@@ -1,0 +1,1284 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.Procurement.Proforma
+<legend>Proforma</legend>
+@(Html.Kendo().Grid<ProformaPurchase>()
+          .Name("grid")
+          .Columns(columns =>
+          {
+              columns.Bound(c => c.ProformaPurchaseID).Title("#").Width(70);
+              columns.Bound(c => c.StoreRequisitionID).Title("SR. No").EditorTemplateName("PurchaseRequisitionSelector").Width(80);
+              columns.Bound(c => c.PurchaseRequisitionID).Title("PR No").EditorTemplateName("PurchaseRequisitionSelector").Width(80);
+              columns.ForeignKey(p => p.ProcurementOfficer, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Title("Purchaser").Width(140).EditorTemplateName("EmployeeSelector");
+              columns.Bound(c => c.ProformaReference).Title("Reference").Width(120);
+              columns.Bound(c => c.Description).Width(150);
+              columns.Bound(c => c.FloatDate).Width(120);
+              columns.Bound(c => c.ClosingDate).Width(120);
+              columns.Bound(c => c.EvaluationDate).Width(120);
+              columns.Bound(c => c.PurchaseStatus).Width(110);
+              columns.Bound(c => c.EvaluateTotalFinance).Width(130).ClientTemplate("<input type='checkbox' disabled = 'true' #= EvaluateTotalFinance ? checked='checked' :'' # />");
+              columns.Bound(c => c.Status).Width(120);
+
+              columns.Command(command =>
+              {
+                  command.Edit();
+      // command.Destroy();
+  }).Width(180);
+
+          })
+          .ToolBar(toolbar =>
+          {
+              toolbar.Create();
+  // toolbar.Excel();
+  //toolbar.Pdf();
+})
+          .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("ProformaPurchase").Window(w => w.Title("Proforma Purchase")))
+          .HtmlAttributes(new { style = "height: 650px;" })
+          .Pageable(pageable => pageable
+              .Input(true)
+              .Numeric(false)
+              .Refresh(true)
+              .PageSizes(true)
+              .ButtonCount(20))
+          .Scrollable()
+          .Selectable(selectable =>
+          {
+              selectable.Mode(GridSelectionMode.Single);
+              selectable.Type(GridSelectionType.Row);
+          })
+          .Sortable(sortable =>
+          {
+              sortable.SortMode(GridSortMode.SingleColumn);
+          })
+          .Filterable()
+          .Groupable()
+          .Scrollable(h => h.Height(500))
+          .Events(x => x.DataBound("onDataBoundMaster"))
+          .Groupable().Events(ev => ev.DetailExpand("detailExpandProforma"))
+          .DataSource(dataSource => dataSource
+              .Ajax()
+              .Sort(sort => sort.Add("ProformaPurchaseID").Descending())
+              .Events(ev => ev
+                  .Error("error_handler(\"grid\")")
+                  .RequestStart("onRequestStart(\"grid\")")
+                  .RequestEnd("onRequestEnd(\"grid\")"))
+              .Model(model =>
+              {
+                  model.Id(p => p.ProformaPurchaseID);
+                  model.Field(p => p.ProformaPurchaseID).Editable(false);
+                  model.Field(p => p.StoreRequisitionID).Editable(false);
+                  model.Field(p => p.PurchaseRequisitionID).Editable(false);
+                  model.Field(p => p.ProcurementOfficer).Editable(false);
+                  model.Field(p => p.Status).Editable(false);
+
+                  model.Field(p => p.CreatedBy).Editable(false);
+                  model.Field(p => p.DateCreated).Editable(false);
+                  model.Field(p => p.ModifiedBy).Editable(false);
+                  model.Field(p => p.LastModified).Editable(false);
+              })
+              .Read(read => read.Action("ProformaPurchases_Read", "ProformaPurchase"))
+              .Create(create => create.Action("ProformaPurchases_Create", "ProformaPurchase"))
+              .Update(update => update.Action("ProformaPurchases_Update", "ProformaPurchase"))
+              .Destroy(destroy => destroy.Action("ProformaPurchases_Destroy", "ProformaPurchase"))
+          ).ClientDetailTemplateId("proformaTemplate"))
+
+<script id="proformaTemplate" type="text/kendo">
+    @(Html.Kendo().TabStrip().Name("ProformaTabstrip_#=ProformaPurchaseID#").SelectedIndex(0).Items(items =>
+              {
+    @*======================================================================== Proforma Detail ========================================================*@
+
+                items.Add().Text("Proforma").Content(@<text>
+
+                    # if (!IsOnlineApproved&&!IsSendForApproval)
+                    {#
+                    <br />
+                    <div class="popupwrapper">
+                        <label>Send to checker</label> <input type="text" disabled="disabled" id="NextApprover" />
+                        <img src="~/Content/Images/search.png" onclick="SelectChecker(this)" />
+
+                        <a onclick='return sendToChecker("#=ProformaPurchaseID#")' href=' \#' title="Send to Checker "><i class="fa fa-share-square fa-2x"></i></a>
+                    </div>
+                    <br />
+                    <br />
+                    <a onclick='return sendForApproval("#=ProformaPurchaseID#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                    # } #
+
+                    <div>
+                        <hr>
+                        <dl class="dl-horizontal">
+                            <dt>
+                                Proforma Reference
+                            </dt>
+                            <dd>
+                                #= ProformaReference #
+                            </dd>
+                            <dt>
+                                Description
+                            </dt>
+                            <dd>
+                                #= Description #
+                            </dd>
+                            <dt>
+                                Float Date
+                            </dt>
+                            <dd>
+
+                                #=kendo.toString(kendo.parseDate(FloatDate), 'dd/MM/yyyy') #
+
+                            </dd>
+                            <dt>
+                                Closing Date
+                            </dt>
+                            <dd>
+
+                                #=kendo.toString(kendo.parseDate(ClosingDate), 'dd/MM/yyyy') #
+
+                            </dd>
+                            <dt>
+                                Evaluation Date
+                            </dt>
+                            <dd>
+
+                                #=kendo.toString(kendo.parseDate(EvaluationDate), 'dd/MM/yyyy') #
+
+                            </dd>
+                            <dt>
+                                Status
+                            </dt>
+                            <dd>
+                                #= Status #
+                            </dd>
+                            <dt>
+                                CreatedOn
+                            </dt>
+                            <dd>
+                                #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+
+                            </dd>
+                            <dt>
+                                CreatedBy
+                            </dt>
+                            <dd>
+                                #= CreatedBy #
+                            </dd>
+
+                        </dl>
+
+                    </div>
+                    <hr>
+
+                    # if (IsOnlineApproved && !IsVoid)
+                    {#
+                    @if (HttpContext.Current.User.IsInRole("Procurement_Void"))
+                                {
+                        <a onclick='return voidRecord("#=ProformaPurchaseID#")' href='\#' title='Void Record'><i class='fa  fa-bolt fa-2x' style='color:red'></i></a>
+                                }
+                    /**/
+                    # } #
+
+                    <hr />
+                    <a target="_new" href='@Url.Action("ProformaResultAm", "ProcurementPrint")/#=ProformaPurchaseID#'>Result Summary (AM)</a> |
+                    <a target="_new" href='@Url.Action("ProformaResultEn", "ProcurementPrint")/#=ProformaPurchaseID#'>Result Summary (EN) </a> |
+
+                </text>);
+            @*======================================================================== documents ========================================================*@
+
+                        items.Add().Text("Documents").Content(@<text>
+
+                            @FileUpload()
+
+                        </text>);
+                    @*========================================================================purchase requisitions ========================================================*@
+
+                                items.Add().Text("PR").Content(@<text>
+                                    @(Html.Kendo().Grid<ProformaPurchaseRequisition>()
+                                                  .Name("ProformaPurchaseRequisition#=ProformaPurchaseID#")
+                                                  .Columns(columns =>
+                                                  {
+                                                                                                        columns.Bound(c => c.PurchaseRequisitionAssignmentId).Title("Assignment ID").Width(200).EditorTemplateName("PurchaseRequistionForProforma");
+                                                                                                        columns.Bound(c => c.PurchaseRequisitionID).Width(120);//.EditorTemplateName("PurchaseRequistionForProforma");
+                                                                                            columns.Bound(c => c.StoreRequisitionID).Width(120).Title("SR");
+                                                                                                        columns.Command(command =>
+                                                                                                        {
+                                                                                                            command.Edit();
+                                                                                                            command.Destroy();
+                                                                                                        }).Width(580);
+                                                                                                    })
+                                                  .ToolBar(toolbar =>
+                                                  {
+                                                                                                        toolbar.Create();
+
+                                                                                                    })
+
+                                                  .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                  .Pageable()
+                                                  .Navigatable()
+
+                                                  .Sortable(sortable =>
+                                                  {
+                                                                                                        sortable.SortMode(GridSortMode.SingleColumn);
+                                                                                                    })
+                                                  .Filterable()
+                                                  .Scrollable()
+                                                  .DataSource(dataSource => dataSource
+                                                      .Ajax()
+                                                      .Events(ev => ev
+                                                          .Error("error_handler(\"ProformaPurchaseRequisition#=ProformaPurchaseID#\")")
+                                                          .RequestStart("onRequestStart(\"ProformaPurchaseRequisition#=ProformaPurchaseID#\")")
+                                                          .RequestEnd("onRequestEnd(\"ProformaPurchaseRequisition#=ProformaPurchaseID#\")"))
+                                                      .Model(model =>
+                                                      {
+                                                                                                            model.Id(p => p.ProformaPurchaseRequisitionId);
+                                                                                                            model.Field(p => p.PurchaseRequisitionID).Editable(false);
+                                                                                                            model.Field(p => p.StoreRequisitionID).Editable(false);
+                                                                                                        })
+                                                      .Read(read => read.Action("ProformaPurchaseRequisitions_Read", "ProformaPurchaseRequisition", new { id = "#= ProformaPurchaseID #" }))
+                                                      .Create(create => create.Action("ProformaPurchaseRequisitions_Create", "ProformaPurchaseRequisition", new { id = "#= ProformaPurchaseID #" }))
+                                                      .Update(update => update.Action("ProformaPurchaseRequisitions_Update", "ProformaPurchaseRequisition"))
+                                                      .Destroy(destroy => destroy.Action("ProformaPurchaseRequisitions_Destroy", "ProformaPurchaseRequisition"))
+                                                  ).ToClientTemplate())
+
+                                </text>);
+                            @*======================================================================== Proforma Requested Items ========================================================*@
+
+                                        items.Add().Text("Items").Content(@<text >
+                                        @(Html.Kendo().Grid<ProformaItem>()
+                                                      .Name("proformaItemgrid_#=ProformaPurchaseID#")
+                                                      .Columns(columns =>
+                                                      {
+                                                          columns.Bound(c => c.ItemType).Width(110);
+                                                          columns.ForeignKey(p => p.CatCode, (IEnumerable)ViewData["Category"], "CatCode", "Name").Title("Category");
+                                                          columns.ForeignKey(p => p.ItmCode, (IEnumerable)ViewData["Items"], "ItmCode", "Name").Title("Item");
+                                                          columns.Bound(c => c.Name).Width(150);
+                                                          columns.Bound(c => c.ModelNo).Width(100);
+                                                          columns.Bound(c => c.PartNo).Width(120);
+                                                          columns.Bound(c => c.UoM).Width(100);
+                                                          columns.Bound(c => c.Quantity).Width(90);
+                                                          columns.Bound(c => c.ItemSpecification).Width(150);
+                                                          columns.Command(command =>
+                                                          {
+                                                              command.Edit();
+                                                              //command.Destroy();
+                                                          }).Width(380);
+                                                      })
+                                                      .ToolBar(toolbar =>
+                                                      {
+                                                          //toolbar.Create().Text("Add New Item");
+                                                      })
+                                                      //.Events(ev => ev.Edit("onItemEdit"))
+                                                      .Events(x => x.DataBound("onDataBoundProformaLines"))
+                                                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                      .HtmlAttributes(new { style = "height: 450px;" })
+                                                      .Sortable(sortable =>
+                                                      {
+                                                          sortable.SortMode(GridSortMode.SingleColumn);
+                                                      })
+
+                                                      .Pageable()
+                                                      .Navigatable()
+
+                                                      .Sortable(sortable =>
+                                                      {
+                                                          sortable.SortMode(GridSortMode.SingleColumn);
+                                                      })
+                                                      //.Filterable()
+                                                      .Scrollable()
+                                                      .DataSource(dataSource =>
+                                                          dataSource
+                                                              .Ajax()
+                                                              .Events(ev => ev
+                                                                  .Error("error_handler(\"proformaItemgrid_#=ProformaPurchaseID#\")")
+                                                                  .RequestStart("onRequestStart(\"proformaItemgrid_#=ProformaPurchaseID#\")")
+                                                                  .RequestEnd("onRequestEnd(\"proformaItemgrid_#=ProformaPurchaseID#\")"))
+                                                              .Model(model =>
+                                                              {
+                                                                  model.Id(p => p.ProformaItemID);
+                                                                  model.Field(p => p.ItemType).Editable(false);
+                                                                  model.Field(p => p.CatCode).Editable(false);
+                                                                  model.Field(p => p.CategoryName).Editable(false);
+                                                                  model.Field(p => p.ItmCode).Editable(false);
+                                                                  model.Field(p => p.ItemName).Editable(false);
+                                                                  model.Field(p => p.PartNo).Editable(false);
+                                                                  model.Field(p => p.UoM).Editable(false);
+                                                                  model.Field(p => p.Name).Editable(false);
+                                                                  model.Field(p => p.ModelNo).Editable(false);
+
+                                                                  model.Field(p => p.CreatedBy).Editable(false);
+                                                                  model.Field(p => p.DateCreated).Editable(false);
+                                                                  model.Field(p => p.ModifiedBy).Editable(false);
+                                                                  model.Field(p => p.LastModified).Editable(false);
+
+                                                              })
+                                                              .Read(read => read.Action("ProformaItems_Read", "ProformaItem", new { id = "#= ProformaPurchaseID #" }))
+                                                              .Create(create => create.Action("ProformaItems_Create", "ProformaItem", new { id = "#= ProformaPurchaseID #" }))
+                                                              .Update(update => update.Action("ProformaItems_Update", "ProformaItem"))
+                                                              .Destroy(destroy => destroy.Action("ProformaItems_Destroy", "ProformaItem"))
+                                                      ).ToClientTemplate())
+
+
+                                        </text>);
+
+                                    @*============================================================================== Participating Suppliers  ===========================================================*@
+
+                                                items.Add().Text("Suppliers").Content(@<text>
+                                                    @(Html.Kendo().Grid<ParticipatingSupplier>()
+                                                                  .Name("participatingsuppliergrid_#=ProformaPurchaseID#")
+                                                                  .Columns(columns =>
+                                                                  {
+                                                                      //            columns.ForeignKey(p => p.ProformaItemID, (IEnumerable)ViewData["ProformaItems"], "ProformaItemID", "Name").Title("Item").EditorTemplateName("ProformaItemSelector").Width(140);
+                                                                      //// columns.ForeignKey(p => p.CatCode, (IEnumerable)ViewData["Category"], "CatCode", "Name").Title("Category").EditorTemplateName("ItemCategoryProformaSelector").Width(130);
+                                                                      //columns.ForeignKey(p => p.ItmCode, (IEnumerable)ViewData["Items"], "ItmCode", "Name").Title("Items").Width(140).EditorTemplateName("ItemProformaSelector");
+                                                                      //            columns.Bound(c => c.Name).Width(60);
+                                                                      //            columns.ForeignKey(p => p.GLTaxRateID, (IEnumerable)ViewData["tax"], "GLTaxRateID", "TaxName").Title("Tax Name").EditorTemplateName("TaxSelector").Width(80);
+                                                                      //            columns.Bound(c => c.Quantity).Width(60);
+                                                                      //            columns.Bound(c => c.UPrice).Width(60);
+                                                                      //            columns.Bound(c => c.TaxAmount).Title("Tax").Width(60);
+                                                                      //            columns.Bound(c => c.TPrice).Width(60);
+                                                                      columns.Bound(c => c.SupplierId).Width(100).EditorTemplateName("SupplierSelector");
+                                                                      columns.Bound(c => c.IsNewSupplier).Width(70).ClientTemplate("<input type='checkbox' disabled = 'true' \\#= IsNewSupplier ? checked='checked' :'' \\# />");
+                                                                      columns.Bound(c => c.SupplierName).Width(130);
+                                                                      columns.Bound(c => c.Representative).Title("Representative").Width(70);
+                                                                      columns.Bound(c => c.Address).Width(70);
+                                                                      columns.Bound(c => c.Telephone).Width(90);
+                                                                      columns.Bound(c => c.ProformaSubmitionDate).Width(100);
+                                                                      columns.Bound(c => c.ProformaSubmitionTime).Width(100);
+                                                                      //columns.Bound(c => c.IsOutOfStock).Width(80).ClientTemplate("<input type='checkbox' disabled = 'true' \\#= IsOutOfStock ? checked='checked' :'' \\# />");
+                                                                      columns.Bound(c => c.Remark).Width(80);
+
+                                                                      columns.Command(command =>
+                                                                      {
+                                                                          command.Edit();
+                                                                          command.Destroy();
+                                                                      }).Width(180);
+                                                                  })
+                                                                  .ToolBar(toolbar =>
+                                                                  {
+                                                                      toolbar.Create();
+                                                                  })
+                                                                  .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                  .HtmlAttributes(new { style = "height: 450px;" })
+                                                                  .Scrollable()
+                                                                  .Pageable(pageable => pageable
+                                                                      .Input(true)
+                                                                      .Numeric(false)
+                                                                      .Refresh(true)
+                                                                      .PageSizes(true)
+                                                                      .ButtonCount(20))
+                                                                  .Sortable(sortable =>
+                                                                  {
+                                                                      sortable.SortMode(GridSortMode.SingleColumn);
+                                                                  })
+                                                                  //.Events(events => events.Edit("participatingSupplierEdit"))
+                                                                  .Events(x => x.DataBound("onDataBoundProformaLines"))
+                                                                  .ClientDetailTemplateId("supplierDetail")
+                                                                  .DataSource(dataSource => dataSource
+                                                                      .Ajax()
+                                                                      .Events(ev => ev
+                                                                          .Error("error_handler(\"participatingsuppliergrid_#=ProformaPurchaseID#\")")
+                                                                          .RequestStart("onRequestStart(\"participatingsuppliergrid_#=ProformaPurchaseID#\")")
+                                                                          .RequestEnd("onRequestEnd(\"participatingsuppliergrid_#=ProformaPurchaseID#\")"))
+                                                                      .Model(model =>
+                                                                      {
+                                                                          model.Id(p => p.ParticipatingSupplierID);
+                                                                          model.Field(p => p.Quantity).Editable(false);
+                                                                          model.Field(p => p.TaxAmount).Editable(false);
+                                                                          model.Field(p => p.TPrice).Editable(false);
+                                                                          model.Field(p => p.CatCode).Editable(false);
+                                                                          model.Field(p => p.ItmCode).Editable(false);
+                                                                          model.Field(p => p.CategoryName).Editable(false);
+                                                                          model.Field(p => p.ItemName).Editable(false);
+                                                                          model.Field(p => p.Name).Editable(false);
+                                                                      })
+                                                                      .Read(read => read.Action("ParticipatingSuppliers_Read", "ProformaParticipatingSupplier", new { id = " #= ProformaPurchaseID #  " }))
+                                                                      .Create(create => create.Action("ParticipatingSuppliers_Create", "ProformaParticipatingSupplier", new { id = " #= ProformaPurchaseID #  " }))
+                                                                      .Update(update => update.Action("ParticipatingSuppliers_Update", "ProformaParticipatingSupplier"))
+                                                                      .Destroy(destroy => destroy.Action("ParticipatingSuppliers_Destroy", "ProformaParticipatingSupplier"))
+                                                                  ).ToClientTemplate())
+
+
+                                                </text>);
+
+                                            @*=========================================================================== Proforma Evaluation Criteria===============================================*@
+
+                                                        items.Add().Text("Criteria").Content(@<text>
+                                                            @(Html.Kendo().Grid<ProformaEvaluationCriteria>()
+                                                                          .Name("proformaevaluationcriteriagrid_#=ProformaPurchaseID#")
+                                                                          .Columns(columns =>
+                                                                          {
+                                                                                                                                                        columns.Bound(c => c.Type).Width(120).EditorTemplateName("CriteriaType");
+                                                                                                                                                        columns.Bound(c => c.Weight).Width(90);
+                                                                                                                                                        columns.Bound(c => c.Description).Width(100);
+
+                                                                                                                                                        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(380);
+                                                                                                                                                    })
+                                                                          .ToolBar(toolbar =>
+                                                                          {
+                                                                                                                                                        toolbar.Create();
+                                                                                                                                                    })
+                                                                          .Events(x => x.DataBound("onDataBoundProformaLines"))
+                                                                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                          .Scrollable()
+                                                                          .DataSource(dataSource => dataSource
+                                                                              .Ajax()
+                                                                              .Events(ev => ev
+                                                                                  .Error("error_handler(\"proformaevaluationcriteriagrid_#=ProformaPurchaseID#\")")
+                                                                                  .RequestStart("onRequestStart(\"proformaevaluationcriteriagrid_#=ProformaPurchaseID#\")")
+                                                                                  .RequestEnd("onRequestEnd(\"proformaevaluationcriteriagrid_#=ProformaPurchaseID#\")"))
+                                                                              .Model(model => model.Id(p => p.ProformaEvaluationCriteriaID))
+                                                                              .Read(read => read.Action("ProformaEvaluationCriterias_Read", "ProformaEvaluationCriteria", new { id = "#= ProformaPurchaseID #" }))
+                                                                              .Create(create => create.Action("ProformaEvaluationCriterias_Create", "ProformaEvaluationCriteria", new { id = "#= ProformaPurchaseID #" }))
+                                                                              .Update(update => update.Action("ProformaEvaluationCriterias_Update", "ProformaEvaluationCriteria"))
+                                                                              .Destroy(destroy => destroy.Action("ProformaEvaluationCriterias_Destroy", "ProformaEvaluationCriteria"))
+                                                                          ).ToClientTemplate())
+
+
+                                                        </text>);
+
+                                                                items.Add().Text("Technical").Content(@<text>
+                                                                    @(Html.Kendo().Grid<ProformTechnical>()
+                                                                                  .Name("ProformTechnical#=ProformaPurchaseID#")
+                                                                                  .Columns(columns =>
+                                                                                  {
+                                                                                      columns.Bound(c => c.SupplierName).EditorTemplateName("ProformaParticipant").Width(120);
+                                                                                      columns.ForeignKey(p => p.ProformaItemID, (IEnumerable)ViewData["ProformaItems"], "ProformaItemID", "Name").Title("Item").EditorTemplateName("ProformaItemSelector").Width(140);
+                                                                                      columns.ForeignKey(p => p.ItmCode, (IEnumerable)ViewData["Items"], "ItmCode", "Name").Title("Item").Width(120).EditorTemplateName("BidItem");
+                                                                                      columns.Bound(c => c.Name).Width(60);
+                                                                                      columns.Bound(c => c.ModelNo).Width(60);
+                                                                                      columns.Bound(c => c.Result).Width(120);
+                                                                                      columns.Command(command =>
+                                                                                      {
+                                                                                          command.Edit();
+                                                                                          command.Destroy();
+                                                                                      }).Width(380);
+                                                                                  })
+                                                                                  .ToolBar(toolbar =>
+                                                                                  {
+                                                                                      toolbar.Create();
+                                                                                  })
+                                                                                  .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                                  .HtmlAttributes(new { style = "height: 500px;" })
+                                                                                  .Scrollable()
+                                                                                  .Sortable(sortable =>
+                                                                                  {
+                                                                                      sortable.SortMode(GridSortMode.SingleColumn);
+                                                                                  })
+                                                                                  .DataSource(dataSource => dataSource
+                                                                                      .Ajax()
+                                                                                      .Events(ev => ev
+                                                                                          .Error("error_handler(\"ProformTechnical#=ProformaPurchaseID#\")")
+                                                                                          .RequestStart("onRequestStart(\"ProformTechnical#=ProformaPurchaseID#\")")
+                                                                                          .RequestEnd("onRequestEnd(\"ProformTechnical#=ProformaPurchaseID#\")"))
+
+                                                                                      .Model(model =>
+                                                                                      {
+                                                                                          model.Id(p => p.ProformTechnicalId);
+                                                                                          model.Field(p => p.CategoryName).Editable(false);
+                                                                                          model.Field(p => p.CatCode).Editable(false);
+                                                                                          model.Field(p => p.ItmCode).Editable(false);
+                                                                                          model.Field(p => p.ItemName).Editable(false);
+                                                                                          model.Field(p => p.Name).Editable(false);
+                                                                                          model.Field(p => p.ModelNo).Editable(false);
+                                                                                      })
+                                                                                      .Read(read => read.Action("ProformTechnicals_Read", "ProformTechnical", new { id = "#= ProformaPurchaseID #" }))
+                                                                                      .Create(create => create.Action("ProformTechnicals_Create", "ProformTechnical", new { id = "#= ProformaPurchaseID #" }))
+                                                                                      .Update(update => update.Action("ProformTechnicals_Update", "ProformTechnical"))
+                                                                                      .Destroy(destroy => destroy.Action("ProformTechnicals_Destroy", "ProformTechnical"))
+                                                                                  ).ToClientTemplate())
+
+                                                                </text>);
+
+
+                                                                        items.Add().Text("Pass Fail").Content(@<text>
+                                                                            @(Html.Kendo().Grid<ProformPassFail>()
+                                                                                          .Name("ProformPassFail#=ProformaPurchaseID#")
+                                                                                          .Columns(columns =>
+                                                                                          {
+                                                                                              columns.Bound(c => c.SupplierName).EditorTemplateName("ProformaParticipant").Width(120);
+                                                                                              columns.ForeignKey(p => p.ProformaItemID, (IEnumerable)ViewData["ProformaItems"], "ProformaItemID", "Name").Title("Item").EditorTemplateName("ProformaItemSelector").Width(140);
+
+                                                                                              columns.ForeignKey(p => p.ItmCode, (IEnumerable)ViewData["Items"], "ItmCode", "Name").Title("Item").Width(120).EditorTemplateName("BidItem");
+                                                                                              columns.Bound(c => c.Name).Width(60);
+                                                                                              columns.Bound(c => c.ModelNo).Width(60);
+                                                                                              columns.Bound(c => c.Result).Width(120).EditorTemplateName("PassFailCriteria");
+                                                                                              columns.Bound(c => c.Remark).Width(120);
+                                                                                              columns.Command(command =>
+                                                                                              {
+                                                                                                  command.Edit();
+                                                                                                  command.Destroy();
+                                                                                              }).Width(380);
+                                                                                          })
+                                                                                          .ToolBar(toolbar =>
+                                                                                          {
+                                                                                              toolbar.Create();
+                                                                                          })
+                                                                                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                                          .Pageable()
+                                                                                          .Sortable(sortable =>
+                                                                                          {
+                                                                                              sortable.SortMode(GridSortMode.SingleColumn);
+                                                                                          })
+                                                                                          .Scrollable()
+                                                                                          .DataSource(dataSource => dataSource
+                                                                                              .Ajax()
+                                                                                              .Events(ev => ev
+                                                                                                  .Error("error_handler(\"ProformPassFail#=ProformaPurchaseID#\")")
+                                                                                                  .RequestStart("onRequestStart(\"ProformPassFail#=ProformaPurchaseID#\")")
+                                                                                                  .RequestEnd("onRequestEnd(\"ProformPassFail#=ProformaPurchaseID#\")"))
+                                                                                              .Model(model =>
+                                                                                              {
+                                                                                                  model.Id(p => p.ProformPassFailId);
+                                                                                                  model.Field(p => p.CatCode).Editable(false);
+                                                                                                  model.Field(p => p.CategoryName).Editable(false);
+                                                                                                  model.Field(p => p.ItmCode).Editable(false);
+                                                                                                  model.Field(p => p.ItemName).Editable(false);
+                                                                                                  model.Field(p => p.Name).Editable(false);
+                                                                                                  model.Field(p => p.ModelNo).Editable(false);
+                                                                                              })
+                                                                                              .Read(read => read.Action("ProformPassFails_Read", "ProformPassFail", new { id = "#= ProformaPurchaseID #" }))
+                                                                                              .Create(create => create.Action("ProformPassFails_Create", "ProformPassFail", new { id = "#= ProformaPurchaseID #" }))
+                                                                                              .Update(update => update.Action("ProformPassFails_Update", "ProformPassFail"))
+                                                                                              .Destroy(destroy => destroy.Action("ProformPassFails_Destroy", "ProformPassFail"))
+                                                                                          ).ToClientTemplate())
+
+                                                                        </text>);
+
+
+                                                                    @*==============================================================Proforma Evaluation Result================================================================*@
+                                                                                items.Add().Text("Evaluation Result").Content(@<text>
+
+                                                                                    @ProformaResult()
+
+                                                                                </text>);
+                                                                            @*============================================================== Proforma Winning Supplier ================================================================*@
+
+                                                                                        items.Add().Text("Winning Supplier").Content(@<text>
+
+                                                                                            @WinningSupplier()
+
+                                                                                        </text>);
+                                                                                    @*============================================================== Proforma Validation ================================================================*@
+
+                                                                                                items.Add().Text("Validation").Content(@<text>
+                                                                                                    @(Html.Kendo().Grid<PurchaseValidation>()
+                                                                                                                  .Name("proformaValidationgrid_#=ProformaPurchaseID#")
+                                                                                                                  .Columns(columns =>
+                                                                                                                  {
+                                                                                                                                                                                                                                        columns.Bound(c => c.Status).Width(170).EditorTemplateName("ValidationStatus");
+                                                                                                                                                                                                                                        columns.Bound(c => c.Remark).Width(170);
+                                                                                                                                                                                                                                        columns.Bound(c => c.DateCreated).Width(200).Title("Time").Format("{0:dd/MM/yyyy}");
+                                                                                                                                                                                                                                        columns.Bound(c => c.LastModified).Hidden(true);
+                                                                                                                                                                                                                                        columns.Bound(c => c.CreatedBy).Width(200).Title("User");
+                                                                                                                                                                                                                                        columns.Bound(c => c.ModifiedBy).Hidden(true);
+                                                                                                                                                                                                                                        columns.Command(command =>
+                                                                                                                                                                                                                                        {
+                                                                                                                                                                                                                                            command.Edit();
+                                                                                                                                                                                                                                //command.Destroy();
+                                                                                                                                                                                                                            });
+                                                                                                                                                                                                                                    })
+                                                                                                                  .ToolBar(toolbar =>
+                                                                                                                  {
+                                                                                                                                                                                                                                        toolbar.Create();
+                                                                                                                                                                                                                                    })
+                                                                                                                  .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                                                                  .Scrollable()
+                                                                                                                  .Events(x => x.DataBound("onDataBoundProformaValidation"))
+                                                                                                                  .DataSource(dataSource => dataSource
+                                                                                                                      .Ajax()
+
+                                                                                                                      .Events(ev => ev
+                                                                                                                          .Error("error_handler(\"proformaValidationgrid_#=ProformaPurchaseID#\")")
+                                                                                                                          .RequestStart("onRequestStart(\"proformaValidationgrid_#=ProformaPurchaseID#\")")
+                                                                                                                          .RequestEnd("onRequestEnd(\"proformaValidationgrid_#=ProformaPurchaseID#\")"))
+                                                                                                                      .Model(model =>
+                                                                                                                      {
+                                                                                                                                                                                                                                            model.Id(p => p.PurchaseValidationID);
+                                                                                                                                                                                                                                            model.Field(p => p.CreatedBy).Editable(false);
+                                                                                                                                                                                                                                            model.Field(p => p.DateCreated).Editable(false);
+                                                                                                                                                                                                                                            model.Field(p => p.ModifiedBy).Editable(false);
+                                                                                                                                                                                                                                            model.Field(p => p.LastModified).Editable(false);
+                                                                                                                                                                                                                                        })
+                                                                                                                      .Read(read => read.Action("PurchaseValidations_Read", "ProformaValidation", new { id = "#= ProformaPurchaseID #" }))
+                                                                                                                      .Create(create => create.Action("PurchaseValidations_Create", "ProformaValidation", new { id = "#= ProformaPurchaseID #" }))
+                                                                                                                      .Update(update => update.Action("PurchaseValidations_Update", "ProformaValidation"))
+                                                                                                                      .Destroy(destroy => destroy.Action("PurchaseValidations_Destroy", "ProformaValidation"))
+                                                                                                                  ).ToClientTemplate())
+
+
+                                                                                                </text>);
+
+                                                                                                    }).ToClientTemplate())
+
+
+
+    @helper ProformaResult()
+    {
+        @(Html.Kendo().Grid<ProformaEvaluationResult>()
+                      .Name("proformaevaluationresultgrid_#=ProformaPurchaseID#")
+                      .Columns(columns =>
+                      {
+                          columns.Bound(c => c.SupplierName).EditorTemplateName("GetParticipants").Width(120);
+                          //columns.ForeignKey(p => p.ProformaItemID, (IEnumerable)ViewData["ProformaItems"], "ProformaItemID", "Name").Title("Item").Width(140).EditorTemplateName("ProformaParticipatingItemSelector");
+                          //columns.ForeignKey(p => p.ItmCode, (IEnumerable)ViewData["Items"], "ItmCode", "Name").Title("Items").EditorTemplateName("ItemProformaSelector").Width(180);
+                          //columns.Bound(c => c.Name).Width(60);
+                          columns.Bound(c => c.Financial).Format("{0:n}").Width(70);
+                          columns.Bound(c => c.Technical).Width(70);
+                          columns.Bound(c => c.Pass).Width(70);
+                          columns.Bound(c => c.Total).Format("{0:n}").Width(70);
+
+                          columns.Command(command =>
+                          {
+                  //command.Edit();
+                  //command.Destroy();
+
+              }).Width(380);
+              //columns.Command(command => command.Custom("technicalLetter"));
+          })
+                      .ToolBar(toolbar =>
+                      {
+                          toolbar.Template(@<text>
+                            @Html.Kendo().Button().Content("Calculate Result").Name("GetCriteria").Events(events => events.Click("GetCriteriaClicked")).ToClientTemplate()
+                        </text>);
+                            })
+
+                            .Events(x => x.DataBound("onDataBoundProformaLines"))
+                            .Editable(editable => editable.Mode(GridEditMode.InLine))
+                            .Scrollable()
+                            .Sortable(sortable =>
+                            {
+                                sortable.SortMode(GridSortMode.SingleColumn);
+                            })
+                            .Events(ev => ev.DataBound("letterBound"))
+                            .ClientDetailTemplateId("resultDetail")
+                            .DataSource(dataSource => dataSource
+                                .Ajax()
+
+                                .Events(ev => ev
+                                    .Error("error_handler(\"proformaevaluationresultgrid_#=ProformaPurchaseID#\")")
+                                    .RequestStart("onRequestStart(\"proformaevaluationresultgrid_#=ProformaPurchaseID#\")")
+                                    .RequestEnd("onRequestEnd(\"proformaevaluationresultgrid_#=ProformaPurchaseID#\")"))
+                                .Model(model => model.Id(p => p.ProformaEvaluationResultID))
+                                .Read(read => read.Action("ProformaEvaluationResults_Read", "ProformaEvaluationResult", new { id = "#= ProformaPurchaseID #" }))
+                                .Create(create => create.Action("ProformaEvaluationResults_Create", "ProformaEvaluationResult", new { id = "#= ProformaPurchaseID #" }))
+                                .Update(update => update.Action("ProformaEvaluationResults_Update", "ProformaEvaluationResult"))
+                                .Destroy(destroy => destroy.Action("ProformaEvaluationResults_Destroy", "ProformaEvaluationResult"))
+                            ).ToClientTemplate())
+    }
+
+    @helper WinningSupplier()
+    {
+        @(Html.Kendo().Grid<WinningSupplier>()
+                      .Name("winningSuppliergrid_#=ProformaPurchaseID#")
+                      .Columns(columns =>
+                      {
+                          columns.Bound(c => c.SupplierName).EditorTemplateName("ProformaParticipant").Width(150);
+                          columns.Bound(c => c.AwardDate).Width(100);
+                          columns.Bound(c => c.DeliveryDate).Width(100);
+                          columns.Bound(c => c.AwardGiven).Width(90).ClientTemplate("<input type='checkbox' disabled = 'false' \\#= AwardGiven ? checked='checked' :'' \\# />");
+                          columns.Bound(c => c.Remark).Width(100);
+
+
+                          columns.Command(command =>
+                          {
+                              command.Edit();
+                  //command.Destroy();
+              }).Width(380);
+                      })
+                      .ToolBar(toolbar =>
+                      {
+                          toolbar.Template(@<text>
+                            @Html.Kendo().Button().Content("Calculate Winner").Name("GetWinner").Events(events => events.Click("GetWinnerClicked")).ToClientTemplate()
+                        </text>);
+                            })
+                            .Events(x => x.DataBound("onDataBoundProformaLines").DetailExpand("awardDetailExpand"))
+                            .Editable(editable => editable.Mode(GridEditMode.InLine))
+                            .Scrollable()
+                            .Sortable(sortable =>
+                            {
+                                sortable.SortMode(GridSortMode.SingleColumn);
+                            })
+                            .ClientDetailTemplateId("winnerDetail")
+                            .DataSource(dataSource => dataSource
+                                .Ajax()
+                                .Events(ev => ev
+                                    .Error("error_handler(\"winningSuppliergrid_#=ProformaPurchaseID#\")")
+                                    .RequestStart("onRequestStart(\"winningSuppliergrid_#=ProformaPurchaseID#\")")
+                                    .RequestEnd("onRequestEnd(\"winningSuppliergrid_#=ProformaPurchaseID#\")"))
+                                .Model(model =>
+                                {
+                                    model.Id(p => p.WinningSupplierID);
+                        //model.Field(p => p.SupplierName).Editable(false);
+
+                    })
+                                .Read(read => read.Action("WinningSuppliers_Read", "ProformaWinningSuppliers", new { id = "#= ProformaPurchaseID #" }))
+                                .Create(create => create.Action("WinningSuppliers_Create", "ProformaWinningSuppliers", new { id = "#= ProformaPurchaseID #" }))
+                                .Update(update => update.Action("WinningSuppliers_Update", "ProformaWinningSuppliers"))
+                                .Destroy(destroy => destroy.Action("WinningSuppliers_Destroy", "ProformaWinningSuppliers"))
+                            ).ToClientTemplate())
+    }
+
+
+    @helper FileUpload()
+    {
+        <text>
+            @(Html.Kendo().Grid<ExceedERP.Core.Domain.Procurement.Proforma.ProformaUploadDbModel>
+                          ()
+                          .Name("proformauploadgrid_#=ProformaPurchaseID#")
+                          .Columns(columns =>
+                          {
+                              columns.Bound(x => x.ProformaUploadDbModelId).Hidden(true);
+                              columns.Bound(c => c.FileName).ClientTemplate("<a href='/ProformaUploads/FileDwonload?id=\\#=ProformaUploadDbModelId \\#'>\\#=FileName \\#</a>").Width(200);
+
+                              columns.Command(command =>
+                              {
+                                  command.Edit();
+                                  command.Destroy();
+                              }).Width(580);
+                          })
+                          .ToolBar(t => t.Template(
+                            @<text>
+                                @(Html.Kendo().Upload()
+                                              .Name("proformaUploadDBModel")
+                                              .Async(a => a.Save("ProformaUploadDbModels_Create", "ProformaUploads", new { id = "#=ProformaPurchaseID #" }))
+                                              .Events(e => e.Complete("onUploadSuccess"))
+                                              .ShowFileList(false)
+                                              .ToClientTemplate())
+                            </text>
+                                    ))
+                                .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                .HtmlAttributes(new { style = "height: 150px;" })
+                                .Sortable(sortable =>
+                                {
+                                    sortable.SortMode(GridSortMode.SingleColumn);
+                                })
+                                .Scrollable()
+                                .Events(x => x.DataBound("onDataBoundProformaLines"))
+                                .DataSource(dataSource => dataSource
+                                    .Ajax()
+                                    .Events(ev => ev
+                                        .Error("error_handler(\"proformauploadgrid_#=ProformaPurchaseID#\")")
+                                        .RequestStart("onRequestStart(\"proformauploadgrid_#=ProformaPurchaseID#\")")
+                                        .RequestEnd("onRequestEnd(\"proformauploadgrid_#=ProformaPurchaseID#\")"))
+                                    .Model(model => model.Id(p => p.ProformaUploadDbModelId))
+                                    .Read(read => read.Action("ProformaUploadDbModels_Read", "ProformaUploads", new { id = "#=ProformaPurchaseID #" }))
+                                    .Create(create => create.Action("ProformaUploadDbModels_Create", "ProformaUploads", new { id = "#=ProformaPurchaseID #" }))
+                                    .Update(update => update.Action("ProformaUploadDbModels_Update", "ProformaUploads"))
+                                    .Destroy(destroy => destroy.Action("ProformaUploadDbModels_Destroy", "ProformaUploads"))
+                                ).ToClientTemplate())
+        </text>
+    }
+</script>
+
+
+
+<script id="supplierDetail" type="text/Kendo-tmpl">
+    @(Html.Kendo().TabStrip().Name("tabStrip_#=ParticipatingSupplierID#").SelectedIndex(0).Items(items =>
+      {
+          items.Add().Text("Supplier Items").Content(@<text>
+            @(Html.Kendo().Grid<ParticipatingSupplierItem>()
+                  .Name("participatingsupplieritemgrid_#=ParticipatingSupplierID#")
+                  .Columns(columns =>
+                  {
+                      columns.ForeignKey(p => p.ProformaItemID, (IEnumerable)ViewData["ProformaItems"], "ProformaItemID", "Name").Title("Item").EditorTemplateName("ProformaItemSelector").Width(140);
+                      // columns.ForeignKey(p => p.CatCode, (IEnumerable)ViewData["Category"], "CatCode", "Name").Title("Category").EditorTemplateName("ItemCategoryProformaSelector").Width(130);
+                      columns.ForeignKey(p => p.ItmCode, (IEnumerable)ViewData["Items"], "ItmCode", "Name").Title("Items").Width(140).EditorTemplateName("ItemProformaSelector");
+                      columns.Bound(c => c.Name).Width(60);
+                      columns.Bound(c => c.ModelNo).Width(60);
+                      columns.ForeignKey(p => p.GLTaxRateID, (IEnumerable)ViewData["tax"], "GLTaxRateID", "TaxName").Title("Tax Name").EditorTemplateName("TaxSelector").Width(80);
+                      columns.Bound(c => c.Quantity).Width(60);
+                      columns.Bound(c => c.UPrice).Width(60);
+                      columns.Bound(c => c.TaxAmount).Title("Tax").Width(60);
+                      columns.Bound(c => c.TPrice).Width(60);
+                      columns.Bound(c => c.IsOutOfStock).Width(80).ClientTemplate("<input type='checkbox' disabled = 'true' \\#= IsOutOfStock ? checked='checked' :'' \\# />");
+                      columns.Bound(c => c.Remark).Width(80);
+
+                      columns.Command(command =>
+                      {
+                          command.Edit();
+                          command.Destroy();
+                      }).Width(180);
+                  })
+                  .ToolBar(toolbar =>
+                  {
+                      toolbar.Create();
+                  })
+                  .Editable(editable => editable.Mode(GridEditMode.InLine))
+                  .HtmlAttributes(new { style = "height: 450px;" })
+                  .Scrollable()
+                  .Pageable(pageable => pageable
+                      .Input(true)
+                      .Numeric(false)
+                      .Refresh(true)
+                      .PageSizes(true)
+                      .ButtonCount(20))
+                  .Sortable(sortable =>
+                  {
+                      sortable.SortMode(GridSortMode.SingleColumn);
+                  })
+                  //.Events(events => events.Edit("participatingSupplierEdit"))
+                  .Events(x => x.DataBound("onDataBoundProformaLines"))
+                  .DataSource(dataSource => dataSource
+                      .Ajax()
+                      .Events(ev => ev
+                          .Error("error_handler(\"participatingsupplieritemgrid_#=ParticipatingSupplierID#\")")
+                          .RequestStart("onRequestStart(\"participatingsupplieritemgrid_#=ParticipatingSupplierID#\")")
+                          .RequestEnd("onRequestEnd(\"participatingsupplieritemgrid_#=ParticipatingSupplierID#\")"))
+                      .Model(model =>
+                      {
+                          model.Id(p => p.ParticipatingSupplierItemId);
+                          model.Field(p => p.Quantity).Editable(false);
+                          model.Field(p => p.TaxAmount).Editable(false);
+                          model.Field(p => p.TPrice).Editable(false);
+                          model.Field(p => p.CatCode).Editable(false);
+                          model.Field(p => p.ItmCode).Editable(false);
+                          model.Field(p => p.CategoryName).Editable(false);
+                          model.Field(p => p.ItemName).Editable(false);
+                          model.Field(p => p.Name).Editable(false);
+                          model.Field(p => p.ModelNo).Editable(false);
+                      })
+                      .Read(read => read.Action("ParticipatingSupplierItems_Read", "ProformaParticipatingSupplierItem", new { id = " #= ParticipatingSupplierID #  " }))
+                      .Create(create => create.Action("ParticipatingSupplierItems_Create", "ProformaParticipatingSupplierItem", new { id = " #= ParticipatingSupplierID #  " }))
+                      .Update(update => update.Action("ParticipatingSupplierItems_Update", "ProformaParticipatingSupplierItem"))
+                      .Destroy(destroy => destroy.Action("ParticipatingSupplierItems_Destroy", "ProformaParticipatingSupplierItem"))
+                  ).ToClientTemplate())
+
+
+        </text>);
+
+
+      }).ToClientTemplate())
+</script>
+
+<script id="resultDetail" type="text/Kendo-tmpl">
+    @(Html.Kendo().TabStrip().Name("tabStrip_#=ProformaEvaluationResultID#").SelectedIndex(0).Items(itemn =>
+              {
+                  itemn.Add().Text("Result Items").Content(
+
+                    @<text>
+
+                        @(Html.Kendo().Grid<ProformaEvaluationItemResult>()
+                                      .Name("ProformaEvaluationItemResult#=ProformaEvaluationResultID#")
+                                      .Columns(columns =>
+                                      {
+                                          columns.ForeignKey(p => p.ProformaItemID, (IEnumerable)ViewData["ProformaItems"], "ProformaItemID", "Name").Title("Item").EditorTemplateName("LotItemSelector").Width(180);
+                                          columns.ForeignKey(p => p.ItmCode, (IEnumerable)ViewData["Items"], "ItmCode", "Name").Title("Items").Width(150);
+                                          columns.Bound(c => c.Name).Width(100);
+                                          columns.Bound(c => c.ModelNo).Width(100);
+                                          columns.Bound(c => c.Financial).Format("{0:n}").Width(100);
+                                          columns.Bound(c => c.Technical).Width(100);
+                                          columns.Bound(c => c.Pass).Width(100);
+                                          columns.Bound(c => c.Total).Format("{0:n}").Width(100);
+                                          columns.Command(command =>
+                                          {
+                                              command.Edit();
+                                              //command.Destroy();
+                                          });
+                                      })
+                                      .ToolBar(toolbar =>
+                                      {
+                                          // toolbar.Create();
+                                      })
+                                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                      .Scrollable()
+                                      .Events(x => x.DataBound("onDataBoundProformaLines"))
+                                      .DataSource(dataSource => dataSource
+                                          .Ajax()
+                                          .Events(ev => ev
+                                              .Error("error_handler(\"ProformaEvaluationItemResult#=ProformaEvaluationResultID#\")")
+                                              .RequestStart("onRequestStart(\"ProformaEvaluationItemResult#=ProformaEvaluationResultID#\")")
+                                              .RequestEnd("onRequestEnd(\"ProformaEvaluationItemResult#=ProformaEvaluationResultID#\")"))
+                                          .Model(model =>
+                                          {
+                                              model.Id(p => p.ProformaEvaluationItemResultId);
+                                              model.Field(p => p.ProformaItemID).Editable(false);
+                                              model.Field(p => p.CatCode).Editable(false);
+                                              model.Field(p => p.CategoryName).Editable(false);
+                                              model.Field(p => p.ItmCode).Editable(false);
+                                              model.Field(p => p.ItemName).Editable(false);
+                                              model.Field(p => p.Name).Editable(false);
+                                              model.Field(p => p.ModelNo).Editable(false);
+                                              model.Field(p => p.Financial).Editable(false);
+                                              model.Field(p => p.Technical).Editable(false);
+                                              model.Field(p => p.Pass).Editable(false);
+                                              model.Field(p => p.Total).Editable(false);
+                                          })
+                                          .Read(read => read.Action("ProformaEvaluationItemResults_Read", "ProformaEvaluationItemResult", new { id = "#=ProformaEvaluationResultID#" }))
+                                          .Create(create => create.Action("ProformaEvaluationItemResults_Create", "ProformaEvaluationItemResult", new { id = "#=ProformaEvaluationResultID#" }))
+                                          .Update(update => update.Action("ProformaEvaluationItemResults_Update", "ProformaEvaluationItemResult", new { id = "#=ProformaEvaluationResultID#" }))
+                                          .Destroy(destroy => destroy.Action("ProformaEvaluationItemResults_Destroy", "ProformaEvaluationItemResult", new { id = "#=ProformaEvaluationResultID#" }))
+                                      ).ToClientTemplate())
+
+
+                    </text>);
+
+
+                    }).ToClientTemplate())
+</script>
+
+<script id="winnerDetail" type="text/Kendo-tmpl">
+    @(Html.Kendo().TabStrip().Name("tabStrip_#=WinningSupplierID#").SelectedIndex(0).Items(itemn =>
+                                                      {
+                                                          itemn.Add().Text("Winner Items").Content(
+
+                        @<text>
+
+                            @(Html.Kendo().Grid<WinningSupplierItem>()
+                                          .Name("WinningSupplierItem#=WinningSupplierID#")
+                                          .Columns(columns =>
+                                          {
+                                              //columns.ForeignKey(p => p.CatCode, (IEnumerable)ViewData["Category"], "CatCode", "Name").Title("Category").EditorTemplateName("ItemCategoryProformaSelector").Width(180);
+                                              columns.ForeignKey(p => p.ProformaItemID, (IEnumerable)ViewData["ProformaItems"], "ProformaItemID", "Name").Title("Item").Width(140).EditorTemplateName("ProformaParticipatingItemSelector");
+                                              columns.ForeignKey(p => p.ItmCode, (IEnumerable)ViewData["Items"], "ItmCode", "Name").Title("Items").EditorTemplateName("ItemProformaSelector").Width(180);
+                                              columns.Bound(c => c.Name).Width(60);
+                                              columns.Bound(c => c.ModelNo).Width(60);
+                                              columns.Bound(c => c.Quanity).Width(90);
+                                              columns.Bound(c => c.UPrice).Width(90);
+                                              columns.ForeignKey(p => p.GLTaxRateID, (IEnumerable)ViewData["taxes"], "GLTaxRateID", "TaxName").Width(100);//.Title("Tax Name").EditorTemplateName("TaxSelector").Width(180);
+                                              columns.Bound(c => c.TaxAmount).Width(90);
+                                              columns.Bound(c => c.TPrice).Width(90);
+                                              columns.Command(command =>
+                                              {
+                                                  command.Edit();
+                                                  command.Destroy();
+                                              });
+                                          })
+                                          .ToolBar(toolbar =>
+                                          {
+                                              toolbar.Create();
+                                          })
+                                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                          .Scrollable()
+                                          .Events(x => x.DataBound("onDataBoundProformaLines"))
+                                          .DataSource(dataSource => dataSource
+                                              .Ajax()
+                                              .Events(ev => ev
+                                                  .Error("error_handler(\"WinningSupplierItem#=WinningSupplierID#\")")
+                                                  .RequestStart("onRequestStart(\"WinningSupplierItem#=WinningSupplierID#\")")
+                                                  .RequestEnd("onRequestEnd(\"WinningSupplierItem#=WinningSupplierID#\")"))
+                                              .Model(model =>
+                                              {
+                                                  model.Id(p => p.WinningSupplierItemId);
+                                                  model.Field(p => p.CatCode).Editable(false);
+                                                  model.Field(p => p.ItmCode).Editable(false);
+                                                  model.Field(p => p.Name).Editable(false);
+                                                  model.Field(p => p.ModelNo).Editable(false);
+                                                  model.Field(p => p.Quanity).Editable(false);
+                                                  model.Field(p => p.GLTaxRateID).Editable(false);
+                                                  model.Field(p => p.TaxAmount).Editable(false);
+                                                  model.Field(p => p.UPrice).Editable(false);
+                                                  model.Field(p => p.TPrice).Editable(false);
+                                              })
+                                              .Read(read => read.Action("WinningSupplierItems_Read", "ProformaWinningSupplierItemItems", new { id = "#=WinningSupplierID#" }))
+                                              .Create(create => create.Action("WinningSupplierItems_Create", "ProformaWinningSupplierItemItems", new { id = "#=WinningSupplierID#" }))
+                                              .Update(update => update.Action("WinningSupplierItems_Update", "ProformaWinningSupplierItemItems", new { id = "#=WinningSupplierID#" }))
+                                              .Destroy(destroy => destroy.Action("WinningSupplierItems_Destroy", "ProformaWinningSupplierItemItems", new { id = "#=WinningSupplierID#" }))
+                                          ).ToClientTemplate())
+
+
+                        </text>);
+
+
+                                                              }).ToClientTemplate())
+</script>
+
+<script>
+
+    var approverTextBox;
+    var popup;
+    var slectedUser;
+    function SelectChecker(e) {
+
+        approverTextBox = $(e).prev('input').attr('id');
+        popup = window.open('/Common/GlobalDataProvider/GetProcurementPurchasersSelector', 'WindowPopup', 'top=100, left=400, width=300, height=220,resizable=no,');
+        popup.focus();
+        return false;
+    }
+
+    function setChoice(user) {
+        slectedUser = user;
+        $("#" + approverTextBox).val(slectedUser).trigger("change");
+    }
+
+
+
+    var masterDataItem;
+    var masterRow;
+    var masterGrid;
+    var codeid;
+    var recordStatus;
+    var validationGrid;
+    var isapproved;
+    var isSendForApproval;
+
+    function detailExpandProforma(e) {
+
+        masterRow = e.masterRow;
+
+        masterGrid = $("#grid").data("kendoGrid");
+
+        masterDataItem = masterGrid.dataItem(masterRow);
+
+        //  var masterDataItem = masterGrid.dataItem();
+        codeid = masterDataItem.ProformaPurchaseID;
+        isapproved = masterDataItem.IsOnlineApproved;
+        isSendForApproval = masterDataItem.IsSendForApproval;
+    }
+
+    function onDataBoundProformaLines(e) {
+
+        var detailGrid = "#" + e.sender.element[0].id;// "#StoreRequisitionItem_" + codeid;
+        if (isapproved || isSendForApproval) {
+
+            $(".k-grid-add", detailGrid).hide();
+            $(".k-grid-delete", detailGrid).hide();
+            $(".k-grid-edit", detailGrid).hide();
+        }
+    }
+
+    function onDataBoundProformaValidation(e) {
+
+        var detailGrid = "#" + e.sender.element[0].id;// "#StoreRequisitionValidation_" + codeid;
+
+        if (isapproved || !isSendForApproval) {
+
+            $(".k-grid-add", detailGrid).hide();
+            $(".k-grid-delete", detailGrid).hide();
+            $(".k-grid-edit", detailGrid).hide();
+        }
+
+        this.table.find(".k-grid-edit").hide();
+    }
+
+
+    var awardid;
+    function awardDetailExpand(e) {
+        var awardrow = e.masterRow;
+        var gridName = "#winningSuppliergrid_" + codeid;
+        var awardgrid = $(gridName).data("kendoGrid");
+        var awardDataItem = awardgrid.dataItem(awardrow);
+        awardid = awardDataItem.BidAwardedSupplierID;
+
+
+    }
+
+
+    function getProforma() {
+        return {
+            id: codeid,
+            text: $("#PurchaseRequisitionAssignmentId").data("kendoDropDownList").filterInput.val()
+        }
+
+    }
+
+    function getProformaForTechnical() {
+        return {
+            id: codeid
+        }
+
+    }
+
+    function getProformaId() {
+        return {
+            id: codeid
+        }
+
+    }
+
+    function getProformaAndAwardId() {
+        return {
+            proforma: codeid,
+            award: awardid
+
+        }
+
+    }
+
+    function onUploadSuccess(e) {
+       var gridname = "#proformauploadgrid_" + codeid;
+        $(gridname).data("kendoGrid").dataSource.read();
+    }
+
+    function isNewSupplierClicked(e) {
+        if ($(e).is(':checked')) {
+            alert('checked');
+
+        } else {
+            alert('not checked');
+        }
+
+    }
+
+
+
+    function GetWinnerClicked(e) {
+        $.ajax({
+            url: '@Url.Action("GenerateWinner", "ProformaPurchase")',
+            type: 'POST',
+            dataType: 'json',
+            data: JSON.stringify({ "id": codeid }),
+            contentType: "application/json; charset=utf-8",
+            success: function (result) {
+                // toastr.warnning(result.Message);
+                var resultgritn = "#winningSuppliergrid_" + codeid;
+                $(resultgritn).data('kendoGrid').dataSource.read();
+                $(resultgritn).data('kendoGrid').refresh();
+                alert(result.Message);
+            }, //end s
+            error: function (result) {
+                alert(result);
+            }
+        });
+
+    }
+
+    function GetCriteriaClicked(e) {
+
+        $.ajax({
+            url: '@Url.Action("GenerateResult", "ProformaPurchase")',
+            type: 'POST',
+            dataType: 'json',
+            data: JSON.stringify({ "id": codeid }),
+            contentType: "application/json; charset=utf-8",
+            success: function (result) {
+                // toastr.warnning(result.Message);
+                var resultgritn = "#proformaevaluationresultgrid_" + codeid;
+                $(resultgritn).data('kendoGrid').dataSource.read();
+                $(resultgritn).data('kendoGrid').refresh();
+                alert(result.Message);
+            }, //end s
+            error: function (result) {
+                alert(result);
+            }
+        });
+
+    }
+
+    function isNewSupplier(obj) {
+
+        if ($(obj).is(":checked")) {
+            $("#supplierNameDiv").show();
+
+        } else {
+            $("#supplierNameDiv").hide();
+        }
+
+    }
+
+    function OnIndexCall(elem) {
+
+        var a = codeid;
+        $(elem).attr('href', $(elem).attr('href') + '?id=' + a);
+    }
+
+
+    var popup;
+    var aCode;
+
+    function SelectItemCode() {
+
+        // codeid = masterDataItem.GoodSellingAndLendingID;
+        popup = window.open('/Inventory/DataProvider/ItemFilterCat', 'WindowPopup', 'top=100, left=400, width=400, height=320,resizable=no,');
+        popup.focus();
+        return false;
+    }
+    function letterBound(e) {
+        var rows = e.sender.tbody.children();
+
+        for (var j = 0; j < rows.length; j++) {
+            var row = $(rows[j]);
+            var dataItem = e.sender.dataItem(row);
+            var typee = dataItem.Type;
+            if (typee === 0) {
+
+            }
+
+
+        }
+
+    }
+    function getProformaId() {
+        return { id: codeid }
+    }
+
+    function filtercategoryitems() {
+        return { id: codeid, itemCategoryCode: $("#CatCode").data("kendoDropDownList").value() }
+    }
+
+    function setLang(itemCode) {
+        aCode = itemCode;
+        $("#ItmCode").val(aCode).trigger("change");
+    }
+
+
+    function suppliersInItem() {
+        return { itemCode: $("#ItemCode").data("kendoDropDownList").value(), id: codeid }
+    }
+
+    function sendForApproval(id) {
+        var recordStatus = "";
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("SendForApproval", "ProformaPurchase", new { area = "Procurement" })',
+            data: { id: id },
+            success: function (result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                recordStatus = result.Status;
+                location.reload(true);
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+
+    function sendToChecker(id) {
+        var recordStatus = "";
+        var user = $("#NextApprover").val();
+        if (user.length === 0)
+            alert("Please select checker");
+        else {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("SendToChecker", "ProformaPurchase", new { area = "Procurement" })',
+                data: {
+                    id: id,
+                    user: user
+                },
+                success: function (result) {
+                    // toastr.warnning(result.Message);
+                    alert(result.Message);
+                    recordStatus = result.Status;
+                    location.reload(true);
+                }, //end succ
+                error: function (result) {
+                    alert(result);
+                }
+            });
+        }
+    }
+
+    function voidRecord(id) {
+        var recordStatus = "";
+        var conf = confirm("Are you sure you want to void this record number: " + id + " ?");
+        if (conf === true) {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("Void", "ProformaPurchase", new {area = "Procurement"})',
+                data: { id: id },
+                success: function (result) {
+                    // toastr.warnning(result.Message);
+                    alert(result.Message);
+                    recordStatus = result.Status;
+                    location.reload(true);
+                }, //end succ
+                error: function (result) {
+                    alert(result);
+                }
+            });
+        }
+    }
+
+</script>
+
+
+

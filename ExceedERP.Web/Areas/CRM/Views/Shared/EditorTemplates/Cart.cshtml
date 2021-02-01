@@ -1,0 +1,9 @@
+﻿@using System.Collections
+@(Html.Kendo().DropDownList()
+.BindTo((IEnumerable)ViewData["VoucherList"])
+    .OptionLabel("--Select Cart Number--")
+        .DataValueField("CartID")
+        .DataTextField("Description")
+        .Name("CartID")
+
+)

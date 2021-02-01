@@ -1,0 +1,147 @@
+﻿@using System.Collections
+<legend>Item Price Index</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Procurement.ItemPriceIndex>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.ForeignKey(p => p.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("BranchSelector").Width(200);
+          columns.ForeignKey(p => p.ItemCategoryCode, (IEnumerable)ViewData["Category"], "ItemCategoryCode", "Name").Title("Category").EditorTemplateName("ItemCategorySelector").Width(180);
+          //columns.ForeignKey(p => p.ItemCode, (IEnumerable)ViewData["Items"], "ItemCode", "Name").Title("Items").EditorTemplateName("ItemSelector").Width(180);
+          columns.Bound(c => c.ItemCode).Width(100);
+          columns.Bound(c => c.ItemName).Width(120);
+          columns.Bound(c => c.PriceBeforeVAT).Width(150);
+          columns.Bound(c => c.DateOfInformation).Width(150).Title("Date");
+          columns.Bound(c => c.SourceOfData).Width(150);
+          columns.Bound(c => c.SourceType).Width(120);
+          columns.ForeignKey(p => p.GLPeriodId, (IEnumerable)ViewData["inventoryPeriods"], "GLPeriodId", "Name").Width(130).Title("Period").EditorTemplateName("InventoryPeriodSelector");
+          columns.Bound(c => c.SupplierName).Width(150);
+          columns.Bound(c => c.Remark).Width(120);
+
+
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .HtmlAttributes(new { style = "height: 550px;" })
+      .ToolBar(toolbar => {
+          toolbar.Create();
+          //toolbar.Excel();
+          //toolbar.Pdf();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))//.TemplateName("PriceIndex").Window(w => w.Title("Item Price Index")).Window(w => w.HtmlAttributes(new { @style = "width:1000px;" })))
+          .Pageable(pageable => pageable
+                            .Input(true)
+                            .Numeric(false)
+                            .Refresh(true)
+                            .PageSizes(true)
+                            .ButtonCount(20))
+                .Scrollable()
+                .Sortable()
+                .Filterable()
+                    .Selectable(selectable =>
+                    {
+                        selectable.Mode(GridSelectionMode.Single);
+                        selectable.Type(GridSelectionType.Row);
+                    })
+                .Sortable(sortable =>
+                {
+                    sortable.SortMode(GridSortMode.SingleColumn);
+                })
+                .Groupable()
+                     .Events(events => events.Edit("edit"))
+                .Events(x => x.DataBound("onDataBoundMasterlPrice"))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+                  .Sort(sort => sort.Add("ItemPriceIndexID").Descending())
+        .Model(
+            model =>
+            {
+                model.Id(p => p.ItemPriceIndexID);
+                model.Field(p => p.ItemName).Editable(false);
+                model.Field(p => p.SourceType).Editable(false);
+                model.Field(p => p.OrgBranchName).Editable(false);
+                model.Field(p => p.CreatedBy).Editable(false);
+                model.Field(p => p.ModifiedBy).Editable(false);
+                model.Field(p => p.LastModified).Editable(false);
+                model.Field(p => p.DateCreated).Editable(false);
+            })
+                   .Events(ev => ev
+                            .Error("error_handler(\"grid\")")
+                            .RequestStart("onRequestStart(\"grid\")")
+                            .RequestEnd("onRequestEnd(\"grid\")"))
+          .Read(read => read.Action("ItemPriceIndexes_Read", "ItemPriceIndex"))
+          .Create(create => create.Action("ItemPriceIndexes_Create", "ItemPriceIndex"))
+          .Update(update => update.Action("ItemPriceIndexes_Update", "ItemPriceIndex"))
+          .Destroy(destroy => destroy.Action("ItemPriceIndexes_Destroy", "ItemPriceIndex"))
+      )
+      )
+
+
+<style>
+    div.k-edit-form-container {
+        width: 800px;
+        height: auto;
+    }
+
+    div.k-content {
+        overflow: hidden;
+        height: auto;
+    }
+</style>
+
+
+
+<script>
+    
+    function onDataBoundMasterlPrice(e) {
+      
+        //this.expandRow(this.tbody.find("tr.k-master-row").first());
+        var gridid = "#" + e.sender.element[0].id;
+        //approved
+        var grid = $(gridid).data("kendoGrid");
+        var gridData = grid.dataSource.view();
+
+        for (var i = 0; i < gridData.length; i++) {
+            var currentUid = gridData[i].uid;
+            if (gridData[i].SourceType === 0) {
+               
+                var currenRow = grid.table.find("tr[data-uid='" + currentUid + "']");
+                var editButton = $(currenRow).find(".k-grid-edit");
+                var deleteButton = $(currenRow).find(".k-grid-delete");
+                editButton.hide();
+                deleteButton.hide();
+            }
+        }
+    }
+    
+    function edit(e) {
+        //if (e.model.isNew() === false) {
+        //    $("#PriceBeforeVAT").attr("readonly", true);
+        //}
+    }
+
+
+    function filterItems() {
+        return {
+            ItemCategoryCode: $("#ItemCategoryCode").data("kendoDropDownList").value()
+        };
+    }
+
+    //function filterProducts() {
+    //    return {
+    //        vendorId: $("#VendorId").data("kendoDropDownList").value()
+    //    };
+    //}
+</script>
+
+<script type="text/javascript">
+    
+    function filterItems() {
+        return {
+            ItemCategoryCode: $("#ItemCategory").data("kendoDropDownList").value()
+        };
+    }
+</script>
+
+
+
+
+

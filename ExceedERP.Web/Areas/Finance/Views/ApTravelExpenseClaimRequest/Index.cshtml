@@ -1,0 +1,198 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.Finance.AP.Travel
+@using ExceedERP.Core.Domain.HRM.SelfCare
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Travel Expense Claim Request</legend>
+@(Html.Kendo().Grid<ApTravelExpenseClaim>()
+          .Name("grid")
+      .Columns(columns =>
+      {
+
+          columns.Bound(c => c.ApTravelExpenseClaimId).ClientTemplate("#=appendZeros(ApTravelExpenseClaimId)#").Width(100).Title("ID");
+          columns.Bound(c => c.ApTravelOrderId).Width(110).Title("Travel Order Id").EditorTemplateName("TravelOrderSelector");
+          columns.ForeignKey(p => p.EmployeeId, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Title("Requester").Width(130).EditorTemplateName("EmployeeSelector");
+          columns.ForeignKey(p => p.OrgStructureId, (IEnumerable)ViewData["costCenters"], "Code", "Name").Title("Work Unit").Width(160).EditorTemplateName("WorkUnitCostCenterSelector");
+          columns.ForeignKey(p => p.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("BranchSelector").Width(200);
+          columns.Bound(c => c.PurposeOfTravel).Width(150);
+          columns.Bound(c => c.ClaimDate).Width(130);
+          // columns.Bound(c => c.PaymentMethod).Width(120).EditorTemplateName("PaymentMethodSelectorAP");
+          columns.Bound(c => c.Reference).Width(120);
+          columns.Bound(c => c.Status).Width(90);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+
+       .Editable(editable => editable.Mode(GridEditMode.InLine).TemplateName("ExpenseClaim"))//.Window(window => { window.Title(Resources.NavigatorTermination_TerminationRequest); window.Scrollable(false); }))
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Groupable().Events(ev => ev.DetailExpand("detailExpandMasterNew"))
+      .Scrollable(h => h.Height(500))
+      .Events(x => x.DataBound("onDataBoundMasterNew"))
+      .Scrollable(h => h.Height(500))
+               .Groupable()
+                      .Sortable(sortable =>
+                      {
+                          sortable.SortMode(GridSortMode.SingleColumn);
+                      })
+          .Filterable()
+
+             .Pageable(pageable => pageable
+                                        .Input(true)
+                                        .Numeric(false)
+                                        .Refresh(true)
+                                        .PageSizes(true)
+                                        .ButtonCount(5))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Sort(sort => sort.Add("ApTravelExpenseClaimId").Descending())
+                              .Events(events =>
+                              {
+                                  events.Error("error_handler(\"grid\")");
+                                  events.RequestStart("onRequestStart(\"grid\")");
+                                  events.RequestEnd("onRequestEnd(\"grid\")");
+                              })
+          .Model(model =>
+          {
+              model.Id(p => p.ApTravelExpenseClaimId);
+              model.Field(p => p.ApTravelExpenseClaimId).Editable(false);
+              model.Field(p => p.OrgStructureId).Editable(false);
+              model.Field(p => p.BranchId).Editable(false);
+              //model.Field(p => p.PurposeOfTravel).Editable(false);
+              model.Field(p => p.IsPostedToSecondLedger).Editable(false);
+              model.Field(p => p.IsForOther).Editable(false);
+
+              model.Field(p => p.Status).Editable(false);
+              model.Field(p => p.CreatedBy).Editable(false);
+              model.Field(p => p.DateCreated).Editable(false);
+              model.Field(p => p.ModifiedBy).Editable(false);
+              model.Field(p => p.LastModified).Editable(false);
+          })
+                  .Read(read => read.Action("ApTravelExpenseClaims_Read", "ApTravelExpenseClaimRequest"))
+                  .Create(create => create.Action("ApTravelExpenseClaims_Create", "ApTravelExpenseClaimRequest"))
+                  .Update(update => update.Action("ApTravelExpenseClaims_Update", "ApTravelExpenseClaimRequest"))
+                  .Destroy(destroy => destroy.Action("ApTravelExpenseClaims_Destroy", "ApTravelExpenseClaimRequest"))
+
+                  ).ClientDetailTemplateId("template")
+)
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                  .Name("tabstrip_#=ApTravelOrderId#")
+          .SelectedIndex(0)
+          .Items(items =>
+          {
+          items.Add().Text("Travel Expense").Content(
+            @<text>
+               <a href='@Url.Action("ApTravelExpenseClaim", "FinancePrint")/#=ApTravelExpenseClaimId#' title="Print"><i class="fa fa-print fa-2x"></i></a>
+                @(Html.Kendo().Grid<ApTravelExpenseExpense>()
+                                  .Name("ApTravelExpenseExpensegrid_#=ApTravelExpenseClaimId#")
+                          .Columns(columns =>
+                          {
+                              columns.Bound(c => c.Description).Width(90);
+                              columns.Bound(c => c.UoM).Width(70);
+                              columns.Bound(c => c.UnitPrice).Width(70);
+                              columns.Bound(c => c.Quantity).Width(70);
+                              columns.Bound(c => c.Total).Width(70);
+                              columns.Command(command =>
+                              {
+                                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                  command.Destroy().Text(Resources.ActionButton_Cancel);
+                              }).Width(400);
+                          })
+                          .ToolBar(toolbar =>
+                          {
+                              toolbar.Create();
+                          })
+                         
+                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                          .Scrollable(h => h.Height(300))
+                      .Events(x => x.DataBound("onDataBoundLineNew"))
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+                                                        .Events(events =>
+                                                        {
+                                                            events.Error("error_handler(\"ApTravelExpenseExpensegrid_#=ApTravelExpenseClaimId#\")");
+                                                            events.RequestStart("onRequestStart(\"ApTravelExpenseExpensegrid_#=ApTravelExpenseClaimId#\")");
+                                                            events.RequestEnd("onRequestEnd(\"ApTravelExpenseExpensegrid_#=ApTravelExpenseClaimId#\")");
+                                                        })
+                              .Model(model =>
+                              {
+                                  model.Id(p => p.ApTravelExpenseExpenseId);
+                                  model.Field(p => p.Total).Editable(false);
+                              })
+
+                                      .Read(read => read.Action("ApTravelExpenseExpenseRequest_Read", "ApTravelExpenseExpenseRequest", new { id = "#=ApTravelExpenseClaimId#" }))
+                                              .Create(create => create.Action("ApTravelExpenseExpenseRequest_Create", "ApTravelExpenseExpenseRequest", new { id = "#=ApTravelExpenseClaimId#" }))
+                              .Update(update => update.Action("ApTravelExpenseExpenseRequest_Update", "ApTravelExpenseExpenseRequest"))
+                              .Destroy(destroy => destroy.Action("ApTravelExpenseExpenseRequest_Destroy", "ApTravelExpenseExpenseRequest"))
+                          ).ToClientTemplate()
+                )
+
+
+            </text>
+                  );
+
+
+
+          items.Add().Text(Resources.HR_RequestStatus).Content(
+            @<text>
+             
+
+                @(Html.Kendo().Grid<RequestesStatus>()
+                                  .Name("RequestesStatusgrid_#=ApTravelExpenseClaimId#")
+                          .Columns(columns =>
+                          {
+                              //columns.Bound(c => c.RequestId);
+                              columns.Bound(c => c.DateReqStatAm).Width(100);
+                              columns.Bound(c => c.Status).EditorTemplateName("Enum").Width(200);
+                              columns.Bound(c => c.Remark).Width(100);
+                              columns.Command(command =>
+                              {
+                                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                  command.Destroy().Text(Resources.ActionButton_Cancel);
+                              }).Width(400);
+                          })
+                          .ToolBar(toolbar =>
+                          {
+                              toolbar.Custom().Action("SendForApproval", "ApTravelExpenseClaimRequest").Text(Resources.HR_Send_For_Approval);
+                          })
+                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                          .Scrollable(h => h.Height(300))
+                      .Events(x => x.DataBound("onDataBoundLineNew"))
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+                                                        .Events(events =>
+                                                        {
+                                                            events.Error("error_handler(\"RequestesStatusgrid_#=ApTravelExpenseClaimId#\")");
+                                                            events.RequestStart("onRequestStart(\"RequestesStatusgrid_#=ApTravelExpenseClaimId#\")");
+                                                            events.RequestEnd("onRequestEnd(\"RequestesStatusgrid_#=ApTravelExpenseClaimId#\")");
+                                                        })
+                              .Model(model =>
+                              {
+                                  model.Id(p => p.RequestStatusId);
+                                  model.Field(p => p.Date).Editable(false).DefaultValue(DateTime.Today);
+                              })
+
+                                      .Read(read => read.Action("RequestesStatus_Read", "RequestesStatus", new { id = "#=ApTravelExpenseClaimId#", referenceType = "TravelExpenseClaim" }))
+                                              .Create(create => create.Action("RequestesStatus_Create", "RequestesStatus", new { id = "#=ApTravelExpenseClaimId#", referenceType2 = "TravelExpenseClaim" }))
+                              .Update(update => update.Action("RequestesStatus_Update", "RequestesStatus"))
+                              .Destroy(destroy => destroy.Action("RequestesStatus_Destroy", "RequestesStatus"))
+                          ).ToClientTemplate()
+                )
+
+
+            </text>
+                  );
+             
+
+          }).ToClientTemplate())
+</script>
+

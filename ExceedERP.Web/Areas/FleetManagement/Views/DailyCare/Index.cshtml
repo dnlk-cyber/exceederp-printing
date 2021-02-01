@@ -1,0 +1,41 @@
+﻿<legend>Daily Care</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetMaintenance.DailyCare>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.DailyCareCategoryId).EditorTemplateName("DailyCareCategory").ClientTemplate("<label>  #=Category#    <label/>").Width(150);
+          columns.Bound(c => c.Name).Width(180); 
+          columns.Bound(c => c.Description).Width(180);
+        columns.Bound(c => c.DateCreated).Format("{0:d}").Width(150);
+       
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+         .HtmlAttributes(new { style = "height: 520px;" })
+                          .Pageable(pageable => pageable
+                                            .Input(true)
+                                            .Numeric(false)
+                                            .Refresh(true)
+                                            .PageSizes(true)
+                                            .ButtonCount(5))
+
+                                .Scrollable()
+                                .Sortable()
+                                .Filterable()
+                              .Scrollable(h => h.Height(500))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+                      .Model(model => { model.Id(p => p.DailyCareId); model.Field(p => p.DateCreated).Editable(false); })
+                                     .Events(ev => ev
+                                        .Error("error_handler(\"grid\")")
+                                        .RequestStart("onRequestStart(\"grid\")")
+                                        .RequestEnd("onRequestEnd(\"grid\")"))
+          .Read(read => read.Action("DailyCares_Read", "DailyCare"))
+          .Create(create => create.Action("DailyCares_Create", "DailyCare"))
+          .Update(update => update.Action("DailyCares_Update", "DailyCare"))
+          .Destroy(destroy => destroy.Action("DailyCares_Destroy", "DailyCare"))
+      )
+)

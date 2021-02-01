@@ -1,0 +1,8 @@
+﻿@(Html.Kendo().DropDownListFor(m => m)
+              .DataTextField("Name")
+                  .DataValueField("Name").Filter(FilterType.Contains)
+                     .DataSource(dataSource =>
+                      {
+                          dataSource.Read(read => read.Action("FollowUpTypeDDBind", "FleetDataProvider"))
+                                    .ServerFiltering(false);
+                      }).OptionLabel("Select").ValuePrimitive(true))

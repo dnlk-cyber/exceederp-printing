@@ -1,0 +1,95 @@
+﻿@model  ExceedERP.Core.Domain.FleetManagement.FuelManagement.FuelInventory
+
+
+
+
+<div class="demo-section k-content">
+    <form>
+
+        <div class="row">
+            <div class="col-md-1">
+            </div>
+
+
+            )
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.SiteName)
+                    </div>
+
+                    @(Html.Kendo().DropDownListFor(model => model.SiteName)
+        .DataTextField("Name")
+                                .DataValueField("Name").OptionLabel(" Select")
+                    .DataSource(d => d.Read(r => r.Action("BranchDDBind", "Branch"))))
+                </div>
+            </div>
+
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.FuelType)
+
+                    </div>
+                    <div>
+                        @(Html.Kendo().DropDownListFor(model => model.FuelType)
+                                                               .DataTextField("PlateNumber")
+                                                                       .DataValueField("PlateNumber").OptionLabel(" Select ")
+                                                                                       .DataSource(d => d.Read(r => r.Action("FuelTypeDDBind", "FuelType"))).Events(e => e.Change("BindFuelDetail")))
+
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.UnitPrice)
+                    </div>
+                    <div>
+                        @Html.Kendo().TextBoxFor(model => model.UnitPrice).HtmlAttributes("@type='number' ,min='1'")
+                        @Html.ValidationMessageFor(model => model.UnitPrice)
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-1">
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.Quantity)
+                    </div>
+                    <div>
+                        @Html.Kendo().TextBoxFor(model => model.Quantity).HtmlAttributes("@type='number' ,min='1'")
+                        @Html.ValidationMessageFor(model => model.Quantity)
+                    </div>
+
+                </div>
+            </div>
+
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.Remark)
+                    </div>
+                    <div>
+                        @Html.Kendo().TextBoxFor(model => model.Remark).HtmlAttributes("@type='textarea'  ")
+                        @Html.ValidationMessageFor(model => model.Remark)
+                    </div>
+
+                </div>
+            </div>
+
+
+        </div>
+    </form>
+</div>
+
+
+

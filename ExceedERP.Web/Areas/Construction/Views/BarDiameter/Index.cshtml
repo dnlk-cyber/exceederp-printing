@@ -1,0 +1,53 @@
+﻿
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Bar Diameters</legend>
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.BarDiameter>()
+                          .Name("barDiameterGrid")
+                          .Columns(columns =>
+                          {
+                              columns.Bound(c => c.BarDiameterId).Title("Id");
+                              columns.Bound(c => c.Diameter).Title("Diameter (mm)");
+                              columns.Bound(c => c.UnitWeight).Title("Unit Weight");
+                              columns.Bound(c => c.Description);
+
+                              columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit); command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+                          })
+                          .ToolBar(toolbar =>
+                          {
+                              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                          })
+                          //.Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("Resources").Window(window => { window.Title("Resource"); window.Scrollable(false); }))
+                          .Selectable(selectable =>
+                          {
+                              selectable.Mode(GridSelectionMode.Single);
+                              selectable.Type(GridSelectionType.Row);
+                          })
+                        .Scrollable(h => h.Height(500))
+                        .Groupable()
+                        .Sortable(sortable =>
+                        {
+                            sortable.SortMode(GridSortMode.SingleColumn);
+                        })
+                        .Filterable()
+                        .Pageable(pageable => pageable
+                                                .Input(true)
+                                                .Numeric(false)
+                                                .Refresh(true)
+                                                .PageSizes(true)
+                                                .ButtonCount(5))
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+                              .Model(model => {
+                                  model.Id(diam => diam.BarDiameterId);
+                                  model.Field(b => b.UnitWeight).Editable(false);
+                              } )
+                              .Read(read => read.Action("BarDiameters_Read", "BarDiameter"))
+                              .Create(create => create.Action("BarDiameter_Create", "BarDiameter"))
+                              .Update(update => update.Action("BarDiameter_Update", "BarDiameter"))
+                              .Destroy(destroy => destroy.Action("BarDiameter_Destroy", "BarDiameter"))
+                          )
+)

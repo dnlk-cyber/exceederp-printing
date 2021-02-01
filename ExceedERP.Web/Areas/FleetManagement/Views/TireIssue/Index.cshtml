@@ -1,0 +1,85 @@
+﻿
+@{
+    ViewBag.Title = "Tire Issue";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend> Tire Issue</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetTireManagement.TireIssue>()
+    .Name("grid")
+    .Columns(columns =>
+    {
+        columns.Bound(e => e.Brand).Width(140);
+        columns.Bound(e => e.Quantity).Width(140);
+        columns.Bound(e => e.TireSize).Width(140);
+        columns.Bound(e => e.UnitPrice).Width(140);
+        columns.Bound(e => e.InstalledDate).Format(("{0:d}")).Width(200);
+       
+   
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
+
+
+    })
+                                                  .ToolBar(commands => commands.Create())
+      .Editable(editable =>
+      {
+          editable.Mode(GridEditMode.PopUp).TemplateName("TireIssueEditor");
+          editable.DisplayDeleteConfirmation("Are You Sure To Remove Tire Issue Information");
+      })
+        .HtmlAttributes(new { style = "height: 520px;" })
+                              .Pageable(pageable => pageable
+                                                .Input(true)
+                                                .Numeric(false)
+                                                .Refresh(true)
+                                                .PageSizes(true)
+                                                .ButtonCount(5))
+
+                                    .Scrollable()
+                                    .Sortable()
+                                    .Filterable()
+                                    .Groupable()
+                                    .Scrollable(h => h.Height(500))
+     
+    .DataSource(dataSource => dataSource
+        .Ajax()
+        .ServerOperation(false)
+             .Events(events => events.Error("error_handler").Sync("sync_handler"))
+        .Model(model =>
+              {
+                  model.Id(p => p.TireIssueID);
+               
+              })
+                .Create(update => update.Action("TireIssue_Create", "TireIssue"))
+                .Read(read => read.Action("TireIssue_Read", "TireIssue"))
+                .Update(update => update.Action("TireIssue_Update", "TireIssue"))
+                .Destroy(update => update.Action("TireIssue_Destroy", "TireIssue"))
+  )
+)
+
+<script type="text/javascript">
+    function error_handler(e) {    
+        if (e.errors) {
+            var message = "Errors:\n";
+            $.each(e.errors, function (key, value) {
+                if ('errors' in value) {
+                    $.each(value.errors, function() {
+                        message += this + "\n";
+                    });
+                }
+            });        
+            alert(message);
+        }
+    }
+    function sync_handler(e) {
+        this.read();
+
+    }
+    function onClick() {
+        $("#grid").data("kendoGrid").addRow();
+    }
+</script>
+
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 700px;
+    }
+</style>

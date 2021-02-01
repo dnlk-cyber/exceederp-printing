@@ -1,0 +1,102 @@
+﻿@using ExceedERP.Core.Domain.FleetManagement.FleetRegistration
+@using ExceedERP.Core.Domain.Procurement.Need
+@using ExceedERP.Helpers.Common
+@model ExceedERP.Core.Domain.Procurement.Need.AnnualNeedAssesmentItem
+
+@Html.HiddenFor(model => model.AnnualNeedAssesmentItemID)
+<div class="form">
+    <div class="row fullrow">
+        <div class="col-md-3 ro1">
+            <div class="form-group">
+                @Html.LabelFor(model => model.ItemCode, htmlAttributes: new { @class = "control-label col-md-6" })
+                <div class="col-md-6">
+                    
+                    <input class="k-textbox" id="ItemCode" name="ItemCode" disabled="disabled" data-bind="value: ItemCode"><img src="~/Content/Images/search.png" onclick="SelectItemCode()" />
+
+                    
+                </div>
+            </div>
+            <div class="row"></div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.Function, htmlAttributes: new { @class = "control-label col-md-6" })
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(model => model.Function)
+                    @Html.ValidationMessageFor(model => model.Function, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.PerformanceRequirement, htmlAttributes: new { @class = "control-label col-md-6" })
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(model => model.PerformanceRequirement)
+                    @Html.ValidationMessageFor(model => model.PerformanceRequirement, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.PhysicalCharacteristics, htmlAttributes: new { @class = "control-label col-md-6" })
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(model => model.PhysicalCharacteristics)
+                    @Html.ValidationMessageFor(model => model.PhysicalCharacteristics, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+        </div>
+
+        <div class="col-md-3 ro1">
+            <div class="form-group">
+                @Html.LabelFor(model => model.QuantityRequired, htmlAttributes: new { @class = "control-label col-md-6" })
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(model => model.QuantityRequired)
+                    @Html.ValidationMessageFor(model => model.QuantityRequired, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+
+            
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.BudgetSource, htmlAttributes: new { @class = "control-label col-md-6" })
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(model => model.BudgetSource)
+                    @Html.ValidationMessageFor(model => model.BudgetSource, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+        </div>
+
+        <div class="col-md-3 ro1">
+            <div class="form-group">
+                @Html.LabelFor(model => model.ProcurementCategory, htmlAttributes: new {@class = "control-label col-md-6"})
+                <div class="col-md-6">
+                    @Html.Kendo().DropDownListFor(m => m.ProcurementCategory).DataTextField("Text").DataValueField("Value").BindTo(EnumExtension.EnumToSelectList(typeof (ProcurementCategory)))
+                    @Html.ValidationMessageFor(model => model.ProcurementCategory, "", new {@class = "text-danger"})
+                </div>
+            </div>
+            <div class="row"></div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.EstimatedBudget, htmlAttributes: new {@class = "control-label col-md-6"})
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(model => model.EstimatedBudget)
+                    @Html.ValidationMessageFor(model => model.EstimatedBudget, "", new {@class = "text-danger"})
+                </div>
+            </div>
+            <div class="row"></div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.EstimatedTimeTheItemIsNeeded, htmlAttributes: new {@class = "control-label col-md-6"})
+                <div class="col-md-6">
+                    @Html.Kendo().DateTimePickerFor(model => model.EstimatedTimeTheItemIsNeeded)
+                    @Html.ValidationMessageFor(model => model.EstimatedTimeTheItemIsNeeded, "", new {@class = "text-danger"})
+                </div>
+            </div>
+            <div class="row"></div>
+        </div>
+    </div>
+</div>
+
+

@@ -1,0 +1,14 @@
+﻿
+@{
+    ViewBag.Title = "ETDateTime";
+}
+
+<input id="SampleDatePicker" class="et-popup-picker">
+<script type="text/javascript">
+    $(document).ready(function() {
+
+        var calendar = $.calendars.instance("ethiopian", "am");
+        $(".et-popup-picker").calendarsPicker({ calendar: calendar, yearRange: "+10:-10" });
+        
+    });
+</script>

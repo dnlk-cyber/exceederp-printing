@@ -1,0 +1,102 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Job Title Mapping</legend>
+@*<legend>@Resources.Navigator_Company_JobTitleSalary</legend>*@
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.ProjectJobTitle>()
+    .Name("ProjectJobTitle")
+    .Columns(columns =>
+    {
+        columns.Bound(c => c.JobTitle).Width(200);
+        columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["jobTitles"], "LookupId", "Description").EditorTemplateName("JobTitles").Width(200);
+        //columns.ForeignKey(c => c.RankId, (IEnumerable)ViewData["RankList"], "RankId", "RankName").EditorTemplateName("Rank").Width(150);
+        //columns.ForeignKey(c => c.StepId, (IEnumerable)ViewData["StepList"], "StepId", "StepName").EditorTemplateName("Step").Width(150);
+        //columns.Bound(c => c.Salary).Width(150);
+        columns.Bound(c => c.Remark).Width(120);
+        columns.Command(command =>
+        {
+            command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+            command.Destroy().Text(Resources.ActionButton_Cancel);
+        }).Width(200);
+    })
+    .ToolBar(toolbar =>
+    {
+
+        toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+
+    })
+    .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("ProjectJobTitle").Window(window => { window.Title(Resources.Navigator_Company_JobTitleSalary); window.Scrollable(false); }))
+    .Selectable(selectable =>
+    {
+        selectable.Mode(GridSelectionMode.Single);
+        selectable.Type(GridSelectionType.Row);
+    })
+    .Scrollable(h => h.Height(700))
+    .Sortable(sortable =>
+    {
+        sortable.SortMode(GridSortMode.SingleColumn);
+    })
+    .Filterable()
+    .Pageable(pageable => pageable
+                            .Input(true)
+                            .Numeric(false)
+                            .Refresh(true)
+                            .PageSizes(true)
+                            .ButtonCount(5))
+    .DataSource(dataSource => dataSource
+    .Ajax()
+    .PageSize(20)
+    .Events(events =>
+    {
+        events.Error("error_handler(\"ProjectJobTitle\")");
+        events.RequestStart("onRequestStart(\"ProjectJobTitle\")");
+        events.RequestEnd("onRequestEnd(\"ProjectJobTitle\")");
+    })
+
+    .Model(model => model.Id(p => p.ProjectJobTitleId))
+    .Read(read => read.Action("ProjectJobTitles_Read", "ProjectJobTitle"))
+    .Create(create => create.Action("ProjectJobTitles_Create", "ProjectJobTitle"))
+    .Update(update => update.Action("ProjectJobTitles_Update", "ProjectJobTitle"))
+    .Destroy(destroy => destroy.Action("ProjectJobTitles_Destroy", "ProjectJobTitle"))
+    )
+)
+<script>
+    
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+</script>
+
+<script>
+    function filterCategories() {
+        return {
+            OrganizationId: $("#OrganizationId").val()
+        };
+    }
+    function GetSalary() {
+        var jId = $("#LookupId").val();
+        //var rId = $("#RankId").val();
+        //var sId = $("#StepId").val();
+
+        $.ajax({
+            url: '@Url.Action("GetSalary", "ProjectJobTitle")',
+
+            //data: { jId: jId, rId: rId, sId: sId },
+            data: { jId: jId },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                r = result;
+                //var s = r.split(/-/);
+
+                $("#Salary").val(r);
+                $("#Salary").trigger("change");
+            }
+
+        });
+    }
+</script>

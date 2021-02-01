@@ -1,0 +1,437 @@
+﻿
+<style>
+    #reportViewer1 {
+        position: relative;
+        width: 100%;
+        height: 900px;
+        font-family: Verdana, Arial;
+    }
+
+
+    .k-grid table tr.k-state-FleetApproved {
+        background: #b7ff9e;
+        color: #040000;
+    }
+
+</style>
+@if (HttpContext.Current.User.IsInRole("Fleet_Admin")
+    || HttpContext.Current.User.IsInRole("Registration_User")
+    || HttpContext.Current.User.IsInRole("Registration_Approver")
+    || HttpContext.Current.User.IsInRole("Rent_Requestor")
+    || HttpContext.Current.User.IsInRole("Rent_User")
+    || HttpContext.Current.User.IsInRole("Rent_Approver")
+
+    || HttpContext.Current.User.IsInRole("Fuel_Requestor")
+    || HttpContext.Current.User.IsInRole("Fuel_Approver")
+    || HttpContext.Current.User.IsInRole("Fuel_User")
+    || HttpContext.Current.User.IsInRole("Inspection_User")
+    || HttpContext.Current.User.IsInRole("Inspection_Approver")
+    || HttpContext.Current.User.IsInRole("Resource_Requestor")
+    || HttpContext.Current.User.IsInRole("Resource_Distributor")
+    || HttpContext.Current.User.IsInRole("Resource_Return_User")
+    || HttpContext.Current.User.IsInRole("Resource_User")
+    || HttpContext.Current.User.IsInRole("Resource_Request_Approver")
+    || HttpContext.Current.User.IsInRole("Resource_Approver")
+    || HttpContext.Current.User.IsInRole("Tyre_Requestor")
+    || HttpContext.Current.User.IsInRole("Tyre_Approver")
+    || HttpContext.Current.User.IsInRole("Tyre_User")
+    || HttpContext.Current.User.IsInRole("Fleet_Training_user")
+    || HttpContext.Current.User.IsInRole("Fleet_Report")
+    || HttpContext.Current.User.IsInRole("Fleet_Resource_Report")
+    || HttpContext.Current.User.IsInRole("Fleet_Registration_Report")
+
+    || HttpContext.Current.User.IsInRole("Equipment_Plan_User")
+    || HttpContext.Current.User.IsInRole("Equipment_Plan_Approver")
+    || HttpContext.Current.User.IsInRole("Salvage_Store_Issue_User")
+    || HttpContext.Current.User.IsInRole("Salvage_Store_Issue_Approver")
+    || HttpContext.Current.User.IsInRole("Store_Good_Receiving_User")
+    || HttpContext.Current.User.IsInRole("Store_Good_Receiving_Approver"))
+{
+
+    <li class="">
+        <a href="#" class="dropdown-toggle">
+            <i class="menu-icon fa fa-car"></i>
+            <span class="menu-text">
+                Fleet
+            </span>
+
+            <b class="arrow fa fa-angle-down"></b>
+        </a>
+
+        <b class="arrow"></b>
+
+        <ul class="submenu">
+            <li class="">
+                <a href="#" class="dropdown-toggle">
+                    <i class="menu-icon fa fa-caret-right"></i>
+
+                    Fleet Management
+                    <b class="arrow fa fa-angle-down"></b>
+                </a>
+
+                <b class="arrow"></b>
+
+                <ul class="submenu">
+                    @if (HttpContext.Current.User.IsInRole("Registration_User")
+    || HttpContext.Current.User.IsInRole("Registration_Approver"))
+                    {
+                        <li class="">
+                            <a href="#" class="dropdown-toggle">
+                                <i class="menu-icon fa fa-caret-right"></i>
+
+                                Registration
+                                <b class="arrow fa fa-angle-down"></b>
+                            </a>
+
+                            <b class="arrow"></b>
+
+                            <ul class="submenu">
+                                <li id="flt000" class="actionlinlk">@Html.ActionLink("Equipment Registration", "Index", "EquipmentRegistration", new { area = "FleetManagement" }, null)<b class="arrow"></b></li>
+                                <li id="FleetApprove1222" class="actionlinlk">@Html.ActionLink("Approve Equipment ", "ApproveEquipment", "EquipmentRegistration", new { area = "FleetManagement" }, null)<b class="arrow"></b></li>
+
+                                  <li id="flt001" class="actionlinlk">@Html.ActionLink("Operator Registration", "Index", "OperatorRegistration", new { area = "FleetManagement" }, null)<b class="arrow"></b></li>
+                                <li id="flt002" class="actionlinlk">@Html.ActionLink("Insurance Registration", "Index", "InsuranceRegistration", new { area = "FleetManagement" }, null)<b class="arrow"></b></li>
+                                <li id="flt003" class="actionlinlk">@Html.ActionLink("Accident Registration", "Index", "AccidentRegistration", new { area = "FleetManagement" }, null)<b class="arrow"></b></li>
+                                <li id="fltX003" class="actionlinlk">@Html.ActionLink("Petty Cash Registration", "Index", "FleetPettyCash", new { area = "FleetManagement" }, null)<b class="arrow"></b></li>
+                                <li id="fltX003" class="actionlinlk">@Html.ActionLink("Equipment Return", "Index", "FleetReturn", new { area = "FleetManagement" }, null)<b class="arrow"></b></li>
+
+
+                                 
+                            </ul>
+                        </li>
+
+                    }
+
+                    @if (HttpContext.Current.User.IsInRole("Rent_Requestor")
+                || HttpContext.Current.User.IsInRole("Rent_User")
+                || HttpContext.Current.User.IsInRole("Rent_Approver"))
+                    {
+                        <li class="">
+                            <a href="#" class="dropdown-toggle">
+                                <i class="menu-icon fa fa-caret-right"></i>
+
+                                Equipment Rent
+                                <b class="arrow fa fa-angle-down"></b>
+                            </a>
+
+                            <b class="arrow"></b>
+
+                            <ul class="submenu">
+
+                               @* <li id="flt004" class="actionlinlk">@Html.ActionLink("Rent Requisition", "Index", "RentRequest", new { area = "FleetManagement" }, null)<b class="arrow"></b></li>
+                                *@
+                                @if (HttpContext.Current.User.IsInRole("Rent_Approver")
+                || HttpContext.Current.User.IsInRole("Rent_User"))
+                                {
+                                    <li id="flt005" class="actionlinlk">@Html.ActionLink("Rent Time Sheet", "Index", "TimeSheet", new { area = "FleetManagement" }, null)<b class="arrow"></b></li>
+                                }
+                                <li id="flt008" class="actionlinlk">@Html.ActionLink("Rent To External", "Index", "RentOtherSuppliers", new { area = "FleetManagement" }, null)<b class="arrow"></b></li>
+                                <li id="flt008" class="actionlinlk">@Html.ActionLink("Rent From External", "Index", "RentFromExternal", new { area = "FleetManagement" }, null)<b class="arrow"></b></li>
+                            </ul>
+                        </li>
+
+                    }
+
+                    @if (HttpContext.Current.User.IsInRole("Fuel_Requestor")
+                    || HttpContext.Current.User.IsInRole("Fuel_Approver")
+                    || HttpContext.Current.User.IsInRole("Fuel_User"))
+                    {
+                        <li class="">
+                            <a href="#" class="dropdown-toggle">
+                                <i class="menu-icon fa fa-caret-right"></i>
+
+                                Fuel Management
+                                <b class="arrow fa fa-angle-down"></b>
+                            </a>
+
+                            <b class="arrow"></b>
+
+                            <ul class="submenu">
+
+                                <li id="flt018" class="actionlinlk">@Html.ActionLink("Fuel ", "Index", "Fuel", new { area = "FleetManagement" }, null)<b class="arrow"></b></li>
+
+                            </ul>
+                        </li>
+
+                    }
+                    @if (HttpContext.Current.User.IsInRole("Inspection_User")
+                    || HttpContext.Current.User.IsInRole("Inspection_Approver"))
+                    {
+                        <li class="">
+                            <a href="#" class="dropdown-toggle">
+                                <i class="menu-icon fa fa-caret-right"></i>
+
+                                Equipment Inspection
+                                <b class="arrow fa fa-angle-down"></b>
+                            </a>
+
+                            <b class="arrow"></b>
+
+                            <ul class="submenu">
+                                <li id="flt019" class="actionlinlk">@Html.ActionLink("Equipment Inspection", "Index", "AnnualEquipmentInventoryInspection", new { area = "FleetManagement" }, null)<b class="arrow"></b></li>
+                                <li id="fltif002" class="actionlinlk">@Html.ActionLink("Insurance FollowUp", "InsuranceFollowUp", "InsuranceRegistration", new { area = "FleetManagement" }, null)<b class="arrow"></b></li>
+
+                                
+                            </ul>
+                        </li>
+                    }
+                    @if (HttpContext.Current.User.IsInRole("Equipment_Plan_User")
+                            || HttpContext.Current.User.IsInRole("Equipment_Plan_Approver"))
+                    {
+                        <li class="">
+                            <a href="#" class="dropdown-toggle">
+                                <i class="menu-icon fa fa-caret-right"></i>
+
+                                Plan & Evaluation
+                                <b class="arrow fa fa-angle-down"></b>
+                            </a>
+
+                            <b class="arrow"></b>
+
+                            <ul class="submenu">
+                                
+                                <li id="fltoc020" class="actionlinlk">@Html.ActionLink("Equipment Owning Cost", "Index", "OwningOperatingCost", new { area = "FleetManagement" }, null)<b class="arrow"></b></li>
+
+                                <li id="flt020" class="actionlinlk">@Html.ActionLink("Equipment Plan", "Index", "EquipmentPlanandEvaluations", new { area = "FleetManagement" }, null)<b class="arrow"></b></li>
+                            </ul>
+                        </li>
+                    }
+                    @if (HttpContext.Current.User.IsInRole("Resource_Requestor")
+                    || HttpContext.Current.User.IsInRole("Resource_Distributor")
+                    || HttpContext.Current.User.IsInRole("Resource_Return_User")
+                    || HttpContext.Current.User.IsInRole("Resource_User")
+                    || HttpContext.Current.User.IsInRole("Resource_Request_Approver")
+                    || HttpContext.Current.User.IsInRole("Resource_Approver"))
+                    {
+                        <li class="">
+                            <a href="#" class="dropdown-toggle">
+                                <i class="menu-icon fa fa-caret-right"></i>
+
+                                Fleet Resources
+                                <b class="arrow fa fa-angle-down"></b>
+                            </a>
+
+                            <b class="arrow"></b>
+
+                            <ul class="submenu">
+                                @if (HttpContext.Current.User.IsInRole("Resource_Requestor"))
+                                {
+
+                                    <li id="Fleetreq1444" class="actionlinlk">@Html.ActionLink("Job Request", "Index", "JobRequest", new { area = "FleetManagement" }, null)<b class="arrow"></b></li>
+
+                                    <li id="flt021" class="actionlinlk">@Html.ActionLink("Requisition", "Index", "EquipmentDemand", new { area = "FleetManagement" }, null)<b class="arrow"></b></li>
+                                }
+                                @if (HttpContext.Current.User.IsInRole("Resource_Requestor"))
+                                {
+                                    <li id="flt022" class="actionlinlk">@Html.ActionLink("Distribution", "Index", "EquipmentDistribution", new { area = "FleetManagement" }, null)<b class="arrow"></b></li>
+                                }
+                                @if (HttpContext.Current.User.IsInRole("Resource_Requestor"))
+                                {
+                                    <li id="flt02d1" class="actionlinlk">@Html.ActionLink("Arrival", "Index", "EquipmentArrival", new { area = "FleetManagement" }, null)<b class="arrow"></b></li>
+                                }
+                                @if (HttpContext.Current.User.IsInRole("Resource_Return_User"))
+                                {
+                                    <li id="flt023" class="actionlinlk">@Html.ActionLink("Return", "Index", "EquipmentReturn", new { area = "FleetManagement" }, null)<b class="arrow"></b></li>
+                                }
+                                @if (HttpContext.Current.User.IsInRole("Resource_Request_Approver")
+                    || HttpContext.Current.User.IsInRole("Resource_Approver"))
+                                {
+                                    <li id="flt032421924" class="actionlinlk">@Html.ActionLink("Time Sheet", "Index", "DistributionTimeSheet", new { area = "FleetManagement" }, null)<b class="arrow"></b></li>
+
+                                    <li id="flt024" class="actionlinlk">@Html.ActionLink("Transfer Between Drivers", "Index", "DriverTransfer", new { area = "FleetManagement" }, null)<b class="arrow"></b></li>
+
+
+                                    <li id="flt02345344" class="actionlinlk">@Html.ActionLink("Drivers Assignment", "Index", "DriverAssignment", new { area = "FleetManagement" }, null)<b class="arrow"></b></li>
+
+                                    <li id="flt025" class="actionlinlk">@Html.ActionLink("Transfer Between Sites", "Index", "SitesVehicleTransfer", new { area = "FleetManagement" }, null)<b class="arrow"></b></li>
+                               
+                                }
+                            </ul>
+                        </li>
+                    }
+
+                    @*if( HttpContext.Current.User.IsInRole("Salvage_Store_Issue_User")
+                         || HttpContext.Current.User.IsInRole("Salvage_Store_Issue_Approver")
+                         || HttpContext.Current.User.IsInRole("Store_Good_Receiving_User")
+                         || HttpContext.Current.User.IsInRole("Store_Good_Receiving_Approver"))
+                         {
+                                         <li class="">
+                                             <a href="#" class="dropdown-toggle">
+                                                 <i class="menu-icon fa fa-caret-right"></i>
+                                                 Salvage Store
+                                                 <b class="arrow fa fa-angle-down"></b>
+                                             </a>
+
+                                             <b class="arrow"></b>
+
+                                             <ul class="submenu">
+                                                 <li id="flt026" class="actionlinlk">@Html.ActionLink("Good Receiving Note", "Index", "SalvageStoreGoodReceiving", new { area = "FleetManagement" }, null)<b class="arrow"></b></li>
+                                                 <li id="flt027" class="actionlinlk">@Html.ActionLink("Salvage Store Issue", "Index", "SalvageStore", new { area = "FleetManagement" }, null)<b class="arrow"></b></li>
+                                             </ul>
+                                         </li>
+                        }*@
+                    @if (HttpContext.Current.User.IsInRole("Tyre_Requestor")
+                    || HttpContext.Current.User.IsInRole("Tyre_Approver"))
+                    {
+                        <li class="">
+                            <a href="#" class="dropdown-toggle">
+                                <i class="menu-icon fa fa-caret-right"></i>
+                                Tyre Management
+                                <b class="arrow fa fa-angle-down"></b>
+                            </a>
+
+                            <b class="arrow"></b>
+
+                            <ul class="submenu">
+                                <li id="flt028" class="actionlinlk">@Html.ActionLink("Tyre Issue", "Index", "TyreManagementIssue", new { area = "FleetManagement" }, null)<b class="arrow"></b></li>
+                                <li id="flt0t28" class="actionlinlk">@Html.ActionLink("Tyre Return", "Index", "TyreManagementReturn", new { area = "FleetManagement" }, null)<b class="arrow"></b></li>
+                                <li id="flt02129" class="actionlinlk">@Html.ActionLink("Tyre History", "Index", "TyreUsageHistory", new { area = "FleetManagement" }, null)<b class="arrow"></b></li>
+
+                               @* <li id="flt029" class="actionlinlk">@Html.ActionLink("Tyre Transfer", "Index", "TyreTransfer", new { area = "FleetManagement" }, null)<b class="arrow"></b></li>*@
+                            </ul>
+                        </li>
+                    }
+                    @if (HttpContext.Current.User.IsInRole("Tyre_Requestor")
+                    || HttpContext.Current.User.IsInRole("Tyre_Approver"))
+                    {
+                        <li class="">
+                            <a href="#" class="dropdown-toggle">
+                                <i class="menu-icon fa fa-caret-right"></i>
+                                Battery Management
+                                <b class="arrow fa fa-angle-down"></b>
+                            </a>
+
+                            <b class="arrow"></b>
+
+                            <ul class="submenu">
+                                <li id="fltBattery01" class="actionlinlk">@Html.ActionLink("Battery Issue", "Index", "BatteryIssue", new { area = "FleetManagement" }, null)<b class="arrow"></b></li>
+                                <li id="fltBattery02" class="actionlinlk">@Html.ActionLink("Battery Return", "Index", "BatteryReturn", new { area = "FleetManagement" }, null)<b class="arrow"></b></li>
+                                <li id="fltbattery02129" class="actionlinlk">@Html.ActionLink("Battery History", "Index", "BatteryUsageHistory", new { area = "FleetManagement" }, null)<b class="arrow"></b></li>
+
+                            </ul>
+                        </li>
+                    }
+                </ul>
+            </li>
+          
+       
+    
+        @*
+            <li class="">
+                <a href="#" class="dropdown-toggle">
+                    <i class="menu-icon fa fa-caret-right"></i>
+
+                    Training Management
+                    <b class="arrow fa fa-angle-down"></b>
+                </a>
+
+                <b class="arrow"></b>
+
+                <ul class="submenu">
+                    <li id="flt030" class="actionlinlk">@Html.ActionLink("Training Types", "Index", "TrainingType", new { area = "FleetManagement" }, null)<b class="arrow"></b></li>
+                    <li id="flt031" class="actionlinlk">@Html.ActionLink("Training Registration", "Index", "Training", new { area = "FleetManagement" }, null)<b class="arrow"></b></li>
+                </ul>
+
+            </li>
+    *@
+    @if (HttpContext.Current.User.IsInRole("Fleet_Training_user")
+                     || HttpContext.Current.User.IsInRole("Fleet_Report")
+            || HttpContext.Current.User.IsInRole("Fleet_Resource_Report")
+            || HttpContext.Current.User.IsInRole("Fleet_Registration_Report"))
+    {
+        <li class="">
+            <a href="#" class="dropdown-toggle">
+                <i class="menu-icon fa fa-caret-right"></i>
+
+                Report
+                <b class="arrow fa fa-angle-down"></b>
+            </a>
+
+            <b class="arrow"></b>
+
+            <ul class="submenu">
+                <li id="fltR030" class="actionlinlk">@Html.ActionLink(" Head Office Summary ", "HeadOfficeSummary", "FleetReport", new { area = "FleetManagement" }, null)<b class="arrow"></b></li>
+                <li id="fltR12030" class="actionlinlk">@Html.ActionLink(" Project Summary ", "ProjectSummaryReport", "FleetReport", new { area = "FleetManagement" }, null)<b class="arrow"></b></li>
+                <li id="fltR0d30" class="actionlinlk">@Html.ActionLink(" Tyre Consumption ", "TyreReport", "FleetReport", new { area = "FleetManagement" }, null)<b class="arrow"></b></li>
+
+                <li id="fltXR033" class="actionlinlk">@Html.ActionLink("Rent From External", "RentFromExternal", "FleetReport", new { area = "FleetManagement" }, null)<b class="arrow"></b></li>
+
+                <li id="fltXR0F323" class="actionlinlk">@Html.ActionLink(" Equipment Maintenace Summary ", "EquipmentMaintenaceSummary", "FleetReport", new { area = "FleetManagement" }, null)<b class="arrow"></b></li>
+                <li id="fltXR0F33" class="actionlinlk">@Html.ActionLink(" Equipment Mechanic Summary", "EquipmentMechanicSummary", "FleetReport", new { area = "FleetManagement" }, null)<b class="arrow"></b></li>
+
+                <li id="fixLReport7878" class="actionlinlk">@Html.ActionLink(" Job Request Status ", "JObRequestStatus", "FleetReport", new { area = "FleetManagement" }, null)<b class="arrow"></b></li>
+
+                <li id="fltR034323" class="actionlinlk">@Html.ActionLink(" Fuel Consumption ", "FuelConsumptionReport", "FleetReport", new { area = "FleetManagement" }, null)<b class="arrow"></b></li>
+
+
+                <li id="fltR032" class="actionlinlk">@Html.ActionLink(" Equipment Utilization ", "EquipmentUtilizationReport", "FleetReport", new { area = "FleetManagement" }, null)<b class="arrow"></b></li>
+                <li id="fltR032" class="actionlinlk">@Html.ActionLink(" Equipment Demand & Supply ", "EquipmentDistrubtionReport", "FleetReport", new { area = "FleetManagement" }, null)<b class="arrow"></b></li>
+                <li id="fltR033" class="actionlinlk">@Html.ActionLink(" Project Work Performance ", "TimeSheetReport", "FleetReport", new { area = "FleetManagement" }, null)<b class="arrow"></b></li>
+                <li id="fltR0F322213" class="actionlinlk">@Html.ActionLink(" SiteTransfer ", "EquipmentSiteTransferReport", "FleetReport", new { area = "FleetManagement" }, null)<b class="arrow"></b></li>
+
+                <li id="fltR0F323" class="actionlinlk">@Html.ActionLink(" Equipment ", "EquipmentReport", "FleetReport", new { area = "FleetManagement" }, null)<b class="arrow"></b></li>
+                
+                <li id="fltR0F33" class="actionlinlk">@Html.ActionLink(" Operator", "OperatorReport", "FleetReport", new { area = "FleetManagement" }, null)<b class="arrow"></b></li>
+                
+         
+                <li id="fltR0F322213n" class="actionlinlk">@Html.ActionLink(" Equipment Plan Evaluation ", "PlanPerEquipmentEvaluation", "FleetReport", new { area = "FleetManagement" }, null)<b class="arrow"></b></li>
+
+                <li id="fltR0F323n" class="actionlinlk">@Html.ActionLink(" Rent TimeSheet ", "RentTimeSheet", "FleetReport", new { area = "FleetManagement" }, null)<b class="arrow"></b></li>
+                
+                <li id="fltR0F3n3" class="actionlinlk">@Html.ActionLink(" Rent TimeSheet Evaluation", "RentTimeSheetEvaluation", "FleetReport", new { area = "FleetManagement" }, null)<b class="arrow"></b></li>
+                <li id="fltR0F3vn3" class="actionlinlk">@Html.ActionLink("Plan Vs Accomplishment", "PlanVsAccomplishment", "FleetReport", new { area = "FleetManagement" }, null)<b class="arrow"></b></li>
+                <li id="Fleet53" class="actionlinlk">@Html.ActionLink(" PM Schedule", "PMSchedule", "FleetReport", new { area = "FleetManagement" }, null)<b class="arrow"></b></li>
+                <li id="Fleet71" class="actionlinlk">@Html.ActionLink("Plan Vs Actual Schedule", "PMActualSchedule", "FleetReport", new { area = "FleetManagement" }, null)<b class="arrow"></b></li>
+
+                <li id="Fleeetr12" class="actionlinlk">@Html.ActionLink("  Logistic Plan ", "LogisticPlan", "FleetReport", new { area = "FleetManagement" }, null)<b class="arrow"></b></li>
+
+            </ul>
+
+        </li>
+    }
+    @if (HttpContext.Current.User.IsInRole("Fleet_Admin"))
+    {
+        <li class="">
+            <a href="#" class="dropdown-toggle">
+                <i class="menu-icon fa fa-caret-right"></i>
+
+                Setting
+                <b class="arrow fa fa-angle-down"></b>
+            </a>
+
+            <b class="arrow"></b>
+
+            <ul class="submenu">
+                <li id="flt032" class="actionlinlk">@Html.ActionLink("Equipment Category", "Index", "EquipmentCategory", new { area = "FleetManagement" }, null)<b class="arrow"></b></li>
+                <li id="flt033" class="actionlinlk">@Html.ActionLink("Equipment Type", "Index", "EquipmentType", new { area = "FleetManagement" }, null)<b class="arrow"></b></li>
+                <li id="flt034" class="actionlinlk">@Html.ActionLink("Equipment Name", "Index", "EquipmentName", new { area = "FleetManagement" }, null)<b class="arrow"></b></li>
+            
+                <li id="flt0J35" class="actionlinlk">@Html.ActionLink("Employee Job Type", "Index", "EmployeeFleetMap", new { area = "FleetManagement" }, null)<b class="arrow"></b></li>
+                <li id="flt035" class="actionlinlk">@Html.ActionLink("Education Level", "Index", "Educationallevel", new { area = "FleetManagement" }, null)<b class="arrow"></b></li>
+                <li id="flt036" class="actionlinlk">@Html.ActionLink("Operator Position", "Index", "OperatorPosition", new { area = "FleetManagement" }, null)<b class="arrow"></b></li>
+                <li id="flt0561232" class="actionlinlk">@Html.ActionLink(" Alert Level", "Index", "AlertLevel", new { area = "FleetManagement" }, null)<b class="arrow"></b></li>
+
+                <li id="flt023136" class="actionlinlk">@Html.ActionLink("Fuel Type", "Index", "FuelType", new { area = "FleetManagement" }, null)<b class="arrow"></b></li>
+                
+                <li id="flt040" class="actionlinlk">@Html.ActionLink("Manufacturer", "Index", "EquipmentManufacturer", new { area = "FleetManagement" }, null)<b class="arrow"></b></li>
+                 <li id="fltowc032" class="actionlinlk">@Html.ActionLink(" Equipment Owning Constant ","Index", "EquipmentOwningCostConstant",  new { area = "FleetManagement" }, null)<b class="arrow"></b></li>
+                <li id="fltpc0166" class="actionlinlk">@Html.ActionLink("Check List", "Index", "CheckList", new { area = "FleetManagement" }, null)<b class="arrow"></b></li>
+
+                <li id="fltpc0166" class="actionlinlk">@Html.ActionLink(" Petty Cash Type", "Index", "FleetPettyCashType", new { area = "FleetManagement" }, null)<b class="arrow"></b></li>
+                <li id="flt016F6" class="actionlinlk">@Html.ActionLink("Fuel Consumption Standard", "Index", "EquipmentTypeFuelConsumption", new { area = "FleetManagement" }, null)<b class="arrow"></b></li>
+                 
+                <li id="fltset016F6" class="actionlinlk">@Html.ActionLink("License Level", "Index", "LicenseLevel", new { area = "FleetManagement" }, null)<b class="arrow"></b></li>
+                <li id="fltset016Fd36" class="actionlinlk">@Html.ActionLink("License Type", "Index", "LicenseType", new { area = "FleetManagement" }, null)<b class="arrow"></b></li>
+
+                <li id="fltset016xsF6" class="actionlinlk">@Html.ActionLink("Condition", "Index", "EquipmentCondition", new { area = "FleetManagement" }, null)<b class="arrow"></b></li>
+
+
+            
+            </ul>
+
+        </li>
+    }
+        </ul>
+    </li>
+
+}

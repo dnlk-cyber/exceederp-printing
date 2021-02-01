@@ -1,0 +1,71 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.HRM.ArchiveManagement
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Subject Type</legend>
+@(Html.Kendo().Grid<SubjectType>()
+              .Name("SubjectTypegrid")
+          .Columns(columns =>
+          {
+              columns.Bound(c => c.SubjectTypeName).Width(200);
+              columns.Bound(c => c.Remark).Width(100);
+              columns.Command(command =>
+              {
+                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                  command.Destroy().Text(Resources.ActionButton_Cancel);
+              }).Width(200);
+          })
+          .ToolBar(toolbar =>
+          {
+              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+          })
+          .Editable(editable => editable.Mode(GridEditMode.InLine))
+            .Scrollable(h => h.Height(500))
+                     
+
+                             .Groupable()
+                                      .Sortable(sortable =>
+                                      {
+                                          sortable.SortMode(GridSortMode.SingleColumn);
+                                      })
+                          .Filterable()
+                             .Pageable(pageable => pageable
+                                                        .Input(true)
+                                                        .Numeric(false)
+                                                        .Refresh(true)
+                                                        .PageSizes(true)
+                                                        .ButtonCount(5))
+          .DataSource(dataSource => dataSource
+              .Ajax()
+                     .Events(events =>
+                     {
+                         events.Error("error_handler(\"SubjectTypegrid\")");
+                         events.RequestStart("onRequestStart(\"SubjectTypegrid\")");
+                         events.RequestEnd("onRequestEnd(\"SubjectTypegrid\")");
+                     }
+                  )
+
+                  .Model(model =>
+                  {
+                      model.Id(p => p.SubjectTypeId);
+                  })
+              .Read(read => read.Action("SubjectType_Read", "SubjectType"))
+              .Create(create => create.Action("SubjectType_Create", "SubjectType"))
+              .Update(update => update.Action("SubjectType_Update", "SubjectType"))
+              .Destroy(destroy => destroy.Action("SubjectType_Destroy", "SubjectType"))
+          )
+)
+<script>
+    
+    function sync_handler(e) {
+        this.read();
+
+    }
+    function AssignDate() {
+        var list = AssignDates();
+        return list;
+    }
+ 
+</script>

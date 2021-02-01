@@ -1,0 +1,39 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.HRM.SelfCare
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@(Html.Kendo().Grid<OverTimeRequestEmployee>()
+          .Name("OverTimeRequestEmployeegrid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.EmployeeId);
+          columns.Bound(c => c.Remark);
+        columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+         .Scrollable(h => h.Height(500))
+                                         .Groupable()
+                                                  .Sortable(sortable =>
+                                                  {
+                                                      sortable.SortMode(GridSortMode.SingleColumn);
+                                                  })
+                                      .Filterable()
+                                         .Pageable(pageable => pageable
+                                                                    .Input(true)
+                                                                    .Numeric(false)
+                                                                    .Refresh(true)
+                                                                    .PageSizes(true)
+                                                                    .ButtonCount(5))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.OverTimeRequestEmployeeId))
+          .Read(read => read.Action("OverTimeRequestEmployee_Read", "OverTimeRequestEmployee"))
+          .Create(create => create.Action("OverTimeRequestEmployee_Create", "OverTimeRequestEmployee"))
+          .Update(update => update.Action("OverTimeRequestEmployee_Update", "OverTimeRequestEmployee"))
+          .Destroy(destroy => destroy.Action("OverTimeRequestEmployee_Destroy", "OverTimeRequestEmployee"))
+      )
+)

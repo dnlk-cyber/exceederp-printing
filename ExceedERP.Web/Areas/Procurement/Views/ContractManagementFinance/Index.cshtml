@@ -1,0 +1,1283 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.Procurement.Contract
+@using ExceedERP.Web.Areas.Procurement.Models
+
+<legend>Contract Management</legend>
+@(Html.Kendo().Grid<ContractManagement>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.ContractManagementID).Title("#").Width(90).ClientTemplate("#=appendZeros(ContractManagementID)#");
+          columns.Bound(c => c.SupplierId).Width(100);
+          columns.Bound(c => c.IsNewSupplier).Width(100).Title("New Supplier").ClientTemplate(
+              "<input type='checkbox' disabled = 'true' value='#= IsNewSupplier #' " +
+              "# if (IsNewSupplier) { #" +
+              "checked='checked'" +
+              "# } #" +
+              "/>"
+              );
+          columns.Bound(c => c.SupplierName).Width(130);
+          columns.Bound(c => c.ContractRefNo).Width(130);
+          columns.Bound(c => c.TenderRefNo).Width(130);
+          columns.Bound(c => c.ProcurementRefNo).Title("Award Ref.").EditorTemplateName("AwardSelector").Width(120);
+          columns.Bound(c => c.SigningDate).Width(100).Format("{0:dd/MM/yyyy}");
+          columns.Bound(c => c.ContractType).EditorTemplateName("ProcurementCategorys").Width(120);
+          columns.Bound(c => c.PurchaseCategory).EditorTemplateName("PurchaseCategory").Width(120);
+          columns.Bound(c => c.DeliveryPlace).Width(120);
+          columns.Bound(c => c.DeliveryDate).Width(110).Format("{0:dd/MM/yyyy}");
+          columns.Bound(c => c.DeliveryType).Width(100).EditorTemplateName("DeliveryType");
+          columns.Bound(c => c.ContractAmount).Width(110);
+          columns.Bound(c => c.Advance).Width(110);
+          columns.Bound(c => c.RetentionPercentage).Width(110);
+          columns.Bound(c => c.Remark).Width(80);
+          columns.Bound(c => c.Status).Width(100);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+                              // toolbar.Excel();
+                              //toolbar.Pdf();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .HtmlAttributes(new { style = "height: 550px;" })
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(10))
+      .Scrollable()
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Filterable()
+      .Groupable()
+      .ClientDetailTemplateId("template")
+      .Events(ev => ev.DetailExpand("detailExpandMasterNew"))
+      .Scrollable(h => h.Height(500))
+      .Events(x => x.DataBound("onDataBoundMasterNew"))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Sort(sort => sort.Add("ContractManagementID").Descending())
+          .PageSize(20)
+          .Events(ev => ev
+              .Error("error_handler(\"grid\")")
+              .RequestStart("onRequestStart(\"grid\")")
+              .RequestEnd("onRequestEnd(\"grid\")"))
+          .Model(
+              model =>
+              {
+                  model.Id(p => p.ContractManagementID);
+                  model.Field(p => p.OrgBranchName).Editable(false);
+                  model.Field(p => p.IsTransferredToPayment).Editable(false);
+                  model.Field(p => p.IsTransferredToFollowUp).Editable(false);
+                  model.Field(p => p.CreatedBy).Editable(false);
+                  model.Field(p => p.ModifiedBy).Editable(false);
+                  model.Field(p => p.LastModified).Editable(false);
+                  model.Field(p => p.DateCreated).Editable(false);
+                  model.Field(p => p.Status).Editable(false);
+              })
+          .Read(read => read.Action("ContractManagements_Read", "ContractManagement"))
+          .Create(create => create.Action("ContractManagements_Create", "ContractManagement"))
+          .Update(update => update.Action("ContractManagements_Update", "ContractManagement"))
+          .Destroy(destroy => destroy.Action("ContractManagements_Destroy", "ContractManagement"))
+      ))
+
+
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+            .Name("tabStrip_#=ContractManagementID#")
+            .SelectedIndex(0)
+            .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+            .Items(items =>
+            {
+                items.Add().Text("Detail").Content(
+                    @<text>
+                        # if (!IsOnlineApproved&&!IsSendForApproval)
+                        {#
+                        <a onclick='return sendForApproval("#=ContractManagementID#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                        <br />
+                        # } #
+    
+                     # if (IsOnlineApproved && !IsTransferredToPayment &&!IsVoid )
+                                {#
+                                <a onclick='return transferToPayment("#=ContractManagementID#")' href=' \#' title="Transfer to Payment"><i class="fa fa-dollar fa-2x"></i></a>
+                                <br />
+                            <a onclick='return transferToFollowUp("#=ContractManagementID#")' href=' \#' title="Transfer to Foreign Followup"><i class="fa fa-check fa-2x"></i></a>
+                                <br />
+                                # } #
+                 
+
+                        <div>
+                            <hr>
+                            <dl class="dl-horizontal">
+
+                                <dt>
+                                    Contract NO.
+                                </dt>
+                                <dd>
+                                    #= ContractManagementID #
+                                </dd>
+                                <dt>
+                                    Branch
+                                </dt>
+                                <dd>
+                                    #= Branch #
+
+                                </dd>
+                                                                
+                                @*<dt>
+                                    Status
+                                </dt>
+                                <dd>
+                                    #= Status #
+
+                                </dd>*@
+                                <dt>
+                                    Created On
+                                </dt>
+                                <dd>
+                                    #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+
+
+                                </dd>
+                                <dt>
+                                    Created By
+                                </dt>
+                                <dd>
+                                    #=CreatedBy #
+
+                                </dd>
+                            </dl>
+
+                        </div>
+
+                    </text>
+                  );
+                  
+                items.Add().Text("Items").Content(@<text>
+
+                    @(Html.Kendo().Grid<ContractManagementItem>()
+                          .Name("ContractManagementItem#=ContractManagementID#")
+                          .Columns(columns =>
+                          {
+                              columns.Bound(c => c.ItemType).Hidden();
+                              columns.Bound(c => c.Type).Width(90).EditorTemplateName("ItemTypeSelector");
+                              columns.ForeignKey(p => p.CatCode, (IEnumerable)ViewData["Category"], "CatCode", "Name").Title("Category").EditorTemplateName("GenericItemCategorySelector").Width(170);
+                              columns.ForeignKey(p => p.ItmCode, (IEnumerable)ViewData["Items"], "ItmCode", "Name").Title("Item").EditorTemplateName("GenericItemSelector").Width(170);
+                              columns.Bound(c => c.Quantity).Title("QTY").Width(90);
+                              columns.Bound(c => c.Addition).Width(90);
+                              columns.Bound(c => c.Omission).Width(90);
+                              //columns.Bound(c => c.UoM).Width(100);
+                              columns.Bound(c => c.UnitPrice).Width(90);
+                              columns.ForeignKey(p => p.GLTaxRateID, (IEnumerable)ViewData["tax"], "GLTaxRateID", "TaxName").Width(100);//.Title("Tax Name").EditorTemplateName("TaxSelector").Width(180);
+                              columns.Bound(c => c.TaxAmount).Width(90);
+                              columns.Bound(c => c.Total).Width(90);
+                              columns.Bound(c => c.Remark).Width(80);
+                              columns.Command(command =>
+                              {
+                                  command.Edit();
+                                  command.Destroy();
+                              }).Width(580);
+                          })
+                          .ToolBar(toolbar =>
+                          {
+                              //toolbar.Create();
+                          })
+                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                          //.Events(x => x.DataBound("onDataBoundLineNew"))
+                            
+                          .Scrollable()
+                          .Sortable()
+                            
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+                              .Model(
+                                  model =>
+                                  {
+                                      model.Id(p => p.ContractManagementItemID);
+
+                          
+                                      model.Field(p => p.OrgBranchName).Editable(false);
+                                      model.Field(p => p.ItemType).Editable(false);
+                                      model.Field(p => p.Type).Editable(false);
+                                      model.Field(p => p.CatCode).Editable(false);
+                                      model.Field(p => p.ItmCode).Editable(false);
+                                      model.Field(p => p.GLTaxRateID).Editable(false);
+                                      model.Field(p => p.Quantity).Editable(false);
+                                      model.Field(p => p.UnitPrice).Editable(false);
+                                      model.Field(p => p.TaxAmount).Editable(false);
+                                      model.Field(p => p.Total).Editable(false);
+                                      model.Field(p => p.CreatedBy).Editable(false);
+                                      model.Field(p => p.ModifiedBy).Editable(false);
+                                      model.Field(p => p.LastModified).Editable(false);
+                                      model.Field(p => p.DateCreated).Editable(false);
+
+
+                                  })
+                              .Events(ev => ev
+                                  .Error("error_handler(\"ContractManagementItem#=ContractManagementID#\")")
+                                  .RequestStart("onRequestStart(\"ContractManagementItem#=ContractManagementID#\")")
+                                  .RequestEnd("onRequestEnd(\"ContractManagementItem#=ContractManagementID#\")"))
+                              .Read(read => read.Action("ContractManagementItems_Read", "ContractManagementItem", new { id = "#=ContractManagementID#" }))
+                              .Create(create => create.Action("ContractManagementItems_Create", "ContractManagementItem", new { id = "#=ContractManagementID#" }))
+                              .Update(update => update.Action("ContractManagementItems_Update", "ContractManagementItem"))
+                              .Destroy(destroy => destroy.Action("ContractManagementItems_Destroy", "ContractManagementItem"))
+                          )
+                          .Events(events => events.DataBound("onDataBoundLines"))
+                          .ToClientTemplate())
+                </text>
+                );
+
+                items.Add().Text("Payment Schedule").Content(@<text>
+
+                    @(Html.Kendo().Grid<ContractPaymentSchedule>()
+                          .Name("ContractPaymentSchedule#=ContractManagementID#")
+                          .Columns(columns =>
+                          {
+                              columns.Bound(p => p.PaymentType).EditorTemplateName("PaymentType").Width(150);
+                              columns.Bound(p => p.Percentage).Width(150);
+                              columns.Bound(p => p.Remark).Width(150);
+                              columns.Command(command =>
+                              {
+                                  command.Edit();
+                                  command.Destroy();
+                              });
+                          })
+                          .ToolBar(toolbar =>
+                          {
+                              toolbar.Create();
+                          })
+                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                          .Events(x => x.DataBound("onDataBoundLineNew"))
+                            
+                          .Scrollable()
+                          .Sortable()
+                          //.Filterable()
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+                              .Model(
+                                  model =>
+                                  {
+                                      model.Id(p => p.ContractPaymentScheduleId);
+                                      model.Field(p => p.OrgBranchName).Editable(false);
+                                      model.Field(p => p.CreatedBy).Editable(false);
+                                      model.Field(p => p.ModifiedBy).Editable(false);
+                                      model.Field(p => p.LastModified).Editable(false);
+                                      model.Field(p => p.DateCreated).Editable(false);
+
+
+                                  })
+                              .Events(ev => ev
+                                  .Error("error_handler(\"ContractPaymentSchedule#=ContractManagementID#\")")
+                                  .RequestStart("onRequestStart(\"ContractPaymentSchedule#=ContractManagementID#\")")
+                                  .RequestEnd("onRequestEnd(\"ContractPaymentSchedule#=ContractManagementID#\")"))
+                              
+                              .Read(read => read.Action("ContractPaymentSchedules_Read", "ContractPaymentSchedule", new { id = "#=ContractManagementID#" }))
+                              .Create(create => create.Action("ContractPaymentSchedules_Create", "ContractPaymentSchedule", new { id = "#=ContractManagementID#" }))
+                              .Update(update => update.Action("ContractPaymentSchedules_Update", "ContractPaymentSchedule", new { id = "#=ContractManagementID#" }))
+                              .Destroy(destroy => destroy.Action("ContractPaymentSchedules_Destroy", "ContractPaymentSchedule"))
+                          )
+                          .Events(events => events.DataBound("onDataBoundLines"))
+                          .ToClientTemplate())
+                </text>
+                );
+
+                 @*======================================================================== Contract Document ========================================================*@
+
+                items.Add().Text("Attachement").Content(@<text>
+
+                            @ContractFileUpload()
+
+                        </text>);
+
+                items.Add().Text("Validation").Content(@<text>
+
+                    @(Html.Kendo().Grid<ContractManagementValidation>()
+                          .Name("validation_#=ContractManagementID#")
+                          .Columns(columns =>
+                          {
+                              columns.Bound(c => c.Status).Width(170).EditorTemplateName("ApprovalStatus");
+                              columns.Bound(c => c.Remark).Width(170);
+                              columns.Bound(c => c.DateCreated).Width(200).Title("Time").Format("{0:dd/MM/yyyy}");
+                              columns.Bound(c => c.LastModified).Hidden(true);
+                              columns.Bound(c => c.CreatedBy).Width(200).Title("User");
+                              columns.Bound(c => c.ModifiedBy).Hidden(true);
+                              columns.Command(command =>
+                              {
+                                  command.Edit();
+                                  //command.Destroy();
+                              });
+                          })
+                          .ToolBar(toolbar =>
+                          {
+                              toolbar.Create();
+                          })
+                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                          .Scrollable()
+                          .Events(x => x.DataBound("onDataBoundValidationNew"))
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+                       
+                              .Model(model =>
+                              {
+                                  model.Id(p => p.ContractManagementValidationId);
+                                  model.Field(p => p.CreatedBy).Editable(false);
+                                  model.Field(p => p.DateCreated).Editable(false);
+                                  model.Field(p => p.ModifiedBy).Editable(false);
+                                  model.Field(p => p.LastModified).Editable(false);
+                              })
+                              .Events(ev => ev
+                                  .Error("error_handler(\"validation_#=ContractManagementID#\")")
+                                  .RequestStart("onRequestStart(\"validation_#=ContractManagementID#\")")
+                                  .RequestEnd("onRequestEnd(\"validation_#=ContractManagementID#\")"))
+
+                              .Read(read => read.Action("ContractManagementValidations_Read", "ContractManagementValidation", new { id = "#=ContractManagementID#" }))
+                              .Create(create => create.Action("ContractManagementValidations_Create", "ContractManagementValidation", new { id = "#=ContractManagementID#" }))
+                              .Update(update => update.Action("ContractManagementValidations_Update", "ContractManagementValidation"))
+                              .Destroy(destroy => destroy.Action("ContractManagementValidations_Destroy", "ContractManagementValidation"))
+                          )
+                       
+                          .ToClientTemplate())
+                </text>
+                );
+
+                items.Add().Text("Renewal").Content(@<text>
+
+                    @(Html.Kendo().Grid<ContractRenewal>()
+                          .Name("ContractRenewal#=ContractManagementID#")
+                          .Columns(columns =>
+                          {
+                              columns.Bound(p => p.SigningDate).Width(130);
+                              columns.Bound(p => p.DaysAdded).Width(130);
+                              columns.Bound(p => p.AdditionalPayment).Width(150);
+                              columns.Bound(p => p.Remark).Width(150);
+                              columns.Bound(p => p.Status).Width(150);
+                              columns.Command(command =>
+                              {
+                                  command.Edit();
+                                  command.Destroy();
+                              });
+                          })
+                          .ToolBar(toolbar =>
+                          {
+                              toolbar.Create();
+                          })
+                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                             
+                          .Scrollable()
+                          .Sortable()
+                          //.Filterable()
+                          .ClientDetailTemplateId("renewaltemplates")
+                          //.Groupable()
+                          .Events(ev => ev.DetailExpand("detailExpandRenewal"))
+                          .Scrollable(h => h.Height(500))
+                          .Events(x => x.DataBound("onDataBoundMasterRenewal"))
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+                              .Model(
+                                  model =>
+                                  {
+                                      model.Id(p => p.ContractRenewalId);
+                                      model.Field(p => p.OrgBranchName).Editable(false);
+                                      model.Field(p => p.CreatedBy).Editable(false);
+                                      model.Field(p => p.ModifiedBy).Editable(false);
+                                      model.Field(p => p.LastModified).Editable(false);
+                                      model.Field(p => p.DateCreated).Editable(false);
+                                      model.Field(p => p.Status).Editable(false);
+
+                                  })
+                              .Events(ev => ev
+                                  .Error("error_handler(\"ContractRenewal#=ContractManagementID#\")")
+                                  .RequestStart("onRequestStart(\"ContractRenewal#=ContractManagementID#\")")
+                                  .RequestEnd("onRequestEnd(\"ContractRenewal#=ContractManagementID#\")"))
+                              .Read(read => read.Action("ContractRenewals_Read", "ContractRenewal", new { id = "#=ContractManagementID#" }))
+                              .Create(create => create.Action("ContractRenewals_Create", "ContractRenewal", new { id = "#=ContractManagementID#" }))
+                              .Update(update => update.Action("ContractRenewals_Update", "ContractRenewal", new { id = "#=ContractManagementID#" }))
+                              .Destroy(destroy => destroy.Action("ContractRenewals_Destroy", "ContractRenewal"))
+                          )
+                        
+                          .ToClientTemplate())
+                </text>
+                );
+
+                 items.Add().Text("GRN Info.").Content(@<text>
+                                                    @(Html.Kendo().Grid<ExceedERP.Web.Areas.Procurement.Models.GrnViewModel>()
+                                                          .Name("GRNInfo#=ContractManagementID#")
+                                                          .Columns(columns =>
+                                                          {
+                                                              columns.Bound(p => p.GrnType).Width(130);
+                                                              columns.Bound(c => c.GrnId).Title("\\#").Width(120);
+                                                              columns.ForeignKey(p => p.ReceiveTypeId, (IEnumerable)ViewData["ReeceiveType"], "ReceiveTypeId", "Name").EditorTemplateName("ReceiveTypeSelector").Width(150);
+                                                              columns.Bound(p => p.ReceiveRef).Width(150);//until data entry.EditorTemplateName("ReceiveReferenceSelector");
+                                                              columns.Bound(p => p.Reference).Width(130);
+                                                              columns.ForeignKey(p => p.StoreCode, (IEnumerable)ViewData["stores"], "StoreCode", "Name").Width(150).EditorTemplateName("StoreSelectorByKeeper");
+                                                              columns.Bound(p => p.SupplierId).Width(90);
+                                                              columns.Bound(p => p.SupplierName).Width(150);//upto data entry.EditorTemplateName("ReceiveSupplierSelector");
+                                                              columns.Bound(c => c.SupplierInvoiceNo).Title("Supplier Invoice").Width(150);
+                                                              columns.ForeignKey(p => p.GLPeriodId, (IEnumerable)ViewData["inventoryPeriods"], "GLPeriodId", "Name").Width(130).Title("Period").EditorTemplateName("InventoryPeriodSelector");
+                                                              columns.Bound(c => c.ReceiveDate).Title("Receive Date").Width(130);
+
+                                                              columns.ForeignKey(p => p.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("BranchSelector").Width(150);
+                                                              columns.Bound(c => c.Status).Width(80);
+                                                             
+                                                          })
+                                                         
+                                                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                          .Scrollable()
+                                                         .ClientDetailTemplateId("grntemplates")
+                                                          .DataSource(dataSource => dataSource
+                                                              .Ajax()
+                                                              .Events(ev => ev
+                                                                  .Error("error_handler(\"GRNInfo#=ContractManagementID#\")")
+                                                                  .RequestStart("onRequestStart(\"GRNInfo#=ContractManagementID#\")")
+                                                                  .RequestEnd("onRequestEnd(\"GRNInfo#=ContractManagementID#\")"))
+                                                              .Model(model =>
+                                                              {
+                                                                  model.Id(p => p.GrnId);
+                                                              }
+                                                              )
+                                                              .Read(read => read.Action("GrnHeader_Read", "ContractManagement", new { id = "#=ContractManagementID#" }))
+                                                          )
+                                                          .ToClientTemplate())
+                                                </text>
+              );
+                 items.Add().Text("Payment").Content(@<text>
+
+                    @(Html.Kendo().Grid<ContractPayment>()
+                          .Name("ContractPayment#=ContractManagementID#")
+                          .Columns(columns =>
+                          {
+                              columns.Bound(p => p.Date).Width(130);
+                              columns.Bound(p => p.PaymentAmount).Width(130);
+                              columns.Bound(c => c.ApplyPenality).Width(90).ClientTemplate("<input type='checkbox' disabled = 'true' \\#= ApplyPenality ? checked='checked' :'' \\# />");
+                              columns.Bound(p => p.PenalityAmount).Width(130);
+                              columns.Bound(p => p.Remark).Width(150);
+                              columns.Bound(p => p.Status).Width(150);
+                              columns.Command(command =>
+                              {
+                                  command.Edit();
+                                  command.Destroy();
+                              });
+                          })
+                          .ToolBar(toolbar =>
+                          {
+                              toolbar.Create();
+                          })
+                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                             
+                          .Scrollable()
+                          .Sortable()
+                          //.Filterable()
+                          .ClientDetailTemplateId("paymenttemplates")
+                          //.Groupable().
+                          .Events(ev => ev.DetailExpand("detailExpandRenewal"))
+                          .Scrollable(h => h.Height(500))
+                          .Events(x => x.DataBound("onDataBoundMasterRenewal"))
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+                              .Model(
+                                  model =>
+                                  {
+                                      model.Id(p => p.ContractPaymentId);
+                                      model.Field(p => p.OrgBranchName).Editable(false);
+                                      model.Field(p => p.CreatedBy).Editable(false);
+                                      model.Field(p => p.ModifiedBy).Editable(false);
+                                      model.Field(p => p.LastModified).Editable(false);
+                                      model.Field(p => p.DateCreated).Editable(false);
+                                      model.Field(p => p.Status).Editable(false);
+
+                                  })
+                              .Events(ev => ev
+                                  .Error("error_handler(\"ContractPayment#=ContractManagementID#\")")
+                                  .RequestStart("onRequestStart(\"ContractPayment#=ContractManagementID#\")")
+                                  .RequestEnd("onRequestEnd(\"ContractPayment#=ContractManagementID#\")"))
+                              .Read(read => read.Action("ContractPayments_Read", "ContractPayment", new { id = "#=ContractManagementID#" }))
+                              .Create(create => create.Action("ContractPayments_Create", "ContractPayment", new { id = "#=ContractManagementID#" }))
+                              .Update(update => update.Action("ContractPayments_Update", "ContractPayment", new { id = "#=ContractManagementID#" }))
+                              .Destroy(destroy => destroy.Action("ContractPayments_Destroy", "ContractPayment"))
+                          )
+                        
+                          .ToClientTemplate())
+                </text>
+                );
+            })
+         .ToClientTemplate()
+)
+</script>
+
+<script id="renewaltemplates" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+          .Name("tabStrip#=ContractRenewalId#")
+          .SelectedIndex(0)
+          .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+          .Items(items =>
+          {
+              items.Add().Text("Renewal Detail").Content(@<text>
+
+                        # if (!IsOnlineApproved&&!isSendForApprovalRenew)
+                        {#
+                        <a onclick='return sendForApprovalRenewal("#=ContractRenewalId#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                        <br />
+                        # } #
+                        <div>
+                            <hr>
+                            <dl class="dl-horizontal">
+
+
+                                <dt>
+                                    Created On
+                                </dt>
+                                <dd>
+                                    #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+
+                                </dd>
+                                <dt>
+                                    Created By
+                                </dt>
+                                <dd>
+                                    #= CreatedBy #
+                                </dd>
+                                <dt>
+                                    Modified By
+                                </dt>
+                                <dd>
+                                    #= ModifiedBy #
+                                </dd>
+                                <dt>
+                                    Modified Date
+                                </dt>
+                                <dd>
+                                    #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+                                </dd>
+                            </dl>
+                        </div>
+
+                    </text>
+                  );
+
+
+              items.Add().Text("Validation").Content(
+                  @<text>
+                            @(Html.Kendo().Grid<ContractRenewalValidation>()
+                                  .Name("ContractRenewalValidation#=ContractRenewalId#")
+                                  .Columns(columns =>
+                                  {
+                                      columns.Bound(c => c.ContractRenewalValidationId).Hidden(true);
+                                      columns.Bound(c => c.Status).EditorTemplateName("ApprovalStatus").Width(150);
+                                      columns.Bound(c => c.Remark).Width(130);
+                                      columns.Bound(c => c.DateCreated).Width(150).Title("Time").Format("{0:dd/MM/yyyy}");
+                                      columns.Bound(c => c.LastModified).Hidden(true);
+                                      columns.Bound(c => c.CreatedBy).Width(150).Title("User");
+                                      columns.Bound(c => c.ModifiedBy).Hidden(true);
+                                      columns.Command(command =>
+                                      {
+                                          command.Edit();
+
+                                      });
+
+                                  })
+                                  .ToolBar(toolbar =>
+                                  {
+                                      toolbar.Create();
+                                  })
+                                  .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                    
+                                  .Pageable(pageable => pageable
+                                      .Input(true)
+                                      .Numeric(false)
+                                      .Refresh(true)
+                                      .PageSizes(true)
+                                      .ButtonCount(5))
+                                  .Sortable(sortable =>
+                                  {
+                                      sortable.SortMode(GridSortMode.SingleColumn);
+                                  })
+                                  //.Filterable()
+                                  .Scrollable()
+                                  .Events(events => events.DataBound("onDataBoundFisrtValidationRenewal"))
+                                  .DataSource(dataSource => dataSource
+                                      .Ajax()
+                                      .Model(
+                                          model =>
+                                          {
+                                              model.Id(p => p.ContractRenewalValidationId);
+                                              model.Field(p => p.OrgBranchName).Editable(false);
+                                              model.Field(p => p.CreatedBy).Editable(false);
+                                              model.Field(p => p.ModifiedBy).Editable(false);
+                                              model.Field(p => p.LastModified).Editable(false);
+                                              model.Field(p => p.DateCreated).Editable(false);
+                                          })
+                                      .Events(ev => ev
+                                          .Error("error_handler(\"ContractRenewalValidation#=ContractRenewalId#\")")
+                                          .RequestStart("onRequestStart(\"ContractRenewalValidation#=ContractRenewalId#\")")
+                                          .RequestEnd("onRequestEnd(\"ContractRenewalValidation#=ContractRenewalId#\")"))
+                                          
+                                      .Read(read => read.Action("ContractRenewalValidations_Read", "ContractRenewalValidation", new { id = "#=ContractRenewalId#" }))
+                                      .Create(create => create.Action("ContractRenewalValidations_Create", "ContractRenewalValidation", new { id = "#=ContractRenewalId#" }))
+                                      .Update(update => update.Action("ContractRenewalValidations_Update", "ContractRenewalValidation", new { id = "#=ContractRenewalId#" }))
+                                      .Destroy(destroy => destroy.Action("ContractRenewalValidations_Destroy", "ContractRenewalValidation"))
+                                  )
+                                  .ToClientTemplate())
+
+                        </text>);
+          })
+
+          .ToClientTemplate()
+          )
+
+</script>
+
+<script id="paymenttemplates" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+          .Name("tabStrip#=ContractPaymentId#")
+          .SelectedIndex(0)
+          .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+          .Items(items =>
+          {
+              items.Add().Text("Payment Detail").Content(@<text>
+
+                        # if (!IsOnlineApproved&&!IsSendForApproval)
+                        {#
+                        <a onclick='return sendForApprovalPayment("#=ContractPaymentId#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                        <br />
+                        # } #
+                        <div>
+                            <hr>
+                            <dl class="dl-horizontal">
+
+
+                                <dt>
+                                    Created On
+                                </dt>
+                                <dd>
+                                    #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+
+                                </dd>
+                                <dt>
+                                    Created By
+                                </dt>
+                                <dd>
+                                    #= CreatedBy #
+                                </dd>
+                                <dt>
+                                    Modified By
+                                </dt>
+                                <dd>
+                                    #= ModifiedBy #
+                                </dd>
+                                <dt>
+                                    Modified Date
+                                </dt>
+                                <dd>
+                                    #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+                                </dd>
+                            </dl>
+                        </div>
+
+                    </text>
+                  );
+
+              items.Add().Text("GRN/SRN").Content(
+                  @<text>
+                @(Html.Kendo().Grid<ContractPaymentGrn>()
+                      .Name("ContractPaymentGrn#=ContractPaymentId#")
+                      .Columns(columns =>
+                      {
+                          columns.Bound(c => c.ContractPaymentGrnId).Hidden(true);
+                          columns.Bound(c => c.GrnNo).Width(200);
+
+                          columns.Bound(c => c.DateCreated).Hidden(true).Width(200).Title("Time").Format("{0:dd/MM/yyyy}");
+                          columns.Bound(c => c.LastModified).Hidden(true);
+                          columns.Bound(c => c.CreatedBy).Width(200).Title("User").Hidden(true);
+                          columns.Bound(c => c.ModifiedBy).Hidden(true);
+                          columns.Command(command =>
+                          {
+
+                              command.Edit();
+                              command.Destroy();
+
+                          }).Width(580);
+
+                      })
+                      .ToolBar(toolbar =>
+                      {
+                          toolbar.Create();
+                      })
+                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+
+                      .Sortable(sortable =>
+                      {
+                          sortable.SortMode(GridSortMode.SingleColumn);
+                      })
+                      .Filterable()
+                      .Scrollable()
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+                          .Model(
+                              model =>
+                              {
+                                  model.Id(p => p.ContractPaymentGrnId);
+                                  model.Field(p => p.OrgBranchName).Editable(false);
+                                  model.Field(p => p.CreatedBy).Editable(false);
+                                  model.Field(p => p.ModifiedBy).Editable(false);
+                                  model.Field(p => p.LastModified).Editable(false);
+                                  model.Field(p => p.DateCreated).Editable(false);
+                              })
+                          .Events(ev => ev
+                              .Error("error_handler(\"ContractPaymentGrn#=ContractPaymentId#\")")
+                              .RequestStart("onRequestStart(\"ContractPaymentGrn#=ContractPaymentId#\")")
+                              .RequestEnd("onRequestEnd(\"ContractPaymentGrn#=ContractPaymentId#\")"))
+                          .Read(read => read.Action("ContractPaymentGrns_Read", "ContractPaymentGrn", new { id = "#=ContractPaymentId#" }))
+                          .Create(create => create.Action("ContractPaymentGrns_Create", "ContractPaymentGrn", new { id = "#=ContractPaymentId#" }))
+                          .Update(update => update.Action("ContractPaymentGrns_Update", "ContractPaymentGrn", new { id = "#=ContractPaymentId#" }))
+                          .Destroy(destroy => destroy.Action("ContractPaymentGrns_Destroy", "ContractPaymentGrn"))
+                      )
+                      .ToClientTemplate())
+
+            </text>);
+
+               @*======================================================================== payment Document ========================================================*@
+
+              items.Add().Text("Attachement").Content(@<text>
+
+                            @ContractPaymentFileUpload()
+
+                        </text>);
+
+
+              items.Add().Text("Validation").Content(
+                  @<text>
+                            @(Html.Kendo().Grid<ContractPaymentValidation>()
+                                  .Name("ContractPaymentValidation#=ContractPaymentId#")
+                                  .Columns(columns =>
+                                  {
+                                      columns.Bound(c => c.ContractPaymentValidationId).Hidden(true);
+                                      columns.Bound(c => c.Status).EditorTemplateName("ApprovalStatus").Width(150);
+                                      columns.Bound(c => c.Remark).Width(130);
+                                      columns.Bound(c => c.DateCreated).Width(150).Title("Time").Format("{0:dd/MM/yyyy}");
+                                      columns.Bound(c => c.LastModified).Hidden(true);
+                                      columns.Bound(c => c.CreatedBy).Width(150).Title("User");
+                                      columns.Bound(c => c.ModifiedBy).Hidden(true);
+                                      columns.Command(command =>
+                                      {
+                                          command.Edit();
+
+                                      });
+
+                                  })
+                                  .ToolBar(toolbar =>
+                                  {
+                                      toolbar.Create();
+                                  })
+                                  .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                    
+                                  .Pageable(pageable => pageable
+                                      .Input(true)
+                                      .Numeric(false)
+                                      .Refresh(true)
+                                      .PageSizes(true)
+                                      .ButtonCount(5))
+                                  .Sortable(sortable =>
+                                  {
+                                      sortable.SortMode(GridSortMode.SingleColumn);
+                                  })
+                                  //.Filterable()
+                                  .Scrollable()
+                                  .Events(events => events.DataBound("onDataBoundFisrtValidationRenewal"))
+                                  .DataSource(dataSource => dataSource
+                                      .Ajax()
+                                      .Model(
+                                          model =>
+                                          {
+                                              model.Id(p => p.ContractPaymentValidationId);
+                                              model.Field(p => p.OrgBranchName).Editable(false);
+                                              model.Field(p => p.CreatedBy).Editable(false);
+                                              model.Field(p => p.ModifiedBy).Editable(false);
+                                              model.Field(p => p.LastModified).Editable(false);
+                                              model.Field(p => p.DateCreated).Editable(false);
+                                          })
+                                      .Events(ev => ev
+                                          .Error("error_handler(\"ContractPaymentValidation#=ContractPaymentId#\")")
+                                          .RequestStart("onRequestStart(\"ContractPaymentValidation#=ContractPaymentId#\")")
+                                          .RequestEnd("onRequestEnd(\"ContractPaymentValidation#=ContractPaymentId#\")"))
+                                          
+                                      .Read(read => read.Action("ContractPaymentValidations_Read", "ContractPaymentValidation", new { id = "#=ContractPaymentId#" }))
+                                      .Create(create => create.Action("ContractPaymentValidations_Create", "ContractPaymentValidation", new { id = "#=ContractPaymentId#" }))
+                                      .Update(update => update.Action("ContractPaymentValidations_Update", "ContractPaymentValidation", new { id = "#=ContractPaymentId#" }))
+                                      .Destroy(destroy => destroy.Action("ContractPaymentValidations_Destroy", "ContractPaymentValidation"))
+                                  )
+                                  .ToClientTemplate())
+
+                        </text>);
+          })
+
+          .ToClientTemplate()
+          )
+
+</script>
+
+<script id="grntemplates" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                .Name("tabStrip#=GrnId#")
+                .SelectedIndex(0)
+                .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+                .Items(items =>
+                {
+                                                           
+                        items.Add().Text("Items").Content(@<text>
+                            @(Html.Kendo().Grid<GrnViewModelItem>()
+                                                                .Name("GrnViewModelItem#=GrnId#")
+                                                                .Columns(columns =>
+                                                                {
+                                                                    columns.Bound(c => c.Category).Width(70);
+                                                                    columns.Bound(c => c.SubCategory).Width(70);
+                                                                    columns.Bound(c => c.Item).Width(70);
+                                                                    columns.Bound(c => c.UOM).Width(70);
+                                                                    columns.Bound(c => c.Quantity).Width(70);
+                                                                    columns.Bound(c => c.UnitPrice).Width(90);
+                                                                    columns.ForeignKey(p => p.GLTaxRateID, (IEnumerable)ViewData["tax"], "GLTaxRateID", "TaxName").Title("Tax Name").EditorTemplateName("TaxSelector").Width(120);
+                                                                    columns.Bound(c => c.SubTotal).Width(90);
+                                                                    columns.Bound(c => c.TaxAmount).Width(90);
+                                                                    columns.Bound(c => c.Total).Width(90);
+                                                                    columns.Bound(c => c.Specification).Width(110).Hidden();
+                                                                    columns.Command(command =>
+                                                                    {
+                                                                    }).Width(380);
+
+                                                                })
+
+                                                            .Scrollable()
+                                                            .Selectable()
+                                                            .DataSource(dataSource => dataSource
+                                                                .Ajax()
+                                                                .Events(ev => ev
+                                                                    .Error("error_handler(\"GrnViewModelItem#=GrnId#\")")
+                                                                    .RequestStart("onRequestStart(\"GrnViewModelItem#=GrnId#\")")
+                                                                    .RequestEnd("onRequestEnd(\"GrnViewModelItem#=GrnId#\")"))
+                                                                .Model(model =>
+                                                                {
+
+                                                                    model.Field(p => p.CreatedBy).Editable(false);
+                                                                    model.Field(p => p.DateCreated).Editable(false);
+                                                                    model.Field(p => p.ModifiedBy).Editable(false);
+                                                                    model.Field(p => p.LastModified).Editable(false);
+
+                                                                })
+                                                                    .Read(read => read.Action("GrnItem_Read", "ContractManagement", new { id = "#=GrnId#", type = "#=GrnType#" }))
+                                                                    )
+                                                                        .ToClientTemplate()
+                                                )
+
+                        </text>
+                                        );
+                                                                        
+                                                items.Add().Text("Validation").Content(
+                                              @<text>
+                                           @(Html.Kendo().Grid<GrnViewModelValidation>()
+                                .Name("GrnViewModelValidation#=GrnId#")
+                                        .Columns(columns =>
+                                        {
+                                            columns.Bound(c => c.Status).EditorTemplateName("ApprovalStatus").Width(150);
+                                            columns.Bound(c => c.Remark).Width(200);
+
+                                            columns.Bound(c => c.DateCreated).Width(200).Title("Time").Format("{0:dd/MM/yyyy}");
+                                            columns.Bound(c => c.LastModified).Hidden(true);
+                                            columns.Bound(c => c.CreatedBy).Width(200).Title("User");
+                                            columns.Bound(c => c.ModifiedBy).Hidden(true);
+
+
+                                        })
+
+                                        .Editable(editable => editable.Mode(GridEditMode.InLine))
+
+
+                                        .Sortable(sortable =>
+                                        {
+                                            sortable.SortMode(GridSortMode.SingleColumn);
+                                        })
+                                                                                                                                                                                                    
+                                        .Scrollable()
+                                        .DataSource(dataSource => dataSource
+                                            .Ajax()
+                                            .Model(
+                                                model =>
+                                                {
+                                                    model.Id(p => p.GrnViewModelValidationID);
+                                                    model.Field(p => p.OrgBranchName).Editable(false);
+                                                    model.Field(p => p.CreatedBy).Editable(false);
+                                                    model.Field(p => p.ModifiedBy).Editable(false);
+                                                    model.Field(p => p.LastModified).Editable(false);
+                                                    model.Field(p => p.DateCreated).Editable(false);
+                                                })
+                                            .Events(ev => ev
+                                                .Error("error_handler(\"GrnViewModelValidation#=GrnId#\")")
+                                                .RequestStart("onRequestStart(\"GrnViewModelValidation#=GrnId#\")")
+                                                .RequestEnd("onRequestEnd(\"GrnViewModelValidation#=GrnId#\")"))
+                                            .Read(read => read.Action("GrnValidation_Read", "ContractManagement", new { id = "#=GrnId#", type = "#=GrnType#" }))
+
+                                        )
+                                        .ToClientTemplate())
+
+</text>);
+
+
+})
+
+                                                                                                                                                                                                            .ToClientTemplate()
+    )
+
+</script>
+
+@helper ContractFileUpload()
+{
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Procurement.Contract.ContractAttachment>()
+          .Name("contractdocument_#=ContractManagementID#")
+          .Columns(columns =>
+          {
+              columns.Bound(c => c.FileName).ClientTemplate("<a href='/ContractDocument/FileDwonload?id=\\#=ContractAttachmentId \\#'>\\#=FileName \\#</a>").Width(200);
+              columns.Command(command => { command.Edit(); command.Destroy(); }).Width(580);
+          })
+          .ToolBar(t => t.Template(
+              @<text>
+                  @(Html.Kendo().Upload()
+                        .Name("contractDocuments")
+                        .Async(a => a.Save("ContractAttachements_Create", "ContractDocument", new { id = "#=ContractManagementID #" }))
+                        .Events(e => e.Complete("contractAttachementSuccess"))
+                        .ShowFileList(false)
+                        .ToClientTemplate())
+               </text>
+              ))
+
+          .Editable(editable => editable.Mode(GridEditMode.InLine))
+          .HtmlAttributes(new { style = "height: 350px;" })
+          .Scrollable()
+          .Events(x => x.DataBound("onDataBoundLineNew"))
+          .DataSource(dataSource => dataSource
+              .Ajax()
+              .Events(ev => ev
+                  .Error("error_handler(\"contractdocument_#=ContractManagementID#\")")
+                  .RequestStart("onRequestStart(\"contractdocument_#=ContractManagementID#\")")
+                  .RequestEnd("onRequestEnd(\"contractdocument_#=ContractManagementID#\")"))
+              .Model(model => model.Id(p => p.ContractAttachmentId))
+              .Read(read => read.Action("ContractAttachments_Read", "ContractDocument", new { id = "#= ContractManagementID #" }))
+              .Create(create => create.Action("ContractAttachments_Create", "ContractDocument", new { id = "#=ContractManagementID #" }))
+              .Update(update => update.Action("ContractAttachments_Update", "ContractDocument" ))
+              .Destroy(destroy => destroy.Action("ContractAttachments_Destroy", "ContractDocument"))
+          ).ToClientTemplate())
+}
+
+@helper ContractPaymentFileUpload()
+{
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Procurement.Contract.ContractPaymentAttachment>()
+          .Name("contractdocument_#=ContractPaymentId#")
+          .Columns(columns =>
+          {
+              columns.Bound(c => c.FileName).ClientTemplate("<a href='/ContractPaymentDocument/FileDwonload?id=\\#=ContractPaymentAttachmentId \\#'>\\#=FileName \\#</a>").Width(200);
+              columns.Command(command => { command.Edit(); command.Destroy(); }).Width(580);
+          })
+          .ToolBar(t => t.Template(
+              @<text>
+                  @(Html.Kendo().Upload()
+                        .Name("contractPaymentDocuments")
+                        .Async(a => a.Save("ContractPaymentAttachements_Create", "ContractPaymentDocument", new { id = "#=ContractPaymentId #" }))
+                        .Events(e => e.Complete("contractPaymentAttachementSuccess"))
+                        .ShowFileList(false)
+                        .ToClientTemplate())
+               </text>
+              ))
+
+          .Editable(editable => editable.Mode(GridEditMode.InLine))
+          .HtmlAttributes(new { style = "height: 350px;" })
+          .Scrollable()
+          .Events(x => x.DataBound("onDataBoundLineNew"))
+          .DataSource(dataSource => dataSource
+              .Ajax()
+              .Events(ev => ev
+                  .Error("error_handler(\"contractdocument_#=ContractManagementID#\")")
+                  .RequestStart("onRequestStart(\"contractdocument_#=ContractManagementID#\")")
+                  .RequestEnd("onRequestEnd(\"contractdocument_#=ContractManagementID#\")"))
+              .Model(model => model.Id(p => p.ContractPaymentAttachmentId))
+              .Read(read => read.Action("ContractPaymentAttachments_Read", "ContractPaymentDocument", new { id = "#= ContractPaymentId #" }))
+              .Create(create => create.Action("ContractPaymentAttachments_Create", "ContractPaymentDocument", new { id = "#=ContractPaymentId #" }))
+              .Update(update => update.Action("ContractPaymentAttachments_Update", "ContractPaymentDocument" ))
+              .Destroy(destroy => destroy.Action("ContractPaymentAttachments_Destroy", "ContractPaymentDocument"))
+          ).ToClientTemplate())
+}
+
+<script>
+
+    function sendForApproval(id) {
+        var recordStatus = "";
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("SendForApproval", "ContractManagement", new { area = "Procurement" })',
+            data: { id: id },
+            success: function(result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                recordStatus = result.Status;
+                location.reload(true);
+            }, //end succ
+            error: function(result) {
+                alert(result);
+            }
+        });
+    }
+
+    function sendForApprovalRenewal(id) {
+        var recordStatus = "";
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("SendForApproval", "ContractRenewal", new {area = "Procurement"})',
+            data: { id: id },
+            success: function (result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                recordStatus = result.Status;
+                location.reload(true);
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+
+    function sendForApprovalPayment(id) {
+        var recordStatus = "";
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("SendForApproval", "ContractPayment", new {area = "Procurement"})',
+            data: { id: id },
+            success: function (result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                recordStatus = result.Status;
+                location.reload(true);
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+
+
+    var masterDataItem;
+    var masterRow;
+    var masterGrid;
+
+    var codeid;
+    var isapproved;
+    var issecondapproved;
+    var isSendForApproval;
+    var isOnlineTransferred;
+    var nextApprover;
+
+    function detailExpandMasterNew(e) {
+
+        masterRow = e.masterRow;
+        masterGrid = $("#grid").data("kendoGrid");
+        masterDataItem = masterGrid.dataItem(masterRow);
+        codeid = masterDataItem.ContractManagementID;
+        isapproved = masterDataItem.IsOnlineApproved;
+        isSendForApproval = masterDataItem.IsSendForApproval;
+        isOnlineTransferred = masterDataItem.IsOnlineTransferred;
+        issecondapproved = masterDataItem.IsSecondOnlineApproved;
+        nextApprover = masterDataItem.ForwardedTo;
+
+    }
+    function onDataBoundMasterNew() {
+        //this.expandRow(this.tbody.find("tr.k-master-row").first());
+
+        //approved
+        var grid = $("#grid").data("kendoGrid");
+        var gridData = grid.dataSource.view();
+
+        for (var i = 0; i < gridData.length; i++) {
+            var currentUid = gridData[i].uid;
+            if (gridData[i].IsOnlineApproved || gridData[i].IsSendForApproval) {
+                var currenRow = grid.table.find("tr[data-uid='" + currentUid + "']");
+                var editButton = $(currenRow).find(".k-grid-edit");
+                var deleteButton = $(currenRow).find(".k-grid-delete");
+                editButton.hide();
+                deleteButton.hide();
+            }
+        }
+
+      
+    }
+    function onDataBoundLineNew(e) {
+
+        var detailGrid = "#" + e.sender.element[0].id;// "#StoreRequisitionItem_" + codeid;
+        if (isapproved || isSendForApproval) {
+
+            $(".k-grid-add", detailGrid).hide();
+            $(".k-grid-delete", detailGrid).hide();
+            $(".k-grid-edit", detailGrid).hide();
+        }
+    }
+    function onDataBoundValidationNew(e) {
+        var currentUser=@Html.Raw(Json.Encode(User.Identity.Name));
+       
+
+        var detailGrid = "#" + e.sender.element[0].id;
+
+        if (isapproved || !isSendForApproval) {
+
+            $(".k-grid-add", detailGrid).hide();
+            $(".k-grid-delete", detailGrid).hide();
+            $(".k-grid-edit", detailGrid).hide();
+        }
+
+        if (nextApprover !== currentUser) {
+            $(".k-grid-add", detailGrid).hide();
+        }
+
+        this.table.find(".k-grid-edit").hide();
+    }
+    function onDataBoundDistributionNew(e) {
+
+        var detailGrid = "#" + e.sender.element[0].id;
+
+        if (isOnlineTransferred) {
+
+            $(".k-grid-add", detailGrid).hide();
+            $(".k-grid-delete", detailGrid).hide();
+            $(".k-grid-edit", detailGrid).hide();
+        }
+
+
+    }
+
+
+    var masterDataItemRenew;
+    var masterRowRenew;
+    var masterGridRenew;
+
+    
+    var isapprovedRenew;
+    var issecondapprovedRenew;
+    var isSendForApprovalRenew;
+    var isOnlineTransferredRenew;
+
+    function detailExpandRenewal(e) {
+
+        masterRowRenew = e.masterRow;
+        var grid = "#" + e.sender.element[0].id;
+        masterGridRenew = $(grid).data("kendoGrid");
+        masterDataItemRenew = masterGridRenew.dataItem(masterRowRenew);
+        isapprovedRenew = masterDataItemRenew.IsOnlineApproved;
+        isSendForApprovalRenew = masterDataItemRenew.isSendForApprovalRenew;
+        isOnlineTransferredRenew = masterDataItemRenew.isOnlineTransferredRenew;
+        issecondapprovedRenew = masterDataItemRenew.IsSecondOnlineApproved;
+
+    }
+
+    function onDataBoundMasterRenewal(e) {
+        //this.expandRow(this.tbody.find("tr.k-master-row").first());
+        var gridid = "#" + e.sender.element[0].id;
+        //approved
+        var grid = $(gridid).data("kendoGrid");
+        var gridData = grid.dataSource.view();
+
+        for (var i = 0; i < gridData.length; i++) {
+            var currentUid = gridData[i].uid;
+            if (gridData[i].IsOnlineApproved || gridData[i].isSendForApprovalRenew) {
+                var currenRow = grid.table.find("tr[data-uid='" + currentUid + "']");
+                var editButton = $(currenRow).find(".k-grid-edit");
+                var deleteButton = $(currenRow).find(".k-grid-delete");
+                editButton.hide();
+                deleteButton.hide();
+            }
+        }
+       }
+    function onDataBoundFisrtValidationRenewal(e) {
+
+        var detailGrid = "#" + e.sender.element[0].id;// "#StoreRequisitionValidation_" + codeid;
+
+        if (isapprovedRenew || !isSendForApprovalRenew) {
+
+            $(".k-grid-add", detailGrid).hide();
+            $(".k-grid-delete", detailGrid).hide();
+            $(".k-grid-edit", detailGrid).hide();
+        }
+
+        this.table.find(".k-grid-edit").hide();
+    }
+
+    function filterInventoryItems() {
+
+        return {
+            itemCategoryCode: $("#ItemCategoryCode").data("kendoDropDownList").value()
+        };
+    }
+
+
+    function transferToPayment(id) {
+        var desc = "";//prompt("Please enter transaction description:");
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("TransferToPayment", "ContractManagement", new { area = "Procurement" })',
+            data: {
+                id: id,
+                description: desc
+            },
+            success: function (result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                location.reload(true);
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+
+
+    function transferToFollowUp(id) {
+        var desc = "";//prompt("Please enter transaction description:");
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("TransferToForeignFollowup", "ContractManagement", new { area = "Procurement" })',
+            data: {
+                id: id,
+                description: desc
+            },
+            success: function (result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                location.reload(true);
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+
+    
+
+    function contractAttachementSuccess(e) {
+        var gridname = "#contractdocument_" + codeid;
+        $(gridname).data("kendoGrid").dataSource.read();
+    }
+
+    
+    function contractPaymentAttachementSuccess(e) {
+        //var gridname = "#contractdocument_" + codeid;
+        //$(gridname).data("kendoGrid").dataSource.read();
+    }
+</script>
+
+
+

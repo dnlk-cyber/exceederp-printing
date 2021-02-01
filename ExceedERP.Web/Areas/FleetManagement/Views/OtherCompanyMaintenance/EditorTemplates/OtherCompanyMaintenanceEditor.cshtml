@@ -1,0 +1,174 @@
+﻿@model ExceedERP.Core.Domain.FleetManagement.FleetMaintenance.OtherCompanyMaintenance
+
+
+
+<div class = "demo-section k-content">
+    <form>
+ 
+                              <div class = "row">
+                                  <div class = "col-md-1">
+                                  </div>
+                              
+
+                                  <div class="col-md-3">
+                                      <div class="form-group">
+                                          <div class="k-label">
+                                              @Html.LabelFor(model => model.EquipmentName)
+
+                                          </div>
+                                          <div>
+                                              @Html.Kendo().TextBoxFor(model => model.EquipmentName)
+                                              @Html.ValidationMessageFor(model => model.EquipmentName)
+                                          </div>
+                                      </div>
+                                    
+                                  </div>
+                                  <div class = "col-md-3">
+                                      <div class = "form-group">
+                                          <div class = "k-label">
+                                              @Html.LabelFor(model => model.NameofCustomer)
+                                          </div>
+                                          <div>
+                                              @Html.Kendo().TextBoxFor(model => model.NameofCustomer)
+                                              @Html.ValidationMessageFor(model => model.NameofCustomer)
+                                          </div>
+
+                                      </div>
+                                  </div>
+
+
+                                  <div class = "col-md-3">
+                                      <div class = "form-group">
+                                          <div class = "k-label">
+                                              @Html.LabelFor(model => model.OperatorName)
+                                          </div>
+                                          <div>
+                                              @Html.Kendo().TextBoxFor(model => model.OperatorName)
+                                              @Html.ValidationMessageFor(model => model.OperatorName)
+                                          </div>
+
+                                      </div>
+                                  </div>
+                              </div>
+        <div class="row">
+            <div class="col-md-1">
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.BankBranchName)
+                    </div>
+                    <div>
+                        @Html.Kendo().TextBoxFor(model => model.BankBranchName)
+                        @Html.ValidationMessageFor(model => model.BankBranchName)
+                    </div>
+
+                </div>
+            </div>
+
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.BankSlipNo)
+                    </div>
+                    <div>
+                        @Html.Kendo().TextBoxFor(model => model.BankSlipNo)
+                        @Html.ValidationMessageFor(model => model.BankSlipNo)
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.CustomerEmail)
+                    </div>
+                    <div>
+                        @Html.Kendo().TextBoxFor(model => model.CustomerEmail)
+                        @Html.ValidationMessageFor(model => model.CustomerEmail)
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+        <div class="row">
+            <div class="col-md-1">
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.PlateNo)
+                    </div>
+                    <div>
+                        @Html.Kendo().TextBoxFor(model => model.PlateNo)
+                        @Html.ValidationMessageFor(model => model.PlateNo)
+                    </div>
+
+                </div>
+            </div>
+
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.KmhrReading)
+                    </div>
+                    <div>
+                        @Html.Kendo().TextBoxFor(model => model.KmhrReading)
+                        @Html.ValidationMessageFor(model => model.KmhrReading)
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.SerialNo)
+                    </div>
+                    <div>
+                        @Html.Kendo().TextBoxFor(model => model.SerialNo)
+                        @Html.ValidationMessageFor(model => model.SerialNo)
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+        <div class="row">
+            <div class="col-md-1">
+            </div>
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.CustomerPhone)
+                    </div>
+                    <div>
+                        @Html.Kendo().TextBoxFor(model => model.CustomerPhone)
+                        @Html.ValidationMessageFor(model => model.CustomerPhone)
+                    </div>
+
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.Description)
+                    </div>
+                    <div>
+                        @Html.Kendo().TextBoxFor(model => model.Description)
+                        @Html.ValidationMessageFor(model => model.Description)
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+
+
+</form>
+</div>

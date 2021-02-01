@@ -1,0 +1,288 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@using Kendo.Mvc.UI
+@model ExceedERP.Core.Domain.Construction.TaskViewModel
+<form>
+    <div class="row">
+        <div class="col-md-1">
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.TaskCode, htmlAttributes: new { @class = "control-label col-md-12" })
+
+                </div>
+                <div>
+                    @Html.Kendo().TextBoxFor(model => model.TaskCode)
+                    @Html.ValidationMessageFor(model => model.TaskCode, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.Title, htmlAttributes: new { @class = "control-label col-md-12" })
+
+                </div>
+                <div>
+                    @Html.Kendo().TextBoxFor(model => model.Title)
+                    @Html.ValidationMessageFor(model => model.Title, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.WorkItemDurationId, htmlAttributes: new { @class = "control-label col-md-12" })
+
+                </div>
+                <div>
+                    @(Html.Kendo().DropDownListFor(model => model.WorkItemDurationId)
+                        .Name("WorkItemDurationId")
+                        .OptionLabel(Resources.Select)
+                        .DataTextField("WorkDescription")
+                        .DataValueField("WorkItemDurationId")
+                        //.BindTo((IEnumerable)ViewData["tasks"])
+                        .DataSource(dataSource =>
+                        {
+                            dataSource.Read(read => read.Action("GetWorkItemsUnderCurrentProject", "DataProvider", new { wbsId = Model.ProjectWorkBreakDownId }))
+                            .ServerFiltering(false);
+                        })
+                        .ValuePrimitive(true)
+                        .Filter("contains")
+                        .MinLength(2)
+                    )
+                                        
+                    @Html.ValidationMessageFor(model => model.WorkItemDurationId, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-md-1">
+
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.Start, htmlAttributes: new { @class = "control-label col-md-12" })
+
+                </div>
+                <div>
+
+                    @Html.Kendo().DatePickerFor(model => model.Start)
+                    @Html.ValidationMessageFor(model => model.Start, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.End, htmlAttributes: new { @class = "control-label col-md-12" })
+
+                </div>
+                <div>
+                    @Html.Kendo().DatePickerFor(model => model.End)
+                    @Html.ValidationMessageFor(model => model.End, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.PercentComplete, htmlAttributes: new { @class = "control-label col-md-12" })
+
+                </div>
+                <div>
+                    @Html.Kendo().NumericTextBoxFor(model => model.PercentComplete)
+                    @Html.ValidationMessageFor(model => model.PercentComplete, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+        
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-md-1">
+        </div>
+
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.OrderId, htmlAttributes: new { @class = "control-label col-md-12" })
+
+                </div>
+                <div>
+                    @Html.Kendo().NumericTextBoxFor(model => model.OrderId).Enable(false)
+                    @Html.ValidationMessageFor(model => model.OrderId, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.ParentID, htmlAttributes: new { @class = "control-label col-md-12" })
+
+                </div>
+                <div>
+                    @(Html.Kendo().DropDownListFor(model => model.ParentID)
+                        .Name("taskParentList")
+                        .OptionLabel(Resources.Select)
+                        .DataTextField("Title")
+                        .DataValueField("TaskID")
+                        .BindTo((IEnumerable)ViewData["tasks"])
+                        .ValuePrimitive(true)
+                        .Filter("contains")
+                        .MinLength(2)
+
+                    )
+                </div>
+            </div>
+        </div>
+        @*<div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.ContractTime, "Original Complition Date", htmlAttributes: new { @class = "control-label col-md-12" })
+
+                </div>
+                <div>
+                    @Html.Kendo().DatePickerFor(model => model.ContractTime).Enable(false)
+                    @Html.ValidationMessageFor(model => model.ContractTime, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>*@
+
+    </div>
+
+    <br />
+    @*<div class="row">
+        <div class="col-md-1">
+        </div>
+
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.RevisedCompletionDate, htmlAttributes: new { @class = "control-label col-md-12" })
+
+                </div>
+                <div>
+                    @Html.Kendo().DatePickerFor(model => model.RevisedCompletionDate).Enable(false)
+                    @Html.ValidationMessageFor(model => model.RevisedCompletionDate, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+        <div class=" col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.TimeElapsedToDate, htmlAttributes: new { @class = "control-label col-md-12" })
+
+                </div>
+                <div>
+                    @Html.Kendo().NumericTextBoxFor(model => model.TimeElapsedToDate).Enable(false)
+                    @Html.ValidationMessageFor(model => model.TimeElapsedToDate, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.ContractAmount, "Project Amount", htmlAttributes: new { @class = "control-label col-md-12" })
+
+                </div>
+                <div>
+                    @Html.Kendo().NumericTextBoxFor(model => model.ContractAmount)
+                    @Html.ValidationMessageFor(model => model.ContractAmount, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+    </div>*@
+
+    <br />
+    @*<div class="row">
+        <div class="col-md-1">
+        </div>
+
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.Rebate, htmlAttributes: new { @class = "control-label col-md-12" })
+
+                </div>
+                <div>
+                    @Html.Kendo().NumericTextBoxFor(model => model.Rebate)
+                    @Html.ValidationMessageFor(model => model.Rebate, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.Variation, htmlAttributes: new { @class = "control-label col-md-12" })
+
+                </div>
+                <div>
+                    @Html.Kendo().NumericTextBoxFor(model => model.Variation)
+                    @Html.ValidationMessageFor(model => model.Variation, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.Supplemetary, htmlAttributes: new { @class = "control-label col-md-12" })
+
+                </div>
+                <div>
+                    @Html.Kendo().NumericTextBoxFor(model => model.Supplemetary)
+                    @Html.ValidationMessageFor(model => model.Supplemetary, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+    </div>*@
+
+    <br />
+    @*<div class="row">
+        <div class="col-md-1">
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.TotalProjectAmount, htmlAttributes: new { @class = "control-label col-md-12" })
+
+                </div>
+                <div>
+                    @Html.Kendo().NumericTextBoxFor(model => model.TotalProjectAmount).Enable(false)
+                    @Html.ValidationMessageFor(model => model.TotalProjectAmount, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.NetGrand, htmlAttributes: new { @class = "control-label col-md-12" })
+
+                </div>
+                <div>
+                    @Html.Kendo().NumericTextBoxFor(model => model.NetGrand).Enable(false)
+                    @Html.ValidationMessageFor(model => model.NetGrand, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.ExecutedToDate, htmlAttributes: new { @class = "control-label col-md-12" })
+
+                </div>
+                <div>
+                    @Html.Kendo().NumericTextBoxFor(model => model.ExecutedToDate).Enable(false)
+                    @Html.ValidationMessageFor(model => model.ExecutedToDate, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+    </div>*@
+
+</form>

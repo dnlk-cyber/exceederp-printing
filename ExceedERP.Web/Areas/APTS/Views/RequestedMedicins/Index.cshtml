@@ -1,0 +1,184 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.HRM.HRMPlan
+@using ExceedERP.Core.Domain.APTS
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Requested Medicines</legend>
+
+
+@(Html.Kendo().Grid<MedicinPurchaseRequest>()
+                  .Name("MedicinPurchaseRequestGrid")
+              .Columns(columns =>
+              {
+              columns.Bound(c => c.MedicinPurchaseRequestId).Hidden();
+              columns.Bound(c => c.IsNewRequest).Template(@<text></text>).ClientTemplate("<input type='checkbox' #= IsNewRequest ? checked='checked':'' # class='chkbx' />")
+                        .HeaderTemplate("<input type='checkbox' id='masterCheckBox' onclick='checkAll(this)'/>").Width(30);
+
+                  columns.ForeignKey(c => c.DrugListsId, (IEnumerable)ViewData["medicinCode"], "DrugListsId", "DrugCode").Width(200);
+                  columns.Bound(c => c.Description).Width(300);
+
+              })
+              .ToolBar(toolbar =>
+              {
+
+              toolbar.Template(@<text>
+
+
+        @item.SaveButton()
+
+            </text>);
+              })
+
+                                 .Editable(editable => editable.Mode(GridEditMode.InCell))
+                                          .Selectable(selectable =>
+                                          {
+                                              selectable.Mode(GridSelectionMode.Single);
+                                              selectable.Type(GridSelectionType.Row);
+                                          })
+                                                               .Scrollable(h => h.Height(250))
+                                                                  .Groupable()
+
+                                                 .Pageable(pageable => pageable
+                                                              .Input(true)
+                                                              .Numeric(false)
+                                                                .Refresh(true)
+                                                               .PageSizes(true)
+                                                                 .ButtonCount(5))
+                                                                  .DataSource(dataSource => dataSource
+                                                                      .Ajax()
+
+                                                                          .Batch(true)
+                                                                                .Events(events =>
+                                                                                {
+                                                                                    events.Error("error_handler(\"MedicinPurchaseRequestGrid\")");
+                                                                                    events.RequestStart("onRequestStart(\"MedicinPurchaseRequestGrid\")");
+                                                                                    events.RequestEnd("onRequestEnd(\"MedicinPurchaseRequestGrid\")");
+                                                                                })
+
+                                                                      .Model(model =>
+                                                                      {
+                                                                          model.Id(p => p.MedicinPurchaseRequestId);
+
+                                                                          model.Field(p => p.DrugListsId).Editable(false);
+                                                                          model.Field(p => p.Description).Editable(false);
+
+                                                                      })
+                                                                          .Read(read => read.Action("RequestedMedicins_Read", "RequestedMedicins"))
+                                                                          .Create(create => create.Action("RequestedMedicins_Create", "RequestedMedicins"))
+                                                                         .Update(update => update.Action("RequestedMedicins_Update", "RequestedMedicins"))
+                                                                      .Destroy(destroy => destroy.Action("RequestedMedicins_Destroy", "RequestedMedicins"))
+                                                                      )
+
+)
+
+<script>
+
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+    function onDataBound(e) {
+        var rows = e.sender.tbody.children();
+
+        for (var j = 0; j < rows.length; j++) {
+            var row = $(rows[j]);
+            var dataItem = e.sender.dataItem(row);
+            if (dataItem.Status === 0) {
+
+
+                row.css("background-color", "red");
+
+            } else {
+                row.css("background-color", "green");
+            }
+
+        }
+
+    }
+
+
+</script>
+<script>
+    function Branch() {
+
+
+        var value = this.value(),
+            grid = $("#RecruitmentPlanGrid").data("kendoGrid");
+
+        if (value) {
+            grid.dataSource.filter({ field: "BranchId", operator: "eq", value: parseInt(value) });
+        } else {
+            grid.dataSource.filter({});
+        }
+    }
+</script>
+<script>
+    function RecruitmentType() {
+
+
+        var value = this.value(),
+            grid = $("#RecruitmentPlanGrid").data("kendoGrid");
+
+        if (value) {
+            grid.dataSource.filter({ field: "RecruitmentType", operator: "eq", value: parseInt(value) });
+        } else {
+            grid.dataSource.filter({});
+        }
+    }
+</script>
+<script>
+    function Transfer() {
+        var from = $("#VaccancyCode").data("kendoComboBox");
+
+        try {
+
+            var vacancy = from.value();
+
+            //$("#run").on("click", function (eve) {
+            $.ajax({
+                url: '@Url.Action("SetVacancy", "RecruitmentVacancy")',
+                //contentType: "application/json; charset=utf-8",
+                data: { vacancy: vacancy },
+                type: 'POST',
+                cache: false,
+                success: function (result) {
+                    // r = result;
+                }
+
+
+            });
+
+
+
+        } catch (e) {
+            alert("Please select Vacancy Code!!");
+        }
+
+    }
+</script>
+
+<script type="text/javascript">
+    $(function () {
+        $('#MedicinPurchaseRequestGrid').on('click', '.chkbx', function () {
+            var checked = $(this).is(':checked');
+            var grid = $('#MedicinPurchaseRequestGrid').data().kendoGrid;
+            var dataItem = grid.dataItem($(this).closest('tr'));
+            dataItem.set('IsNewRequest', checked);
+        })
+    })
+
+    function checkAll(ele) {
+        var state = $(ele).is(':checked');
+        var grid = $('#MedicinPurchaseRequestGrid').data().kendoGrid;
+        $.each(grid.dataSource.view(), function () {
+            if (this['IsNewRequest'] != state)
+                this.dirty = true;
+            this['IsNewRequest'] = state;
+        });
+        grid.refresh();
+    }
+
+</script>

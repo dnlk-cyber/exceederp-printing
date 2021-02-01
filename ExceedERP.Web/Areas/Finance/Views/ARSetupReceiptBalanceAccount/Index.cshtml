@@ -1,0 +1,81 @@
+﻿@using ExceedERP.Core.Domain.Finance.AR
+<legend>Setup Receipt Account</legend>
+@(Html.Kendo().Grid<ARSetupReceiptBalanceAccount>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          //columns.Bound(c => c.UnidentifiedAccountCode).Hidden(true).EditorTemplateName("AccountCode").Width(150);
+          //columns.Bound(c => c.OnAccountAccountCode).Hidden(true).EditorTemplateName("AccountCode").Width(150);
+          //columns.Bound(c => c.UnappliedAccountCode).Hidden(true).EditorTemplateName("AccountCode").Width(150);
+          columns.Bound(c => c.PrepaymentAccountCode).EditorTemplateName("AccountCode").Width(150);
+          columns.Bound(c => c.Branch).Width(130);
+          
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+                              toolbar.Excel();
+                              // toolbar.Pdf();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .HtmlAttributes(new { style = "height: 550px;" })
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(5))
+
+      .Scrollable()
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Filterable()
+      .Groupable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.ARSetupReceiptBalanceAccountID))
+          .Events(events => events
+              .Error("error_handler_one")
+              .Sync("sync_handler"))
+          .Read(read => read.Action("ARSetupReceiptBalanceAccounts_Read", "ArSetupReceiptBalanceAccount"))
+          .Create(create => create.Action("ARSetupReceiptBalanceAccounts_Create", "ArSetupReceiptBalanceAccount"))
+          .Update(update => update.Action("ARSetupReceiptBalanceAccounts_Update", "ArSetupReceiptBalanceAccount"))
+          .Destroy(destroy => destroy.Action("ARSetupReceiptBalanceAccounts_Destroy", "ArSetupReceiptBalanceAccount"))
+      ))
+
+
+<script type="text/javascript">
+
+    function dataBound() {
+
+    }
+
+
+
+    function error_handler(e) {
+        if (e.errors) {
+            var message = "Errors:\n";
+            $.each(e.errors, function (key, value) {
+                if ('errors' in value) {
+                    $.each(value.errors, function () {
+                        message += this + "\n";
+                    });
+                }
+            });
+            alert(message);
+        }
+    }
+
+    function sync_handler(e) {
+        this.read();
+    }
+
+</script>
+

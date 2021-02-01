@@ -1,0 +1,159 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Plots or Land Segments</legend>
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Production.Plot>()
+                              .Name("plots")
+                            .Columns(columns =>
+                            {
+                                columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("Branches");
+                                columns.ForeignKey(c => c.ProductionSiteId, (IEnumerable)ViewData["ProductionSites"], "ProductionSiteId", "Name").EditorTemplateName("ProductionSites");
+                                columns.Bound(c => c.PlotCode);
+                                //columns.Bound(c => c.Width);
+                                //columns.Bound(c => c.Length);
+                                columns.Bound(c => c.Area);
+                                columns.Bound(c => c.IsolationDistance);
+                                columns.ForeignKey(c => c.ProductionSettingId, (IEnumerable)ViewData["LandStatus"], "ProductionSettingId", "Value");
+
+                                columns.Command(command =>
+                                {
+                                    command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                    command.Destroy().Text(Resources.ActionButton_Cancel);
+                                }).Width(200);
+                            })
+                            .ToolBar(toolbar =>
+                            {
+                                toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                            })
+                              .Scrollable(h => h.Height(700))
+                              .Sortable(sortable =>
+                              {
+                                  sortable.SortMode(GridSortMode.SingleColumn);
+                              })
+                              .Filterable()
+                              .Selectable(selectable =>
+                              {
+                                  selectable.Mode(GridSelectionMode.Single);
+                                  selectable.Type(GridSelectionType.Row);
+                              })
+                              .Pageable(pageable => pageable
+                                  .Input(true)
+                                  .Numeric(false)
+                                  .Refresh(true)
+                                  .PageSizes(true)
+                                  .ButtonCount(5))
+                              .DataSource(dataSource => dataSource
+                                  .Ajax()
+                                  //.Group(gr => {
+                                  //    gr.Add(f => f.BranchId);
+                                  //})
+                                  .PageSize(20)
+                                  .Events(events =>
+                                  {
+                                      events.Error("error_handler(\"plots\")");
+                                      events.RequestStart("onRequestStart(\"plots\")");
+                                      events.RequestEnd("onRequestEnd(\"plots\")");
+
+                                  })
+                                .Model(model =>
+                                {
+                                    model.Id(p => p.PlotId);
+
+                                    //model.Field(f => f.Area).Editable(false);
+                                    model.Field(f => f.ProductionSettingId).Editable(false);
+                                })
+                                .Read(read => read.Action("Plots_Read", "Plot"))
+                                .Create(create => create.Action("Plot_Create", "Plot"))
+                                .Update(update => update.Action("Plot_Update", "Plot"))
+                                .Destroy(destroy => destroy.Action("Plot_Destroy", "Plot"))
+                                )
+
+)
+
+<script>
+    function getSelectedBranchId() {
+        return {
+            branchId: $("#BranchId").val()
+        };
+    }
+</script>
+@*<script id="farming_plots" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+            .Name("tab_#=BranchId#")
+            .SelectedIndex(0)
+            .Items(items =>
+            {
+            items.Add().Text("Field/Plots").Content(
+                @<text>
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Production.Plot>()
+                              .Name("plots_#=BranchId#")
+                            .Columns(columns =>
+                            {
+                                columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("Branches");
+                                columns.Bound(c => c.PlotCode);
+                                //columns.Bound(c => c.Width);
+                                //columns.Bound(c => c.Length);
+                                columns.Bound(c => c.Area);
+                                columns.Bound(c => c.IsolationDistance);
+                                columns.ForeignKey(c => c.ProductionSettingId, (IEnumerable)ViewData["LandStatus"], "ProductionSettingId", "Value");
+
+                                columns.Command(command =>
+                                {
+                                    command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                    command.Destroy().Text(Resources.ActionButton_Cancel);
+                                }).Width(200);
+                            })
+                            .ToolBar(toolbar =>
+                            {
+                                toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                            })
+                              .Scrollable(h => h.Height(700))
+                              .Sortable(sortable =>
+                              {
+                                  sortable.SortMode(GridSortMode.SingleColumn);
+                              })
+                              .Filterable()
+                              .Selectable(selectable =>
+                              {
+                                  selectable.Mode(GridSelectionMode.Single);
+                                  selectable.Type(GridSelectionType.Row);
+                              })
+                              .Pageable(pageable => pageable
+                                  .Input(true)
+                                  .Numeric(false)
+                                  .Refresh(true)
+                                  .PageSizes(true)
+                                  .ButtonCount(5))
+                              .DataSource(dataSource => dataSource
+                                  .Ajax()
+
+                                  .PageSize(20)
+                                  .Events(events =>
+                                  {
+                                      events.Error("error_handler(\"plots_#=BranchId#\")");
+                                      events.RequestStart("onRequestStart(\"plots_#=BranchId#\")");
+                                      events.RequestEnd("onRequestEnd(\"plots_#=BranchId#\")");
+
+                                  })
+                                .Model(model =>
+                                {
+                                    model.Id(p => p.PlotId);
+
+                                    model.Field(f => f.Area).Editable(false);
+                                    //model.Field(f => f.ProductionSettingId).Editable(false);
+                                })
+                                .Read(read => read.Action("Plots_Read", "Plot"))
+                                .Create(create => create.Action("Plot_Create", "Plot"))
+                                .Update(update => update.Action("Plot_Update", "Plot"))
+                                .Destroy(destroy => destroy.Action("Plot_Destroy", "Plot"))
+                                )
+                                .ToClientTemplate()
+                    )
+                </text>);
+
+            }).ToClientTemplate()
+    )
+</script>*@

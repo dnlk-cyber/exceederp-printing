@@ -1,0 +1,1367 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@using Kendo.Mvc.UI
+@using ExceedERP.Core.Domain.Production
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>  Production Order | Inputs </legend>
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Production.ProductionOrder>()
+                          .Name("productionOrderGrid")
+                          .Columns(columns =>
+                          {
+                              columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("Branches");
+                              columns.ForeignKey(c => c.ProductionSiteId, (IEnumerable)ViewData["ProductionSites"], "ProductionSiteId", "Name");
+                              columns.Bound(c => c.ProductionType).EditorTemplateName("ProductionTypes");
+
+                              columns.Bound(c => c.Description);
+                          })
+                          .Selectable(selectable =>
+                          {
+                              selectable.Mode(GridSelectionMode.Single);
+                              selectable.Type(GridSelectionType.Row);
+                          })
+                          .Scrollable(h => h.Height(500))
+                          .Sortable(sortable =>
+                          {
+                              sortable.SortMode(GridSortMode.SingleColumn);
+                          })
+                          .Filterable()
+                          .Pageable(pageable => pageable
+                              .Input(true)
+                              .Numeric(false)
+                              .Refresh(true)
+                              .PageSizes(true)
+                              .ButtonCount(5))
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+
+                              .Events(events =>
+                              {
+                                  events.Error("error_handler(\"productionOrderGrid\")");
+                                  events.RequestStart("onRequestStart(\"productionOrderGrid\")");
+                                  events.RequestEnd("onRequestEnd(\"productionOrderGrid\")");
+                              })
+                              .Model(model =>
+                              {
+                                  model.Id(f => f.ProductionOrderId);
+                              })
+
+                              .Read(read => read.Action("ProductionOrders_Read", "ProductionOrder"))
+                          //.Create(create => create.Action("ProductionOrder_Create", "ProductionOrder"))
+                          //.Update(update => update.Action("ProductionOrder_Update", "ProductionOrder"))
+                          //.Destroy(destroy => destroy.Action("ProductionOrder_Destroy", "ProductionOrder"))
+                          ).ClientDetailTemplateId("template_productionOrder_detail")
+)
+
+
+<script id="template_productionOrder_detail" type="text/kendo-tmpl">
+    #if(ProductionType == 0) {#
+    @(Html.Kendo().TabStrip()
+            .Name("tabstrip_str_#=ProductionOrderId#")
+            .SelectedIndex(0)
+            .Items(items =>
+            {
+                items.Add().Text("Seed Production Order Items").Content(
+                    @<text>
+                        @(Html.Kendo().Grid<ExceedERP.Core.Domain.Production.SeedProductionOrderItem>()
+                                .Name("productionOrderItems_#=ProductionOrderId#")
+                                .Columns(columns =>
+                                {
+                                    columns.ForeignKey(c => c.PlotId, (IEnumerable)ViewData["FarmingPlots"], "PlotId", "PlotCode").EditorTemplateName("FarmingPlots");
+                                    //columns.Bound(c => c.DateFrom);
+                                    //columns.Bound(c => c.DateTo);
+                                    columns.ForeignKey(c => c.ProductionYearId, (IEnumerable)ViewData["ProductionYears"], "ProductionYearId", "Name");
+                                    columns.Bound(c => c.ProductionType);
+                                    columns.Bound(c => c.ProductionCode);
+                                    columns.ForeignKey(c => c.CropId, (IEnumerable)ViewData["CropTypes"], "CropId", "Name").EditorTemplateName("CropNames");
+                                    //columns.Bound(c => c.SeedType).EditorTemplateName("SeedTypes");
+                                    //columns.Bound(c => c.Generation).EditorTemplateName("SeedGenerations");
+                                    columns.Bound(c => c.Description);
+
+                                    //columns.Command(command =>
+                                    //{
+                                    //    command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                    //    command.Destroy().Text(Resources.ActionButton_Cancel);
+                                    //}).Width(200);
+                                })
+                                //.ToolBar(toolbar =>
+                                //{
+                                //    toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                                //})
+                                .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                .Scrollable(h => h.Height(500))
+                                .Sortable(sortable =>
+                                {
+                                    sortable.SortMode(GridSortMode.SingleColumn);
+                                })
+                                .Selectable(selectable =>
+                                {
+                                    selectable.Mode(GridSelectionMode.Single);
+                                    selectable.Type(GridSelectionType.Row);
+                                })
+                                .Filterable()
+                                .Pageable(pageable => pageable
+                                    .Input(true)
+                                    .Numeric(false)
+                                    .Refresh(true)
+                                    .PageSizes(true)
+                                    .ButtonCount(5))
+                                .DataSource(dataSource => dataSource
+                                    .Ajax()
+                                    .Events(events =>
+                                    {
+                                        events.Error("error_handler(\"productionOrderItems_#=ProductionOrderId#\")");
+                                        events.RequestStart("onRequestStart(\"productionOrderItems_#=ProductionOrderId#\")");
+                                        events.RequestEnd("onRequestEnd(\"productionOrderItems_#=ProductionOrderId#\")");
+                                    })
+                                    .Model(model =>
+                                    {
+                                        model.Id(p => p.SeedProductionOrderItemId);
+
+                                    })
+                                    .Read(read => read.Action("ProductionOrderItems_Read", "SeedProductionOrderItem", new { id = "#=ProductionOrderId#" }))
+                                    //.Create(create => create.Action("ProductionOrderItem_Create", "SeedProductionOrderItem", new { id = "#=ProductionOrderId#" }))
+                                    //.Update(update => update.Action("ProductionOrderItem_Update", "SeedProductionOrderItem"))
+                                    //.Destroy(destroy => destroy.Action("ProductionOrderItem_Destroy", "SeedProductionOrderItem"))
+                                    ).ClientDetailTemplateId("template_seedProductionactivities")
+                                    .ToClientTemplate()
+                        )
+                    </text>
+                );
+            }).ToClientTemplate())
+    #} else {#
+    @(Html.Kendo().TabStrip()
+        .Name("tabstrip_str_#=ProductionOrderId#")
+        .SelectedIndex(0)
+        .Items(items =>
+        {
+            items.Add().Text("Natural GUM Production Order Items").Content(
+                @<text>
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Production.GumProductionOrderItem>()
+                            .Name("productionOrderItems_#=ProductionOrderId#")
+                            .Columns(columns =>
+                            {
+                                columns.ForeignKey(c => c.NaturalGumId, (IEnumerable)ViewData["NaturalGumNames"], "NaturalGumId", "Name");
+                                columns.ForeignKey(c => c.ProductionYearId, (IEnumerable)ViewData["ProductionYears"], "ProductionYearId", "Name");
+                                columns.Bound(c => c.ProductionType);
+                                columns.Bound(c => c.ProductionCode);
+
+                                //columns.Command(command =>
+                                //{
+                                //    command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                //    command.Destroy().Text(Resources.ActionButton_Cancel);
+                                //}).Width(200);
+                            })
+                            //.ToolBar(toolbar =>
+                            //{
+                            //    toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                            //})
+                            .Editable(editable => editable.Mode(GridEditMode.InLine))
+                            .Scrollable(h => h.Height(500))
+                            .Sortable(sortable =>
+                            {
+                                sortable.SortMode(GridSortMode.SingleColumn);
+                            })
+                            .Selectable(selectable =>
+                            {
+                                selectable.Mode(GridSelectionMode.Single);
+                                selectable.Type(GridSelectionType.Row);
+                            })
+                            .Filterable()
+                            .Pageable(pageable => pageable
+                                .Input(true)
+                                .Numeric(false)
+                                .Refresh(true)
+                                .PageSizes(true)
+                                .ButtonCount(5))
+                            .DataSource(dataSource => dataSource
+                                .Ajax()
+                                .Events(events =>
+                                {
+                                    events.Error("error_handler(\"productionOrderItems_#=ProductionOrderId#\")");
+                                    events.RequestStart("onRequestStart(\"productionOrderItems_#=ProductionOrderId#\")");
+                                    events.RequestEnd("onRequestEnd(\"productionOrderItems_#=ProductionOrderId#\")");
+                                })
+                                .Model(model =>
+                                {
+                                    model.Id(p => p.GumProductionOrderItemId);
+
+                                })
+                                .Read(read => read.Action("ProductionOrderItems_Read", "GumProductionOrderItem", new { id = "#=ProductionOrderId#" }))
+                                //.Create(create => create.Action("ProductionOrderItem_Create", "GumProductionOrderItem", new { id = "#=ProductionOrderId#" }))
+                                //.Update(update => update.Action("ProductionOrderItem_Update", "GumProductionOrderItem"))
+                                //.Destroy(destroy => destroy.Action("ProductionOrderItem_Destroy", "GumProductionOrderItem"))
+                                ).ClientDetailTemplateId("template_gumProductionactivities")
+                                .ToClientTemplate()
+                    )
+                </text>
+            );
+        }).ToClientTemplate())
+    #}#
+</script>
+
+<script id="template_seedProductionactivities" type="text/kendo-tmpl">
+    # if(ProductionType == 0) { #
+        @(Html.Kendo().TabStrip()
+                .Name("tab_str_#=SeedProductionOrderItemId#")
+                .SelectedIndex(0)
+                .Items(items =>
+                {
+                items.Add().Text("Detail").Content(
+                    @<text>
+                        @(Html.Kendo().PanelBar()
+                                  .Name("panelbar_#=SeedProductionOrderItemId#")
+                                  .ExpandMode(PanelBarExpandMode.Single)
+                                  .Items(panelbar =>
+                                  {
+                                      panelbar.Add()
+                                          .Expanded(true)
+                                          .Content(
+                                             "<div class='workItem-details'>" +
+                                                 "<ul>" +
+                                                     //"<li> <label> <strong> Status </label> #= Status# </strong></li>" +
+                                                     "<li> <label> <b>(A)</b> Material Cost </label> #= kendo.toString(MaterialCost, 'N2')# </li>" +
+                                                     "<li> <label> <b>(B)</b> Labor Cost :</label> #= kendo.toString(LaborCost, 'N2')# </li>" +
+                                                     "<li> <label> <b>(C)</b> Machinery Cost:</label> #= kendo.toString(EquipmentCost, 'N2')# </li>" +
+                                                     "<li> <label> <b>(D)</b> Direct Cost: <b>(A + B + C) = </b> </label> #= kendo.toString(DirectCost, 'N2')# </li>" +
+                                                     "<li> <label> <b>(E)</b> Over head Cost:</label> #= kendo.toString(OverheadCost, 'N2')# </li>" +
+                                                     //"<li> <label> Profit Cost:</label> #= kendo.toString(ProfitCost, 'N2')# </li>" +
+                                                     "<li> <label>Total  Cost : <b>(D + E) = </b> </label><b> #= kendo.toString(TotalCost, 'N2')# </b></li>" +
+                                                "</ul>" +
+                                            "</div>"
+
+                                    );
+                                  }).ToClientTemplate()
+                        )
+                    </text>
+                    );
+                items.Add().Text("Activities").Content(
+                    @<text>
+                        @(Html.Kendo().Grid<ExceedERP.Core.Domain.Production.ProductionOrderActivitiy>()
+                                    .Name("activities_#=SeedProductionOrderItemId#")
+                                    .Columns(columns =>
+                                    {
+                                        columns.ForeignKey(c => c.ProductionActivityId, (IEnumerable)ViewData["Activities"], "ProductionActivityId", "Name").EditorTemplateName("SeedProductionActivities");
+                                        columns.Bound(c => c.OperationType).EditorTemplateName("OperationTypes");
+                                        columns.Bound(c => c.Quantity);
+                                        columns.Bound(c => c.LaborCost);
+                                        columns.Bound(c => c.EquipmentCost);
+                                        columns.Bound(c => c.TotalCost);
+                                        columns.ForeignKey(c => c.ProductionPeriodId, (IEnumerable)ViewData["ProductionPeriods"], "ProductionPeriodId", "Name").EditorTemplateName("ProductionPeriods");
+                                        columns.Bound(c => c.DateOfInformation);
+                                        columns.Bound(c => c.Reference);
+
+                                        columns.Command(command =>
+                                        {
+                                            command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                            command.Destroy().Text(Resources.ActionButton_Cancel);
+                                        }).Width(200);
+                                    })
+                                    .ToolBar(toolbar =>
+                                    {
+                                        toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                                    })
+                                    .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                    .Scrollable(h => h.Height(500))
+                                    .Sortable(sortable =>
+                                    {
+                                        sortable.SortMode(GridSortMode.SingleColumn);
+                                    })
+                                    .Selectable(selectable =>
+                                    {
+                                        selectable.Mode(GridSelectionMode.Single);
+                                        selectable.Type(GridSelectionType.Row);
+                                    })
+                                    .Filterable()
+                                    .Pageable(pageable => pageable
+                                        .Input(true)
+                                        .Numeric(false)
+                                        .Refresh(true)
+                                        .PageSizes(true)
+                                        .ButtonCount(5))
+                                    .DataSource(dataSource => dataSource
+                                        .Ajax()
+                                        .Events(events =>
+                                        {
+                                            events.Error("error_handler(\"activities_#=SeedProductionOrderItemId#\")");
+                                            events.RequestStart("onRequestStart(\"activities_#=SeedProductionOrderItemId#\")");
+                                            events.RequestEnd("onRequestEnd(\"activities_#=SeedProductionOrderItemId#\")");
+                                        })
+                                        .Model(model =>
+                                        {
+                                            model.Id(p => p.ProductionOrderActivitiyId);
+                                            model.Field(f => f.TotalCost).Editable(false);
+
+                                        })
+                                        .Read(read => read.Action("Activities_Read", "ProductionOrderActivitiy", new { itemId = "#=SeedProductionOrderItemId#", productionType = ProductType.Seed }))
+                                        .Create(create => create.Action("Activity_Create", "ProductionOrderActivitiy", new { itemId = "#=SeedProductionOrderItemId#", productionType = ProductType.Seed }))
+                                        .Update(update => update.Action("Activity_Update", "ProductionOrderActivitiy", new { productionType = ProductType.Seed }))
+                                        .Destroy(destroy => destroy.Action("Activity_Destroy", "ProductionOrderActivitiy", new { productionType = ProductType.Seed }))
+                                        )
+                                        .ToClientTemplate()
+                        )
+                    </text>
+                    );
+                    items.Add().Text("Input Materials").Content(
+                        @<text>
+                            @(Html.Kendo().Grid<ExceedERP.Core.Domain.Production.ProductionOrderInputMaterial>()
+                                    .Name("material_#=SeedProductionOrderItemId#")
+                                    .Columns(columns =>
+                                    {
+                                        columns.ForeignKey(c => c.ItemCategoryCode, (IEnumerable)ViewData["ItemCategorys"], "ItemCategoryCode", "Name").EditorTemplateName("ItemCategory").Width(200);
+                                        columns.ForeignKey(c => c.ItemCode, (IEnumerable)ViewData["Items"], "ItemCode", "Name").EditorTemplateName("Item").Width(200);
+                                        columns.Bound(c => c.Unit).Width(100);//, (IEnumerable)ViewData["Unit"], "LookupId", "Description").EditorTemplateName("Unit").Width(75);
+                                        columns.Bound(c => c.Quantity).Width(75);
+                                        columns.Bound(c => c.UnitPrice).Width(75).Format("{0:N2}");
+                                        columns.Bound(c => c.TotalCost).Width(75)
+                                            .ClientFooterTemplate("Total: \\#= kendo.toString(sum, 'N2')\\#")
+                                            .ClientGroupFooterTemplate("Total: \\#= kendo.toString(sum, 'N2')\\#");
+                                        columns.ForeignKey(c => c.ProductionPeriodId, (IEnumerable)ViewData["ProductionPeriods"], "ProductionPeriodId", "Name").Width(100).EditorTemplateName("ProductionPeriods");
+                                        columns.Bound(c => c.DateOfInformation).Width(100);
+                                        columns.Bound(c => c.Reference).Width(100);
+                                        columns.Command(command =>
+                                        {
+                                            command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                            command.Destroy().Text(Resources.ActionButton_Cancel);
+                                        }).Width(200);
+                                    })
+                                    .ToolBar(toolbar =>
+                                    {
+                                        toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                                    })
+                                    .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                    .Scrollable(h => h.Height(500))
+                                    .Sortable(sortable =>
+                                    {
+                                        sortable.SortMode(GridSortMode.SingleColumn);
+                                    })
+                                    .Selectable(selectable =>
+                                    {
+                                        selectable.Mode(GridSelectionMode.Single);
+                                        selectable.Type(GridSelectionType.Row);
+                                    })
+                                    .Filterable()
+                                    .Pageable(pageable => pageable
+                                        .Input(true)
+                                        .Numeric(false)
+                                        .Refresh(true)
+                                        .PageSizes(true)
+                                        .ButtonCount(5))
+                                    .DataSource(dataSource => dataSource
+                                        .Ajax()
+                                        .Aggregates(ag =>
+                                        {
+                                            ag.Add(f => f.TotalCost).Sum();
+                                        })
+                                        .Events(events =>
+                                        {
+                                            events.Error("error_handler(\"activities_#=SeedProductionOrderItemId#\")");
+                                            events.RequestStart("onRequestStart(\"activities_#=SeedProductionOrderItemId#\")");
+                                            events.RequestEnd("onRequestEnd(\"activities_#=SeedProductionOrderItemId#\")");
+                                        })
+                                        .Model(model =>
+                                        {
+                                            model.Id(p => p.ProductionOrderInputMaterialId);
+                                            model.Field(f => f.TotalCost).Editable(false);
+                                            model.Field(f => f.Unit).Editable(false);
+                                        })
+                                        .Read(read => read.Action("Materials_Read", "ProductionOrderInputMaterial", new { itemId = "#=SeedProductionOrderItemId#", productionType = ProductType.Seed }))
+                                        .Create(create => create.Action("Material_Create", "ProductionOrderInputMaterial", new { itemId = "#=SeedProductionOrderItemId#", productionType = ProductType.Seed }))
+                                        .Update(update => update.Action("Material_Update", "ProductionOrderInputMaterial", new { productionType = ProductType.Seed }))
+                                        .Destroy(destroy => destroy.Action("Material_Destroy", "ProductionOrderInputMaterial", new { productionType = ProductType.Seed }))
+                                        )
+                                        .ToClientTemplate()
+                            )
+                        </text>
+                    );
+                    items.Add().Text("Farming Machinery Maintenance").Content(
+                        @<text>
+                            @(Html.Kendo().Grid<ExceedERP.Core.Domain.Production.MachineryMaintenance>()
+                                    .Name("maintenance_#=SeedProductionOrderItemId#")
+                                    .Columns(columns =>
+                                    {
+                                        //columns.ForeignKey(c => c.ItemCategoryCode, (IEnumerable)ViewData["ItemCategorys"], "ItemCategoryCode", "Name").EditorTemplateName("ItemCategory").Width(200);
+                                        //columns.ForeignKey(c => c.ItemCode, (IEnumerable)ViewData["Items"], "ItemCode", "Name").EditorTemplateName("Item").Width(200);
+                                        columns.Bound(c => c.MachineryDescription).Width(100);//, (IEnumerable)ViewData["Unit"], "LookupId", "Description").EditorTemplateName("Unit").Width(75);
+                                        columns.Bound(c => c.ActivityPerformed).Width(75);
+                                        columns.Bound(c => c.TotalCost).Width(75)
+                                            .ClientFooterTemplate("Total: \\#= kendo.toString(sum, 'N2')\\#")
+                                            .ClientGroupFooterTemplate("Total: \\#= kendo.toString(sum, 'N2')\\#");
+                                        columns.ForeignKey(c => c.ProductionPeriodId, (IEnumerable)ViewData["ProductionPeriods"], "ProductionPeriodId", "Name").Width(100).EditorTemplateName("ProductionPeriods");
+                                        columns.Bound(c => c.DateOfInformation).Width(100);
+                                        columns.Bound(c => c.Reference).Width(100);
+                                        columns.Command(command =>
+                                        {
+                                            command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                            command.Destroy().Text(Resources.ActionButton_Cancel);
+                                        }).Width(200);
+                                    })
+                                    .ToolBar(toolbar =>
+                                    {
+                                        toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                                    })
+                                    .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                    .Scrollable(h => h.Height(500))
+                                    .Sortable(sortable =>
+                                    {
+                                        sortable.SortMode(GridSortMode.SingleColumn);
+                                    })
+                                    .Selectable(selectable =>
+                                    {
+                                        selectable.Mode(GridSelectionMode.Single);
+                                        selectable.Type(GridSelectionType.Row);
+                                    })
+                                    .Filterable()
+                                    .Pageable(pageable => pageable
+                                        .Input(true)
+                                        .Numeric(false)
+                                        .Refresh(true)
+                                        .PageSizes(true)
+                                        .ButtonCount(5))
+                                    .DataSource(dataSource => dataSource
+                                        .Ajax()
+                                        .Aggregates(ag =>
+                                        {
+                                            ag.Add(f => f.TotalCost).Sum();
+                                        })
+                                        .Events(events =>
+                                        {
+                                            events.Error("error_handler(\"maintenance_#=SeedProductionOrderItemId#\")");
+                                            events.RequestStart("onRequestStart(\"maintenance_#=SeedProductionOrderItemId#\")");
+                                            events.RequestEnd("onRequestEnd(\"maintenance_#=SeedProductionOrderItemId#\")");
+                                        })
+                                        .Model(model =>
+                                        {
+                                            model.Id(p => p.MachineryMaintenanceId);
+                                            //model.Field(f => f.TotalCost).Editable(false);
+                                            //model.Field(f => f.Unit).Editable(false);
+                                        })
+                                        .Read(read => read.Action("MachineryMaintenances_Read", "MachineryMaintenance", new { itemId = "#=SeedProductionOrderItemId#", productionType = ProductType.Seed }))
+                                        .Create(create => create.Action("MachineryMaintenance_Create", "MachineryMaintenance", new { itemId = "#=SeedProductionOrderItemId#", productionType = ProductType.Seed }))
+                                        .Update(update => update.Action("MachineryMaintenance_Update", "MachineryMaintenance", new { productionType = ProductType.Seed }))
+                                        .Destroy(destroy => destroy.Action("MachineryMaintenance_Destroy", "MachineryMaintenance", new { productionType = ProductType.Seed }))
+                                        )
+                                        .ToClientTemplate()
+                            )
+                        </text>
+                    );
+                }).ToClientTemplate())
+    # } else { #
+        @(Html.Kendo().TabStrip()
+            .Name("tab_str_#=SeedProductionOrderItemId#")
+            .SelectedIndex(0)
+            .Items(items =>
+            {
+            items.Add().Text("Detail").Content(
+                @<text>
+                    @(Html.Kendo().PanelBar()
+                              .Name("panelbar_#=SeedProductionOrderItemId#")
+                              .ExpandMode(PanelBarExpandMode.Single)
+                              .Items(panelbar =>
+                              {
+                                  panelbar.Add()
+                                      .Expanded(true)
+                                      .Content(
+                                         "<div class='workItem-details'>" +
+                                            "<ul>" +
+                                                 "<li> <label> <b>(A)</b> Purchase Price </label> #= kendo.toString(PurchaseCost, 'N2')# </li>" +
+                                                 "<li> <label> <b>(B)</b> Material Cost </label> #= kendo.toString(MaterialCost, 'N2')# </li>" +
+                                                 "<li> <label> <b>(C)</b> Labor Cost :</label> #= kendo.toString(LaborCost, 'N2')# </li>" +
+                                                 "<li> <label> <b>(D)</b> Machinery Cost:</label> #= kendo.toString(EquipmentCost, 'N2')# </li>" +
+                                                 "<li> <label> <b>(E)</b> Direct Cost: <b>(A + B + C + D) = </b></label> #= kendo.toString(DirectCost, 'N2')# </li>" +
+                                                 "<li> <label> <b>(F)</b> Over head Cost:</label> #= kendo.toString(OverheadCost, 'N2')# </li>" +
+                                                 //"<li> <label> Profit Cost:</label> #= kendo.toString(ProfitCost, 'N2')# </li>" +
+                                                 "<li> <label>Total  Cost :<b>(E + F) = </b></label> #= kendo.toString(TotalCost, 'N2')# </li>" +
+                                            "</ul>" +
+                                        "</div>"
+
+                                );
+                              }).ToClientTemplate()
+                    )
+                </text>
+                );
+                items.Add().Text("Purchase info.").Content(
+                    @<text>
+                        @*@(Html.Kendo().Grid<ExceedERP.Core.Domain.Production.SeedPurchasePriceViewModel>()*@
+                        @(Html.Kendo().Grid<ExceedERP.Core.Domain.Production.ProductionRawProductPurchase>()
+                                .Name("purchasePrice_#=SeedProductionOrderItemId#")
+                                .Columns(columns =>
+                                {
+                                    columns.Bound(c => c.SupplierName);
+                                    columns.Bound(c => c.PurchasedQuantity).Format("{0:N2}");
+                                    columns.Bound(c => c.UnitPrice).Format("{0:N2}");
+                                    columns.Bound(c => c.TotalPrice).Format("{0:N2}");
+
+                                    columns.Command(command =>
+                                    {
+                                        command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                        command.Destroy().Text(Resources.ActionButton_Cancel);
+                                    }).Width(200);
+                                })
+                                .ToolBar(toolbar =>
+                                {
+                                    toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                                })
+                                .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                .Scrollable(h => h.Height(300))
+                                .Sortable(sortable =>
+                                {
+                                    sortable.SortMode(GridSortMode.SingleColumn);
+                                })
+                                .Selectable(selectable =>
+                                {
+                                    selectable.Mode(GridSelectionMode.Single);
+                                    selectable.Type(GridSelectionType.Row);
+                                })
+                                .Filterable()
+                                .Pageable(pageable => pageable
+                                    .Input(true)
+                                    .Numeric(false)
+                                    .Refresh(true)
+                                    .PageSizes(true)
+                                    .ButtonCount(5))
+                                .DataSource(dataSource => dataSource
+                                    .Ajax()
+                                    .Events(events =>
+                                    {
+                                        events.Error("error_handler(\"purchasePrice_#=SeedProductionOrderItemId#\")");
+                                        events.RequestStart("onRequestStart(\"purchasePrice_#=SeedProductionOrderItemId#\")");
+                                        events.RequestEnd("onRequestEnd(\"purchasePrice_#=SeedProductionOrderItemId#\")");
+                                    })
+                                    .Model(model =>
+                                    {
+                                        model.Id(p => p.ProductionRawProductPurchaseId);
+                                        model.Field(f => f.TotalPrice).Editable(false);
+
+                                    })
+                                    .Read(read => read.Action("Purchases_Read", "ProductionRawProductPurchase", new { itemId = "#=SeedProductionOrderItemId#", productionType = ProductType.Seed }))
+                                    .Create(create => create.Action("Purchase_Create", "ProductionRawProductPurchase", new { itemId = "#=SeedProductionOrderItemId#", productionType = ProductType.Seed }))
+                                    .Update(update => update.Action("Purchase_Update", "ProductionRawProductPurchase", new { productionType = ProductType.Seed }))
+                                    .Destroy(destroy => destroy.Action("Purchase_Destroy", "ProductionRawProductPurchase", new { productionType = ProductType.Seed }))
+                                    )
+                                    .ToClientTemplate()
+                        )
+                    </text>
+                );
+            items.Add().Text("Activities").Content(
+                @<text>
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Production.ProductionOrderActivitiy>()
+                                .Name("activities_#=SeedProductionOrderItemId#")
+                                .Columns(columns =>
+                                {
+                                    columns.ForeignKey(c => c.ProductionActivityId, (IEnumerable)ViewData["Activities"], "ProductionActivityId", "Name").EditorTemplateName("SeedProductionActivities");
+                                    columns.Bound(c => c.OperationType).EditorTemplateName("OperationTypes");
+                                    columns.Bound(c => c.Quantity);
+                                    columns.Bound(c => c.LaborCost);
+                                    columns.Bound(c => c.EquipmentCost);
+                                    columns.Bound(c => c.TotalCost);
+                                    columns.ForeignKey(c => c.ProductionPeriodId, (IEnumerable)ViewData["ProductionPeriods"], "ProductionPeriodId", "Name").EditorTemplateName("ProductionPeriods");
+                                    columns.Bound(c => c.DateOfInformation);
+                                    columns.Bound(c => c.Reference);
+
+                                    columns.Command(command =>
+                                    {
+                                        command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                        command.Destroy().Text(Resources.ActionButton_Cancel);
+                                    }).Width(200);
+                                })
+                                .ToolBar(toolbar =>
+                                {
+                                    toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                                })
+                                .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                .Scrollable(h => h.Height(500))
+                                .Sortable(sortable =>
+                                {
+                                    sortable.SortMode(GridSortMode.SingleColumn);
+                                })
+                                .Selectable(selectable =>
+                                {
+                                    selectable.Mode(GridSelectionMode.Single);
+                                    selectable.Type(GridSelectionType.Row);
+                                })
+                                .Filterable()
+                                .Pageable(pageable => pageable
+                                    .Input(true)
+                                    .Numeric(false)
+                                    .Refresh(true)
+                                    .PageSizes(true)
+                                    .ButtonCount(5))
+                                .DataSource(dataSource => dataSource
+                                    .Ajax()
+                                    .Events(events =>
+                                    {
+                                        events.Error("error_handler(\"activities_#=SeedProductionOrderItemId#\")");
+                                        events.RequestStart("onRequestStart(\"activities_#=SeedProductionOrderItemId#\")");
+                                        events.RequestEnd("onRequestEnd(\"activities_#=SeedProductionOrderItemId#\")");
+                                    })
+                                    .Model(model =>
+                                    {
+                                        model.Id(p => p.ProductionOrderActivitiyId);
+                                        model.Field(f => f.TotalCost).Editable(false);
+
+                                    })
+                                    .Read(read => read.Action("Activities_Read", "ProductionOrderActivitiy", new { itemId = "#=SeedProductionOrderItemId#", productionType = ProductType.Seed }))
+                                    .Create(create => create.Action("Activity_Create", "ProductionOrderActivitiy", new { itemId = "#=SeedProductionOrderItemId#", productionType = ProductType.Seed }))
+                                    .Update(update => update.Action("Activity_Update", "ProductionOrderActivitiy", new { productionType = ProductType.Seed }))
+                                    .Destroy(destroy => destroy.Action("Activity_Destroy", "ProductionOrderActivitiy", new { productionType = ProductType.Seed }))
+                                    )
+                                    .ToClientTemplate()
+                    )
+                </text>
+                );
+                items.Add().Text("Input Materials").Content(
+                    @<text>
+                        @(Html.Kendo().Grid<ExceedERP.Core.Domain.Production.ProductionOrderInputMaterial>()
+                                .Name("material_#=SeedProductionOrderItemId#")
+                                .Columns(columns =>
+                                {
+                                    columns.ForeignKey(c => c.ItemCategoryCode, (IEnumerable)ViewData["ItemCategorys"], "ItemCategoryCode", "Name").EditorTemplateName("ItemCategory").Width(200);
+                                    columns.ForeignKey(c => c.ItemCode, (IEnumerable)ViewData["Items"], "ItemCode", "Name").EditorTemplateName("Item").Width(200);
+                                    columns.Bound(c => c.Unit).Width(100);//, (IEnumerable)ViewData["Unit"], "LookupId", "Description").EditorTemplateName("Unit").Width(75);
+                                    columns.Bound(c => c.Quantity).Width(75);
+                                    columns.Bound(c => c.UnitPrice).Width(75).Format("{0:N2}");
+                                    columns.Bound(c => c.TotalCost).Width(75)
+                                        .ClientFooterTemplate("Total: \\#= kendo.toString(sum, 'N2')\\#")
+                                        .ClientGroupFooterTemplate("Total: \\#= kendo.toString(sum, 'N2')\\#");
+                                    columns.ForeignKey(c => c.ProductionPeriodId, (IEnumerable)ViewData["ProductionPeriods"], "ProductionPeriodId", "Name").Width(100).EditorTemplateName("ProductionPeriods");
+                                    columns.Bound(c => c.DateOfInformation).Width(100);
+                                    columns.Bound(c => c.Reference).Width(100);
+                                    columns.Command(command =>
+                                    {
+                                        command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                        command.Destroy().Text(Resources.ActionButton_Cancel);
+                                    }).Width(200);
+                                })
+                                .ToolBar(toolbar =>
+                                {
+                                    toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                                })
+                                .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                .Scrollable(h => h.Height(500))
+                                .Sortable(sortable =>
+                                {
+                                    sortable.SortMode(GridSortMode.SingleColumn);
+                                })
+                                .Selectable(selectable =>
+                                {
+                                    selectable.Mode(GridSelectionMode.Single);
+                                    selectable.Type(GridSelectionType.Row);
+                                })
+                                .Filterable()
+                                .Pageable(pageable => pageable
+                                    .Input(true)
+                                    .Numeric(false)
+                                    .Refresh(true)
+                                    .PageSizes(true)
+                                    .ButtonCount(5))
+                                .DataSource(dataSource => dataSource
+                                    .Ajax()
+                                    .Aggregates(ag =>
+                                    {
+                                        ag.Add(f => f.TotalCost).Sum();
+                                    })
+                                    .Events(events =>
+                                    {
+                                        events.Error("error_handler(\"activities_#=SeedProductionOrderItemId#\")");
+                                        events.RequestStart("onRequestStart(\"activities_#=SeedProductionOrderItemId#\")");
+                                        events.RequestEnd("onRequestEnd(\"activities_#=SeedProductionOrderItemId#\")");
+                                    })
+                                    .Model(model =>
+                                    {
+                                        model.Id(p => p.ProductionOrderInputMaterialId);
+                                        model.Field(f => f.TotalCost).Editable(false);
+                                        model.Field(f => f.Unit).Editable(false);
+                                    })
+                                    .Read(read => read.Action("Materials_Read", "ProductionOrderInputMaterial", new { itemId = "#=SeedProductionOrderItemId#", productionType = ProductType.Seed }))
+                                    .Create(create => create.Action("Material_Create", "ProductionOrderInputMaterial", new { itemId = "#=SeedProductionOrderItemId#", productionType = ProductType.Seed }))
+                                    .Update(update => update.Action("Material_Update", "ProductionOrderInputMaterial", new { productionType = ProductType.Seed }))
+                                    .Destroy(destroy => destroy.Action("Material_Destroy", "ProductionOrderInputMaterial", new { productionType = ProductType.Seed }))
+                                    )
+                                    .ToClientTemplate()
+                        )
+                    </text>
+                );
+                 items.Add().Text("Machinery Maintenance").Content(
+                        @<text>
+                            @(Html.Kendo().Grid<ExceedERP.Core.Domain.Production.MachineryMaintenance>()
+                                    .Name("maintenance_#=SeedProductionOrderItemId#")
+                                    .Columns(columns =>
+                                    {
+                                        //columns.ForeignKey(c => c.ItemCategoryCode, (IEnumerable)ViewData["ItemCategorys"], "ItemCategoryCode", "Name").EditorTemplateName("ItemCategory").Width(200);
+                                        //columns.ForeignKey(c => c.ItemCode, (IEnumerable)ViewData["Items"], "ItemCode", "Name").EditorTemplateName("Item").Width(200);
+                                        columns.Bound(c => c.MachineryDescription);//, (IEnumerable)ViewData["Unit"], "LookupId", "Description").EditorTemplateName("Unit").Width(75);
+                                        columns.Bound(c => c.ActivityPerformed);
+                                        columns.Bound(c => c.TotalCost)
+                                            .ClientFooterTemplate("Total: \\#= kendo.toString(sum, 'N2')\\#")
+                                            .ClientGroupFooterTemplate("Total: \\#= kendo.toString(sum, 'N2')\\#");
+                                        columns.ForeignKey(c => c.ProductionPeriodId, (IEnumerable)ViewData["ProductionPeriods"], "ProductionPeriodId", "Name").Width(100).EditorTemplateName("ProductionPeriods");
+                                        columns.Bound(c => c.DateOfInformation).Width(100);
+                                        columns.Bound(c => c.Reference).Width(100);
+                                        columns.Command(command =>
+                                        {
+                                            command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                            command.Destroy().Text(Resources.ActionButton_Cancel);
+                                        }).Width(200);
+                                    })
+                                    .ToolBar(toolbar =>
+                                    {
+                                        toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                                    })
+                                    .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                    .Scrollable(h => h.Height(500))
+                                    .Sortable(sortable =>
+                                    {
+                                        sortable.SortMode(GridSortMode.SingleColumn);
+                                    })
+                                    .Selectable(selectable =>
+                                    {
+                                        selectable.Mode(GridSelectionMode.Single);
+                                        selectable.Type(GridSelectionType.Row);
+                                    })
+                                    .Filterable()
+                                    .Pageable(pageable => pageable
+                                        .Input(true)
+                                        .Numeric(false)
+                                        .Refresh(true)
+                                        .PageSizes(true)
+                                        .ButtonCount(5))
+                                    .DataSource(dataSource => dataSource
+                                        .Ajax()
+                                        .Aggregates(ag =>
+                                        {
+                                            ag.Add(f => f.TotalCost).Sum();
+                                        })
+                                        .Events(events =>
+                                        {
+                                            events.Error("error_handler(\"maintenance_#=SeedProductionOrderItemId#\")");
+                                            events.RequestStart("onRequestStart(\"maintenance_#=SeedProductionOrderItemId#\")");
+                                            events.RequestEnd("onRequestEnd(\"maintenance_#=SeedProductionOrderItemId#\")");
+                                        })
+                                        .Model(model =>
+                                        {
+                                            model.Id(p => p.MachineryMaintenanceId);
+                                            //model.Field(f => f.TotalCost).Editable(false);
+                                            //model.Field(f => f.Unit).Editable(false);
+                                        })
+                                        .Read(read => read.Action("MachineryMaintenances_Read", "MachineryMaintenance", new { itemId = "#=SeedProductionOrderItemId#", productionType = ProductType.Seed }))
+                                        .Create(create => create.Action("MachineryMaintenance_Create", "MachineryMaintenance", new { itemId = "#=SeedProductionOrderItemId#", productionType = ProductType.Seed }))
+                                        .Update(update => update.Action("MachineryMaintenance_Update", "MachineryMaintenance", new { productionType = ProductType.Seed }))
+                                        .Destroy(destroy => destroy.Action("MachineryMaintenance_Destroy", "MachineryMaintenance", new { productionType = ProductType.Seed }))
+                                        )
+                                        .ToClientTemplate()
+                            )
+                        </text>
+                    );
+            }).ToClientTemplate())
+    # } #
+</script>
+
+<script id="template_gumProductionactivities" type="text/kendo-tmpl">
+    # if(ProductionType == 0) { #
+        @(Html.Kendo().TabStrip()
+            .Name("tabst_str_#=GumProductionOrderItemId#")
+            .SelectedIndex(0)
+            .Items(items =>
+            {
+                items.Add().Text("Detail").Content(
+                    @<text>
+                        @(Html.Kendo().PanelBar()
+                              .Name("panelbar_#=GumProductionOrderItemId#")
+                              .ExpandMode(PanelBarExpandMode.Single)
+                              .Items(panelbar =>
+                              {
+                                  panelbar.Add()
+                                      .Expanded(true)
+                                      .Content(
+                                         "<div class='workItem-details'>" +
+                                            "<ul>" +
+                                                     //"<li> <label> <strong> Status </label> #= Status# </strong></li>" +
+                                                     "<li> <label> <b>(A)</b> Material Cost </label> #= kendo.toString(MaterialCost, 'N2')# </li>" +
+                                                     "<li> <label> <b>(B)</b> Labor Cost :</label> #= kendo.toString(LaborCost, 'N2')# </li>" +
+                                                     "<li> <label> <b>(C)</b> Machinery Cost:</label> #= kendo.toString(EquipmentCost, 'N2')# </li>" +
+                                                     "<li> <label> <b>(D)</b> Direct Cost: <b>(A + B + C) = </b> </label> #= kendo.toString(DirectCost, 'N2')# </li>" +
+                                                     "<li> <label> <b>(E)</b> Over head Cost:</label> #= kendo.toString(OverheadCost, 'N2')# </li>" +
+                                                     //"<li> <label> Profit Cost:</label> #= kendo.toString(ProfitCost, 'N2')# </li>" +
+                                                     "<li> <label>Total  Cost : <b>(D + E) = </b> </label><b> #= kendo.toString(TotalCost, 'N2')# </b></li>" +
+                                                "</ul>" +
+                                        "</div>"
+
+                                );
+                              }).ToClientTemplate()
+                        )
+                    </text>
+                );
+                items.Add().Text("Activities").Content(
+                    @<text>
+                        @(Html.Kendo().Grid<ExceedERP.Core.Domain.Production.ProductionOrderActivitiy>()
+                                .Name("activities_#=GumProductionOrderItemId#")
+                                .Columns(columns =>
+                                {
+                                    columns.ForeignKey(c => c.ProductionActivityId, (IEnumerable)ViewData["Activities"], "ProductionActivityId", "Name").EditorTemplateName("GumProductionActivities");
+                                    columns.Bound(c => c.OperationType).EditorTemplateName("OperationTypes");
+                                    columns.Bound(c => c.LaborCost);
+                                    columns.Bound(c => c.EquipmentCost);
+                                    columns.Bound(c => c.TotalCost);
+                                    columns.ForeignKey(c => c.ProductionPeriodId, (IEnumerable)ViewData["ProductionPeriods"], "ProductionPeriodId", "Name").EditorTemplateName("ProductionPeriods");
+                                    columns.Bound(c => c.DateOfInformation);
+                                    columns.Bound(c => c.Reference);
+
+                                    columns.Command(command =>
+                                    {
+                                        command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                        command.Destroy().Text(Resources.ActionButton_Cancel);
+                                    }).Width(200);
+                                })
+                                .ToolBar(toolbar =>
+                                {
+                                    toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                                })
+                                .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                .Scrollable(h => h.Height(500))
+                                .Sortable(sortable =>
+                                {
+                                    sortable.SortMode(GridSortMode.SingleColumn);
+                                })
+                                .Selectable(selectable =>
+                                {
+                                    selectable.Mode(GridSelectionMode.Single);
+                                    selectable.Type(GridSelectionType.Row);
+                                })
+                                .Filterable()
+                                .Pageable(pageable => pageable
+                                    .Input(true)
+                                    .Numeric(false)
+                                    .Refresh(true)
+                                    .PageSizes(true)
+                                    .ButtonCount(5))
+                                .DataSource(dataSource => dataSource
+                                    .Ajax()
+                                    .Events(events =>
+                                    {
+                                        events.Error("error_handler(\"activities_#=GumProductionOrderItemId#\")");
+                                        events.RequestStart("onRequestStart(\"activities_#=GumProductionOrderItemId#\")");
+                                        events.RequestEnd("onRequestEnd(\"activities_#=GumProductionOrderItemId#\")");
+                                    })
+                                    .Model(model =>
+                                    {
+                                        model.Id(p => p.ProductionOrderActivitiyId);
+                                        model.Field(f => f.TotalCost).Editable(false);
+                                    })
+                                    .Read(read => read.Action("Activities_Read", "ProductionOrderActivitiy", new { itemId = "#=GumProductionOrderItemId#", productionType = ProductType.NaturalGum }))
+                                    .Create(create => create.Action("Activity_Create", "ProductionOrderActivitiy", new { itemId = "#=GumProductionOrderItemId#", productionType = ProductType.NaturalGum }))
+                                    .Update(update => update.Action("Activity_Update", "ProductionOrderActivitiy", new { productionType = ProductType.NaturalGum }))
+                                    .Destroy(destroy => destroy.Action("Activity_Destroy", "ProductionOrderActivitiy", new { productionType = ProductType.NaturalGum }))
+                                    )
+                                    .ToClientTemplate()
+                        )
+                    </text>
+                );
+                items.Add().Text("Input Materials").Content(
+                    @<text>
+                        @(Html.Kendo().Grid<ExceedERP.Core.Domain.Production.ProductionOrderInputMaterial>()
+                                .Name("material_#=GumProductionOrderItemId#")
+                                .Columns(columns =>
+                                {
+                                    columns.ForeignKey(c => c.ItemCategoryCode, (IEnumerable)ViewData["ItemCategorys"], "ItemCategoryCode", "Name").EditorTemplateName("ItemCategory").Width(200);
+                                    columns.ForeignKey(c => c.ItemCode, (IEnumerable)ViewData["Items"], "ItemCode", "Name").EditorTemplateName("Item").Width(200);
+                                    columns.Bound(c => c.Unit).Width(100);//, (IEnumerable)ViewData["Unit"], "LookupId", "Description").EditorTemplateName("Unit").Width(75);
+                                    columns.Bound(c => c.Quantity).Width(75);
+                                    columns.Bound(c => c.UnitPrice).Width(75).Format("{0:N2}");
+                                    columns.Bound(c => c.TotalCost).Width(75)
+                                        .ClientFooterTemplate("Total: \\#= kendo.toString(sum, 'N2')\\#")
+                                        .ClientGroupFooterTemplate("Total: \\#= kendo.toString(sum, 'N2')\\#");
+                                    columns.ForeignKey(c => c.ProductionPeriodId, (IEnumerable)ViewData["ProductionPeriods"], "ProductionPeriodId", "Name").Width(100).EditorTemplateName("ProductionPeriods");
+                                    columns.Bound(c => c.DateOfInformation).Width(100);
+                                    columns.Bound(c => c.Reference).Width(100);
+
+                                    columns.Command(command =>
+                                    {
+                                        command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                        command.Destroy().Text(Resources.ActionButton_Cancel);
+                                    }).Width(200);
+                                })
+                                .ToolBar(toolbar =>
+                                {
+                                    toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                                })
+                                .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                .Scrollable(h => h.Height(500))
+                                .Sortable(sortable =>
+                                {
+                                    sortable.SortMode(GridSortMode.SingleColumn);
+                                })
+                                .Selectable(selectable =>
+                                {
+                                    selectable.Mode(GridSelectionMode.Single);
+                                    selectable.Type(GridSelectionType.Row);
+                                })
+                                .Filterable()
+                                .Pageable(pageable => pageable
+                                    .Input(true)
+                                    .Numeric(false)
+                                    .Refresh(true)
+                                    .PageSizes(true)
+                                    .ButtonCount(5))
+                                .DataSource(dataSource => dataSource
+                                    .Ajax()
+                                    .Aggregates(ag =>
+                                    {
+                                        ag.Add(f => f.TotalCost).Sum();
+                                    })
+                                    .Events(events =>
+                                    {
+                                        events.Error("error_handler(\"activities_#=GumProductionOrderItemId#\")");
+                                        events.RequestStart("onRequestStart(\"activities_#=GumProductionOrderItemId#\")");
+                                        events.RequestEnd("onRequestEnd(\"activities_#=GumProductionOrderItemId#\")");
+                                    })
+                                    .Model(model =>
+                                    {
+                                        model.Id(p => p.ProductionOrderInputMaterialId);
+                                        model.Field(f => f.TotalCost).Editable(false);
+                                        model.Field(f => f.Unit).Editable(false);
+                                    })
+                                    .Read(read => read.Action("Materials_Read", "ProductionOrderInputMaterial", new { itemId = "#=GumProductionOrderItemId#", productionType = ProductType.NaturalGum }))
+                                    .Create(create => create.Action("Material_Create", "ProductionOrderInputMaterial", new { itemId = "#=GumProductionOrderItemId#", productionType = ProductType.NaturalGum }))
+                                    .Update(update => update.Action("Material_Update", "ProductionOrderInputMaterial", new { productionType = ProductType.NaturalGum }))
+                                    .Destroy(destroy => destroy.Action("Material_Destroy", "ProductionOrderInputMaterial", new { productionType = ProductType.NaturalGum }))
+                                    )
+                                    .ToClientTemplate()
+                        )
+                    </text>
+                );
+                items.Add().Text("Machinery Maintenance").Content(
+                    @<text>
+                        @(Html.Kendo().Grid<ExceedERP.Core.Domain.Production.MachineryMaintenance>()
+                                .Name("maintenance_#=GumProductionOrderItemId#")
+                                .Columns(columns =>
+                                {
+                                    columns.Bound(c => c.MachineryDescription);//, (IEnumerable)ViewData["Unit"], "LookupId", "Description").EditorTemplateName("Unit").Width(75);
+                                    columns.Bound(c => c.ActivityPerformed);
+                                    columns.Bound(c => c.TotalCost).Width(75)
+                                        .ClientFooterTemplate("Total: \\#= kendo.toString(sum, 'N2')\\#")
+                                        .ClientGroupFooterTemplate("Total: \\#= kendo.toString(sum, 'N2')\\#");
+                                    columns.ForeignKey(c => c.ProductionPeriodId, (IEnumerable)ViewData["ProductionPeriods"], "ProductionPeriodId", "Name").Width(100).EditorTemplateName("ProductionPeriods");
+                                    columns.Bound(c => c.Reference).Width(100);
+
+                                    columns.Command(command =>
+                                    {
+                                        command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                        command.Destroy().Text(Resources.ActionButton_Cancel);
+                                    }).Width(200);
+                                })
+                                .ToolBar(toolbar =>
+                                {
+                                    toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                                })
+                                .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                .Scrollable(h => h.Height(500))
+                                .Sortable(sortable =>
+                                {
+                                    sortable.SortMode(GridSortMode.SingleColumn);
+                                })
+                                .Selectable(selectable =>
+                                {
+                                    selectable.Mode(GridSelectionMode.Single);
+                                    selectable.Type(GridSelectionType.Row);
+                                })
+                                .Filterable()
+                                .Pageable(pageable => pageable
+                                    .Input(true)
+                                    .Numeric(false)
+                                    .Refresh(true)
+                                    .PageSizes(true)
+                                    .ButtonCount(5))
+                                .DataSource(dataSource => dataSource
+                                    .Ajax()
+                                    .Aggregates(ag =>
+                                    {
+                                        ag.Add(f => f.TotalCost).Sum();
+                                    })
+                                    .Events(events =>
+                                    {
+                                        events.Error("error_handler(\"maintenance_#=GumProductionOrderItemId#\")");
+                                        events.RequestStart("onRequestStart(\"maintenance_#=GumProductionOrderItemId#\")");
+                                        events.RequestEnd("onRequestEnd(\"maintenance_#=GumProductionOrderItemId#\")");
+                                    })
+                                    .Model(model =>
+                                    {
+                                        model.Id(p => p.MachineryMaintenanceId);
+                                        //model.Field(f => f.TotalCost).Editable(false);
+                                    })
+                                    .Read(read => read.Action("MachineryMaintenances_Read", "MachineryMaintenance", new { itemId = "#=GumProductionOrderItemId#", productionType = ProductType.NaturalGum }))
+                                    .Create(create => create.Action("MachineryMaintenance_Create", "MachineryMaintenance", new { itemId = "#=GumProductionOrderItemId#", productionType = ProductType.NaturalGum }))
+                                    .Update(update => update.Action("MachineryMaintenance_Update", "MachineryMaintenance", new { productionType = ProductType.NaturalGum }))
+                                    .Destroy(destroy => destroy.Action("MachineryMaintenance_Destroy", "MachineryMaintenance", new { productionType = ProductType.NaturalGum }))
+                                    )
+                                    .ToClientTemplate()
+                        )
+                    </text>
+                );
+            }).ToClientTemplate())
+    # } else { #
+        @(Html.Kendo().TabStrip()
+            .Name("tabst_str_#=GumProductionOrderItemId#")
+            .SelectedIndex(0)
+            .Items(items =>
+            {
+                items.Add().Text("Detail").Content(
+                    @<text>
+                        @(Html.Kendo().PanelBar()
+                              .Name("panelbar_#=GumProductionOrderItemId#")
+                              .ExpandMode(PanelBarExpandMode.Single)
+                              .Items(panelbar =>
+                              {
+                                  panelbar.Add()
+                                      .Expanded(true)
+                                      .Content(
+                                         "<div class='workItem-details'>" +
+                                            "<ul>" +
+                                                 "<li> <label> <b>(A)</b> Purchase Price </label> #= kendo.toString(PurchaseCost, 'N2')# </li>" +
+                                                 "<li> <label> <b>(B)</b> Material Cost </label> #= kendo.toString(MaterialCost, 'N2')# </li>" +
+                                                 "<li> <label> <b>(C)</b> Labor Cost :</label> #= kendo.toString(LaborCost, 'N2')# </li>" +
+                                                 "<li> <label> <b>(D)</b> Machinery Cost:</label> #= kendo.toString(EquipmentCost, 'N2')# </li>" +
+                                                 "<li> <label> <b>(E)</b> Direct Cost: <b>(A + B + C + D) = </b></label> #= kendo.toString(DirectCost, 'N2')# </li>" +
+                                                 "<li> <label> <b>(F)</b> Over head Cost:</label> #= kendo.toString(OverheadCost, 'N2')# </li>" +
+                                                 //"<li> <label> Profit Cost:</label> #= kendo.toString(ProfitCost, 'N2')# </li>" +
+                                                 "<li> <label>Total  Cost :<b>(E + F) = </b></label> #= kendo.toString(TotalCost, 'N2')# </li>" +
+                                            "</ul>" +
+                                        "</div>"
+
+                                );
+                              }).ToClientTemplate()
+                        )
+                    </text>
+                );
+                items.Add().Text("Purchase info.").Content(
+                    @<text>
+                        @*@(Html.Kendo().Grid<ExceedERP.Core.Domain.Production.GumPurchasePriceViewModel>()*@
+                        @(Html.Kendo().Grid<ExceedERP.Core.Domain.Production.ProductionRawProductPurchase>()
+                                .Name("purchasePrice_#=GumProductionOrderItemId#")
+                                .Columns(columns =>
+                                {
+                                    columns.Bound(c => c.SupplierName);
+                                    columns.Bound(c => c.PurchasedQuantity).Format("{0:N2}");
+                                    columns.Bound(c => c.UnitPrice).Format("{0:N2}");
+                                    columns.Bound(c => c.TotalPrice).Format("{0:N2}");
+
+                                    columns.Command(command =>
+                                    {
+                                        command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                        command.Destroy().Text(Resources.ActionButton_Cancel);
+                                    }).Width(200);
+                                })
+                                .ToolBar(toolbar =>
+                                {
+                                    toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                                })
+                                .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                .Scrollable(h => h.Height(300))
+                                .Sortable(sortable =>
+                                {
+                                    sortable.SortMode(GridSortMode.SingleColumn);
+                                })
+                                .Selectable(selectable =>
+                                {
+                                    selectable.Mode(GridSelectionMode.Single);
+                                    selectable.Type(GridSelectionType.Row);
+                                })
+                                .Filterable()
+                                .Pageable(pageable => pageable
+                                    .Input(true)
+                                    .Numeric(false)
+                                    .Refresh(true)
+                                    .PageSizes(true)
+                                    .ButtonCount(5))
+                                .DataSource(dataSource => dataSource
+                                    .Ajax()
+                                    .Events(events =>
+                                    {
+                                        events.Error("error_handler(\"purchasePrice_#=GumProductionOrderItemId#\")");
+                                        events.RequestStart("onRequestStart(\"purchasePrice_#=GumProductionOrderItemId#\")");
+                                        events.RequestEnd("onRequestEnd(\"purchasePrice_#=GumProductionOrderItemId#\")");
+                                    })
+                                    .Model(model =>
+                                    {
+                                        model.Id(p => p.ProductionRawProductPurchaseId);
+                                        model.Field(f => f.TotalPrice).Editable(false);
+
+                                    })
+                                    .Read(read => read.Action("Purchases_Read", "ProductionRawProductPurchase", new { itemId = "#=GumProductionOrderItemId#", productionType = ProductType.NaturalGum }))
+                                    .Create(create => create.Action("Purchase_Create", "ProductionRawProductPurchase", new { itemId = "#=GumProductionOrderItemId#", productionType = ProductType.NaturalGum }))
+                                    .Update(update => update.Action("Purchase_Update", "ProductionRawProductPurchase", new {  productionType = ProductType.NaturalGum }))
+                                    .Destroy(destroy => destroy.Action("Purchase_Destroy", "ProductionRawProductPurchase", new { productionType = ProductType.NaturalGum }))
+                                    )
+                                    .ToClientTemplate()
+                        )
+                    </text>
+                );
+                items.Add().Text("Activities").Content(
+                    @<text>
+                        @(Html.Kendo().Grid<ExceedERP.Core.Domain.Production.ProductionOrderActivitiy>()
+                                .Name("activities_#=GumProductionOrderItemId#")
+                                .Columns(columns =>
+                                {
+                                    columns.ForeignKey(c => c.ProductionActivityId, (IEnumerable)ViewData["Activities"], "ProductionActivityId", "Name").EditorTemplateName("GumProductionActivities");
+                                    columns.Bound(c => c.OperationType).EditorTemplateName("OperationTypes");
+                                    columns.Bound(c => c.Quantity);
+                                    columns.Bound(c => c.LaborCost);
+                                    columns.Bound(c => c.EquipmentCost);
+                                    columns.Bound(c => c.TotalCost);
+                                    columns.ForeignKey(c => c.ProductionPeriodId, (IEnumerable)ViewData["ProductionPeriods"], "ProductionPeriodId", "Name").EditorTemplateName("ProductionPeriods");
+                                    columns.Bound(c => c.DateOfInformation);
+                                    columns.Bound(c => c.Reference);
+
+                                    columns.Command(command =>
+                                    {
+                                        command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                        command.Destroy().Text(Resources.ActionButton_Cancel);
+                                    }).Width(200);
+                                })
+                                .ToolBar(toolbar =>
+                                {
+                                    toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                                })
+                                .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                .Scrollable(h => h.Height(500))
+                                .Sortable(sortable =>
+                                {
+                                    sortable.SortMode(GridSortMode.SingleColumn);
+                                })
+                                .Selectable(selectable =>
+                                {
+                                    selectable.Mode(GridSelectionMode.Single);
+                                    selectable.Type(GridSelectionType.Row);
+                                })
+                                .Filterable()
+                                .Pageable(pageable => pageable
+                                    .Input(true)
+                                    .Numeric(false)
+                                    .Refresh(true)
+                                    .PageSizes(true)
+                                    .ButtonCount(5))
+                                .DataSource(dataSource => dataSource
+                                    .Ajax()
+                                    .Events(events =>
+                                    {
+                                        events.Error("error_handler(\"activities_#=GumProductionOrderItemId#\")");
+                                        events.RequestStart("onRequestStart(\"activities_#=GumProductionOrderItemId#\")");
+                                        events.RequestEnd("onRequestEnd(\"activities_#=GumProductionOrderItemId#\")");
+                                    })
+                                    .Model(model =>
+                                    {
+                                        model.Id(p => p.ProductionOrderActivitiyId);
+                                        model.Field(f => f.TotalCost).Editable(false);
+                                    })
+                                    .Read(read => read.Action("Activities_Read", "ProductionOrderActivitiy", new { itemId = "#=GumProductionOrderItemId#", productionType = ProductType.NaturalGum }))
+                                    .Create(create => create.Action("Activity_Create", "ProductionOrderActivitiy", new { itemId = "#=GumProductionOrderItemId#", productionType = ProductType.NaturalGum }))
+                                    .Update(update => update.Action("Activity_Update", "ProductionOrderActivitiy", new { productionType = ProductType.NaturalGum }))
+                                    .Destroy(destroy => destroy.Action("Activity_Destroy", "ProductionOrderActivitiy", new { productionType = ProductType.NaturalGum }))
+                                    )
+                                    .ToClientTemplate()
+                        )
+                    </text>
+                );
+                items.Add().Text("Input Materials").Content(
+                    @<text>
+                        @(Html.Kendo().Grid<ExceedERP.Core.Domain.Production.ProductionOrderInputMaterial>()
+                                .Name("material_#=GumProductionOrderItemId#")
+                                .Columns(columns =>
+                                {
+                                    columns.ForeignKey(c => c.ItemCategoryCode, (IEnumerable)ViewData["ItemCategorys"], "ItemCategoryCode", "Name").EditorTemplateName("ItemCategory").Width(200);
+                                    columns.ForeignKey(c => c.ItemCode, (IEnumerable)ViewData["Items"], "ItemCode", "Name").EditorTemplateName("Item").Width(200);
+                                    columns.Bound(c => c.Unit).Width(100);//, (IEnumerable)ViewData["Unit"], "LookupId", "Description").EditorTemplateName("Unit").Width(75);
+                                    columns.Bound(c => c.Quantity).Width(75);
+                                    columns.Bound(c => c.UnitPrice).Width(75).Format("{0:N2}");
+                                    columns.Bound(c => c.TotalCost).Width(75)
+                                        .ClientFooterTemplate("Total: \\#= kendo.toString(sum, 'N2')\\#")
+                                        .ClientGroupFooterTemplate("Total: \\#= kendo.toString(sum, 'N2')\\#");
+                                    columns.ForeignKey(c => c.ProductionPeriodId, (IEnumerable)ViewData["ProductionPeriods"], "ProductionPeriodId", "Name").Width(100).EditorTemplateName("ProductionPeriods");
+                                    columns.Bound(c => c.DateOfInformation).Width(100);
+                                    columns.Bound(c => c.Reference).Width(100);
+
+                                    columns.Command(command =>
+                                    {
+                                        command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                        command.Destroy().Text(Resources.ActionButton_Cancel);
+                                    }).Width(200);
+                                })
+                                .ToolBar(toolbar =>
+                                {
+                                    toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                                })
+                                .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                .Scrollable(h => h.Height(500))
+                                .Sortable(sortable =>
+                                {
+                                    sortable.SortMode(GridSortMode.SingleColumn);
+                                })
+                                .Selectable(selectable =>
+                                {
+                                    selectable.Mode(GridSelectionMode.Single);
+                                    selectable.Type(GridSelectionType.Row);
+                                })
+                                .Filterable()
+                                .Pageable(pageable => pageable
+                                    .Input(true)
+                                    .Numeric(false)
+                                    .Refresh(true)
+                                    .PageSizes(true)
+                                    .ButtonCount(5))
+                                .DataSource(dataSource => dataSource
+                                    .Ajax()
+                                    .Aggregates(ag =>
+                                    {
+                                        ag.Add(f => f.TotalCost).Sum();
+                                    })
+                                    .Events(events =>
+                                    {
+                                        events.Error("error_handler(\"activities_#=GumProductionOrderItemId#\")");
+                                        events.RequestStart("onRequestStart(\"activities_#=GumProductionOrderItemId#\")");
+                                        events.RequestEnd("onRequestEnd(\"activities_#=GumProductionOrderItemId#\")");
+                                    })
+                                    .Model(model =>
+                                    {
+                                        model.Id(p => p.ProductionOrderInputMaterialId);
+                                        model.Field(f => f.TotalCost).Editable(false);
+                                        model.Field(f => f.Unit).Editable(false);
+                                    })
+                                    .Read(read => read.Action("Materials_Read", "ProductionOrderInputMaterial", new { itemId = "#=GumProductionOrderItemId#", productionType = ProductType.NaturalGum }))
+                                    .Create(create => create.Action("Material_Create", "ProductionOrderInputMaterial", new { itemId = "#=GumProductionOrderItemId#", productionType = ProductType.NaturalGum }))
+                                    .Update(update => update.Action("Material_Update", "ProductionOrderInputMaterial", new { productionType = ProductType.NaturalGum }))
+                                    .Destroy(destroy => destroy.Action("Material_Destroy", "ProductionOrderInputMaterial", new { productionType = ProductType.NaturalGum }))
+                                    )
+                                    .ToClientTemplate()
+                        )
+                    </text>
+                );
+                items.Add().Text("Machinery Maintenance").Content(
+                    @<text>
+                        @(Html.Kendo().Grid<ExceedERP.Core.Domain.Production.MachineryMaintenance>()
+                                .Name("maintenance_#=GumProductionOrderItemId#")
+                                .Columns(columns =>
+                                {
+                                    columns.Bound(c => c.MachineryDescription);//, (IEnumerable)ViewData["Unit"], "LookupId", "Description").EditorTemplateName("Unit").Width(75);
+                                    columns.Bound(c => c.ActivityPerformed);
+                                    columns.Bound(c => c.TotalCost).Width(75)
+                                        .ClientFooterTemplate("Total: \\#= kendo.toString(sum, 'N2')\\#")
+                                        .ClientGroupFooterTemplate("Total: \\#= kendo.toString(sum, 'N2')\\#");
+                                    columns.ForeignKey(c => c.ProductionPeriodId, (IEnumerable)ViewData["ProductionPeriods"], "ProductionPeriodId", "Name").Width(100).EditorTemplateName("ProductionPeriods");
+                                    columns.Bound(c => c.DateOfInformation).Width(100);
+                                    columns.Bound(c => c.Reference).Width(100);
+
+                                    columns.Command(command =>
+                                    {
+                                        command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                        command.Destroy().Text(Resources.ActionButton_Cancel);
+                                    }).Width(200);
+                                })
+                                .ToolBar(toolbar =>
+                                {
+                                    toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                                })
+                                .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                .Scrollable(h => h.Height(500))
+                                .Sortable(sortable =>
+                                {
+                                    sortable.SortMode(GridSortMode.SingleColumn);
+                                })
+                                .Selectable(selectable =>
+                                {
+                                    selectable.Mode(GridSelectionMode.Single);
+                                    selectable.Type(GridSelectionType.Row);
+                                })
+                                .Filterable()
+                                .Pageable(pageable => pageable
+                                    .Input(true)
+                                    .Numeric(false)
+                                    .Refresh(true)
+                                    .PageSizes(true)
+                                    .ButtonCount(5))
+                                .DataSource(dataSource => dataSource
+                                    .Ajax()
+                                    .Aggregates(ag =>
+                                    {
+                                        ag.Add(f => f.TotalCost).Sum();
+                                    })
+                                    .Events(events =>
+                                    {
+                                        events.Error("error_handler(\"maintenance_#=GumProductionOrderItemId#\")");
+                                        events.RequestStart("onRequestStart(\"maintenance_#=GumProductionOrderItemId#\")");
+                                        events.RequestEnd("onRequestEnd(\"maintenance_#=GumProductionOrderItemId#\")");
+                                    })
+                                    .Model(model =>
+                                    {
+                                        model.Id(p => p.MachineryMaintenanceId);
+                                        //model.Field(f => f.TotalCost).Editable(false);
+                                    })
+                                    .Read(read => read.Action("MachineryMaintenances_Read", "MachineryMaintenance", new { itemId = "#=GumProductionOrderItemId#", productionType = ProductType.NaturalGum }))
+                                    .Create(create => create.Action("MachineryMaintenance_Create", "MachineryMaintenance", new { itemId = "#=GumProductionOrderItemId#", productionType = ProductType.NaturalGum }))
+                                    .Update(update => update.Action("MachineryMaintenance_Update", "MachineryMaintenance", new { productionType = ProductType.NaturalGum }))
+                                    .Destroy(destroy => destroy.Action("MachineryMaintenance_Destroy", "MachineryMaintenance", new { productionType = ProductType.NaturalGum }))
+                                    )
+                                    .ToClientTemplate()
+                        )
+                    </text>
+                );
+            }).ToClientTemplate())
+    #}#
+</script>
+
+<script>
+    function filterCategories() {
+        //
+        // summary:
+        //      send the filtering text along with the parent widget's value
+        var dropdownlist = $("#ItemCode").data("kendoDropDownList");
+        var filterInput = dropdownlist.filterInput;
+        return {
+            ItemCategoryCode: $("#ItemCategoryCode").val(), filterString: filterInput.val()
+        };
+    }
+
+    function periodChanged(e) {
+        var drp = this;
+        var id = drp.value();
+        var dateOfInformation = $("#DateOfInformation").data("kendoDatePicker");
+        
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("GetPeriodRanges", "ProductionDataProvider", new { area = "Production" })',
+            data: { periodId: id},
+            success: function (result) {
+                if (result) {
+                    var ranges = result.split('_');
+                    var start = ranges[0];
+                    var end = ranges[1];
+                    var startDate = new Date(start);
+                    var endDate = new Date(end);
+                    if (dateOfInformation) {
+                        dateOfInformation.min(startDate);
+                        dateOfInformation.max(endDate);
+                        dateOfInformation.value(startDate);
+                        dateOfInformation.trigger("change");
+                    } 
+                }
+            }, 
+            error: function (result) {
+            }
+        });
+    }
+    function materialChanged(e) {
+        var itmCode = $('#ItemCode').val();
+        $.ajax({
+            url: '@Url.Action("GetInventoryMaterialUnitPrice", "ProductionOrderInputs", new {area = "Production"})',
+            data: { itemCode: itmCode },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                $("#UnitPrice").val(result);
+                $("#UnitPrice").trigger("change");
+            }
+
+        });
+    }
+</script>

@@ -1,0 +1,133 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<Legend>@Resources.NavigatorSelfCare_ApplicationForm</Legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.HRM.PromotionRequest>()
+              .Name("PromotionRequest")
+      .Columns(columns =>
+      {
+        columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["Departments"], "OrgStructureId", "Name").EditorTemplateName("Department").Width(200);
+      
+        columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["jobTitles"], "LookupId", "Description").EditorTemplateName("JobTitles").Width(200);
+        columns.Bound(c => c.NoOfPostion).Width( 145);
+       
+        columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+                   .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("PromotionRequest").Window(window => { window.Title("Promotion Request"); window.Scrollable(false); }))
+           .HtmlAttributes(new { style = "height: 550px;" })
+                               .Groupable()
+                              .Sortable(sortable =>
+                              {
+                                  sortable.SortMode(GridSortMode.SingleColumn);
+                              })
+                               .Filterable()
+                              .Scrollable()
+                          .Pageable(pageable => pageable
+                                                .Input(true)
+                                                .Numeric(false)
+                                                .Refresh(true)
+                                                .PageSizes(true)
+                                                .ButtonCount(5))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+              .Events(events =>
+                                {
+                                    events.Error("error_handler(\"PromotionRequest\")");
+                                    events.RequestEnd("onRequestEnd(\"PromotionRequest\")");
+                                })
+                      
+          .Model(model => model.Id(p => p.PromotionRequestId))
+                  .Read(read => read.Action("PromotionRequest_Read", "PromotionRequest"))
+          .Create(create => create.Action("PromotionRequest_Create", "PromotionRequest"))
+          .Update(update => update.Action("PromotionRequest_Update", "PromotionRequest"))
+          .Destroy(destroy => destroy.Action("PromotionRequest_Destroy", "PromotionRequest"))
+          ).ClientDetailTemplateId("template")
+      )
+
+
+
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                  .Name("tabstrip_#=PromotionRequestId#")
+          .SelectedIndex(0)
+          .Items(items =>
+          {
+              items.Add().Text(Resources.HR_RequestStatus).Content(
+                @<text>
+                   @* <legend>Status</legend>*@
+
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.HRM.RequestesStatus>()
+                          .Name("RequestesStatusgrid")
+                          .Columns(columns =>
+                          {
+                              //columns.Bound(c => c.RequestId);
+                              columns.Bound(c => c.Date);
+                              columns.Bound(c => c.Status).EditorTemplateName("Enum");
+                              columns.Bound(c => c.Remark);
+                              columns.Command(command =>
+                              {
+                                 // command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                 //command.Destroy().Text(Resources.ActionButton_Cancel);
+                              }).Width(180);
+                          })
+                          .ToolBar(toolbar =>
+                          {
+                              toolbar.Custom().Action("SendForApproval", "PromotionRequest").Text("Send For Approval");
+                          })
+                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                          .Scrollable()
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+                                      .Events(events =>
+                                        {
+                                            events.Error("error_handler(\"RequestesStatusgrid\")");
+                                            events.RequestEnd("onRequestEnd(\"RequestesStatusgrid\")");
+                                        })
+                                                    
+                                      .Model(model =>
+                                      {
+                                          model.Id(p => p.RequestStatusId);
+                                          model.Field(p => p.Date).Editable(false).DefaultValue(DateTime.Today);
+                                      })
+
+                                     .Read(read => read.Action("RequestesStatus_Read", "RequestesStatus", new { id = "#=PromotionRequestId#", referenceType = "Promotion" }))
+                                                                                                                  .Create(create => create.Action("RequestesStatus_Create", "RequestesStatus", new { id = "#=PromotionRequestId#", referenceType2 = "Promotion" }))
+                                          .Update(update => update.Action("RequestesStatus_Update", "RequestesStatus"))
+                                          .Destroy(destroy => destroy.Action("RequestesStatus_Destroy", "RequestesStatus"))
+                          ).ToClientTemplate()
+                    )
+
+
+                </text>
+                  );
+              //*****************************************************************************************************//
+
+          }).ToClientTemplate())
+</script>
+<script>
+                        //function error_handler(e) {
+                        //    if (e.errors) {
+                        //        var message = "Errors:\n";
+                        //        $.each(e.errors, function (key, value) {
+                        //            if ('errors' in value) {
+                        //                $.each(value.errors, function () {
+                        //                    message += this + "\n";
+                        //                });
+                        //            }
+                        //        });
+                        //        alert(message);
+
+                        //    }
+
+                        //}
+
+                        function sync_handler(e) {
+                            this.read();
+
+                        }
+</script>

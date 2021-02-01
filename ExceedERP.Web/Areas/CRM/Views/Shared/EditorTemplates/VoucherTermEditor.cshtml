@@ -1,0 +1,5 @@
+﻿@(Html.Kendo().DropDownListFor(model => model).HtmlAttributes(new { @class = "form-control" })
+                                .DataTextField("TermID")
+                                    .DataValueField("TermID").OptionLabel("Select Voucher Term")
+                                    .DataSource(d => d.Read(r => r.Action("VoucherTermDDBind", "VoucherTerm"))))
+

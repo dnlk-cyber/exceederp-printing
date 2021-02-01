@@ -1,0 +1,247 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@using Kendo.Mvc.UI
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend> Seeds Selling Prices </legend>
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Production.CleanedSeedSellingPrice>()
+                          .Name("sellingPriceGrid")
+                          .Columns(columns =>
+                          {
+                              columns.ForeignKey(c => c.CropId, (IEnumerable)ViewData["Crops"], "CropId", "Name").EditorTemplateName("CropNames");
+                              columns.ForeignKey(c => c.ProductionYearId, (IEnumerable)ViewData["ProductionYears"], "ProductionYearId", "Name").EditorTemplateName("YearSelector");
+                              
+
+                              columns.Command(command =>
+                              {
+                                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                  command.Destroy().Text(Resources.ActionButton_Cancel);
+                              }).Width(200);
+
+                          })
+                          .ToolBar(toolbar =>
+                          {
+                              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                          })
+                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                          .Selectable(selectable =>
+                          {
+                              selectable.Mode(GridSelectionMode.Single);
+                              selectable.Type(GridSelectionType.Row);
+                          })
+                          .Scrollable(h => h.Height(500))
+                          .Sortable(sortable =>
+                          {
+                              sortable.SortMode(GridSortMode.SingleColumn);
+                          })
+                          .Filterable()
+                          .Pageable(pageable => pageable
+                              .Input(true)
+                              .Numeric(false)
+                              .Refresh(true)
+                              .PageSizes(true)
+                              .ButtonCount(5))
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+
+                              .Events(events =>
+                              {
+                                  events.Error("error_handler(\"sellingPriceGrid\")");
+                                  events.RequestStart("onRequestStart(\"sellingPriceGrid\")");
+                                  events.RequestEnd("onRequestEnd(\"sellingPriceGrid\")");
+                              })
+                              .Model(model =>
+                              {
+                                  model.Id(f => f.CleanedSeedSellingPriceId);
+                                  
+                              })
+
+                              .Read(read => read.Action("SellingPrices_Read", "CleanedSeedSellingPrice"))
+                              .Create(create => create.Action("SellingPrice_Create", "CleanedSeedSellingPrice"))
+                              .Update(update => update.Action("SellingPrice_Update", "CleanedSeedSellingPrice"))
+                              .Destroy(destroy => destroy.Action("SellingPrice_Destroy", "CleanedSeedSellingPrice"))
+                          ).ClientDetailTemplateId("sellingprice-detail-template")
+)
+
+<script id="sellingprice-detail-template" type="text/kendo-template">
+    @(Html.Kendo().TabStrip()
+        .Name("tab_#=CleanedSeedSellingPriceId#")
+        .SelectedIndex(0)
+        .Items(items => {
+            items.Add().Text("Detail").Content(
+                @<text>
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Production.CleanedSeedSellingPriceEditViewModel>()
+                                .Name("sellingPrice_#=CleanedSeedSellingPriceId#")
+                                .Columns(columns =>
+                                {
+                                    columns.Bound(c => c.SellingPrice)
+                                    .ClientTemplate(
+                                        "\\# if(SellingPrice > 0 ) {\\#" +
+                                            "\\#=SellingPrice\\# birr per \\#=UoM\\#"+
+                                        "\\#} else {\\#" +
+                                            "0" +
+                                        "\\#}\\#"
+
+                                        );
+                                    columns.Bound(c => c.ApprovedSellingPrice)
+                                    .ClientTemplate(
+                                        "\\# if(ApprovedSellingPrice > 0 ) {\\#" +
+                                            "\\#=ApprovedSellingPrice\\# birr per \\#=UoM\\#" +
+                                        "\\#} else {\\#" +
+                                            "0" +
+                                        "\\#}\\#"
+
+                                        );
+                                    columns.Command(command =>
+                                    {
+                                        command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                    }).Width(200);
+                                })
+
+                                .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                .Scrollable(h => h.Height(100))
+                                .Sortable(sortable =>
+                                {
+                                    sortable.SortMode(GridSortMode.SingleColumn);
+                                })
+                                .Selectable(selectable =>
+                                {
+                                    selectable.Mode(GridSelectionMode.Single);
+                                    selectable.Type(GridSelectionType.Row);
+                                })
+                                //.Filterable()
+                                .Pageable(pageable => pageable
+                                    //.Input(true)
+                                    //.Numeric(false)
+                                    .Refresh(true)
+                                    //.PageSizes(true)
+                                    //.ButtonCount(5)
+                                    )
+                                .DataSource(dataSource => dataSource
+                                    .Ajax()
+                                    .Events(events =>
+                                    {
+                                        events.Error("error_handler(\"sellingPrice_#=CleanedSeedSellingPriceId#\")");
+                                        events.RequestStart("onRequestStart(\"isellingPrice_#=CleanedSeedSellingPriceId#\")");
+                                        events.RequestEnd("onRequestEnd(\"sellingPrice_#=CleanedSeedSellingPriceId#\")");
+                                    })
+                                    .Model(model =>
+                                    {
+                                        model.Id(p => p.CleanedSeedSellingPriceId);
+
+                                        model.Field(f => f.SellingPrice).Editable(false);
+
+                                    })
+                                    .Read(read => read.Action("SellingPriceEdit_Read", "CleanedSeedSellingPrice", new { id = "#=CleanedSeedSellingPriceId#" }))
+                                    .Update(update => update.Action("SellingPrice_UpdatePrice", "CleanedSeedSellingPrice"))
+                                    ).ToClientTemplate()
+                        )
+                </text>
+                );
+            items.Add().Text("Items").Content(
+                @<text>
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Production.CleanedSeedSellingPriceItem>()
+                                .Name("itemsGrid_#=CleanedSeedSellingPriceId#")
+                                .Columns(columns =>
+                                {
+                                    columns.ForeignKey(c => c.SeedProcessingOrderItemId, (IEnumerable)ViewData["SeedProcessingOrderItems"], "SeedProcessingOrderItemId", "ProcessingCode").EditorTemplateName("SeedProcessingItems");
+                                    columns.Group(g => {
+                                        g.Title("Quantity").HeaderHtmlAttributes(new { style = "text-align: center; font-weight: bold;" })
+                                        .Columns(incl =>
+                                        {
+                                            incl.Bound(c => c.RawQuantity).Format("{0:N2}");
+                                            incl.Bound(c => c.CleanedQuantity).Format("{0:N2}");
+                                        });
+                                    });
+                                    columns.Group(gr =>
+                                    {
+                                        gr.Title("Costs").HeaderHtmlAttributes(new { style = "text-align: center; font-weight: bold;" })
+                                        .Columns(incl => {
+                                            incl.Bound(c => c.ProductionCost).Format("{0:N2}");
+                                            incl.Bound(c => c.ProcessingAndPackingCost).Format("{0:N2}");
+                                            incl.Bound(c => c.Recovery).Format("{0:N2}");
+                                            incl.Bound(c => c.TotalNetCost).Format("{0:N2}");
+                                        });
+                                    });
+                                    //columns.Bound(c => c.DateTo);
+                                    //columns.Bound(c => c.ProductionType).EditorTemplateName("SeedProductionTypes");
+                                    //columns.Bound(c => c.ProductionCode);
+                                    //columns.ForeignKey(c => c.CropId, (IEnumerable)ViewData["CropTypes"], "CropId", "Name").EditorTemplateName("CropNames");
+                                    ////columns.Bound(c => c.SeedType).EditorTemplateName("SeedTypes");
+                                    ////columns.Bound(c => c.Generation).EditorTemplateName("SeedGenerations");
+                                    //columns.Bound(c => c.Description);
+
+                                    columns.Command(command =>
+                                    {
+                                        command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                        command.Destroy().Text(Resources.ActionButton_Cancel);
+                                    }).Width(200);
+                                })
+                                .ToolBar(toolbar =>
+                                {
+                                    toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                                })
+                                .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                .Scrollable(h => h.Height(500))
+                                .Sortable(sortable =>
+                                {
+                                    sortable.SortMode(GridSortMode.SingleColumn);
+                                })
+                                .Selectable(selectable =>
+                                {
+                                    selectable.Mode(GridSelectionMode.Single);
+                                    selectable.Type(GridSelectionType.Row);
+                                })
+                                .Filterable()
+                                .Pageable(pageable => pageable
+                                    .Input(true)
+                                    .Numeric(false)
+                                    .Refresh(true)
+                                    .PageSizes(true)
+                                    .ButtonCount(5))
+                                .DataSource(dataSource => dataSource
+                                    .Ajax()
+                                    .Events(events =>
+                                    {
+                                        events.Error("error_handler(\"itemsGrid_#=CleanedSeedSellingPriceId#\")");
+                                        events.RequestStart("onRequestStart(\"itemsGrid_#=CleanedSeedSellingPriceId#\")");
+                                        events.RequestEnd("onRequestEnd(\"itemsGrid_#=CleanedSeedSellingPriceId#\")");
+                                    })
+                                    .Model(model =>
+                                    {
+                                        model.Id(p => p.CleanedSeedSellingPriceItemId);
+
+                                        model.Field(f => f.RawQuantity).Editable(false);
+                                        model.Field(f => f.CleanedQuantity).Editable(false);
+                                        model.Field(f => f.ProductionCost).Editable(false);
+                                        model.Field(f => f.ProcessingAndPackingCost).Editable(false);
+                                        model.Field(f => f.Recovery).Editable(false);
+                                        model.Field(f => f.TotalNetCost).Editable(false);
+
+                                    })
+                                    .Read(read => read.Action("SellingPrices_Read", "CleanedSeedSellingPriceItem", new { id = "#=CleanedSeedSellingPriceId#" }))
+                                    .Create(create => create.Action("SellingPrice_Create", "CleanedSeedSellingPriceItem", new { id = "#=CleanedSeedSellingPriceId#" }))
+                                    .Update(update => update.Action("SellingPrice_Update", "CleanedSeedSellingPriceItem"))
+                                    .Destroy(destroy => destroy.Action("SellingPrice_Destroy", "CleanedSeedSellingPriceItem"))
+                                    )//.ClientDetailTemplateId("template_seedProductionactivities")
+                                    .ToClientTemplate()
+                        )
+                </text>
+                );
+        }).ToClientTemplate()
+    )
+</script>
+<script>
+    //function filterCategories() {
+    //    //
+    //    // summary:
+    //    //      send the filtering text along with the parent widget's value
+    //    var dropdownlist = $("#ItemCode").data("kendoDropDownList");
+    //    var filterInput = dropdownlist.filterInput;
+    //    return {
+    //        ItemCategoryCode: $("#ItemCategoryCode").val(), filterString: filterInput.val()
+    //    };
+    //}
+</script>

@@ -1,0 +1,61 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.HRM.Templates
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Templates</legend>
+@(Html.Kendo().Grid<Template>()
+          .Name("Template")
+          .Columns(columns =>
+          {
+
+              columns.Bound(c => c.TempOne).Width(200);
+              columns.Bound(c => c.TemplateType).Width(200);
+
+                  columns.Command(command => {
+                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                  command.Destroy().Text(Resources.ActionButton_Cancel);
+                  }).Width(200);
+          })
+          .ToolBar(toolbar =>
+          {
+              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+          })
+          .Editable(editable => editable.Mode(GridEditMode.InLine))
+          .Scrollable(h => h.Height(500))
+          .Selectable(selectable =>
+          {
+              selectable.Mode(GridSelectionMode.Single);
+              selectable.Type(GridSelectionType.Row);
+          })
+          .Groupable()
+          .Sortable(sortable =>
+          {
+              sortable.SortMode(GridSortMode.SingleColumn);
+          })
+          .Filterable()
+
+          .Pageable(pageable => pageable
+              .Input(true)
+              .Numeric(false)
+              .Refresh(true)
+              .PageSizes(true)
+              .ButtonCount(5))
+          .DataSource(dataSource => dataSource
+              .Ajax()
+                  .Events(events =>
+                  {
+                      events.Error("error_handler(\"Template\")");
+                      events.RequestStart("onRequestStart(\"Template\")");
+                      events.RequestEnd("onRequestEnd(\"Template\")");
+                  })
+
+              .Model(model => model.Id(p => p.TemplateId))
+              .Read(read => read.Action("Template_Read", "Template"))
+              .Create(create => create.Action("Template_Create", "Template", new { Area = "HRM" }))
+              .Update(update => update.Action("Template_Update", "Template"))
+              .Destroy(destroy => destroy.Action("Template_Destroy", "Template"))
+          ))
+
+

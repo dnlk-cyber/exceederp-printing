@@ -1,0 +1,484 @@
+﻿<legend>Trainees & Companies</legend>
+@(Html.Kendo().TabStrip()
+    .Name("trainee_tabstrip")
+    .SelectedIndex(0)
+    .Items(items =>
+    {
+        items.Add().Text("Trainees").Content(@<text>
+            @(Html.Kendo().Grid<ExceedERP.Core.Domain.CMS.CmsTrainee>()
+                  .Name("trainee_grid")
+                  .Columns(columns =>
+                  {
+                      columns.Template(c => { }).Width(100)
+                      .ClientTemplate("<img class='circular-profile-img-small' src ='" + @Url.Content("~/Content/Images/CMS/Profiles/") + "#=ProfilePicFileName#'/>");
+                      columns.Bound(c => c.RegistrationDate).Width(100);
+                      columns.Bound(c => c.RegistrationNumber).Width(350);
+                      columns.ForeignKey(c => c.CMSProgramId, (IEnumerable)ViewData["Programs"], "CMSProgramId", "Name").Width(100);
+                      columns.ForeignKey(c => c.CMSCourseId, (IEnumerable)ViewData["Courses"], "CMSCourseId", "Name").Width(100);
+                      //columns.Bound(c => c.FirstName);
+                      //columns.Bound(c => c.LastName);
+                      //columns.Bound(c => c.MiddleName);
+                      columns.Bound(c => c.FullName).Width(100);
+                      columns.Bound(c => c.Nationality).Width(100);
+                      //columns.Bound(c => c.CompanyName);
+                      columns.Bound(c => c.Region).Width(100);
+                      columns.Bound(c => c.Address).Width(100);
+                      columns.ForeignKey(c => c.CityId, (IEnumerable)ViewData["Cities"], "CityId", "Name").Width(100);
+                      columns.Bound(c => c.DateOfBirth).Width(100);
+                      columns.Bound(c => c.PhoneNumber).Width(100);
+                      columns.Bound(c => c.MobilePhoneNumber).Width(100);
+                      columns.Bound(c => c.Email).Width(100);
+                      columns.Bound(c => c.PreferedDate).Width(100);
+                      columns.Bound(c => c.TrainingVenue).Width(100);
+
+                      columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+                  })
+                  .ToolBar(toolbar => {
+                      toolbar.Create();
+                      toolbar.Excel();
+                      toolbar.Pdf();
+                  })
+                  .Editable(editable =>
+                  {
+                      editable.Mode(GridEditMode.PopUp);
+
+                      editable.TemplateName("TraineeEditorTemplate");
+                      editable.Window(window =>
+                      {
+                          window.Title("Trainee Registration");
+                          window.Scrollable(true);
+                          window.Height(550);
+                      });
+                  })
+                  .Pageable(pagable =>
+                  {
+                      pagable.Enabled(true);
+                      pagable.PageSizes(true);
+                      pagable.Refresh(true);
+                      pagable.ButtonCount(10);
+                      pagable.Input(true);
+                      pagable.Numeric(false);
+                      //pagable.Messages
+
+                  })
+                  .Events(ev =>
+                  {
+                      ev.Edit("onTraineeEdit");
+                  })
+                  .Navigatable()
+                  .Selectable(selectable => {
+                      selectable.Mode(GridSelectionMode.Single);
+                      selectable.Type(GridSelectionType.Row);
+                  })
+                  .Sortable(sortable => {
+                      sortable.SortMode(GridSortMode.SingleColumn);
+                  })
+                  .Filterable()
+                  .Scrollable(s => s.Height(700))
+                  .Events(ev =>
+                  {
+                      ev.DataBound("onTraineeGridDataBound");
+                  })
+                  .DataSource(dataSource => dataSource
+                      .Ajax()
+                      .Model(model => model.Id(p => p.CmsTraineeId))
+                      .Events(ev => ev
+                            .Error("error_handler(\"trainee_grid\")")
+                            .RequestStart("onRequestStart(\"trainee_grid\")")
+                            .RequestEnd("onRequestEnd(\"trainee_grid\")"))
+
+                      .Read(read => read.Action("Trainees_Read", "Trainees", new { traineeType = ExceedERP.Core.Domain.CMS.TraineeType.Individual}))
+                      .Create(create => create.Action("Trainees_Create", "Trainees", new { traineeType = ExceedERP.Core.Domain.CMS.TraineeType.Individual }))
+                      .Update(update => update.Action("Trainees_Update", "Trainees"))
+                      .Destroy(destroy => destroy.Action("Trainees_Destroy", "Trainees"))
+                  ).ClientDetailTemplateId("trainee_detail_template")
+            )
+        </text>);
+        items.Add().Text("Companies").Content(@<text>
+            @(Html.Kendo().Grid<ExceedERP.Core.Domain.CMS.CmsTrainee>()
+                  .Name("company_grid")
+                  .Columns(columns =>
+                  {
+                      columns.Template(c => { }).Width(100)
+                     .ClientTemplate("<img class='circular-profile-img-small' src ='" + @Url.Content("~/Content/Images/CMS/Profiles/") + "#=ProfilePicFileName#'/>");
+                      columns.Bound(c => c.RegistrationDate).Width(100);
+                      columns.Bound(c => c.RegistrationNumber).Width(350);
+                      columns.ForeignKey(c => c.CMSProgramId, (IEnumerable)ViewData["Programs"], "CMSProgramId", "Name").Width(100);
+                      columns.ForeignKey(c => c.CMSCourseId, (IEnumerable)ViewData["Courses"], "CMSCourseId", "Name").Width(100);
+
+                      //columns.Bound(c => c.FullName);
+                      columns.Bound(c => c.Nationality).Width(100);
+                      columns.Bound(c => c.CompanyName).Width(100);
+                      columns.Bound(c => c.Region).Width(100);
+                      columns.Bound(c => c.Address).Width(100);
+                      columns.ForeignKey(c => c.CityId, (IEnumerable)ViewData["Cities"], "CityId", "Name").Width(100);
+                      //columns.Bound(c => c.DateOfBirth);
+                      columns.Bound(c => c.PhoneNumber).Width(100);
+                      columns.Bound(c => c.MobilePhoneNumber).Width(100);
+                      columns.Bound(c => c.Email).Width(100);
+                      columns.Bound(c => c.PreferedDate).Width(100);
+                      //columns.Bound(c => c.TrainingVenue);
+
+                      columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+                  })
+                  .ToolBar(toolbar => {
+                      toolbar.Create();
+                      toolbar.Excel();
+                      toolbar.Pdf();
+                  })
+                  .Events(ev =>
+                  {
+                      ev.Edit("onCompanyEdit");
+                  })
+                  .Editable(editable =>
+                  {
+                      editable.Mode(GridEditMode.PopUp);
+
+                      editable.TemplateName("CompanyEditorTemplate");
+                      editable.Window(window =>
+                      {
+                          window.Title("Company Registration");
+                          window.Scrollable(true);
+                          window.Height(550);
+                      });
+                  })
+                  .Pageable()
+                  .Navigatable()
+                  .Selectable(selectable => {
+                      selectable.Mode(GridSelectionMode.Single);
+                      selectable.Type(GridSelectionType.Row);
+                  })
+                  .Sortable(sortable => {
+                      sortable.SortMode(GridSortMode.SingleColumn);
+                  })
+                  .Filterable()
+                  .Scrollable(s => s.Height(700))
+                  .DataSource(dataSource => dataSource
+                      .Ajax()
+                      .Model(model => model.Id(p => p.CmsTraineeId))
+                      .Events(ev => ev
+                            .Error("error_handler(\"company_grid\")")
+                            .RequestStart("onRequestStart(\"company_grid\")")
+                            .RequestEnd("onRequestEnd(\"company_grid\")"))
+
+                      .Read(read => read.Action("Trainees_Read", "Trainees", new { traineeType = ExceedERP.Core.Domain.CMS.TraineeType.Company }))
+                      .Create(create => create.Action("Trainees_Create", "Trainees", new { traineeType = ExceedERP.Core.Domain.CMS.TraineeType.Company }))
+                      .Update(update => update.Action("Trainees_Update", "Trainees"))
+                      .Destroy(destroy => destroy.Action("Trainees_Destroy", "Trainees"))
+                  ).ClientDetailTemplateId("company_detail_template")
+            )
+        </text>);
+    }))
+
+<script id="trainee_detail_template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+        .Name("trainee_tab_str_#=CmsTraineeId#")
+        .SelectedIndex(0)
+        .Items(items =>
+        {
+            items.Add().Text("Detail").Content(@<text>
+
+                <a class="btn btn-primary k-button k-button-icontext" href='@Url.Action("RegistrationSlip", "CMSPrint")/#=CmsTraineeId#' title="Print Registration Slip"><i class="fa fa-print  fa-2x"></i> &nbsp;&nbsp; Print Registration Slip</a>
+
+
+                @(Html.Kendo().PanelBar()
+                    .Name("trainee_panelbar_#=CmsTraineeId#")
+                    .ExpandMode(PanelBarExpandMode.Multiple)
+                    .Items(panelbar =>
+                    {
+                        panelbar.Add()
+                            .Expanded(true)
+                            .Text("Detail")
+                            .Content(
+                                "<div>" +
+                                "<ul>" +
+                                "<li> <label> Status: </label> <strong> #=Status != null ? Status: ' '# </strong> </li>" +
+                                "<li> <label> Created by: </label> <strong> #=CreatedBy != null ? CreatedBy: ' '# </strong> </li>" +
+                                "<li> <label> Created on: </label> #= kendo.toString(DateCreated, 'dd/MM/yyyy H:mm:ss')# </li>" +
+                                "<li> <label> Modified by :</label> #= ModifiedBy != null ? ModifiedBy: ''# </li>" +
+                                "<li> <label> Last Modified :</label> #= LastModified != null ? kendo.toString(LastModified, 'dd/MM/yyyy H:mm:ss') : ' '# </li>" +
+                                "</ul>" +
+                                "</div>"
+                            );
+
+                    }).ToClientTemplate()
+                ) 
+            </text>);
+            items.Add().Text("Barcode").Content(@<text>
+                <a class="btn btn-primary k-button k-button-icontext" href='\\#' onclick='return onRegerateBarcodeClick("#=CmsTraineeId#", "#=BarcodeImageName#")' title="Regenerate Barcode"><i class="fa fa-repeat  fa-2x"></i> &nbsp;&nbsp; Regenerate Barcode</a>
+
+                <div class="image-container-box">
+                    <img class="rectuangular-large-img" src="~/Content/Images/CMS/Barcodes/#=BarcodeImageName#" />
+                </div>
+            </text>);
+            items.Add().Text("Profile").Content(@<text>
+                <div>
+                    @ProfileChangeHelper()
+                </div>
+                <div class="image-container-box">
+                    <img class="rectuangular-large-img" src="~/Content/Images/CMS/Profiles/#=ProfilePicFileName#" />
+                </div>
+
+            </text>);
+            items.Add().Text("Registration No. Components").Content(@<text>
+                @RegistrationNumberComponentHelper()
+            </text>);
+        }).ToClientTemplate()
+    )
+</script>
+<script id="company_detail_template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+        .Name("company_tab_str_#=CmsTraineeId#")
+        .SelectedIndex(0)
+        .Items(items =>
+        {
+            items.Add().Text("Detail").Content(@<text>
+                <a class="btn btn-primary k-button k-button-icontext" href='@Url.Action("RegistrationSlip", "CMSPrint")/#=CmsTraineeId#' title="Print Registration Slip"><i class="fa fa-print  fa-1x"></i> &nbsp;&nbsp; Print Registration Slip</a>
+
+                @(Html.Kendo().PanelBar()
+                    .Name("company_panelbar_#=CmsTraineeId#")
+                    .ExpandMode(PanelBarExpandMode.Multiple)
+                    .Items(panelbar =>
+                    {
+                        panelbar.Add()
+                            .Expanded(true)
+                            .Text("Detail")
+                            .Content(
+                               "<div>" +
+                                "<ul>" +
+                                "<li> <label> Status: </label> <strong> #=Status != null ? Status: ' '# </strong> </li>" +
+                                "<li> <label> Created by: </label> <strong> #=CreatedBy != null ? CreatedBy: ' '# </strong> </li>" +
+                                "<li> <label> Created on: </label> #= kendo.toString(DateCreated, 'dd/MM/yyyy H:mm:ss')# </li>" +
+                                "<li> <label> Modified by :</label> #= ModifiedBy != null ? ModifiedBy: ''# </li>" +
+                                "<li> <label> Last Modified :</label> #= LastModified != null ? kendo.toString(LastModified, 'dd/MM/yyyy H:mm:ss') : ' '# </li>" +
+                                "</ul>" +
+                                "</div>"
+                            );
+
+                    }).ToClientTemplate()
+                ) 
+            </text>);
+            items.Add().Text("Company Logo").Content(@<text>
+                <div>
+                    @CompanyChangeHelper()
+                </div>
+                <div class="image-container-box">
+                    <img class="rectuangular-large-img" src="~/Content/Images/CMS/Profiles/#=ProfilePicFileName#" />
+                </div>
+            </text>);
+            items.Add().Text("Barcode").Content(@<text>
+                 <a class="btn btn-primary k-button k-button-icontext" href='\\#' onclick='return onRegerateBarcodeClick("#=CmsTraineeId#", "#=BarcodeImageName#")' title="Regenerate Barcode"><i class="fa fa-repeat  fa-2x"></i> &nbsp;&nbsp; Regenerate Barcode</a>
+
+                <div class="image-container-box">
+                    <img class="rectuangular-large-img" src="~/Content/Images/CMS/Barcodes/#=BarcodeImageName#" />
+                </div>
+            </text>);
+            items.Add().Text("Registration No. Components").Content(@<text>
+                @RegistrationNumberComponentHelper()
+            </text>);
+        }).ToClientTemplate()
+    )
+</script>
+@helper RegistrationNumberComponentHelper() { 
+        @(Html.Kendo().Grid<ExceedERP.Core.Domain.CMS.TraineeIdNumberComponent>()
+                  .Name("id_component_grid_#=CmsTraineeId#")
+                  .Columns(columns =>
+                  {
+
+                      columns.Bound(c => c.PrefixValue).Width(60);
+                      columns.Bound(c => c.ISOType).Width(50);
+                      columns.Bound(c => c.SystemId).Width(100);
+                      columns.Bound(c => c.SequenceNumber).Width(50);
+                      columns.Bound(c => c.CombinedIdNumber).Width(500);
+
+
+                      //columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+                  })
+                  //.ToolBar(toolbar => {
+                  //    toolbar.Create();
+                  //    toolbar.Excel();
+                  //    toolbar.Pdf();
+                  //})
+
+                  //.Editable(editable =>
+                  //{
+                  //    editable.Mode(GridEditMode.PopUp);
+
+                  //    editable.TemplateName("CompanyEditorTemplate");
+                  //    editable.Window(window =>
+                  //    {
+                  //        window.Title("Company Registration");
+                  //        window.Scrollable(true);
+                  //        window.Height(550);
+                  //    });
+                  //})
+                  .Pageable()
+                  .Navigatable()
+                  .Selectable(selectable => {
+                      selectable.Mode(GridSelectionMode.Single);
+                      selectable.Type(GridSelectionType.Row);
+                  })
+                  .Sortable(sortable => {
+                      sortable.SortMode(GridSortMode.SingleColumn);
+                  })
+                  .Filterable()
+                  .Scrollable()
+                  .DataSource(dataSource => dataSource
+                      .Ajax()
+                      .Model(model => model.Id(p => p.TraineeIdNumberComponentId))
+                      .Events(ev => ev
+                            .Error("error_handler(\"id_component_grid_#=CmsTraineeId#\")")
+                            .RequestStart("onRequestStart(\"id_component_grid_#=CmsTraineeId#\")")
+                            .RequestEnd("onRequestEnd(\"id_component_grid_#=CmsTraineeId#\")"))
+
+                      .Read(read => read.Action("TraineeIdNumberComponents_Read", "TraineeIdNumberComponents", new { id = "#=CmsTraineeId#" }))
+                      .Create(create => create.Action("TraineeIdNumberComponent_Create", "TraineeIdNumberComponents", new { id = "#=CmsTraineeId#" }))
+                      .Update(update => update.Action("TraineeIdNumberComponent_Update", "TraineeIdNumberComponents"))
+                      .Destroy(destroy => destroy.Action("TraineeIdNumberComponent_Destroy", "TraineeIdNumberComponents"))
+                  ).ToClientTemplate()
+            )
+    }
+@helper ProfileChangeHelper()
+{
+    @(Html.Kendo().Upload()
+        .Name("files")
+        .HtmlAttributes(new { @id= "uploader_#=CmsTraineeId#" })
+        .Messages(msg =>
+        {
+            msg.Select("<i class = \"fa fa-upload\"></i> Upload Photo");
+        })
+        .ShowFileList(false)
+        .Async(s => s.Save("ProfilePicture_Upload", "Trainees", new { id = "#=CmsTraineeId#"})
+        )
+        //.Events(e => e.Complete("contractAttachementSuccess"))
+        .HtmlAttributes(new { accept = "image/*" })
+        .Events(events => events.Complete(
+                            @<text>
+                                function(e) {
+                                var ddl = $("\\#trainee_grid").data("kendoGrid");
+                                @*var ddl2 = $("\\#company_grid").data("kendoGrid");*@
+                                ddl.dataSource.read();
+                                @*ddl2.dataSource.read();*@
+                                }
+                            </text>
+                                   ))
+               .ToClientTemplate()
+    )
+}
+@helper CompanyChangeHelper()
+{
+    @(Html.Kendo().Upload()
+        .Name("files")
+        .HtmlAttributes(new { @id= "uploader_#=CmsTraineeId#" })
+        .Messages(msg =>
+        {
+            msg.Select("<i class = \"fa fa-upload\"></i> Upload Photo");
+        })
+        .ShowFileList(false)
+        .Async(s => s.Save("ProfilePicture_Upload", "Trainees", new { id = "#=CmsTraineeId#"})
+        )
+        //.Events(e => e.Complete("contractAttachementSuccess"))
+        .HtmlAttributes(new { accept = "image/*" })
+        .Events(events => events.Complete(
+                            @<text>
+                                function(e) {
+                                var ddl = $("\\#company_grid").data("kendoGrid");
+                                ddl.dataSource.read();
+                                }
+                            </text>
+                                   ))
+               .ToClientTemplate()
+    )
+}
+<script type="text/javascript">
+    function getSelectedRegion() {
+        return {
+            region: $("#Region").val(), filterString: $("#CityId").data("kendoDropDownList").filterInput.val()
+        }
+    }
+    function onTraineeEdit(e) {
+        if (e.model.isNew()) {
+            $("#trainee-profile-container").hide();
+            $("#registrationNumberContainer").hide();
+        } else {
+            $("#trainee-profile-container").show();
+            $("#registrationNumberContainer").show();
+        }
+    }
+    function onCompanyEdit(e) {
+        if (e.model.isNew()) {
+            $("#trainee-profile-container").hide();
+            $("#registrationNumberContainer").hide();
+        } else {
+            $("#trainee-profile-container").show();
+            $("#registrationNumberContainer").show();
+        }
+    }
+    function onRegerateBarcodeClick(id, existingBarcodeImage) {
+        var canGen = false;
+        if (existingBarcodeImage != null) {
+            canGen = confirm("Are you sure you want to Generate Barcode?");
+        }
+        if (canGen == true) {
+                canGen
+                 $.ajax({
+                    type: "POST",
+                    url: '@Url.Action("RegenerateBarcode", "Trainees", new { area = "CMS" })',
+                    data: { traineeId: id },
+                    success: function (result) {
+                        alert(result.Message);
+                        location.reload(true);
+                    },
+                    error: function (result) {
+                        alert(result);
+                    }
+                });
+            }
+    }
+    function onTraineeGridDataBound(e) {
+        var grid = this;
+        var gridRows = grid.tbody.find("tr");
+        for (var i = 0; i < gridRows.length; i++) {
+            var row = $(gridRows[i]);
+            var dataItem = grid.dataItem(row);
+            if (dataItem.Status === "@ExceedERP.Core.Domain.CMS.TraineeStatusConstants.PassedExamination" || 
+                dataItem.Status === "@ExceedERP.Core.Domain.CMS.CompanyStatusConstants.PassedEvaluation") {
+                row.find(".k-grid-edit").hide();
+                row.find(".k-grid-delete").hide();
+                row.addClass("k-state-PassedEvaluation");
+            } else if (dataItem.Status === "@ExceedERP.Core.Domain.CMS.TraineeStatusConstants.FailedExamination" ||
+                dataItem.Status === "@ExceedERP.Core.Domain.CMS.CompanyStatusConstants.FailedEvaluation") {
+                row.find(".k-grid-edit").hide();
+                row.find(".k-grid-delete").hide();
+                row.addClass("k-state-FailedEvaluation");
+
+            }
+            //else if (dataItem.Status == "Rejected") {
+            //    row.addClass("k-state-Rejected");
+            //}
+            //else {
+
+            //    row.find(".k-grid-edit").show();
+            //    row.find(".k-grid-delete").show();
+            //}
+        }
+    }
+</script>
+
+<style>
+    .k-grid table tr.k-state-PassedEvaluation {
+        background: #b7ff9e;
+    }
+        .k-grid table tr.k-state-PassedEvaluation.k-alt {
+            background: #c6ffb3;
+        }
+
+    .k-grid table tr.k-state-FailedEvaluation {
+        background: #fac2c2;
+    }
+
+        .k-grid table tr.k-state-FailedEvaluation.k-alt {
+            background: #f9cfcf;
+        }
+</style>
+

@@ -1,0 +1,234 @@
+﻿@using ExceedERP.Web.Models
+<legend>Groups</legend>
+@(Html.Kendo().Grid<GroupViewModel>()
+      .Name("mygroup")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Name);
+          columns.Bound(c => c.Description);
+          columns.Bound(c => c.GroupModule);
+
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create();
+         
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .HtmlAttributes(new { style = "height: 650px;" })
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(20))
+      .Scrollable()
+      .Sortable()
+      .Filterable()
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Groupable()
+      .Pageable()
+          .Events(events => events.DetailExpand("onDetailExpandgroup").DetailCollapse("onDetailCollapsegroup"))
+    
+      .Filterable()
+      .Scrollable(height => height.Height(600))
+      
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.Id))
+              .Events(ev => ev.Error("error_handlergroup").Sync("sync_handlergroup"))
+          .Read(read => read.Action("ApplicationGroups_Read", "Groups"))
+            .Create(create => create.Action("ApplicationGroups_Create", "Groups"))
+            .Update(update => update.Action("ApplicationGroups_Update", "Groups"))
+            .Destroy(destroy => destroy.Action("ApplicationGroups_Destroy", "Groups"))
+      ).ClientDetailTemplateId("template")
+)
+
+<script id="template" type="text/Kendo-tmpl">
+    @Html.Kendo().TabStrip().Name("tabstrip_#=Id#").SelectedIndex(0).Items(items =>
+    {
+        items.Add().Text("Role Assignment").Content(
+            @<text>
+               @GroupRolesGrid()
+            </text>);
+    }).ToClientTemplate()
+
+
+</script>
+
+@helper GroupRolesGrid()
+{
+    @(Html.Kendo().Grid<ExceedERP.Web.Models.RoleViewModel>()
+                  .Name("rolegrid_#=Id#")
+                  .Columns(columns =>
+                  {
+                      columns.Bound(c => c.Name);
+                      columns.Bound(c => c.Description);
+                      columns.Bound(c => c.IsIngroup).ClientTemplate("<input type='checkbox' \\#= IsIngroup? checked='checked': checked='' \\# class='checkbox'  />");
+                     
+                       
+                  })
+          .ToolBar(toolbar => toolbar.Template(@<text>
+                                                   @Html.Kendo().Button().Name("assignRolebtn_#=Id#").Content("Save Change").Events(events => events.Click("sendRoles")).Enable(false).ToClientTemplate()
+                                                </text>))
+                         .Editable(editable => editable.Mode(GridEditMode.InLine))
+                        
+                          .HtmlAttributes(new { style = "height: 500px;" })
+                          
+                          .Scrollable()
+                          .Sortable()
+                          .Filterable()
+                          .Selectable(selectable =>
+                          {
+                              selectable.Mode(GridSelectionMode.Single);
+                              selectable.Type(GridSelectionType.Row);
+                          })
+                          .Sortable(sortable =>
+                          {
+                              sortable.SortMode(GridSortMode.SingleColumn);
+                          })
+          
+                         .Events(events => events.DataBound("detaildatabound"))
+                        
+                         .DataSource(dataSource => dataSource
+                             .Ajax()
+                            .Group(groups => groups.Add(p => p.Category))
+                            .Events(events => events.Sync("sync_handlergroup"))
+                            
+                             .Model(model => model.Id(p => p.RoleViewModelId))
+                             .Read(read => read.Action("RoleViewModels_Read", "ApplicationRole", new { id = "#=Id#" }))
+                             .Create(create => create.Action("RoleViewModels_Create", "ApplicationRole", new { id = "#=Id#" }))
+                             .Update(update => update.Action("RoleViewModels_Update", "ApplicationRole"))
+                             .Destroy(destroy => destroy.Action("RoleViewModels_Destroy", "ApplicationRole"))
+                         ).ToClientTemplate()
+    )
+}
+
+<script>
+    function error_handlergroup(e) {
+        if (e.errors) {
+            var message = "Errors:\n";
+            $.each(e.errors, function (key, value) {
+                if ('errors' in value) {
+                    $.each(value.errors, function () {
+                        message += this + "\n";
+                    });
+                }
+            });
+            alert(message);
+
+        }
+
+    }
+
+    function sync_handlergroup(e) {
+        this.read();
+
+    }
+    var gridName;
+    var masterId; 
+    function onDetailExpandgroup(e) {
+        var masterRow = e.masterRow;
+
+        var masterGrid = $("#mygroup").data("kendoGrid");
+
+        var  masterDataItem = masterGrid.dataItem(masterRow);
+
+        masterId = masterDataItem.Id;
+        gridName = "#rolegrid_" + masterDataItem.Id;
+        var subgrid = $(gridName).data("kendoGrid");
+
+        subgrid.table.on("click", ".checkbox", selectRow);
+         
+    }
+    
+    var checkedIds =[];
+    var items = {};
+    var buttonName;
+    function selectRow() {
+        buttonName = "#assignRolebtn_" + masterId;
+        var button = $(buttonName).data("kendoButton");
+        button.enable(true);
+        var checked = this.checked,
+            row = $(this).closest("tr"),
+            grid = $(gridName).data("kendoGrid"),
+            dataItem = grid.dataItem(row);
+        var item = dataItem; 
+        checkedIds.push(dataItem.Id);
+        if (checked) {
+           
+            row.addClass("k-state-selected");
+        } else {
+             
+            row.removeClass("k-state-selected");
+        }
+    }
+    
+
+    function sendRoles(e) {
+        var items = {};
+        
+        var count = 0;
+        var gridgroup = $(gridName).data("kendoGrid");
+        $(gridName).find("input:checked").each(function () {
+
+            var item = gridgroup.dataItem($(this).closest('tr'));
+            items['result[' + count + '].Name'] = item.Name;
+            items['result[' + count + '].RoleViewModelId'] = item.RoleViewModelId;
+            items['result[' + count + '].IsIngroup'] = item.IsIngroup;
+            items['result[' + count + '].Description'] = item.Description;
+            count++;
+        });
+
+        
+        items['result[' + count + '].Name'] = "masterGridParameter";
+        items['result[' + count + '].RoleViewModelId'] = masterId;
+        items['result[' + count + '].IsIngroup'] = false;
+        items['result[' + count + '].Description'] = "master Grid Description";
+
+        buttonName = "#assignRolebtn_" + masterId;
+        var button = $(buttonName).data("kendoButton");
+        button.enable(false);
+        $.ajax({
+            type: "POST",
+            data: items,
+            url: '@Url.Action("Roles","Groups")',
+            success: function(result) {
+                console.log(result);
+            }
+        });
+       
+
+    }
+
+    function detaildatabound(e) {
+
+        var rows = e.sender.tbody.children();
+
+        for (var j = 0; j < rows.length; j++) {
+            var row = $(rows[j]);
+            var dataItem = e.sender.dataItem(row);
+ 
+            if (dataItem.IsIngroup) {
+                row.addClass("k-state-selected"); 
+
+            }
+
+            
+        }
+         
+       
+    }
+    function onDetailCollapsegroup(e) {
+        
+    }
+</script>

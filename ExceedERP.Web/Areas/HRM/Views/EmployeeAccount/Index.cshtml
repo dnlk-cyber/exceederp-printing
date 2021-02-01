@@ -1,0 +1,388 @@
+﻿@using System.Collections
+@using System.Security.AccessControl
+@using ExceedERP.Core.Domain.Common.HRM
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>@Resources.NavigatorPayrollSetup_EmployeeAccount</legend>
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.HRM.Payroll.EmployeeBankAccountView>()
+      .Name("Person_Employeegrid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.EmployeeCode).Width(140);
+          columns.Bound(c => c.FirstNameEnglish).Width(150);
+          columns.Bound(c => c.MiddleNameEnglish).Width(150);
+          columns.Bound(c => c.LastNameEnglish).Width(140);
+          columns.Bound(c => c.MothersFullName).Width(150);
+          columns.Bound(c => c.Gender).Width(100);
+          columns.Bound(c => c.Branch).Width(100);
+          columns.Bound(c => c.AccountNumber).Width(150);
+          //  columns.Bound(c => c.Assignment).Width(100);
+
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Excel().Text(Resources .ActionButton_ExportExcel);
+          toolbar.Pdf().Text(Resources.ActionButton_ExportPDF);
+      })
+
+            .Excel(excel => excel
+                                                            .FileName(Resources.NavigatorPayrollSetup_EmployeeAccount + ".xlsx")
+                                        .Filterable(true)
+                                                .AllPages(true)
+             .ProxyURL(Url.Action("Excel_Export_Save", "EmployeeAccount"))
+                                    )
+                                         .Pdf(pdf => pdf
+                                        .AllPages()
+                                                                .FileName(Resources.NavigatorPayrollSetup_EmployeeAccount + ".pdf")
+                     .ProxyURL(Url.Action("Pdf_Export_Save", "EmployeeAccount"))
+                                    )
+         .Scrollable(h => h.Height(500))
+             .Groupable()
+                      .Sortable(sortable =>
+                      {
+                          sortable.SortMode(GridSortMode.SingleColumn);
+                      })
+          .Filterable()
+          
+             .Pageable(pageable => pageable
+                                        .Input(true)
+                                        .Numeric(false)
+                                        .Refresh(true)
+                                        .PageSizes(true)
+                                        .ButtonCount(5))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+               .Events(events =>
+ {
+events.Error("error_handler(\"Person_Employeegrid\")");
+events.RequestStart("onRequestStart(\"Person_Employeegrid\")");
+events.RequestEnd("onRequestEnd(\"Person_Employeegrid\")");
+})
+                      
+          .Model(model =>
+          {
+              model.Id(p => p.EmployeeId);
+              
+          })
+          
+                                  .Read(read => read.Action("Person_Employee_Read", "EmployeeAccount"))
+
+          ).ClientDetailTemplateId("template")
+)
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+            .Name("tabstrip_#=EmployeeId#")
+    .SelectedIndex(0)
+    .Items(items =>
+     {
+         items.Add().Text(Resources.Details).Content(
+            @<text>
+
+                @(Html.Kendo().PanelBar()
+                                      .Name("panelbar_#=EmployeeId#")
+                      .ExpandMode(PanelBarExpandMode.Single)
+                      .Items(panelbar =>
+                      {
+                          panelbar.Add().Text(Resources.Details)
+                              .Expanded(true)
+                              .Content(
+                                  "<div class='employee-details'>" +
+                        "<ul>" +
+                         "<li><label>" + Resources.HR_Photo + ": </label><div class='EmployeeDetail-photo'style='background-image: url(" + Url.Content("~/Content/Images/") + "#:data.EmployeeId#-Photo/" + "#:data.EmployeeId#.jpg" + ");'/></li>" +
+                         "<li><label>" + Resources.Common_PersonEmployee_EmployeeCode + ": </label>#=EmployeeCode #</li>" +
+                              // "<li><label>Title:  </label>#=Title #</li>" +
+                            "<li><label>" + Resources.Common_PersonEmployee_FirstNameEnglish + ":</label>#=FirstNameEnglish #</li>" +
+                             "<li><label>" + Resources.Common_PersonEmployee_MiddleNameEnglish + ":    </label>#=MiddleNameEnglish #</li>" +
+                              "<li><label>" + Resources.Common_PersonEmployee_LastNameEnglish + ":</label>#=LastNameEnglish #</li>" +
+                              // "<li><label>FirstName:</label>#=FirstName #</li>" +
+                           "<li><label>" + Resources.Common_PersonEmployee_DateOfBirth + ":</label>#=DateOfBirthAm#</li>" +
+                                  "<li><label>" + Resources.Common_PersonEmployee_MothersFullName + ":                </label>#=MothersFullName #</li>" +
+                                  "<li><label>" + Resources.Common_PersonEmployee_BirthPlace + ":</label>#=BirthPlace #</li>" +
+                                  "<li><label>" + Resources.Common_PersonEmployee_HiredDate + ":</label>#=HiredDateAmharic#</li>" +
+
+                        "</ul>" +
+                    "</div>"
+
+
+
+                );
+
+
+
+
+                      }).ToClientTemplate()
+
+                )
+
+
+            </text>
+
+
+                  );
+
+
+         //*************************************************************************************************
+         //*********************************BankInformation*************************************************//
+         items.Add().Text(Resources.NavigatorPayrollSetup_EmployeeAccount).Content(
+             @<text>
+                 @*<Legend>Bank Account</Legend>*@
+                @(Html.Kendo().Grid<BankReference>()
+                      .Name("BankReference_#=EmployeeId#")
+                      .Columns(columns =>
+                      {
+                          columns.ForeignKey(c => c.BankId, (System.Collections.IEnumerable)ViewData["BankList"], "BankId", "Name").EditorTemplateName("Bank").Width(150);
+                          columns.Bound(c => c.Type).EditorTemplateName("Enum");
+                          columns.Bound(c => c.AccountNumber);
+                          columns.Bound(c => c.Remark);
+                          columns.Command(command =>
+                          {
+                              command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                             command.Destroy().Text(Resources.ActionButton_Cancel);
+                          }).Width(200);
+                      })
+                      .ToolBar(toolbar =>
+                      {
+                          toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                      })
+                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                      .Scrollable()
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+                                   .Events(events =>
+         {
+             events.Error("error_handler(\"BankReference_#=EmployeeId#\")");
+             events.RequestStart("onRequestStart(\"BankReference_#=EmployeeId#\")");
+             events.RequestEnd("onRequestEnd(\"BankReference_#=EmployeeId#\")");
+         })
+                                                  
+                          .Model(model => model.Id(p => p.BankReferenceId))
+                                          .Read(read => read.Action("BankReferences_Read", "BankReference", new {Area="Common", id = "#=EmployeeId#", bankReferenceType = "Employee" }))
+                                          .Create(create => create.Action("BankReferences_Create", "BankReference", new {Area="Common", id = "#=EmployeeId#", bankReferenceType = "Employee" }))
+                                          .Update(update => update.Action("BankReferences_Update", "BankReference", new {Area="Common"}))
+                                          .Destroy(destroy => destroy.Action("BankReferences_Destroy", "BankReference", new {Area="Common"}))
+                      ).ToClientTemplate()
+                      )
+
+            
+              </text>
+            );
+         
+     }).ToClientTemplate())
+</script>
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 700px;
+    }
+</style>
+
+<script>
+    
+    var popup;
+    var aCode;
+    var templbtn;
+
+    function SelectAccCode() {
+        templbtn = "acc";
+        var wnd = $("#AccountCodeIssue").data("kendoWindow");
+        wnd.center().open();
+    }
+
+    function rankclicked(e) {
+
+        var account = $("#Accounts").data("kendoDropDownList").value();
+        var subaccount = $("#SubAccounts").data("kendoDropDownList").value();
+        var company = $("#Company").data("kendoDropDownList").value();
+        var glAcc = account + "-" + company + "-" + "00000" + "-" + subaccount;
+        if (account !== "" && subaccount !== "" && company !== "") {
+            if (templbtn === "iacc") {
+                $("#IssueAccCode").val(glAcc).trigger("change");
+
+            }
+            else if (templbtn === "acc") {
+                $("#AccountCode").val(glAcc).trigger("change");
+
+            }
+            var window = $("#AccountCodeIssue").data("kendoWindow");
+
+            window.close();
+        } else {
+            alert("Please select all the neccessary Fields");
+        }
+
+    }
+</script>
+<script>
+    //function error_handler(e) {
+    //    if (e.errors) {
+    //        var message = "Errors:\n";
+    //        $.each(e.errors, function(key, value) {
+    //            if ('errors' in value) {
+    //                $.each(value.errors, function() {
+    //                    message += this + "\n";
+    //                });
+    //            }
+    //        });
+    //        alert(message);
+
+    //    }
+
+    //}
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+</script>
+
+
+@(Html.Kendo().Window().Name("AccountCodeIssue")
+    .Title("Account Code")
+    .Visible(false)
+    .Modal(true)
+      .Content(@<text>
+        @(Html.Kendo().DropDownList()
+                          .Name("Accounts")
+                          .HtmlAttributes(new { style = "width:200px" })
+                          .ValuePrimitive(true)
+                          .OptionLabel("Account...")
+                                  .DataTextField("GlchartAccunt")
+                                  .DataValueField("GlValue")
+                          .DataSource(dataSource =>
+                          {
+                              dataSource.Read(read => read.Action("GetAccountCode", "EmployeeAccount", new { area = "HRM" }))
+                                  .ServerFiltering(true);
+                          })
+        )
+
+        <br />
+
+        @(Html.Kendo().DropDownList()
+                          .Name("SubAccounts")
+                          .ValuePrimitive(true)
+                          .OptionLabel("...SubAccount...")
+                          .HtmlAttributes(new { style = "width:200px" })
+                                  .DataTextField("GlchartSubAccunt")
+                                  .DataValueField("GlValue")
+                          .DataSource(dataSource =>
+                          {
+                              dataSource.Read(read => read.Action("GetSubAccountCode", "EmployeeAccount", new { area = "HRM" }))
+                                  .ServerFiltering(true);
+                          })
+        )
+        <br />
+
+        @(Html.Kendo().DropDownList()
+                          .Name("Company")
+                          .ValuePrimitive(true)
+                          .OptionLabel("...Comapny...")
+                          .HtmlAttributes(new { style = "width:200px" })
+                                  .DataTextField("Name")
+                                  .DataValueField("Value")
+                          .DataSource(dataSource =>
+                          {
+                              dataSource.Read(read => read.Action("GetCompany", "EmployeeAccount", new { area = "HRM" }))
+                                  .ServerFiltering(true);
+                          })
+        )
+        @Html.ValidationMessageFor(m => m)
+        <br />
+        <div class="pull-right">
+            @Html.Kendo().Button().Name("gggg").Content("Save").Events(ev => ev.Click("rankclicked"))
+
+        </div>
+
+    </text>)
+    .Draggable(true)
+    .Width(300)
+      )
+
+<style>
+    .Employee-photo {
+        display: inline-block;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background-size: 32px 35px;
+        background-position: center center;
+        vertical-align: middle;
+        line-height: 32px;
+        box-shadow: inset 0 0 1px #4b0082, inset 0 0 10px rgba(0, 0, 0, .2);
+        margin-left: 5px;
+    }
+
+    .EmployeeDetail-photo {
+        display: inline-block;
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        background-size: 100px 100px;
+        background-position: center center;
+        vertical-align: middle;
+        line-height: 32px;
+        box-shadow: inset 0 0 1px #4b0082, inset 0 0 10px rgba(0, 0, 0, .2);
+        margin-left: 5px;
+    }
+
+    .Employee-name {
+        display: inline-block;
+        vertical-align: middle;
+        line-height: 32px;
+        padding-left: 3px;
+    }
+
+    .k-detail-cell .k-tabstrip .k-content {
+        padding: 0.2em;
+    }
+
+    .employee-details ul {
+        list-style: none;
+        font-style: italic;
+        margin: 15px;
+        padding: 0;
+    }
+
+    .employee-details ul li {
+        margin: 0;
+        line-height: 1.7em;
+    }
+
+    .employee-details label {
+        display: inline-block;
+        width: 90px;
+        padding-right: 10px;
+        text-align: right;
+        font-style: normal;
+        font-weight: bold;
+    }
+</style>
+
+
+<script>
+    function BranchList() {
+
+        var value = this.value(),
+           grid = $("#Person_Employeegrid").data("kendoGrid");
+
+        if (value) {
+            grid.dataSource.filter({ field: "Branch", operator: "eq", value: parseInt(value) });
+        } else {
+            grid.dataSource.filter({});
+        }
+
+    }
+    function AssignmentList() {
+
+        var value = this.value(),
+           grid = $("#Person_Employeegrid").data("kendoGrid");
+
+        if (value) {
+            grid.dataSource.filter({ field: "Assignment", operator: "eq", value: parseInt(value) });
+        } else {
+            grid.dataSource.filter({});
+        }
+
+    }
+</script>

@@ -1,0 +1,747 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.HRM.PerformanceManagment
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<legend>@Resources.NavigatorPerformance_EmployeePerformance</legend>
+<form>
+
+    <div class="row">
+
+    </div>
+    <div class="row">
+
+        @(Html.Kendo().Grid<EmployeePerformance>()
+                           .Name("EmployeePerformancegrid")
+                       .Columns(columns =>
+                       {
+                           columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["Employee"], "EmployeeId", "FullNameaEnglish").Filterable(ftb => ftb.Multi(true).Search(true));//.ClientGroupHeaderTemplate("#=value#");
+                           columns.Bound(c => c.Weight);
+                           columns.Bound(c => c.Result);
+                           columns.Bound(c => c.Grade);
+                           columns.Bound(c => c.IsApproved).ClientTemplate("<input type='checkbox' disabled = 'true' #=IsApproved ? checked='checked' :'' # >");
+                           columns.Command(command =>
+                           {
+                               // command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+
+
+                               // command.Custom("customAction").Text(Resources.ActionButton_Approve).Click("customAction");
+
+                           });
+                       })
+                       .ToolBar(toolbar =>
+                       {
+                       toolbar.Template(@<text>
+                            @*<div class="toolbar">*@
+        <div>
+
+
+            <label class="category-label" for="Role">Evaluation Level</label>
+            @(Html.Kendo().ComboBox()
+                                                                                                          .Name("Evaluation")
+                                                                                                          .Placeholder("Evaluation Level")
+                                                                                                          .DataTextField("Text")
+                                                                                                          .BindTo(EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.Common.EvaluationLevel)))
+                                                                                                          .DataValueField("Value")
+                                                                                                          .AutoBind(false)
+                                                                                                          //.Events(e => e.Change("Roles"))
+                                                                                                          .HtmlAttributes(new { style = "width: 100px;" })
+
+            )
+
+
+
+            <label class="category-label" @*for="Period"*@>Year</label>
+            @(Html.Kendo().DropDownListFor(m => m)
+                                                                                                                                     .Name("GlFiscalYearId")
+                                                                                                                                             //.Placeholder("Period")
+                                                                                                                                             .OptionLabel(Resources.Select)
+                                                                                                                                             .Filter("contains")
+                                                                                                                                             .DataTextField("Name")
+                                                                                                                                                 .DataValueField("GlFiscalYearId")
+                                                                                                                                                     .DataSource(dataSource =>
+                                                                                                                                                     {
+                                                                                                                                          dataSource.Read(read => read.Action("GetFiscalYear", "EmployeePerformance", new { area = "HRM" }))
+                                                       .ServerFiltering(false);
+                                                                                                                                      })
+
+
+            )
+
+
+            <label class="category-label" for="Period">@Resources.HR_PerformanceManagment_EmployeeMeasurementDefinition_PeriodId</label>
+            @(Html.Kendo().DropDownListFor(m => m)
+                                                                                                                                     .Name("Period")
+                                                                                                                                             //.Placeholder("Period")
+                                                                                                                                             .OptionLabel(Resources.Select)
+                                                                                                                                             .Filter("contains")
+                                                                                                                                              .CascadeFrom("GlFiscalYearId")
+                                                                                                                                             .DataTextField("Name")
+                                                                                                                                                     .DataSource(dataSource =>
+                                                                                                                                                     {
+                                                                                                                                          dataSource.Read(read => read.Action("GetPeriodList", "EmployeePerformance", new { area = "HRM" }).Data("filterPeriod"))
+                                                       .ServerFiltering(true);
+                                                                                                                                      })
+                                                                                                                                                     .DataValueField("QuarterId")
+                                                                                                                             .AutoBind(false)
+                                                                                                                                             .Events(e => e.Change("Period"))
+                                                                                                                             .HtmlAttributes(new { style = "width: 150px;" })
+
+            )
+            <label class="category-label" for="EmployeeId">@Resources.HR_PerformanceManagment_EmployeeMeasurementDefinition_PersonEmployee</label>
+            @(Html.Kendo().DropDownListFor(m => m)
+                                                                                                                                          .Name("EmployeeId")
+                                                                                                                                                  .OptionLabel(Resources.Select)
+                                                                                                                                                  .Filter("contains")
+                                                                                                                                                  .DataTextField("FullNameaEnglish")
+                                                                                                                                                   .DataValueField("EmployeeId")
+
+                                                                                                                                                            .DataSource(dataSource =>
+                                                                                                                                                            {
+                                                                                                                                                 dataSource.Read(read => read.Action("GetEmployeesByUserForPerformanceEvaluation", "HRMDataProvider", new { area = "HRM" }))
+                                                              .ServerFiltering(false);
+                                                                                                                                             })
+
+                                                                                                                                  .HtmlAttributes(new { style = "width: 150px;" })
+
+            )
+
+
+
+
+
+            <label class="category-label" for="LookupId">@Resources.HR_PerformanceManagment_EmployeePerformance_EvaluationType</label>
+            @(Html.Kendo().ComboBox()
+                                                                                                                                                  .Name("LookupId")
+                                                                                                                                          .Placeholder("Type")
+                                                                                                                                          .DataTextField("Description")
+                                                                                                                                          .BindTo((IEnumerable)ViewData["EvaluationTypes"])
+                                                                                                                                          .DataValueField("LookupId")
+                                                                                                                                          .AutoBind(false)
+                                                                                                                                          //.Events(e => e.Change("Process"))
+                                                                                                                                          .HtmlAttributes(new { style = "width: 150px;" })
+
+            )
+
+            @(Html.Kendo().Button()
+                                                                                                                .Name("btnRefresh")
+                                                                                                                .HtmlAttributes(new { type = "button", @class = "k-primary" })
+                                                                                                                   .Events(e => e.Click("Process"))
+                                                                                                                   .Content(Resources.Show))
+            &nbsp; &nbsp;
+            &nbsp; &nbsp;
+            &nbsp;  &nbsp;
+            @(Html.Kendo().Button()
+                                                                                                              .Name("btnApprove")
+                                                                                                              .HtmlAttributes(new { type = "button", @class = "btn btn-success" })
+                                                                                                                 .Events(e => e.Click("Approve"))
+                                                                                                                 .Content("Approve"))
+
+
+        </div>
+                        </text>);
+                       })
+                           .Editable(editable => editable.Mode(GridEditMode.InLine))
+                           .Selectable()
+                                .Scrollable(h => h.Height(500))
+                                               //.Groupable()
+                                               .Sortable(sortable =>
+                                               {
+                                                   sortable.SortMode(GridSortMode.SingleColumn);
+                                               })
+                                   .Filterable()
+                                              .Events(x =>
+                                              {
+                                                  x.DetailExpand("MasterDetailExpandSecond");
+                                                 // x.DataBound("mainDataBound");
+                                              })
+                                      .Pageable(pageable => pageable
+                                                                 .Input(true)
+                                                                 .Numeric(false)
+                                                                 .Refresh(true)
+                                                                    .PageSizes(true)
+                                                               .PageSizes(new int[] { 20, 30, 50, 100, 200 })
+                                                                 .ButtonCount(5))
+                           .DataSource(dataSource => dataSource
+                               .Ajax()
+                                                             // .Group(x=>x.Add(p=>p.EmployeeId))
+                                                             .Events(events =>
+                                                             {
+                                                                 events.Error("error_handler(\"EmployeePerformancegrid\")");
+                                                                 events.RequestStart("onRequestStart(\"EmployeePerformancegrid\")");
+                                                                 events.RequestEnd("onRequestEnd(\"EmployeePerformancegrid\")");
+                                                             })
+
+
+
+                               .Model(model =>
+                               {
+                                   model.Id(p => p.EmployeePerformanceId);
+                                   //model.Field(p => p.EvaluationCriteria).Editable(false);
+                                   //model.Field(p => p.LookupId).Editable(false);
+                                   //model.Field(p => p.Result).Editable(false);
+                                   //model.Field(p => p.DefnPercentageofWeight).Editable(false);
+                               })
+                                .Read(read => read.Action("EmployeePerformance_Read", "EmployeePerformance").Data("filterdata"))
+                                .Create(create => create.Action("MeasurementDefinitions_Create", "EmployeePerformance"))
+                                .Update(update => update.Action("MeasurementDefinitions_Create", "EmployeePerformance"))
+                                              .Destroy(destroy => destroy.Action("", ""))
+                               ).ClientDetailTemplateId("template")
+        )
+        <script id="template" type="text/kendo-tmpl">
+            @(Html.Kendo().TabStrip()
+                                  .Name("tabstrip_#=EmployeePerformanceId#")
+                                  .SelectedIndex(0)
+                                  .Items(items =>
+                                  {
+                                      items.Add().Text(Resources.HR_PerformanceManagment_EmployeeMeasurement_MeasurementType).Content(
+                                    @<text>
+                                        @* <legend>Measurement</legend>*@
+                                        @(Html.Kendo().Grid<MeasurementDefinition>()
+                                                                      .Name("MeasurementDefinitionsgrid")
+                                                              .Columns(columns =>
+                                                              {
+
+                                                                  columns.Bound(c => c.EvaluationCriteria);//.ClientGroupHeaderTemplate("#=value#");
+                                                                  columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["EvaluationTypes"], "LookupId", "Description").EditorTemplateName("EvaluationTypes");
+                                                                  //        columns.Bound(c => c.DefnPercentageofWeight);
+                                                                  // .ClientFooterTemplate("DefnPercentageofWeight: #=sum#").HeaderTemplate("Percentage of Weight")
+                                                                  // .ClientGroupFooterTemplate("DefnPercentageofWeight: #=sum#").HeaderTemplate("Percentage of Weight");
+                                                                  columns.Bound(c => c.DefnPercentageofWeight);
+                                                                  columns.Bound(c => c.Result);
+                                                                  //  .ClientFooterTemplate("Result: #=sum#").Title("Result")
+                                                                  // .ClientGroupFooterTemplate("Result: #=sum#").Title("Result");
+                                                                  columns.Bound(c => c.Remark);
+                                                                  //columns.Command(command =>
+                                                                  //{
+                                                                  //    command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                                                  //    //command.Destroy().Text(Resources.ActionButton_Cancel);
+                                                                  //}).Width(180);
+                                                              })
+                                                               //    .ToolBar(toolbar =>
+                                                               //    {
+                                                               //    // toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                                                               //})
+                                                               .ClientDetailTemplateId("ActionOne")
+                                                              // .Events(ev =>
+                                                              //    {
+                                                              //        ev.DataBound("DetailDatabound");
+                                                              //    //  ev.Change("CheckDisablity");
+                                                              //})
+                                                              .Events(x =>
+                                                              {
+                                                                  x.DetailExpand("MasterDetailExpandMeasurmentDefinition");
+                                                              })
+                                                              .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                              .Scrollable(h => h.Height(500))
+                                                              .DataSource(dataSource => dataSource
+                                                                  .Ajax()
+
+                                                                                  .Events(events =>
+                                                                                  {
+                                                                                      events.Error("error_handler(\"MeasurementDefinitionsgrid\")");
+                                                                                      events.RequestStart("onRequestStart(\"MeasurementDefinitionsgrid\")");
+                                                                                      events.RequestEnd("onRequestEnd(\"MeasurementDefinitionsgrid\")");
+                                                                                  })
+
+                                                                                  .Model(model =>
+                                                                                  {
+                                                                                      model.Id(p => p.MeasurementDefinitionId);
+                                                                                      model.Field(p => p.EvaluationCriteria).Editable(false);
+                                                                                      model.Field(p => p.LookupId).Editable(false);
+                                                                                      model.Field(p => p.Result).Editable(false);
+                                                                                      model.Field(p => p.DefnPercentageofWeight).Editable(false);
+
+                                                                                  }
+                                                                  )
+                                                                          .Read(read => read.Action("MeasurementDefinitions_Read", "EmployeePerformance", new {}).Data("filterdata"))
+                                                                                  //.Create(create => create.Action("Measurements_Create", "EmployeePerformance", new { id = "#=MeasurementDefinitionId#" }))
+                                                                                  .Update(update => update.Action("Measurements_Update", "EmployeePerformance"))
+                                                              //.Destroy(destroy => destroy.Action("Measurements_Destroy", "EmployeePerformance"))
+                                                              ).ToClientTemplate()
+                                        )
+
+
+                                    </text>
+
+
+             );
+
+                       
+
+          }).ToClientTemplate())
+        </script>
+
+        <script id="ActionOne" type="text/kendo-tmpl">
+            @(Html.Kendo().TabStrip()
+                                                  .Name("tabstrip_#MeasurementDefinitionId#")
+                                  .SelectedIndex(0)
+                                  .Items(items =>
+                                  {
+                                      items.Add().Text(Resources.HR_PerformanceManagment_EmployeeMeasurement_MeasurementType).Content(
+                            @<text>
+                                @* <legend>Measurement</legend>*@
+                                @(Html.Kendo().Grid<Measurement>()
+                                                                      .Name("Measurementgrid_#=MeasurementDefinitionId#")
+                                                              .Columns(columns =>
+                                                              {
+                                                                  columns.Bound(c => c.MeasurementName);
+                                                                  columns.Bound(c => c.MesPercentageofWeight);
+                                                                  columns.Bound(c => c.Result);
+                                                                  columns.Bound(c => c.Remark);
+                                                                  //columns.Command(command =>
+                                                                  //{
+                                                                  //    //command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                                                  //    //command.Destroy().Text(Resources.ActionButton_Cancel);
+                                                                  //}).Width(180);
+                                                              })
+                                                                       //.ToolBar(toolbar =>
+                                                                       //{
+                                                                       //    // toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                                                                       //})
+                                                                       .ClientDetailTemplateId("Action")
+
+                                                              .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                              .Scrollable(h => h.Height(500))
+                                                              .DataSource(dataSource => dataSource
+                                                                  .Ajax()
+
+                                                                                  .Events(events =>
+                                                                                  {
+                                                                                      events.Error("error_handler(\"Measurementgrid_#=MeasurementDefinitionId#\")");
+                                                                                      events.RequestStart("onRequestStart(\"Measurementgrid_#=MeasurementDefinitionId#\")");
+                                                                                      events.RequestEnd("onRequestEnd(\"Measurementgrid_#=MeasurementDefinitionId#\")");
+                                                                                  })
+
+                                                                                  .Model(model =>
+                                                                                  {
+                                                                                      model.Id(p => p.MeasurementId);
+                                                                                      model.Field(p => p.MeasurementName).Editable(false);
+                                                                                      model.Field(p => p.MesPercentageofWeight).Editable(false);
+                                                                                      model.Field(p => p.Result).Editable(false);
+
+                                                                                  }
+                                                                  )
+                                                                          .Read(read => read.Action("Measurements_Read", "EmployeePerformance", new { mdid = "#=MeasurementDefinitionId#" }).Data("filterdata"))
+                                                                                  //.Create(create => create.Action("Measurements_Create", "EmployeePerformance", new { id = "#=MeasurementDefinitionId#" }))
+                                                                                  .Update(update => update.Action("Measurements_Update", "EmployeePerformance"))
+                                                              //.Destroy(destroy => destroy.Action("Measurements_Destroy", "EmployeePerformance"))
+                                                              ).ToClientTemplate()
+                                )
+
+
+                            </text>
+
+
+               );
+
+                              }).ToClientTemplate())
+        </script>
+
+        <script id="Action" type="text/kendo-tmpl">
+            @(Html.Kendo().TabStrip()
+                                          .Name("tabstrip_#MeasurementId#")
+                          .SelectedIndex(0)
+                          .Items(items =>
+                          {
+                              items.Add().Text(Resources.HR_PerformanceManagment_PerformanceAction_PerformanceAction).Content(
+                                @<text>
+                                    @*  <legend>Action</legend>*@
+                                    @(Html.Kendo().Grid<EmployeePerformanceScore>()
+                                                                                 .Name("PerformanceActiongrid_#=MeasurementId#")
+                                                                 .Columns(columns =>
+                                                                 {
+
+                                                                     columns.ForeignKey(c => c.ActionId, (IEnumerable)ViewData["PerformanceActions"], "ActionId", "ActionName").Title("Action Name");
+                                                                     columns.Bound(c => c.EmpPerfPercentageofWeight);
+                                                                     columns.Bound(c => c.Result);
+                                                                     columns.Bound(c => c.Remark);
+                                                                     columns.Command(command =>
+                                                                     {
+                                                                         command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                                                         //command.Destroy().Text(Resources.ActionButton_Cancel);
+                                                                     }).Width(180);
+                                                                 })
+                                                                 //.ToolBar(toolbar =>
+                                                                 //{
+                                                                 //    //  toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                                                                 //})
+                                                                 .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                          .Scrollable(h => h.Height(500))
+                                                                 .DataSource(dataSource => dataSource
+                                                                     .Ajax()
+                                                                                        .Events(events =>
+                                                                                        {
+                                                                                            events.Error("error_handler(\"PerformanceActiongrid_#=MeasurementId#\")");
+                                                                                            events.RequestStart("onRequestStart(\"PerformanceActiongrid_#=MeasurementId#\")");
+                                                                                            events.RequestEnd("onRequestEnd(\"PerformanceActiongrid_#=MeasurementId#\")");
+                                                                                        })
+
+                                                                      .Model(model =>
+                                                                      {
+                                                                          model.Id(p => p.EmployeePerformanceScoreId);
+                                                                          model.Field(p => p.EmpPerfPercentageofWeight).Editable(false);
+                                                                          model.Field(p => p.ActionId).Editable(false);
+                                                                      }
+                                                      )
+                                                                .Read(read => read.Action("PerformanceActions_Read", "EmployeePerformance", new { mesid = "#=MeasurementId#" }).Data("filterdata"))
+                                                                //.Create(create => create.Action("PerformanceActions_Create", "EmployeePerformance", new { defid = 0, mesid = "#=MeasurementId#" }))
+                                                                .Update(update => update.Action("PerformanceActions_Update", "EmployeePerformance", new { /*defid = "#=MeasurementDefinitionId#",*/ /*mesid = "#=MeasurementId#" */}))
+                                                                 //.Destroy(destroy => destroy.Action("PerformanceActions_Destroy", "EmployeePerformance"))
+                                                                 ).ToClientTemplate()
+                                    )
+
+
+                                </text>
+                          );
+
+                          }).ToClientTemplate())
+        </script>
+
+    </div>
+
+</form>
+
+<script>
+    //function error_handler(e) {
+    //    if (e.errors) {
+    //        var message = "Errors:\n";
+    //        $.each(e.errors, function (key, value) {
+    //            if ('errors' in value) {
+    //                $.each(value.errors, function () {
+    //                    message += this + "\n";
+    //                });
+    //            }
+    //        });
+    //        alert(message);
+
+    //    }
+
+    //}
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+</script>
+<script>
+    function Process() {
+
+        var grid = $("#EmployeePerformancegrid").data("kendoGrid");
+        
+       // grid.dataSource.transport.read();
+        grid.dataSource.read();
+
+      //  grid.refresh();
+
+    }
+</script>
+
+
+
+<script>
+    function Roles() {
+
+
+        var value = this.value(),
+            grid = $("#EmployeePerformancegrid").data("kendoGrid");
+
+        if (value) {
+            grid.dataSource.filter({ field: "Role", operator: "eq", value: parseInt(value) });
+        } else {
+            grid.dataSource.filter({});
+        }
+    }
+</script>
+
+<script>
+    function Period() {
+
+
+        var periods = $("#Period").data("kendoDropDownList");
+        var period = periods.value();
+        // $("#EvaluationType").val(0);
+        $.ajax({
+            url: '@Url.Action("GetPeriod", "EmployeePerformance")',
+            //contentType: "application/json; charset=utf-8",
+            data: { period: period },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                r = result;
+
+            }
+
+        });
+
+    }
+</script>
+
+<script>
+
+    function customAction(e) {
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+
+        var id = dataItem.MeasurementDefinitionId;
+
+
+        try {
+            //var BookNo = dataItem.BookNo;
+            $.ajax({
+                //contentType: "application/json; charset=utf-8",
+                url: '@Url.Action("SetStatus", "EmployeePerformance")',
+                data: { mid: id },
+                type: 'POST',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                    $("#MeasurementDefinitiongrid").data("kendoGrid").dataSource.read();
+                    $("#MeasurementDefinitiongrid").data("kendoGrid").refresh();
+                }
+
+            });
+        } catch (ee) {
+            alert("Please select the row first!!");
+        }
+    }
+    var enableDisable;
+   
+    
+    function DetailDatabound(e) {
+        var grid = this;
+
+
+        var gridRows = grid.tbody.find("tr");
+        for (var i = 0; i < gridRows.length; i++) {
+            var row = $(gridRows[i]);
+
+            var dataItem = grid.dataItem(row);
+
+            if (enableDisable === true) {
+
+                    //answer.hide(true);
+                    //transfer.hide(true);
+                row.find(".k-grid-edit").hide();
+
+
+
+            } else {
+                row.find(".k-grid-edit").show();
+            }
+        }
+    }
+    function mainDataBound(e) {
+
+        $("#chkemp").show(false);
+
+        try {
+
+            var grid = this;
+
+            var gridRows = grid.tbody.find("tr");
+
+            for (var j = 0; j < gridRows.length; j++) {
+                var row = $(gridRows[j]);
+                var dataItem = grid.dataItem(row);
+                //perform your custom check
+
+
+                if (dataItem.IsApproved === false) {
+                    //hide buttons using jQuery
+                    row.find(".k-grid-edit").show();
+                    row.find(".k-grid-customAction").text('Approve');
+                }
+                else {
+
+                    row.find(".k-grid-edit").hide();
+                    row.find(".k-grid-customAction").text('Reject');
+                }
+
+
+
+            }
+        } catch (ee) {
+            alert(ee);
+        }
+
+    }
+
+    var empId = 0;
+    var measurmentDefinitionId = 0;
+    function MasterDetailExpandSecond(e) {
+        var masterRow = e.masterRow;
+
+        var masterGrid = $("#EmployeePerformancegrid").data("kendoGrid");
+
+        var masterDataItem = masterGrid.dataItem(masterRow);
+
+        empId = masterDataItem.EmployeeId;
+    }
+
+    function MasterDetailExpandMeasurmentDefinition(e) {
+        var masterRow = e.masterRow;
+
+        var masterGrid = $("#MeasurementDefinitionsgrid").data("kendoGrid");
+
+        var masterDataItem = masterGrid.dataItem(masterRow);
+
+        measurmentDefinitionId = masterDataItem.MeasurementDefinitionId;
+    }
+
+    function filterdata() {
+        
+        var employees = $("#EmployeeId").data("kendoDropDownList");
+        var employee = employees.value();
+       // var checkemployee = $("#CheckEmp").data("kendoDropDownList");
+       // var checkemp = checkemployee.value();
+        var periods = $("#Period").data("kendoDropDownList");
+        var period = periods.value();
+        var lookups = $("#LookupId").data("kendoComboBox");
+        var LookupId = lookups.value();
+        var evaluation = $("#Evaluation").data("kendoComboBox");
+        var Evaluation = evaluation.value();
+       
+            return {
+                employee: employee,
+                period: period,
+                LookupId: LookupId,
+                Evaluation: Evaluation,
+                //checkemp: checkemp,
+                empId: empId,
+                measurmentDefinitionId: measurmentDefinitionId
+            };
+        
+       
+    }
+    function Employee() {
+        var employees = $("#EmployeeId").data("kendoComboBox");
+        var employee = employees.value();
+        // $("#EvaluationType").val(0);
+        $.ajax({
+            url: '@Url.Action("GetEmployee", "EmployeePerformance")',
+            //contentType: "application/json; charset=utf-8",
+            data: { employee: employee },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                r = result;
+
+            }
+
+        });
+
+
+        var value = this.value(),
+            grid = $("#MeasurementDefinitiongrid").data("kendoGrid");
+
+        if (value) {
+            grid.dataSource.filter({ field: "EmployeeId", operator: "eq", value: parseInt(value) });
+        } else {
+            grid.dataSource.filter({});
+        }
+    }
+</script>
+
+<style>
+    #grid .k-grid-toolbar {
+        padding: .6em 1.3em;
+    }
+
+    .category-label {
+        vertical-align: middle;
+        padding-right: .5em;
+    }
+
+    #category {
+        vertical-align: middle;
+    }
+
+    .toolbar {
+        float: right;
+    }
+</style>
+
+<script>
+
+    function filterPeriod() {
+        return {
+            GlFiscalYearId: $("#GlFiscalYearId").val()
+        };
+    }
+
+
+</script>
+
+<script>
+    function MasterDetailExpand() {
+
+        var employees = $("#EmployeeId").data("kendoDropDownList");
+        var empId = employees.value();
+       // var checkemployee = $("#CheckEmp").data("kendoDropDownList");
+       // var checkemp = checkemployee.value();
+        var periods = $("#Period").data("kendoDropDownList");
+        var period = periods.value();
+        var lookups = $("#LookupId").data("kendoComboBox");
+        var LookupId = lookups.value();
+        var evaluation = $("#Evaluation").data("kendoComboBox");
+        var eva = evaluation.value();
+
+        $.ajax({
+            url: '@Url.Action("GenerateEvaluation", "EmployeePerformance")',
+            //contentType: "application/json; charset=utf-8",
+            data: { empId: empId, period: period, LookupId: LookupId, eva: eva},
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                r = result;
+
+            }
+
+        });
+
+
+        var value = this.value(),
+            grid = $("#MeasurementDefinitiongrid").data("kendoGrid");
+
+        if (value) {
+            grid.dataSource.filter({ field: "EmployeeId", operator: "eq", value: parseInt(value) });
+        } else {
+            grid.dataSource.filter({});
+        }
+    }
+</script>
+
+<script>
+    function Approve() {
+        
+        var periods = $("#Period").data("kendoDropDownList");
+        var period = periods.value();
+        if (period == "") {
+            alert("please select the period to approve");
+        }
+        else {
+            var conf = confirm("Are you sure you want to approve this quarter performance evaluation");
+            if (conf === true) {
+                $('#loading-image').show();
+
+                $.ajax({
+                    url: '@Url.Action("Approve", "EmployeePerformance")',
+                    //contentType: "application/json; charset=utf-8",
+                    data: { period: period },
+                    type: 'POST',
+                    cache: false,
+                    success: function (result) {
+                        r = result;
+                        alert("Successfully Approved");
+                        $('#loading-image').hide();
+                        grid.dataSource.read();
+                    }
+
+                });
+            }
+    }
+        }
+       
+</script>

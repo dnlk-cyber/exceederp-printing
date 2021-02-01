@@ -1,0 +1,11 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@(Html.Kendo().DropDownListFor(m=> m).BindTo((IEnumerable)ViewData["Contribution"])
+.OptionLabel(Resources.Select)
+        .DataTextField("Description")
+            .DataValueField("ContributionTypeId")
+             .ValuePrimitive(true)
+)
+
+
+

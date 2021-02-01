@@ -1,0 +1,29 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.CommunicationSource>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.Reference);
+        columns.Bound(c => c.CommunicationType);
+        columns.Bound(c => c.CommunicationCode);
+        columns.Bound(c => c.Remark);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.CommunicationSourceID))
+              .Events(ev => ev
+                                                                    .Error("error_handler(\"grid\")")
+                                                                    .RequestStart("onRequestStart(\"grid\")")
+                                                                    .RequestEnd("onRequestEnd(\"grid\")"))
+          .Read(read => read.Action("CommunicationSources_Read", "CommunicationSource"))
+          .Create(create => create.Action("CommunicationSources_Create", "CommunicationSource"))
+          .Update(update => update.Action("CommunicationSources_Update", "CommunicationSource"))
+          .Destroy(destroy => destroy.Action("CommunicationSources_Destroy", "CommunicationSource"))
+      )
+)

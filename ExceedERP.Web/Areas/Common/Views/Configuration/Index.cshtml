@@ -1,0 +1,88 @@
+﻿@using ExceedERP.Core.Domain.Common.HRM
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<Legend>Settings</Legend>
+@(Html.Kendo().Grid<Configuration>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Reference).EditorTemplateName("SettingCategories").Width(200);
+             
+             
+          columns.Bound(c => c.Attribute).EditorTemplateName( "SettingAttribute").Width(300);
+          columns.Bound(c => c.CurrentValue);//.EditorTemplateName("SettingValue").Width(150);
+        columns.Bound(c => c.Remark);
+          columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit); });
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+           .Filterable()
+      .Scrollable(h=> h.Height( 500))
+           .Pageable(pageable => pageable
+                                        .Input(true)
+                                        .Numeric(false)
+                                        .Refresh(true)
+                                        .PageSizes(true)
+                                        .ButtonCount(5))
+                                    
+      .DataSource(dataSource => dataSource
+          .Ajax()
+                .Events(events => events.Error("error_handler")
+                          .Sync("sync_handler"))
+          .Model(model => model.Id(p => p.ConfigurationId))
+               .Group(groups => groups.Add(p => p.Reference ))
+          .Read(read => read.Action("Configurations_Read", "Configuration"))
+                              .Create(create => create.Action("Configurations_Create", "Configuration", new { Attribute = "#=Attribute#", CurrentValue = "#=CurrentValue#" }))
+          .Update(update => update.Action("Configurations_Update", "Configuration"))
+      )
+)
+<script>
+    function filterCategories() {
+        return {
+            Reference: $("#Reference").val()
+        };
+    }
+</script>
+<script>
+    function filterAttributes() {
+        return {
+            Attribute: $("#Attribute").val()
+        };
+    }
+
+
+</script>
+<script>
+    function filterCurrentValue() {
+        return {
+            Attribute: $("#CurrentValue").val()
+        };
+    }
+
+
+</script>
+<script>
+    function error_handler(e) {
+        if (e.errors) {
+            var message = "Errors:\n";
+            $.each(e.errors, function (key, value) {
+                if ('errors' in value) {
+                    $.each(value.errors, function () {
+                        message += this + "\n";
+                    });
+                }
+            });
+            alert(message);
+
+        }
+
+    }
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+</script>

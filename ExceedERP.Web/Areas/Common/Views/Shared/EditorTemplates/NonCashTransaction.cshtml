@@ -1,0 +1,136 @@
+﻿@using Kendo.Mvc.UI
+@model ExceedERP.Core.Domain.Common.NonCashTransaction
+
+<form>
+    <div class="row">
+        <div class="col-md-1">
+
+        </div>
+
+ 
+
+
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.Consignee)
+                </div>
+                <div>
+
+
+                    @(Html.Kendo().DropDownListFor(model => model.Consignee)
+                          .AutoBind(false)
+                          .OptionLabel("Select Consignee...")
+                          .DataTextField("TradeName")
+                          .DataValueField("OrganizationCustomerID")
+                          .DataSource(datasource =>
+                          {
+                              datasource.Read(read => read.Action("GetConsignee", "DataProvider"))
+                                  .ServerFiltering(true);
+                          }))
+                  
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.PaymentMethod)
+                </div>
+                <div>
+                    @(Html.Kendo().DropDownListFor(model => model.PaymentMethod)
+                    .AutoBind(false)
+                    .OptionLabel("Select Paymenent...")
+                    .DataTextField("Text")
+                    .DataValueField("Text")
+                    .BindTo(EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.Common.PaymentMethodType)))
+                    )
+
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.PaymentProcessor)
+                </div>
+                <div>
+                    @(Html.Kendo().DropDownListFor(model => model.PaymentProcessor)
+                    .AutoBind(false)
+                    .OptionLabel("Select Bank...")
+                            .DataTextField("TradeName")
+                                    .DataValueField("BankID")
+                    .DataSource(dataSource =>
+                    {
+                        dataSource.Read(read => read.Action("GetBankList", "DataProvider")).ServerFiltering(true);
+                    })
+
+                    )
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-md-1">
+
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.Index)
+                </div>
+                <div>
+                    @Html.Kendo().NumericTextBoxFor(model => model.Index)
+                    @Html.ValidationMessageFor(model => model.Index)
+                </div>
+            </div>
+
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.IssueDate)
+                </div>
+                <div>
+                    @Html.Kendo().DatePickerFor(model => model.IssueDate)
+                    @Html.ValidationMessageFor(model => model.IssueDate)
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.MaturityDate)
+                </div>
+                <div>
+                    @Html.Kendo().DatePickerFor(model => model.MaturityDate)
+                    @Html.ValidationMessageFor(model => model.MaturityDate)
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-md-1">
+
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.Number)
+                </div>
+                <div>
+                    @Html.Kendo().TextBoxFor(model => model.Number)
+                    @Html.ValidationMessageFor(model => model.Number)
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+</form>

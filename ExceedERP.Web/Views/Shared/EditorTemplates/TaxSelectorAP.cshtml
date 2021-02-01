@@ -1,0 +1,13 @@
+﻿@(Html.Kendo().DropDownListFor(m => m)
+                  .ValuePrimitive(true)
+                  .OptionLabel("Select Tax...")
+                      .DataTextField("Name")
+                                  .DataValueField("GLTaxRateID")
+                          .Filter("contains")
+                                .DataSource(dataSource =>
+                                {
+                                    dataSource.Read(read => read.Action("GetApTax", "FinanceDataProvider", new { area = "Finance" }))
+                                    .ServerFiltering(false);
+                                })
+)
+@Html.ValidationMessageFor(m => m)

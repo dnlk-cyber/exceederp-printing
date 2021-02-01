@@ -1,0 +1,71 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.APTS
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Despensary Store</legend>
+@(Html.Kendo().Grid<DespensaryStore>()
+                  .Name("DrugStoregrid")
+              .Columns(columns =>
+              {
+                  columns.Bound(c => c.DespensaryStoreId).Visible(false);
+                  columns.ForeignKey(c => c.DrugListsId, (IEnumerable)ViewData["druglists"], "DrugListsId", "Description").Width(200).Title("Description");
+                  columns.ForeignKey(c => c.DrugUnitId, (IEnumerable)ViewData["Unit"], "DrugUnitId", "UoMName").Width(100).Title("Unit");
+                  columns.Bound(c => c.BegStock).Width(200);
+                  columns.Bound(c => c.NewReceived).Width(200);
+                  columns.Bound(c => c.Balance).Width(200);
+                  columns.Bound(c => c.Remark).Width(200);
+                  columns.Command(command =>
+                  {
+                      //command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                      //command.Destroy().Text(Resources.ActionButton_Cancel);
+                  }).Width(200);
+              })
+              .ToolBar(toolbar =>
+              {
+                  //toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+              })
+              .Editable(editable => editable.Mode(GridEditMode.InLine))
+                .Scrollable(h => h.Height(500))
+
+
+                                 .Groupable()
+                                          .Sortable(sortable =>
+                                          {
+                                              sortable.SortMode(GridSortMode.SingleColumn);
+                                          })
+                              .Filterable()
+                                 .Pageable(pageable => pageable
+                                                            .Input(true)
+                                                            .Numeric(false)
+                                                            .Refresh(true)
+                                                            .PageSizes(true)
+                                                            .ButtonCount(5))
+              .DataSource(dataSource => dataSource
+                  .Ajax()
+                         .Events(events =>
+                         {
+                             events.Error("error_handler(\"DrugStoregrid\")");
+                             events.RequestStart("onRequestStart(\"DrugStoregrid\")");
+                             events.RequestEnd("onRequestEnd(\"DrugStoregrid\")");
+                         }
+                      )
+
+                      .Model(model =>
+                      {
+                          model.Id(p => p.DespensaryStoreId);
+                          //model.Field(p => p.InternalCode).Editable(false);
+                          model.Field(p => p.Balance).Editable(false);
+                      })
+                  .Read(read => read.Action("DespensaryStore_Read", "DespensaryStore"))
+                  .Create(create => create.Action("DespensaryStore_Create", "DespensaryStore"))
+                  .Update(update => update.Action("DespensaryStore_Update", "DespensaryStore"))
+                  .Destroy(destroy => destroy.Action("DespensaryStore_Destroy", "DespensaryStore"))
+              )
+)
+<script>
+
+    function sync_handler(e) {
+        this.read();
+</script>

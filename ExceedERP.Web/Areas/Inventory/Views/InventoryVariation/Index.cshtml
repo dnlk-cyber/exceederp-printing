@@ -1,0 +1,37 @@
+﻿ @{ Layout = "~/Views/Shared/_Layout.cshtml";}
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Inventory.VariationVM>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.ItemDescription).Width(120);
+          columns.Bound(c => c.ItemCode).Width(120);
+          columns.Bound(c => c.Uom).Width(120);
+          columns.Bound(c => c.Price).Width(120);
+
+          columns.Bound(c => c.PreviousBalance).Width(120);
+          columns.Bound(c => c.Count).Width(120);
+          
+          columns.Bound(c => c.ItemCategoryCode).Width(120);
+          columns.Bound(c => c.ShortageQty).Width(120);
+          columns.Bound(c => c.OverageQty).Width(120);
+          columns.Bound(c => c.ShortagePrice).Width(120);
+          columns.Bound(c => c.OveragePrice).Width(120);
+          columns.Bound(c => c.TotalAmount).Width(120);
+          columns.Bound(c => c.PhysicalAmount).Width(120);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Excel();
+           // toolbar.Pdf();
+      })
+      .Pageable()
+      .Navigatable()
+      .Sortable(sortable => {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Scrollable(h => h.Height(500))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+              .Read(read => read.Action("PropertyCountItems_Read", "InventoryVariation"))
+      )
+)

@@ -1,0 +1,10 @@
+﻿
+@(Html.Kendo().DropDownListFor(m => m).Name("CategoryRef")
+              .DataTextField("EquipmentName")
+              .DataValueField("RequestedEquipmentId") 
+                     .DataSource(dataSource =>
+                      {
+                          dataSource.Read(read => read.Action("AssignmentDDBind", "AssignedEquipment").Data("filterRequest"))
+                                    .ServerFiltering(false);
+                      }).OptionLabel("Select ").Filter(FilterType.Contains).ValuePrimitive(true))
+                

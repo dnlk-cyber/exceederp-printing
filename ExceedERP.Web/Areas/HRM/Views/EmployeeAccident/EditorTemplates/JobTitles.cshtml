@@ -1,0 +1,18 @@
+﻿@using ExceedERP.Core.Domain.Common
+@using ExceedERP.Core.Localization
+@(Html.Kendo().DropDownListFor(m => m)
+ 
+                .DataTextField("Name")
+                            .DataValueField("OrgStructureId")
+                            .OptionLabel(Resources.Select)
+               .DataSource(source =>
+                    {
+                        source.Read(read =>
+                        {
+                            read.Action("GetJobTitle", "HRMDataProvider");
+
+                        })
+                        .ServerFiltering(true);
+                    })
+                         .ValuePrimitive(true)
+)

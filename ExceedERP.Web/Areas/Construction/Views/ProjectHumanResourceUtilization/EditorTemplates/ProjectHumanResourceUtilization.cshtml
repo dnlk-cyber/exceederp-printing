@@ -1,0 +1,151 @@
+﻿@using System.Collections
+@using ExceedERP.Helpers.Common
+@using Kendo.Mvc.UI
+@model ExceedERP.Core.Domain.Construction.ProjectHumanResourceUtilization 
+
+<form>
+    <div class="row">
+    <div class="col-md-1">
+
+    </div>
+    <div class="col-md-3">
+        <div class="form-group">
+            <div class="k-label">
+                @Html.LabelFor(model => model.CrewCode, htmlAttributes: new {@class = "control-label col-md-8"})
+
+            </div>
+            <div>
+
+                @Html.Kendo().TextBoxFor(model => model.CrewCode)
+                @Html.ValidationMessageFor(model => model.CrewCode, "", new { @class = "text-danger" })
+
+
+
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="form-group">
+            <div class="k-label">
+                @Html.LabelFor(model => model.CrewName, htmlAttributes: new { @class = "control-label col-md-8" })
+
+            </div>
+            <div>
+
+                @Html.TextAreaFor(model => model.CrewName)
+                @Html.ValidationMessageFor(model => model.CrewName, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="form-group">
+            <div class="k-label">
+                @Html.LabelFor(model => model.EmployeeId, htmlAttributes: new { @class = "control-label col-md-8" })
+
+            </div>
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model)
+                     .Name("EmployeeId")
+                         .DataValueField("PersonId")
+                        .DataTextField("FullName")
+                           .OptionLabel("Select Employee..")
+                            .Filter("contains")
+                            .MinLength(2)
+                            .HtmlAttributes(new { style = "width:200px" })
+                                  .BindTo((IEnumerable)ViewData["EmployeeList"])
+                                           .ValuePrimitive(true)
+                                           .Height(400)
+                                           //.HeaderTemplate("<div class=\"dropdown-header k-widget k-header\">" +
+                                           //             "<span>Photo</span>" +
+                                           //             "<span>Full Name</span>" +
+                                           //         "</div>")
+                                           //.Template(@"<div class='Employee-photo' style='background-image: url(" + Url.Content("~/Content/Images/") + "#:data.PersonId#-Photo/" + "#:data.PersonId#.jpg" + ");'></div>" +
+                                           //                 "<div class='Employee-name'>#:FullName#</div>")
+                )
+                
+            </div>
+        </div>
+    </div>
+  
+   
+
+</div>
+
+<br/>
+
+
+<div class="row">
+    <div class="col-md-1">
+
+    </div>
+    <div class="col-md-3">
+        <div>
+            @Html.LabelFor(model => model.CombinationOfCrew, htmlAttributes: new { @class = "control-label col-md-8" })
+        </div>
+        <div class="form-group">
+            @Html.Kendo().TextBoxFor(model => model.CombinationOfCrew)
+            @Html.ValidationMessageFor(model => model.CombinationOfCrew, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="form-group">
+            <div class="k-label">
+                @Html.LabelFor(model => model.TypeOfWork, htmlAttributes: new { @class = "control-label col-md-8" })
+
+            </div>
+            <div>
+                @Html.Kendo().TextBoxFor( model => model.TypeOfWork)
+                @Html.ValidationMessageFor(model => model.TypeOfWork, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div>
+            @Html.LabelFor(model => model.CrewOutput , htmlAttributes: new { @class = "control-label col-md-8" })
+        </div>
+        <div class="form-group">
+
+            @Html.TextAreaFor(model => model.CrewOutput)
+            @Html.ValidationMessageFor(model => model.CrewOutput, "", new { @class = "text-danger" })
+        </div>
+    </div>
+ 
+   
+
+
+</div>
+<br/>
+    <div class="row">
+        <div class="col-md-1">
+
+        </div>
+        <div class="col-md-3">
+            <div>
+                @Html.LabelFor(model => model.CrewDirectCost, htmlAttributes: new { @class = "control-label col-md-8" })
+            </div>
+            <div class="form-group">
+                @Html.Kendo().TextBoxFor(model => model.CrewDirectCost)
+                @Html.ValidationMessageFor(model => model.CrewDirectCost, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div>
+                @Html.LabelFor(model => model.CrewIndirectCost, htmlAttributes: new { @class = "control-label col-md-8" })
+            </div>
+            <div class="form-group">
+                @Html.Kendo().TextBoxFor(model => model.CrewIndirectCost)
+                @Html.ValidationMessageFor(model => model.CrewIndirectCost, "", new { @class = "text-danger" })
+            </div>
+        </div>
+       
+
+
+
+
+    </div>
+
+    <br />
+    
+    
+
+</form>

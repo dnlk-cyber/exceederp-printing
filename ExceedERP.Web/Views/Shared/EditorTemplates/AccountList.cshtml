@@ -1,0 +1,8 @@
+﻿@using System.Collections
+@(Html.Kendo().DropDownList().BindTo((IEnumerable)ViewData["ListOfAccounts"])
+.OptionLabel("--Select Account--")
+                    .DataTextField("Description")
+                .DataValueField("AccountID")
+                .Name("AccountID")
+                     .ValuePrimitive(true)
+)

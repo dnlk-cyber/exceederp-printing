@@ -1,0 +1,15 @@
+﻿@(Html.Kendo().DropDownListFor(m => m)
+                      .AutoBind(false)
+                      .OptionLabel("--Select Customer--")
+                      .DataTextField("TradeName")
+                      .DataValueField("TradeName")
+                        .Filter("contains")
+                         .ValuePrimitive(true)
+                      .DataSource(dataSource =>
+                      {
+                          dataSource.Read(read => read.Action("GetCustomer", "CRMDataProvider", new { area = "CRM" }))
+                                    .ServerFiltering(false);
+                      })
+
+)
+@Html.ValidationMessageFor(m => m)

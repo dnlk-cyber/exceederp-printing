@@ -1,0 +1,25 @@
+﻿<legend>Ticket Role</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.TicketRole>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.TicketActivityDefinitionID);
+        columns.Bound(c => c.RoleID);
+        columns.Bound(c => c.TicketGroup);
+        columns.Bound(c => c.NeedsPassKey);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.TicketRoleID))
+          .Read(read => read.Action("TicketRoles_Read", "TicketRole"))
+          .Create(create => create.Action("TicketRoles_Create", "TicketRole"))
+          .Update(update => update.Action("TicketRoles_Update", "TicketRole"))
+          .Destroy(destroy => destroy.Action("TicketRoles_Destroy", "TicketRole"))
+      )
+)

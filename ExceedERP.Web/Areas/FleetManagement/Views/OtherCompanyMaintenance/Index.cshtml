@@ -1,0 +1,253 @@
+﻿@model ExceedERP.Core.Domain.FleetManagement.FleetMaintenance.OtherCompanyMaintenance
+@{
+    ViewBag.Title = "Other Company Maintenance";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend> Maintenance For External  </legend>
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetMaintenance.OtherCompanyMaintenance>()
+    .Name("grid")
+    .Columns(columns =>
+    {
+        columns.Bound(e => e.EquipmentName).Width(180);
+        columns.Bound(e => e.NameofCustomer).Title("Customer Name").Width(150);
+        columns.Bound(e => e.PlateNo).Width(100);
+        columns.Bound(e => e.KmhrReading).Width(100);
+        columns.Bound(e => e.SerialNo).Width(100);
+        columns.Bound(e => e.OperatorName).Width(140);
+        columns.Bound(e => e.CustomerPhone).Width(140);
+    
+        columns.Bound(e => e.Description).Width(200);
+       
+   
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
+
+
+    }).Events(ev =>
+                        {
+                            ev.DataBound("onDataBound");
+                        })
+                        .ToolBar(commands => commands.Create())
+  .Editable(editable =>
+      {
+          editable.Window(w => w.Title(" Maintenance For External "));
+          editable.Mode(GridEditMode.PopUp).TemplateName("OtherCompanyMaintenanceEditor");
+          editable.DisplayDeleteConfirmation("Are You Sure To Remove Other Company Maintenance");
+      })
+       .HtmlAttributes(new { style = "height: 520px;" })
+                          .Pageable(pageable => pageable
+                                            .Input(true)
+                                            .Numeric(false)
+                                            .Refresh(true)
+                                            .PageSizes(true)
+                                            .ButtonCount(5))
+
+                                .Scrollable()
+                                .Sortable()
+                                .Filterable()
+                                .Groupable()
+                                .Scrollable(h => h.Height(500))
+                                    .ClientDetailTemplateId("template")
+                                               .Groupable().Events(ev => ev.DetailExpand("onDetailExpand")) 
+    .DataSource(dataSource => dataSource
+        .Ajax()
+        .ServerOperation(false)
+                   .Model(model =>
+              {
+                  model.Id(p => p.OtherCompanyMaintenanceID);
+               
+              })
+                  .Events(ev => ev
+                                                    .Error("error_handler(\"grid\")")
+                                                    .RequestStart("onRequestStart(\"grid\")")
+                                                    .RequestEnd("onRequestEnd(\"grid\")"))                             
+                .Create(update => update.Action("OtherCompanyMaintenance_Create", "OtherCompanyMaintenance"))
+                .Read(read => read.Action("OtherCompanyMaintenance_Read", "OtherCompanyMaintenance"))
+                .Update(update => update.Action("OtherCompanyMaintenance_Update", "OtherCompanyMaintenance"))
+                .Destroy(update => update.Action("OtherCompanyMaintenance_Destroy", "OtherCompanyMaintenance"))
+  )
+)
+
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                                            .Name("tabStrip_#=OtherCompanyMaintenanceID#")
+            .SelectedIndex(0)
+            .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+            .Items(items =>
+            {
+                  items.Add().Text("Detail").Content(
+                        @<text>
+                            <legend>Detail</legend>
+
+                            <div class="box">
+
+                                <div class="box-col">
+                                    # if (IsSendForApproval == false || IsSendForApproval == "false")
+                                    {#
+
+                                    <a href='@Url.Action("OtherCompanyMaintenance_SendForOnlineApproval", "OtherCompanyMaintenaceApproval")/?EId=#=OtherCompanyMaintenanceID#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                                    # }#
+                                
+                                </div>
+                            </div> 
+                            <div class="demo-section k-header export-app">
+                                <div class="demo-section content-wrapper">
+
+                                    <form>
+
+                                       
+
+                                        <div class="row">
+                                            <div class="col-md-1">
+                                            </div>
+                                            <div class="col-md-2">
+                                                <div class="form-group">
+                                                    <div class="label">
+                                                        @Html.LabelFor(model => model.CreatedBy)
+                                                    </div>
+                                                    <div>
+                                                        #=CreatedBy#
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <div class="form-group">
+                                                    <div class="label">
+                                                        @Html.LabelFor(model => model.DateCreated)
+                                                    </div>
+                                                    <div>
+                                                        #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                       
+                                            <div class="col-md-2">
+                                                <div class="form-group">
+                                                    <div class="label">
+                                                        @Html.LabelFor(model => model.ModifiedBy)
+                                                    </div>
+                                                    <div>
+
+                                                        #=ModifiedBy#
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                       
+                                                    <div class="col-md-2">
+                                                <div class="form-group">
+                                                    <div class="label">
+                                                        @Html.LabelFor(model => model.LastModified)
+                                                    </div>
+                                                    <div>
+                                                        #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                          
+                                        </div>
+
+                                    </form>
+
+                                </div>
+                            </div>
+
+
+
+                        </text>
+
+
+            );
+                items.Add().Text(" Approval").Content(@<text>
+           
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetMaintenance.OtherCompanyMaintenaceApproval>()
+                                                                                        .Name("OtherCompanyMaintenance#=OtherCompanyMaintenanceID#")
+                        .Columns(columns =>
+                        {
+                            columns.Bound(o => o.Status).EditorTemplateName("ApprovalEditor").Width(126);
+
+                            columns.Bound(o => o.Remark).Width(200);
+                            columns.Bound(c => c.CreatedBy).Width(150);
+                            columns.Bound(c => c.DateCreated).Format("{0:yyyy-MM-dd}").Width(150);
+                            columns.Command(command => { command.Edit(); }).Width(250);
+
+                        }).Events(ev =>
+                        {
+                            ev.DataBound("approveonDataBound");
+                        })
+                             .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                       .DataSource(dataSource => dataSource
+                            .Ajax()
+                            .PageSize(5)
+                                                        .Model(model =>
+                              {
+                                  model.Id(p => p.OtherCompanyMaintenaceApprovalID);
+                                  model.Field(p => p.CreatedBy).Editable(false);
+                                  model.Field(p => p.DateCreated).Editable(false);
+                              })
+                                                                                .Events(ev => ev
+                                                    .Error("error_handler(\"OtherCompanyMaintenance#=OtherCompanyMaintenanceID#\")")
+                                                    .RequestStart("onRequestStart(\"OtherCompanyMaintenance#=OtherCompanyMaintenanceID#\")")
+                                                    .RequestEnd("onRequestEnd(\"OtherCompanyMaintenance#=OtherCompanyMaintenanceID#\")"))
+                                                                                                           .Create(update => update.Action("OtherCompanyMaintenance_Approve", "OtherCompanyMaintenaceApproval", new { EId = "#=OtherCompanyMaintenanceID#" }))
+                                                                                             .Read(read => read.Action("OtherCompanyMaintenaceApproval_Read", "OtherCompanyMaintenaceApproval", new { EId = "#=OtherCompanyMaintenanceID#" }))
+                                                                                   .Update(update => update.Action("OtherCompanyMaintenance_Approve", "OtherCompanyMaintenaceApproval"))
+
+
+                                                      )
+                                               .ToClientTemplate())
+                </text>
+                );
+            })
+                                                                                                                                                                                                                                                                                                                                    .ToClientTemplate())
+</script>
+
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 700px;
+    }
+</style>
+<script type="text/javascript">
+
+    var IsApproved;
+    var IsSendForApproved;
+    function onDetailExpand(e) {
+        var masterRow = e.masterRow;
+
+        var masterGrid = $("#grid").data("kendoGrid");
+
+        var masterDataItem = masterGrid.dataItem(masterRow);
+        IsApproved = masterDataItem.IsOnlineApproved;
+        IsSendForApproved = masterDataItem.IsSendForApproval;
+    }
+    function onDataBound(e) {
+        var grid = this;
+
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+            console.log(dataItem.IsOnlineApproved);
+            if (dataItem.IsSendForApproval == true || dataItem.IsOnlineApproved == true) {
+                 $(this).find(".k-grid-edit").remove();
+                $(this).find(".k-grid-delete").remove();
+            }
+        });
+    }
+
+      function approveonDataBound(e) {
+          var grid = this;
+
+          grid.tbody.find("tr[role='row']").each(function () {
+              var dataItem = grid.dataItem(this);
+              if (dataItem.Status == "Approve" || IsApproved == true) {
+                   $(this).find(".k-grid-edit").remove();
+                  $(this).find(".k-grid-delete").remove();
+              }
+          });
+      }
+
+</script>
+
+ 

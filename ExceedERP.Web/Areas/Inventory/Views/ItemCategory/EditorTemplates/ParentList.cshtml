@@ -1,0 +1,11 @@
+﻿
+ @(Html.Kendo().DropDownListFor(m => m) .AutoBind(false)
+                   .DataValueField("ItemCategoryCode")
+                   .DataTextField("Name")
+                   .OptionLabel("...Parent...")
+                   .DataSource(
+                   read => read.Read(re => re.Action("GetParents", "DataProvider")).ServerFiltering(true)).ValuePrimitive(true))
+
+
+ 
+                    

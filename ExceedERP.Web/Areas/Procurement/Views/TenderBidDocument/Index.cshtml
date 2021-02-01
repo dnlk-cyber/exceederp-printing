@@ -1,0 +1,385 @@
+﻿@using System.Collections
+@using System.Globalization
+@using ExceedERP.Core.Domain.Procurement.Tender.Lot
+@using ExceedERP.Web.Areas.Procurement.Models
+
+<legend>Tender Bid Documents</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Procurement.Tender.Tender>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.TenderReference).Width(150);
+          columns.Bound(c => c.Description).Width(150);
+          columns.Bound(c => c.ProcurementCategory).Width(150).EditorTemplateName("ProcurementCategorys");
+          columns.Bound(c => c.TenderType).Width(150).EditorTemplateName("TenderType");
+          columns.Bound(c => c.PurchaseCategory).Width(150).EditorTemplateName("PurchaseCategory");
+          columns.Bound(c => c.FloatDate).Width(130);
+          columns.Bound(c => c.ClosingDate).Width(130);
+          columns.Bound(c => c.OpenigDate).Width(130);
+          columns.Bound(c => c.Status);
+      })
+     
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Filterable()
+      .Events(ev => ev.DetailExpand("detailExpand"))
+      .Scrollable(height => height.Height(500))
+      .ClientDetailTemplateId("tenderdetail")
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model =>
+          {
+              model.Id(p => p.TenderID);
+              model.Field(p => p.Status).Editable(false);
+          })
+         
+          .Read(read => read.Action("Tenders_Read", "Tender"))
+      ))
+
+<script type="text/kendo" id="tenderdetail">
+    @(Html.Kendo().TabStrip().Name("tenderTabstrip_#=TenderID#").SelectedIndex(0).Items(itemn =>
+          {
+
+        
+
+        @*======================================================================== Tender Bid Document ========================================================*@
+
+              itemn.Add().Text("Bid Document").Content(@<text>
+
+            @FilUploaderBid()
+
+            </text>);
+    
+        
+          }).ToClientTemplate())
+
+  
+
+ 
+
+</script>
+
+
+
+@helper FilUploaderBid()
+{
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Procurement.Tender.TenderBidDocument>()
+          .Name("tenderbiddocument_#=TenderID#")
+          .Columns(columns =>
+          {
+              columns.Bound(c => c.FileName).ClientTemplate("<a href='/BidDocument/FileDwonload?id=\\#=TenderBidDocumentId \\#'>\\#=FileName \\#</a>");
+
+                 
+          })
+                    
+          .Scrollable()
+          .DataSource(dataSource => dataSource
+              .Ajax()
+              .Model(model => model.Id(p => p.TenderBidDocumentId))
+              .Read(read => read.Action("TenderBidDocuments_Read", "BidDocument", new { id = "#= TenderID #" }))
+          ).ToClientTemplate())
+}
+
+
+<script>
+
+    function onEditCriteria(e) {
+
+        var item = $("#Type").data("kendoDropDownList").value();
+        //var dataItem = this.dataItem(e.item);
+        //var item = dataItem.Type;
+        alert(item);
+        //begin
+
+        if (item === "2") {
+            $("#Weight").val("0").trigger("change");
+            $("#Weight").attr("readonly", true);
+        } else {
+            $("#Weight").attr("readonly", false);
+        }
+        //end
+    }
+
+    var popup;
+    var aCode;
+    function SelectItemCode() {
+
+        popup = window.open('/Inventory/DataProvider/ItemFilterCat', 'WindowPopup', 'top=100, left=400, width=400, height=320,resizable=no,');
+        popup.focus();
+        return false;
+    }
+
+    function setLang(itemCode) {
+        aCode = itemCode;
+        $("#ItemCode").val(aCode).trigger("change");
+    }
+
+
+    var masterRow;
+    var masterGrid;
+    var masterDataItem;
+    var codeid;
+    var tenderType;
+    var purchaseType;
+    function detailExpand(e) {
+        masterRow = e.masterRow;
+        masterGrid = $("#grid").data("kendoGrid");
+        masterDataItem = masterGrid.dataItem(masterRow);
+        codeid = masterDataItem.TenderID;
+        tenderType = masterDataItem.TenderType;
+        purchaseType = masterDataItem.PurchaseCategory;
+        var lotgd;
+        if (tenderType === 1) {
+            $('#Supplier').attr('disabled', 'disabled');
+        }
+        else {
+            // $('#PurchaseRequisitionID').attr('required', 'required');
+        }
+
+        if (purchaseType !== 0) {
+            lotgd = "#lotgrid_" + codeid;
+            var lotgrid = $(lotgd).data("kendoGrid");
+            lotgrid.hideColumn(0);
+
+        } else {
+            $('#PurchaseRequisitionID').attr('required', 'required');
+        }
+    }
+    function onUploadSuccess(e) {
+        var gridname = "#tenderminuteuploadgrid_" + codeid;
+        $(gridname).data("kendoGrid").dataSource.read();
+    }
+    function bidSuccess(e) {
+        var gridname = "#tenderbiddocument_" + codeid;
+        $(gridname).data("kendoGrid").dataSource.read();
+    }
+    var lotid;
+    function lotDetailExpand(e) {
+        var lotrow = e.masterRow;
+        var gridName = "#lotgrid_" + codeid;
+        var lotgrid = $(gridName).data("kendoGrid");
+        var lotDataItem = lotgrid.dataItem(lotrow);
+        lotid = lotDataItem.LotID;
+
+        if (tenderType === 0) {
+            var lotitemgrid = "#lotitemgrid_" + lotid;
+            $(".k-grid-add", lotitemgrid).hide();
+
+        }
+        var tabname = "#LotsTabstrip_" + lotid;
+        var lottab = $(tabname).data("kendoTabStrip");
+        $.ajax({
+            type: "GET",
+            dataType: 'json',
+            contentType: "application/json;charset=utf-8",
+            url: "/Tender/GetCriteriaType",
+            data: { id: lotid },
+            success: function (result) {
+                debugger;
+
+                if (result === "Technical") {
+                    $(lottab.items()[7]).attr("style", "display:none");
+
+                }
+                if (result === "PassFail") {
+
+                    $(lottab.items()[8]).attr("style", "display:none");
+
+                }
+                if (result === "None") {
+
+                    $(lottab.items()[7]).attr("style", "display:none");
+                    $(lottab.items()[8]).attr("style", "display:none");
+
+                }
+
+            },
+            error: function (response) {
+                debugger;
+                alert('eror');
+            }
+        });
+
+
+
+    }
+
+    function getTenderid() {
+        return { id: lotid }
+
+    }
+    function getMainTenderId() {
+        return { id: codeid }
+    }
+    function GetCriteriaClicked(e) {
+
+
+        $.ajax({
+            url: '@Url.Action("GenerateResult", "EvaluationResult")',
+            type: 'POST',
+            dataType: 'json',
+            data: JSON.stringify({ "id": lotid }),
+            contentType: "application/json; charset=utf-8",
+            success: function () { }
+        });
+        var resultgritn = "#tenderEvaluationResultGrid_" + lotid;
+
+        $(resultgritn).data('kendoGrid').dataSource.read();
+        $(resultgritn).data('kendoGrid').refresh();
+    }
+
+    function GetSuppliersClicked(e) {
+        $.ajax({
+            url: '@Url.Action("GetParticipantItem", "TenderParticipantItems")',
+            type: 'POST',
+            dataType: 'json',
+            data: JSON.stringify({ "id": lotid }),
+            contentType: "application/json; charset=utf-8",
+            success: function () { }
+        });
+        var resultgritn = "#biditemofParticipant_" + lotid;
+
+        $(resultgritn).data('kendoGrid').dataSource.read();
+        $(resultgritn).data('kendoGrid').refresh();
+    }
+    function resultBinding(e) {
+
+    }
+
+    function OnIndexCall(e) {
+        var wnd = $("#evaluationForm").data("kendoWindow");
+        wnd.center().open();
+    }
+    function sendClicked(e) {
+
+        var window = $("#evaluationForm").data("kendoWindow");
+
+        window.close();
+
+    }
+    function onUpload(e) {
+        e.data = { id: codeid };
+
+    }
+
+    function OnIndexCall(elem) {
+        var a = codeid;
+        $(elem).attr('href', $(elem).attr('href') + '?id=' + a);
+    }
+    function lotEdit(e) {
+        if (tenderType === 0) {
+            $('#PurchaseRequisitionID').attr('required', 'required');
+        }
+    }
+
+    function lotItemEdit(e) {
+        if (tenderType === 0) {
+
+            $("#InventoryItem").attr("readonly", true);
+            $("#ItemCode").attr("readonly", true);
+
+            $('[name="InventoryItem"]').attr("readonly", true);
+            $('[name="ItemCode"]').attr("readonly", true);
+        }
+
+    }
+    function assignParticipantClicked(e) {
+
+        $.ajax({
+            type: "GET",
+
+            dataType: 'json',
+
+
+            contentType: "application/json;charset=utf-8",
+            //url: '@Url.Action("PopulateLotParticipant", "Tender")',
+            data: { id: lotid },
+            success: function (result) {
+                debugger;
+
+
+
+                var wnd = $("#PurchaseOrderDetailWindow").data("kendoWindow");
+                wnd.center().open();
+
+            },
+            error: function (response) {
+                debugger;
+                var wnd = $("#PurchaseOrderDetailWindow").data("kendoWindow");
+                wnd.center().open();
+            }
+        });
+
+
+    }
+
+    function lotDataBound(e) {
+        if (tenderType === 1) {
+
+        }
+        var tabname = "#LotsTabstrip_" + lotid;
+        var lottab = $(tabname).data("kendoTabStrip");
+        $(lottab.items()["Award"]).attr("style", "display:none");
+    }
+
+    function getItemCode(e) {
+
+        return {
+            itemCode: $("#ItemCode").data("kendoDropDownList").value()
+        }
+    }
+
+    function WindowClosed(e) {
+
+    }
+
+    function computeAwardClicked(e) {
+        e.preventDefault();
+        $.ajax({
+            url: '@Url.Action("ComputeAward", "TenderAward")',
+            type: 'POST',
+            dataType: 'json',
+            data: JSON.stringify({ "id": lotid }),
+            contentType: "application/json; charset=utf-8",
+            success: function () { }
+        });
+        var resultgritn = "#bidAwardedSuppliergrid_" + lotid;
+
+        $(resultgritn).data('kendoGrid').dataSource.read();
+        $(resultgritn).data('kendoGrid').refresh();
+    }
+
+</script>
+<style>
+    .k-window .row, .k-window .row * {
+        box-sizing: border-box;
+    }
+</style>
+
+<script>
+    var supplierTextBox;
+    var popup;
+    var supplier;
+    function SelectSupplier(e) {
+
+        supplierTextBox = $(e).prev('input').attr('id');
+        popup = window.open('/Procurement/ProcurementDataProvider/SupplierShortListSelector', 'WindowPopup', 'top=100, left=400, width=300, height=220,resizable=no,');
+        popup.focus();
+        return false;
+    }
+
+
+    function setChoice(supplierName) {
+        supplier = supplierName;
+        $("#" + supplierTextBox).val(supplier).trigger("change");
+    }
+
+
+</script>

@@ -1,0 +1,31 @@
+role-based
+groups,roles
+AAA
+authentication can be integrated with AD
+
+lock out for some time...defined by 
+session expiry
+password complexity..defined
+log,created by,modified by
+
+mainly benchmarked oracle
+automating every process [debit credit distribution]=email,
+localization=ethiopian languages
+
+
+
+audit trial
+without HR
+sore management
+implementation july -->is it ready
+bank reconcilation...how is it easy from peach tree
+aging good
+IFRS is good
+ratio analysis
+profitability analysis
+
+report after closing...what is the format
+payroll is under finance...why HR,similarly for inventory
+after posting can we reverse if we found error
+payroll JV is automatic
+report template...we can give you ,we have 

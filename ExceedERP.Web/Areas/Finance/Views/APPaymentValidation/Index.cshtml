@@ -1,0 +1,34 @@
+﻿@using ExceedERP.Core.Domain.Finance.AP
+@(Html.Kendo().Grid<ApPaymentValidation>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Status);
+          columns.Bound(c => c.Remark);
+          columns.Bound(c => c.OrgBranchName);
+          columns.Bound(c => c.DateCreated);
+          columns.Bound(c => c.LastModified);
+          columns.Bound(c => c.CreatedBy);
+          columns.Bound(c => c.ModifiedBy);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+                              toolbar.Excel();
+                              // toolbar.Pdf();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Pageable()
+      .Sortable(sortable => {
+                                sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Filterable()
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.ApPaymentValidationId))
+          .Read(read => read.Action("APPaymentValidations_Read", "ApPaymentValidation"))
+          .Create(create => create.Action("APPaymentValidations_Create", "ApPaymentValidation"))
+          .Update(update => update.Action("APPaymentValidations_Update", "ApPaymentValidation"))
+          .Destroy(destroy => destroy.Action("APPaymentValidations_Destroy", "ApPaymentValidation"))
+      ))

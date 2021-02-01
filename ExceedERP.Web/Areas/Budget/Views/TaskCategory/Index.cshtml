@@ -1,0 +1,48 @@
+﻿@model ExceedERP.Core.Domain.Budget.Task.TaskCategory
+
+
+<legend>   Task Category </legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Budget.Task.TaskCategory>()
+              .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Name).Width(100);
+          columns.Bound(c => c.Description).Width(100);
+
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create();
+      })
+
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+         .HtmlAttributes(new { style = "height: 520px;" })
+                      .Pageable(pageable => pageable
+                                        .Input(true)
+                                        .Numeric(false)
+                                        .Refresh(true)
+                                        .PageSizes(true)
+                                        .ButtonCount(5))
+
+                            .Scrollable()
+                            .Sortable()
+                            .Filterable()
+                            .Groupable()
+                            .Scrollable(h => h.Height(500))
+
+           .DataSource(dataSource => dataSource
+          .Ajax()
+                      .Model(model => model.Id(p => p.TaskCategoryId))
+                      .Events(ev => ev
+                                            .Error("error_handler(\"grid\")")
+                                            .RequestStart("onRequestStart(\"grid\")")
+                                            .RequestEnd("onRequestEnd(\"grid\")"))
+              .Read(read => read.Action("TaskCategory_Read", "TaskCategory"))
+              .Create(create => create.Action("TaskCategory_Create", "TaskCategory"))
+              .Update(update => update.Action("TaskCategory_Update", "TaskCategory"))
+              .Destroy(destroy => destroy.Action("TaskCategory_Destroy", "TaskCategory"))
+          )
+
+)
+

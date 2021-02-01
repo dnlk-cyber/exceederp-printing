@@ -1,0 +1,70 @@
+﻿@using System.Collections
+@model  ExceedERP.Core.Domain.Finance.GL.GlRecordJournal
+          
+@Html.HiddenFor(model => model.GlRecordJournalId)
+
+<div class="form">
+    <div class="row fullrow">
+        <div class="col-md-3 ro1">
+            <div class="form-group">
+                @Html.LabelFor(model => model.JournalName, htmlAttributes: new {@class = "control-label col-md-6"})
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(model => model.JournalName)
+                    @Html.ValidationMessageFor(model => model.JournalName, "", new {@class = "text-danger"})
+                </div>
+            </div>
+            <div class="row"></div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.Description, htmlAttributes: new {@class = "control-label col-md-6"})
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(m => m.Description)
+                    @Html.ValidationMessageFor(model => model.Description, "", new {@class = "text-danger"})
+                </div>
+            </div>
+            <div class="row"></div>
+        </div>
+
+        <div class="col-md-3 ro1">
+            <div class="form-group">
+                @Html.LabelFor(model => model.PeriodName, htmlAttributes: new {@class = "control-label col-md-6"})
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(model => model.PeriodName)
+                    @Html.ValidationMessageFor(model => model.PeriodName, "", new {@class = "text-danger"})
+                </div>
+            </div>
+            <div class="row"></div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.CategoryName, htmlAttributes: new {@class = "control-label col-md-6"})
+                <div class="col-md-6">
+                    @Html.Kendo().DropDownListFor(m => m.CategoryName).DataTextField("Category").DataValueField("Category").BindTo((IEnumerable)ViewData["categories"])
+                    @Html.ValidationMessageFor(model => model.CategoryName, "", new {@class = "text-danger"})
+                </div>
+            </div>
+            <div class="row"></div>
+        </div>
+
+        <div class="col-md-3 ro1">
+            <div class="form-group">
+                @Html.LabelFor(model => model.JournalNumber, htmlAttributes: new {@class = "control-label col-md-6"})
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(model => model.JournalNumber)
+                    @Html.ValidationMessageFor(model => model.JournalNumber, "", new {@class = "text-danger"})
+                </div>
+            </div>
+            <div class="row"></div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.EffectiveDate, htmlAttributes: new {@class = "control-label col-md-6"})
+                <div class="col-md-6">
+                    @Html.Kendo().DatePickerFor(model => model.EffectiveDate)
+                    @Html.ValidationMessageFor(model => model.EffectiveDate, "", new {@class = "text-danger"})
+                </div>
+            </div>
+            <div class="row"></div>
+        </div>
+    </div>
+</div>
+
+

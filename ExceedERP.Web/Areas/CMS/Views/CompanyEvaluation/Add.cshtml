@@ -1,0 +1,145 @@
+﻿@model  ExceedERP.Core.Domain.CMS.CompanyEvaluationDataEntryViewModel
+@using System.Collections
+@using ExceedERP.Core.Domain.CMS
+@{
+    ViewBag.Title = "Company Evaluation ";
+}
+<div class="content-wrapper">
+    @*<section class="content-header">
+       
+    </section>*@
+    <div class="content">
+        <h4>
+            <i class="fa fa-plus-circle"></i> Add Evaluation <small> | @Model.Trainee.CompanyName</small>
+        </h4>
+
+        @if (Model.ISOTypesList.Any())
+        {
+            using (Html.BeginForm("Add", "CompanyEvaluation", FormMethod.Post))
+            {
+                @*<div class="box custom-styled-box">
+                    <div class="box-header">
+                        <h3 class="box-title"> Fiscal Year</h3>
+                        <div class="box-tools pull-right">
+                            <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip"
+                                    title="Collapse">
+                                <i class="fa fa-minus"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="box-body">
+                        @(Html.Kendo().DropDownListFor(m => m.FiscalYearId)
+                            .HtmlAttributes(new { style = "width:100%;"})
+                            .DataTextField("Year")
+                            .DataValueField("FiscalYearId")
+                            .Filter(FilterType.Contains)
+                            .DataSource(datasource => {
+                                datasource.Read(read =>
+                                {
+                                    read.Action("GetFiscalYears", "DataProvider", new { area = "" });
+                                });
+                            })
+                            )
+                    </div>
+                </div>*@
+                @Html.HiddenFor(m => m.CmsTraineeId);
+                for (int i = 0; i < Model.ISOTypesList.Count; i++)
+                {
+                    <div class="box custom-styled-box">
+                        <div class="box-header" style="border-bottom: 0.5px solid #d2d6de">
+                            <h3 class="box-title"><text class="text-danger">@Model.ISOTypesList[i].Name</text>  </h3>
+                            @*<div class="box-tools pull-right">
+                                <button type="button" class="btn btn-box-tool" data-widget="collapse" data-toggle="tooltip"
+                                        title="Collapse">
+                                    <i class="fa fa-minus"></i>
+                                </button>
+
+                            </div>*@
+                        </div>
+                        <div class="box-body">
+                            @Html.HiddenFor(m => Model.ISOTypesList[i].ISOTypeId)
+
+                            <table class="display  table table-condensed  table-striped" style="width:100%">
+                                <thead>
+                                    <tr>
+                                        <td>Code</td>
+                                        <td>Name</td>
+                                        <td>Value</td>
+                                        <td>Remark</td>
+
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @for (int j = 0; j < Model.ISOTypesList[i].ISOChecklists.Count; j++)
+                                    {
+                                        <tr>
+                                            <td style="width:60px;vertical-align:middle;">
+                                                @Html.HiddenFor(m => Model.ISOTypesList[i].ISOChecklists[j].ISOChecklistId)
+                                                @Html.HiddenFor(m => Model.ISOTypesList[i].ISOChecklists[j].ValueType)
+                                                <label style="color:orange;">
+                                                    @Model.ISOTypesList[i].ISOChecklists[j].Code
+                                                </label>
+
+                                            </td>
+                                            <td style="vertical-align:middle;">
+                                                @*<i class="fa fa-circle text-info"> </i> &nbsp;&nbsp;*@
+                                                @Model.ISOTypesList[i].ISOChecklists[j].Name
+                                            </td>
+                                            <td style="width:10%;vertical-align:middle;">
+                                                @{ if (@Model.ISOTypesList[i].ISOChecklists[j].ValueType == ISOChecklistValueType.Yes_Or_No)
+                                                    {
+                                                        @Html.CheckBoxFor(x => Model.ISOTypesList[i].ISOChecklists[j].IsSelected, new { id = "espSelected_" + Model.ISOTypesList[i].ISOChecklists[j].ISOChecklistId, data_toggle = "toggle", data_onstyle = "success", data_offstyle = "info", data_on = "<i class='fa fa-check'></i>&nbsp;YES", data_off = "<i class='fa fa-close'></i>&nbsp; NO" })
+                                                    }
+                                                    else
+                                                    {
+                                                        @(Html.Kendo().NumericTextBoxFor(m => Model.ISOTypesList[i].ISOChecklists[j].NumericValue).HtmlAttributes(new { style = "width:87px;" }))
+                                                    }
+                                                }
+                                            </td>
+                                            <td style="width:20%;vertical-align:middle;">
+                                                @Html.TextBoxFor(m => Model.ISOTypesList[i].ISOChecklists[j].Remark, htmlAttributes: new{@style="width:100%;" })
+                                            </td>
+                                        </tr>
+
+                                    }
+
+
+                                </tbody>
+                            </table>
+                            @if (Model.ISOTypesList[i].ISOChecklists.Count <= 0)
+                            {
+                                <table class="display  table table-condensed table-bordered table-striped" style="width:100%">
+                                    <tbody>
+                                        <tr>
+                                            <td>
+                                                <i class="fa fa-info-circle"></i> &nbsp;
+                                                <text class="header"> No Checklist Found</text>
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            }
+                        </div>
+                    </div>
+
+
+                }
+
+                <div class="box box-default" style="margin-top:0px;">
+                    <div class="box-body">
+                        <div class="row">
+                            <div class="col-xs-6">
+                                <a href="/CMS/CompanyEvaluation" class="btn btn-danger" style="line-height:25px; width:100%;"> Calcel</a>
+                            </div>
+                            <div class="col-xs-6">
+                                <button type="submit" class="btn btn-success" style="line-height:25px; width:100%;"> Save</button>
+
+                            </div>
+                        </div>   
+                    </div>
+                </div>
+            }
+        }
+    </div>
+</div>
+

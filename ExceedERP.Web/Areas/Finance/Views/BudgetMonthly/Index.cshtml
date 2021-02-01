@@ -1,0 +1,38 @@
+﻿@using ExceedERP.Core.Domain.Finance.Budget
+@(Html.Kendo().Grid<BudgetMonthly>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.BudgetMonth);
+        columns.Bound(c => c.AccountCode);
+        columns.Bound(c => c.AccountDesc);
+        columns.Bound(c => c.Unit);
+        columns.Bound(c => c.MonthlyBudget);
+        columns.Bound(c => c.OrgBranchName);
+        columns.Bound(c => c.DateCreated);
+        columns.Bound(c => c.LastModified);
+        columns.Bound(c => c.CreatedBy);
+        columns.Bound(c => c.ModifiedBy);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+            toolbar.Excel();
+           // toolbar.Pdf();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Pageable()
+      .Sortable(sortable => {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Filterable()
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.BudgetMonthlyID))
+          .Read(read => read.Action("BudgetMonthlies_Read", "BudgetMonthly"))
+          .Create(create => create.Action("BudgetMonthlies_Create", "BudgetMonthly"))
+          .Update(update => update.Action("BudgetMonthlies_Update", "BudgetMonthly"))
+          .Destroy(destroy => destroy.Action("BudgetMonthlies_Destroy", "BudgetMonthly"))
+      )
+)

@@ -1,0 +1,396 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@using Kendo.Mvc.UI
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>  Production | Outputs Produced </legend>
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Production.ProductionOrder>()
+                          .Name("productionOrderGrid")
+                          .Columns(columns =>
+                          {
+                              columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("Branches");
+                              columns.ForeignKey(c => c.ProductionSiteId, (IEnumerable)ViewData["ProductionSites"], "ProductionSiteId", "Name");
+                              columns.Bound(c => c.ProductionType).EditorTemplateName("ProductionTypes");
+                              columns.Bound(c => c.Description);
+                          })
+
+                          .Selectable(selectable =>
+                          {
+                              selectable.Mode(GridSelectionMode.Single);
+                              selectable.Type(GridSelectionType.Row);
+                          })
+                          .Scrollable(h => h.Height(500))
+                          .Sortable(sortable =>
+                          {
+                              sortable.SortMode(GridSortMode.SingleColumn);
+                          })
+                          .Filterable()
+                          .Pageable(pageable => pageable
+                              .Input(true)
+                              .Numeric(false)
+                              .Refresh(true)
+                              .PageSizes(true)
+                              .ButtonCount(5))
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+
+                              .Events(events =>
+                              {
+                                  events.Error("error_handler(\"productionOrderGrid\")");
+                                  events.RequestStart("onRequestStart(\"productionOrderGrid\")");
+                                  events.RequestEnd("onRequestEnd(\"productionOrderGrid\")");
+                              })
+                              .Model(model =>
+                              {
+                                  model.Id(f => f.ProductionOrderId);
+                                  model.Field(f => f.ProductionType);
+                              })
+
+                              .Read(read => read.Action("ProductionOrders_Read", "ProductionOrder"))
+                          //.Create(create => create.Action("ProductionOrder_Create", "ProductionOrder"))
+                          //.Update(update => update.Action("ProductionOrder_Update", "ProductionOrder"))
+                          //.Destroy(destroy => destroy.Action("ProductionOrder_Destroy", "ProductionOrder"))
+                          ).ClientDetailTemplateId("template_productionOrder_detail")
+)
+
+
+<script id="template_productionOrder_detail" type="text/kendo-tmpl">
+    #if(ProductionType == 0) {#
+    @(Html.Kendo().TabStrip()
+            .Name("tabstrip_str_#=ProductionOrderId#")
+            .SelectedIndex(0)
+            .Items(items =>
+            {
+                items.Add().Text("Seed Production Order Items").Content(
+                    @<text>
+                        @(Html.Kendo().Grid<ExceedERP.Core.Domain.Production.SeedProductionOrderItem>()
+                                .Name("productionOrderItems_#=ProductionOrderId#")
+                                .Columns(columns =>
+                                {
+                                    columns.ForeignKey(c => c.PlotId, (IEnumerable)ViewData["FarmingPlots"], "PlotId", "PlotCode").EditorTemplateName("FarmingPlots");
+                                    //columns.Bound(c => c.DateFrom);
+                                    //columns.Bound(c => c.DateTo);
+                                    columns.ForeignKey(c => c.ProductionYearId, (IEnumerable)ViewData["ProductionYears"], "ProductionYearId", "Name").EditorTemplateName("YearSelector");
+                                    columns.Bound(c => c.ProductionType);
+                                    columns.Bound(c => c.ProductionCode);
+                                    columns.ForeignKey(c => c.CropId, (IEnumerable)ViewData["CropTypes"], "CropId", "Name").EditorTemplateName("CropNames");
+                                    //columns.Bound(c => c.SeedType).EditorTemplateName("SeedTypes");
+                                    //columns.Bound(c => c.Generation).EditorTemplateName("SeedGenerations");
+                                    columns.Bound(c => c.Description);
+                                    columns.Group(g => g.Title("Output Produced").HeaderHtmlAttributes(new { style = "text-align: center; font-weight: bold; " })
+                                   .Columns(info =>
+                                   {
+                                       info.Bound(x => x.QuantityProduced).Format("{0:N2}");
+                                       info.Bound(x => x.UnitOfOutPutProduced);
+
+                                   })
+                                   );
+                                    columns.Command(command =>
+                                    {
+                                        command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                        //command.Destroy().Text(Resources.ActionButton_Cancel);
+                                    }).Width(200);
+                                })
+                                //.ToolBar(toolbar =>
+                                //{
+                                //    toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                                //})
+                                .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                .Scrollable(h => h.Height(500))
+                                .Sortable(sortable =>
+                                {
+                                    sortable.SortMode(GridSortMode.SingleColumn);
+                                })
+                                .Selectable(selectable =>
+                                {
+                                    selectable.Mode(GridSelectionMode.Single);
+                                    selectable.Type(GridSelectionType.Row);
+                                })
+                                .Filterable()
+                                .Pageable(pageable => pageable
+                                    .Input(true)
+                                    .Numeric(false)
+                                    .Refresh(true)
+                                    .PageSizes(true)
+                                    .ButtonCount(5))
+                                .DataSource(dataSource => dataSource
+                                    .Ajax()
+                                    .Events(events =>
+                                    {
+                                        events.Error("error_handler(\"productionOrderItems_#=ProductionOrderId#\")");
+                                        events.RequestStart("onRequestStart(\"productionOrderItems_#=ProductionOrderId#\")");
+                                        events.RequestEnd("onRequestEnd(\"productionOrderItems_#=ProductionOrderId#\")");
+                                    })
+                                    .Model(model =>
+                                    {
+                                        model.Id(p => p.SeedProductionOrderItemId);
+                                        model.Field(f => f.PlotId).Editable(false);
+                                        //model.Field(f => f.DateFrom).Editable(false);
+                                        //model.Field(f => f.DateTo).Editable(false);
+                                        model.Field(f => f.ProductionCode).Editable(false);
+                                        //model.Field(f => f.Generation).Editable(false);
+                                        //model.Field(f => f.SeedType).Editable(false);
+                                        model.Field(f => f.Description).Editable(false);
+                                        model.Field(f => f.CropId).Editable(false);
+                                        model.Field(f => f.ProductionType).Editable(false);
+                                        model.Field(f => f.UnitOfOutPutProduced).Editable(false);
+                                        model.Field(f => f.ProductionYearId).Editable(false);
+
+                                    })
+                                    .Read(read => read.Action("ProductionOrderItems_Read", "SeedProductionOrderItem", new { id = "#=ProductionOrderId#" }))
+                                    .Create(create => create.Action("ProductionOrderItem_Create", "SeedProductionOrderItem", new { id = "#=ProductionOrderId#" }))
+                                    .Update(update => update.Action("ProductionOrderItem_Update", "SeedProductionOrderItem"))
+                                    .Destroy(destroy => destroy.Action("ProductionOrderItem_Destroy", "SeedProductionOrderItem"))
+                                    ).ClientDetailTemplateId("template_seedProductionactivities")
+                                    .ToClientTemplate()
+                        )
+                    </text>
+                );
+            }).ToClientTemplate())
+    #} else {#
+    @(Html.Kendo().TabStrip()
+        .Name("tabstrip_str_#=ProductionOrderId#")
+        .SelectedIndex(0)
+        .Items(items =>
+        {
+            items.Add().Text("Natural GUM Production Order Items").Content(
+                @<text>
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Production.GumProductionOrderItem>()
+                            .Name("productionOrderItems_#=ProductionOrderId#")
+                            .Columns(columns =>
+                            {
+                                columns.ForeignKey(c => c.NaturalGumId, (IEnumerable)ViewData["NaturalGumNames"], "NaturalGumId", "Name");
+                                columns.ForeignKey(c => c.ProductionYearId, (IEnumerable)ViewData["ProductionYears"], "ProductionYearId", "Name").EditorTemplateName("YearSelector");
+                                columns.Bound(c => c.ProductionType);
+                                columns.Bound(c => c.ProductionCode);
+
+                                columns.Group(g => g.Title("Output Produced").HeaderHtmlAttributes(new { style = "text-align: center; font-weight: bold; " })
+                                  .Columns(info =>
+                                  {
+                                      info.Bound(x => x.QuantityProduced).Format("{0:N2}");
+                                      info.Bound(x => x.UnitOfOutPutProduced);
+
+                                  })
+                                  );
+                                columns.Command(command =>
+                                {
+                                    command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                    //command.Destroy().Text(Resources.ActionButton_Cancel);
+                                }).Width(200);
+                            })
+                            //.ToolBar(toolbar =>
+                            //{
+                            //    toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                            //})
+                            .Editable(editable => editable.Mode(GridEditMode.InLine))
+                            .Scrollable(h => h.Height(500))
+                            .Sortable(sortable =>
+                            {
+                                sortable.SortMode(GridSortMode.SingleColumn);
+                            })
+                            .Selectable(selectable =>
+                            {
+                                selectable.Mode(GridSelectionMode.Single);
+                                selectable.Type(GridSelectionType.Row);
+                            })
+                            .Filterable()
+                            .Pageable(pageable => pageable
+                                .Input(true)
+                                .Numeric(false)
+                                .Refresh(true)
+                                .PageSizes(true)
+                                .ButtonCount(5))
+                            .DataSource(dataSource => dataSource
+                                .Ajax()
+                                .Events(events =>
+                                {
+                                    events.Error("error_handler(\"productionOrderItems_#=ProductionOrderId#\")");
+                                    events.RequestStart("onRequestStart(\"productionOrderItems_#=ProductionOrderId#\")");
+                                    events.RequestEnd("onRequestEnd(\"productionOrderItems_#=ProductionOrderId#\")");
+                                })
+                                .Model(model =>
+                                {
+                                    model.Id(p => p.GumProductionOrderItemId);
+                                    model.Field(f => f.NaturalGumId).Editable(false);
+                                    model.Field(f => f.ProductionType).Editable(false);
+                                    model.Field(f => f.ProductionCode).Editable(false);
+                                    model.Field(f => f.UnitOfOutPutProduced).Editable(false);
+                                    model.Field(f => f.ProductionYearId).Editable(false);
+                                })
+                                .Read(read => read.Action("ProductionOrderItems_Read", "GumProductionOrderItem", new { id = "#=ProductionOrderId#" }))
+                                .Create(create => create.Action("ProductionOrderItem_Create", "GumProductionOrderItem", new { id = "#=ProductionOrderId#" }))
+                                .Update(update => update.Action("ProductionOrderItem_Update", "GumProductionOrderItem"))
+                                .Destroy(destroy => destroy.Action("ProductionOrderItem_Destroy", "GumProductionOrderItem"))
+                                ).ClientDetailTemplateId("template_gumProductionactivities")
+                                .ToClientTemplate()
+                    )
+                </text>
+            );
+        }).ToClientTemplate())
+    #}#
+</script>
+
+<script id="template_seedProductionactivities" type="text/kendo-tmpl">
+    # if(ProductionType == 0) { #
+    @(Html.Kendo().TabStrip()
+            .Name("tab_str_#=SeedProductionOrderItemId#")
+            .SelectedIndex(0)
+            .Items(items =>
+            {
+            items.Add().Text("Detail").Content(
+                    @<text>
+                        @(Html.Kendo().PanelBar()
+                              .Name("panelbar_#=SeedProductionOrderItemId#")
+                              .ExpandMode(PanelBarExpandMode.Single)
+                              .Items(panelbar =>
+                              {
+                                  panelbar.Add()
+                                      .Expanded(true)
+                                      .Content(
+                                         "<div class='workItem-details'>" +
+                                            "<ul>" +
+                                                 //"<li> <label> <strong> Status </label> #= Status# </strong></li>" +
+                                                 "<li> <label> <b>(A)</b> Material Cost </label> #= kendo.toString(MaterialCost, 'N2')# </li>" +
+                                                 "<li> <label> <b>(B)</b> Labor Cost :</label> #= kendo.toString(LaborCost, 'N2')# </li>" +
+                                                 "<li> <label> <b>(C)</b> Machinery Cost:</label> #= kendo.toString(EquipmentCost, 'N2')# </li>" +
+                                                 "<li> <label> <b>(D)</b> Direct Cost: <b>(A + B + C) = </b> </label> #= kendo.toString(DirectCost, 'N2')# </li>" +
+                                                 "<li> <label> <b>(E)</b> Over head Cost:</label> #= kendo.toString(OverheadCost, 'N2')# </li>" +
+                                                 //"<li> <label> Profit Cost:</label> #= kendo.toString(ProfitCost, 'N2')# </li>" +
+                                                 "<li> <label>Total  Cost : <b>(D + E) = </b> </label><b> #= kendo.toString(TotalCost, 'N2')# </b></li>" +
+                                            "</ul>" +
+                                        "</div>"
+
+                                );
+                              }).ToClientTemplate()
+                        )
+                    </text>
+                );
+              
+            }).ToClientTemplate())  
+    #} else {#
+    @(Html.Kendo().TabStrip()
+            .Name("tab_str_#=SeedProductionOrderItemId#")
+            .SelectedIndex(0)
+            .Items(items =>
+            {
+            items.Add().Text("Detail").Content(
+                    @<text>
+                        @(Html.Kendo().PanelBar()
+                              .Name("panelbar_#=SeedProductionOrderItemId#")
+                              .ExpandMode(PanelBarExpandMode.Single)
+                              .Items(panelbar =>
+                              {
+                                  panelbar.Add()
+                                      .Expanded(true)
+                                      .Content(
+                                         "<div class='workItem-details'>" +
+                                            "<ul>" +
+                                                 "<li> <label> <b>(A)</b> Purchase Price </label> #= kendo.toString(PurchaseCost, 'N2')# </li>" +
+                                                 "<li> <label> <b>(B)</b> Material Cost </label> #= kendo.toString(MaterialCost, 'N2')# </li>" +
+                                                 "<li> <label> <b>(C)</b> Labor Cost :</label> #= kendo.toString(LaborCost, 'N2')# </li>" +
+                                                 "<li> <label> <b>(D)</b> Machinery Cost:</label> #= kendo.toString(EquipmentCost, 'N2')# </li>" +
+                                                 "<li> <label> <b>(E)</b> Direct Cost: <b>(A + B + C + D) = </b></label> #= kendo.toString(DirectCost, 'N2')# </li>" +
+                                                 "<li> <label> <b>(F)</b> Over head Cost:</label> #= kendo.toString(OverheadCost, 'N2')# </li>" +
+                                                 //"<li> <label> Profit Cost:</label> #= kendo.toString(ProfitCost, 'N2')# </li>" +
+                                                 "<li> <label>Total  Cost :<b>(E + F) = </b></label> #= kendo.toString(TotalCost, 'N2')# </li>" +
+                                            "</ul>" +
+                                        "</div>"
+
+                                );
+                              }).ToClientTemplate()
+                        )
+                    </text>
+                );
+              
+            }).ToClientTemplate())  
+    #}#
+</script>
+
+<script id="template_gumProductionactivities" type="text/kendo-tmpl">
+    # if(ProductionType == 0) { #
+    @(Html.Kendo().TabStrip()
+            .Name("tabst_str_#=GumProductionOrderItemId#")
+            .SelectedIndex(0)
+            .Items(items =>
+            {
+                items.Add().Text("Detail").Content(
+                    @<text>
+                        @(Html.Kendo().PanelBar()
+                              .Name("panelbar_#=GumProductionOrderItemId#")
+                              .ExpandMode(PanelBarExpandMode.Single)
+                              .Items(panelbar =>
+                              {
+                                  panelbar.Add()
+                                      .Expanded(true)
+                                      .Content(
+                                         "<div class='workItem-details'>" +
+                                             "<ul>" +
+                                                 //"<li> <label> <strong> Status </label> #= Status# </strong></li>" +
+                                                 "<li> <label> <b>(A)</b> Material Cost </label> #= kendo.toString(MaterialCost, 'N2')# </li>" +
+                                                 "<li> <label> <b>(B)</b> Labor Cost :</label> #= kendo.toString(LaborCost, 'N2')# </li>" +
+                                                 "<li> <label> <b>(C)</b> Machinery Cost:</label> #= kendo.toString(EquipmentCost, 'N2')# </li>" +
+                                                 "<li> <label> <b>(D)</b> Direct Cost: <b>(A + B + C) = </b> </label> #= kendo.toString(DirectCost, 'N2')# </li>" +
+                                                 "<li> <label> <b>(E)</b> Over head Cost:</label> #= kendo.toString(OverheadCost, 'N2')# </li>" +
+                                                 //"<li> <label> Profit Cost:</label> #= kendo.toString(ProfitCost, 'N2')# </li>" +
+                                                 "<li> <label>Total  Cost : <b>(D + E) = </b> </label><b> #= kendo.toString(TotalCost, 'N2')# </b></li>" +
+                                            "</ul>" +
+                                        "</div>"
+
+                                );
+                              }).ToClientTemplate()
+                        )
+                    </text>
+                );
+            }).ToClientTemplate())
+    #} else {#
+    @(Html.Kendo().TabStrip()
+            .Name("tabst_str_#=GumProductionOrderItemId#")
+            .SelectedIndex(0)
+            .Items(items =>
+            {
+                items.Add().Text("Detail").Content(
+                    @<text>
+                        @(Html.Kendo().PanelBar()
+                              .Name("panelbar_#=GumProductionOrderItemId#")
+                              .ExpandMode(PanelBarExpandMode.Single)
+                              .Items(panelbar =>
+                              {
+                                  panelbar.Add()
+                                      .Expanded(true)
+                                      .Content(
+                                         "<div class='workItem-details'>" +
+                                             "<ul>" +
+                                                 "<li> <label> <b>(A)</b> Purchase Price </label> #= kendo.toString(PurchaseCost, 'N2')# </li>" +
+                                                 "<li> <label> <b>(B)</b> Material Cost </label> #= kendo.toString(MaterialCost, 'N2')# </li>" +
+                                                 "<li> <label> <b>(C)</b> Labor Cost :</label> #= kendo.toString(LaborCost, 'N2')# </li>" +
+                                                 "<li> <label> <b>(D)</b> Machinery Cost:</label> #= kendo.toString(EquipmentCost, 'N2')# </li>" +
+                                                 "<li> <label> <b>(E)</b> Direct Cost: <b>(A + B + C + D) = </b></label> #= kendo.toString(DirectCost, 'N2')# </li>" +
+                                                 "<li> <label> <b>(F)</b> Over head Cost:</label> #= kendo.toString(OverheadCost, 'N2')# </li>" +
+                                                 //"<li> <label> Profit Cost:</label> #= kendo.toString(ProfitCost, 'N2')# </li>" +
+                                                 "<li> <label>Total  Cost :<b>(E + F) = </b></label> #= kendo.toString(TotalCost, 'N2')# </li>" +
+                                            "</ul>" +
+                                        "</div>"
+
+                                );
+                              }).ToClientTemplate()
+                        )
+                    </text>
+                );
+            }).ToClientTemplate())
+    #}#
+</script>
+
+<script>
+    function filterCategories() {
+        //
+        // summary:
+        //      send the filtering text along with the parent widget's value
+        var dropdownlist = $("#ItemCode").data("kendoDropDownList");
+        var filterInput = dropdownlist.filterInput;
+        return {
+            ItemCategoryCode: $("#ItemCategoryCode").val(), filterString: filterInput.val()
+        };
+    }
+</script>

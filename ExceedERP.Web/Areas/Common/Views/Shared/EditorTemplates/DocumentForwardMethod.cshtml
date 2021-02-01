@@ -1,0 +1,12 @@
+﻿@using ExceedERP.Core.Domain.Procurement
+@using ExceedERP.Core.Domain.Common.DocumentApproval
+@using ExceedERP.Helpers.Common
+
+@(Html.Kendo().DropDownListFor(m => m)
+    .OptionLabel("Select ...")
+        .DataTextField("Text")
+            .DataValueField("Value")
+            .ValuePrimitive(true)
+            .BindTo(EnumExtension.EnumToSelectList(typeof(ForwardMethod)))
+ 
+)

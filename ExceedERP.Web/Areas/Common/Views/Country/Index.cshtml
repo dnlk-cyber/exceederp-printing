@@ -1,0 +1,40 @@
+﻿@using ExceedERP.Core.Domain.Common.HRM
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>@Resources.NavigatorMiscellaneous_Countries</legend>
+@(Html.Kendo().Grid<Country>()
+          .Name("Countrygrid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.Name).Width (120);
+      //  columns.Bound(c => c.PolticalName);
+        columns.Bound(c => c.Continent).Width (120);
+        columns.Bound(c => c.TelephoneCode).Width (150);
+       // columns.Bound(c => c.TimeZone);
+        columns.Bound(c => c.Nationality).Width (120);
+        columns.Bound(c => c.CountryCode).Width (150);
+        //columns.Bound(c => c.Remark);
+        columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Selectable(selectable => {
+            selectable.Mode(GridSelectionMode.Single);
+            selectable.Type(GridSelectionType.Row);
+      })
+      .Filterable()
+      .Scrollable(h=> h.Height( 500))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+                   .Events(events => events.Error("error_handler(\"Countrygrid\")"))
+          .Model(model => model.Id(p => p.CountryId))
+          .Read(read => read.Action("Countries_Read", "Country"))
+          .Create(create => create.Action("Countries_Create", "Country"))
+          .Update(update => update.Action("Countries_Update", "Country"))
+          .Destroy(destroy => destroy.Action("Countries_Destroy", "Country"))
+      )
+)

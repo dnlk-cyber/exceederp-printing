@@ -1,0 +1,41 @@
+﻿<legend>  Service  </legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.CustomerService>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Description).Width(120);
+          columns.Bound(c => c.Type).EditorTemplateName("CustomerServiceType").Width(120);
+          columns.Bound(c => c.Remark).Width(120);
+
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                .HtmlAttributes(new { style = "height: 520px;" })
+                                  .Pageable(pageable => pageable
+                                                    .Input(true)
+                                                    .Numeric(false)
+                                                    .Refresh(true)
+                                                    .PageSizes(true)
+                                                    .ButtonCount(5))
+
+                                        .Scrollable()
+                                        .Sortable()
+                                        .Filterable()
+                                        .Groupable()
+                                        .Scrollable(h => h.Height(500))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+                  .Model(model => model.Id(p => p.CustomerServiceId)).Events(ev => ev
+                                                                    .Error("error_handler(\"grid\")")
+                                                                    .RequestStart("onRequestStart(\"grid\")")
+                                                                    .RequestEnd("onRequestEnd(\"grid\")"))
+              .Read(read => read.Action("CustomerServices_Read", "CustomerService"))
+              .Create(create => create.Action("CustomerServices_Create", "CustomerService"))
+              .Update(update => update.Action("CustomerServices_Update", "CustomerService"))
+              .Destroy(destroy => destroy.Action("CustomerServices_Destroy", "CustomerService"))
+      )
+)

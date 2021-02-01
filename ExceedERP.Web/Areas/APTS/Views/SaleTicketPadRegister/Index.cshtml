@@ -1,0 +1,116 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.APTS
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Drug Requistes</legend>
+@(Html.Kendo().Grid<SaleTicketPadRegister>()
+          .Name("SaleTicketPadRegistergrid")
+      .Columns(columns =>
+      {
+          //columns.Bound(c => c.Date).Visible(false);
+          columns.Bound(c => c.NameOfReceiver).Width(100);
+          columns.Bound(c => c.SerialNoIssuedFrom).Width(200);
+          columns.Bound(c => c.SerialNoIssuedTo).Width(200);
+
+
+          columns.Bound(c => c.SignatureOfReceiver).Width(120);
+          columns.Bound(c => c.SerialNoOfUsedPadReturnedFrom).Width(120);
+          columns.Bound(c => c.SerialNoOfUsedPadReturnedTo).Width(100);
+          columns.Bound(c => c.SignOfAccountant).Width(100);
+          columns.Bound(c => c.SetialNoOfLost).Width(100);
+
+
+          columns.Command(command =>
+          {
+              command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit); command.Destroy().Text(Resources.ActionButton_Cancel);
+          }).Width(300);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))//.TemplateName("RequisitionModel20"))
+        .Scrollable(h => h.Height(500))
+
+
+                         .Groupable()
+                                  .Sortable(sortable =>
+                                  {
+                                      sortable.SortMode(GridSortMode.SingleColumn);
+                                  })
+                      .Filterable()
+                         .Pageable(pageable => pageable
+                                                    .Input(true)
+                                                    .Numeric(false)
+                                                    .Refresh(true)
+                                                    .PageSizes(true)
+                                                    .ButtonCount(5))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+                 //.Sort(sort => sort.Add("DateCreated").Descending())
+                 .Events(events =>
+                 {
+                     events.Error("error_handler(\"SaleTicketPadRegistergrid\")");
+                     events.RequestStart("onRequestStart(\"SaleTicketPadRegistergrid\")");
+                     events.RequestEnd("onRequestEnd(\"SaleTicketPadRegistergrid\")");
+                 }
+              )
+
+              .Model(model =>
+              {
+                  model.Id(p => p.SaleTicketPadRegisterId);
+              })
+          .Read(read => read.Action("SaleTicketPadRegister_Read", "SaleTicketPadRegister"))
+          .Create(create => create.Action("SaleTicketPadRegister_Create", "SaleTicketPadRegister"))
+          .Update(update => update.Action("SaleTicketPadRegister_Update", "SaleTicketPadRegister"))
+          .Destroy(destroy => destroy.Action("SaleTicketPadRegister_Destroy", "SaleTicketPadRegister"))
+      )
+)
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 800px;
+    }
+</style>
+<script>
+
+    function sync_handler(e) {
+        this.read();
+</script>
+
+<script>
+        function approve(e) {
+
+
+        var row = $(e.target).closest("tr");
+        var grid = $("#SaleTicketPadRegistergrid").data("kendoGrid");
+        var dataItem = grid.dataItem(row);
+        var id = dataItem.RequisitionModel20Id;
+
+
+        if (id.length !== 0 )
+        {
+
+            $.ajax({
+                url: '@Url.Action("Approve", "SaleTicketPadRegistergrid")',
+
+                data: { id: id},
+                type: 'POST',
+                cache: false,
+                success: function (result) {
+                    r = result;
+
+
+                   // $("#OrgStructureId").val(r).trigger("change");;
+
+
+                }
+
+
+
+            });
+
+        }
+    }
+</script>

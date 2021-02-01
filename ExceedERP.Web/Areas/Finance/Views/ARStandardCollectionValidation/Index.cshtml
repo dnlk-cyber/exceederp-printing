@@ -1,0 +1,34 @@
+﻿@using ExceedERP.Core.Domain.Finance.AR
+@(Html.Kendo().Grid<ArStandardCollectionValidation>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Status);
+          columns.Bound(c => c.Remark);
+          columns.Bound(c => c.OrgBranchName);
+          columns.Bound(c => c.DateCreated);
+          columns.Bound(c => c.LastModified);
+          columns.Bound(c => c.CreatedBy);
+          columns.Bound(c => c.ModifiedBy);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+                              toolbar.Excel();
+                              // toolbar.Pdf();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Pageable()
+      .Sortable(sortable => {
+                                sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Filterable()
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.ArStandardCollectionValidationId))
+          .Read(read => read.Action("ARStandardCollectionValidations_Read", "ArStandardCollectionValidation"))
+          .Create(create => create.Action("ARStandardCollectionValidations_Create", "ArStandardCollectionValidation"))
+          .Update(update => update.Action("ARStandardCollectionValidations_Update", "ArStandardCollectionValidation"))
+          .Destroy(destroy => destroy.Action("ARStandardCollectionValidations_Destroy", "ArStandardCollectionValidation"))
+      ))

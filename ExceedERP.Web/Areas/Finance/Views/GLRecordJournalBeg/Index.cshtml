@@ -1,0 +1,625 @@
+﻿@using ExceedERP.Core.Domain.Finance.GL
+<legend>Beginning Journal</legend>
+@(Html.Kendo().Grid<GLRecordJournalBeg>()
+							  .Name("grid")
+							  .Columns(columns =>
+							  {
+								  columns.Bound(c => c.GLRecordJournalBegId).Title("ID").Width(100).ClientTemplate("#=appendZeros(GLRecordJournalBegId)#");
+								  columns.Bound(c => c.JournalName).Width(150);
+								  columns.Bound(c => c.Description).Width(150);
+								  columns.Bound(c => c.PeriodName).Width(130).EditorTemplateName("OpenGlPeriodSelector");
+								  columns.Bound(c => c.CategoryName).Width(130).EditorTemplateName("GLCategory");
+								  columns.Bound(c => c.JournalNumber).Title("Reference").Width(120);
+								  columns.Bound(c => c.EffectiveDate).Title("Date").Width(130);
+
+								  //columns.Bound(c => c.DebitSum).Width(100).Format("{0:n}");
+								  columns.Bound(c => c.Status).Width(100);
+
+
+
+								  columns.Command(command =>
+								  {
+
+									 // command.Edit();
+						  //command.Destroy();
+					  }).Width(180);
+							  })
+							 .ToolBar(toolbar =>
+				  {
+
+					  toolbar.Template(@<text>
+
+						@(Html.Kendo().DropDownList()
+											  .OptionLabel("Select Year")
+											  .Name("yearSelector")
+											  .AutoBind(false)
+											  .DataValueField("GlFiscalYearId")
+											  .DataTextField("Name")
+											  .HtmlAttributes(new { style = "width: 200px;" })
+											  .DataSource(dataSource =>
+											  {
+														dataSource.Read(read => read.Action("GetAllYearsOpenYearSinceBeginning", "GlobalDataProvider", new { area = "Common" }))
+												.ServerFiltering(false);
+													}))
+
+
+						@(Html.Kendo().DropDownList()
+											  .Name("PeriodList")
+											  .AutoBind(false)
+											  .DataValueField("GLPeriodId")
+											  .DataTextField("Name")
+											  .HtmlAttributes(new { style = "width: 200px;" })
+											  .ValuePrimitive(true)
+											  .DataSource(dataSource =>
+											  {
+														dataSource.Read(read => read.Action("GetFirstPeriods", "GlobalDataProvider", new { area = "Common" }).Data("getFiscalYear"))
+												.ServerFiltering(true);
+													})
+											  .CascadeFrom("yearSelector"))		   
+						
+
+
+						@Html.Kendo().Button().Name("btnOpenRecord").HtmlAttributes(new { type = "button", @class = "k-primary" }).Content("Open").Events(ev => ev.Click("OpenOpeningRecord"))
+
+
+					</text>);
+						})
+
+									.Editable(editable => editable.Mode(GridEditMode.InLine))
+								 .HtmlAttributes(new { style = "height: 700px;" })
+									  .Pageable(pageable => pageable
+												  .Input(true)
+												  .Numeric(false)
+												  .Refresh(true)
+												  .PageSizes(true)
+												  .ButtonCount(20))
+									  .Scrollable()
+										   .Selectable(selectable =>
+										   {
+											   selectable.Mode(GridSelectionMode.Single);
+											   selectable.Type(GridSelectionType.Row);
+										   })
+													  .Sortable(sortable =>
+													  {
+														  sortable.SortMode(GridSortMode.SingleColumn);
+													  })
+
+									 .Events(ev => ev.DetailExpand("detailExpand"))
+									 .Scrollable(h => h.Height(500))
+									 .Events(x => x.DataBound("onDataBoundMaster"))
+									  .ClientDetailTemplateId("templates")
+									.DataSource(dataSource => dataSource
+										.Ajax()
+											.Sort(sort => sort.Add("GLRecordJournalBegId").Descending())
+										.Events(ev => ev
+											.Error("error_handler(\"grid\")")
+											.RequestStart("onRequestStart(\"grid\")")
+											.RequestEnd("onRequestEnd(\"grid\")"))
+										.PageSize(20)
+									  .Model(
+										  model =>
+										  {
+											  model.Id(p => p.GLRecordJournalBegId);
+
+											  model.Field(p => p.GLRecordJournalBegId).Editable(false);
+											  model.Field(p => p.IsPostedToSecondLedger).Editable(false);
+											  model.Field(p => p.JournalName).Editable(false);
+											  model.Field(p => p.JournalNumber).Editable(false);
+											  model.Field(p => p.Description).Editable(false);
+											  model.Field(p => p.FiscalYear).Editable(false);
+											  model.Field(p => p.PeriodName).Editable(false);
+											  model.Field(p => p.CategoryName).Editable(false);
+											  model.Field(p => p.ReferenceDoc).Editable(false);
+											  model.Field(p => p.EffectiveDate).Editable(false);
+											  model.Field(p => p.Status).Editable(false);
+
+											  model.Field(p => p.VoidTime).Editable(false);
+											  model.Field(p => p.VoidBy).Editable(false);
+											  model.Field(p => p.isVoid).Editable(false);
+											  model.Field(p => p.OnlineApprovedTime).Editable(false);
+											  model.Field(p => p.OnlineApprovedBy).Editable(false);
+											  model.Field(p => p.IsOnlineApproved).Editable(false);
+											  model.Field(p => p.Status).Editable(false);
+											  model.Field(p => p.isPosted).Editable(false);
+											  model.Field(p => p.isReversed).Editable(false);
+											  model.Field(p => p.Posting).Editable(false);
+
+											  model.Field(p => p.SourcesName).Editable(false);
+											  model.Field(p => p.FiscalYear).Editable(false);
+											  model.Field(p => p.DebitSum).Editable(false);
+
+											  model.Field(p => p.InvoiceReferenceDoc).Editable(false);
+											  model.Field(p => p.ReferenceDoc).Editable(false);
+											  model.Field(p => p.PaymentReference).Editable(false);
+
+
+
+											  model.Field(p => p.OrgBranchName).Editable(false);
+											  model.Field(p => p.CreatedBy).Editable(false);
+											  model.Field(p => p.ModifiedBy).Editable(false);
+											  model.Field(p => p.LastModified).Editable(false);
+											  model.Field(p => p.DateCreated).Editable(false);
+
+
+										  })
+
+										.Read(read => read.Action("GLRecordJournalBegs_Read", "GLRecordJournalBeg"))
+										.Create(create => create.Action("GLRecordJournalBegs_Create", "GLRecordJournalBeg"))
+										.Update(update => update.Action("GLRecordJournalBegs_Update", "GLRecordJournalBeg"))
+										.Destroy(destroy => destroy.Action("GLRecordJournalBegs_Destroy", "GLRecordJournalBeg"))
+									)
+
+)
+
+
+
+<script id="templates" type="text/kendo-tmpl">
+	@(Html.Kendo().TabStrip()
+																	.Name("tabStrip#=GLRecordJournalBegId#")
+																	.SelectedIndex(0)
+																	.Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+																	.Items(items =>
+																	{
+																		items.Add().Text("Journal Detail").Content(@<text>
+
+	<div>
+		<p><b>Record Status :#= Status #</b></p>
+		# if (!IsOnlineApproved)
+		{#
+		<a onclick='return Close("#=GLRecordJournalBegId#")' href=' \#' title="Close"><i class="fa fa-icon-lock fa-2x"></i>Close</a>|
+		<a onclick='return Refresh("#=GLRecordJournalBegId#")' href=' \#' title="Refresh Beginning Data"><i class="fa icon-refresh fa-2x"></i>Refresh</a>
+
+		# } #
+
+
+
+		# if (IsOnlineApproved)
+		{#
+
+		<a onclick='return Post("#=GLRecordJournalBegId#")' href=' \#' title="Post"><i class="fa fa-step-forward fa-2x"></i>Post</a>
+
+		# } #
+
+	</div>
+																			<div>
+																				<hr>
+																				<dl class="dl-horizontal">
+
+
+																					<dt>
+																						Created On
+																					</dt>
+																					<dd>
+																						#=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+
+																					</dd>
+																					<dt>
+																						Created By
+																					</dt>
+																					<dd>
+																						#= CreatedBy #
+																					</dd>
+																					<dt>
+																						Modified By
+																					</dt>
+																					<dd>
+																						#= ModifiedBy #
+																					</dd>
+																					<dt>
+																						Modified Date
+																					</dt>
+																					<dd>
+																						#=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+																					</dd>
+																				</dl>
+																			</div>
+
+																		</text>
+																															);
+
+																				items.Add().Text("Lines").Content(@<text>
+
+																					@FileUploaderPermit()
+
+																				</text>);
+
+
+
+																					})
+
+																																																		.ToClientTemplate()
+	)
+
+</script>
+
+
+@helper FileUploaderPermit()
+{
+	@(Html.Kendo().Grid<GLRecordJournalBegDistribution>()
+																											  .Name("GLRecordJournalBegDistribution#=GLRecordJournalBegId#")
+																											  .Columns(columns =>
+																											  {
+																												  columns.Bound(c => c.AccountCode).EditorTemplateName("AccountCode").Width(120);
+																												  columns.Bound(c => c.AccountDesc).Title("Account Description").Width(120);
+																												  columns.Bound(c => c.AdditionalDescription).Title("Description").Width(100);
+																												  columns.Bound(c => c.Debit).Width(50).Format("{0:n}").ClientFooterTemplate("\\#=kendo.toString(sum, 'n')\\# ");
+																												  columns.Bound(c => c.Credit).Width(50).Format("{0:n}").ClientFooterTemplate("\\#=kendo.toString(sum, 'n')\\# ");
+																												  columns.Command(command =>
+																									  {
+
+																										  command.Edit(); command.Destroy();
+
+																									  }).Width(180).ClientFooterTemplate("Difference: \\#=Debit.sum-Credit.sum\\# ");
+																											  })
+										.ToolBar(t => t.Template(
+										@<text>
+											<div class="toolbar row">
+												<div class="col-md-4">
+													<a class="k-button k-button-icontext k-grid-add" href='\#'><span class="k-icon k-i-add"></span> Add new record</a>
+													<button class="k-button k-button-icontext k-grid-excel" href='\#'> <span class="k-icon k-i-excel"></span>Export to Excel</button>
+												</div>
+												<div class="col-md-4 pull-right">
+													@(Html.Kendo().Upload()
+																										.Name("files")
+																										.Async(a => a.Save("ImportBeginningLines", "GLRecordJournalBeg", new { id = "#=GLRecordJournalBegId #" }))
+																										.Events(e => e.Complete("bidSuccess"))
+																										.Events(c => c
+																				.Upload("OnUpload")
+																			)
+																			.Events(c => c
+																				.Select("OnSelect")
+																			)
+																										.ShowFileList(false)
+																										.ToClientTemplate())
+													<a style="color:blue" href="~/Content/Downloads/Templates/Finance/BeginningImport.xlsx">Click to download excel template</a>
+												</div>
+
+											</div>
+										</text>
+																																						))
+																																						 .Excel(excel => excel
+		  .FileName("Beginning.xlsx")
+		  .Filterable(true)
+		  .AllPages(true)
+	  )
+
+																																							 .Editable(editable => editable.Mode(GridEditMode.InLine))
+																																				  .HtmlAttributes(new { style = "height: 600px;" })
+																																				  .Pageable(pageable => pageable
+																																					  .Input(true)
+																																					  .Numeric(false)
+																																					  .Refresh(true)
+																																					  .PageSizes(true)
+																																					  .ButtonCount(10))
+																																				  .Scrollable()
+																																				  .Sortable()
+																																				  .Filterable()
+																																				  .Events(x => x.DataBound("onDataBoundLines"))
+																																				  .DataSource(dataSource => dataSource
+																																					  .Ajax()
+																																					  .Sort(sort => sort.Add("Debit").Descending())
+																																					  .Aggregates(aggregates =>
+																																					  {
+																																						  aggregates.Add(p => p.Debit).Sum();
+																																						  aggregates.Add(p => p.Credit).Sum();
+																																					  })
+																																					  .Model(
+																																						  model =>
+																																						  {
+																																							  model.Id(p => p.GLRecordJournalBegDistributionId);
+																																							  model.Field(p => p.AccountDesc).Editable(false);
+																																							  model.Field(p => p.OrgBranchName).Editable(false);
+																																							  model.Field(p => p.CreatedBy).Editable(false);
+																																							  model.Field(p => p.ModifiedBy).Editable(false);
+																																							  model.Field(p => p.LastModified).Editable(false);
+																																							  model.Field(p => p.DateCreated).Editable(false);
+																																						  })
+																																					  .Events(ev => ev
+																																						  .Error("error_handler(\"GLRecordJournalBegDistribution#=GLRecordJournalBegId#\")")
+																																						  .RequestStart("onRequestStart(\"GLRecordJournalBegDistribution#=GLRecordJournalBegId#\")")
+																																						  .RequestEnd("onRequestEndWithAddRow(\"GLRecordJournalBegDistribution#=GLRecordJournalBegId#\")"))
+																																					  .Read(read => read.Action("GLRecordJournalBegDistributions_Read", "GlRecordJournalBegLines", new { id = "#=GLRecordJournalBegId#" }))
+																																					  .Create(create => create.Action("GLRecordJournalBegDistributions_Create", "GlRecordJournalBegLines", new { id = "#=GLRecordJournalBegId#" }))
+																																					  .Update(update => update.Action("GLRecordJournalBegDistributions_Update", "GlRecordJournalBegLines", new { id = "#=GLRecordJournalBegId#" }))
+																																					  .Destroy(destroy => destroy.Action("GLRecordJournalBegDistributions_Destroy", "GlRecordJournalBegLines"))
+																																				  )
+
+																																				  .ToClientTemplate())
+}
+
+
+
+<script>
+
+
+	function getFiscalYear() {
+		return { year: $("#yearSelector").data("kendoDropDownList").value() }
+	}
+
+	function OpenOpeningRecord() {
+
+		var periodObject = $("#PeriodList").data("kendoDropDownList");
+		var periodid = periodObject.value();
+
+		
+
+		if (periodid != null) {
+			$("#btnOpenRecord").attr("disabled", true);
+			$.ajax({
+				type: "POST",
+				url: '@Url.Action("OpenOpeningRecord", "GLRecordJournalBeg", new {area = "Finance"})',
+				data: { id: periodid },
+				success: function (result) {
+					// toastr.warnning(result.Message);
+					alert(result.Message);
+					location.reload(true);
+				}, //end succ
+				beforeSend: function(){
+					// Show image container
+					$("#loading-image").show();
+				},
+				complete:function(data){
+					// Hide image container
+					$("#loading-image").hide();
+				},
+				error: function (result) {
+					alert(result);
+				}
+			});
+
+
+			$("#grid").data("kendoGrid").dataSource.read();
+		} else {
+			alert("Please select period.");
+		}
+
+	}
+
+	function Close(id) {
+
+		$.ajax({
+			type: "POST",
+			url: '@Url.Action("Close", "GLRecordJournalBeg", new { area = "Finance" })',
+			data: { id: id },
+			success: function (result) {
+				// toastr.warnning(result.Message);
+				alert(result.Message);
+				location.reload(true);
+			}, //end succ
+			beforeSend: function () {
+				// Show image container
+				$("#loading-image").show();
+			},
+			complete: function (data) {
+				// Hide image container
+				$("#loading-image").hide();
+			},
+			error: function (result) {
+				alert(result);
+			}
+		});
+	}
+
+	@*function Open(id) {
+		var recordStatus = "";
+
+		$.ajax({
+			type: "POST",
+			url: '@Url.Action("Open", "GLRecordJournalBeg", new { area = "Finance" })',
+			data: { id: id },
+			success: function (result) {
+				//toastr.success(result.Message);
+				alert(result.Message);
+				recordStatus = result.Status;
+				location.reload(true);
+			}, //end succ
+			error: function (result) {
+				alert(result);
+			}
+		});
+	}*@
+
+	function Refresh(id) {
+		
+
+		$.ajax({
+			type: "POST",
+			url: '@Url.Action("Refresh", "GLRecordJournalBeg", new { area = "Finance" })',
+			data: { id: id },
+			success: function (result) {
+				// toastr.warnning(result.Message);
+				alert(result.Message);
+				location.reload(true);
+			}, //end succ
+			beforeSend: function () {
+				// Show image container
+				$("#loading-image").show();
+			},
+			complete: function (data) {
+				// Hide image container
+				$("#loading-image").hide();
+			},
+			error: function (result) {
+				alert(result);
+			}
+		});
+	}
+
+
+	$("a.sending").click(function (event) {
+		//alert("sent");
+		//event.preventDefault();
+
+		var item = $(this).text();//$(this).attr('id');
+		$.ajax({
+			url: '/Finance/JSON/Description',
+			type: 'POST',
+			data: { id: item },
+			success: function (result) {
+				if (result.length > 0) {
+					for (var i = 0; i < result.length; i++) {
+						$("#DescriptionArea").text('');
+						$("<a>")
+							.append(result[i].Description)
+							.appendTo("#DescriptionArea");
+					}
+				}
+				else {
+					alert("Description not found");
+				}
+
+			}, //end succ
+			error: function (result) {
+				alert(result);
+			}
+		}); //end post
+	});//end of click
+
+	@*function PostrJournal(e) {
+		var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+		var id = dataItem.GLRecordJournalBegId;
+		$.ajax({
+			type: "GET",
+			data: id,
+			url: '@Url.Action("PostLedger", "GLRecordJournalBeg")/' + id
+
+		});
+
+		$('#grid').data('kendoGrid').dataSource.read();
+		$('#grid').data('kendoGrid').refresh();
+		location.reload();
+	};*@
+
+	@*function Close(e) {
+		var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+		var id = dataItem.GLRecordJournalBegId;
+		$.ajax({
+			type: "GET",
+			data: id,
+			url: '@Url.Action("Close", "GLRecordJournalBeg")/' +id
+
+		});
+
+		$('#grid').data('kendoGrid').dataSource.read();
+		$('#grid').data('kendoGrid').refresh();
+		location.reload();
+	};*@
+
+	@*function Reverse(e) {
+		var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+		var id = dataItem.GLRecordJournalBegId;
+		$.ajax({
+			type: "GET",
+			data:id,
+			url: '@Url.Action("Reverse", "GLRecordJournalBeg")/' + id
+
+		});
+
+		$('#grid').data('kendoGrid').dataSource.read();
+		$('#grid').data('kendoGrid').refresh();
+		location.reload();
+	};*@
+
+
+	function onSelectedPeriod() {
+		var periodName = $("#PeriodName").data("kendoDropDownList").value();
+		var min = "";
+		var max = "";
+
+		$.ajax({
+			type: "POST",
+			url: '@Url.Action("GetPeriodDateRangeByName", "FinanceDataProvider", new { area = "Finance" })',
+			data: { name: periodName },
+			success: function (result) {
+				min = result.Min;
+				max = result.Max;
+				//update
+				var datepicker = $("#EffectiveDate").data("kendoDatePicker");
+				datepicker.setOptions({
+					format: "yyyy-MM-dd",
+					min:min,
+					max:max,
+					value: new Date(),
+					change: onDOBChange
+				});
+			}, //end succ
+			error: function (result) {
+				alert(result);
+			}
+
+		});
+
+
+	}
+
+	function OnSelect(e) {
+		var files = e.files;
+		$.each(files, function () {
+
+			if (!(this.extension.toLowerCase() === ".xls" || this.extension.toLowerCase() === ".xlsx")) {
+				alert("Only Excel files are allowed.");
+				e.preventDefault();
+			}
+		});
+	}
+	function OnUpload(e) {
+		var files = e.files;
+		$.each(files, function () {
+			if (!(this.extension.toLowerCase() === ".xls" || this.extension.toLowerCase() === ".xlsx")) {
+				e.preventDefault();
+			}
+		});
+	}
+
+	function bidSuccess(e) {
+		//var gridname = "#Attachment_" + CompanyId;
+		//$(gridname).data("kendoGrid").dataSource.read();
+	}
+
+
+</script>
+
+
+
+
+<script>
+
+	var popup;
+	var aCode;
+	//function SelectAccCode() {
+	//    popup = window.open('/Finance/AccountCode/GLAccountSelector', 'WindowPopup', 'top=100, left=400, width=300, height=320,resizable=no,');
+	//    popup.focus();
+	//    return false;
+	//}
+
+	//function setLang(accCode) {
+	//    aCode = accCode;
+	//    $("#AccountCode").val(aCode).trigger("change");
+	//}
+
+	$(function () {
+
+		$("#GLRecordJournalBegDistribution table").on("keydown", "tr", function (e) {
+			var grid = $("#GLRecordJournalBegDistribution").data("kendoGrid");
+			var code = (e.keyCode ? e.keyCode : e.which);
+
+			if (code === 13) { //Enter keycode
+				$(e.srcElement).closest("tbody").focus();
+				setTimeout(function () {
+					grid.saveRow();
+				});
+			}
+		});
+		var grid = $("#grid").data("kendoGrid");
+		grid.addRow();
+		$(".k-grid-edit-row").appendTo("#GLRecordJournalBegDistribution1 tbody");
+	});
+
+	$("#grid").delegate(".details-button", "click", function (e) {
+		var row = $(this).closest("tr"),
+			grid = $(this).parents("[data-role=grid]").data("kendoGrid"); //gets child grid
+		//var model = grid.dataItem(row);
+		//console.log(model); //model contains the id
+	});
+</script>
+

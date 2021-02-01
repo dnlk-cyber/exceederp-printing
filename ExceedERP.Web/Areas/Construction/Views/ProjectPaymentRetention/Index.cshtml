@@ -1,0 +1,25 @@
+﻿@using ExceedERP.Core.Localization
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.ProjectPaymenRetention>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.RetentionBeforeVat);
+        columns.Bound(c => c.RetentionAfterVat);
+        columns.Bound(c => c.TotalRetentionBeforeVat);
+        columns.Bound(c => c.TotalRetentionAfterVat);
+        columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.ProjectPaymenRetentionId))
+          .Read(read => read.Action("Retentions_Read", "ProjectPaymentRetention"))
+          .Create(create => create.Action("Retentions_Create", "ProjectPaymentRetention"))
+          .Update(update => update.Action("Retentions_Update", "ProjectPaymentRetention"))
+          .Destroy(destroy => destroy.Action("Retentions_Destroy", "ProjectPaymentRetention"))
+      )
+)

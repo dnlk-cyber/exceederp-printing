@@ -1,0 +1,4 @@
+﻿@(Html.Kendo().DropDownListFor(model => model)
+                                              .DataTextField("Name").Filter(FilterType.Contains)
+                                                  .DataValueField("Name").OptionLabel("Select ").HtmlAttributes(new { style = "width:100%" })
+                                                              .DataSource(d => d.Read(r => r.Action("LicenseLevelDDBind", "LicenseLevel")).ServerFiltering(true)))

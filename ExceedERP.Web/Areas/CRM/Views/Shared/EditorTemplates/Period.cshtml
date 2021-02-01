@@ -1,0 +1,9 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.CRM
+@(Html.Kendo().DropDownListFor(m => m)
+.OptionLabel( "Select..")
+         .DataTextField("PeriodName")
+                .DataValueField("PeriodId")
+                       .BindTo((IEnumerable)ViewData["PeriodList"])
+                         .ValuePrimitive(true)
+)

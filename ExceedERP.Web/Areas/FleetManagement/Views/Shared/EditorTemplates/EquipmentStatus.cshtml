@@ -1,0 +1,5 @@
+﻿
+@( Html.Kendo().DropDownListFor(m => m).Name("EquipmentStatus")
+                                                .DataTextField("Text")
+                                                .DataValueField("Text").OptionLabel(" Select Status ")
+.BindTo(EnumHelper.GetSelectList(typeof(ExceedERP.Core.Domain.FleetManagement.FleetEquipmentRent.RentRequest.EquipmentStatusenum))))

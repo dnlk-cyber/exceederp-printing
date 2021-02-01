@@ -1,0 +1,12 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@using ExceedERP.Core.Domain.Construction
+
+@(Html.Kendo().DropDownListFor(m => m)
+      .OptionLabel(Resources.Select)
+      .DataTextField("Text")
+      .DataValueField("Value")
+      .ValuePrimitive(true)
+      .Filter("contains")
+      .BindTo(EnumExtension.EnumToSelectList(typeof(StandardCollectionReceiptType))))
+

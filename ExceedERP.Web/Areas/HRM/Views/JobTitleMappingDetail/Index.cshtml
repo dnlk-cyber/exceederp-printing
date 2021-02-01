@@ -1,0 +1,35 @@
+﻿@using ExceedERP.Core.Domain.HRM.Company
+@using ExceedERP.Core.Localization
+
+@(Html.Kendo().Grid<JobTitleMappingDetail>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.MainFunction);
+        columns.Bound(c => c.LookupId);
+        columns.Bound(c => c.RelevantExp);
+        columns.Bound(c => c.Experience);
+        columns.Bound(c => c.SpecialSkill);
+        columns.Bound(c => c.PlannedSalary);
+        columns.Bound(c => c.Remark);
+        columns.Bound(c => c.OrgBranchName);
+        columns.Bound(c => c.DateCreated);
+        columns.Bound(c => c.LastModified);
+        columns.Bound(c => c.CreatedBy);
+        columns.Bound(c => c.ModifiedBy);
+        columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.JobTitleMappingDetailId))
+          .Read(read => read.Action("JobTitleMappingDetail_Read", "JobTitleMappingDetail"))
+          .Create(create => create.Action("JobTitleMappingDetail_Create", "JobTitleMappingDetail"))
+          .Update(update => update.Action("JobTitleMappingDetail_Update", "JobTitleMappingDetail"))
+          .Destroy(destroy => destroy.Action("JobTitleMappingDetail_Destroy", "JobTitleMappingDetail"))
+      )
+)

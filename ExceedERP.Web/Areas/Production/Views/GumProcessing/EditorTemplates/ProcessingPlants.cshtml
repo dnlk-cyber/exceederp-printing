@@ -1,0 +1,14 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@(Html.Kendo().DropDownListFor(m => m)
+    .OptionLabel(Resources.Select)
+            .DataTextField("Name")
+            .DataValueField("ProcessingPlantId")
+            .DataSource(dataSource =>
+            {
+                dataSource.Read(read => read.Action("GetProcessingPlants", "ProductionDataProvider", new { type = 1, area = "Production"}));
+            })
+            .Filter("contains")
+            .MinLength(2)
+            .ValuePrimitive(true)
+)

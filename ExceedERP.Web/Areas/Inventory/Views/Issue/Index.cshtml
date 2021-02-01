@@ -1,0 +1,680 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.Inventory
+@using Kendo.Mvc
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Issue</legend>
+
+@(Html.Kendo().Grid<Issue>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.IssueID).Title("Issue No.").Width(120).ClientTemplate("#=appendZeros(IssueID)#");
+          columns.Bound(c => c.StoreRequisitionID).Title("SR No.").EditorTemplateName("StoreRequisitionSelector").Width(160);
+          columns.ForeignKey(p => p.StoreCode, (IEnumerable)ViewData["stores"], "StoreCode", "Name").Width(150).EditorTemplateName("StoreReadOnly");
+          columns.ForeignKey(p => p.GLPeriodId, (IEnumerable)ViewData["inventoryPeriods"], "GLPeriodId", "Name").Width(90).Title("Period").EditorTemplateName("InventoryPeriodSelector");
+          columns.Bound(c => c.IssueDate).Title("Issue Date").Width(100);
+          columns.Bound(c => c.PlateNo).Title("Plate No.").Width(100);
+          columns.ForeignKey(p => p.OrgStructureId, (IEnumerable)ViewData["costCenters"], "Code", "Name").Title("Work Unit").Width(160).EditorTemplateName("WorkUnitCostCenterSelector");
+          columns.ForeignKey(p => p.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("BranchSelector").Width(200);
+          columns.ForeignKey(p => p.EmployeeId, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Title("Requester").Width(130).EditorTemplateName("EmployeeSelector");
+          columns.ForeignKey(p => p.RecipientId, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Title("Recipient").Width(130).EditorTemplateName("EmployeeSelector");
+          columns.Bound(c => c.Remark).Title("Issue Reference").Width(90);
+          columns.Bound(c => c.Status).Width(90);
+          columns.Command(command =>
+          {
+
+              command.Edit();
+              command.Destroy();
+
+
+          }).Width(180);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create();
+          /*toolbar.Template(@<text>
+            <div class="toolbar row">
+                <div class="col-md-1">
+                    <a class="k-button k-button-icontext k-grid-add" href='#'>Add New</a>
+                </div>
+
+                <div class="col-md-2 pull-right">
+                    @(Html.Kendo().Upload()
+                                         .Name("file")
+                                         .Async(a => a.Save("Issue_Import", "Issue"))
+                                         .Events(e => e.Complete("onUploadSuccess").Upload("checkFileType"))
+                                         .ShowFileList(false).Events(events => events .Error("error_handler_one"))
+
+                    )
+                </div>
+                <div class="pull-right">
+                    @Html.Kendo().Button().Name("downloadTemplate").Content("Get Template").Events(events => events.Click("downloadTemplateClicked")).HtmlAttributes(new { @class = "btn btn-primary" })
+                </div>
+            </div>
+
+        </text>);*/
+      })
+      .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("Issue").Window(w => w.Title("Issue")))
+      .HtmlAttributes(new { style = "height: 550px;" })
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(20))
+      .Scrollable()
+      .Sortable()
+      .Filterable()
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Groupable()
+      .Events(ev => ev.Edit("onMasterEdit"))
+      .Groupable().Events(ev => ev.DetailExpand("detailExpand"))
+      .Scrollable(h => h.Height(500))
+      .Events(x => x.DataBound("onDataBoundMaster"))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Sort(sort => sort.Add("IssueID").Descending())
+          .Events(ev => ev
+              .Error("error_handler(\"grid\")")
+              .RequestStart("onRequestStart(\"grid\")")
+              .RequestEnd("onRequestEnd(\"grid\")"))
+          .Model(model =>
+          {
+              model.Id(p => p.IssueID);
+              model.Field(p => p.EmployeeId).Editable(false);
+              // model.Field(p => p.BranchId).Editable(false);
+              //  model.Field(p => p.OrgStructureId).Editable(false);
+              model.Field(p => p.Status).Editable(false);
+              // model.Field(p => p.GLPeriodId).Editable(false);
+              model.Field(p => p.Owner).Editable(false);
+              // model.Field(p => p.IssueDate).Editable(false);
+              model.Field(p => p.ForBranchId).Editable(false);
+              model.Field(p => p.IssueID).Editable(false);
+              model.Field(p => p.IsManual).Editable(false);
+              model.Field(p => p.CreatedBy).Editable(false);
+              model.Field(p => p.DateCreated).Editable(false);
+              model.Field(p => p.ModifiedBy).Editable(false);
+              model.Field(p => p.LastModified).Editable(false);
+          })
+          .Read(read => read.Action("Issues_Read", "Issue"))
+          .Create(create => create.Action("Issues_Create", "Issue"))
+          .Update(update => update.Action("Issues_Update", "Issue"))
+          .Destroy(destroy => destroy.Action("Issues_Destroy", "Issue"))
+      ).Resizable(x => x.Columns(true))
+      .ClientDetailTemplateId("issuetemplate"))
+
+<script id="issuetemplate" type="text/Kendo-tmpl">
+    @(Html.Kendo().TabStrip().Name("tabStrip_#=IssueID#").SelectedIndex(0).Items(items =>
+                      {
+                          items.Add().Text("Detail").Content(
+                            @<text>
+
+                                # if (!IsOnlineApproved&&!IsSendForApproval)
+                                {#
+                                <a onclick='return sendForApproval("#=IssueID#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                                <br />
+                                # } #
+
+
+                                # if (IsOnlineApproved)
+                                {#
+                                <a href='@Url.Action("IssuePrint", "InventoryPrint")/#=IssueID#' title="Print"><i class="fa fa-print fa-2x"></i></a>
+                                <br />
+                                # } #
+
+                                <div>
+                                    <hr>
+                                    <dl class="dl-horizontal">
+                                        <dt>
+                                            SR No.
+                                        </dt>
+                                        <dd>
+                                            #= StoreRequisitionID #
+                                        </dd>
+                                        <dt>
+                                            Issue No.
+                                        </dt>
+                                        <dd>
+                                            #= IssueID #
+                                        </dd>
+                                        <dt>
+                                            Store
+                                        </dt>
+                                        <dd>
+                                            #= StoreCode #
+                                        </dd>
+
+                                        <dt>
+                                            Work Unit
+                                        </dt>
+                                        <dd>
+                                            #= OrgStructureId #
+                                        </dd>
+                                        <dt>
+                                            Project
+                                        </dt>
+                                        <dd>
+                                            #= BranchId #
+                                        </dd>
+
+                                        <dt>
+                                            Issue Date
+                                        </dt>
+                                        <dd>
+
+                                            #=kendo.toString(kendo.parseDate(IssueDate), 'dd/MM/yyyy') #
+
+                                        </dd>
+                                        <dt>
+                                            Status
+                                        </dt>
+                                        <dd>
+                                            #= Status #
+                                        </dd>
+                                        <dt>
+                                            CreatedOn
+                                        </dt>
+                                        <dd>
+                                            #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+
+                                        </dd>
+                                        <dt>
+                                            CreatedBy
+                                        </dt>
+                                        <dd>
+                                            #= CreatedBy #
+                                        </dd>
+                                        <dt>
+                                            Modified By
+                                        </dt>
+                                        <dd>
+                                            #= ModifiedBy #
+                                        </dd>
+                                        <dt>
+                                            Modified Date
+                                        </dt>
+                                        <dd>
+                                            #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+                                        </dd>
+                                    </dl>
+                                </div>
+                                <hr>
+
+                                # if (IsOnlineApproved&&!IsVoid&&!IsOnlineTransferred)
+                                {#
+                                @if (HttpContext.Current.User.IsInRole("Property_Void"))
+                                            {
+                                    <a onclick='return voidRecord("#=IssueID#")' href='\#' title='Void Record'><i class='fa  fa-bolt fa-2x' style='color:red'></i></a>
+                                            }
+                                /**/
+                                # } #
+
+
+
+                            </text>
+                                            );
+
+                                  items.Add().Text("Item").Content(
+                    @<text>
+
+                        @(Html.Kendo().Grid<IssueItem>()
+                                      .Name("IssueItem_#=IssueID#")
+                                      .Columns(columns =>
+                                      {
+                                          columns.ForeignKey(p => p.ItemCategoryCode, (IEnumerable)ViewData["Category"], "ItemCategoryCode", "Name").Title("Category").EditorTemplateName("ItemCategorySelector").Width(180);
+                                          columns.ForeignKey(p => p.ItemCode, (IEnumerable)ViewData["Items"], "ItemCode", "Name").Title("Items").EditorTemplateName("ItemSelector").Width(180);
+                                          columns.ForeignKey(p => p.WorkItemCode, (IEnumerable)ViewData["WorkItem"], "Code", "Name").Width(120).EditorTemplateName("ConsWorkItemSelector");
+                                          columns.Bound(c => c.RequestedQuantity).Width(80);
+                                          columns.Bound(c => c.ApprovedQuantity).Width(80);
+                                          columns.Bound(c => c.IssuedQuantity).Width(70);
+                                          columns.Bound(c => c.UnitPrice).Width(70);
+                                          columns.Bound(c => c.Total).Width(70);
+                                          columns.Bound(c => c.AdditionalCost).Hidden();
+
+                                          columns.Bound(c => c.CreatedBy).Hidden();
+                                          columns.Bound(c => c.DateCreated).Hidden();
+                                          columns.Bound(c => c.ModifiedBy).Hidden();
+                                          columns.Bound(c => c.LastModified).Hidden();
+                                          columns.Command(command =>
+                                          {
+                                              command.Edit();
+                                              command.Destroy();
+                                          }).Width(180);
+                                      })
+                                      .ToolBar(toolbar =>
+                                      {
+
+                                      })
+                                      .Events(ev => ev.Edit("onItemEdit"))
+                                      .Events(x => x.DataBound("onDataBoundLines"))
+                                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                      .Scrollable()
+                                      .Selectable()
+                                      .DataSource(dataSource => dataSource
+                                          .Ajax()
+                                          .Events(ev => ev
+                                              .Error("error_handler(\"IssueItem_#=IssueID#\")")
+                                              .RequestStart("onRequestStart(\"IssueItem_#=IssueID#\")")
+                                              .RequestEnd("onRequestEnd(\"IssueItem_#=IssueID#\")"))
+                                          .Model(model =>
+                                          {
+                                              model.Id(p => p.IssueItemID);
+                                              model.Field(p => p.ItemCategoryCode).Editable(false);
+                                              model.Field(p => p.ItemCode).Editable(false);
+                                              model.Field(p => p.RequestedQuantity).Editable(false);
+                                              model.Field(p => p.ApprovedQuantity).Editable(false);
+                                              model.Field(p => p.AdditionalCost).Editable(false);
+                                              model.Field(p => p.UnitPrice).Editable(false);
+                                              model.Field(p => p.Total).Editable(false);
+
+
+                                              model.Field(p => p.CreatedBy).Editable(false);
+                                              model.Field(p => p.DateCreated).Editable(false);
+                                              model.Field(p => p.ModifiedBy).Editable(false);
+                                              model.Field(p => p.LastModified).Editable(false);
+
+                                          })
+                                          .Read(read => read.Action("IssueItems_Read", "IssueItem", new { id = "#=IssueID#" }))
+                                          .Create(create => create.Action("IssueItems_Create", "IssueItem", new { id = "#=IssueID#" }))
+                                          .Update(update => update.Action("IssueItems_Update", "IssueItem", new { id = "#=IssueID#" }))
+                                          .Destroy(destroy => destroy.Action("IssueItems_Destroy", "IssueItem"))
+                                      ).ToClientTemplate())
+
+                    </text>
+                    );
+
+                      items.Add().Text("Validation").Content(
+            @<text>
+                @(Html.Kendo().Grid<IssueValidation>()
+                              .Name("IssueValidation_#=IssueID#")
+                              .Columns(columns =>
+                              {
+                                          columns.Bound(c => c.Status).Width(170).EditorTemplateName("ValidationStatus");
+                                          columns.Bound(c => c.Remark).Width(170);
+                                          columns.Bound(c => c.DateCreated).Width(200).Title("Time").Format("{0:dd/MM/yyyy}");
+                                          columns.Bound(c => c.LastModified).Hidden(true);
+                                          columns.Bound(c => c.CreatedBy).Width(200).Title("User");
+                                          columns.Bound(c => c.ModifiedBy).Hidden(true);
+                                          columns.Command(command =>
+                                          {
+                                              command.Edit();
+                                  //command.Destroy();
+                              });
+                                      })
+                              .ToolBar(toolbar =>
+                              {
+                                          toolbar.Create();
+                                      })
+                              .Editable(editable => editable.Mode(GridEditMode.InLine))
+                              .Scrollable()
+                              .Events(x => x.DataBound("onDataBoundFisrtValidation"))
+                              .DataSource(dataSource => dataSource
+                                  .Ajax()
+                                  .Events(ev => ev
+                                      .Error("error_handler(\"IssueValidation_#=IssueID#\")")
+                                      .RequestStart("onRequestStart(\"IssueValidation_#=IssueID#\")")
+                                      .RequestEnd("onRequestEnd(\"IssueValidation_#=IssueID#\")"))
+
+                                  .Model(model =>
+                                  {
+                                              model.Id(p => p.IssueValidationID);
+                                              model.Field(p => p.CreatedBy).Editable(false);
+                                              model.Field(p => p.DateCreated).Editable(false);
+                                              model.Field(p => p.ModifiedBy).Editable(false);
+                                              model.Field(p => p.LastModified).Editable(false);
+                                          }
+                                  )
+                                  .Read(read => read.Action("IssueValidations_Read", "IssueValidation", new { id = "#=IssueID#" }))
+                                  .Create(create => create.Action("IssueValidations_Create", "IssueValidation", new { id = "#=IssueID#" }))
+                                  .Update(update => update.Action("IssueValidations_Update", "IssueValidation"))
+                                  .Destroy(destroy => destroy.Action("IssueValidations_Destroy", "IssueValidation"))
+                              ).ToClientTemplate())
+
+
+            </text>
+
+      );
+
+  }).ToClientTemplate()
+
+    )
+    <h6>Distribution</h6>
+    # if (IsOnlineApproved && !IsOnlineTransferred )
+    {#
+    @*<a href='@Url.Action("TransferDistribution", "Issue" )/#=IssueID#'>Transfer to GL</a>*@
+    <br />
+    # } #
+    @(Html.Kendo().Grid<IssueDistribution>()
+                  .Name("IssueDistribution_#=IssueID#")
+                  .Columns(columns =>
+                  {
+                      columns.Bound(c => c.AccountCode).EditorTemplateName("AccountCode").Width(200);
+                      columns.Bound(c => c.AccountDesc).Width(200);
+                      columns.Bound(c => c.Debit).Width(100);
+                      columns.Bound(c => c.Credit).Width(100);
+                      columns.Command(command =>
+                      {
+                          command.Edit();
+                          command.Destroy();
+                      }).Width(380);
+                  })
+
+                  .Editable(editable => editable.Mode(GridEditMode.InLine))
+                  .Pageable()
+                  .Scrollable()
+                  .Events(ev => ev.DataBound("itemTransfered"))
+                  .DataSource(dataSource => dataSource
+                      .Ajax()
+                      .Model(model =>
+                      {
+                          model.Id(p => p.IssueDistributionID);
+                          model.Field(p => p.AccountDesc).Editable(false);
+                          model.Field(p => p.Debit).Editable(false);
+                          model.Field(p => p.Credit).Editable(false);
+                      })
+                      .Read(read => read.Action("IssueDistributions_Read", "IssueDistribution", new { id = "#=IssueID#" }))
+                      .Create(create => create.Action("IssueDistributions_Create", "IssueDistribution", new { id = "#=IssueID#" }))
+                      .Update(update => update.Action("IssueDistributions_Update", "IssueDistribution"))
+                      .Destroy(destroy => destroy.Action("IssueDistributions_Destroy", "IssueDistribution"))
+                  ).ToClientTemplate())
+</script>
+
+
+
+
+<script type="text/javascript">
+
+
+    function voidRecord(id) {
+        var recordStatus = "";
+        var conf = confirm("Are you sure you want to void this record number: " + id + " ?");
+        if (conf === true) {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("Void", "Issue", new {area = "Inventory"})',
+            data: { id: id },
+            success: function (result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                recordStatus = result.Status;
+                location.reload(true);
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+       }
+    }
+
+    function sendForApproval(id) {
+        var recordStatus = "";
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("SendForApproval", "Issue", new { area = "Inventory" })',
+            data: { id: id },
+            success: function(result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                recordStatus = result.Status;
+                location.reload(true);
+            }, //end succ
+            error: function(result) {
+                alert(result);
+            }
+        });
+    }
+
+    function onSelectedPeriod() {
+        var periodId = $("#GLPeriodId").data("kendoDropDownList").value();
+        var min = "";
+        var max = "";
+        if (periodId) {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("GetPeriodDateRangeById", "DataProvider", new {area = "Inventory"})',
+            data: { id: periodId },
+            success: function (result) {
+                min = result.Min;
+                max = result.Max;
+                //update
+                var datepicker = $("#IssueDate").data("kendoDatePicker");
+                datepicker.setOptions({
+                    format: "yyyy-MM-dd",
+                    min:min,
+                    max:max,
+                    value: new Date(),
+                    change: onDOBChange
+                });
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+
+                });
+          }
+
+    }
+
+    
+
+    function filterAsset() {
+        return {   
+            text: $("#AssetRegistrationId").data("kendoDropDownList").filterInput.val()
+        }
+    }
+
+    function filterPeriodsByMyStore() {
+        return {
+            store: $("#StoreCode").val(),
+            text: null
+        }
+    }
+
+
+    function onMasterEdit(e) {
+        if (e.model.isNew() === false) {
+            $("#StoreRequisitionID").kendoDropDownList({
+                enable: false
+            });
+
+        }
+    }
+
+    $("#file").closest(".k-upload").find("span").text("Import");
+
+
+    //var popup;
+    //var aCode;
+    //function SelectAccCode() {
+    //    popup = window.open('/Inventory/DataProvider/GLAccount', 'WindowPopup', 'top=100, left=400, width=300, height=320,resizable=no,');
+    //    popup.focus();
+    //    return false;
+    //}
+
+    //function setLang(accCode) {
+    //    aCode = accCode;
+    //    $("#AccountCode").val(aCode).trigger("change");
+    //}
+    //var masterDataItem;
+    //var masterRow;
+    //var masterGrid;
+    //var codeid;
+    //var isapproved;
+    //var istransfered;
+    //var recordStatus;
+
+    //var validationGrid;
+
+    //function detailExpand(e) {
+
+    //    masterRow = e.masterRow;
+
+    //    masterGrid = $("#grid").data("kendoGrid");
+
+    //    masterDataItem = masterGrid.dataItem(masterRow);
+
+
+    //    codeid = masterDataItem.IssueID;
+    //    isapproved = masterDataItem.IsOnlineApproved;
+    //    istransfered = masterDataItem.IsOnlineTransferred;
+    //    recordStatus = masterDataItem.Status;
+
+
+    //    validationGrid = "#IssueValidation_" + codeid;
+
+    //    if (recordStatus !== "WaitingApproval") {
+
+    //        $(".k-grid-add", validationGrid).hide();
+
+    //    }
+    //}
+
+    function OnIndexCall(elem) {
+
+        var a = codeid;
+        $(elem).attr('href', $(elem).attr('href') + '?id=' + a);
+
+    }
+
+    var from = "GR";
+    function checkboxClicked(e) {
+
+        var isChecked = e.checked;
+        var tabStrip = $("#tabstrip").kendoTabStrip({ select: onSelect }).data("kendoTabStrip");
+
+        function onSelect(e) {
+            console.log("Selected: " + tabStrip.select().index());
+        }
+
+        tabStrip.select("li:first");
+        tabStrip.select(1);
+
+        if (isChecked) {
+
+            tabStrip.select("li:first");
+            tabStrip.select(1);
+
+        }
+        else {
+            tabStrip.select(0);
+
+        }
+
+    };
+
+    function itemTransfered(e) {
+        var itemGrid = "#IssueDistribution_" + codeid;
+        var grid = $(itemGrid).data("kendoGrid");
+
+        //if (istransfered) {
+
+        //    $(".k-grid-delete", itemGrid).hide();
+        //    $(".k-grid-edit", itemGrid).hide();
+        //}
+
+    }
+
+    var itemCode;
+    function onItemEdit(e) {
+        //e.preventDefault();
+
+        //var itemGrid = "#IssueItem_" + codeid;
+        //var grid = $(itemGrid).data("kendoGrid");
+
+        //var selectedItem = grid.dataItem(grid.select());
+
+        //var grid = $("#grid").data("kendoGrid");
+        //var row = this.wrapper.closest("tr");
+        //var itemGrid = "#IssueItem_" + codeid;
+        //var grid = $(itemGrid).data("kendoGrid");
+        //var dataItem = grid.dataItem(row);
+
+
+        //itemCode = selectedItem.ItemCode;
+
+    }
+    function onDataBound(e) {
+        var itemGrid = "#IssueItem_" + codeid;
+        var grid = $(itemGrid).data("kendoGrid");
+
+        if (isapproved) {
+
+            $(".k-grid-delete", itemGrid).hide();
+            $(".k-grid-edit", itemGrid).hide();
+        }
+    }
+
+    function checkboxClicked(e) {
+        var isChecked = e.checked;
+        var dropdown = $("#FixedAssetSelector").data("kendoDropDownList");
+        if (isChecked) {
+            from = "SR";
+            dropdown.dataSource.read();
+        } else {
+            from = "GR";
+            dropdown.dataSource.read();
+        }
+    }
+    function fixedAssetItemCode() {
+        return {
+            itemcode: itemCode,
+            from: from
+        }
+    }
+
+    function onUploadSuccess(e) {
+
+    }
+
+    function checkFileType(e) {
+        var files = e.files;
+
+        $.each(files, function () {
+
+            if (this.extension.toLowerCase() === ".xls" || this.extension.toLowerCase() === ".xlsx" || this.extension.toLowerCase() === ".xlsm") {
+
+            } else {
+                alert("Only .xls, .xlsx, .xlsm files can be uploaded!");
+                e.preventDefault();
+            }
+
+        });
+    }
+
+    function downloadTemplateClicked(e) {
+        $.ajax(
+        {
+            type: "GET",
+
+            url: '@Url.Action("DownloadTemplate", "Issue")',
+            dataType: "json"
+
+        });
+    }
+    $(document).ready(function () {
+        $("#file").closest(".k-upload").find("span").text("Import");
+    });
+
+
+</script>
+
+@if (ViewBag.Message != null)
+{
+    <script type="text/javascript">
+        window.onload = function () {
+            alert("@ViewBag.Message");
+        };
+    </script>
+}

@@ -1,0 +1,1 @@
+﻿@Html.Kendo().DropDownListFor(x => x).DataValueField("Glper").DataTextField("Name").ValuePrimitive(true).DataSource(datasource => datasource.Read(read => read.Action("GetPeriods", "ProcurementNeed")).ServerFiltering(true))

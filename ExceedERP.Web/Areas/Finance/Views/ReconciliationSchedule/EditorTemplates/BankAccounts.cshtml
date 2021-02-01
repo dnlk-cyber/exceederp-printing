@@ -1,0 +1,11 @@
+﻿@using System.Collections
+@(Html.Kendo().DropDownListFor(m => m)
+      .OptionLabel("Select")
+      .Filter("contains")
+                  .ValuePrimitive(true)
+                  .OptionLabel("Select Account...")
+                      .DataTextField("AccountName")
+                       .DataValueField("AccountNumber")
+                      .BindTo((IEnumerable)ViewData["accounts"])
+)
+@Html.ValidationMessageFor(m => m)

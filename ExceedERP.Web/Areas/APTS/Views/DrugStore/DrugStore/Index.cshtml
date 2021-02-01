@@ -1,0 +1,129 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.APTS
+@using ExceedERP.Core.Domain.Inventory
+@using ExceedERP.Core.Localization
+@using ExceedERP.Core.Domain.HRM.HealthAndInsurance
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Drug Store</legend>
+@(Html.Kendo().Grid<DrugStore>()
+                  .Name("DrugStoregrid")
+              .Columns(columns =>
+              {
+                  columns.Bound(c => c.DrugStoreId).Visible(false);
+                  columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["Branch"], "BranchId", "Name").EditorTemplateName("Branch").Width(200).Title("Branch");
+                  columns.ForeignKey(c => c.StoreCode, (IEnumerable)ViewData["DrugStore"], "StoreCode", "Name").EditorTemplateName("StoreSelectorByBranch").Width(200).Title("Store Code");
+
+                  columns.Bound(c => c.Remark).Width(200);
+                  columns.Command(command =>
+                  {
+                      command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                      command.Destroy().Text(Resources.ActionButton_Cancel);
+                  }).Width(200);
+              })
+              .ToolBar(toolbar =>
+              {
+                  toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+              })
+              .Editable(editable => editable.Mode(GridEditMode.InLine))
+                .Scrollable(h => h.Height(500))
+
+
+                                 .Groupable()
+                                          .Sortable(sortable =>
+                                          {
+                                              sortable.SortMode(GridSortMode.SingleColumn);
+                                          })
+                              .Filterable()
+                                 .Pageable(pageable => pageable
+                                                            .Input(true)
+                                                            .Numeric(false)
+                                                            .Refresh(true)
+                                                            .PageSizes(true)
+                                                            .ButtonCount(5))
+              .DataSource(dataSource => dataSource
+                  .Ajax()
+                         .Events(events =>
+                         {
+                             events.Error("error_handler(\"DrugStoregrid\")");
+                             events.RequestStart("onRequestStart(\"DrugStoregrid\")");
+                             events.RequestEnd("onRequestEnd(\"DrugStoregrid\")");
+                         }
+                      )
+
+                      .Model(model =>
+                      {
+                          model.Id(p => p.DrugStoreId);
+                      })
+                  .Read(read => read.Action("DrugStore_Read", "DrugStore"))
+                  .Create(create => create.Action("DrugStore_Create", "DrugStore"))
+                  .Update(update => update.Action("DrugStore_Update", "DrugStore"))
+                  .Destroy(destroy => destroy.Action("DrugStore_Destroy", "DrugStore"))
+              ).ClientDetailTemplateId("template")
+)
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                                                                    .Name("tabstrip_#=DrugStoreId#")
+                    .SelectedIndex(0)
+                    .Items(items =>
+                     {
+                         items.Add().Text("Store Items").Content(
+                            @<text>
+                                @(Html.Kendo().Grid<DrugStoreItem>()
+                                                           .Name("DrugStoreItem#=DrugStoreId#")
+                                           .Columns(columns =>
+                                           {
+                                                       columns.ForeignKey(c => c.DrugListsId, (IEnumerable)ViewData["DrugList"], "DrugListsId", "Description").EditorTemplateName("DrugLists").Width(200).Title("Drug Name");
+                                                       columns.ForeignKey(c => c.DrugUnitId, (IEnumerable)ViewData["Unit"], "DrugUnitId", "UoMName").EditorTemplateName("DrugUnits").Width(200).Title("Unit");
+
+                                                       columns.Bound(c => c.Balance);
+                                                       columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit); command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+                                                   })
+                                           .ToolBar(toolbar =>
+                                           {
+                                                       toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                                                   })
+                                           .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                           .Scrollable()
+                                           .DataSource(dataSource => dataSource
+                                               .Ajax()
+                                                         .Events(events =>
+                                                         {
+
+                                                                     events.Error("error_handler(\"DrugStoreItem#=DrugStoreId#\")");
+                                                                     events.RequestStart("onRequestStart(\"DrugStoreItem#=DrugStoreId#\")");
+                                                                     events.RequestEnd("onRequestEnd(\"DrugStoreItem#=DrugStoreId#\")");
+                                                                 })
+
+                                               .Model(model => model.Id(p => p.DrugStoreItemId))
+                                                       .Read(read => read.Action("DrugStoreItem_Read", "DrugStoreItem", new { id = "#=DrugStoreId#" }))
+                                                       .Create(create => create.Action("DrugStoreItem_Create", "DrugStoreItem", new { idTwo = "#=DrugStoreId#" }))
+                                               .Update(update => update.Action("DrugStoreItem_Update", "DrugStoreItem"))
+                                               .Destroy(destroy => destroy.Action("DrugStoreItem_Destroy", "DrugStoreItem"))
+                                           ).ToClientTemplate()
+                                )
+
+                            </text>
+                                                      );
+
+                             }).ToClientTemplate())
+</script>
+
+
+
+<script>
+
+    function sync_handler(e) {
+        this.read();
+</script>
+<script>
+
+        function filterStore() {
+        return {
+            BranchId: $("#BranchId").val()
+        };
+    }
+
+
+</script>

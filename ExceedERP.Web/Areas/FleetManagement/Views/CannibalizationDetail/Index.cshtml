@@ -1,0 +1,47 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetSalvageStore.CannibalizationDetail>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.Model);
+        columns.Bound(c => c.UnitofMeasurement);
+        columns.Bound(c => c.PartName);
+        columns.Bound(c => c.WHPRNo);
+        columns.Bound(c => c.Quantity);
+        columns.Bound(c => c.Status);
+        columns.Bound(c => c.TakenBy);
+        columns.Bound(c => c.Description);
+        columns.Bound(c => c.Remark);
+        columns.Bound(c => c.IsVoid);
+        columns.Bound(c => c.VoidBy);
+        columns.Bound(c => c.VoidTime);
+        columns.Bound(c => c.IsOnlineApproved);
+        columns.Bound(c => c.OnlineApprovedBy);
+        columns.Bound(c => c.OnlineApprovedTime);
+        columns.Bound(c => c.IsOnlineTransferred);
+        columns.Bound(c => c.IsOnlineTransferredBy);
+        columns.Bound(c => c.OnlineTransferredTime);
+        columns.Bound(c => c.IsSendForApproval);
+        columns.Bound(c => c.OrgBranchName);
+        columns.Bound(c => c.SendForApprovalBy);
+        columns.Bound(c => c.SendForApprovalTime);
+        columns.Bound(c => c.DateCreated);
+        columns.Bound(c => c.LastModified);
+        columns.Bound(c => c.CreatedBy);
+        columns.Bound(c => c.ModifiedBy);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.CannibalizationDetailId))
+          .Read(read => read.Action("CannibalizationDetails_Read", "CannibalizationDetail"))
+          .Create(create => create.Action("CannibalizationDetails_Create", "CannibalizationDetail"))
+          .Update(update => update.Action("CannibalizationDetails_Update", "CannibalizationDetail"))
+          .Destroy(destroy => destroy.Action("CannibalizationDetails_Destroy", "CannibalizationDetail"))
+      )
+)

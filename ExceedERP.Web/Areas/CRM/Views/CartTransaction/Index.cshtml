@@ -1,0 +1,29 @@
+﻿<legend>Cart Transaction</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.CartTransaction>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.Cart);
+        columns.Bound(c => c.Voucher);
+        columns.Bound(c => c.Description);
+        columns.Bound(c => c.Value);
+        columns.Bound(c => c.Remark);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+              .Model(model => model.Id(p => p.CartTransactionID)).Events(ev => ev
+                                                                    .Error("error_handler(\"grid\")")
+                                                                    .RequestStart("onRequestStart(\"grid\")")
+                                                                    .RequestEnd("onRequestEnd(\"grid\")"))
+          .Read(read => read.Action("CartTransactions_Read", "CartTransaction"))
+          .Create(create => create.Action("CartTransactions_Create", "CartTransaction"))
+          .Update(update => update.Action("CartTransactions_Update", "CartTransaction"))
+          .Destroy(destroy => destroy.Action("CartTransactions_Destroy", "CartTransaction"))
+      )
+)

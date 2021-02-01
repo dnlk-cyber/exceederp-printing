@@ -1,0 +1,46 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Finance.AP.ApSetupReceiptBalanceAccount>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.PrepaymentAccountCode).EditorTemplateName("AccountCode").Width(150);
+          columns.Bound(c => c.Type).EditorTemplateName("AdvanceTypeSelector").Width(150);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+                              toolbar.Excel();
+                              // toolbar.Pdf();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .HtmlAttributes(new { style = "height: 550px;" })
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(5))
+
+      .Scrollable()
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Filterable()
+      .Groupable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Events(events => events
+              .Error("error_handler_one")
+              .Sync("sync_handler"))
+          .Model(model => model.Id(p => p.ApSetupReceiptBalanceAccountId))
+          .Read(read => read.Action("ApSetupReceiptBalanceAccounts_Read", "ApSetupReceiptBalanceAccount"))
+          .Create(create => create.Action("ApSetupReceiptBalanceAccounts_Create", "ApSetupReceiptBalanceAccount"))
+          .Update(update => update.Action("ApSetupReceiptBalanceAccounts_Update", "ApSetupReceiptBalanceAccount"))
+          .Destroy(destroy => destroy.Action("ApSetupReceiptBalanceAccounts_Destroy", "ApSetupReceiptBalanceAccount"))
+      ))

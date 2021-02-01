@@ -1,0 +1,205 @@
+﻿@model ExceedERP.Core.Domain.Budget.BudgetTransfer
+
+
+
+
+<div class="demo-section k-content">
+
+
+
+    <div class="row">
+        <div class="col-md-1">
+        </div>
+       
+
+
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.FromBranch)
+                </div>
+
+                @(Html.Kendo().DropDownListFor(model => model.FromBranch).HtmlAttributes(new { @class = "form-control", @required = "required" })
+                                    .DataTextField("Name")
+                                                    .DataValueField("BranchId").OptionLabel("Select ").Filter(FilterType.Contains)
+                                                            .DataSource(d => d.Read(r => r.Action("BranchDDBind", "BudgetDataProvider")).ServerFiltering(false)))
+
+
+
+
+
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.FromWorkUnit)
+                </div>
+                @(Html.Kendo().DropDownListFor(model => model.FromWorkUnit).HtmlAttributes(new { @class = "form-control", @required = "required" })
+                        .DataTextField("Text")
+                                    .DataValueField("Value").OptionLabel(" Select ").Filter(FilterType.Contains)
+                    .HtmlAttributes(new { style = "width:100%" })
+                    .DataSource(d =>
+                    {
+                        d.Read(r =>
+                        {
+                            r.Action("WorkUnitDDBind", "BudgetDataProvider").Data("filterWorkUnit");
+                        })
+                      .ServerFiltering(true);
+                    })
+                       .AutoBind(false)
+                               .CascadeFrom("FromAccountCode"))
+            </div>
+        </div>
+
+
+
+        
+          <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.FromAccountCode)
+                </div>
+
+                  @(Html.Kendo().DropDownListFor(model => model.FromAccountCode).HtmlAttributes(new { @class = "form-control", @required = "required" })
+                            .DataTextField("Text")
+                                    .DataValueField("Text").OptionLabel(" Select ")
+                    .HtmlAttributes(new { style = "width:100%" })
+                    .DataSource(d =>
+                    {
+                        d.Read(r =>
+                        {
+                            r.Action("BudgetTransferFromAccCode", "BudgetDataProvider").Data("filterFromAccCode");
+                        })
+                      .ServerFiltering(true);
+                    })
+                   .AutoBind(false))
+                          
+
+                </div>
+            </div>
+        
+
+
+
+       
+
+
+
+
+ </div>
+
+       
+
+    
+    <div class="row">
+        <div class="col-md-1">
+        </div>
+
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.ToBranch)
+                </div>
+
+                @(Html.Kendo().DropDownListFor(model => model.ToBranch).HtmlAttributes(new { @class = "form-control", @required = "required" })
+                                                  .DataTextField("Name")
+                                                            .DataValueField("BranchId").OptionLabel("Select ").Filter(FilterType.Contains)
+                                                            .DataSource(d => d.Read(r => r.Action("BranchDDBind", "BudgetDataProvider")).ServerFiltering(false)))
+
+
+
+
+
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.ToWorkUnit)
+                </div>
+                <div>
+                    @(Html.Kendo().DropDownListFor(model => model.ToWorkUnit).HtmlAttributes(new { @class = "form-control" })
+                        .DataTextField("Text")
+                                    .DataValueField("Value").OptionLabel(" Select ").Filter(FilterType.Contains)
+                    .HtmlAttributes(new { style = "width:100%" })
+                    .DataSource(d =>
+                    {
+                        d.Read(r =>
+                        {
+                            r.Action("WorkUnitDDBind", "BudgetDataProvider");//.Data("filterToWorkUnit");
+                        })
+                      .ServerFiltering(false);
+                    })
+                       .AutoBind(false)
+                                 )
+                </div>
+            </div>
+        </div>
+
+
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.ToAccountCode)
+                </div>
+                <div>
+                    @(Html.Kendo().DropDownListFor(model => model.ToAccountCode).HtmlAttributes(new { @class = "form-control", @required = "required" })
+                            .DataTextField("Text")
+                                    .DataValueField("Text").OptionLabel(" Select ")
+                    .HtmlAttributes(new { style = "width:100%" })
+                    .DataSource(d =>
+                    {
+                        d.Read(r =>
+                        {
+                            r.Action("BudgetTransferToAccCode", "BudgetDataProvider").Data("filterToAccCode");
+                        })
+                      .ServerFiltering(true);
+                    })
+                   .AutoBind(false)
+                           )
+                </div>
+            </div>
+        </div>
+ 
+   
+    </div>
+    
+
+
+    <div class="row">
+        <div class="col-md-1">
+        </div>
+
+         
+  
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.Unit)
+                </div>
+                <div>
+                    @(Html.Kendo().DropDownListFor(model => model.Unit).HtmlAttributes(new { @class = "k-dropdown-clientValidation form-control", required = "required" })
+                                    .DataTextField("Text").Filter(FilterType.Contains)
+                                            .DataValueField("Value").OptionLabel("Select ")
+                                                .DataSource(d => d.Read(r => r.Action("CurrencyDDBind", "BudgetDataProvider")).ServerFiltering(false)).ValuePrimitive(true))
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.Transferred)
+                </div>
+                <div>
+                    @Html.Kendo().NumericTextBoxFor(model => model.Transferred)
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+</div>

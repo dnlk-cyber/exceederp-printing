@@ -1,0 +1,299 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@using ExceedERP.Core.Domain.Production
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>  Natural Gum Processing | Inputs  </legend>
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Production.GumProcessingOrderItem>()
+                                .Name("gumProcessingGrid")
+                                .Columns(columns =>
+                                {
+                                    columns.ForeignKey(c => c.GumProductionOrderItemId, (IEnumerable)ViewData["GumProductionOrderItems"], "GumProductionOrderItemId", "ProductionCode").EditorTemplateName("ProductionOrderItems");
+                                    //columns.Bound(c => c.DateFrom);
+                                    //columns.Bound(c => c.DateTo);
+                                    columns.Bound(c => c.GumName);
+                                    columns.ForeignKey(c => c.ProcessingPlantId, (IEnumerable)ViewData["ProcessingPlants"], "ProcessingPlantId", "Name").EditorTemplateName("ProcessingPlants");
+                                    columns.Bound(c => c.ProcessingCode);
+
+                                    //columns.Command(command =>
+                                    //{
+                                    //    command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                    //    command.Destroy().Text(Resources.ActionButton_Cancel);
+                                    //}).Width(200);
+                                })
+                                //.ToolBar(toolbar =>
+                                //{
+                                //    toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                                //})
+                                //.Editable(editable => editable.Mode(GridEditMode.InLine))
+                                .Scrollable(h => h.Height(500))
+                                .Sortable(sortable =>
+                                {
+                                    sortable.SortMode(GridSortMode.SingleColumn);
+                                })
+                                .Selectable(selectable =>
+                                {
+                                    selectable.Mode(GridSelectionMode.Single);
+                                    selectable.Type(GridSelectionType.Row);
+                                })
+                                .Filterable()
+                                .Pageable(pageable => pageable
+                                    .Input(true)
+                                    .Numeric(false)
+                                    .Refresh(true)
+                                    .PageSizes(true)
+                                    .ButtonCount(5))
+                                .DataSource(dataSource => dataSource
+                                    .Ajax()
+                                    .Events(events =>
+                                    {
+                                        events.Error("error_handler(\"gumProcessingGrid\")");
+                                        events.RequestStart("onRequestStart(\"gumProcessingGrid\")");
+                                        events.RequestEnd("onRequestEnd(\"gumProcessingGrid\")");
+                                    })
+                                    .Model(model =>
+                                    {
+                                        model.Id(p => p.GumProcessingOrderItemId);
+                                        model.Field(f => f.GumName).Editable(false);
+                                    })
+                                    .Read(read => read.Action("ProcessingItems_Read", "GumProcessingOrderItem"))
+                                    //.Create(create => create.Action("ProcessingItem_Create", "GumProcessingOrderItem"))
+                                    //.Update(update => update.Action("ProcessingItem_Update", "GumProcessingOrderItem"))
+                                    //.Destroy(destroy => destroy.Action("ProcessingItem_Destroy", "GumProcessingOrderItem"))
+                                    ).ClientDetailTemplateId("template_gumProcessingActivities")
+)
+
+
+<script id="template_gumProcessingActivities" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+            .Name("tab_str_#=GumProcessingOrderItemId#")
+            .SelectedIndex(0)
+            .Items(items =>
+            {
+            items.Add().Text("Detail").Content(
+                @<text>
+                    @(Html.Kendo().PanelBar()
+                              .Name("panelbar_#=GumProcessingOrderItemId#")
+                              .ExpandMode(PanelBarExpandMode.Single)
+                              .Items(panelbar =>
+                              {
+                                  panelbar.Add()
+                                      .Expanded(true)
+                                      .Content(
+                                         "<div class='workItem-details'>" +
+                                            "<ul>" +
+                                                 //"<li> <label> <strong> Status </label> #= Status# </strong></li>" +
+                                                 "<li> <label> <b>(A)</b> Material Cost </label> #= kendo.toString(MaterialCost, 'N2')# </li>" +
+                                                 "<li> <label> <b>(B)</b> Labor Cost :</label> #= kendo.toString(LaborCost, 'N2')# </li>" +
+                                                 "<li> <label> <b>(C)</b> Machinery Cost:</label> #= kendo.toString(EquipmentCost, 'N2')# </li>" +
+                                                 "<li> <label> <b>(D)</b> Direct Cost: <b>(A + B + C) = </b> </label> #= kendo.toString(DirectCost, 'N2')# </li>" +
+                                                 "<li> <label> <b>(E)</b> Over head Cost:</label> #= kendo.toString(OverheadCost, 'N2')# </li>" +
+                                                 //"<li> <label> Profit Cost:</label> #= kendo.toString(ProfitCost, 'N2')# </li>" +
+                                                 "<li> <label>Total  Cost : <b>(D + E) = </b> </label><b> #= kendo.toString(TotalCost, 'N2')# </b></li>" +
+                                            "</ul>" +
+                                        "</div>"
+
+                                );
+                              }).ToClientTemplate()
+                    )
+                </text>
+                );
+            items.Add().Text("Activities").Content(
+                @<text>
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Production.ProcessingOrderActivity>()
+                                .Name("activities_#=GumProcessingOrderItemId#")
+                                .Columns(columns =>
+                                {
+                                    columns.ForeignKey(c => c.ProductionActivityId, (IEnumerable)ViewData["Activities"], "ProductionActivityId", "Name").EditorTemplateName("GumProcessingActivities");
+                                    columns.Bound(c => c.OperationType);
+                                    columns.Bound(c => c.Quantity);
+                                    columns.Bound(c => c.LaborCost);
+                                    columns.Bound(c => c.EquipmentCost);
+                                    columns.Bound(c => c.TotalCost);
+                                    columns.ForeignKey(c => c.ProductionPeriodId, (IEnumerable)ViewData["ProductionPeriods"], "ProductionPeriodId", "Name").EditorTemplateName("ProductionPeriods");
+                                    columns.Bound(c => c.DateOfInformation);
+                                    columns.Bound(c => c.Reference);
+
+                                    columns.Command(command =>
+                                    {
+                                        command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                        command.Destroy().Text(Resources.ActionButton_Cancel);
+                                    }).Width(200);
+                                })
+                                .ToolBar(toolbar =>
+                                {
+                                    toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                                })
+                                .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                .Scrollable(h => h.Height(500))
+                                .Sortable(sortable =>
+                                {
+                                    sortable.SortMode(GridSortMode.SingleColumn);
+                                })
+                                .Selectable(selectable =>
+                                {
+                                    selectable.Mode(GridSelectionMode.Single);
+                                    selectable.Type(GridSelectionType.Row);
+                                })
+                                .Filterable()
+                                .Pageable(pageable => pageable
+                                    .Input(true)
+                                    .Numeric(false)
+                                    .Refresh(true)
+                                    .PageSizes(true)
+                                    .ButtonCount(5))
+                                .DataSource(dataSource => dataSource
+                                    .Ajax()
+                                    .Events(events =>
+                                    {
+                                        events.Error("error_handler(\"activities_#=GumProcessingOrderItemId#\")");
+                                        events.RequestStart("onRequestStart(\"activities_#=GumProcessingOrderItemId#\")");
+                                        events.RequestEnd("onRequestEnd(\"activities_#=GumProcessingOrderItemId#\")");
+                                    })
+                                    .Model(model =>
+                                    {
+                                        model.Id(p => p.ProcessingOrderActivityId);
+                                        model.Field(f => f.TotalCost).Editable(false);
+
+                                    })
+                                    .Read(read => read.Action("Activities_Read", "ProcessingOrderActivity", new { itemId = "#=GumProcessingOrderItemId#", productionType = ProductType.NaturalGum }))
+                                    .Create(create => create.Action("Activity_Create", "ProcessingOrderActivity", new { itemId = "#=GumProcessingOrderItemId#", productionType = ProductType.NaturalGum }))
+                                    .Update(update => update.Action("Activity_Update", "ProcessingOrderActivity", new { productionType = ProductType.NaturalGum }))
+                                    .Destroy(destroy => destroy.Action("Activity_Destroy", "ProcessingOrderActivity", new { productionType = ProductType.NaturalGum }))
+                                    )
+                                    .ToClientTemplate()
+                    )
+                </text>
+                );
+                items.Add().Text("Input Materials").Content(
+                    @<text>
+                        @(Html.Kendo().Grid<ExceedERP.Core.Domain.Production.ProcessingInputMaterial>()
+                                .Name("material_#=GumProcessingOrderItemId#")
+                                .Columns(columns =>
+                                {
+                                    columns.ForeignKey(c => c.ItemCategoryCode, (IEnumerable)ViewData["ItemCategorys"], "ItemCategoryCode", "Name").EditorTemplateName("ItemCategory").Width(200);
+                                    columns.ForeignKey(c => c.ItemCode, (IEnumerable)ViewData["Items"], "ItemCode", "Name").EditorTemplateName("Item").Width(200);
+                                    columns.Bound(c => c.Unit).Width(100);//, (IEnumerable)ViewData["Unit"], "LookupId", "Description").EditorTemplateName("Unit").Width(75);
+                                    columns.Bound(c => c.Quantity).Width(75);
+                                    columns.Bound(c => c.UnitPrice).Width(75).Format("{0:N2}");
+                                    columns.Bound(c => c.TotalCost).Width(75)
+                                        .ClientFooterTemplate("Total: \\#= kendo.toString(sum, 'N2')\\#")
+                                        .ClientGroupFooterTemplate("Total: \\#= kendo.toString(sum, 'N2')\\#");
+                                    columns.ForeignKey(c => c.ProductionPeriodId, (IEnumerable)ViewData["ProductionPeriods"], "ProductionPeriodId", "Name").Width(100).EditorTemplateName("ProductionPeriods");
+                                    columns.Bound(c => c.DateOfInformation).Width(100);
+                                    columns.Bound(c => c.Reference).Width(100);
+                                    columns.Command(command =>
+                                    {
+                                        command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                        command.Destroy().Text(Resources.ActionButton_Cancel);
+                                    }).Width(200);
+                                })
+                                .ToolBar(toolbar =>
+                                {
+                                    toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                                })
+                                .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                .Scrollable(h => h.Height(500))
+                                .Sortable(sortable =>
+                                {
+                                    sortable.SortMode(GridSortMode.SingleColumn);
+                                })
+                                .Selectable(selectable =>
+                                {
+                                    selectable.Mode(GridSelectionMode.Single);
+                                    selectable.Type(GridSelectionType.Row);
+                                })
+                                .Filterable()
+                                .Pageable(pageable => pageable
+                                    .Input(true)
+                                    .Numeric(false)
+                                    .Refresh(true)
+                                    .PageSizes(true)
+                                    .ButtonCount(5))
+                                .DataSource(dataSource => dataSource
+                                    .Ajax()
+                                    .Aggregates(ag =>
+                                    {
+                                        ag.Add(f => f.TotalCost).Sum();
+                                    })
+                                    .Events(events =>
+                                    {
+                                        events.Error("error_handler(\"activities_#=GumProcessingOrderItemId#\")");
+                                        events.RequestStart("onRequestStart(\"activities_#=GumProcessingOrderItemId#\")");
+                                        events.RequestEnd("onRequestEnd(\"activities_#=GumProcessingOrderItemId#\")");
+                                    })
+                                    .Model(model =>
+                                    {
+                                        model.Id(p => p.ProcessingInputMaterialId);
+                                        model.Field(f => f.TotalCost).Editable(false);
+                                        model.Field(f => f.Unit).Editable(false);
+                                    })
+                                    .Read(read => read.Action("Materials_Read", "ProcessingInputMaterial", new { itemId = "#=GumProcessingOrderItemId#", productionType = ProductType.NaturalGum }))
+                                    .Create(create => create.Action("Material_Create", "ProcessingInputMaterial", new { itemId = "#=GumProcessingOrderItemId#", productionType = ProductType.NaturalGum }))
+                                    .Update(update => update.Action("Material_Update", "ProcessingInputMaterial", new { productionType = ProductType.NaturalGum }))
+                                    .Destroy(destroy => destroy.Action("Material_Destroy", "ProcessingInputMaterial", new { productionType = ProductType.NaturalGum }))
+                                    )
+                                    .ToClientTemplate()
+                        )
+                    </text>
+                );
+            }).ToClientTemplate())
+</script>
+
+<script>
+    function filterCategories() {
+        //
+        // summary:
+        //      send the filtering text along with the parent widget's value
+        var dropdownlist = $("#ItemCode").data("kendoDropDownList");
+        var filterInput = dropdownlist.filterInput;
+        return {
+            ItemCategoryCode: $("#ItemCategoryCode").val(), filterString: filterInput.val()
+        };
+    }
+    function periodChanged(e) {
+        var drp = this;
+        var id = drp.value();
+        var dateOfInformation = $("#DateOfInformation").data("kendoDatePicker");
+        
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("GetPeriodRanges", "ProductionDataProvider", new { area = "Production" })',
+            data: { periodId: id},
+            success: function (result) {
+                if (result) {
+                    var ranges = result.split('_');
+                    var start = ranges[0];
+                    var end = ranges[1];
+                    var startDate = new Date(start);
+                    var endDate = new Date(end);
+                    if (dateOfInformation) {
+                        dateOfInformation.min(startDate);
+                        dateOfInformation.max(endDate);
+                        dateOfInformation.value(startDate);
+                        dateOfInformation.trigger("change");
+                    } 
+                }
+            }, 
+            error: function (result) {
+            }
+        });
+    }
+    function materialChanged(e) {
+        var itmCode = $('#ItemCode').val();
+        $.ajax({
+            url: '@Url.Action("GetInventoryMaterialUnitPrice", "ProductionOrderInputs", new {area = "Production"})',
+            data: { itemCode: itmCode },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                $("#UnitPrice").val(result);
+                $("#UnitPrice").trigger("change");
+            }
+
+        });
+    }
+</script>
+

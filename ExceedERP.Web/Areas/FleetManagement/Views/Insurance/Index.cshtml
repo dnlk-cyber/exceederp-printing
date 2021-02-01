@@ -1,0 +1,85 @@
+﻿
+@{
+    ViewBag.Title = "Insurance";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Insurance Registration </legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetRegistration.Insurance>()
+    .Name("grid")
+    .Columns(columns =>
+    {
+        columns.Bound(e => e.InsuranceCompany).Width(140);
+        columns.Bound(e => e.InsuranceType).Width(140);
+        columns.Bound(e => e.Attachment).Title("Plate Number").Width(120);
+        columns.Bound(e => e.PremiumCost).Width(120);
+       
+   
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
+
+
+    })
+                      .ToolBar(commands => commands.Create())
+      .Editable(editable =>
+      {
+          editable.Mode(GridEditMode.PopUp).TemplateName("InsuranceEditor");
+          editable.DisplayDeleteConfirmation("Are You Sure To Remove Insurance");
+      })
+      .HtmlAttributes(new { style = "height: 520px;" })
+                          .Pageable(pageable => pageable
+                                            .Input(true)
+                                            .Numeric(false)
+                                            .Refresh(true)
+                                            .PageSizes(true)
+                                            .ButtonCount(5))
+
+                                .Scrollable()
+                                .Sortable()
+                                .Filterable()
+                                .Groupable()
+                                .Scrollable(h => h.Height(500))
+    .DataSource(dataSource => dataSource
+        .Ajax()
+        .ServerOperation(false)
+            .Events(events => events.Error("error_handler").Sync("sync_handler"))
+        .Model(model =>
+              {
+                  model.Id(p => p.InsuranceID);
+               
+              })
+                .Create(update => update.Action("Insurance_Create", "Insurance"))
+                .Read(read => read.Action("Insurance_Read", "Insurance"))
+                .Update(update => update.Action("Insurance_Update", "Insurance"))
+                .Destroy(update => update.Action("Insurance_Destroy", "Insurance"))
+  )
+)
+
+
+
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 700px;
+    }
+</style>
+<script type="text/javascript">
+    function error_handler(e) {    
+        if (e.errors) {
+            var message = "Errors:\n";
+            $.each(e.errors, function (key, value) {
+                if ('errors' in value) {
+                    $.each(value.errors, function() {
+                        message += this + "\n";
+                    });
+                }
+            });        
+            alert(message);
+        }
+    }
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+    function onClick() {
+        $("#grid").data("kendoGrid").addRow();
+    }
+</script>

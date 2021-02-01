@@ -1,0 +1,4 @@
+﻿@(Html.Kendo().DropDownListFor(model => model).HtmlAttributes(new { @class = "form-control" })
+                                    .DataTextField("Text")
+                                        .DataValueField("Text").OptionLabel("Select Unit")
+                                        .DataSource(d => d.Read(r => r.Action("GetUnits", "BudgetDataProvider"))))

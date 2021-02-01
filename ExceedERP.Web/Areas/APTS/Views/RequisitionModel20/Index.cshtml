@@ -1,0 +1,312 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.APTS
+@using ExceedERP.Core.Localization
+@using ExceedERP.Core.Domain.HRM.SelfCare
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Drug Requistes</legend>
+@(Html.Kendo().Grid<RequisitionModel20>()
+              .Name("RequisitionModel20grid")
+          .Columns(columns =>
+          {
+              columns.Bound(c => c.RequisitionModel20Id).Visible(false);
+              //   columns.Bound(c => c.IsApproved).ClientTemplate("<input type='checkbox' disabled = 'true' #=IsApproved ? checked='checked' :'' # >").Width(100);
+              //columns.ForeignKey(c => c.DrugListsId, (IEnumerable)ViewData["druglists"], "DrugListsId", "InternalDrugCode").Width(200).Title("Internal Code");
+              columns.ForeignKey(c => c.DrugListsId, (IEnumerable)ViewData["druglists"], "DrugListsId", "Description").Width(200).Title("Description");
+              columns.ForeignKey(c => c.Unit, (IEnumerable)ViewData["Unit"], "UoMName", "UoMName").Width(200).Title("Unit");
+              columns.Bound(c => c.QtyToBeApproved).Width(150);
+              columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["FiscalYear"], "GlFiscalYearId", "Name").Width(200).Title("Fiscal Year");
+              columns.ForeignKey(c => c.GLPeriodId, (IEnumerable)ViewData["Period"], "GLPeriodId", "Name").Width(200).Title("Period");
+              //columns.Bound(c => c.RequestDate).Width(120);
+              columns.Bound(c => c.RequestDateAm).Width(120).Title("Request Date");
+              columns.Bound(c => c.BegStock).Width(100);
+              columns.Bound(c => c.ReceivedQty).Width(100);
+              columns.Bound(c => c.Loss).Width(100);
+              columns.Bound(c => c.EndStock).Width(100);
+              columns.Bound(c => c.CalculatedConsumption).Width(200);
+              columns.Bound(c => c.Max).Width(100);
+              columns.Bound(c => c.QtyToMax).Width(100);
+
+              columns.Bound(c => c.Remark);
+
+
+              columns.Command(command =>
+              {
+                  //command.Custom("").Text("Approve").Click("approve");
+                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit); command.Destroy().Text(Resources.ActionButton_Cancel);
+              }).Width(300);
+          })
+          .ToolBar(toolbar =>
+          {
+              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+          })
+          .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("RequisitionModel20"))
+            .Events(events => events.DetailExpand("onDetailExpandUser"))
+           .HtmlAttributes(new { style = "height: 550px;" })
+                               .Groupable()
+                              .Sortable(sortable =>
+                              {
+                                  sortable.SortMode(GridSortMode.SingleColumn);
+                              })
+                               .Filterable()
+                              .Scrollable()
+
+                               .Events(x =>
+                           {
+                               x.Edit("GetDate");
+                               x.Save("GetDate");
+                           })
+                          .Pageable(pageable => pageable
+                                                .Input(true)
+                                                .Numeric(false)
+                                                .Refresh(true)
+                                                .PageSizes(true)
+                                                .ButtonCount(5))
+          .DataSource(dataSource => dataSource
+              .Ajax()
+              .Sort(sort => sort.Add("DateCreated").Descending())
+                     .Events(events =>
+                     {
+                         events.Error("error_handler(\"RequisitionModel20grid\")");
+                         events.RequestStart("onRequestStart(\"RequisitionModel20grid\")");
+                         events.RequestEnd("onRequestEnd(\"RequisitionModel20grid\")");
+                     }
+                  )
+
+                  .Model(model =>
+                  {
+                      model.Id(p => p.RequisitionModel20Id);
+                      model.Field(p => p.CalculatedConsumption).Editable(false);
+                      model.Field(p => p.Max).Editable(false);
+                      model.Field(p => p.QtyToMax).Editable(false);
+                  })
+              .Read(read => read.Action("RequisitionModel20_Read", "RequisitionModel20"))
+              .Create(create => create.Action("RequisitionModel20_Create", "RequisitionModel20"))
+              .Update(update => update.Action("RequisitionModel20_Update", "RequisitionModel20"))
+              .Destroy(destroy => destroy.Action("RequisitionModel20_Destroy", "RequisitionModel20"))
+          ).ClientDetailTemplateId("template")
+)
+
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                          .Name("tabstrip_#=RequisitionModel20Id#")
+                          .SelectedIndex(0)
+                          .Items(items =>
+                          {
+                              items.Add().Text(Resources.HR_RequestStatus).Content(
+                                @<text>
+                                    @*<legend>Status</legend>*@
+
+                                    @(Html.Kendo().Grid<RequestesStatus>()
+                                                                  .Name("RequestesStatusgrid_#=RequisitionModel20Id#")
+                                                          .Columns(columns =>
+                                                          {
+                                                              //columns.Bound(c => c.RequestId);
+                                                              columns.Bound(c => c.DateReqStatAm).Width(80);
+                                                              columns.Bound(c => c.Status).EditorTemplateName("Enum").Width(100);
+                                                              //columns.Bound(c => c.Remark).Width(50);
+                                                              columns.Command(command =>
+                                                              {
+                                                                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                                                  command.Destroy().Text(Resources.ActionButton_Cancel);
+                                                              }).Width(400);
+                                                          })
+                                                          .ToolBar(toolbar =>
+                                                          {
+                                                              toolbar.Custom().Action("SendForApproval", "RequisitionModel20").Text(Resources.HR_Send_For_Approval);
+                                                          })
+                                                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                          .Scrollable()
+                                                          .DataSource(dataSource => dataSource
+                                                              .Ajax()
+                                                                      .Events(events =>
+                                                                      {
+                                                                          events.Error("error_handler(\"RequestesStatusgrid_#=RequisitionModel20Id#\")");
+                                                                          events.RequestStart("onRequestStart(\"RequestesStatusgrid_#=RequisitionModel20Id#\")");
+                                                                          events.RequestEnd("onRequestEnd(\"RequestesStatusgrid_#=RequisitionModel20Id#\")");
+                                                                      })
+
+                                                                      .Model(model =>
+                                                                      {
+                                                                          model.Id(p => p.RequestStatusId);
+                                                                          model.Field(p => p.Date).Editable(false).DefaultValue(DateTime.Today);
+                                                                      })
+
+                                                             .Read(read => read.Action("RequestesStatus_Read", "RequestesStatus", new { id = "#=RequisitionModel20Id#", referenceType = "DrugRequest", area = "HRM" }))
+                                                            .Create(create => create.Action("RequestesStatus_Create", "RequestesStatus", new { id = "#=RequisitionModel20Id#", referenceType2 = "DrugRequest", area = "HRM" }))
+                                                                          .Update(update => update.Action("RequestesStatus_Update", "RequestesStatus", new { area = "HRM" }))
+                                                                          .Destroy(destroy => destroy.Action("RequestesStatus_Destroy", "RequestesStatus"))
+                                                          ).ToClientTemplate()
+                                    )
+
+
+                                </text>
+                                                  );
+                          //*****************************************************************************************************//
+
+                      }).ToClientTemplate())
+</script>
+
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 800px;
+    }
+</style>
+<script>
+
+    function sync_handler(e) {
+        this.read();
+    }
+</script>
+
+<script>
+        function approve(e) {
+
+
+        var row = $(e.target).closest("tr");
+        var grid = $("#RequisitionModel20grid").data("kendoGrid");
+        var dataItem = grid.dataItem(row);
+        var id = dataItem.RequisitionModel20Id;
+
+
+        if (id.length !== 0 )
+        {
+
+            $.ajax({
+                url: '@Url.Action("Approve", "RequisitionModel20")',
+
+                data: { id: id},
+                type: 'POST',
+                cache: false,
+                success: function (result) {
+                    r = result;
+
+
+                   // $("#OrgStructureId").val(r).trigger("change");;
+
+
+                }
+
+
+
+            });
+
+        }
+    }
+</script>
+
+<script>
+    function GetBalance() {
+        $("#BegStock").val(0);
+        var DrugListId = $("#DrugListsId").data("kendoDropDownList");
+        var drugList = DrugListId.value();
+
+        if (drugList.length !== 0)
+        {
+
+        $.ajax({
+            url: '@Url.Action("GetBalance", "RequisitionModel20")',
+
+            data: { drugList: drugList},
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                r = result;
+
+                var s = r.split(/-/);
+
+                $("#BegStock").val(s[0]).trigger("change");
+                $("#ReceivedQty").val(s[1]).trigger("change");
+                //$("#Loss").val(s[2]).trigger("change");
+                //$("#EndStock").val(s[3]).trigger("change");
+
+
+                //$("#NoOfShouldBeStaff").val(r);
+        }
+
+
+
+        });
+
+    }
+    }
+
+</script>
+
+<script>
+    function GetDate() {
+
+        //var x = AssignDate();
+        //var y = x;
+        $("#RequestDateAm").trigger("change");
+        //$("#ToAmharic").trigger("change");
+        @*for (var o in y) {
+            $.ajax({
+                contentType: "application/json; charset=utf-8",
+                url: '@Url.Action("SetDate", "RequisitionModel20")',
+                data: { name: y[o].id, value: y[o].date },
+                type: 'GET',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                }
+
+            });
+        }*@
+    }
+
+</script>
+<script>
+    //function AssignDate() {
+    //    var list = AssignDates();
+    //    return list;
+    //}
+
+</script>
+<script>
+   
+    function onDetailExpandUser(e) {
+        var masterRow = e.masterRow;
+
+        var masterGrid = $("#RequisitionModel20grid").data("kendoGrid");
+
+        var masterDataItem = masterGrid.dataItem(masterRow);
+
+        masterId = masterDataItem.RecruitmentRequestId;
+        var gridName = "#RequestesStatusgrid_" + masterId;
+        $.ajax({
+            url: '@Url.Action("CheckStatus", "RequisitionMedel20Status")',
+
+            data: { masterId: masterId },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                r = result;
+                if (r == "true") {
+                    $(gridName).find(".k-toolbar").hide(); //hide toolbar
+                    $(".k-grid-top", gridName).hide();
+                }
+                else if (r == "approved") {
+                    $(gridName).find(".k-toolbar").hide(); //hide toolbar
+                    $(".k-grid-top", gridName).hide();
+                    $(".k-grid-edit", gridName).hide();
+                    $(".k-grid-delete", gridName).hide();
+                }
+                else if (r == "Dapproved") {
+                    $(gridName).find(".k-toolbar").hide(); //hide toolbar
+                    $(".k-grid-top", gridName).hide();
+                    $(".k-grid-edit", gridName).hide();
+                    $(".k-grid-delete", gridName).hide();
+                }
+                else {
+                    $(gridName).find(".k-toolbar").show(); //hide toolbar
+                    $(".k-grid-top", gridName).show();
+                }
+
+            }
+
+        });
+
+    }
+</script>

@@ -1,0 +1,41 @@
+﻿<legend>Tax</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.Tax>()
+          .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Category).EditorTemplateName("TaxCategory").Width(100);
+          columns.Bound(c => c.Description).Width(120);
+          columns.Bound(c => c.Amount).Width(100);
+          columns.Bound(c => c.Remark).Width(150);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+       .HtmlAttributes(new { style = "height: 520px;" })
+                                                  .Pageable(pageable => pageable
+                                                                    .Input(true)
+                                                                    .Numeric(false)
+                                                                    .Refresh(true)
+                                                                    .PageSizes(true)
+                                                                    .ButtonCount(5))
+
+                                                        .Scrollable()
+                                                        .Sortable()
+                                                        .Filterable()
+                                                        .Groupable()
+                                                        .Scrollable(h => h.Height(500))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+              .Model(model => model.Id(p => p.TaxID)).Events(ev => ev
+                                                                    .Error("error_handler(\"grid\")")
+                                                                 .RequestStart("onRequestStart(\"grid\")")
+                                                               .RequestEnd("onRequestEnd(\"grid\")"))
+          .Read(read => read.Action("Taxs_Read", "Tax"))
+          .Create(create => create.Action("Taxs_Create", "Tax"))
+          .Update(update => update.Action("Taxs_Update", "Tax"))
+          .Destroy(destroy => destroy.Action("Taxs_Destroy", "Tax"))
+      )
+)

@@ -1,0 +1,474 @@
+﻿
+@using System.Collections
+@using ExceedERP.Core.Domain.HRM.Attendance
+@using ExceedERP.Core.Localization
+@{
+                /**/
+
+                Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Previous Attendance</legend>
+@(Html.Kendo().Grid<WeeklyAttendance>()
+                          .Name("WeeklyAttendance")
+                      .Columns(columns =>
+                      {
+                          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "PersonId", "FullNameWithOutCode").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
+              //columns.Bound(c => c.DayOne).ClientTemplate("<input type='checkbox' disabled='true' value='#=DayOne #' " + " # if (DayOne) { #" + "checked='checked'" + "# } #" + " />").Width(130).Title("");
+              //columns.Bound(c => c.DayOneAN).ClientTemplate("<input type='checkbox' disabled='true' value='#=DayOneAN #' " + " # if (DayOneAN) { #" + "checked='checked'" + "# } #" + " />").Width(130).Title("");
+
+              columns.Group(group => group
+                           .Title("Day One")
+
+                              .Columns(info =>
+                              {
+                                  info.Bound(x => x.DayOne).ClientTemplate("<input type='checkbox' disabled='true' value='#=DayOne #' " + " # if (DayOne) { #" + "checked='checked'" + "# } #" + " />").Width(130).Title("");
+                                  info.Bound(x => x.DayOneAN).ClientTemplate("<input type='checkbox' disabled='true' value='#=DayOneAN #' " + " # if (DayOneAN) { #" + "checked='checked'" + "# } #" + " />").Width(130).Title("");
+                              }));
+
+                          columns.Bound(c => c.DayOneDate).Visible(false);
+
+
+              //columns.Bound(c => c.DayTwo).ClientTemplate("<input type='checkbox' disabled='true' value='#=DayTwo #' " + " # if (DayTwo) { #" + "checked='checked'" + "# } #" + " />").Width(130).Title("");
+              //columns.Bound(c => c.DayTwoAN).ClientTemplate("<input type='checkbox' disabled='true' value='#=DayTwoAN #' " + " # if (DayTwoAN) { #" + "checked='checked'" + "# } #" + " />").Width(130).Title("");
+              columns.Group(group => group
+                       .Title("Day Two")
+
+                          .Columns(info =>
+                          {
+                              info.Bound(x => x.DayTwo).ClientTemplate("<input type='checkbox' disabled='true' value='#=DayTwo #' " + " # if (DayTwo) { #" + "checked='checked'" + "# } #" + " />").Width(130).Title("");
+                              info.Bound(x => x.DayTwoAN).ClientTemplate("<input type='checkbox' disabled='true' value='#=DayTwo #' " + " # if (DayTwoAN) { #" + "checked='checked'" + "# } #" + " />").Width(130).Title("");
+                          }));
+                          columns.Bound(c => c.DayTwoDate).Visible(false);
+
+
+
+              //columns.Bound(c => c.DayThree).ClientTemplate("<input type='checkbox' disabled='true' value='#=DayThree #' " + " # if (DayThree) { #" + "checked='checked'" + "# } #" + " />").Width(130).Title("");
+              //columns.Bound(c => c.DayThreeAN).ClientTemplate("<input type='checkbox' disabled='true' value='#=DayThreeAN #' " + " # if (DayThreeAN) { #" + "checked='checked'" + "# } #" + " />").Width(130).Title("");
+
+              columns.Group(group => group
+                      .Title("Day Three")
+
+                         .Columns(info =>
+                         {
+                             info.Bound(x => x.DayThree).ClientTemplate("<input type='checkbox' disabled='true' value='#=DayThree #' " + " # if (DayThree) { #" + "checked='checked'" + "# } #" + " />").Width(130).Title("");
+                             info.Bound(x => x.DayThreeAN).ClientTemplate("<input type='checkbox' disabled='true' value='#=DayThreeAN #' " + " # if (DayThreeAN) { #" + "checked='checked'" + "# } #" + " />").Width(130).Title("");
+                         }));
+
+                          columns.Bound(c => c.DayThreeDate).Visible(false);
+              //columns.Bound(c => c.DayFour).ClientTemplate("<input type='checkbox' disabled='true' value='#=DayFour #' " + " # if (DayFour) { #" + "checked='checked'" + "# } #" + " />").Width(130).Title("");
+              //columns.Bound(c => c.DayFourAN).ClientTemplate("<input type='checkbox' disabled='true' value='#=DayFourAN #' " + " # if (DayFourAN) { #" + "checked='checked'" + "# } #" + " />").Width(130).Title("");
+
+              columns.Group(group => group
+                    .Title("Day Four")
+
+                       .Columns(info =>
+                       {
+                           info.Bound(x => x.DayFour).ClientTemplate("<input type='checkbox' disabled='true' value='#=DayFour #' " + " # if (DayFour) { #" + "checked='checked'" + "# } #" + " />").Width(130).Title("");
+                           info.Bound(x => x.DayFourAN).ClientTemplate("<input type='checkbox' disabled='true' value='#=DayFourAN #' " + " # if (DayFourAN) { #" + "checked='checked'" + "# } #" + " />").Width(130).Title("");
+                       }));
+
+                          columns.Bound(c => c.DayFourDate).Visible(false);
+              //columns.Bound(c => c.DayFive).ClientTemplate("<input type='checkbox' disabled='true' value='#=DayFive #' " + " # if (DayFive) { #" + "checked='checked'" + "# } #" + " />").Width(130).Title("");
+              //columns.Bound(c => c.DayFiveAN).ClientTemplate("<input type='checkbox' disabled='true' value='#=DayFiveAN #' " + " # if (DayFiveAN) { #" + "checked='checked'" + "# } #" + " />").Width(130).Title("");
+
+              columns.Group(group => group
+                  .Title("Day Five")
+
+                     .Columns(info =>
+                     {
+                         info.Bound(x => x.DayFive).ClientTemplate("<input type='checkbox' disabled='true' value='#=DayFive #' " + " # if (DayFive) { #" + "checked='checked'" + "# } #" + " />").Width(130).Title("");
+                         info.Bound(x => x.DayFiveAN).ClientTemplate("<input type='checkbox' disabled='true' value='#=DayFiveAN #' " + " # if (DayFiveAN) { #" + "checked='checked'" + "# } #" + " />").Width(130).Title("");
+                     }));
+
+                          columns.Bound(c => c.DayFiveDate).Visible(false);
+              //columns.Bound(c => c.DaySix).ClientTemplate("<input type='checkbox' disabled='true' value='#=DaySix #' " + " # if (DaySix) { #" + "checked='checked'" + "# } #" + " />").Width(130).Title("");
+              //columns.Bound(c => c.DaySixAN).ClientTemplate("<input type='checkbox' disabled='true' value='#=DaySixAN #' " + " # if (DaySixAN) { #" + "checked='checked'" + "# } #" + " />").Width(130).Title("");
+
+
+              columns.Group(group => group
+                .Title("Day Six")
+
+                   .Columns(info =>
+                   {
+                       info.Bound(x => x.DaySix).ClientTemplate("<input type='checkbox' disabled='true' value='#=DaySix #' " + " # if (DaySix) { #" + "checked='checked'" + "# } #" + " />").Width(130).Title("");
+                       info.Bound(x => x.DaySixAN).ClientTemplate("<input type='checkbox' disabled='true' value='#=DaySixAN #' " + " # if (DaySixAN) { #" + "checked='checked'" + "# } #" + " />").Width(130).Title("");
+                   }));
+
+                          columns.Bound(c => c.DaySixDate).Visible(false);
+              //columns.Bound(c => c.DaySeven).ClientTemplate("<input type='checkbox' disabled='true' value='#=DaySeven #' " + " # if (DaySeven) { #" + "checked='checked'" + "# } #" + " />").Width(130).Title("");
+              //columns.Bound(c => c.DaySevenAN).ClientTemplate("<input type='checkbox' disabled='true' value='#=DaySevenAN #' " + " # if (DaySevenAN) { #" + "checked='checked'" + "# } #" + " />").Width(130).Title("");
+
+
+
+              columns.Group(group => group
+                .Title("Day Seven")
+
+                   .Columns(info =>
+                   {
+                       info.Bound(x => x.DaySeven).ClientTemplate("<input type='checkbox' disabled='true' value='#=DaySeven #' " + " # if (DaySeven) { #" + "checked='checked'" + "# } #" + " />").Width(130).Title("");
+                       info.Bound(x => x.DaySevenAN).ClientTemplate("<input type='checkbox' disabled='true' value='#=DaySevenAN #' " + " # if (DaySevenAN) { #" + "checked='checked'" + "# } #" + " />").Width(130).Title("");
+                   }));
+
+                          columns.Bound(c => c.DaySevenDate).Visible(false);
+                          columns.Bound(c => c.Week).Visible(false);
+                          columns.Bound(c => c.Month).Visible(false);
+                          columns.Bound(c => c.Year).Visible(false);
+                          columns.Bound(c => c.DayOneAmharicDate).Visible(false);
+                          columns.Bound(c => c.DayTwoAmharicDate).Visible(false);
+                          columns.Bound(c => c.DayThreeAmharicDate).Visible(false);
+                          columns.Bound(c => c.DayFourAmharicDate).Visible(false);
+                          columns.Bound(c => c.DayFiveAmharicDate).Visible(false);
+                          columns.Bound(c => c.DaySixAmharicDate).Visible(false);
+                          columns.Bound(c => c.DaySevenAmharicDate).Visible(false);
+                          columns.Bound(c => c.Remark).Width(200);
+              //  columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel);  }).Width(180);
+          })
+             .ToolBar(toolbar =>
+           {
+               toolbar.Template(@<text>
+<div class="toolbar">
+
+
+    @item.SaveButton()
+
+
+    
+
+
+    <label class="category-label" for="Period">Month</label>
+    @(Html.Kendo().DropDownListFor(m => m)
+                                                                     .Name("Period")
+                                                                             //.Placeholder("Period")
+                                                                             .OptionLabel(Resources.Select)
+                                                                             .Filter("contains")
+                                                                             //.CascadeFrom("GlFiscalYearId")
+                                                                             .DataTextField("Name")
+                                                                                     .DataSource(dataSource =>
+                                                                                     {
+                                                                                  dataSource.Read(read => read.Action("GetGlPeriods", "PreviousAttendance", new { area = "HRM" }))
+                                           .ServerFiltering(false);
+                                                                              })
+                                                                                     .DataValueField("GLPeriodId")
+                                                             //.AutoBind(false)
+                                                             //.Events(e => e.Change("Period"))
+                                                             .HtmlAttributes(new { style = "width: 150px;" })
+
+    )
+
+     <label class="category-label" >Week</label>
+    @(Html.Kendo().DropDownListFor(m => m)
+                                                                     .Name("Week")
+                                                                             //.Placeholder("Period")
+                                                                             .OptionLabel(Resources.Select)
+                                                                             .Filter("contains")
+                                                                             //.CascadeFrom("GlFiscalYearId")
+                                                                             .DataTextField("Name")
+                                                                                     .DataSource(dataSource =>
+                                                                                     {
+                                                                                  dataSource.Read(read => read.Action("GetWeeks", "PreviousAttendance", new { area = "HRM" }))
+                                           .ServerFiltering(false);
+                                                                              })
+                                                                                     .DataValueField("Id")
+                                                             //.AutoBind(false)
+                                                             //.Events(e => e.Change("Week"))
+                                                             .HtmlAttributes(new { style = "width: 150px;" })
+
+    )
+    <label class="category-label" for="EmployeeId">@Resources.HR_PerformanceManagment_EmployeeMeasurementDefinition_PersonEmployee</label>
+    @(Html.Kendo().DropDownListFor(m => m)
+                                                                          .Name("EmployeeId")
+                                                                                  .OptionLabel(Resources.Select)
+                                                                                  .Filter("contains")
+                                                                                  .DataTextField("FullNameaEnglish")
+                                                                                   .DataValueField("EmployeeId")
+                                                                                            .DataSource(dataSource =>
+                                                                                            {
+                                                                                         dataSource.Read(read => read.Action("GetEmployeesByUser", "HRMDataProvider", new { area = "HRM" }))
+                                                  .ServerFiltering(false);
+                                                                                     })
+                                                                                     //.Events(e => e.Change("Employee"))
+
+                                                                  .HtmlAttributes(new { style = "width: 150px;" })
+
+    )
+
+
+
+
+
+    @(Html.Kendo().Button()
+                                                .Name("btnRefresh")
+                                                .HtmlAttributes(new { type = "button", @class = "k-primary" })
+                                                   .Events(e => e.Click("Process"))
+                                                   .Content(Resources.Show))
+
+
+
+</div>
+            </text>);
+                })
+                 .Editable(editable => editable.Mode(GridEditMode.InCell))
+                          .Events(ev => ev.DataBinding("onDataBound"))
+                   .Scrollable(h => h.Height(500))
+
+
+                                      .Groupable()
+                                                   .Sortable(sortable =>
+                                                   {
+                                                       sortable.SortMode(GridSortMode.SingleColumn);
+                                                   })
+                                   .Filterable()
+                                       .Selectable()
+                                          .Pageable(pageable => pageable
+                                                                     .Input(true)
+                                                                     .Numeric(false)
+                                                                     .Refresh(true)
+                                                                        .PageSizes(true)
+                                                                                .PageSizes(new int[] { 10, 20, 30, 50, 100, 200 })
+                                                                 .ButtonCount(5))
+                   .DataSource(dataSource => dataSource
+                       .Ajax()
+                            .Batch(true)
+
+                       .Events(events =>
+                       {
+                           events.Error("error_handler(\"WeeklyAttendance\")");
+                           events.RequestStart("onRequestStart(\"WeeklyAttendance\")");
+                           events.RequestEnd("onRequestEnd(\"WeeklyAttendance\")");
+                       })
+
+
+                   .Model(model =>
+                   {
+                       model.Id(p => p.WeeklyAttendanceId);
+                       model.Field(p => p.EmployeeId).Editable(false);
+
+                   })
+                   .Read(read => read.Action("PreviousAttendance_Read", "PreviousAttendance").Data("filterdata"))
+                       .Create(create => create.Action("Editing_Create", "PreviousAttendance"))
+                       .Update(update => update.Action("Editing_Create", "PreviousAttendance"))
+
+                 )
+)
+
+
+<script>
+    function filterdata() {
+
+        var period = 1, week = 1, employee = 1;
+        var employees = $("#EmployeeId").data("kendoDropDownList");
+        var employee = employees.value();
+        var periods = $("#Period").data("kendoDropDownList");
+        var period = periods.value();
+       var weeks = $("#Week").data("kendoDropDownList");
+       var week = weeks.value();
+        return {
+            
+            period: period,
+            week:week,
+            employee: employee,
+           
+        };
+    }
+</script>
+
+<script>
+    function Period() {
+
+
+        var periods = $("#Period").data("kendoDropDownList");
+        var period = periods.value();
+        // $("#EvaluationType").val(0);
+        $.ajax({
+            url: '@Url.Action("GetPeriod", "PreviousAttendance")',
+            //contentType: "application/json; charset=utf-8",
+            data: { period: period },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                r = result;
+
+            }
+
+        });
+
+    }
+
+</script>
+
+
+<script>
+    function Week() {
+
+
+        var weeks = $("#Period").data("kendoDropDownList");
+        var week = weeks.value();
+        // $("#EvaluationType").val(0);
+        $.ajax({
+            url: '@Url.Action("GetWeek", "PreviousAttendance")',
+            //contentType: "application/json; charset=utf-8",
+            data: { week: week },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                r = result;
+
+            }
+
+        });
+
+    }
+</script>
+
+<script>
+
+    function filterPeriod() {
+        return {
+            GlFiscalYearId: $("#GlFiscalYearId").val()
+        };
+    }
+
+
+</script>
+
+<script>
+    function Process() {
+
+        var grid = $("#WeeklyAttendance").data("kendoGrid");
+
+        grid.dataSource.transport.read();
+        grid.dataSource.read();
+
+        //grid.refresh();
+
+    }
+</script>
+
+
+<script>
+    function onDataBound(e) {
+
+        var gsDayNames = [
+            "Sunday",
+            "Monday",
+            "Tuesday",
+            "Wednesday",
+            "Thursday",
+            "Friday",
+            "Saturday"
+        ];
+
+
+        //dayName will return the name of day
+        var rows = e.sender.tbody.children();
+
+        try {
+            for (var j = 0; j < rows.length; j++) {
+                var row = $(rows[j]);
+                var dataItem = e.items[j]; //sender.dataItem(row);
+                if (dataItem !== undefined) {
+
+
+                    var dO = new Date(dataItem.DayOneDate);
+                    var dayOneName = dO.toString().split(' ')[0];
+
+                    if (dataItem.DayOneDate !== null)
+                        {
+                        $("#WeeklyAttendance th[data-field=DayOne]").html("ጧት\n"+"እሁድ" + " (" + dataItem.DayOneAmharicDate + ")");
+                        $("#WeeklyAttendance th[data-field=DayOneAN]").html("ከሰአት\n" +"እሁድ" + " (" + dataItem.DayOneAmharicDate + ")");
+                    }
+                    //////////////////////////////////////////////////////////////////////////////////
+                    e.sender.columns[1].readonly = true;
+                    var dT = new Date(dataItem.DayTwoDate);
+                    var dayTwoName = dT.toString().split(' ')[0];
+
+                    if (dataItem.DayTwoDate !== null)
+                        {
+                        $("#WeeklyAttendance th[data-field=DayTwo]").html("ጧት\n" + "ሰኞ" + " (" + dataItem.DayTwoAmharicDate + ")");
+                        $("#WeeklyAttendance th[data-field=DayTwoAN]").html("ከሰአት\n" + "ሰኞ" + " (" + dataItem.DayTwoAmharicDate + ")");
+                    }
+                    ///////////////////////////////////////////////////////////////////////////////
+                    var dTh = new Date(dataItem.DayThreeDate);
+                    var dayThreeName = dTh.toString().split(' ')[0];
+
+                    if (dataItem.DayThreeDate !== null) {
+                        $("#WeeklyAttendance th[data-field=DayThree]").html("ጧት "+"ማክሰኞ" + " (" + dataItem.DayThreeAmharicDate + ")");
+                        $("#WeeklyAttendance th[data-field=DayThreeAN]").html("ከሰአት "+"ማክሰኞ" + " (" + dataItem.DayThreeAmharicDate + ")");
+                    }
+                    //////////////////////////////////////////////////////////////////////////////////
+                    var dF = new Date(dataItem.DayFourDate);
+                    var dayFourName = dF.toString().split(' ')[0];
+
+                    if (dataItem.DayFourDate !== null) {
+                        $("#WeeklyAttendance th[data-field=DayFour]").html("ጧት"+"ረቡዕ" + " (" + dataItem.DayFourAmharicDate + ")");
+                        $("#WeeklyAttendance th[data-field=DayFourAN]").html("ከሰአት"+"ረቡዕ" + " (" + dataItem.DayFourAmharicDate + ")");
+                    }
+                    //////////////////////////////////////////////////////////////////////
+                    var dFiv = new Date(dataItem.DayFiveDate);
+                    var dayFiveName = dFiv.toString().split(' ')[0];
+
+                    if (dataItem.DayFiveDate !== null) {
+                        $("#WeeklyAttendance th[data-field=DayFive]").html("ጧት "+"ሐሙስ" + " (" + dataItem.DayFiveAmharicDate + ")");
+                        $("#WeeklyAttendance th[data-field=DayFiveAN]").html("ከሰአት "+"ሐሙስ" + " (" + dataItem.DayFiveAmharicDate + ")");
+                    }
+                    //////////////////////////////////////////////////////////////
+                    var dSi = new Date(dataItem.DaySixDate);
+                    var daySixName = dSi.toString().split(' ')[0];
+
+                    if (dataItem.DaySixDate !== null) {
+                        $("#WeeklyAttendance th[data-field=DaySix]").html("ጧት "+"ዓርብ" + " (" + dataItem.DaySixAmharicDate + ")");
+                        $("#WeeklyAttendance th[data-field=DaySixAN]").html("ከሰአት "+"ዓርብ" + " (" + dataItem.DaySixAmharicDate + ")");
+                    }
+                    /////////////////////////////////////////////////////////
+                    var dSe = new Date(dataItem.DaySevenDate);
+                    var daySevName = dSe.toString().split(' ')[0];
+
+                    if (dataItem.DaySevenDate !== null)
+                    {
+                        $("#WeeklyAttendance th[data-field=DaySeven]").html("ጧት "+"ቅዳሜ" + " (" + dataItem.DaySevenAmharicDate + ")");
+                        $("#WeeklyAttendance th[data-field=DaySevenAN]").html("ከሰኣት "+"ቅዳሜ" + " (" + dataItem.DaySevenAmharicDate + ")");
+}
+                }
+
+            }
+
+        }
+        catch (ee) {
+            alert(ee);
+        }
+
+    }
+
+</script>
+
+<script>
+
+    function Employee() {
+        var employees = $("#EmployeeId").data("kendoComboBox");
+        var employee = employees.value();
+        // $("#EvaluationType").val(0);
+        $.ajax({
+            url: '@Url.Action("GetEmployee", "PreviousAttendance")',
+            //contentType: "application/json; charset=utf-8",
+            data: { employee: employee },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                r = result;
+
+            }
+
+        });
+
+
+        var value = this.value(),
+            grid = $("#MeasurementDefinitiongrid").data("kendoGrid");
+
+        if (value) {
+            grid.dataSource.filter({ field: "EmployeeId", operator: "eq", value: parseInt(value) });
+        } else {
+            grid.dataSource.filter({});
+        }
+    }
+
+</script>

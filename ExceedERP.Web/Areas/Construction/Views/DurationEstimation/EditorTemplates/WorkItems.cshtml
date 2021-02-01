@@ -1,0 +1,10 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.HRM
+@using ExceedERP.Core.Localization
+@(Html.Kendo().DropDownListFor(m => m)
+.OptionLabel(Resources.Select)
+                         .DataTextField("ItemName")
+                                .DataValueField("ProjectEstimationWorkItemId")
+                                   .BindTo((IEnumerable)ViewData["WorkItems"])
+                         .ValuePrimitive(true)
+)

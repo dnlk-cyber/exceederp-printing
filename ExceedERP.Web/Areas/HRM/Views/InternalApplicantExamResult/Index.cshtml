@@ -1,0 +1,137 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.HRM.RecruitmentManagment
+@using ExceedERP.Core.Domain.HRM.SelfCare
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<Legend>@Resources.Navigator_Recruitment_InternalApplicantExamResult</Legend>
+@(Html.Kendo().Grid<ApplicantionForm>()
+                      .Name("ApplicantionForm")
+      .Columns(columns =>
+      {
+          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "PersonId", "FullNameWithOutCode").EditorTemplateName("ListOfEmployee").Width(175);
+          // columns.Bound(c => c.ApplicationType);
+          columns.ForeignKey(c => c.VacancyId, (IEnumerable)ViewData["Vacancy"], "VaccancyCode", "VaccancyCode").EditorTemplateName("Vacancy").Width(150);
+          columns.Bound(c => c.TotalResult);
+          columns.Bound(c => c.Remark);
+          // columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+      })
+      .ToolBar(toolbar =>
+      {
+          // toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+          .Scrollable(h => h.Height(500))
+                 .Groupable()
+                          .Sortable(sortable =>
+                          {
+                              sortable.SortMode(GridSortMode.SingleColumn);
+                          })
+              .Filterable()
+                 .Pageable(pageable => pageable
+                                            .Input(true)
+                                            .Numeric(false)
+                                            .Refresh(true)
+                                            .PageSizes(true)
+                                            .ButtonCount(5))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+              .Events(events =>
+                            {
+
+                                events.Error("error_handler(\"ApplicantionForm\")");
+                                events.RequestStart("onRequestStart(\"ApplicantionForm\")");
+                                events.RequestEnd("onRequestEnd(\"ApplicantionForm\")");
+                            })
+                          
+          .Model(model => model.Id(p => p.ApplicantionFormId))
+                              .Read(read => read.Action("ApplicantionFormes_Read", "ApplicationForm", new { id = "Screen" }))
+                          .Create(create => create.Action("ApplicantionFormes_Create", "ApplicationForm"))
+                  .Update(update => update.Action("ApplicantionFormes_Update", "ApplicationForm"))
+                  .Destroy(destroy => destroy.Action("ApplicantionFormes_Destroy", "ApplicationForm"))
+          ).ClientDetailTemplateId("template")
+)
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                            .Name("tabstrip_#,ApplicantionFormId#")
+    .SelectedIndex(0)
+    .Items(items =>
+     {
+
+         items.Add().Text(Resources.Navigator_Recruitment_InternalApplicantExamResult).Content(
+            @<text>
+               @* <legend>Exam Result</legend>*@
+               @(Html.Kendo().Grid<ApplicantExamResult>()
+                      .Name("ApplicantExamResultgrid_#=ApplicantionFormId#")
+      .Columns(columns =>
+      {
+         // columns.Bound(c => c.ApplicantRegistrationId);
+          columns.Bound(c => c.Criteria).Width( 120);
+          columns.Bound(c => c.SettingValue).Width( 120);
+          columns.Bound(c => c.CurrentResult).Width( 120);
+        //  columns.Bound(c => c.Total).Width( 120);
+          //columns.Bound(c => c.Rank).Width( 120);
+          columns.Bound(c => c.Remark);
+          columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+      })
+      .ToolBar(toolbar =>
+      {
+          //toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+                   .Events(events =>
+                                    {
+
+                                        events.Error("error_handler(\"ApplicantExamResultgrid_#=ApplicantionFormId#\")");
+                                        events.RequestStart("onRequestStart(\"ApplicantExamResultgrid_#=ApplicantionFormId#\")");
+                                        events.RequestEnd("onRequestEnd(\"ApplicantExamResultgrid_#=ApplicantionFormId#\")");
+                                    })
+                                     
+                  .Model(model =>
+                  {
+                      model.Id(p => p.ApplicantResultId);
+                      model.Field(p => p.Criteria).Editable(false);
+                      model.Field(p => p.SettingValue).Editable(false);
+                  })
+                                  .Read(read => read.Action("ApplicantExamResult_Read", "InternalApplicantExamResult", new { id = "#=ApplicantionFormId#" }))
+                                  .Create(create => create.Action("ApplicantExamResult_Create", "InternalApplicantExamResult", new { id = "#=ApplicantionFormId#" }))
+                  .Update(update => update.Action("ApplicantExamResult_Update", "InternalApplicantExamResult"))
+                  .Destroy(destroy => destroy.Action("ApplicantExamResult_Destroy", "InternalApplicantExamResult"))
+      ).ToClientTemplate() 
+            )
+            </text>
+    );
+
+         
+
+      
+
+     }).ToClientTemplate())
+</script>
+
+<script>
+                        //function error_handler(e) {
+                        //    if (e.errors) {
+                        //        var message = "Errors:\n";
+                        //        $.each(e.errors, function (key, value) {
+                        //            if ('errors' in value) {
+                        //                $.each(value.errors, function () {
+                        //                    message += this + "\n";
+                        //                });
+                        //            }
+                        //        });
+                        //        alert(message);
+
+                        //    }
+
+                        //}
+
+                        function sync_handler(e) {
+                            this.read();
+
+                        }
+</script>

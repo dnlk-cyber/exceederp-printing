@@ -1,0 +1,43 @@
+﻿@*@(Html.Kendo().DropDownListFor(m => m)
+                  .ValuePrimitive(true)
+                  .OptionLabel("Select Item...")
+                      .DataTextField("Name")
+                          .DataValueField("ItemCode")
+                              .Filter("contains")
+                               .DataSource(dataSource =>
+                               {
+                                   dataSource.Read(read => read.Action("GetItems2", "DataProvider", new {area = "Inventory"}).Data("filterInventoryItems"))
+                                       .ServerFiltering(true);
+                               })
+                              .CascadeFrom("ItemCategoryCode")
+                                    .Events(e =>
+                                    {
+                                        e.Select("onSelectItemCode");
+                                    })
+)*@
+
+
+
+@(Html.Kendo().DropDownListFor(m => m)
+                        .CascadeFrom("ItemCategoryCode")
+                           .DataTextField("Name")
+                                  .DataValueField("ItemCode")
+                             .OptionLabel("Select Item...")
+                                .HtmlAttributes(new { @class = "width500" })
+                        .Filter("contains")
+                            .Virtual(v => v.ValueMapper("valueMapper").ItemHeight(26))
+                        .DataSource(source =>
+                        {
+                            source.Custom()
+                                  .ServerFiltering(true)
+                                  .ServerPaging(true)
+                                  .Type("aspnetmvc-ajax")
+                                  .Transport(transport => transport.Read(r => r.Action("VirtualItems_Read", "DataProvider", new { area = "Inventory" }).Data("filterInventoryItems")))
+                                  .Schema(schema =>
+                                  {
+                                      schema.Data("Data")
+                                            .Total("Total");
+                                  });
+                        })
+          )
+    @Html.ValidationMessageFor(m => m)

@@ -1,0 +1,58 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.HRM.HealthAndInsurance
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Treatment</legend>
+@(Html.Kendo().Grid<Treatment>()
+          .Name("Treatmentgrid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.Measure);
+        columns.Bound(c => c.Quntity);
+        columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+                 .Events(events =>
+                                                             {
+                                                                 events.Error("error_handler(\"Treatmentgrid\")");
+                                                                 events.RequestStart("onRequestStart(\"Treatmentgrid\")");
+                                                                 events.RequestEnd("onRequestEnd(\"Treatmentgrid\")");
+                                                             })
+                        
+          .Model(model => model.Id(p => p.TreatmentId))
+          .Read(read => read.Action("Treatment_Read", "Treatment"))
+          .Create(create => create.Action("Treatment_Create", "Treatment"))
+          .Update(update => update.Action("Treatment_Update", "Treatment"))
+          .Destroy(destroy => destroy.Action("Treatment_Destroy", "Treatment"))
+      )
+)
+<script>
+    //function error_handler(e) {
+    //    if (e.errors) {
+    //        var message = "Errors:\n";
+    //        $.each(e.errors, function(key, value) {
+    //            if ('errors' in value) {
+    //                $.each(value.errors, function() {
+    //                    message += this + "\n";
+    //                });
+    //            }
+    //        });
+    //        alert(message);
+
+    //    }
+
+    //}
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+</script>

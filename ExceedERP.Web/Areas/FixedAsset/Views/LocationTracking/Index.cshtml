@@ -1,0 +1,28 @@
+﻿@using ExceedERP.Core.Domain.FixedAsset.Registrations
+
+@(Html.Kendo().Grid<LocationTracking>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.LocationType);
+          columns.Bound(c => c.StartDate);
+          columns.Bound(c => c.EndDateDate);
+          columns.Bound(c => c.Description);
+          columns.Bound(c => c.OrgBranchName);
+          columns.Bound(c => c.DateCreated);
+          columns.Bound(c => c.LastModified);
+          columns.Bound(c => c.CreatedBy);
+          columns.Bound(c => c.ModifiedBy);
+          columns.Command(command => { command.Edit(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.LocationTrackingId))
+          .Read(read => read.Action("LocationTrackings_Read", "LocationTracking"))
+          .Create(create => create.Action("LocationTrackings_Create", "LocationTracking"))
+      ))

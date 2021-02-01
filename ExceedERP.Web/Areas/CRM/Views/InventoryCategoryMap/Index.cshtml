@@ -1,0 +1,52 @@
+﻿
+<legend>   Inventory Category Map </legend>
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.InventoryCateoryMap>()
+    .Name("grid")
+    .Columns(columns =>
+    {
+        columns.ForeignKey(c => c.InventoryCategoryId, (System.Collections.IEnumerable)ViewData["ItemCategorys"], "ItemCategoryCode", "Name").EditorTemplateName("ItemCategory").Width(140);
+  
+    //   columns.ForeignKey(e => e.InventoryCategoryId).EditorTemplateName("ItemCategory").Width(140);
+        columns.Bound(c => c.Category).EditorTemplateName("ItemCategoryEditor").Width(140);
+        columns.Bound(e => e.Remark).Width(140);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
+
+    })
+              .ToolBar(commands => commands.Create())
+         .Editable(editable =>
+         {
+             editable.Mode(GridEditMode.InLine);
+             editable.DisplayDeleteConfirmation("Are You Sure To Remove ");
+         })  .HtmlAttributes(new { style = "height: 520px;" })
+                      .Pageable(pageable => pageable
+                                        .Input(true)
+                                        .Numeric(false)
+                                        .Refresh(true)
+                                        .PageSizes(true)
+                                        .ButtonCount(5))
+
+                            .Scrollable()
+                            .Sortable()
+                            .Filterable()
+                               .Scrollable(h => h.Height(500))
+    .DataSource(dataSource => dataSource
+        .Ajax()
+        .ServerOperation(false)
+        .Model(model =>
+              {
+                  model.Id(p => p.InventoryCateoryMapId);
+
+                  model.Field(p => p.InventoryCateoryMapId).Editable(false);
+
+              })                          .Events(ev => ev
+                                    .Error("error_handler(\"grid\")")
+                                    .RequestStart("onRequestStart(\"grid\")")
+                                    .RequestEnd("onRequestEnd(\"grid\")"))
+                                    .Create(update => update.Action("InventoryCateoryMap_Create", "InventoryCategoryMap"))
+                                    .Read(read => read.Action("InventoryCateoryMap_Read", "InventoryCategoryMap"))
+                                    .Update(update => update.Action("InventoryCateoryMap_Update", "InventoryCategoryMap"))
+                                    .Destroy(update => update.Action("InventoryCateoryMap_Destroy", "InventoryCategoryMap"))
+  )
+)
+

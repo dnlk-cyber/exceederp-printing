@@ -1,0 +1,10 @@
+﻿@using ExceedERP.Core.Domain.Procurement
+@using ExceedERP.Core.Domain.Procurement.Settings
+
+@(Html.Kendo().DropDownListFor(m => m)
+        .DataTextField("Text")
+            .DataValueField("Value")
+            .ValuePrimitive(true)
+            .BindTo(EnumExtension.EnumToSelectList(typeof(PaymentType)))
+ 
+)

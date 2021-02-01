@@ -1,0 +1,95 @@
+﻿@using ExceedERP.Core.Domain.Finance.GL
+@using ExceedERP.Helpers.Common
+@model  ExceedERP.Core.Domain.Finance.GL.GlFiscalYear
+          
+
+
+<div class="form">
+    <div class="row fullrow">
+        <div class="col-md-3 ro1">
+            <div class="form-group">
+                @Html.LabelFor(model => model.Name, htmlAttributes: new { @class = "control-label col-md-6" })
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(model => model.Name)
+                    @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+           
+            <div class="form-group">
+                @Html.LabelFor(model => model.Status, htmlAttributes: new { @class = "control-label col-md-6" })
+                <div class="col-md-6">
+                    @Html.Kendo().DropDownListFor(m => m.Status).DataTextField("Text").DataValueField("Value") .BindTo(EnumExtension.EnumToSelectList(typeof(FiscalYearStatus)))
+                    @Html.ValidationMessageFor(model => model.Status, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+        </div>
+
+        <div class="col-md-3 ro1">
+            <div class="form-group">
+                @Html.LabelFor(model => model.DateFrom, htmlAttributes: new { @class = "control-label col-md-6" })
+                <div class="col-md-6">
+                    @Html.Kendo().DatePickerFor(model => model.DateFrom)
+                    @Html.ValidationMessageFor(model => model.DateFrom, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.DateTo, htmlAttributes: new { @class = "control-label col-md-6" })
+                <div class="col-md-6">
+                    @Html.Kendo().DatePickerFor(model => model.DateTo)
+                    @Html.ValidationMessageFor(model => model.DateTo, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+        </div>
+
+        <div class="col-md-3 ro1">
+            <div class="form-group">
+                @Html.LabelFor(model => model.Current, htmlAttributes: new { @class = "control-label col-md-6" })
+                <div class="col-md-6">
+                    @Html.Kendo().CheckBoxFor(model => model.Current)
+                    @Html.ValidationMessageFor(model => model.Current, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+        </div>
+    </div>
+</div>
+
+
+@*<script type="text/x-kendo-template" id="orderDetailsValidationMessageTemplate">
+    # if (messages.length) { #
+    <li>
+        #=field#
+        <ul>
+            # for (var i = 0; i < messages.length; ++i) { #
+            <li>#= messages[i] #</li>
+            # } #
+        </ul>
+    </li>
+    # } #
+</script>*@
+
+
+
+@*<script type="text/javascript">
+    function error_handler(e) {
+        if (e.errors) {
+            e.preventDefault();
+            var grid = $("#grid").data("kendoGrid");
+            var validationTemplate = kendo.template($("#orderDetailsValidationMessageTemplate").html());
+
+            grid.one("dataBinding", function (e) {
+                e.preventDefault();
+
+                $.each(e.errors, function (propertyName) {
+                    var renderedTemplate = validationTemplate({ field: propertyName, messages: this.errors });
+                    grid.editable.element.find(".errors").append(renderedTemplate);
+                });
+            });
+        }
+    }
+</script>*@

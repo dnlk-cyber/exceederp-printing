@@ -1,0 +1,17 @@
+﻿@using ExceedERP.Core.Domain.Common
+@using ExceedERP.Core.Localization
+@(Html.Kendo().DropDownListFor(m => m)
+    .OptionLabel( Resources.Select)
+                    .DataTextField("Name")
+                    .DataValueField("OrgStructureId")
+               .DataSource(source =>
+                    {
+                        source.Read(read =>
+                        {
+                            read.Action("GetOrganizations", "CreateStructure");
+
+                        })
+                        .ServerFiltering(true);
+                    })
+                         .ValuePrimitive(true)
+)

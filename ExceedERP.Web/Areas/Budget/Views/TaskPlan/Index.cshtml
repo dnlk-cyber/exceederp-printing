@@ -1,0 +1,330 @@
+﻿@model ExceedERP.Core.Domain.Budget.Task.TaskPlan
+
+
+
+<script>
+    var masterId;
+    var Isapproved;
+    var BudgetCategory;
+
+    function filterAccCode() {
+        return {
+            TaskPlanId: masterId,
+        };
+    }
+
+    function onDetailExpand(e) {
+        var masterRow = e.masterRow;
+        var masterGrid = $("#grid").data("kendoGrid");
+
+        var masterDataItem = masterGrid.dataItem(masterRow);
+        masterId = masterDataItem.TaskPlanId;
+
+    }
+
+
+
+</script>
+
+<legend>Task Plan </legend>
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Budget.Task.TaskPlan>()
+                        .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.TaskPlanId).Title("Id").Width(80);
+
+          columns.Bound(c => c.Name);
+          columns.ForeignKey(c => c.BudgetCategoryID, (System.Collections.IEnumerable)ViewData["Category"], "TaskCategoryId", "Name").Title("Category").EditorTemplateName("TaskCategoryEditor").Width(120);
+          columns.ForeignKey(c => c.GlFiscalYearId, (System.Collections.IEnumerable)ViewData["FiscalYear"], "GlFiscalYearId", "Name").Title("Fiscal Year").EditorTemplateName("YearTemplate").Width(120);
+
+          columns.ForeignKey(c => c.GLChartOfAccountCostCenterId, (System.Collections.IEnumerable)ViewData["MainCompanyStructures"], "Values", "Description").EditorTemplateName("WorkUnitEditor");
+
+          columns.ForeignKey(c => c.Unit, (System.Collections.IEnumerable)ViewData["TaskUnits"], "TaskUnitId", "Name").EditorTemplateName("TaskUnitEditor").Width(100);
+          columns.Bound(c => c.Amount).Format("{0:N0}").EditorTemplateName("NumEditor").Width(100);
+          columns.Bound(c => c.Remark);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+
+              .ToolBar(toolbar =>
+              {
+
+                  toolbar.Create();
+
+              })
+                 
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                        .HtmlAttributes(new { style = "height: 520px;" })
+                              .Pageable(pageable => pageable
+                                                .Input(true)
+                                                .Numeric(false)
+                                                .Refresh(true)
+                                                .PageSizes(true)
+                                                .ButtonCount(5))
+
+                                    .Sortable()
+                                    .Filterable()
+                                   
+                                    .Scrollable(h => h.Height(500))
+                                                  .ClientDetailTemplateId("template")
+                                     .Groupable().Events(ev => { ev.DetailExpand("onDetailExpandUser"); ev.DataBound("onDataBound"); })
+       
+                .Reorderable(reorderable => reorderable.Columns(true))
+           .DataSource(dataSource => dataSource
+                                  .Ajax().Group(x => { x.Add(y => y.BudgetCategoryID); })
+              .Model(model =>
+              {
+                  model.Id(p => p.TaskPlanId);
+                  model.Field(p => p.TaskPlanId).Editable(false);
+              }).Events(ev => ev
+                                                .Error("error_handler(\"grid\")")
+                                                .RequestStart("onRequestStart(\"grid\")")
+                                                .RequestEnd("onRequestEnd(\"grid\")"))
+                                              .Read(read => read.Action("TaskPlan_Read", "TaskPlan"))
+                                      .Create(create => create.Action("TaskPlan_Create", "TaskPlan"))
+                      .Update(update => update.Action("TaskPlan_BatchUpdate", "TaskPlan"))
+              .Destroy(destroy => destroy.Action("TaskPlan_Destroy", "TaskPlan"))))
+
+
+
+
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                  .Name("tabstripline_#=TaskPlanId#")
+          .SelectedIndex(0)
+          .Items(items =>
+          {
+              items.Add().Text("Detail").Content(
+                @<text>
+
+                    <div class="box">
+
+                        <div class="box-col">
+
+
+                        </div>
+                    </div>
+                    <legend> </legend>
+                    <div class="demo-section k-header export-app">
+                        <div class="demo-section content-wrapper">
+
+                            <form>
+                                # if (IsSendForApproval == false || IsSendForApproval == "false")
+                                {#
+
+                                <a href='@Url.Action("TaskPlan_SendForOnlineApproval", "TaskPlan")/?Id=#=TaskPlanId#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                                # }#
+
+
+                                <div class="row">
+                                    <div class="col-md-1">
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <div class="label">
+                                                <label>    Status </label>
+                                            </div>
+                                            <div>
+                                                # if (IsSendForApproval == false && IsOnlineApproved == false)
+                                                {#
+
+                                                <p>  Editing</p>
+                                                # }
+
+                                                else if (IsSendForApproval == true && IsOnlineApproved == false)
+                                                {#
+
+                                                <p>Waiting For Approval</p>
+                                                # }
+                                                @*else if (IsSendForApproval == false && IsOnlineTransferred == true)
+                                                    {#
+
+                                                    <p>  Rejected </p>
+                                                    # }#*@
+                                                else if (IsOnlineApproved == true)
+                                                {#
+
+                                                <p>  Approved </p>
+                                                # }#
+                                            </div>
+
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <div class="label">
+                                                <label>   @Html.LabelFor(model => model.CreatedBy)</label>
+                                            </div>
+                                            <div>
+                                                #=CreatedBy#
+
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <div class="label">
+                                                <label>     @Html.LabelFor(model => model.DateCreated)</label>
+                                            </div>
+                                            <div>
+                                                #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+
+                                            </div>
+                                        </div>
+                                    </div>
+
+
+
+                                </div>
+                            </form>
+
+                        </div>
+                    </div>
+
+
+
+                </text>
+
+
+            );
+              items.Add().Text("Monthly Plan").Content(
+                @<text>
+
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Budget.Task.TaskPlanMonthly>()
+                  .Name("TaskPlanMonthly_#=TaskPlanId#")
+      .Columns(columns =>
+      {
+          columns.ForeignKey(c => c.GLPeriodId, (System.Collections.IEnumerable)ViewData["GLPeriods"], "GLPeriodId", "Name").EditorTemplateName("BranchEditor").Width(120);
+          columns.Bound(c => c.MonthlyBudget).Format("{0:N0}");
+
+          columns.Command(command => {   }).Width(650);
+      })
+                
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                   .Pageable(pageable => pageable
+                                                    .Input(true)
+                                                    .Numeric(false)
+                                                    .Refresh(true)
+                                                    .ButtonCount(5))
+
+                                        .Scrollable()
+                                        .Sortable()
+                                        .Filterable()
+                                        .Groupable()
+                                        .Scrollable(h => h.Height(100))
+            .DataSource(dataSource => dataSource
+          .Ajax()
+              .Model(model =>
+              {
+                  model.Id(p => p.TaskPlanMonthlyId);
+
+
+              })
+                                      .Read(read => read.Action("TaskPlanMonth_Read", "TaskPlan", new { Id = "#=TaskPlanId#" }))
+                              .Create(create => create.Action("TaskPlanMonthly_Create", "TaskPlanMonthlyRegistration", new { Cid = "#=TaskPlanId#" }))
+              .Update(update => update.Action("TaskPlanMonthly_Update", "TaskPlanMonthlyRegistration"))
+              .Destroy(destroy => destroy.Action("TaskPlanMonthly_Destroy", "TaskPlanMonthlyRegistration"))
+                            ).ToClientTemplate()
+                    )
+                </text>
+    );
+
+              items.Add().Text("Approval").Content(
+                @<text>
+
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Budget.Task.TaskPlanApproval>()
+                                                      .Name("approvegrid_#=TaskPlanId#")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Status).EditorTemplateName("ApprovalStatusBind").Width(100);
+          columns.Bound(c => c.Remark).Width(150);
+          columns.Bound(c => c.CreatedBy).Width(150);
+          columns.Bound(c => c.DateCreated).Format("{0:yyyy-MM-dd}").Width(150);
+          columns.Command(command => { command.Edit().Text("Approve"); }).Width(180);
+      })
+                         .Events(ev =>
+                                                                                             {
+                                                                                                 ev.DataBound("approveonDataBound");
+                                                                                             })
+         .Editable(editable =>
+      {
+          editable.Mode(GridEditMode.InLine);
+          editable.DisplayDeleteConfirmation("Are You Sure To Approve ? ");
+      })
+
+      .DataSource(dataSource => dataSource
+                  .Ajax()
+                   .Model(model =>
+                      {
+                          model.Id(p => p.TaskPlanApprovalId);
+                          model.Field(p => p.CreatedBy).Editable(false);
+                          model.Field(p => p.DateCreated).Editable(false);
+                      })
+                                 .Read(read => read.Action("TaskPlanApproval_Read", "TaskPlan", new { Id = "#=TaskPlanId#" }))
+                                             .Create(update => update.Action("TaskPlans_Approve", "TaskPlan", new { Id = "#=TaskPlanId#" }))
+                                         .Update(update => update.Action("TaskPlans_Approve", "TaskPlan", new { Id = "#=TaskPlanId#" }))
+
+     ).ToClientTemplate()
+
+                    )
+                </text>
+
+
+            );
+          }).ToClientTemplate())
+</script>
+
+
+
+<script type="text/javascript">
+
+
+
+
+
+</script>
+
+<script>
+    function onDetailExpandUser(e) {
+        var masterRow = e.masterRow;
+
+        var masterGrid = $("#grid").data("kendoGrid");
+
+        var masterDataItem = masterGrid.dataItem(masterRow);
+         Isapproved = masterDataItem.IsOnlineApproved;
+       
+      }
+
+
+
+    function onDataBound(e) {
+        var grid = this;
+        
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+            if (dataItem.IsSendForApproval == true || dataItem.IsOnlineApproved == true ) {
+                 $(this).find(".k-grid-edit").remove();
+                $(this).find(".k-grid-delete").remove();
+            }
+        });
+    }
+
+
+   
+    function approveonDataBound(e) {
+        var grid = this;
+
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+            if (Isapproved == true) {
+                $(this).find(".k-grid-edit").remove();
+             
+            }
+        });
+       
+
+     }
+
+</script>

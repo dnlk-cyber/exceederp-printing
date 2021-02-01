@@ -1,0 +1,16 @@
+﻿@(Html.Kendo().DropDownListFor(model => model).Name("Model")
+                    .DataTextField("Name")
+                                .DataValueField("Value").OptionLabel("Select ").Filter(FilterType.Contains)
+                    .HtmlAttributes(new { style = "width:100%" })
+                    .DataSource(d =>
+                    {
+                        d.Read(r =>
+                        {
+                            r.Action("GetModelByType", "FleetDataProvider").Data("filterModel");
+                        })
+                      .ServerFiltering(true);
+                    })
+              .Enable(true)
+              .AutoBind(false)
+                   .CascadeFrom("EquipmentTypeId")
+)

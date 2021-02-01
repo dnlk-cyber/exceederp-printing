@@ -1,0 +1,55 @@
+﻿@using ExceedERP.Core.Domain.HRM.Company
+@using ExceedERP.Core.Localization
+
+@(Html.Kendo().Grid<AnnouncmentDetail>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.Detail);
+        columns.Bound(c => c.Remark);
+        columns.Bound(c => c.OrgBranchName);
+        columns.Bound(c => c.DateCreated);
+        columns.Bound(c => c.LastModified);
+        columns.Bound(c => c.CreatedBy);
+        columns.Bound(c => c.ModifiedBy);
+        columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel);  }).Width(200);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+               .Events(events => events.Error("error_handler")
+                              .Sync("sync_handler"))
+
+          .Model(model => model.Id(p => p.AnnouncDetailId))
+          .Read(read => read.Action("AnnouncmentDetails_Read", "AnnouncmentDetail"))
+          .Create(create => create.Action("AnnouncmentDetails_Create", "AnnouncmentDetail"))
+          .Update(update => update.Action("AnnouncmentDetails_Update", "AnnouncmentDetail"))
+          .Destroy(destroy => destroy.Action("AnnouncmentDetails_Destroy", "AnnouncmentDetail"))
+      )
+)
+<script>
+    function error_handler(e) {
+        if (e.errors) {
+            var message = "Errors:\n";
+            $.each(e.errors, function(key, value) {
+                if ('errors' in value) {
+                    $.each(value.errors, function() {
+                        message += this + "\n";
+                    });
+                }
+            });
+            alert(message);
+
+        }
+
+    }
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+</script>

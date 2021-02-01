@@ -1,0 +1,52 @@
+﻿@using ExceedERP.Core.Domain.Finance.AP
+@(Html.Kendo().Grid<APSupplierRegistration>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.SupplierName);
+          columns.Bound(c => c.Account);
+          columns.Bound(c => c.PhoneNo);
+          columns.Bound(c => c.TINNo);
+          columns.Bound(c => c.Address1);
+          columns.Bound(c => c.Address2);
+          columns.Bound(c => c.ContactName);
+          columns.Bound(c => c.Country);
+          columns.Bound(c => c.SupplierType);
+          columns.Bound(c => c.BusinessType);
+          columns.Bound(c => c.IsActive);
+          columns.Bound(c => c.OrgBranchName);
+          columns.Bound(c => c.DateCreated);
+          columns.Bound(c => c.LastModified);
+          columns.Bound(c => c.CreatedBy);
+          columns.Bound(c => c.ModifiedBy);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+                              toolbar.Excel();
+                              // toolbar.Pdf();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Pageable()
+      .Sortable(sortable => {
+                                sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Filterable()
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.APSupplierRegistrationID))
+          .Read(read => read.Action("APSupplierRegistrations_Read", "ApSupplierRegistration"))
+          .Create(create => create.Action("APSupplierRegistrations_Create", "ApSupplierRegistration"))
+          .Update(update => update.Action("APSupplierRegistrations_Update", "ApSupplierRegistration"))
+          .Destroy(destroy => destroy.Action("APSupplierRegistrations_Destroy", "ApSupplierRegistration"))
+      ))

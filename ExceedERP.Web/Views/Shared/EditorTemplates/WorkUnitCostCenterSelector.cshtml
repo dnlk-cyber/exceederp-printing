@@ -1,0 +1,15 @@
+﻿ 
+@(Html.Kendo().DropDownListFor(m => m)
+                  .AutoBind(false)
+                      .OptionLabel("Select Work Unit")
+                          .DataTextField("Name")
+                          .DataValueField("Code")
+                              .Filter("contains")
+                          .DataSource(dataSource =>
+                          {
+                              dataSource.Read(read => read.Action("GetWorkUnitCostCenters", "DataProvider", new { area = "Inventory" }))
+                                            .ServerFiltering(false);
+                          })
+                          
+)
+@Html.ValidationMessageFor(m => m)

@@ -1,0 +1,15 @@
+﻿@(Html.Kendo().DropDownListFor(m => m)
+                  .ValuePrimitive(true)
+                  .OptionLabel("Select Asset...")
+                      .DataTextField("Name")
+                                  .DataValueField("AssetRegistrationId")
+                              .Filter("contains")
+                               .DataSource(dataSource =>
+                              {
+                                  dataSource.Read(read => read.Action("GetFixedAsset", "FixedAssetDataProvider", new { area = "FixedAsset" }).Data("filterAssets"))
+                                            .ServerFiltering(true);
+                              })
+                                      .CascadeFrom("SubCategoryCode")
+                                   
+)
+@Html.ValidationMessageFor(m => m)

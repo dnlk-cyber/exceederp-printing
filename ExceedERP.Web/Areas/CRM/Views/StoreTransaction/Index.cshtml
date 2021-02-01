@@ -1,0 +1,26 @@
+﻿<legend>Store Transaction</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.StoreTransaction>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.Voucher);
+        columns.Bound(c => c.Source);
+        columns.Bound(c => c.Destination);
+        columns.Bound(c => c.HasEffect);
+        columns.Bound(c => c.Remark);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.StoreTransactionID))
+          .Read(read => read.Action("StoreTransactions_Read", "StoreTransaction"))
+          .Create(create => create.Action("StoreTransactions_Create", "StoreTransaction"))
+          .Update(update => update.Action("StoreTransactions_Update", "StoreTransaction"))
+          .Destroy(destroy => destroy.Action("StoreTransactions_Destroy", "StoreTransaction"))
+      )
+)

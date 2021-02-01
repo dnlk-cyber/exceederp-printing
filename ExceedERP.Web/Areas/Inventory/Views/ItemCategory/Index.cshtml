@@ -1,0 +1,192 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.Inventory
+@using Kendo.Mvc.UI
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<legend>Item Category</legend>
+
+@(Html.Kendo().Grid<ItemCategory>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.ItemCategoryCode).Width(150);
+          columns.Bound(c => c.Name ).Width(150);
+          columns.Bound(c => c.HaveParent).EditorTemplateName("IsParent").ClientTemplate("<input type='checkbox' disabled = 'true'  value='#=HaveParent #' " + " # if (HaveParent) { #" + "checked='checked'" + "# } #" + " />").Width(120);
+          columns.Bound(c => c.ParentName).EditorTemplateName("ParentList").Width(150);
+          columns.Bound(c => c.Description).Width(150);
+          columns.Bound(c => c.AccountCode).EditorTemplateName("AccountCode").Width(220);
+          columns.Bound(c => c.IssueAccountCode).EditorTemplateName("AccountCode").Width(220);
+          columns.Bound(c => c.CostType).Width(120);
+
+          columns.Command(command =>
+          {
+              command.Edit();
+              command.Destroy();
+          }).Width(180);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create();
+          toolbar.Excel();
+      })
+      .Excel(excel => excel
+          .FileName("Item Categories.xlsx")
+          .Filterable(true)
+          .AllPages(true)
+      )
+
+      //.Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("Issue"))
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .HtmlAttributes(new { style = "height: 550px;" })
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(20))
+      .Scrollable()
+      .Sortable()
+      .Filterable()
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Groupable()
+      .Events(events => events.Edit("edit"))
+      .ClientDetailTemplateId("categorytemplate")
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.ItemCategoryCode))
+          .Events(ev => ev
+              .Error("error_handler(\"grid\")")
+              .RequestStart("onRequestStart(\"grid\")")
+              .RequestEnd("onRequestEnd(\"grid\")"))
+          .Read(read => read.Action("ItemCategorys_Read", "ItemCategory"))
+          .Create(create => create.Action("ItemCategorys_Create", "ItemCategory"))
+          .Update(update => update.Action("ItemCategorys_Update", "ItemCategory"))
+          .Destroy(destroy => destroy.Action("ItemCategorys_Destroy", "ItemCategory"))
+      ))
+
+
+<script id="categorytemplate" type="text/Kendo-tmpl">
+    @(Html.Kendo().TabStrip().Name("tabStrip_#=ItemCategoryCode#").SelectedIndex(0).Items(items =>
+{
+    items.Add().Text("Allowed Users").Content(
+                        @<text>
+
+                            @(Html.Kendo().Grid<ItemCategoryUserRole>()
+                                  .Name("ItemCategoryUserRole#=ItemCategoryCode#")
+                                  .Columns(columns =>
+                                  {
+                                      columns.ForeignKey(p => p.RoleName, (IEnumerable)ViewData["users"], "Code", "Name").Width(80).Title("User").EditorTemplateName("UserSelector");
+                                      columns.Command(command =>
+                                      {
+                                          if (HttpContext.Current.User.IsInRole("Admin") || HttpContext.Current.User.IsInRole("Property_Admin"))
+                                          {
+                                              command.Edit();
+                                              command.Destroy();
+                                          }
+                                      }).Width(480);
+                                  })
+                                  .ToolBar(toolbar =>
+                                  {
+                                      if (HttpContext.Current.User.IsInRole("Admin") || HttpContext.Current.User.IsInRole("Property_Admin"))
+                                      {
+                                          toolbar.Create();
+                                      }
+
+                                  })
+
+                                  .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                  .Scrollable()
+                                  .Selectable()
+                                  .DataSource(dataSource => dataSource
+                                      .Ajax()
+                                      .Events(ev => ev
+                                          .Error("error_handler(\"ItemCategoryUserRole#=ItemCategoryCode#\")")
+                                          .RequestStart("onRequestStart(\"ItemCategoryUserRole#=ItemCategoryCode#\")")
+                                          .RequestEnd("onRequestEnd(\"ItemCategoryUserRole#=ItemCategoryCode#\")"))
+                                      .Model(model =>
+                                      {
+                                          model.Id(p => p.ItemCategoryUserRoleId);
+                                          model.Field(p => p.ItemCategoryUserRoleId).Editable(false);
+
+
+                                          model.Field(p => p.CreatedBy).Editable(false);
+                                          model.Field(p => p.DateCreated).Editable(false);
+                                          model.Field(p => p.ModifiedBy).Editable(false);
+                                          model.Field(p => p.LastModified).Editable(false);
+
+                                      })
+                                      .Read(read => read.Action("ItemCategoryUserRoles_Read", "ItemCategoryUserRole", new { id = "#=ItemCategoryCode#" }))
+                                      .Create(create => create.Action("ItemCategoryUserRoles_Create", "ItemCategoryUserRole", new { id = "#=ItemCategoryCode#" }))
+                                      .Update(update => update.Action("ItemCategoryUserRoles_Update", "ItemCategoryUserRole", new { id = "#=ItemCategoryCode#" }))
+                                      .Destroy(destroy => destroy.Action("ItemCategoryUserRoles_Destroy", "ItemCategoryUserRole"))
+                                  ).ToClientTemplate())
+
+                        </text>
+                                  );
+
+                              
+
+                                  }).ToClientTemplate()
+
+    )
+  
+</script>
+
+<script type="text/javascript">
+    
+    function edit(e) {
+        if (e.model.isNew() === false) {
+            $("#ItemCategoryCode").attr("readonly", true);
+        }
+    }
+     
+  
+
+    var popup;
+    var aCode;
+    var templbtn;
+
+  
+
+    function checkboxClicked(e) {
+ 
+        var isChecked = e.checked;
+        var grid = $("#grid").data("kendoGrid");
+        if (isChecked) {
+
+            grid.showColumn("ParentName");
+        } else {
+            grid.hideColumn("ParentName");
+        }
+             
+    };
+     
+    $(function () {
+
+
+        $("#grid table").on("keydown", "tr", function (e) {
+            var grid = $("#grid").data("kendoGrid");
+            var code = (e.keyCode ? e.keyCode : e.which);
+
+            if (code === 13) {
+                $(e.srcElement).closest("tbody").focus();
+                setTimeout(function () {
+                    grid.saveRow();
+                });
+            }
+        });
+        var grid = $("#grid").data("kendoGrid");
+        grid.addRow();
+        $(".k-grid-edit-row").appendTo("#grid tbody");
+    });
+</script> 

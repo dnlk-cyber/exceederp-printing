@@ -1,0 +1,679 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.FixedAsset.Receives
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<legend>Fixed Asset Receive</legend>
+@(Html.Kendo().Grid<FixedAssetReceive>()
+                      .Name("grid")
+                      .Columns(columns =>
+                      {
+                          columns.Bound(c => c.FixedAssetReceiveId).Title("Receive No.").Width(120).ClientTemplate("#=appendZeros(FixedAssetReceiveId)#");
+                          columns.ForeignKey(p => p.ReceiveTypeId, (IEnumerable)ViewData["ReeceiveType"], "ReceiveTypeId", "Name").EditorTemplateName("ReceiveTypeSelector").Width(150);
+                          columns.Bound(p => p.ReceiveRef).EditorTemplateName("ReceiveReferenceSelector").Width(150);
+                          columns.ForeignKey(p => p.StoreCode, (IEnumerable)ViewData["stores"], "StoreCode", "Name").Width(150).EditorTemplateName("StoreSelectorByKeeper");
+                          columns.Bound(p => p.SupplierName).EditorTemplateName("ReceiveSupplierSelector").Width(150);
+                          columns.Bound(c => c.SupplierInvoiceNo).Title("Supplier Invoice").Width(150);
+                          columns.Bound(c => c.ReceiveDate).Title("Receive Date").Width(150);
+                          columns.ForeignKey(p => p.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("BranchSelector").Width(150);
+                          columns.Bound(c => c.Status).Width(150);
+
+                      })
+                      .ToolBar(toolbar =>
+                  {
+                      if (HttpContext.Current.User.IsInRole("General_SubLedger_Inventory_BatchTransfer"))
+                      {
+                          toolbar.Template(@<text>
+                            <div class="toolbar">
+
+                                <table>
+                                    <tr>
+                                        <td>
+                                            <i>Periods:</i>
+                                            @(Html.Kendo().DropDownListFor(m => m)
+                                                                          .Name("PeriodList")
+                                                                          .BindTo((IEnumerable)ViewData["PeriodList"])
+                                                                          .DataTextField("Name")
+                                                                          .DataValueField("FixedAssetPeriodId")
+                                                                          .HtmlAttributes(new { style = "width: 300px;" })
+                                                                          .ValuePrimitive(true))
+                                        </td>
+                                        <td></td>
+                                        <td>
+
+                                            @(Html.Kendo().Button()
+                                                                          .Name("btnPost")
+                                                                          .HtmlAttributes(new { type = "search", @class = "k-primary" })
+                                                                          .Events(e => e.Click("BatchTransfer"))
+                                                                          .Content("Batch Transfer"))
+                                        </td>
+                                    </tr>
+                                </table>
+
+                            </div>
+                        </text>);
+                            }
+                        })
+
+
+                                        .HtmlAttributes(new { style = "height: 550px;" })
+                                        .Pageable(pageable => pageable
+                                            .Input(true)
+                                            .Numeric(false)
+                                            .Refresh(true)
+                                            .PageSizes(true)
+                                            .ButtonCount(20))
+                                        .Scrollable()
+                                        .Selectable(selectable =>
+                                        {
+                                            selectable.Mode(GridSelectionMode.Single);
+                                            selectable.Type(GridSelectionType.Row);
+                                        })
+                                        .Sortable(sortable =>
+                                        {
+                                            sortable.SortMode(GridSortMode.SingleColumn);
+                                        })
+                                        .Filterable()
+                                        .Groupable()
+                                        .Groupable().Events(ev => ev.DetailExpand("detailExpand"))
+                                        .Scrollable(h => h.Height(500))
+                                        .Events(x => x.DataBound("onDataBoundMaster").Edit("onMasterEdit"))
+                                        .DataSource(dataSource => dataSource
+                                            .Ajax()
+                                            .Sort(sort => sort.Add("FixedAssetReceiveId").Descending())
+                                            .Events(ev => ev
+                                                .Error("error_handler(\"grid\")")
+                                                .RequestStart("onRequestStart(\"grid\")")
+                                                .RequestEnd("onRequestEnd(\"grid\")"))
+                                            .Model(model =>
+                                            {
+                                                model.Id(p => p.FixedAssetReceiveId);
+                                                model.Field(p => p.FixedAssetReceiveId).Editable(false);
+                                                model.Field(p => p.Status).Editable(false);
+                                    //model.Field(p => p.ReceiveDate).Editable(false);
+                                    model.Field(p => p.BranchId).Editable(false);
+
+                                                model.Field(p => p.CreatedBy).Editable(false);
+                                                model.Field(p => p.DateCreated).Editable(false);
+                                                model.Field(p => p.ModifiedBy).Editable(false);
+                                                model.Field(p => p.LastModified).Editable(false);
+
+                                            })
+                                            .Read(read => read.Action("FixedAssetReceives_Read", "FixedAssetTransactions"))
+                                        )
+                                        .ClientDetailTemplateId("templates"))
+
+<script id="templates" type="text/Kendo">
+    @(Html.Kendo().TabStrip()
+                                                  .SelectedIndex(0)
+                                                  .Name("tabStrip_#=FixedAssetReceiveId#").Items(items =>
+                                                  {
+                                                      items.Add().Text("Detail").Content(
+                                                        @<text>
+
+                                                            # if (IsOnlineApproved)
+                                                            {#
+                                                            <a href='@Url.Action("FixedAssetReceive", "FixedAssetPrint",new { area = "FixedAsset"})/#=FixedAssetReceiveId#' title="Print"><i class="fa fa-print fa-2x"></i></a>
+                                                            <br />
+                                                            # } #
+
+                                                            <div>
+                                                                <hr>
+                                                                <dl class="dl-horizontal">
+                                                                    <dt>
+                                                                        Store
+                                                                    </dt>
+                                                                    <dd>
+                                                                        #= StoreCode #
+
+                                                                    </dd>
+                                                                    <dt>
+                                                                        Supplier Name
+                                                                    </dt>
+                                                                    <dd>
+                                                                        #= SupplierName #
+                                                                    </dd>
+                                                                    <dt>
+                                                                        Supplier Invoice No.
+                                                                    </dt>
+                                                                    <dd>
+                                                                        #= SupplierInvoiceNo #
+
+                                                                    </dd>
+                                                                    <dt>
+                                                                        Receive Date
+                                                                    </dt>
+                                                                    <dd>
+
+                                                                        #=kendo.toString(kendo.parseDate(ReceiveDate), 'dd/MM/yyyy') #
+
+                                                                    </dd>
+                                                                    <dt>
+                                                                        Status
+                                                                    </dt>
+                                                                    <dd>
+                                                                        #= Status #
+
+                                                                    </dd>
+                                                                    <dt>
+                                                                        CreatedOn
+                                                                    </dt>
+                                                                    <dd>
+                                                                        #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+
+                                                                    </dd>
+                                                                    <dt>
+                                                                        CreatedBy
+                                                                    </dt>
+                                                                    <dd>
+                                                                        #=CreatedBy #
+
+                                                                    </dd>
+                                                                    <dt>
+                                                                        Modified By
+                                                                    </dt>
+                                                                    <dd>
+                                                                        #= ModifiedBy #s
+                                                                    </dd>
+                                                                    <dt>
+                                                                        Modified Date
+                                                                    </dt>
+                                                                    <dd>
+                                                                        #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+                                                                    </dd>
+                                                                </dl>
+
+                                                            </div>
+                                                            <hr />
+
+
+                                                        </text>
+                                                                            );
+
+                                                @*=================================================================== Good Receive Item ================================================================*@
+                                                            items.Add().Text("Items")
+
+                                    .Content(
+                        @<text>
+                            @(Html.Kendo().Grid<FixedAssetReceiveItem>()
+                                                                          .Name("FixedAssetReceiveItems_#=FixedAssetReceiveId#")
+                                                                          .Columns(columns =>
+                                                                          {
+                                                                                      columns.ForeignKey(p => p.FixedAssetCategoryID, (IEnumerable)ViewData["fixedAssetCategories"], "FixedAssetCategoryID", "CategoryName").Title("Category").EditorTemplateName("FixedAssetCategorySelector").Width(150);
+                                                                                      columns.ForeignKey(p => p.FixedAssetSubCategoryID, (IEnumerable)ViewData["fixedAssetSubCategories"], "FixedAssetSubCategoryID", "SubCategoryName").Title("Sub Category").EditorTemplateName("FixedAssetSubCategorySelector").Width(150);
+                                                                                      columns.Bound(c => c.Name).Width(110).EditorTemplateName("FixedAssetSubCategoryNameSelector");
+                                                                                      columns.ForeignKey(p => p.FixedAssetConditionId, (IEnumerable)ViewData["Conditions"], "FixedAssetConditionId", "Name").Width(130).EditorTemplateName("AssetConditions");
+                                                                                      columns.Bound(c => c.TagNo).Width(90); columns.Bound(c => c.BatchNo).Width(100);
+                                                                                      columns.Bound(c => c.SerialNo).Width(100);
+                                                                                      columns.Bound(c => c.Model).Width(100);
+                                                                                      columns.Bound(c => c.Size).Width(100);
+                                                                                      columns.ForeignKey(p => p.GLTaxRateID, (IEnumerable)ViewData["tax"], "GLTaxRateID", "TaxName").Title("Tax Name").EditorTemplateName("TaxSelector").Width(140);
+                                                                                      columns.Bound(c => c.Unit).Width(90);
+                                                                                      columns.Bound(c => c.Quantity).Width(90);
+                                                                                      columns.Bound(c => c.UnitPrice).Format("{0:n}").Width(100);
+                                                                                      columns.Bound(c => c.TaxAmount).Format("{0:n}").Width(100);
+                                                                                      columns.Bound(c => c.Total).Format("{0:n}").Width(105);
+                                                                                      columns.Bound(c => c.Remark).Width(90);
+
+
+                                                                                  })
+
+                                                                          .Events(ev => ev.Edit("onItemEdit"))
+                                                                          .Events(x => x.DataBound("onDataBoundLines"))
+                                                                          .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("FixedAssetReceive").Window(w => w.Title("Asset Receiving")))
+                                                                          .HtmlAttributes(new { style = "height: 300px;" })
+                                                                          .Pageable(pageable => pageable
+                                                                              .Input(true)
+                                                                              .Numeric(false)
+                                                                              .Refresh(true)
+                                                                              .PageSizes(true)
+                                                                              .ButtonCount(20))
+                                                                          .Scrollable()
+                                                                          .Sortable()
+
+
+                                                                          .DataSource(dataSource =>
+                                                                              dataSource
+                                                                                  .Ajax()
+                                                                                  .Events(ev => ev
+                                                                                      .Error("error_handler(\"FixedAssetReceiveItems_#=FixedAssetReceiveId#\")")
+                                                                                      .RequestStart("onRequestStart(\"FixedAssetReceiveItems_#=FixedAssetReceiveId#\")")
+                                                                                      .RequestEnd("onRequestEnd(\"FixedAssetReceiveItems_#=FixedAssetReceiveId#\")"))
+                                                                                  .Model(model =>
+                                                                                  {
+                                                                                              model.Id(p => p.FixedAssetReceiveItemID);
+                                                                                              model.Field(p => p.TaxAmount).Editable(false);
+                                                                                              model.Field(p => p.TagNo).Editable(false);
+                                                                                              model.Field(p => p.Total).Editable(false);
+                                                                                              model.Field(p => p.FixedAssetCategoryID).Editable(false);
+                                                                                              model.Field(p => p.FixedAssetSubCategoryID).Editable(false);
+                                                                                  //model.Field(p => p.UnitPrice).Editable(false);
+                                                                                  model.Field(p => p.SubTotal).Editable(false);
+                                                                                  // model.Field(p => p.Quantity).Editable(false);
+
+
+
+                                                                                  model.Field(p => p.CreatedBy).Editable(false);
+                                                                                              model.Field(p => p.DateCreated).Editable(false);
+                                                                                              model.Field(p => p.ModifiedBy).Editable(false);
+                                                                                              model.Field(p => p.LastModified).Editable(false);
+
+                                                                                          })
+                                                                                  .Read(read => read.Action("FixedAssetReceiveItems_Read", "FixedAssetReceiveItem", new { area = "FixedAsset", Id = "#=FixedAssetReceiveId#" }))
+
+                                                                          ).ToClientTemplate())
+                        </text>
+                      );
+                    @*=========================================================== GoodRecive Item Inspection ===================================================================================*@
+                                items.Add().Text("Inspection").Content(
+@<text>
+    @(Html.Kendo().Grid<FixedAssetInspection>()
+                                                  .Name("Inspection_#=FixedAssetReceiveId#")
+                                                  .Columns(columns =>
+                                                  {
+                                                              columns.ForeignKey(p => p.EmployeeId, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Title("Requester").Width(160).EditorTemplateName("EmployeeSelfSelector");
+                                                              columns.Bound(c => c.InspectionDate).Width(130);
+                                                              columns.Bound(c => c.Accepted).Width(90).ClientTemplate("<input type='checkbox' disabled = 'true' \\#= Accepted ? checked='checked' :'' \\# />");
+                                                              columns.Bound(c => c.Remark).Width(160);
+
+
+
+                                                          })
+
+
+                                                  .Events(x => x.DataBound("onDataBoundGoodReceiveInspectionLines"))
+                                                  .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                  .Scrollable()
+                                                  .DataSource(dataSource => dataSource
+                                                      .Ajax()
+                                                      .Events(ev => ev.Error("error_handler_one")
+                                                          .Sync("sync_handler"))
+                                                      .Model(model =>
+                                                      {
+                                                                  model.Id(p => p.FixedAssetInspectionId);
+
+                                                                  model.Field(p => p.CreatedBy).Editable(false);
+                                                                  model.Field(p => p.DateCreated).Editable(false);
+                                                                  model.Field(p => p.ModifiedBy).Editable(false);
+                                                                  model.Field(p => p.LastModified).Editable(false);
+
+                                                              })
+                                                      .Read(read => read.Action("FixedAssetItemInspections_Read", "FixedAssetItemInspection", new { area = "FixedAsset", id = "#=FixedAssetReceiveId#" }))
+
+                                                  ).ToClientTemplate())
+
+</text>
+                                                  );
+
+                                        @*==============================================================================    GoodReceive Validation =====================================================================*@
+                                                    items.Add().Text("Validation").Content(
+    @<text>
+        @(Html.Kendo().Grid<FixedAssetReceiveValidation>()
+                                                      .Name("FixedAssetReceiveValidation_#=FixedAssetReceiveId#")
+                                                      .Columns(columns =>
+                                                      {
+                                                                  columns.Bound(c => c.Status).Width(170).EditorTemplateName("ValidationStatus");
+                                                                  columns.Bound(c => c.Remark).Width(170);
+
+                                                              })
+
+                                                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                      .Scrollable()
+                                                      .Events(x => x.DataBound("onDataBoundFisrtValidation"))
+                                                      .DataSource(dataSource => dataSource
+                                                          .Ajax()
+                                                          .Events(ev => ev
+                                                              .Error("error_handler(\"FixedAssetReceiveValidation_#=FixedAssetReceiveId#\")")
+                                                              .RequestStart("onRequestStart(\"FixedAssetReceiveValidation_#=FixedAssetReceiveId#\")")
+                                                              .RequestEnd("onRequestEnd(\"FixedAssetReceiveValidation_#=FixedAssetReceiveId#\")"))
+                                                          .Model(model => model.Id(p => p.FixedAssetReceiveValidationID))
+                                                          .Read(read => read.Action("FixedAssetReceiveValidations_Read", "FixedAssetReceiveValidation", new { area = "FixedAsset", id = "#=FixedAssetReceiveId#" }))
+
+                                                      ).ToClientTemplate())
+
+    </text>
+                                                                                  );
+                                                      }).ToClientTemplate()
+
+    )
+    @*======================================================= GoodReceive Distribution =====================================================*@
+    <legend>Distribution</legend>
+    # if (IsOnlineApproved && !IsOnlineTransferred && !IsVoid )
+    {#
+    <a onclick='return transfer("#=FixedAssetReceiveId#")' href=' \#' title="Transfer to GL"><i class="fa fa-paper-plane fa-2x"></i></a>
+    &nbsp;&nbsp;&nbsp;
+    <a onclick='return generateDistribution("#=FixedAssetReceiveId#")' href=' \#' title="Regenerate Distribution"><i class="fa fa-forward fa-2x"></i></a>
+    <br />
+    # } #
+
+    @(Html.Kendo().Grid<FixedAssetReceiveDistribution>()
+                                                  .Name("FixedAssetReceiveDistribution#=FixedAssetReceiveId#")
+                                                  .Columns(columns =>
+                                                  {
+
+                                                      columns.Bound(c => c.AccountCode).EditorTemplateName("AccountCode").Width(220);
+                                                      columns.Bound(c => c.AccountDesc).Width(200);
+                                                      //columns.Bound(c => c.AdditionalDescription).Width(150);
+                                                      columns.Bound(c => c.Debit).Width(100).ClientFooterTemplate("Total Debit: \\#=sum\\# ");
+                                                      columns.Bound(c => c.Credit).Width(100).ClientFooterTemplate("Total Credit: \\#=sum\\# ");
+                                                      columns.Command(command =>
+                                                      {
+                                                          command.Edit();
+                                                          command.Destroy();
+
+                                                      }).ClientFooterTemplate("Difference: \\#=Debit.sum-Credit.sum\\# ");
+                                                  })
+                                                  .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                  .Scrollable()
+                                                  .Events(x => x.DataBound("onDataBoundDistribution"))
+                                                  .DataSource(dataSource => dataSource
+                                                      .Ajax()
+                                                      .Events(ev => ev
+                                                          .Error("error_handler(\"FixedAssetReceiveDistribution#=FixedAssetReceiveId#\")")
+                                                          .RequestStart("onRequestStart(\"FixedAssetReceiveDistribution#=FixedAssetReceiveId#\")")
+                                                          .RequestEnd("onRequestEnd(\"FixedAssetReceiveDistribution#=FixedAssetReceiveId#\")"))
+                                                      .Model(model =>
+                                                      {
+                                                          model.Id(p => p.FixedAssetReceiveDistributionID);
+                                                          //model.Field(p => p.Credit).Editable(false);
+                                                          //model.Field(p => p.Debit).Editable(false);
+                                                          model.Field(p => p.AccountDesc).Editable(false);
+
+
+                                                      })
+                                                      .Read(read => read.Action("FixedAssetReceiveDistributions_Read", "FixedAssetReceiveDistribution", new { area = "FixedAsset", id = "#=FixedAssetReceiveId#" }))
+                                                      .Create(create => create.Action("FixedAssetReceiveDistributions_Create", "FixedAssetReceiveDistribution", new { area = "FixedAsset", id = "#=FixedAssetReceiveId#" }))
+                                                      .Update(update => update.Action("FixedAssetReceiveDistributions_Update", "FixedAssetReceiveDistribution",new { area = "FixedAsset"}))
+                                                      .Destroy(destroy => destroy.Action("FixedAssetReceiveDistributions_Destroy", "FixedAssetReceiveDistribution", new { area = "FixedAsset" }))
+                                                  ).ToClientTemplate())
+
+</script>
+
+
+
+<script>
+
+    function BatchTransfer() {
+        var periodObject = $("#PeriodList").data("kendoDropDownList");
+        var periodid = periodObject.value();
+
+        if (periodid != null) {
+
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("BatchtransferGrn", "FixedAssetTransactions", new {area = "Finance"})',
+                data: { id: periodid },
+                success: function (result) {
+                    // toastr.warnning(result.Message);
+                    alert(result.Message);
+                    location.reload(true);
+                }, //end succ
+                beforeSend: function(){
+                    // Show image container
+                    $("#loading-image").show();
+                },
+                complete:function(data){
+                    // Hide image container
+                    $("#loading-image").hide();
+                },
+                error: function (result) {
+                    alert(result);
+                }
+            });
+
+
+            $("#grid").data("kendoGrid").dataSource.read();
+        } else {
+            alert("Please select period.");
+        }
+
+    }
+
+    function generateDistribution(id) {
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("GenerateDistribution", "FixedAssetReceive", new { area = "FixedAsset" })',
+            data: {id: id},
+            success: function (result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                location.reload(true);
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+
+    function transfer(id) {
+        var desc = prompt("Please enter transaction description:");
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("TransferDistribution", "FixedAssetReceive", new { area = "FixedAsset" })',
+            data: {
+                id: id,
+                description: desc
+            },
+            success: function (result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                location.reload(true);
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+
+
+    function filterTypes() {
+        return { id: $("#ReceiveTypeId").data("kendoDropDownList").value() }
+    }
+
+    function filterSuppliers() {
+        return {
+            id: $("#ReceiveRef").data("kendoDropDownList").value(),
+            type: $("#ReceiveTypeId").data("kendoDropDownList").value()
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+    $(document).ready(function () {
+        $("form.k-edit-form").kendoValidator();
+    });
+    var storeCode;
+    var codeid;
+
+    function onItemEdit(e) {
+        var masterRow = this.wrapper.closest("tr.k-detail-row").prev(".k-master-row");
+        var masterGrid = $("#grid").data("kendoGrid");
+
+        var masterDataItem = masterGrid.dataItem(masterRow);
+        storeCode = masterDataItem.StoreCode;
+        codeid = masterDataItem.GoodReceiveId;
+    }
+
+    function getgoodreceiveid() {
+
+        return { id: codeid };
+    }
+
+    function getItems() {
+
+        return {
+            StoreCode: storeCode
+        };
+    }
+
+    function checkboxClicked(e) {
+
+        var isChecked = e.checked;
+        var tabStrip = $("#tabstrip").kendoTabStrip({ select: onSelect }).data("kendoTabStrip");
+
+        function onSelect(e) {
+            console.log("Selected: " + tabStrip.select().index());
+        }
+
+        tabStrip.select("li:first");
+        tabStrip.cha(1);
+
+        if (isChecked) {
+
+            tabStrip.select("li:first");
+            tabStrip.select(1);
+
+        }
+        else {
+            tabStrip.select(0);
+
+        }
+
+    };
+    function checkboxClickedex(e) {
+        var isChecked = e.checked;
+
+        if (isChecked) {
+
+            $("#isextra").show();
+        } else {
+            $("#isextra").hide();
+
+        }
+    }
+
+
+
+    function OnIndexCall(elem) {
+        var a = codeid;
+        $(elem).attr('href', $(elem).attr('href') + '?id=' + a);
+    }
+    function onDataBound(e) {
+        var itemGrid = "#GoodReceiveItems_" + codeid;
+        var grid = $(itemGrid).data("kendoGrid");
+        var currentDataItem = grid.dataSource.view();
+        if (isapproved) {
+
+            $(".k-grid-delete", itemGrid).hide();
+            $(".k-grid-edit", itemGrid).hide();
+        }
+    }
+</script>
+<script>
+    function onMasterEdit(e) {
+        $(".typeselector").hide();
+        $(".supplierSelector").hide();
+        $(".lotselectors").hide();
+
+    }
+    function onClick(e) {
+
+
+        var masterDataItem = masterGrid.dataItem(masterRow);
+        var tabstrip = $("#tabStrip_4").data("kendoTabstrip");
+
+
+    }
+
+    var dataparamt;
+    function goodrecivetypeselector(e) {
+
+        var reciveId = $("#ReceiveTypeId").data("kendoDropDownList").value();
+
+        var dataRecive;
+        $.ajax({
+            type: "GET",
+
+            dataType: 'json',
+
+
+
+            contentType: "application/json;charset=utf-8",
+            url: "/DataProvider/GetGroodReciveType",
+            data: { id: reciveId },
+            success: function (result) {
+                debugger;
+                dataRecive = result;
+                dataparamt = result;
+                if (result === "Other") {
+                    $(".typeselector").hide();
+                    $(".supplierSelector").hide();
+                    $(".lotselectors").hide();
+                }
+                if (result === "Tender") {
+                    $(".typeselector").show();
+                    $(".supplierSelector").show();
+                    $(".lotselectors").show();
+
+                }
+                if (result === "Proforma") {
+                    $(".typeselector").show();
+                    $(".supplierSelector").show();
+                    $(".lotselectors").hide();
+
+                }
+                if (result === "Purchase") {
+                    $(".typeselector").show();
+                    $(".supplierSelector").hide();
+                    $(".lotselectors").hide();
+
+
+                }
+            },
+            error: function (response) {
+                debugger;
+                alert('eror');
+            }
+        });
+
+
+    }
+
+
+    function GetParameter() {
+        return { type: dataparamt }
+    }
+
+    function GetVoucherRefId() {
+        return {
+            reciveRef: $("#ReciveRef").data("kendoDropDownList").value()
+
+        }
+    }
+    function GetLotId() {
+        return {
+            reciveRef: $("#TenderLot").data("kendoDropDownList").value()
+
+        }
+    }
+    function onUploadSuccess(e) {
+
+    }
+
+    function checkFileType(e) {
+        var files = e.files;
+
+        $.each(files, function () {
+
+            if (this.extension.toLowerCase() === ".xls" || this.extension.toLowerCase() === ".xlsx" || this.extension.toLowerCase() === ".xlsm") {
+
+            } else {
+                alert("Only .xls, .xlsx, .xlsm files can be uploaded!");
+                e.preventDefault();
+            }
+
+        });
+    }
+</script>

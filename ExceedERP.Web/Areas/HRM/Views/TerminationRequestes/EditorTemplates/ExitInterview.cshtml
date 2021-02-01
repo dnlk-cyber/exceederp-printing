@@ -1,0 +1,127 @@
+﻿@using System.Collections
+@using Kendo.Mvc.UI
+@model ExceedERP.Core.Domain.HRM.EmployeeDetail.ExitInterview
+
+
+<form>
+
+<div class="row">
+    <div class="col-md-1">
+
+    </div>
+   
+
+    <div class="col-md-3">
+        <div>
+            @Html.LabelFor(model => model.ToKeep, htmlAttributes: new { @class = "control-label col-md-8" })
+        </div>
+        <div class="form-group">
+            @Html.TextAreaFor(m => m.ToKeep)
+                
+            @Html.ValidationMessageFor(model => model.ToKeep, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div>
+            @Html.LabelFor(model => model.ToRemove, htmlAttributes: new { @class = "control-label col-md-8" })
+        </div>
+        <div class="form-group">
+            @Html.TextAreaFor(model => model.ToRemove)
+            @Html.ValidationMessageFor(model => model.ToRemove, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="form-group">
+            <div class="k-label">
+                @Html.LabelFor(model => model.Reason, htmlAttributes: new { @class = "control-label col-md-8" })
+
+            </div>
+            <div>
+
+                @Html.TextAreaFor(model => model.Reason)
+                @Html.ValidationMessageFor(model => model.Reason, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<br/>
+
+
+<div class="row">
+    <div class="col-md-1">
+
+    </div>
+
+  
+    <div class="col-md-3">
+        <div>
+          @*  @Html.LabelFor(model => model.DueToWork, htmlAttributes: new { @class = "control-label col-md-8" })*@
+        </div>
+        <div class="form-group">
+
+            @Html.Kendo().CheckBoxFor(model => model.DueToWork)
+            @Html.ValidationMessageFor(model => model.DueToWork, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div>
+            @Html.LabelFor(model => model.Sicknees, htmlAttributes: new { @class = "control-label col-md-8" })
+        </div>
+        <div class="form-group">
+
+            @Html.TextAreaFor(model => model.Sicknees)
+            @Html.ValidationMessageFor(model => model.Sicknees, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div>
+            @Html.LabelFor(model => model.MainReason, htmlAttributes: new { @class = "control-label col-md-8" })
+        </div>
+        <div class="form-group">
+
+            @Html.TextAreaFor(model => model.MainReason)
+            @Html.ValidationMessageFor(model => model.MainReason, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+
+</div>
+<br/>
+<div class="row">
+    <div class="col-md-1">
+
+    </div>
+   
+    <div class="col-md-3">
+        <div>
+            @Html.LabelFor(model => model.OtherReason, htmlAttributes: new { @class = "control-label col-md-8" })
+        </div>
+        <div class="form-group">
+
+            @Html.TextAreaFor(model => model.OtherReason)
+            @Html.ValidationMessageFor(model => model.OtherReason, "", new { @class = "text-danger" })
+        </div>
+    </div>
+  
+    <div class="col-md-3">
+        <div>
+            @Html.LabelFor(model => model.Remark, htmlAttributes: new { @class = "control-label col-md-8" })
+
+        </div>
+        <div class="form-group">
+
+            @Html.TextAreaFor(model => model.Remark)
+            @Html.ValidationMessageFor(model => model.Remark, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+
+
+    </div>
+
+
+  
+
+</form>

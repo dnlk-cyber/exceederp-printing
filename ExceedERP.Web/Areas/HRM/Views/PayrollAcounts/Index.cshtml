@@ -1,0 +1,255 @@
+﻿@using System.Collections
+@using System.Security.AccessControl
+@using ExceedERP.Core.Domain.HRM.Payroll.Setting
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>@Resources.NavigatorPayrollSetup_PayrollAcounts</legend>
+@(Html.Kendo().Grid<PayrollAccounts>()
+          .Name("PayrollAccountsgrid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Description).Width( 200);
+          columns.Bound(c => c.IsPerEmployee).Width(150).ClientTemplate("<input type='checkbox'  disabled='true' value='#=IsPerEmployee#' " + " # if (IsPerEmployee) { #" + "checked='checked'" + "# } #" + " />");
+          columns.Bound(c => c.IsPerBranch).Width(150).ClientTemplate("<input type='checkbox'  disabled='true' value='#=IsPerBranch#' " + " # if (IsPerBranch) { #" + "checked='checked'" + "# } #" + " />");
+          columns.Bound(c => c.IsPerCostCenter).Width(150).ClientTemplate("<input type='checkbox'  disabled='true' value='#=IsPerCostCenter#' " + " # if (IsPerCostCenter) { #" + "checked='checked'" + "# } #" + " />");
+          columns.Bound(c => c.Account).EditorTemplateName("AccountCode").Width(200);
+          //  columns.Bound(c => c.Remark).Width( 150);
+          columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);}).Width(200);
+      })
+      .ToolBar(toolbar => {
+
+          toolbar.Excel().Text(Resources.ActionButton_ExportExcel).HtmlAttributes(new { @class = "btn btn-primary btn-xs pull-right" });
+          toolbar.Pdf().Text(Resources.ActionButton_ExportPDF).HtmlAttributes(new { @class = "btn btn-primary btn-xs pull-right" });
+          //   toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Excel(excel => excel
+          .FileName(Resources.NavigatorPayrollSetup_PayrollAcounts + ".xlsx")
+          .Filterable(true)
+          .AllPages(true)
+          .ProxyURL(Url.Action("Excel_Export_Save", "PayrollAcounts"))
+      )
+      .Pdf(pdf => pdf
+          .AllPages()
+          .FileName(Resources.NavigatorPayrollSetup_PayrollAcounts + ".pdf")
+          .ProxyURL(Url.Action("Pdf_Export_Save", "PayrollAcounts"))
+      )
+         .Scrollable(h => h.Height(500))
+                 .Groupable()
+                          .Sortable(sortable =>
+                          {
+                              sortable.SortMode(GridSortMode.SingleColumn);
+                          })
+              .Filterable()
+                 .Pageable(pageable => pageable
+                                            .Input(true)
+                                            .Numeric(false)
+                                            .Refresh(true)
+                                            .PageSizes(true)
+                                            .ButtonCount(5))
+          //    .Events(e =>
+          //{
+          //    e.Edit("onChange");
+
+          //})
+          .Selectable( )
+      .DataSource(dataSource => dataSource
+          .Ajax()
+              .Events(events =>
+              {
+                  events.Error("error_handler(\"PayrollAccountsgrid\")");
+                  events.RequestStart("onRequestStart(\"PayrollAccountsgrid\")");
+                  events.RequestEnd("onRequestEnd(\"PayrollAccountsgrid\")");
+
+              })
+
+          .Model(model => model.Id(p => p.PayrollAccountsId))
+          .Read(read => read.Action("PayrollAccounts_Read", "PayrollAcounts"))
+          .Create(create => create.Action("PayrollAccounts_Create", "PayrollAcounts"))
+          .Update(update => update.Action("PayrollAccounts_Update", "PayrollAcounts"))
+          .Destroy(destroy => destroy.Action("PayrollAccounts_Destroy", "PayrollAcounts"))
+      )
+      )
+
+<Script>
+//    function SelectAccounts(e)
+//    {
+
+//        var wnd = $("#AccountsWindow").data("kendoWindow");
+    
+      
+//        wnd.center().open();
+//    }
+
+//    function onChange(e) {
+       
+//        var id = e.sender.dataItem(e.container).Account;
+//        if (id != null)
+//            {
+//       var s = id.split(/-/);
+
+//       $("#Salary").val(s[0]);
+//       $("#Company").data("kendoComboBox").value(e.sender.dataItem(e.container).BranchAccount);//value(s[1]);
+//       $("#SubAccounts").data("kendoComboBox").value(e.sender.dataItem(e.container).SubAccount);//value(s[3]);
+//       $("#Accounts").data("kendoComboBox").value(e.sender.dataItem(e.container).MainAccount);//value(s[0]);
+//       $("#CostCent").data("kendoComboBox").value(e.sender.dataItem(e.container).CostCenter);//value(s[2]);
+      
+//}
+//    }
+//    function Accountclicked(e) {
+
+//        var account = $("#Accounts").data("kendoComboBox").value();
+//        var subaccount = $("#SubAccounts").data("kendoComboBox").value();
+//        var company = $("#Company").data("kendoComboBox").value();
+//        var costCenter = $("#CostCent").data("kendoComboBox").value();
+//        var glAcc = account + "-" + company + "-" + costCenter + "-" + subaccount;
+//        if (account !== "" && subaccount !== "" && company !== "") {
+
+//            $("#Account").val(glAcc).trigger("change");
+
+//            var window = $("#AccountsWindow").data("kendoWindow");
+
+//            window.close();
+//        }
+//        else
+//        {
+//            alert("Please select all the neccessary Fields");
+//        }
+
+//    }
+</Script>
+
+
+
+@(Html.Kendo().Window().Name("AccountsWindow")
+            .Title(Resources.NavigatorPayrollSetup_PayrollAcounts)
+    .Visible(false)
+    .Modal(true)
+      .Content(@<text>
+                   @(Html.Kendo().ComboBox()
+                         .Name("Accounts")
+                         .HtmlAttributes(new { style = "width:200px" })
+                         .ValuePrimitive(true)
+                         .Placeholder("Account...")
+                                  .Filter("contains")
+              .MinLength(2)
+                         .DataTextField("GlchartAccunt")
+                         .DataValueField("GlValue")
+                         .DataSource(dataSource =>
+                         {
+                             dataSource.Read(read => read.Action("GetAccountCode", "PayrollAcounts", new {area = "HRM"}));
+                             //.ServerFiltering(true);
+                         }))
+
+                   <br />
+        <br />
+
+        @(Html.Kendo().ComboBox()
+                          .Name("Company")
+                          .ValuePrimitive(true)
+                          .Placeholder("Comapny...")
+                                   .Filter("contains")
+              .MinLength(2)
+                          .HtmlAttributes(new { style = "width:200px" })
+                                  .DataTextField("Name")
+                                  .DataValueField("Value")
+                          .DataSource(dataSource =>
+                          {
+                              dataSource.Read(read => read.Action("GetCompany", "PayrollAcounts", new {area = "HRM"}));
+                              //.ServerFiltering(true);
+                          })
+        )
+        <br />
+        <br />
+        @(Html.Kendo().ComboBox()
+                                              .Name("CostCent")
+                          .ValuePrimitive(true)
+                              .Placeholder("Cost Center...")
+                                       .Filter("contains")
+              .MinLength(2)
+                          .HtmlAttributes(new { style = "width:200px" })
+                                      .DataTextField("GlchartAccunt")
+                                  .DataValueField("GlValue")
+                          .DataSource(dataSource =>
+                          {
+                              dataSource.Read(read => read.Action("GetCostCenter", "PayrollAcounts", new {area = "HRM"}));
+                              //.ServerFiltering(true);
+                          })
+        )
+        <br />
+        <br />
+        @(Html.Kendo().ComboBox()
+                          .Name("SubAccounts")
+                          .ValuePrimitive(true)
+                          .Placeholder("SubAccount...")
+                                   .Filter("contains")
+              .MinLength(2)
+                          .HtmlAttributes(new { style = "width:200px" })
+                                  .DataTextField("GlchartSubAccunt")
+                                  .DataValueField("GlValue")
+                          .DataSource(dataSource =>
+                          {
+                              dataSource.Read(read => read.Action("GetSubAccountCode", "PayrollAcounts", new {area = "HRM"}));
+                              //.ServerFiltering(true);
+                          })
+        )
+        <br />
+        <br />
+
+        @Html.ValidationMessageFor(m => m)
+        <br />
+        <br /> <br />
+        <div class="pull-right">
+            @*@Html.Kendo().Button().Name("Save").Content("Submit").Events(ev => ev.Click("Accountclicked"))*@
+
+        </div>
+
+    </text>)
+    .Draggable(true)
+    .Width(300)
+)
+<style>
+    .Employee-photo {
+        display: inline-block;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background-size: 32px 35px;
+        background-position: center center;
+        vertical-align: middle;
+        line-height: 32px;
+        box-shadow: inset 0 0 1px #999, inset 0 0 10px rgba(0,0,0,.2);
+        margin-left: 5px;
+    }
+
+    .Employee-name {
+        display: inline-block;
+        vertical-align: middle;
+        line-height: 32px;
+        padding-left: 3px;
+    }
+</style>
+<script>
+    //function error_handler(e) {
+    //    if (e.errors) {
+    //        var message = "Errors:\n";
+    //        $.each(e.errors, function(key, value) {
+    //            if ('errors' in value) {
+    //                $.each(value.errors, function() {
+    //                    message += this + "\n";
+    //                });
+    //            }
+    //        });
+    //        alert(message);
+
+    //    }
+
+    //}
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+</script>

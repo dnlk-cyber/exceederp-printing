@@ -1,0 +1,61 @@
+﻿@using ExceedERP.Core.Domain.HRM.Discipline
+@using ExceedERP.Core.Localization
+
+@(Html.Kendo().Grid<Appeal>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.AppealDetail);
+        columns.Bound(c => c.Date);
+        columns.Bound(c => c.DateAmharic);
+        columns.Bound(c => c.Remark);
+        columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel);  }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Sortable(sortable => {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Filterable()
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+               .Events(events =>
+                                                                                              {
+                                                                                                  events.Error("error_handler(\"grid\")");
+                                                                                                  events.RequestEnd("onRequestEnd(\"grid\")");
+                                                                                              }
+                                                                                              )
+              
+
+          .Model(model => model.Id(p => p.AppealId))
+          .Read(read => read.Action("Appeal_Read", "Appeal"))
+          .Create(create => create.Action("Appeal_Create", "Appeal"))
+          .Update(update => update.Action("Appeal_Update", "Appeal"))
+          .Destroy(destroy => destroy.Action("Appeal_Destroy", "Appeal"))
+      )
+)
+<script>
+    function error_handler(e) {
+        if (e.errors) {
+            var message = "Errors:\n";
+            $.each(e.errors, function(key, value) {
+                if ('errors' in value) {
+                    $.each(value.errors, function() {
+                        message += this + "\n";
+                    });
+                }
+            });
+            alert(message);
+
+        }
+
+    }
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+</script>

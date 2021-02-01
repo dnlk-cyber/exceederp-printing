@@ -1,0 +1,28 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.HRM.Payroll.OverTimeTrasferDetail>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.NormalHours);
+        columns.Bound(c => c.NightHours);
+        columns.Bound(c => c.HolidayHours);
+        columns.Bound(c => c.RestdayHours);
+        columns.Bound(c => c.From);
+        columns.Bound(c => c.To);
+        columns.Bound(c => c.Remark);
+        columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Update);command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.OverTimeTrasferDetailId))
+          .Read(read => read.Action("OverTimeTrasferDetails_Read", "OverTimeTrasferDetail"))
+          .Create(create => create.Action("OverTimeTrasferDetails_Create", "OverTimeTrasferDetail"))
+          .Update(update => update.Action("OverTimeTrasferDetails_Update", "OverTimeTrasferDetail"))
+          .Destroy(destroy => destroy.Action("OverTimeTrasferDetails_Destroy", "OverTimeTrasferDetail"))
+      )
+)

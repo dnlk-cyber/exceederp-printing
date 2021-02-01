@@ -1,0 +1,114 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.HRM.Attendance
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>@Resources.NavigatorAttendance_LateComming</legend>
+@(Html.Kendo().Grid<LateComming>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.EmployeeCode).Width(150);
+          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "PersonId", "FullNameWithOutCode").EditorTemplateName("ListOfEmployee").Width(200);
+          columns.Bound(c => c.DateLateAmharic).EditorTemplateName("Calander").Width(200);
+        columns.Bound(c => c.Time).Width (120);
+        columns.Bound(c => c.Remark).Width (120);
+        columns.Command(command =>
+        {
+            if (HttpContext.Current.User.IsInRole("HR_Attendance_User"))
+            {
+                command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+            }
+            if (HttpContext.Current.User.IsInRole("HR_Attendance_User") || HttpContext.Current.User.IsInRole("HR_Admin"))
+            {
+                command.Destroy().Text(Resources.ActionButton_Cancel);
+            }
+        }).Width(200);
+      })
+      .ToolBar(toolbar => {
+                              if (HttpContext.Current.User.IsInRole("HR_Attendance_User"))
+                              {
+                                  toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                              }
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+           .Scrollable(h => h.Height(500))
+               .Events(x => x.Save("GetAbscenceDate"))
+                                                .Events(x => x.Edit("GetAbscenceDate"))
+                         .Groupable()
+                                  .Sortable(sortable =>
+                                  {
+                                      sortable.SortMode(GridSortMode.SingleColumn);
+                                  })
+                      .Filterable()
+                         .Pageable(pageable => pageable
+                                                    .Input(true)
+                                                    .Numeric(false)
+                                                    .Refresh(true)
+                                                    .PageSizes(true)
+                                                    .ButtonCount(5))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+              .Events(events =>
+                                                            {
+
+                                                                events.Error("error_handler(\"grid\")");
+                                                                events.RequestStart("onRequestStart(\"grid\")");
+                                                                events.RequestEnd("onRequestEnd(\"grid\")");
+                                                            })
+                      
+              .Model(model => { model.Id(p => p.LateCommingId);
+              model.Field(p => p.EmployeeCode).Editable(false);})
+          .Read(read => read.Action("LateCommings_Read", "LateComming"))
+          .Create(create => create.Action("LateCommings_Create", "LateComming"))
+          .Update(update => update.Action("LateCommings_Update", "LateComming"))
+          .Destroy(destroy => destroy.Action("LateCommings_Destroy", "LateComming"))
+      )
+)
+<script>
+    //function error_handler(e) {
+    //    if (e.errors) {
+    //        var message = "Errors:\n";
+    //        $.each(e.errors, function(key, value) {
+    //            if ('errors' in value) {
+    //                $.each(value.errors, function() {
+    //                    message += this + "\n";
+    //                });
+    //            }
+    //        });
+    //        alert(message);
+
+    //    }
+
+    //}
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+    function AssignDate() {
+        var list = AssignDates();
+        return list;
+    }
+    function GetAbscenceDate() {
+
+        var x = AssignDate();
+        var y = x;
+        $("#DateLateAmharic").trigger("change");
+       
+        for (var o in y) {
+            $.ajax({
+                contentType: "application/json; charset=utf-8",
+                url: '@Url.Action("SetDate", "LateComming")',
+                data: { name: y[o].id, value: y[o].date },
+                type: 'GET',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                }
+
+            });
+        }
+    }
+</script>

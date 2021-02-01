@@ -1,0 +1,29 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Procurement.Tender.TenderMessages>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.ReciverDepartment);
+          columns.Bound(c => c.Sender);
+          columns.Bound(c => c.Reciver);
+          columns.Bound(c => c.Message);
+          columns.Bound(c => c.FileName);
+          columns.Bound(c => c.PhysicalPath);
+          columns.Bound(c => c.MessageStatus);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+                              toolbar.Excel();
+                              // toolbar.Pdf();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.TenderMessagesId))
+          .Read(read => read.Action("TenderMessages_Read", "TenderMessage"))
+          .Create(create => create.Action("TenderMessages_Create", "TenderMessage"))
+          .Update(update => update.Action("TenderMessages_Update", "TenderMessage"))
+          .Destroy(destroy => destroy.Action("TenderMessages_Destroy", "TenderMessage"))
+      ))

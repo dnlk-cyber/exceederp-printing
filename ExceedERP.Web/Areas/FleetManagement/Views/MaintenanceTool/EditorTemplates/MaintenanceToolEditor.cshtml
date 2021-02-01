@@ -1,0 +1,116 @@
+﻿
+@model ExceedERP.Core.Domain.FleetManagement.FleetMaintenance.MaintenanceTool
+
+
+
+<div class = "demo-section k-content">
+    <form>
+   
+
+        <div class="row">
+            <div class="col-md-1">
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.ToolsName)
+                    </div>
+                    <div>
+                        @Html.Kendo().TextBoxFor(model => model.ToolsName)
+                        @Html.ValidationMessageFor(model => model.ToolsName)
+                        @*@(Html.Kendo().DropDownListFor(model => model.ToolsName).Name("ToolsName")
+            .DataTextField("Name")
+                            .DataValueField("Name").OptionLabel("Select ").HtmlAttributes(new { style = "width:100%" })
+                                    .DataSource(d => d.Read(r => r.Action("ToolDDBind", "DataProvider"))))*@
+                    </div>
+
+                </div>
+            </div>
+
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.Quantity)
+                    </div>
+                    <div>
+                        @Html.Kendo().NumericTextBoxFor(model => model.Quantity).Min(0)
+                        @Html.ValidationMessageFor(model => model.Quantity)
+                    </div>
+
+                </div>
+            </div>
+
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.OwnedBy)
+                    </div>
+                    <div>
+                        @(Html.Kendo().DropDownListFor(model => model.OwnedBy).HtmlAttributes(new { @class = "form-control" }).Name("OwnedBy")
+                                .DataTextField("FullName")
+                                    .DataValueField("FullName").OptionLabel("Select")
+                                    .DataSource(d => d.Read(r => r.Action("MechanicCrewDDBind", "MechanicCrew"))).ValuePrimitive(true))
+
+
+
+              
+                        @Html.ValidationMessageFor(model => model.OwnedBy)
+                    </div>
+
+                </div>
+            </div>
+
+    </div>
+        <div class="row">
+            <div class="col-md-1">
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.Description)
+                    </div>
+                    <div>
+                        @Html.Kendo().TextBoxFor(model => model.Description)
+                        @Html.ValidationMessageFor(model => model.Description)
+                    </div>
+
+                </div>
+            </div>
+
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.Location)
+                    </div>
+                    <div>
+                        @Html.Kendo().TextBoxFor(model => model.Location)
+                        @Html.ValidationMessageFor(model => model.Location)
+                    </div>
+
+                </div>
+            </div>
+
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.Price)
+                    </div>
+                    <div>
+                        @Html.Kendo().NumericTextBoxFor(model => model.Price).Min(0)
+                        @Html.ValidationMessageFor(model => model.Price)
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+                         
+
+
+         
+              </form>
+</div>

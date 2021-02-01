@@ -1,0 +1,97 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.Common
+@using ExceedERP.Core.Domain.Common.DocumentApproval
+@using ExceedERP.Core.Domain.Finance
+@using ExceedERP.Helpers
+@model ExceedERP.Core.Domain.Common.DocumentApproval.DocumentApprovalRule
+
+@Html.HiddenFor(model => model.DocumentApprovalRuleId)
+
+<div class="form">
+    <div class="row fullrow">
+
+        <div class="col-md-3 ro1">
+            <div class="form-group">
+                @Html.LabelFor(model => model.DocumentType, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(model => model.DocumentType).HtmlAttributes(new { @disabled = "disabled" })
+                    @Html.ValidationMessageFor(model => model.DocumentType, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+
+           
+
+        </div>
+        <div class="col-md-3 ro1">
+            
+            <div class="form-group">
+                @*@Html.LabelFor(model => model.OwnerCanApprove, htmlAttributes: new { @class = "control-label col-md-8" })*@
+                <div class="col-md-8">
+                    @Html.Kendo().CheckBoxFor(model => model.OwnerCanApprove)
+                    @Html.ValidationMessageFor(model => model.OwnerCanApprove, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+
+            <div class="form-group">
+                @*@Html.LabelFor(model => model.ApproverCanModify, htmlAttributes: new { @class = "control-label col-md-8" })*@
+                <div class="col-md-8">
+                    @Html.Kendo().CheckBoxFor(model => model.ApproverCanModify)
+                    @Html.ValidationMessageFor(model => model.ApproverCanModify, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+            
+            <div class="form-group">
+                @*@Html.LabelFor(model => model.CanChangeForwardTo, htmlAttributes: new { @class = "control-label col-md-8" })*@
+                <div class="col-md-10">
+                    @Html.Kendo().CheckBoxFor(model => model.CanChangeForwardTo)
+                    @Html.ValidationMessageFor(model => model.CanChangeForwardTo, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+
+          
+            
+           
+        </div>
+
+        <div class="col-md-3 ro1">
+
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.ForwardMethod, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-8">
+                    @(Html.Kendo().DropDownListFor(m => m.ForwardMethod)
+                          .OptionLabel("Select ...")
+                          .DataTextField("Text")
+                          .DataValueField("Value")
+                          .ValuePrimitive(true)
+                          .BindTo(EnumExtension.EnumToSelectList(typeof(ForwardMethod)))
+
+                    )
+                    @Html.ValidationMessageFor(model => model.ForwardMethod, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+            
+            <div class="form-group">
+                @Html.LabelFor(model => model.ForwardMethod, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-8">
+                    @(Html.Kendo().DropDownListFor(m => m.HierarchyType)
+                          .OptionLabel("Select ...")
+                          .DataTextField("Text")
+                          .DataValueField("Value")
+                          .ValuePrimitive(true)
+                          .BindTo(EnumExtension.EnumToSelectList(typeof(ApprovalHierarchy)))
+
+                          )
+                    @Html.ValidationMessageFor(model => model.HierarchyType, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+
+        </div>
+    </div>
+</div>

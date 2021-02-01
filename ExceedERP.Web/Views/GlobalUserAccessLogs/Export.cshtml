@@ -1,0 +1,50 @@
+﻿@using ExceedERP.Core.Domain.Global
+
+@{
+    ViewBag.Title = "Export";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<legend>Export Log </legend>
+
+
+
+@(Html.Kendo().Grid<GlobalExportLog>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.IpAddress);
+          columns.Bound(c => c.UserName);
+          columns.Bound(c => c.TimeAccessed).Format("{0:dd MMMM yyyy hh:mm tt}");
+          columns.Bound(c => c.Type);
+          columns.Bound(c => c.Status);
+          columns.Bound(c => c.Description);
+
+      })
+       .HtmlAttributes(new { style = "height: 550px;" })
+                          .Pageable(pageable => pageable
+                                            .Input(true)
+                                            .Numeric(false)
+                                            .Refresh(true)
+                                            .PageSizes(true)
+                                            .ButtonCount(5))
+
+                                .Scrollable()
+                                .Sortable()
+                                .Filterable()
+                                .Groupable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Sort(sort => sort.Add("GlobalExportLogId").Descending())
+                .Events(events => events
+                  .Error("error_handler")
+                  .Sync("sync_handler"))
+                      .Read(read => read.Action("GlobalUserExportLogs_Read", "GlobalUserAccessLogs"))
+      )
+)
+
+
+
+
+
+

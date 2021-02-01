@@ -1,0 +1,184 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@using Kendo.Mvc.UI
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>  Setting | Cost Categories </legend>
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Production.ProductionAndProcessingCostCategory>()
+                                  .Name("categoryGrid")
+                                  .Columns(columns =>
+                                  {
+                                      columns.Bound(c => c.Title);
+                                      columns.Bound(c => c.Remark);
+                                      //columns.Bound(c => c.HasSubCategory);
+                                      // columns.Bound(c => c.ParentId);
+                                      //columns.Bound(c => c.IsDeductive);
+
+                                      columns.Command(command =>
+                                      {
+                                          command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                          command.Destroy().Text(Resources.ActionButton_Cancel);
+                                      }).Width(200);
+
+                                  })
+                                  .ToolBar(toolbar =>
+                                  {
+                                      toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                                  })
+                                  .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("CostCategoryEditor").Window(window => { window.Title("Cost Categories"); window.Scrollable(false); }))
+                                  .Selectable(selectable =>
+                                  {
+                                      selectable.Mode(GridSelectionMode.Single);
+                                      selectable.Type(GridSelectionType.Row);
+                                  })
+                                  .Scrollable(h => h.Height(500))
+                                  .Sortable(sortable =>
+                                  {
+                                      sortable.SortMode(GridSortMode.SingleColumn);
+                                  })
+                                  //.Events(ev => {
+                                  //    ev.DataBound("dataBound");
+                                  //})
+                                  .Filterable()
+                                  .Pageable(pageable => pageable
+                                      .Input(true)
+                                      .Numeric(false)
+                                      .Refresh(true)
+                                      .PageSizes(true)
+                                      .ButtonCount(5))
+                                  .DataSource(dataSource => dataSource
+                                      .Ajax()
+
+                                      .Events(events =>
+                                      {
+                                          events.Error("error_handler(\"categoryGrid\")");
+                                          events.RequestStart("onRequestStart(\"categoryGrid\")");
+                                          events.RequestEnd("onRequestEnd(\"categoryGrid\")");
+                                      })
+                                      .Model(model =>
+                                      {
+                                          model.Id(f => f.ProductionAndProcessingCostCategoryId);
+                                          //model.Field(f => f.ParentId).DefaultValue(-1);
+                                          //model.Field(f => f.Name).Editable(false);
+                                      })
+
+                                      .Read(read => read.Action("Categories_Read", "ProductionAndProcessingCostCategory"))
+                                      .Create(create => create.Action("Category_Create", "ProductionAndProcessingCostCategory"))
+                                      .Update(update => update.Action("Category_Update", "ProductionAndProcessingCostCategory"))
+                                      .Destroy(destroy => destroy.Action("Category_Destroy", "ProductionAndProcessingCostCategory"))
+                                  ).ClientDetailTemplateId("template_subcategories")
+)
+
+
+<script id="template_subcategories" type="text/kendo-tmpl">
+    #if(HasSubCategory) {#
+    @(Html.Kendo().TabStrip()
+                    .Name("tabstrip_str_#=ProductionAndProcessingCostCategoryId#")
+                    .SelectedIndex(0)
+                    .Items(items =>
+                    {
+                        items.Add().Text("Sub Categories").Content(
+                            @<text>
+                                @(Html.Kendo().Grid<ExceedERP.Core.Domain.Production.ProductionAndProcessingCostCategory>()
+                                                .Name("productionOrderItems_#=ProductionAndProcessingCostCategoryId#")
+                                                 .Columns(columns =>
+                                                 {
+                                                     columns.Bound(c => c.Title);
+                                                     columns.Bound(c => c.Remark);
+                                                     //columns.Bound(c => c.HasSubCategory);
+                                                     //columns.Bound(c => c.ParentId);
+                                                     //columns.Bound(c => c.IsDeductive);
+
+                                                     columns.Command(command =>
+                                                     {
+                                                         command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                                         command.Destroy().Text(Resources.ActionButton_Cancel);
+                                                     }).Width(200);
+
+                                                 })
+                                                  .ToolBar(toolbar =>
+                                                  {
+                                                      toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                                                  })
+                                                  .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("CostSubCategoryEditor").Window(window => { window.Title("Cost Categories"); window.Scrollable(false); }))
+                                                  .Selectable(selectable =>
+                                                  {
+                                                      selectable.Mode(GridSelectionMode.Single);
+                                                      selectable.Type(GridSelectionType.Row);
+                                                  })
+                                                .Sortable(sortable =>
+                                                {
+                                                    sortable.SortMode(GridSortMode.SingleColumn);
+                                                })
+
+                                                .Filterable()
+                                                .Pageable(pageable => pageable
+                                                    .Input(true)
+                                                    .Numeric(false)
+                                                    .Refresh(true)
+                                                    .PageSizes(true)
+                                                    .ButtonCount(5))
+                                                .DataSource(dataSource => dataSource
+                                                    .Ajax()
+                                                    .Events(events =>
+                                                    {
+                                                        events.Error("error_handler(\"productionOrderItems_#=ProductionAndProcessingCostCategoryId#\")");
+                                                        events.RequestStart("onRequestStart(\"productionOrderItems_#=ProductionAndProcessingCostCategoryId#\")");
+                                                        events.RequestEnd("onRequestEnd(\"productionOrderItems_#=ProductionAndProcessingCostCategoryId#\")");
+                                                    })
+                                                    .Model(model =>
+                                                    {
+                                                        model.Id(p => p.ProductionAndProcessingCostCategoryId);
+                                                        //model.Field(f => f.ParentId).DefaultValue(-1);
+                                                    })
+                                                    .Read(read => read.Action("SubCategories_Read", "ProductionAndProcessingCostCategory", new { id = "#=ProductionAndProcessingCostCategoryId#" }))
+                                                    .Create(create => create.Action("SubCategory_Create", "ProductionAndProcessingCostCategory", new { id = "#=ProductionAndProcessingCostCategoryId#" }))
+                                                    .Update(update => update.Action("Category_Update", "ProductionAndProcessingCostCategory"))
+                                                    .Destroy(destroy => destroy.Action("Category_Destroy", "ProductionAndProcessingCostCategory"))
+                                                    )//.ClientDetailTemplateId("template_seedProductionactivities")
+                                                    .ToClientTemplate()
+                                )
+                            </text>
+                                );
+                            }).ToClientTemplate())
+    #} else {#
+    
+    #}#
+</script>
+
+<script>
+                //function filterCategories() {
+                //    //
+                //    // summary:
+                //    //      send the filtering text along with the parent widget's value
+                //    var dropdownlist = $("#ItemCode").data("kendoDropDownList");
+                //    var filterInput = dropdownlist.filterInput;
+                //    return {
+                //        ItemCategoryCode: $("#ItemCategoryCode").val(), filterString: filterInput.val()
+                //    };
+                //}
+    function dataBound() {
+        var grid = this;
+
+        //expand all detail rows
+        grid.tbody.find("tr.k-master-row").each(function () {
+            grid.expandRow($(this));
+        })
+
+        //remove hierarchy cells and column
+        $(".k-hierarchy-cell").remove();
+        $(".k-hierarchy-col").remove();
+    }
+    //function dropdownListDataBound(e) {
+    //    $("#ParentId").removeAttr('required');
+    //    $("#ProductionAndProcessingCostCategoryId").removeAttr('required');
+    //}
+</script>
+
+<style>
+    div.k-edit-form-container {
+        width: 450px;
+    }
+</style>

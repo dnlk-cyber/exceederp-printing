@@ -1,0 +1,7 @@
+﻿@using System.Collections
+@(Html.Kendo().DropDownList().BindTo((IEnumerable)ViewData["StoreList"])
+.OptionLabel("--Select Store--")
+                .DataTextField("Description")
+            .DataValueField("OrganizationUnitDefinitionID")
+            .Name("OrganizationUnitDefinitionID")
+)

@@ -1,0 +1,499 @@
+﻿
+@using ExceedERP.Core.Domain.Finance.Report
+@using ExceedERP.Core.Domain.Finance.Report.IFRS
+<legend>Statement of Cash Flow</legend>
+@(Html.Kendo().Grid<IfrsStatementOfCashFlow>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.IfrsStatementOfCashFlowId).Title("ID").Width(300);
+          columns.Command(command =>
+          {
+              if (ViewBag.Count > 0)
+              {
+                  return;
+              }
+              command.Edit();
+              command.Destroy();
+          }).Width(180);
+      })
+      .ToolBar(toolbar =>
+      {
+          if (ViewBag.Count <= 0)
+          {
+              toolbar.Create();
+          }
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .HtmlAttributes(new { style = "height: 550px;" })
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(20))
+      .Scrollable()
+      .ClientDetailTemplateId("templates")
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model =>
+          {
+              model.Id(p => p.IfrsStatementOfCashFlowId);
+              model.Field(p => p.IfrsStatementOfCashFlowId).Editable(false);
+          }
+          )
+          .Model(model => model.Id(p => p.IfrsStatementOfCashFlowId))
+          .Read(read => read.Action("IfrsStatementOfCashFlows_Read", "IfrsStatementOfCashFlow"))
+          .Create(create => create.Action("IfrsStatementOfCashFlows_Create", "IfrsStatementOfCashFlow"))
+          .Update(update => update.Action("IfrsStatementOfCashFlows_Update", "IfrsStatementOfCashFlow"))
+          .Destroy(destroy => destroy.Action("IfrsStatementOfCashFlows_Destroy", "IfrsStatementOfCashFlow"))
+      )
+      .Events(events => events.DataBound("dataBound")))
+
+<script id="templates" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                  .Name("tabStrip#=IfrsStatementOfCashFlowId#")
+                  .SelectedIndex(0)
+                  .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+                  .Items(items =>
+                  {
+
+                      items.Add().Text("Operating Activity").Content(@<text>
+                        @(Html.Kendo().Grid<IfrsSocfOperatingActivity>()
+                                      .Name("IfrsSocfOperatingActivity#=IfrsStatementOfCashFlowId#")
+                                      .Columns(columns =>
+                                      {
+                                                columns.Bound(c => c.Category).EditorTemplateName("CashFlowTypes").Width(150);
+                                                columns.Bound(c => c.Description).Width(250);
+                                                columns.Bound(c => c.Rule).Width(130);
+                                                columns.Bound(c => c.NoteNumber).Width(100);
+                                                columns.Command(command =>
+                                                {
+                                                    command.Edit();
+                                                    command.Destroy();
+                                                });
+                                            })
+                                      .ToolBar(toolbar =>
+                                      {
+                                                toolbar.Create();
+                                            })
+
+                                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                      .HtmlAttributes(new { style = "height: 450px;" })
+
+                                      .Scrollable()
+                                      .Sortable()
+                                      .ClientDetailTemplateId("operatingActivityTemplates")
+                                      .DataSource(dataSource => dataSource
+                                          .Ajax()
+                                          .Model(
+                                              model =>
+                                              {
+                                                        model.Id(p => p.IfrsSocfOperatingActivityId);
+                                                    })
+                                          .Events(events => events
+                                              .Error("error_handler_one")
+                                              .Sync("sync_handler"))
+                                          .Read(read => read.Action("IfrsSocfOperatingActivities_Read", "IfrsSocfOperatingActivity", new { id = "#=IfrsStatementOfCashFlowId#" }))
+                                          .Create(create => create.Action("IfrsSocfOperatingActivities_Create", "IfrsSocfOperatingActivity", new { id = "#=IfrsStatementOfCashFlowId#" }))
+                                          .Update(update => update.Action("IfrsSocfOperatingActivities_Update", "IfrsSocfOperatingActivity", new { id = "#=IfrsStatementOfCashFlowId#" }))
+                                          .Destroy(destroy => destroy.Action("IfrsSocfOperatingActivities_Destroy", "IfrsSocfOperatingActivity"))
+                                      )
+                                      .ToClientTemplate())
+                    </text>);
+
+                            items.Add().Text("Investing Activity").Content(
+                                @<text>
+                                    @(Html.Kendo().Grid<IfrsSocfInvestingActivity>()
+                                                  .Name("IfrsSocfInvestingActivity#=IfrsStatementOfCashFlowId#")
+                                                  .Columns(columns =>
+                                                  {
+                                                //columns.Bound(c => c.Category).EditorTemplateName("CashFlowTypes").Width(150);
+                                                columns.Bound(c => c.Description).Width(250);
+                                                            columns.Bound(c => c.Rule).Width(130);
+                                                            columns.Bound(c => c.NoteNumber).Width(100);
+                                                            columns.Command(command =>
+                                                            {
+                                                                command.Edit();
+                                                                command.Destroy();
+                                                            });
+                                                        })
+                                                  .ToolBar(toolbar =>
+                                                  {
+                                                            toolbar.Create();
+                                                        })
+                                                  .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                  .HtmlAttributes(new { style = "height: 450px;" })
+
+                                                  .Sortable(sortable =>
+                                                  {
+                                                            sortable.SortMode(GridSortMode.SingleColumn);
+                                                        })
+                                                  .Scrollable()
+                                                  .ClientDetailTemplateId("investingActivityTemplates")
+                                                  .DataSource(dataSource => dataSource
+                                                      .Ajax()
+                                                      .Model(
+                                                          model =>
+                                                          {
+                                                                    model.Id(p => p.IfrsSocfInvestingActivityId);
+                                                                })
+                                                      .Events(events => events
+                                                          .Error("error_handler_one")
+                                                          .Sync("sync_handler"))
+                                                      .Read(read => read.Action("IfrsSocfInvestingActivities_Read", "IfrsSocfInvestingActivity", new { id = "#=IfrsStatementOfCashFlowId#" }))
+                                                      .Create(create => create.Action("IfrsSocfInvestingActivities_Create", "IfrsSocfInvestingActivity", new { id = "#=IfrsStatementOfCashFlowId#" }))
+                                                      .Update(update => update.Action("IfrsSocfInvestingActivities_Update", "IfrsSocfInvestingActivity", new { id = "#=IfrsStatementOfCashFlowId#" }))
+                                                      .Destroy(destroy => destroy.Action("IfrsSocfInvestingActivities_Destroy", "IfrsSocfInvestingActivity"))
+                                                  )
+                                                  .ToClientTemplate())
+
+                                </text>);
+
+                                    items.Add().Text("Financing Activity").Content(
+                                        @<text>
+                                            @(Html.Kendo().Grid<IfrsSocfFinancingActivity>()
+                                                          .Name("IfrsSocfFinancingActivity#=IfrsStatementOfCashFlowId#")
+                                                          .Columns(columns =>
+                                                          {
+                                                        //columns.Bound(c => c.Category).EditorTemplateName("CashFlowTypes").Width(150);
+                                                        columns.Bound(c => c.Description).Width(250);
+                                                                    columns.Bound(c => c.Rule).Width(130);
+                                                                    columns.Bound(c => c.NoteNumber).Width(100);
+                                                                    columns.Command(command =>
+                                                                    {
+                                                                        command.Edit();
+                                                                        command.Destroy();
+                                                                    });
+                                                                })
+                                                          .ToolBar(toolbar =>
+                                                          {
+                                                                    toolbar.Create();
+                                                                })
+                                                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                          .HtmlAttributes(new { style = "height: 450px;" })
+
+                                                          .Sortable(sortable =>
+                                                          {
+                                                                    sortable.SortMode(GridSortMode.SingleColumn);
+                                                                })
+                                                          .Scrollable()
+                                                          .ClientDetailTemplateId("financingActivityTemplates")
+                                                          .DataSource(dataSource => dataSource
+                                                              .Ajax()
+                                                              .Model(
+                                                                  model =>
+                                                                  {
+                                                                            model.Id(p => p.IfrsSocfFinancingActivityId);
+                                                                        })
+                                                              .Events(events => events
+                                                                  .Error("error_handler_one")
+                                                                  .Sync("sync_handler"))
+                                                              .Read(read => read.Action("IfrsSocfFinancingActivities_Read", "IfrsSocfFinancingActivity", new { id = "#=IfrsStatementOfCashFlowId#" }))
+                                                              .Create(create => create.Action("IfrsSocfFinancingActivities_Create", "IfrsSocfFinancingActivity", new { id = "#=IfrsStatementOfCashFlowId#" }))
+                                                              .Update(update => update.Action("IfrsSocfFinancingActivities_Update", "IfrsSocfFinancingActivity", new { id = "#=IfrsStatementOfCashFlowId#" }))
+                                                              .Destroy(destroy => destroy.Action("IfrsSocfFinancingActivities_Destroy", "IfrsSocfFinancingActivity"))
+                                                          )
+                                                          .ToClientTemplate())
+
+                                        </text>);
+
+                                            items.Add().Text("Cash and Cash Equivalents").Content(@<text>
+                                                @(Html.Kendo().Grid<IfrsCashAndCashEquivalentRange>()
+                                                              .Name("IfrsCashAndCashEquivalentRange#=IfrsStatementOfCashFlowId#")
+                                                              .Columns(columns =>
+                                                              {
+                                                                        columns.Bound(c => c.AccountFrom).EditorTemplateName("AccountCodeZZZ").Width(220);
+                                                                        columns.Bound(c => c.AccountTo).EditorTemplateName("AccountCodeZZZ").Width(220);
+                                                                        columns.Command(command =>
+                                                                        {
+                                                                            command.Edit();
+                                                                            command.Destroy();
+                                                                        });
+                                                                    })
+                                                              .ToolBar(toolbar =>
+                                                              {
+                                                                        toolbar.Create();
+                                                                    })
+
+                                                              .Editable(editable => editable.Mode(GridEditMode.InLine))
+
+                                                              .Scrollable()
+                                                              .Sortable()
+                                                              .DataSource(dataSource => dataSource
+                                                                  .Ajax()
+                                                                  .Model(
+                                                                      model =>
+                                                                      {
+                                                                                model.Id(p => p.IfrsCashAndCashEquivalentRangeId);
+                                                                            })
+                                                                  .Events(events => events
+                                                                      .Error("error_handler_one")
+                                                                      .Sync("sync_handler"))
+                                                                  .Read(read => read.Action("IfrsCashAndCashEquivalentRanges_Read", "IfrsCashAndCashEquivalentRange", new { id = "#=IfrsStatementOfCashFlowId#" }))
+                                                                  .Create(create => create.Action("IfrsCashAndCashEquivalentRanges_Create", "IfrsCashAndCashEquivalentRange", new { id = "#=IfrsStatementOfCashFlowId#" }))
+                                                                  .Update(update => update.Action("IfrsCashAndCashEquivalentRanges_Update", "IfrsCashAndCashEquivalentRange", new { id = "#=IfrsStatementOfCashFlowId#" }))
+                                                                  .Destroy(destroy => destroy.Action("IfrsCashAndCashEquivalentRanges_Destroy", "IfrsCashAndCashEquivalentRange"))
+                                                              )
+                                                              .Events(events => events.DataBound("dataBound"))
+                                                              .ToClientTemplate())
+                                            </text>);
+
+
+                                                })
+
+                                                .ToClientTemplate()
+    )
+
+</script>
+
+<script id="operatingActivityTemplates" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+          .Name("tabStripIfrsSocfOperatingActivity#=IfrsStatementOfCashFlowId#")
+          .SelectedIndex(0)
+          .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+          .Items(items =>
+          {
+              items.Add().Text("Account Ranges").Content(@<text>
+                @(Html.Kendo().Grid<IfrsSocfOperatingActivityRange>()
+                      .Name("IfrsSocfOperatingActivityRange#=IfrsSocfOperatingActivityId#")
+                      .Columns(columns =>
+                      {
+                          columns.Bound(c => c.AccountFrom).EditorTemplateName("AccountCodeZZZ").Width(220);
+                          columns.Bound(c => c.AccountTo).EditorTemplateName("AccountCodeZZZ").Width(220);
+                          columns.Command(command =>
+                          {
+                              command.Edit();
+                              command.Destroy();
+                          });
+                      })
+                      .ToolBar(toolbar =>
+                      {
+                          toolbar.Create();
+                      })
+
+                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                      
+                      .Scrollable()
+                      .Sortable()
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+                          .Model(
+                              model =>
+                              {
+                                  model.Id(p => p.IfrsSocfOperatingActivityRangeId);
+                              })
+                          .Events(events => events
+                              .Error("error_handler_one")
+                              .Sync("sync_handler"))
+                          .Read(read => read.Action("IfrsSocfOperatingActivityRanges_Read", "IfrsSocfOperatingActivityRange", new {id = "#=IfrsSocfOperatingActivityId#"}))
+                          .Create(create => create.Action("IfrsSocfOperatingActivityRanges_Create", "IfrsSocfOperatingActivityRange", new {id = "#=IfrsSocfOperatingActivityId#"}))
+                          .Update(update => update.Action("IfrsSocfOperatingActivityRanges_Update", "IfrsSocfOperatingActivityRange", new {id = "#=IfrsSocfOperatingActivityId#"}))
+                          .Destroy(destroy => destroy.Action("IfrsSocfOperatingActivityRanges_Destroy", "IfrsSocfOperatingActivityRange"))
+                      )
+                      .Events(events => events.DataBound("dataBound"))
+                      .ToClientTemplate())
+            </text>);
+
+
+
+
+          })
+
+          .ToClientTemplate()
+          )
+
+</script>
+
+<script id="investingActivityTemplates" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+           .Name("tabStripIfrsSocfInvestingActivity#=IfrsStatementOfCashFlowId#")
+          .SelectedIndex(0)
+          .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+          .Items(items =>
+          {
+              items.Add().Text("Account Ranges").Content(@<text>
+                @(Html.Kendo().Grid<IfrsSocfInvestingActivityRange>()
+                      .Name("IfrsSocfInvestingActivityRange#=IfrsSocfInvestingActivityId#")
+                      .Columns(columns =>
+                      {
+                          columns.Bound(c => c.AccountFrom).EditorTemplateName("AccountCodeZZZ").Width(220);
+                          columns.Bound(c => c.AccountTo).EditorTemplateName("AccountCodeZZZ").Width(220);
+                          columns.Command(command =>
+                          {
+                              command.Edit();
+                              command.Destroy();
+                          });
+                      })
+                      .ToolBar(toolbar =>
+                      {
+                          toolbar.Create();
+                      })
+
+                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                      
+                      .Scrollable()
+                      .Sortable()
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+                          .Model(
+                              model =>
+                              {
+                                  model.Id(p => p.IfrsSocfInvestingActivityRangeId);
+                              })
+                          .Events(events => events
+                              .Error("error_handler_one")
+                              .Sync("sync_handler"))
+                          .Read(read => read.Action("IfrsSocfInvestingActivityRanges_Read", "IfrsSocfInvestingActivityRange", new {id = "#=IfrsSocfInvestingActivityId#"}))
+                          .Create(create => create.Action("IfrsSocfInvestingActivityRanges_Create", "IfrsSocfInvestingActivityRange", new {id = "#=IfrsSocfInvestingActivityId#"}))
+                          .Update(update => update.Action("IfrsSocfInvestingActivityRanges_Update", "IfrsSocfInvestingActivityRange", new {id = "#=IfrsSocfInvestingActivityId#"}))
+                          .Destroy(destroy => destroy.Action("IfrsSocfInvestingActivityRanges_Destroy", "IfrsSocfInvestingActivityRange"))
+                      )
+                      .Events(events => events.DataBound("dataBound"))
+                      .ToClientTemplate())
+            </text>);
+
+
+
+
+          })
+
+          .ToClientTemplate()
+          )
+
+</script>
+
+<script id="financingActivityTemplates" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+           .Name("tabStripIfrsSocfFinancingActivity#=IfrsStatementOfCashFlowId#")
+          .SelectedIndex(0)
+          .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+          .Items(items =>
+          {
+              items.Add().Text("Account Ranges").Content(@<text>
+                @(Html.Kendo().Grid<IfrsSocfFinancingActivityRange>()
+                      .Name("IfrsSocfFinancingActivityRange#=IfrsSocfFinancingActivityId#")
+                      .Columns(columns =>
+                      {
+                          columns.Bound(c => c.AccountFrom).EditorTemplateName("AccountCodeZZZ").Width(220);
+                          columns.Bound(c => c.AccountTo).EditorTemplateName("AccountCodeZZZ").Width(220);
+                          columns.Command(command =>
+                          {
+                              command.Edit();
+                              command.Destroy();
+                          });
+                      })
+                      .ToolBar(toolbar =>
+                      {
+                          toolbar.Create();
+                      })
+
+                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                     
+                      .Scrollable()
+                      .Sortable()
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+                          .Model(
+                              model =>
+                              {
+                                  model.Id(p => p.IfrsSocfFinancingActivityRangeId);
+                              })
+                          .Events(events => events
+                              .Error("error_handler_one")
+                              .Sync("sync_handler"))
+                          .Read(read => read.Action("IfrsSocfFinancingActivityRanges_Read", "IfrsSocfFinancingActivityRange", new { id = "#=IfrsSocfFinancingActivityId#" }))
+                          .Create(create => create.Action("IfrsSocfFinancingActivityRanges_Create", "IfrsSocfFinancingActivityRange", new { id = "#=IfrsSocfFinancingActivityId#" }))
+                          .Update(update => update.Action("IfrsSocfFinancingActivityRanges_Update", "IfrsSocfFinancingActivityRange", new { id = "#=IfrsSocfFinancingActivityId#" }))
+                          .Destroy(destroy => destroy.Action("IfrsSocfFinancingActivityRanges_Destroy", "IfrsSocfFinancingActivityRange"))
+                      )
+                      .Events(events => events.DataBound("dataBound"))
+                      .ToClientTemplate())
+            </text>);
+
+
+
+
+          })
+
+          .ToClientTemplate()
+    )
+
+</script>
+
+<script>
+    var popupFrom;
+    var aCodeFrom;
+
+    var popupTo;
+    var aCodeTo;
+
+    function SelectFromAccCode() {
+        popupFrom = window.open('/Finance/AccountCode/GLAccountFromSelector', 'WindowPopup', 'top=100, left=400, width=300, height=320,resizable=no,');
+        popupFrom.focus();
+        return false;
+    }
+
+    function setFromAccountCode(accCode) {
+        aCodeFrom = accCode;
+        $("#AccountFrom").val(aCodeFrom).trigger("change");
+    }
+
+    function SelectToAccCode() {
+        popupFrom = window.open('/Finance/AccountCode/GLAccountToSelector', 'WindowPopup', 'top=100, left=400, width=300, height=320,resizable=no,');
+        popupFrom.focus();
+        return false;
+    }
+
+    function setToAccountCode(accCode) {
+        aCodeTo = accCode;
+        $("#AccountTo").val(aCodeTo).trigger("change");
+    }
+
+</script>
+
+
+
+<script type="text/javascript">
+
+    function dataBound() {
+        this.expandRow(this.tbody.find("tr.k-master-row").first());
+    }
+
+    function error_handler(e) {
+        if (e.errors) {
+            var message = "Errors:\n";
+            $.each(e.errors, function (key, value) {
+                if ('errors' in value) {
+                    $.each(value.errors, function () {
+                        message += this + "\n";
+                    });
+                }
+            });
+            alert(message);
+
+            var grid = $("#grid").data("kendoGrid");
+            grid.one("dataBinding", function (e) {
+                e.preventDefault();
+            });
+        }
+    }
+
+    function sync_handler(e) {
+        this.read();
+    }
+</script>
+
+
+
+
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 700px;
+    }
+
+    div.k-content {
+        overflow: hidden;
+        height: auto;
+    }
+</style>

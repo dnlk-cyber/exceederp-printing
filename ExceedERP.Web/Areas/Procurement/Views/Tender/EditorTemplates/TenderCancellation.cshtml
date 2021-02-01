@@ -1,0 +1,37 @@
+﻿@model ExceedERP.Core.Domain.Procurement.Tender.TenderCancellation
+
+@Html.HiddenFor(c => c.TenderCancellationId)
+<div class="form">
+    <div class="row fullrow">
+
+        <div class="col-md-12 ro1">
+
+            
+            <div class="form-group">
+                @Html.LabelFor(model => model.Description, htmlAttributes: new { @class = "control-label col-md-4" })
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(model => model.Description)
+                    @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+            <br />
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.FileName, htmlAttributes: new { @class = "control-label col-md-4" })
+                <div class="col-md-6">
+                    @(Html.Kendo().Upload()
+                          .Name("bidCancellationDocument")
+                          .Async(a => a.Save("UploadDocument", "BidCancellation"))
+                          .Events(e => e.Complete("bidCanlcelSuccess").Upload("onUpload"))
+                          .ShowFileList(false)
+                          )
+                    @Html.ValidationMessageFor(model => model.FileName, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+           
+        </div>
+       
+    </div>
+</div>

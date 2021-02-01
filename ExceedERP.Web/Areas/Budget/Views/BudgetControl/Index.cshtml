@@ -1,0 +1,48 @@
+﻿@model ExceedERP.Core.Domain.Budget.BudgetCategory
+
+
+<legend>   Budget Control </legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Budget.BudgetControl>()
+              .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Name).Width(150);
+          columns.Bound(c => c.ReserveAmount).EditorTemplateName("OptionalNumEditor").Width(100);
+          columns.Bound(c => c.Percentage).EditorTemplateName("OptionalNumEditor").Width(100);
+          columns.Bound(c => c.Remark).Width(100);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create();
+      })
+
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+         .HtmlAttributes(new { style = "height: 520px;" })
+                      .Pageable(pageable => pageable
+                                        .Input(true)
+                                        .Numeric(false)
+                                        .Refresh(true)
+                                        .PageSizes(true)
+                                        .ButtonCount(5))
+
+                            .Scrollable()
+                            .Sortable()
+                            .Filterable()
+                             .Scrollable(h => h.Height(500))
+
+           .DataSource(dataSource => dataSource
+          .Ajax()
+                      .Model(model => model.Id(p => p.BudgetControlId))
+                      .Events(ev => ev
+                                            .Error("error_handler(\"grid\")")
+                                            .RequestStart("onRequestStart(\"grid\")")
+                                            .RequestEnd("onRequestEnd(\"grid\")"))
+                          .Read(read => read.Action("BudgetControl_Read", "BudgetControl"))
+                      .Create(create => create.Action("BudgetControl_Create", "BudgetControl"))
+                      .Update(update => update.Action("BudgetControl_Update", "BudgetControl"))
+                      .Destroy(destroy => destroy.Action("BudgetControl_Destroy", "BudgetControl"))
+          )
+
+)
+

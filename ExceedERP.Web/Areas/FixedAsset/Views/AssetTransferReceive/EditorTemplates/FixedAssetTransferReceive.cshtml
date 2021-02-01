@@ -1,0 +1,77 @@
+﻿
+@using ExceedERP.Core.Domain
+@using ExceedERP.Core.Domain.FixedAsset
+@using ExceedERP.Core.Domain.FixedAsset.Setting
+@model ExceedERP.Core.Domain.FixedAsset.Transfers.AssetTransferReceive
+
+<div class="form">
+    <div class="row fullrow">
+        
+        <div class="col-md-3 ro1">
+           
+            
+            <div class="form-group">
+                @Html.LabelFor(model => model.AssetTransferId, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @(Html.Kendo().DropDownListFor(model => model.AssetTransferId)
+                          .ValuePrimitive(true)
+                          .OptionLabel("Select Transfer Id...")
+                          .DataTextField("Name")
+                          .DataValueField("Code")
+                          .Filter("contains")
+                          .DataSource(dataSource =>
+                          {
+                              dataSource.Read(read => read.Action("GetAssetTransferSendIds", "FixedAssetDataProvider", new { area = "FixedAsset" }))
+                                  .ServerFiltering(false);
+                          })
+                          )
+                    @Html.ValidationMessageFor(model => model.AssetTransferId, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+
+
+          
+
+
+        </div>
+
+        <div class="col-md-3 ro1">
+
+            
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.ReceiveDate, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @Html.Kendo().DatePickerFor(model => model.ReceiveDate)
+                    @Html.ValidationMessageFor(model => model.ReceiveDate, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="row"></div>
+
+          
+
+
+        </div>
+        
+    <div class="col-md-3 ro1">
+       
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Remark, htmlAttributes: new { @class = "control-label col-md-8" })
+            <div class="col-md-6">
+                @Html.Kendo().TextBoxFor(model => model.Remark)
+                @Html.ValidationMessageFor(model => model.Remark, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="row"></div>
+        
+    </div>
+
+      
+
+    </div>
+</div>
+
+

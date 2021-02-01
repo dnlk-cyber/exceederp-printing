@@ -1,0 +1,61 @@
+﻿@{
+
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>  Work Unit Section</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetMaintenance.WorkUnitSection>()
+        .Name("grid")
+    .Columns(columns =>
+    {
+        columns.Bound(e => e.Name).Width(120);
+        columns.Bound(e => e.Description).Width(140);
+
+
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
+
+    })
+           .ToolBar(t => t.Create())
+       .Editable(editable =>
+        {
+            editable.Mode(GridEditMode.InLine);
+
+        })
+             .HtmlAttributes(new { style = "height: 520px;" })
+                          .Pageable(pageable => pageable
+                                            .Input(true)
+                                            .Numeric(false)
+                                            .Refresh(true)
+                                            .PageSizes(true)
+                                            .ButtonCount(5))
+
+                                .Scrollable()
+                                .Sortable()
+                                .Filterable()
+                                 .Scrollable(h => h.Height(500))
+               .DataSource(dataSource => dataSource
+            .Ajax()
+            .ServerOperation(false)
+            .PageSize(6)
+            .Model(model =>
+                {
+                    model.Id(p => p.WorkUnitSectionId);
+                    model.Field(p => p.WorkUnitSectionId).Editable(false);
+                }
+                ).Events(ev => ev
+                                                            .Error("error_handler(\"grid\")")
+                                                            .RequestStart("onRequestStart(\"grid\")")
+                                                            .RequestEnd("onRequestEnd(\"grid\")"))
+                    .Create(update => update.Action("WorkUnitSection_Create", "WorkUnitSection"))
+                                        .Read(read => read.Action("WorkUnitSection_Read", "WorkUnitSection"))
+                    .Update(update => update.Action("WorkUnitSection_Update", "WorkUnitSection"))
+                    .Destroy(update => update.Action("WorkUnitSection_Destroy", "WorkUnitSection"))
+
+        )
+
+)
+
+
+
+
+
+

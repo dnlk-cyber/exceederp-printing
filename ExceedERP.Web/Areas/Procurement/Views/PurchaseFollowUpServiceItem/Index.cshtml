@@ -1,0 +1,28 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Procurement.PurchaseOrder.PurchaseFollowUpServiceItem>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.Quantity);
+        columns.Bound(c => c.ItemSpecification);
+        columns.Bound(c => c.UoM);
+        columns.Bound(c => c.Supplier);
+        columns.Bound(c => c.PurchaserOrder);
+        columns.Bound(c => c.FCAppliedDate);
+        columns.Bound(c => c.FCPermitDate);
+        columns.Bound(c => c.FCPermitNo);
+        columns.Bound(c => c.FCPermitExpiryDate);
+        columns.Bound(c => c.LCAppliedDate);
+        columns.Bound(c => c.LCNo);
+        columns.Bound(c => c.LCOpenedDate);
+        columns.Command(command => { command.Edit(); }).Width(180);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.PurchaseFollowUpServiceItemID))
+          .Read(read => read.Action("PurchaseFollowUpServiceItems_Read", "PurchaseFollowUpServiceItem"))
+          .Update(update => update.Action("PurchaseFollowUpServiceItems_Update", "PurchaseFollowUpServiceItem"))
+      )
+)

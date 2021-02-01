@@ -1,0 +1,700 @@
+﻿
+@{
+    ViewBag.Title = "Fixedasset Dashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link href="~/Content/dashboard.css" rel="stylesheet" />
+<a style="align-content:center;color:white" onclick='return refreshData()' href='#' title="Refresh Data"><i class="fa fa-refresh fa-2x"></i></a>
+
+
+<div class="dashboard">
+    <div class="row">
+
+        <div class="col-sm-7 col-lg-3 chartcontainer">
+
+            <div class="demo-section k-content wide">
+                <canvas id="srStatus" width="400" height="400" class="chartarea"></canvas>
+            </div>
+
+
+        </div>
+        <div class="col-sm-7 col-lg-3 chartcontainer">
+
+            <div class="demo-section k-content wide">
+                <canvas id="issueStatus" width="400" height="400"></canvas>
+            </div>
+
+
+        </div>
+        <div class="col-sm-7 col-lg-3 chartcontainer">
+
+            <div class="demo-section k-content wide">
+                <canvas id="grnStatus" width="400" height="400"></canvas>
+            </div>
+
+
+        </div>
+        <div class="col-sm-7 col-lg-3 chartcontainer">
+
+            <div class="demo-section k-content wide">
+                <canvas id="machineitransferStatus" width="400" height="400"></canvas>
+            </div>
+
+
+        </div>
+
+    </div>
+    <div class="row">
+        <div class="col-sm-7 col-lg-3 chartcontainer">
+
+            <div class="demo-section k-content wide">
+                <canvas id="storeReturnStatus" width="400" height="400"></canvas>
+            </div>
+
+
+        </div>
+
+        <div class="col-sm-7 col-lg-3 chartcontainer">
+
+            <div class="demo-section k-content wide">
+                <canvas id="fixedasset" width="400" height="400"></canvas>
+            </div>
+
+
+        </div>
+        <div class="col-sm-7 col-lg-3 chartcontainer">
+
+            <div class="demo-section k-content wide">
+                <canvas id="fixedassetValue" width="400" height="400"></canvas>
+            </div>
+
+
+        </div>
+
+    </div>
+    <div class="row">
+        <div class="col-sm-8 col-lg-12 chartcontainer">
+
+            <div class="demo-section k-content wide">
+                <canvas id="assetcount" width="400" height="400"></canvas>
+            </div>
+
+
+        </div>
+    </div>
+
+</div>
+
+<script src="~/Scripts/Chart.bundle.js"></script>
+<script src="~/Scripts/Chart.PieceLabel.js"></script>
+<script>
+
+    window.chartColors = {
+        red: 'rgb(255, 99, 132)',
+        orange: 'rgb(255, 159, 64)',
+        yellow: 'rgb(255, 205, 86)',
+        green: 'rgb(75, 192, 192)',
+        blue: 'rgb(54, 162, 235)',
+        purple: 'rgb(153, 102, 255)',
+        grey: 'rgb(201, 203, 207)'
+    };
+
+    fixedasset();
+    fixedassetvalue();
+    assetcount();
+
+    storerequisition();
+    issue();
+    machineTransfer();
+    grn();
+    storeReturnStatus();
+
+
+     function assetcount() {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetFixedAssetItemCount", "Dashboard", new {area = ""})',
+        success: function (result) {
+            //render
+            var ctx = document.getElementById("assetcount").getContext('2d');
+            ctx.height = 600;
+            var myChart = new Chart(ctx, {
+                type: 'horizontalBar',
+                data: {
+                    labels: result.Labels,
+                    datasets: [{
+                        label: 'PPE QTY',
+                        data: result.Data,
+                        backgroundColor: [
+                            window.chartColors.red,
+                            window.chartColors.orange,
+                            window.chartColors.blue,
+                            window.chartColors.green,
+                            window.chartColors.yellow
+                        ],
+                        borderColor: [
+                            window.chartColors.red,
+                            window.chartColors.orange,
+                            window.chartColors.blue,
+                            window.chartColors.green,
+                            window.chartColors.yellow
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+
+
+                options: {
+
+                    title: {
+                        display: true,
+                        text: 'PPE QTY'
+                    },
+                    gridLines: {
+                        display: false
+                    },
+                    pieceLabel: {
+                        render: 'value',
+                        fontColor: ['green', 'white', 'red'],
+                        precision: 2
+                    },
+                    legend: {
+                        position: 'bottom',
+                        fontSize: 8,
+                        fullWidth: true,
+                        padding: 6,
+                        labels: {
+                            boxWidth:15
+                        }
+                    },
+                    scales: {
+                        yAxes: [{
+                            display: true,
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'PPE Category'
+                            },
+                            barPercentage: 0.4
+                        }],
+                        xAxes: [{
+                            display: true,
+                            scaleLabel: {
+                                display: true,
+                                labelString: 'Quantity'
+                            },
+                            ticks: {
+
+                                // forces step size to be 5 units
+                                stepSize: 1000
+                            }
+                        }]
+                    },
+                    maintainAspectRatio: false
+
+                }
+            });
+
+        }, //end succ
+        error: function (result) {
+            alert(result);
+        }
+        });
+    }
+
+     function fixedassetvalue() {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetFixedAssetValue", "Dashboard", new {area = ""})',
+        success: function (result) {
+            //render
+            var ctx = document.getElementById("fixedassetValue").getContext('2d');
+            var myChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: result.Labels,
+                    datasets: [{
+                        label: 'PPE Value (Birr)',
+                        data: result.Data,
+                        backgroundColor: [
+                            window.chartColors.green,
+                            window.chartColors.orange,
+                            window.chartColors.blue,
+                            window.chartColors.red,
+                            window.chartColors.yellow
+                        ],
+                        borderColor: [
+                            window.chartColors.green,
+                            window.chartColors.orange,
+                            window.chartColors.blue,
+                            window.chartColors.red,
+                            window.chartColors.yellow
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+
+
+                options: {
+
+                    title: {
+                        display: true,
+                        text: 'PPE Value (Birr)'
+                    },
+                    gridLines: {
+                        display: false
+                    },
+                    pieceLabel: {
+                        render: function (args) {
+                            return args.value;
+                        },
+                        fontColor: ['green', 'white', 'red'],
+                        precision: 2
+                    },
+                    legend: {
+                        position: 'bottom',
+                        fontSize: 8,
+                        fullWidth: true,
+                        padding: 6,
+                        labels: {
+                            boxWidth:15
+                        }
+                    }
+
+
+                }
+            });
+
+        }, //end succ
+        error: function (result) {
+            alert(result);
+        }
+        });
+    }
+
+    function fixedasset() {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetFixedAssetStatus", "Dashboard", new {area = ""})',
+        success: function (result) {
+            //render
+            var ctx = document.getElementById("fixedasset").getContext('2d');
+            var myChart = new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: result.Labels,
+                    datasets: [{
+                        label: 'PPE Status',
+                        fill: false,
+                        backgroundColor: window.chartColors.yellow,
+                        borderColor: window.chartColors.yellow,
+                        data: result.Data,
+                        borderWidth: 4
+                    }]
+                },
+
+
+                options: {
+
+                    title: {
+                        display: true,
+                        text: 'PPE Status'
+                    },
+                    gridLines: {
+                        display: false
+                    },
+                    pieceLabel: {
+                        render: 'value',
+                        fontColor: ['green', 'white', 'red'],
+                        precision: 2
+                    },
+                    legend: {
+                        position: 'bottom',
+                        fontSize: 8,
+                        fullWidth: true,
+                        padding: 6,
+                        labels: {
+                            boxWidth:15
+                        }
+                    },
+                    hover: {
+                        mode: 'nearest',
+                        intersect: true
+                    }
+
+                }
+            });
+
+        }, //end succ
+        error: function (result) {
+            alert(result);
+        }
+        });
+    }
+
+     function storerequisition() {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetFixedAssetSrStatus", "Dashboard", new {area = ""})',
+        success: function (result) {
+            //render
+            var ctx = document.getElementById("srStatus").getContext('2d');
+            var myChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: result.Labels,
+                    datasets: [{
+                        label: 'Store Requisition Status',
+                        data: result.Data,
+                        backgroundColor: [
+                            window.chartColors.red,
+                            window.chartColors.orange,
+                            window.chartColors.blue,
+                            window.chartColors.green,
+                            window.chartColors.blue
+                        ],
+                        borderColor: [
+                            window.chartColors.red,
+                            window.chartColors.orange,
+                            window.chartColors.blue,
+                            window.chartColors.green,
+                            window.chartColors.blue
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+
+
+                options: {
+
+                    title: {
+                        display: true,
+                        text: 'Store Requisition Status'
+                    },
+                    gridLines: {
+                        display: false
+                    },
+                    pieceLabel: {
+                        render: 'value',
+                        fontColor: ['green', 'white', 'red'],
+                        precision: 2
+                    },
+                    legend: {
+                        position: 'bottom',
+                        fontSize: 8,
+                        fullWidth: true,
+                        padding: 6,
+                        labels: {
+                            boxWidth:15
+                        }
+                    }
+
+
+                }
+            });
+
+        }, //end succ
+        error: function (result) {
+            alert(result);
+        }
+        });
+    }
+
+    function issue() {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetFixedAssetIssueStatus", "Dashboard", new {area = ""})',
+            success: function (result) {
+                //render
+                var ctx = document.getElementById("issueStatus").getContext('2d');
+                var myChart = new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: result.Labels,
+                        datasets: [{
+                            label: 'Issue Status',
+                            data: result.Data,
+                            backgroundColor: [
+                                window.chartColors.red,
+                                window.chartColors.orange,
+                                window.chartColors.green,
+                                window.chartColors.green,
+                                window.chartColors.blue
+                            ],
+                            borderColor: [
+                                window.chartColors.red,
+                                window.chartColors.orange,
+                                window.chartColors.green,
+                                window.chartColors.green,
+                                window.chartColors.blue
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+
+
+                    options: {
+
+                        title: {
+                            display: true,
+                            text: 'Issue Status'
+                        },
+                        gridLines: {
+                            display: false
+                        },
+                        pieceLabel: {
+                            render:function (args) {
+                                return args.value;
+                            },
+                            fontColor: ['green', 'white', 'red'],
+                            precision: 2
+                        },
+                        legend: {
+                            position: 'bottom',
+                            fontSize: 8,
+                            fullWidth: true,
+                            padding:6
+                        }
+                    }
+                });
+
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+
+    function machineTransfer() {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetFixedAssetTransferSendStatus", "Dashboard", new {area = ""})',
+            success: function (result) {
+                //render
+                var ctx = document.getElementById("machineitransferStatus").getContext('2d');
+                var myChart = new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: result.Labels,
+                        datasets: [{
+                            label: 'Machine Transfer Status',
+                            data: result.Data,
+                            backgroundColor: [
+                                window.chartColors.red,
+                                window.chartColors.orange,
+                                window.chartColors.green,
+                                window.chartColors.green,
+                                window.chartColors.blue
+                            ],
+                            borderColor: [
+                                window.chartColors.red,
+                                window.chartColors.orange,
+                                window.chartColors.green,
+                                window.chartColors.green,
+                                window.chartColors.blue
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+
+
+                    options: {
+
+                        title: {
+                            display: true,
+                            text: 'Machine Transfer Status'
+                        },
+                        gridLines: {
+                            display: false
+                        },
+                        pieceLabel: {
+                            render: 'value',
+                            fontColor: ['green', 'white', 'red'],
+                            precision: 2
+                        },
+                        legend: {
+                            position: 'bottom',
+                            fontSize: 8,
+                            fullWidth: true,
+                            padding:6
+                        }
+                    }
+                });
+
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+
+     function grn() {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetFixedAssetGrnStatus", "Dashboard", new {area = ""})',
+            success: function (result) {
+                //render
+                var ctx = document.getElementById("grnStatus").getContext('2d');
+                var myChart = new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: result.Labels,
+                        datasets: [{
+                            label: 'Good Receive Status',
+                            data: result.Data,
+                            backgroundColor: [
+                                window.chartColors.red,
+                                window.chartColors.orange,
+                                window.chartColors.green,
+                                window.chartColors.green,
+                                window.chartColors.blue
+                            ],
+                            borderColor: [
+                                window.chartColors.red,
+                                window.chartColors.orange,
+                                window.chartColors.green,
+                                window.chartColors.green,
+                                window.chartColors.blue
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+
+
+                    options: {
+
+                        title: {
+                            display: true,
+                            text: 'Good Receive Status'
+                        },
+                        gridLines: {
+                            display: false
+                        },
+                        pieceLabel: {
+                            render: 'value',
+                            fontColor: ['green', 'white', 'red'],
+                            precision: 2
+                        },
+                        legend: {
+                            position: 'bottom',
+                            fontSize: 8,
+                            fullWidth: true,
+                            padding:6
+                        }
+                    }
+                });
+
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+
+    function storeReturnStatus() {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetFixedAssetStoreReturnStatus", "Dashboard", new {area = ""})',
+            success: function (result) {
+                //render
+                var ctx = document.getElementById("storeReturnStatus").getContext('2d');
+                var myChart = new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: result.Labels,
+                        datasets: [{
+                            label: 'Store Return Status',
+                            data: result.Data,
+                            backgroundColor: [
+                                window.chartColors.red,
+                                window.chartColors.orange,
+                                window.chartColors.green,
+                                window.chartColors.green,
+                                window.chartColors.blue
+                            ],
+                            borderColor: [
+                                window.chartColors.red,
+                                window.chartColors.orange,
+                                window.chartColors.green,
+                                window.chartColors.green,
+                                window.chartColors.blue
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+
+
+                    options: {
+
+                        title: {
+                            display: true,
+                            text: 'Store Return Status'
+                        },
+                        gridLines: {
+                            display: false
+                        },
+                        pieceLabel: {
+                            render: 'value',
+                            fontColor: ['green', 'white', 'red'],
+                            precision: 2
+                        },
+                        legend: {
+                            position: 'bottom',
+                            fontSize: 8,
+                            fullWidth: true,
+                            padding:6
+                        }
+                    }
+                });
+
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+
+
+
+
+    $(document).on('click', '.panel-heading span.clickable', function (e) {
+        var $this = $(this);
+        if (!$this.hasClass('panel-collapsed')) {
+            $this.parents('.panel').find('.panel-body').slideUp();
+            $this.addClass('panel-collapsed');
+            $this.find('i').removeClass('glyphicon-chevron-up').addClass('glyphicon-chevron-down');
+        } else {
+            $this.parents('.panel').find('.panel-body').slideDown();
+            $this.removeClass('panel-collapsed');
+            $this.find('i').removeClass('glyphicon-chevron-down').addClass('glyphicon-chevron-up');
+        }
+    })
+
+
+    function refreshData() {       
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("RefreshFixedAssetDashboard", "Dashboard")',
+            success: function(result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                recordStatus = result.Status;
+                location.reload(true);
+            }, //end succ
+            beforeSend: function () {
+                // Show image container
+                $("#loading-image").show();
+            },
+            complete: function (data) {
+                // Hide image container
+                $("#loading-image").hide();
+            },
+            error: function(result) {
+                alert(result);
+            }
+        });
+    }
+
+</script>
+

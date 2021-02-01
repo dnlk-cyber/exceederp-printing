@@ -1,0 +1,231 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@using ExceedERP.Web.Areas.HRM.Controllers
+@using ExceedERP.Web.Areas.HRM.Controllers.Company
+@using Kendo.Mvc.UI
+@model ExceedERP.Core.Domain.HRM.PromotionRequest
+@using ExceedERP.Core.Localization
+<form>
+
+    <div class="row">
+        <div class="col-md-1">
+
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.EmployeeId, htmlAttributes: new { @class = "control-label col-md-8" })
+
+                </div>
+                <div>
+
+                    @(Html.Kendo().ComboBoxFor(model => model)
+                     .Name("EmployeeId")
+                                              .DataValueField("PersonId")
+                        .DataTextField("FullName")
+                           .Placeholder("Select Employee..")
+                            .Filter("contains")
+                            .MinLength(2)
+                            .Enable(false)
+                            .HtmlAttributes(new { style = "width:100%" })
+
+                                  .BindTo((IEnumerable)ViewData["EmployeeList"])
+                                                                   .ValuePrimitive(true)
+
+
+                                                                                          .Height(400)
+                                                                                                  .HeaderTemplate("<div class=\"dropdown-header k-widget k-header\">" +
+                                                                                "<span>Photo</span>" +
+                                                                                "<span>Full Name</span>" +
+                                                                            "</div>")
+                                                                                                                                                               .Template(@"<div class='Employee-photo' style='background-image: url(" + Url.Content("~/Content/Images/") + "#:data.PersonId#-Photo/" + "#:data.PersonId#.jpg" + ");'></div>" +
+                                                                                    "<div class='Employee-name'>#:FullName#</div>")
+
+
+
+                    )
+
+
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="form-group">
+                <div>@Html.LabelFor(model => model.OrgStructureId, htmlAttributes: new { @class = "control-label col-md-8" })</div>
+
+                @(Html.Kendo().ComboBoxFor(model => model.OrgStructureId)
+                  .Placeholder(Resources.Select)
+                  .DataTextField("Name")
+                  .DataValueField("OrgStructureId")
+                          .BindTo((IEnumerable)ViewData["Departments"])
+                  .ValuePrimitive(true)
+
+                )
+                @Html.ValidationMessageFor(model => model.OrgStructureId, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="col-md-3">
+
+            <div class="form-group">
+                <div>@Html.LabelFor(model => model.LookupId, htmlAttributes: new { @class = "control-label col-md-8" })</div>
+
+                @(Html.Kendo().ComboBoxFor(m => m.LookupId)
+                              .DataTextField("Description")
+                                    .DataValueField("LookupId")
+                                                        .BindTo((IEnumerable)ViewData["jobTitles"])
+
+                                                               
+                )
+                @Html.ValidationMessageFor(model => model.LookupId, "", new { @class = "text-danger" })
+            </div>
+
+        </div>
+        
+        
+    </div>
+
+    <br />
+
+    <div class="row">
+        <div class="col-md-1">
+
+        </div>
+        <div class="col-md-3">
+
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.NoOfPostion, htmlAttributes: new { @class = "control-label col-md-8" })
+                </div>
+                <div>
+
+                    @Html.Kendo().TextBoxFor(model => model.NoOfPostion)
+                    @Html.ValidationMessageFor(model => model.NoOfPostion, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.EduLevel, htmlAttributes: new { @class = "control-label col-md-8" })
+
+                </div>
+                <div>
+
+                    @(Html.Kendo().DropDownListFor(model => model.EduLevel)
+                    .ValuePrimitive(true)
+                    .OptionLabel(Resources.Select)
+                                    .DataValueField("LookupId")
+                                            .DataTextField("Description")
+                                    .BindTo((IEnumerable)ViewData["EduLevelList"]))
+                    @Html.ValidationMessageFor(model => model.EduLevel, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+
+
+        <div class="col-md-3">
+
+            <div class="form-group">
+
+                <div class="k-label">
+                    @Html.LabelFor(model => model.RelevantExp, htmlAttributes: new { @class = "control-label col-md-8" })
+
+                </div>
+                <div>
+                    @Html.TextAreaFor(model => model.RelevantExp)
+                    @Html.ValidationMessageFor(model => model.RelevantExp, "", new { @class = "text-danger" })
+
+                </div>
+            </div>
+        </div>
+        
+       
+    </div>
+    <br />
+
+
+    <div class="row">
+        <div class="col-md-1">
+
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.SpecialSkill, htmlAttributes: new { @class = "control-label col-md-8" })
+
+                </div>
+                <div>
+
+                    @Html.TextAreaFor(model => model.SpecialSkill)
+                    @Html.ValidationMessageFor(model => model.SpecialSkill, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.PlannedSalary, htmlAttributes: new { @class = "control-label col-md-8" })
+
+                </div>
+                <div>
+
+                    @Html.Kendo().TextBoxFor(model => model.PlannedSalary)
+                    @Html.ValidationMessageFor(model => model.PlannedSalary, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.RankId, htmlAttributes: new { @class = "control-label col-md-8" })
+
+                </div>
+                <div>
+
+                   @(Html.Kendo().DropDownListFor(model => model.RankId)
+                  .OptionLabel(Resources.Select)
+                          .DataTextField("RankName")
+                                  .DataValueField("RankId")
+                          .BindTo((IEnumerable)ViewData["RankList"])
+                  .ValuePrimitive(true))
+                    @Html.ValidationMessageFor(model => model.RankId, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+       
+        </div> 
+
+    <br />
+
+
+    <div class="row">
+        <div class="col-md-1">
+
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.Remark, htmlAttributes: new { @class = "control-label col-md-8" })
+
+                </div>
+                <div>
+
+                    @Html.TextAreaFor(model => model.Remark)
+                    @Html.ValidationMessageFor(model => model.Remark, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+        </div> 
+</form>
+
+<style>
+    div.k-edit-form-container {
+        width: 700px;
+    }
+</style>
+
+

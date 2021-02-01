@@ -1,0 +1,30 @@
+﻿<legend>Account Map</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.AccountMap>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.ControlAccountID);
+        columns.Bound(c => c.AccountID);
+        columns.Bound(c => c.ReferenceType);
+        columns.Bound(c => c.Reference);
+        columns.Bound(c => c.Remark);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.AccountMapID))
+                .Events(ev => ev
+                                                            .Error("error_handler(\"grid\")")
+                                                            .RequestStart("onRequestStart(\"grid\")")
+                                                            .RequestEnd("onRequestEnd(\"grid\")"))
+          .Read(read => read.Action("AccountMaps_Read", "AccountMap"))
+          .Create(create => create.Action("AccountMaps_Create", "AccountMap"))
+          .Update(update => update.Action("AccountMaps_Update", "AccountMap"))
+          .Destroy(destroy => destroy.Action("AccountMaps_Destroy", "AccountMap"))
+      )
+)

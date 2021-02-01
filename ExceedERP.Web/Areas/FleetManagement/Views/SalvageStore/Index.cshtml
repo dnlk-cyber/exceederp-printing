@@ -1,0 +1,250 @@
+﻿@model ExceedERP.Core.Domain.FleetManagement.FleetSalvageStore.SalvageStore
+@{
+    ViewBag.Title = "Salvage Store";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Issue Salvage Store</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetSalvageStore.SalvageStore>()
+    .Name("grid")
+    .Columns(columns =>
+    {
+        columns.Bound(e => e.VoucherNo).Width(140);
+
+        columns.Bound(e => e.PlateNumber).Title(" Plate Number").Width(140);
+        columns.Bound(e => e.SparePartName).Title("Spare Part").Width(140);
+        columns.Bound(e => e.Quantity).Width(200);
+        columns.Bound(e => e.Status).Width(100);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
+
+
+
+    }).Events(ev =>
+                        {
+                            ev.DataBound("onDataBound");
+                        })
+                       .ToolBar(commands => commands.Create())
+      .Editable(editable =>
+      {
+          editable.Window(w => w.Title(" Issue Salvage "));
+          editable.Mode(GridEditMode.PopUp).TemplateName("SalvageStoreEditor");
+          editable.DisplayDeleteConfirmation("Are You Sure To Remove Salvage Store");
+      })
+            .HtmlAttributes(new { style = "height: 520px;" })
+                              .Pageable(pageable => pageable
+                                                .Input(true)
+                                                .Numeric(false)
+                                                .Refresh(true)
+                                                .PageSizes(true)
+                                                .ButtonCount(5))
+
+                                    .Scrollable()
+                                    .Sortable()
+                                    .Filterable()
+                                    .Groupable()
+                                    .Scrollable(h => h.Height(500))
+            .Groupable().ClientDetailTemplateId("template").Groupable().Events(ev => ev.DetailExpand("onDetailExpand"))
+    .DataSource(dataSource => dataSource
+        .Ajax()
+        .ServerOperation(false)
+        .Model(model =>
+              {
+                  model.Id(p => p.SalvageStoreID);
+               
+              })                .Events(ev => ev
+                                                        .Error("error_handler(\"grid\")")
+                                                        .RequestStart("onRequestStart(\"grid\")")
+                                                        .RequestEnd("onRequestEnd(\"grid\")")) 
+                .Create(update => update.Action("SalvageStore_Create", "SalvageStore"))
+                .Read(read => read.Action("SalvageStore_Read", "SalvageStore"))
+                .Update(update => update.Action("SalvageStore_Update", "SalvageStore"))
+                .Destroy(update => update.Action("SalvageStore_Destroy", "SalvageStore"))
+  )
+)
+
+
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                                            .Name("tabStrip_#=SalvageStoreID#")
+            .SelectedIndex(0)
+            .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+            .Items(items =>
+            {
+                
+                  items.Add().Text("Detail").Content(
+                        @<text>
+                            <legend>Detail</legend>
+
+                            <div class="box">
+
+                                <div class="box-col">
+                                    # if (IsSendForApproval == false || IsSendForApproval == "false")
+                                    {#
+
+                                    <a href='@Url.Action("SalvageStore_SendForOnlineApproval", "SalvageStoreApproval")/?EId=#=SalvageStoreID#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                                    # }#
+                                
+                                </div>
+                            </div> 
+                            <div class="demo-section k-header export-app">
+                                <div class="demo-section content-wrapper">
+
+                                    <form>
+
+                                       
+
+                                        <div class="row">
+                                            <div class="col-md-1">
+                                            </div>
+                                            <div class="col-md-2">
+                                                <div class="form-group">
+                                                    <div class="label">
+                                                        @Html.LabelFor(model => model.CreatedBy)
+                                                    </div>
+                                                    <div>
+                                                        #=CreatedBy#
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <div class="form-group">
+                                                    <div class="label">
+                                                        @Html.LabelFor(model => model.DateCreated)
+                                                    </div>
+                                                    <div>
+                                                        #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                       
+                                            <div class="col-md-2">
+                                                <div class="form-group">
+                                                    <div class="label">
+                                                        @Html.LabelFor(model => model.ModifiedBy)
+                                                    </div>
+                                                    <div>
+
+                                                        #=ModifiedBy#
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                       
+                                                    <div class="col-md-2">
+                                                <div class="form-group">
+                                                    <div class="label">
+                                                        @Html.LabelFor(model => model.LastModified)
+                                                    </div>
+                                                    <div>
+                                                        #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                          
+                                        </div>
+
+                                    </form>
+
+                                </div>
+                            </div>
+
+
+
+                        </text>
+
+
+            );
+                items.Add().Text(" Approval").Content(@<text>
+             
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetSalvageStore.SalvageStoreApproval>()
+                                                                                        .Name("SalvageStore#=SalvageStoreID#")
+                        .Columns(columns =>
+                        {
+                            columns.Bound(o => o.Status).EditorTemplateName("ApprovalEditor").Width(126);
+                            columns.Bound(o => o.ApprovedQuantity).EditorTemplateName("NumEditor").Width(126);
+                            columns.Bound(o => o.Remark).Width(200);
+                            columns.Bound(c => c.CreatedBy).Width(150);
+                            columns.Bound(c => c.DateCreated).Format("{0:yyyy-MM-dd}").Width(150);
+                            columns.Command(command => { command.Edit(); }).Width(250);
+
+                        }).Events(ev =>
+                        {
+                            ev.DataBound("approveonDataBound");
+                        })
+                             .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                       .DataSource(dataSource => dataSource
+                            .Ajax()
+                            .PageSize(5)
+                                                                              .Model(model =>
+                                      {
+                                          model.Id(p => p.SalvageStoreApprovalID);
+                                          model.Field(p => p.CreatedBy).Editable(false);
+                                          model.Field(p => p.DateCreated).Editable(false);
+                                      })
+                                   
+                                                                                .Events(ev => ev
+                                                    .Error("error_handler(\"SalvageStore#=SalvageStoreID#\")")
+                                                    .RequestStart("onRequestStart(\"SalvageStore#=SalvageStoreID#\")")
+                                                    .RequestEnd("onRequestEnd(\"SalvageStore#=SalvageStoreID#\")"))
+                                                                                                           .Create(update => update.Action("SalvageStore_Approve", "SalvageStoreApproval", new { EId = "#=SalvageStoreID#" }))
+                                                                                             .Read(read => read.Action("SalvageStoreApproval_Read", "SalvageStoreApproval", new { EId = "#=SalvageStoreID#" }))
+                                                                                   .Update(update => update.Action("SalvageStore_Approve", "SalvageStoreApproval"))
+
+
+                                                      )
+                                               .ToClientTemplate())
+                </text>
+                );
+            })
+                                                                                                                                                                                                                                                                                                                                                            .ToClientTemplate())
+</script>
+
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 700px;
+    }
+</style>
+<script type="text/javascript">
+
+    var IsApproved;
+    var IsSendForApproved;
+    function onDetailExpand(e) {
+        var masterRow = e.masterRow;
+
+        var masterGrid = $("#grid").data("kendoGrid");
+
+        var masterDataItem = masterGrid.dataItem(masterRow);
+        IsApproved = masterDataItem.IsOnlineApproved;
+        IsSendForApproved = masterDataItem.IsSendForApproval;
+    }
+    function onDataBound(e) {
+        var grid = this;
+
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+            console.log(dataItem.IsOnlineApproved);
+            if (dataItem.IsSendForApproval == true || dataItem.IsSendForApproval == "true") {
+                console.log("Approved");
+                $(this).find(".k-grid-edit").remove();
+                $(this).find(".k-grid-delete").remove();
+            }
+        });
+    }
+
+      function approveonDataBound(e) {
+          var grid = this;
+
+          grid.tbody.find("tr[role='row']").each(function () {
+              var dataItem = grid.dataItem(this);
+              if (dataItem.Status == "Approve" || IsApproved == true) {
+                  console.log("Approved");
+                  $(this).find(".k-grid-edit").remove();
+                  $(this).find(".k-grid-delete").remove();
+              }
+          });
+      }
+
+</script>
+

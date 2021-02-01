@@ -1,0 +1,99 @@
+﻿@using ExceedERP.Core.Domain.Finance.AR
+@using ExceedERP.Helpers.Common
+@model ExceedERP.Core.Domain.Finance.AP.Travel.ApTravelExpenseClaim
+
+@Html.HiddenFor(c => c.ApTravelExpenseClaimId)
+<div class="form">
+    <div class="row fullrow">
+
+        <div class="col-md-3 ro1">
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.ApTravelOrderId, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @(Html.Kendo().DropDownListFor(model => model.ApTravelOrderId)
+                          .ValuePrimitive(true)
+                          .OptionLabel("Select Travel Order...")
+                          .DataTextField("Name")
+                          .DataValueField("Code")
+                          .Filter("contains")
+                          .DataSource(dataSource =>
+                          {
+                              dataSource.Read(read => read.Action("GetTravelOrders", "FinanceDataProvider", new { area = "Finance" }))
+                                  .ServerFiltering(false);
+                          })
+                          .Events(e =>
+                          {
+                              e.Select("onTravelOrderSelect");
+                          })
+                    )
+                    @Html.ValidationMessageFor(model => model.ApTravelOrderId, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.EmployeeId, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @(Html.Kendo().DropDownListFor(model => model.EmployeeId)
+                          .ValuePrimitive(true)
+                          .OptionLabel("Select Employee")
+                          .DataTextField("Name")
+                          .DataValueField("Code")
+                          .Filter("contains")
+                          .DataSource(dataSource =>
+                          {
+                              dataSource.Read(read => read.Action("GetAllEmployeesEnglish", "GlobalDataProvider", new { area = "Common" }))
+                                  .ServerFiltering(false);
+                          })
+                          )
+                    @Html.ValidationMessageFor(model => model.EmployeeId, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+
+            
+
+
+        </div>
+
+        <div class="col-md-3 ro1">
+            
+            <div class="form-group">
+                @Html.LabelFor(model => model.ClaimDate, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @Html.Kendo().DatePickerFor(model => model.ClaimDate)
+                    @Html.ValidationMessageFor(model => model.ClaimDate, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+            
+            <div class="form-group">
+                @Html.LabelFor(model => model.PurposeOfTravel, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(model => model.PurposeOfTravel)
+                    @Html.ValidationMessageFor(model => model.PurposeOfTravel, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+            
+        </div>
+
+        <div class="col-md-3 ro1">
+           
+            <div class="form-group">
+                @Html.LabelFor(model => model.Reference, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(model => model.Reference)
+                    @Html.ValidationMessageFor(model => model.Reference, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>  
+           
+            
+
+        </div>
+    </div>
+</div>
+
+

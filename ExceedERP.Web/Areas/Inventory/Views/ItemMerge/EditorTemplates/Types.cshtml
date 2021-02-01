@@ -1,0 +1,12 @@
+﻿@using ExceedERP.Core.Domain.Inventory
+@using ExceedERP.Helpers.Common
+
+@(
+ Html.Kendo().DropDownListFor(m => m)
+        .DataTextField("Text")
+        .DataValueField("Value")
+        .OptionLabel("...Item Type...")
+        .Events(events => events.Change("itemTypeChanged"))
+        .BindTo(EnumExtension.EnumToSelectList(typeof(ItemTypes)))
+      )
+

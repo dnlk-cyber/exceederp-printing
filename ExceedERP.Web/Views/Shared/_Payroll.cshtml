@@ -1,0 +1,245 @@
+﻿
+<li class="">
+    <a href="#" class="dropdown-toggle">
+        <i class="menu-icon fa fa-money"></i>
+        <span class="menu-text">
+            @ExceedERP.Core.Localization.Resources.NavigatorPayroll_Payroll
+        </span>
+
+        <b class="arrow fa fa-angle-down"></b>
+    </a>
+    <b class="arrow"></b>
+
+    <ul class="submenu">
+             
+        
+      @if (HttpContext.Current.User.IsInRole("Payroll_Admin") || HttpContext.Current.User.IsInRole("Payroll_Approver") || HttpContext.Current.User.IsInRole("Payroll_Input") || HttpContext.Current.User.IsInRole("Payroll_Process") || HttpContext.Current.User.IsInRole("Payroll_Report") || HttpContext.Current.User.IsInRole("Payroll_View"))
+      {
+
+
+          <li class="">
+              <a href="#" class="dropdown-toggle">
+                  <i class="menu-icon fa fa-caret-right"></i>
+                  @ExceedERP.Core.Localization.Resources.NavigatorPayroll_PayrollInput
+
+                  <b class="arrow fa fa-angle-down"></b>
+              </a>
+
+              <b class="arrow"></b>
+
+              <ul class="submenu">
+                  @if (HttpContext.Current.User.IsInRole("OverTime_Request_Approver") || HttpContext.Current.User.IsInRole("Payroll_Admin"))
+                  {
+                      <li id="payroll219" class="actionlinlk">
+                          @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorPayroll_OverTimeRequests, "Index", "OverTimeRequests", new {area = "HRM"}, null)<b class="arrow"></b>
+                      </li>
+                  }
+                  @if (HttpContext.Current.User.IsInRole("Payroll_Admin") || HttpContext.Current.User.IsInRole("Payroll_Input"))
+                  {
+
+                      <li id="payroll043" class="actionlinlk">
+                          @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorPayroll_Addition, "Index", "Addition", new {area = "HRM"}, null)<b class="arrow"></b>
+                      </li>
+
+                            @*<li id="payroll133" class="actionlinlk">
+
+                                    @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorPayroll_OverTimePerDay, "Index", "OverTimePerDay", new { area = "HRM" }, null)<b class="arrow"></b>
+                                </li>*@
+                      <li id="payroll21448" class="actionlinlk">
+
+                          @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorPayroll_OverTimeTransferMaintain, "Index", "OverTimeTransferMaintain", new {area = "HRM"}, null)<b class="arrow"></b>
+                      </li>
+
+                      if (HttpContext.Current.User.IsInRole("OverTime_Request_Approver"))
+                      {
+
+                          <li id="payroll218" class="actionlinlk">
+
+                              @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorPayroll_OverTimeTransfer, "Index", "OverTimeTransfer", new {area = "HRM"}, null)<b class="arrow"></b>
+                          </li>
+                      }
+                      <li id="payroll044" class="actionlinlk">
+                          @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorPayroll_OverTime, "Index", "OverTime", new {area = "HRM"}, null)<b class="arrow"></b>
+                      </li>
+                      <li id="payroll045" class="actionlinlk">
+
+                          @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorPayroll_Loan, "Index", "Loan", new {area = "HRM"}, null)<b class="arrow"></b>
+                      </li>
+
+                      <li id="payroll046" class="actionlinlk">
+                          @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorPayroll_Advance, "Index", "Advance", new {area = "HRM"}, null)<b class="arrow"></b>
+                      </li>
+                      <li id="payroll047" class="actionlinlk">
+                          @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorPayroll_Association, "Index", "Association", new {area = "HRM"}, null)<b class="arrow"></b>
+                      </li>
+                      <li id="payroll048" class="actionlinlk">
+                          @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorPayroll_RegularContribution, "Index", "RegularContribution", new {area = "HRM"}, null)<b class="arrow"></b>
+                      </li>
+                      <li id="payroll049" class="actionlinlk">
+                          @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorPayroll_FixedContribution, "Index", "FixedContribution", new {area = "HRM"}, null)<b class="arrow"></b>
+                      </li>
+                      <li id="payroll56666" class="actionlinlk">
+                          @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorPayroll_ProvidentFund, "Index", "ProvidentFund", new { area = "HRM" }, null)<b class="arrow"></b>
+                      </li>
+
+                      <li id="payroll103" class="actionlinlk">
+                          @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorPayrollSetup_EmployeeAccount, "Index", "EmployeeAccount", new {area = "HRM"}, null)<b class="arrow"></b>
+                      </li>
+
+                      <li id="payroll104" class="actionlinlk">
+                          @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorPayrollSetup_PayrollEmployeeAccount, "Index", "PayrollEmployeeAccount", new {area = "HRM"}, null)<b class="arrow"></b>
+                      </li>
+                  }
+              </ul>
+
+          </li>
+                  }
+    @if (HttpContext.Current.User.IsInRole("Payroll_Admin"))
+    {
+          <li class="">
+              <a href="#" class="dropdown-toggle">
+                  <i class="menu-icon fa fa-caret-right"></i>
+                  @ExceedERP.Core.Localization.Resources.NavigatorPayrollSetup_PayrollSetup
+
+                  <b class="arrow fa fa-angle-down"></b>
+              </a>
+
+              <b class="arrow"></b>
+
+              <ul class="submenu">
+
+                  <li id="payroll180" class="actionlinlk">
+                      @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorPayrollSetup_PayrollPeriod, "Index", "PayrollPeriod", new { area = "HRM" }, null)<b class="arrow"></b>
+                  </li>
+                  <li id="payroll180" class="actionlinlk">
+                      @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorPayrollSetup_BranchLocation, "Index", "BranchLocation", new { area = "HRM" }, null)<b class="arrow"></b>
+                  </li>
+                  <li id="payroll1014" class="actionlinlk">
+                      @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorPayrollSetup_PayrollSetting, "Index", "PayrollSetting", new { area = "HRM" }, null)<b class="arrow"></b>
+                  </li>
+                  <li id="payroll1015" class="actionlinlk">
+                      @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorPayrollSetup_AdditionType, "Index", "AdditionType", new { area = "HRM" }, null)<b class="arrow"></b>
+                  </li>
+                  <li id="payroll1011" class="actionlinlk">
+                      @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorPayrollSetup_Contribution, "Index", "Contribution", new { area = "HRM" }, null)<b class="arrow"></b>
+                  </li>
+                  <li id="payroll182" class="actionlinlk">@Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorPayrollSetup_PayrollAcounts, "Index", "PayrollAcounts", new { area = "HRM" }, null)<b class="arrow"></b></li>
+                  <li id="payroll18c2" class="actionlinlk">@Html.ActionLink("Cost Allocation", "Index", "PayrollCostAllocationSetting", new { area = "HRM" }, null)<b class="arrow"></b></li>
+                  <li id="payroll102" class="actionlinlk">@Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorPayrollSetup_Bank, "Index", "Bank", new { area = "Common" }, null)<b class="arrow"></b></li>
+                  <li id="payroll102" class="actionlinlk">@Html.ActionLink("Bonus Setting", "Index", "BonusSetting", new { area = "HRM" }, null)<b class="arrow"></b></li>
+
+
+
+
+              </ul>
+          </li>
+                      }
+          @if (HttpContext.Current.User.IsInRole("Payroll_Admin") || HttpContext.Current.User.IsInRole("Payroll_Process") || HttpContext.Current.User.IsInRole("Payroll_Close") || HttpContext.Current.User.IsInRole("Payroll_Transfer") || HttpContext.Current.User.IsInRole("Payroll_Distribute") || HttpContext.Current.User.IsInRole("Payroll_View"))
+          {
+          <li class="">
+              <a href="#" class="dropdown-toggle">
+                  <i class="menu-icon fa fa-caret-right"></i>
+                  @ExceedERP.Core.Localization.Resources.NavigatorPayrollProcess_PayrollProcess
+
+                  <b class="arrow fa fa-angle-down"></b>
+              </a>
+
+              <b class="arrow"></b>
+
+              <ul class="submenu">
+                  @if (HttpContext.Current.User.IsInRole("Payroll_Process") || HttpContext.Current.User.IsInRole("Payroll_Close") || HttpContext.Current.User.IsInRole("Payroll_Transfer") || HttpContext.Current.User.IsInRole("Payroll_Distribute") || HttpContext.Current.User.IsInRole("Payroll_View"))
+                  {
+                      <li id="payroll080" class="actionlinlk">
+                          @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorPayrollProcess_PayrollProcess, "Index", "PayrollProcess", new {area = "HRM"}, null)<b class="arrow"></b>
+                      </li>
+                      <li id="payroll0801" class="actionlinlk">
+                          @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorPayrollProcess_Bonus, "Index", "Bonus", new {area = "HRM"}, null)<b class="arrow"></b>
+                      </li>
+                    <li id="payroll0802" class="actionlinlk">
+                        @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorPayrollProcess_BackPayment, "Index", "BackPayment", new { area = "HRM" }, null)<b class="arrow"></b>
+                    </li>
+                  }
+                  
+              </ul>
+          </li>
+      }
+    @if (HttpContext.Current.User.IsInRole("Payroll_Report") || HttpContext.Current.User.IsInRole("Payroll_View"))
+                        {
+                <li class="">
+                    <a href="#" class="dropdown-toggle">
+                        <i class="menu-icon fa fa-caret-right"></i>
+                        @ExceedERP.Core.Localization.Resources.NavigatorPayrollReport_PayrollReport
+
+                        <b class="arrow fa fa-angle-down"></b>
+                    </a>
+
+                    <b class="arrow"></b>
+
+                    <ul class="submenu">
+
+                        <li id="hrm045" class="actionlinlk">
+                            @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorAttendance_AttendanceReport, "AttendanceReport", "EmployeeReport", new { area = "HRM" }, null)<b class="arrow"></b>
+                        </li>
+
+                        <li id="payroll088" class="actionlinlk">@Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorPayrollReport_BankPaymentList, "BankPaymentList", "PayrollReport", new { area = "HRM" }, null)<b class="arrow"></b></li>
+                        <li id="payroll089" class="actionlinlk">
+                            @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorPayrollReport_BasicSalaryList, "BasicSalaryList", "PayrollReport", new { area = "HRM" }, null)<b class="arrow"></b>
+                        </li>
+                        <li id="payroll100" class="actionlinlk">
+                            @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorPayrollReport_PaySlip, "PaySlip", "PayrollReport", new { area = "HRM" }, null)<b class="arrow"></b>
+                        </li>
+                        <li id="payroll090" class="actionlinlk">@Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorPayrollReport_BonusBankPayment, "BonusBankPayment", "PayrollReport", new { area = "HRM" }, null)<b class="arrow"></b></li>
+                        <li id="payroll091" class="actionlinlk">@Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorPayrollReport_BonusIncomeTax, "BonusincomeTax", "PayrollReport", new { area = "HRM" }, null)<b class="arrow"></b></li>
+                        <li id="payroll092" class="actionlinlk">
+                            @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorPayrollReport_MonthlyPensionReport, "GetMonthlyPensionReport", "PayrollReport", new { area = "HRM" }, null)<b class="arrow"></b>
+                        </li>
+                        <li id="payroll092222" class="actionlinlk">
+                            @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorPayrollReport_MonthlyProvidentReport, "GetMonthlyProvidentReport", "PayrollReport", new { area = "HRM" }, null)<b class="arrow"></b>
+                        </li>
+                        <li id="payroll093" class="actionlinlk">
+                            @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorPayrollReport_IncomeTax, "IncomeTax", "PayrollReport", new { area = "HRM" }, null)<b class="arrow"></b>
+                        </li>
+                        <li id="payroll094" class="actionlinlk">
+                            @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorPayrollReport_MonthlyLabourAndCredit, "MonthlyLabourAndCredit", "PayrollReport", new { area = "HRM" }, null)<b class="arrow"></b>
+                        </li>
+                        <li id="payroll095" class="actionlinlk">
+                            @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorPayrollReport_OverTimeHours, "OverTimeHours", "PayrollReport", new { area = "HRM" }, null)<b class="arrow"></b>
+                        </li>
+                        <li id="payroll095" class="actionlinlk">
+                            @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorPayroll_Loan, "Loan", "PayrollReport", new { area = "HRM" }, null)<b class="arrow"></b>
+                        </li>
+                        <li id="payroll095" class="actionlinlk">
+                            @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorPayroll_Advance, "Advance", "PayrollReport", new { area = "HRM" }, null)<b class="arrow"></b>
+                        </li>
+                        <li id="hrm045" class="actionlinlk">
+                            @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorPayroll_PayrollInput, "PayrollInput", "PayrollReport", new { area = "HRM" }, null)<b class="arrow"></b>
+                        </li>
+                        <li id="payroll097" class="actionlinlk">
+                            @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorPayrollReport_PayrollDetailD, "DaynamicPayrollDetail", "PayrollReport", new { area = "HRM" }, null)<b class="arrow"></b>
+                        </li>
+                        <li id="payroll097" class="actionlinlk">
+                            @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorPayrollReport_PayrollDetail, "PayrollDetail", "PayrollReport", new { area = "HRM" }, null)<b class="arrow"></b>
+                        </li>
+                        <li id="payroll098" class="actionlinlk">
+                            @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorPayrollReport_PayrollSummary, "PayrollSummary", "PayrollReport", new { area = "HRM" }, null)<b class="arrow"></b>
+                        </li>
+                        <li id="payroll098" class="actionlinlk">
+                            @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorPayrollReport_AllowanceReport, "AllowanceReport", "PayrollReport", new { area = "HRM" }, null)<b class="arrow"></b>
+                        </li>
+                        <li id="payroll099" class="actionlinlk">
+                            @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorPayrollReport_ReportByContributionType, "ReportByContributionType", "PayrollReport", new { area = "HRM" }, null)<b class="arrow"></b>
+                        </li>
+                        <li id="payroll099" class="actionlinlk">
+                            @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorPayrollReport_PayrollSummReconcilation, "PayrollSummaryReconcilation", "PayrollReport", new { area = "HRM" }, null)<b class="arrow"></b>
+                        </li>
+                        <li id="link1810dsdsa34" class="actionlinlk">@Html.ActionLink("Operation Log", "PayrollOperationLog", "GlobalUserAccessLogs", new { area = "" }, null)<b class="arrow"></b></li>
+
+                    </ul>
+                </li>
+                        }  
+            
+      
+         
+    </ul>
+
+</li>

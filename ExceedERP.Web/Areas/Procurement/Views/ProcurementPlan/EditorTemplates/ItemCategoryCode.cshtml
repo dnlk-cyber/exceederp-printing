@@ -1,0 +1,16 @@
+﻿@using Kendo.Mvc.UI
+ 
+ 
+@(Html.Kendo().DropDownListFor(m => m)
+                  .AutoBind(false)
+                  .OptionLabel("Select ItemCategory...")
+                      .DataTextField("Name")
+                     .DataValueField("ItemCategoryCode")
+                     .ValuePrimitive(true)
+                  .DataSource(dataSource =>
+                  {
+                      dataSource.Read(read => read.Action("GetItemCategory", "DataProvider", new {area = "Inventory"}))
+                                .ServerFiltering(true);
+                  })
+)
+@Html.ValidationMessageFor(m => m)

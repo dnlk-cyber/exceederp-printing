@@ -1,0 +1,25 @@
+﻿<legend>Serial Code</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.SerialCode>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.LineItem);
+        columns.Bound(c => c.SerialDefinition);
+        columns.Bound(c => c.Number);
+        columns.Bound(c => c.Remark);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.SerialCodeID))
+          .Read(read => read.Action("SerialCodes_Read", "SerialCode"))
+          .Create(create => create.Action("SerialCodes_Create", "SerialCode"))
+          .Update(update => update.Action("SerialCodes_Update", "SerialCode"))
+          .Destroy(destroy => destroy.Action("SerialCodes_Destroy", "SerialCode"))
+      )
+)

@@ -1,0 +1,16 @@
+﻿@(Html.Kendo().DropDownListFor(model => model).HtmlAttributes(new { @class = "form-control" })
+                      .AutoBind(false)
+                      .OptionLabel("Select Class...")
+                      .DataTextField("Name")
+                      .DataValueField("Name")
+                       .DataSource(d =>
+                          {
+                              d.Read(r =>
+                                  {
+                                      r.Action("ClassByProductIDDDBind", "Variety").Data("filterclass");
+                                  })
+                                  .ServerFiltering(true);
+                          })
+                      .Enable(true)
+                      .AutoBind(false)
+)

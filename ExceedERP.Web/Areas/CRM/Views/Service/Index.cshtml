@@ -1,0 +1,212 @@
+﻿<legend>Service</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.Service>()
+      .Name("ServiceGrid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Name).Width(120);
+        columns.ForeignKey(c => c.CategoryID, (System.Collections.IEnumerable)ViewData["ThingCategory"], "ProductCategoryId", "Description").Width(120);
+        columns.Bound(c => c.UOM).EditorTemplateName("UOM").Width(100);
+        columns.Bound(c => c.IsActive).Width(100);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+             .HtmlAttributes(new { style = "height: 520px;" })
+                              .Pageable(pageable => pageable
+                                                .Input(true)
+                                                .Numeric(false)
+                                                .Refresh(true)
+                                                .PageSizes(true)
+                                                .ButtonCount(5))
+
+                                    .Scrollable()
+                                    .Sortable()
+                                    .Filterable()
+                                    .Groupable()
+                                    .Scrollable(h => h.Height(500))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.ServiceID))
+          .Read(read => read.Action("Services_Read", "Service"))
+          .Create(create => create.Action("Services_Create", "Service"))
+          .Update(update => update.Action("Services_Update", "Service"))
+          .Destroy(destroy => destroy.Action("Services_Destroy", "Service"))
+          ).ClientDetailTemplateId("template")
+)
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+    .Name("tabstrip_#=ServiceID#")
+    .SelectedIndex(0)
+    .Items(items =>
+     {
+         items.Add().Text("Beginnings").Content(
+            @<text>
+    <legend>Beginnings</legend>
+                @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.Beginning>()
+                    .Name("BeginningGrid_#=ServiceID#")
+      .Columns(columns =>
+      {
+          columns.ForeignKey(c => c.Period, (System.Collections.IEnumerable)ViewData["PeriodList"], "PeriodId", "PeriodName").Width(150);
+          columns.Bound(c => c.Value);
+          columns.Bound(c => c.IsProvisional);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.BeginningID))
+                                                  .Read(read => read.Action("Beginnings_Read", "Beginning", new { id = "#=ServiceID#", beginningReferenceType = "Service" }))
+                                                          .Create(create => create.Action("Beginnings_Create", "Beginning", new { id = "#=ServiceID#", beginningReferenceType = "Service" }))
+          .Update(update => update.Action("Beginnings_Update", "Beginning"))
+          .Destroy(destroy => destroy.Action("Beginnings_Destroy", "Beginning"))
+      ).ToClientTemplate()
+                )
+
+            </text>
+     );
+         //*****************************************************************************************************//
+         //*********************************"Account Map***********************************************************//
+         items.Add().Text("Account Map").Content(
+            @<text>
+    <legend>Account Map</legend>
+                @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.AccountMap>()
+                              .Name("AccountMapGrid_#=ServiceID#")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.ControlAccountID).EditorTemplateName("AccountRequirementDefinition");
+          columns.ForeignKey(c => c.AccountsID, (System.Collections.IEnumerable)ViewData["ListOfAccounts"], "AccountsID", "Description").Width(150);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model =>
+          {
+              model.Id(p => p.AccountMapID);
+              model.Field(f => f.AccountsID).Editable(true);
+          }
+          )
+                                                          .Read(read => read.Action("AccountMaps_Read", "AccountMap", new { accountMapReferenceType = "Service", id = "#=ServiceID#" }))
+                                                          .Create(create => create.Action("AccountMaps_Create", "AccountMap", new { accountMapReferenceType = "Service", id = "#=ServiceID#" }))
+          .Update(update => update.Action("AccountMaps_Update", "AccountMap"))
+          .Destroy(destroy => destroy.Action("AccountMaps_Destroy", "AccountMap"))
+      ).ToClientTemplate()
+                )
+            </text>
+    );
+         //**********************************************************************************************************//
+
+         //*********************************"Price******************************************************************//
+         items.Add().Text("Price").Content(
+            @<text>
+    <legend>Price</legend>
+                @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.Price>()
+                      .Name("PriceGrid_#=ServiceID#")
+      .Columns(columns =>
+      {
+
+          columns.Bound(c => c.PriceType).EditorTemplateName("Price_Types");
+          columns.Bound(c => c.ReferenceType);
+          columns.Bound(c => c.Reference);
+          columns.Bound(c => c.Value);
+          columns.Bound(c => c.IsDefault);
+          columns.Bound(c => c.Priority);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.PriceID))
+                                                          .Read(read => read.Action("Prices_Read", "Price", new { ThingID = "#=ServiceID#", priceThingType = "Service" }))
+                                                          .Create(create => create.Action("Prices_Create", "Price", new { ThingID = "#=ServiceID#", priceThingType = "Service" }))
+          .Update(update => update.Action("Prices_Update", "Price"))
+          .Destroy(destroy => destroy.Action("Prices_Destroy", "Price"))
+      ).ToClientTemplate()
+                )
+            </text>
+    );
+
+       
+         //*********************************"Object State**************************************************************//
+         items.Add().Text("Object State").Content(
+            @<text>
+    <legend>Object State</legend>
+                @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.ObjectState>()
+                      .Name("ObjectStateGrid_#=ServiceID#")
+      .Columns(columns =>
+      {
+          columns.ForeignKey(c => c.ObjectStateDefinitionID, (System.Collections.IEnumerable)ViewData["ObjectStateDefinitionList"], "ObjectStateDefinitionID", "Description").Width(250);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.ObjectStateID))
+                                          .Read(read => read.Action("ObjectStates_Read", "ObjectState", new { id = "#=ServiceID#" }))
+                                          .Create(create => create.Action("ObjectStates_Create", "ObjectState", new { id = "#=ServiceID#" }))
+          .Update(update => update.Action("ObjectStates_Update", "ObjectState"))
+          .Destroy(destroy => destroy.Action("ObjectStates_Destroy", "ObjectState"))
+      ).ToClientTemplate()
+                )
+            </text>
+    );
+         //***********************************************************************************************************//
+         //*********************************"Specification**************************************************************//
+         items.Add().Text("Specification").Content(
+            @<text>
+    <legend>Specification</legend>
+                @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.Specification>()
+                                      .Name("SpecificationGrid_#=ServiceID#")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.IsKey);
+          columns.Bound(c => c.Category);
+          columns.Bound(c => c.Index);
+          columns.Bound(c => c.Attribute);
+          columns.Bound(c => c.Value);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.SpecificationID))
+                                                  .Read(read => read.Action("Specifications_Read", "Specification", new { specificationThingID = "#=ServiceID#", specificationThingType = "Service" }))
+                                                                          .Create(create => create.Action("Specifications_Create", "Specification", new { specificationThingID = "#=ServiceID#", specificationThingType = "Service" }))
+          .Update(update => update.Action("Specifications_Update", "Specification"))
+          .Destroy(destroy => destroy.Action("Specifications_Destroy", "Specification"))
+
+                ).ToClientTemplate()
+                )
+            </text>
+    );
+
+         //***********************************************************************************************************//
+     }).ToClientTemplate())
+</script>

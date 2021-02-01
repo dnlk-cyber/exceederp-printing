@@ -1,0 +1,29 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Finance.AR.ArProductService>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Itemname);
+          columns.Bound(c => c.Description);
+          columns.Bound(c => c.UoM);
+          columns.Bound(c => c.SalesPrice);
+          columns.Bound(c => c.OrgBranchName);
+          columns.Bound(c => c.DateCreated);
+          columns.Bound(c => c.LastModified);
+          columns.Bound(c => c.CreatedBy);
+          columns.Bound(c => c.ModifiedBy);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.ArProductServiceId))
+          .Read(read => read.Action("ArProductService_Read", "ArProductService"))
+          .Create(create => create.Action("ArProductService_Create", "ArProductService"))
+          .Update(update => update.Action("ArProductService_Update", "ArProductService"))
+          .Destroy(destroy => destroy.Action("ArProductService_Destroy", "ArProductService"))
+      ))

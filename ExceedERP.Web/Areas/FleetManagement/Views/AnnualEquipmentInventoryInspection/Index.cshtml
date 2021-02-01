@@ -1,0 +1,327 @@
+﻿@model ExceedERP.Core.Domain.FleetManagement.EquipmentInspection.AnnualEquipmentInventoryInspection
+@{
+   
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+ <link href="~/Scripts/Exceed/dist/css/style.css" rel="stylesheet" />
+
+<legend>Annual Equipment Inventory Inspection</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.EquipmentInspection.AnnualEquipmentInventoryInspection>()
+    .Name("grid")
+    .Columns(columns =>
+    {
+        columns.Bound(e => e.InspectedBy).Width(140);
+        columns.Bound(e => e.Remark).Title(" Equipment ").Width(140);
+        columns.Bound(e => e.FindingsOutcome).Width(140);
+        columns.Bound(e => e.DateofInspection).Title(" Date ").Format("{0:d}").Width(100);
+        columns.Bound(e => e.Status).Width(140);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
+
+    })
+                 .ToolBar(commands =>
+              {
+                  commands.Create(); commands.Excel();
+                  commands.Pdf();
+              }).Events(ev =>
+                                                                                                 {
+                           ev.DataBound("onDataBound");
+                                                                                                 })           
+         .Editable(editable =>
+         {
+             editable.Mode(GridEditMode.PopUp).TemplateName("InspectionEditor");
+             editable.DisplayDeleteConfirmation("Are You Sure To Remove Plan and Evaluations");
+         })
+      .HtmlAttributes(new { style = "height: 520px;" })
+                      .Pageable(pageable => pageable
+                                        .Input(true)
+                                        .Numeric(false)
+                                        .Refresh(true)
+                                        .PageSizes(true)
+                                        .ButtonCount(5))
+
+                            .Scrollable()
+                            .Sortable()
+                            .Filterable()
+                            .Groupable()
+                            .Scrollable(h => h.Height(500))
+                                .ClientDetailTemplateId("template")
+                                                                         .Groupable().Events(ev => ev.DetailExpand("RejectPopUp"))
+    .DataSource(dataSource => dataSource
+        .Ajax()
+        .ServerOperation(false)
+                        .Model(model => model.Id(p => p.AnnualEquipmentInventoryInspectionID))
+                                   .Events(ev => ev
+                                .Error("error_handler(\"grid\")")
+                                .RequestStart("onRequestStart(\"grid\")")
+                                .RequestEnd("onRequestEnd(\"grid\")"))
+                             .Create(update => update.Action("AnnualEquipmentInventoryInspection_Create", "AnnualEquipmentInventoryInspection"))
+                                    .Read(read => read.Action("AnnualEquipmentInventoryInspection_Read", "AnnualEquipmentInventoryInspection"))
+                                    .Update(update => update.Action("AnnualEquipmentInventoryInspection_Update", "AnnualEquipmentInventoryInspection"))
+                              .Destroy(update => update.Action("AnnualEquipmentInventoryInspection_Destroy", "AnnualEquipmentInventoryInspection"))
+  )
+      )
+
+
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                                            .Name("tabStrip_#=AnnualEquipmentInventoryInspectionID#")
+            .SelectedIndex(0)
+            .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+            .Items(items =>
+            {
+                items.Add().Text("Check List").Content(@<text>
+   
+
+    # if (IsSendForApproval == false || IsSendForApproval == "false")
+    {#
+
+    <a href='@Url.Action("SendForOnlineApproval", "AnnualInventoryInspectionApproval")/?EId=#=AnnualEquipmentInventoryInspectionID#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+    # }#
+    <div class="form-group">
+        <div class="label">
+            <label>    Status </label>
+        </div>
+        <div>
+            # if (IsSendForApproval == false && IsOnlineApproved == false)
+            {#
+
+            <p>  Editing</p>
+            # }
+
+            else if (IsSendForApproval == true && IsOnlineApproved == false)
+            {#
+
+            <p>Waiting For Approval</p>
+            # }
+
+            else if (IsOnlineApproved == true)
+            {#
+
+            <p>  Approved </p>
+            # }#
+        </div>
+
+    </div>
+
+    <div class="form-group" >
+        # if (IsSendForApproval == true || IsOnlineApproved == true)
+        {#
+
+        <div style=" padding:10px" id="approvedlines#=AnnualEquipmentInventoryInspectionID#"></div>
+        # }
+
+        else if (IsSendForApproval == false)
+        {#
+           <form action="/CheckListLog/InspectionCheckList" method="post">
+
+               <div style=" padding:30px" id="lines#=AnnualEquipmentInventoryInspectionID#"></div>
+                                 <input type="hidden" name="Id" value="#= AnnualEquipmentInventoryInspectionID#">
+                   <input type="submit" class="k-primary  form-control " value=" Inspect " />
+               
+        </form>
+        # }#
+    </div>
+                </text>
+                );
+                
+                 items.Add().Text("Inspection Log ").Content(@<text>
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.EquipmentInspection.InspectionLog>()
+                                                                                .Name("loggrid_#=AnnualEquipmentInventoryInspectionID#")
+                        .Columns(columns =>
+                        {
+                            columns.Bound(o => o.CategoryName);
+                            columns.Bound(o => o.Status).Width(100); 
+                            columns.Bound(o => o.DateCreated).Format("{0:d}").Width(100);
+                    columns.Command(command => {   }).Width(250);
+
+                        })   
+                                        .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                       .DataSource(dataSource => dataSource
+                            .Ajax()
+                            .PageSize(5)
+                                 
+                             .Model(model => model.Id(p => p.InspectionLogId))
+                                            .Events(ev => ev
+                                                                    .Error("error_handler(\"loggrid_#=AnnualEquipmentInventoryInspectionID#\")")
+                                                                    .RequestStart("onRequestStart(\"loggrid_#=AnnualEquipmentInventoryInspectionID#\")")
+                                                                    .RequestEnd("onRequestEnd(\"loggrid_#=AnnualEquipmentInventoryInspectionID#\")"))
+                                                                                 .Read(read => read.Action("AnnualInspectionlog_Read", "AnnualEquipmentInventoryInspection", new { Id = "#=AnnualEquipmentInventoryInspectionID#" }))
+                               
+
+                                                      )
+                                               .ToClientTemplate())
+</text>
+                );
+                              items.Add().Text("Approval").Content(
+                @<text>
+
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.EquipmentInspection.InspectionApproval>()
+                                                              .Name("approvalitemgrid_#=AnnualEquipmentInventoryInspectionID#")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Status).EditorTemplateName("ApprovalEditor").Width(100);
+          columns.Bound(c => c.Remark).Width(150);
+          columns.Bound(c => c.CreatedBy).Width(150);
+          columns.Bound(c => c.DateCreated).Format("{0:yyyy-MM-dd}").Width(150);
+          columns.Command(command => { command.Edit().Text("Approve"); }).Width(180);
+      })
+                         .Events(ev =>
+                                                                                             {
+                                                                                                 ev.DataBound("approveonDataBound");
+                                                                                             })
+         .Editable(editable =>
+      {
+          editable.Mode(GridEditMode.InLine);
+          editable.DisplayDeleteConfirmation("Are You Sure To Approve ? ");
+      })
+
+      .DataSource(dataSource => dataSource
+          .Ajax()
+                   .Model(model =>
+                      {
+                          model.Id(p => p.InspectionApprovalId);
+                          model.Field(p => p.CreatedBy).Editable(false);
+                          model.Field(p => p.DateCreated).Editable(false);
+                        })
+                                                                 .Read(read => read.Action("Approval_Read", "AnnualInventoryInspectionApproval", new { EId = "#=AnnualEquipmentInventoryInspectionID#" }))
+                                                                             .Create(create => create.Action("Approve", "AnnualInventoryInspectionApproval", new { EId = "#=AnnualEquipmentInventoryInspectionID#" }))
+                                                             .Update(update => update.Action("Approve", "AnnualInventoryInspectionApproval", new { EId = "#=AnnualEquipmentInventoryInspectionID#" }))
+
+     ).ToClientTemplate()
+
+                    )
+                </text>
+
+
+            );
+            })
+                                                                                                                                                                                                                                                            .ToClientTemplate())
+</script>
+
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 700px;
+    }
+</style>
+ 
+
+<script>
+
+    var masterId;
+    var fleetPlate;
+    var IsApproved;
+    var IsSendForApproval;
+
+    function RejectPopUp(e) {
+        var masterRow = e.masterRow;
+
+        var masterGrid = $("#grid").data("kendoGrid");
+
+        var dataItem = masterGrid.dataItem(masterRow);
+        masterId = dataItem.AnnualEquipmentInventoryInspectionID;
+        fleetPlate = dataItem.VoidBy;
+        IsApproved = dataItem.IsOnlineApproved;
+        IsSendForApproval = dataItem.IsSendForApproval;
+
+        var category = "";
+        var lineitem = "";
+        var index = 0;
+        if (IsSendForApproval == false) {
+            $.ajax({
+                url: '@Url.Action("CheckListLog_Read", "CheckListLog")',
+
+                data: { Id: masterId, PlateNumber: fleetPlate },
+                type: 'POST',
+                cache: false,
+                success: function (list) {
+                    for (var i = 0 ; i < list.length; i++) {
+
+                        lineitem += "    <div class='col-sm-12'>";
+                        if (category != list[i].CategoryName) {
+
+                            lineitem += "       <div class='col-sm-12'><h2 style='background-color:greenyellow'>" + list[i].CategoryName + " </h2></div>";
+                            category = list[i].CategoryName;
+                        }
+                        lineitem += "<div class='col-sm-3'  >  <input type='hidden' name=model.CheckListViewModel[" + index + "].InspectionId  value=" + masterId + ">   <input type='hidden' name=model.CheckListViewModel[" + index + "].LineName  value=" + list[i].LineName + " '>     <input type='hidden' name=model.CheckListViewModel[" + index + "].LineCode  value=" + list[i].LineCode + " '>    <input type='hidden' name=model.CheckListViewModel[" + index + "].CategoryName  value=" + list[i].CategoryName + " '>  <label class='k-label' ><h4> " + list[i].LineCode + " - " + list[i].LineName + "</h4></label>  <div class='switch_box box_4'><div class='input_wrapper'>     <input type='checkbox' checked    name='model.CheckListViewModel[" + index + "].IsActive'  class='switch_4'> <svg class='is_checked' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 426.67 426.67'>     <path d='M153.504 366.84c-8.657 0-17.323-3.303-23.927-9.912L9.914 237.265c-13.218-13.218-13.218-34.645 0-47.863 13.218-13.218 34.645-13.218 47.863 0l95.727 95.727 215.39-215.387c13.218-13.214 34.65-13.218 47.86 0 13.22 13.218 13.22 34.65 0 47.863L177.435 356.928c-6.61 6.605-15.27 9.91-23.932 9.91z' />     </svg>       <svg class='is_unchecked' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 212.982 212.982'>       <path d='M131.804 106.49l75.936-75.935c6.99-6.99 6.99-18.323 0-25.312-6.99-6.99-18.322-6.99-25.312 0L106.49 81.18 30.555 5.242c-6.99-6.99-18.322-6.99-25.312 0-6.99 6.99-6.99 18.323 0 25.312L81.18 106.49 5.24 182.427c-6.99 6.99-6.99 18.323 0 25.312 6.99 6.99 18.322 6.99 25.312 0L106.49 131.8l75.938 75.937c6.99 6.99 18.322 6.99 25.312 0 6.99-6.99 6.99-18.323 0-25.313l-75.936-75.936z' fill-rule='evenodd' clip-rule='evenodd' />   </svg>  </div> </div>        </div>  ";
+                        lineitem += "  <input type='text' name='model.CheckListViewModel[" + i + "].Remark' value='' class=' form-control'   style='padding: 5px;'>";
+
+
+                        index++;
+
+                        lineitem += " </div>";
+                    } try {
+                        document.getElementById("lines" + masterId).innerHTML = lineitem;
+                    } catch (err) {
+                        console.log("error to inner " + err);
+                    }
+                }
+
+            });
+        }
+        if (IsSendForApproval == true) {
+            $.ajax({
+                url: '@Url.Action("AnnualInspectionlogLast_Read", "AnnualEquipmentInventoryInspection")',
+
+                data: { Id: masterId, PlateNumber: fleetPlate },
+                type: 'POST',
+                cache: false,
+                success: function (list) {
+                    for (var i = 0 ; i < list.length; i++) {
+
+
+                        lineitem += "    <div class='col-sm-12'>";
+                        if (category != list[i].CategoryName) {
+
+                            lineitem += "       <div class='col-sm-12'><h2 style='background-color:greenyellow'>" + list[i].CategoryName + " </h2></div>";
+                            category = list[i].CategoryName;
+                        }
+                        index++;
+
+                        lineitem += " </div>";
+                    }
+                    try {
+                        document.getElementById("approvedlines" + masterId).innerHTML = lineitem;
+                    }
+                    catch (Err)
+                    { }
+                }
+
+            });
+        }
+    }
+
+    
+    function onDataBound(e) {
+        var grid = this;
+
+        $(grid).find(".k-toolbar").hide(); //hide toolbar
+        $(".k-grid-top", grid).hide();
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+            if (dataItem.IsOnlineApproved == true) { $(this).addClass("k-state-FleetApproved"); }
+            if (dataItem.IsSendForApproval == true || dataItem.IsOnlineApproved == true) {
+                console.log("Approved");
+                $(this).find(".k-grid-edit").remove();
+                $(this).find(".k-grid-delete").remove();
+            }
+        });
+    }
+
+    function approveonDataBound(e) {
+        var grid = this;
+
+        $(grid).find(".k-toolbar").hide(); //hide toolbar
+        $(".k-grid-top", grid).hide();
+
+        grid.tbody.find("tr[role='row']").each(function () {
+           
+            if (IsApproved == "true" || IsApproved == true) {
+                console.log("Approved");
+                $(this).find(".k-grid-edit").remove();
+                $(this).find(".k-grid-delete").remove();
+            }
+        });
+    }
+</script>
+
+       

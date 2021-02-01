@@ -1,0 +1,323 @@
+﻿@using ExceedERP.Core.Domain.Finance.GL
+<legend>Fiscal Year</legend>
+@(Html.Kendo().Grid<GlFiscalYear>()
+      .Name("grid")
+      .Columns(columns =>
+      {         
+          columns.Bound(c => c.Name).Width(120);
+          columns.Bound(c => c.DateFrom).Width(130);
+          columns.Bound(c => c.DateTo).Width(130);
+          columns.Bound(c => c.Status).EditorTemplateName("PeriodStatus").Width(100);
+          columns.Command(command =>
+          {
+              command.Edit();
+              command.Custom("Close").Click("CloseFiscalYear");
+              command.Custom("Open").Click("OpenFiscalYear");
+              command.Custom("Transfer Ending").Click("TransferEnding");
+          }).Width(280);
+      })
+      .ToolBar(toolbar => {
+          toolbar.Create();
+          //toolbar.Excel();
+          // toolbar.Pdf();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .HtmlAttributes(new { style = "height: 300px;" })
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(10))
+      .Selectable()
+      .Scrollable()
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Filterable()
+      //.Groupable()
+
+      .Events(events => events.Edit("edit"))
+      .Events(ev => ev.DetailExpand("detailExpand"))
+      .Events(x => x.DataBound("onDataBoundMaster"))
+
+      .DataSource(dataSource => dataSource
+          .Ajax()
+           .Sort(sort => sort.Add("GlFiscalYearId").Descending())
+          .Model(
+              model =>
+              {
+                  model.Id(p => p.GlFiscalYearId);
+                  model.Field(p => p.Status).Editable(false);
+                  model.Field(p => p.OrgBranchName).Editable(false);
+                  model.Field(p => p.CreatedBy).Editable(false);
+                  model.Field(p => p.ModifiedBy).Editable(false);
+                  model.Field(p => p.LastModified).Editable(false);
+                  model.Field(p => p.DateCreated).Editable(false);
+
+              })
+          .Events(events => events .Error("error_handler_one"))
+          .Read(read => read.Action("GLFiscalYears_Read", "GlFiscalYear"))
+          .Create(create => create.Action("GLFiscalYears_Create", "GlFiscalYear"))
+          .Update(update => update.Action("GLFiscalYears_Update", "GlFiscalYear"))
+          .Destroy(destroy => destroy.Action("GLFiscalYears_Destroy", "GlFiscalYear"))
+      ).Events(events => events.Change("change"))
+      .Events(events => events.DataBound("onDataBoundLines")))
+
+
+<h5>Periods</h5>
+
+@(Html.Kendo().Grid<GLPeriod>()
+      .Name("gridPeriod")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.GLPeriodId).Hidden();
+          columns.Bound(c => c.Index).Width(50);
+          columns.Bound(c => c.Name).Width(100);
+          columns.Bound(c => c.DateFrom).Width(120);
+          columns.Bound(c => c.DateTo).Width(120);
+          columns.Bound(c => c.Status).EditorTemplateName("PeriodStatus").Width(150);
+          columns.Command(command =>
+          {
+              command.Edit();
+              command.Custom("Close").Click("ClosePeriods");
+              command.Custom("Open").Click("OpenPeriod");
+          }).Width(180);
+      })
+      .ToolBar(toolbar =>
+      {
+        
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .HtmlAttributes(new { style = "height: 400px;" })
+            .Scrollable()
+            .Selectable()
+                 .Selectable(selectable =>
+                            {
+                                selectable.Mode(GridSelectionMode.Single);
+                                selectable.Type(GridSelectionType.Row);
+                            })
+                        .Sortable(sortable =>
+                        {
+                            sortable.SortMode(GridSortMode.SingleColumn);
+                        })
+            .Filterable()
+                .Events(events => events.Edit("edit"))
+                .Events(ev => ev.DetailExpand("detailExpand"))
+                .Events(x => x.DataBound("onDataBoundMaster"))
+                .AutoBind(false)
+      .DataSource(dataSource => dataSource
+          .Ajax()
+            .Model(
+            model =>
+            {
+                model.Id(p => p.GLPeriodId);
+                model.Field(p => p.Index).Editable(false);
+                model.Field(p => p.Status).Editable(false);
+                model.Field(p => p.OrgBranchName).Editable(false);
+                model.Field(p => p.CreatedBy).Editable(false);
+                model.Field(p => p.ModifiedBy).Editable(false);
+                model.Field(p => p.LastModified).Editable(false);
+                model.Field(p => p.DateCreated).Editable(false);
+
+            })
+            .Events(events => events .Error("error_handler_one"))
+                .Read(read => read.Action("GLPeriods_Read", "GLPeriod").Data("data"))
+                .Create(create => create.Action("GLPeriods_Create", "GLPeriod").Data("data"))
+                .Update(update => update.Action("GLPeriods_Update", "GLPeriod").Data("data"))
+            .Destroy(destroy => destroy.Action("GLPeriods_Destroy", "GLPeriod"))
+      )
+             
+)
+
+
+
+
+
+<script>
+    
+    function change() {
+        $("#gridPeriod").data("kendoGrid").dataSource.read();
+    }
+
+    function data() {
+        var grid = $("#grid").data("kendoGrid");
+
+        return {
+            id: grid.dataItem(grid.select()).GlFiscalYearId
+        };
+    }
+
+    function edit(e) {
+        if (e.model.isNew() === false) {
+            $("#Name").attr("readonly", true);
+        }
+    }
+
+    function CloseFiscalYear1(e) {
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        var id = dataItem.GlFiscalYearId;
+        $.ajax({
+
+            type: "GET",
+            data: id, //I obtained the id properly
+            url: '@Url.Action("CloseFiscalYear", "GlFiscalYear")/' + id
+
+        });
+
+        $('#grid').data('kendoGrid').dataSource.read();
+        $('#grid').data('kendoGrid').refresh();
+        location.reload();
+    };
+
+
+    function CloseFiscalYear(e) {
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        var id = dataItem.GlFiscalYearId;
+        var recordStatus = "0";
+        var conf = confirm("Are you sure you want to close the year ?");
+        if (conf === true) {
+
+            $.ajax({
+                type: "POST",
+                data: id, 
+                url: '@Url.Action("CloseFiscalYear", "GlFiscalYear")/' + id,
+                success: function (result) {
+                    alert(result.Message);
+                    recordStatus = result.Status;
+                    console.log(result);
+
+                }, //end succ
+                error: function (result) {
+                    alert(result);
+                }
+            });
+
+           
+        }
+
+    }
+
+    
+
+    function OpenFiscalYear(e) {
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        var id = dataItem.GlFiscalYearId;
+        $.ajax({
+            type: "POST",
+            data: id,
+            url: '@Url.Action("OpenFiscalYear", "GlFiscalYear")/' + id,
+            success: function (result) {
+               alert(result.Message);
+                //console.log(result);
+
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+
+        $('#grid').data('kendoGrid').dataSource.read();
+        $('#grid').data('kendoGrid').refresh();
+        location.reload();
+    };
+
+    function TransferEnding(e) {
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        var id = dataItem.GlFiscalYearId;
+        $('#loading-image').show();
+        $.ajax({
+            type: "POST",
+            data: id,
+            url: '@Url.Action("TransferEndingToNextYear", "GlFiscalYear")/' + id,
+            success: function (result) {
+                alert(result.Message);
+                $('#loading-image').hide();
+                //console.log(result);
+
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+
+       
+    };
+</script>
+
+<script>
+
+
+    function ClosePeriods(e) {
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        var id = dataItem.GLPeriodId;
+        $.ajax({
+            type: "POST",
+            data: id,
+            url: '@Url.Action("ClosePeriod", "GlFiscalYear")/' + id,
+            success: function (result) {
+                toastr.error(result.Message);
+                console.log(result);
+
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+
+        $('#gridPeriod').data('kendoGrid').dataSource.read();
+        $('#gridPeriod').data('kendoGrid').refresh();
+        location.reload();
+    }
+
+    function OpenPeriod(e) {
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        var id = dataItem.GLPeriodId;
+        console.log(dataItem);
+        $.ajax({
+            type: "POST",
+            data: id,
+            url: '@Url.Action("OpenPeriod", "GlFiscalYear")/' + id,
+            success: function (result) {
+                toastr.error(result.Message);
+                console.log(result);
+
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+
+        $('#gridPeriod').data('kendoGrid').dataSource.read();
+        $('#gridPeriod').data('kendoGrid').refresh();
+        location.reload();
+    }
+</script>
+
+<script>
+    function dataBound() {
+        this.expandRow(this.tbody.find("tr.k-master-row").first());
+    }
+</script>
+
+<script type="text/javascript">
+
+</script>
+
+<style type="text/css">
+        div.k-edit-form-container {
+            width: 800px;
+            height: auto;
+        }
+
+        div.k-content {
+            overflow: hidden;
+            height: auto;
+        }
+</style>

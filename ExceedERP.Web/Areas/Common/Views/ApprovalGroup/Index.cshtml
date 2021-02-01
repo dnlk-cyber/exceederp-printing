@@ -1,0 +1,165 @@
+﻿@using ExceedERP.Core.Domain.Common.DocumentApproval
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Common.DocumentApproval.ApprovalGroup>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.OpertatingUnit).Width(100).EditorTemplateName("AllBranchSelector");
+          columns.Bound(c => c.Name).Width(100);
+          columns.Bound(c => c.Enabled).Width(100).ClientTemplate(
+              "<input type='checkbox' disabled = 'true' value='#= Enabled #' " +
+              "# if (Enabled) { #" +
+              "checked='checked'" +
+              "# } #" +
+              "/>"
+              );
+
+          columns.Bound(c => c.Description).Width(150);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+          toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .HtmlAttributes(new { style = "height: 550px;" })
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(20))
+      .Scrollable()
+      .Sortable()
+      .Filterable()
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Groupable()
+      .Groupable().Events(ev => ev.DetailExpand("detailExpand"))
+      .Scrollable(h => h.Height(500))
+      .Events(x => x.DataBound("onDataBoundMaster"))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Events(ev => ev
+              .Error("error_handler(\"grid\")")
+              .RequestStart("onRequestStart(\"grid\")")
+              .RequestEnd("onRequestEnd(\"grid\")"))
+          .Model(model => model.Id(p => p.ApprovalGroupId))
+          .Read(read => read.Action("ApprovalGroups_Read", "ApprovalGroup"))
+          .Create(create => create.Action("ApprovalGroups_Create", "ApprovalGroup"))
+          .Update(update => update.Action("ApprovalGroups_Update", "ApprovalGroup"))
+          .Destroy(destroy => destroy.Action("ApprovalGroups_Destroy", "ApprovalGroup"))
+      ).ClientDetailTemplateId("detailtemplate")
+      )
+
+<script id="detailtemplate" type="text/Kendo-tmpl">
+    @(Html.Kendo().TabStrip().Name("tabStrip_#=ApprovalGroupId#").SelectedIndex(0).Items(items =>
+                      {
+                          items.Add().Text("Detail").Content(
+                            @<text>
+
+
+                                <div>
+                                    <hr>
+                                    <dl class="dl-horizontal">
+                                       
+                                        <dt>
+                                            CreatedOn
+                                        </dt>
+                                        <dd>
+                                            #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+
+                                        </dd>
+                                        <dt>
+                                            CreatedBy
+                                        </dt>
+                                        <dd>
+                                            #= CreatedBy #
+                                        </dd>
+                                        <dt>
+                                            Modified By
+                                        </dt>
+                                        <dd>
+                                            #= ModifiedBy #
+                                        </dd>
+                                        <dt>
+                                            Modified Date
+                                        </dt>
+                                        <dd>
+                                            #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+                                        </dd>
+                                    </dl>
+                                </div>
+                               
+
+                            </text>
+                            );
+
+                                  items.Add().Text("Approval Group Rule").Content(
+                                        @<text>
+
+                                            @(Html.Kendo().Grid<ApprovalGroupRule>()
+                                                        .Name("ApprovalGroupRule#=ApprovalGroupId#")
+                                                        .Columns(columns =>
+                                                        {
+                                                            columns.Bound(c => c.RuleObject).Width(80).EditorTemplateName("DocumentRuleObject");
+                                                            columns.Bound(c => c.Type).Width(80).EditorTemplateName("DocumentRuleType");
+                                                            columns.Bound(c => c.AmountLimit).Width(70);
+                                                            columns.Bound(c => c.LowValue).Width(120).EditorTemplateName("Description");
+                                                            columns.Bound(c => c.HighValue).Width(120).EditorTemplateName("Description");
+
+
+                                                            columns.Command(command =>
+                                                            {
+                                                                command.Edit();
+                                                                command.Destroy();
+                                                            }).Width(180);
+                                                        })
+                                                  .ToolBar(toolbar =>
+                                                  {
+                                                      toolbar.Create();
+                                                  })
+
+                                                  .Events(x => x.DataBound("onDataBoundLines"))
+                                                  .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                  .Scrollable()
+                                                  .Selectable()
+                                                  .DataSource(dataSource => dataSource
+                                                      .Ajax()
+                                                            .Events(ev => ev
+                                                                .Error("error_handler(\"ApprovalGroupRule#=ApprovalGroupId#\")")
+                                                                .RequestStart("onRequestStart(\"ApprovalGroupRule#=ApprovalGroupId#\")")
+                                                                        .RequestEnd("onRequestEnd(\"ApprovalGroupRule#=ApprovalGroupId#\")"))
+                                                      .Model(model =>
+                                                      {
+                                                          model.Id(p => p.ApprovalGroupRuleId);
+
+
+                                                          model.Field(p => p.CreatedBy).Editable(false);
+                                                          model.Field(p => p.DateCreated).Editable(false);
+                                                          model.Field(p => p.ModifiedBy).Editable(false);
+                                                          model.Field(p => p.LastModified).Editable(false);
+
+                                                      })
+                                                                      .Read(read => read.Action("ApprovalGroupRules_Read", "ApprovalGroupRule", new { id = "#=ApprovalGroupId#" }))
+                                                                      .Create(create => create.Action("ApprovalGroupRules_Create", "ApprovalGroupRule", new { id = "#=ApprovalGroupId#" }))
+                                                                      .Update(update => update.Action("ApprovalGroupRules_Update", "ApprovalGroupRule", new { id = "#=ApprovalGroupId#" }))
+                                                                      .Destroy(destroy => destroy.Action("ApprovalGroupRules_Destroy", "ApprovalGroupRule"))
+                                                                  ).ToClientTemplate()
+                                            )
+
+                                        </text>
+                                        );
+
+                                  }).ToClientTemplate()
+
+    )
+    
+ 
+</script>

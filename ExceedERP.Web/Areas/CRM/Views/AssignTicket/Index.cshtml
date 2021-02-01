@@ -1,0 +1,411 @@
+﻿@model ExceedERP.Core.Domain.CRM.CustomerTicket
+<legend>Assign Ticket</legend>
+
+
+@if (ViewBag.StateMsg != null)
+{
+    <div class="  alert-danger">
+        <p>
+            @ViewBag.StateMsg
+    </p>
+</div>
+}
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.CustomerTicket>
+    ()
+    .Name("grid")
+    .Columns(columns =>
+    {
+        columns.Bound(c => c.CustomerTicketID).Width(50).Title("#");
+        columns.ForeignKey(c => c.CustomerID, (System.Collections.IEnumerable)ViewData["CustomerList"], "CustomerID", "CustomerName").Width(150);
+        columns.Bound(c => c.CustomerAddress).Width(140);
+        columns.Bound(c => c.Description).Width(120);
+        columns.Bound(c => c.Priority).HtmlAttributes(new { style = "background-color:#:PriorityColor#;" });
+        columns.Bound(c => c.StatusType).HtmlAttributes(new { style = "background-color:#:StatusColor#;" });
+        columns.Bound(c => c.TicketGroup);
+        columns.Bound(c => c.Source);
+        
+
+        columns.Command(command => { command.Custom("UpdateStatus").Text(" Update Status").Click("UpdateStatus").HtmlAttributes(new { @class = " glyphicon-envelope btn-warning k-grid-finalize  " }); }).Width(180);
+    })
+  .Events(ev =>
+    {
+
+        ev.DataBound("onDataBound");
+
+    })
+    .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("CustomerTicketEditor").Window(window =>
+    {
+        window.Title("Open Customer Ticket");
+        window.Scrollable(false);
+
+    }))
+    .HtmlAttributes(new { style = "height: 520px;" })
+    .Pageable(pageable => pageable
+    .Input(true)
+    .Numeric(false)
+    .Refresh(true)
+    .PageSizes(true)
+    .ButtonCount(5))
+
+    .Scrollable()
+    .Sortable()
+    .Filterable()
+         .Groupable().Events(ev => ev.DetailExpand("MasterOnExpand"))
+    .Scrollable(h => h.Height(500))
+    .DataSource(dataSource => dataSource
+    .Ajax()
+        //  .Group(x => x.Add(p => p.Status))
+    .Model(model =>
+    {
+        model.Id(p => p.CustomerTicketID);
+        model.Field(p => p.Status).Editable(false);
+    })
+    .Events(ev => ev
+    .Error("error_handler(\"grid\")")
+    .RequestStart("onRequestStart(\"grid\")")
+    .RequestEnd("onRequestEnd(\"grid\")"))
+        .Read(read => read.Action("CustomerPendingTickets_Read", "CustomerTicket"))
+    .Create(create => create.Action("CustomerTickets_Create", "CustomerTicket"))
+    .Update(update => update.Action("CustomerTickets_Update", "CustomerTicket"))
+    .Destroy(destroy => destroy.Action("CustomerTickets_Destroy", "CustomerTicket"))
+    ).ClientDetailTemplateId("template")
+)
+
+
+
+
+
+
+
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                                                    .Name("tabstrip_#=CustomerTicketID#")
+    .SelectedIndex(0)
+    .Items(items =>
+     {
+         items.Add().Text("  Detail  ").Content(
+           @<text>
+    <legend>  Detail </legend>
+    <div class="demo-section k-header export-app">
+        <div class="demo-section content-wrapper">
+
+            <form>
+
+                <a href='@Url.Action("CustomerTicketPrint", "Print")/#=CustomerTicketID#' title="Print"><i class="fa fa-print fa-2x"></i></a>
+
+
+                <div class="row">
+                    <div class="col-md-1">
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <div class="label">
+                                Created By
+                            </div>
+                            <div>
+                                #=CreatedBy#
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <div class="label">
+                                @Html.LabelFor(model => model.DateCreated)
+                            </div>
+                            <div>
+                                #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <div class="label">
+                                @Html.LabelFor(model => model.ModifiedBy)
+                            </div>
+                            <div>
+
+                                #=ModifiedBy#
+
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <div class="label">
+                                @Html.LabelFor(model => model.LastModified)
+                            </div>
+                            <div>
+                                #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="row">
+                    <div class="col-md-1">
+                    </div>
+
+
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <div class="label">
+                                @Html.LabelFor(model => model.EscalationLevel)
+                            </div>
+                            <div>
+                                #=EscalationLevel#
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <div class="label">
+                                @Html.LabelFor(model => model.DueDate)
+                            </div>
+                            <div>
+                                #=kendo.toString(kendo.parseDate(DueDate), 'dd/MM/yyyy') #
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <div class="label">
+                                @Html.LabelFor(model => model.Remark)
+                            </div>
+                            <div>
+                                #=Remark#
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </form>
+
+        </div>
+    </div>
+    </text>
+   );
+         items.Add().Text("  Assign Ticket  ").Content(
+            @<text>
+                <legend>Assign Ticket</legend>
+                @(Html.Kendo().Grid<ExceedERP.Web.Areas.CRM.Models.AssignTicketViewModel>()
+                  .Name("Assigngrid_#=CustomerTicketID#")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.AssignTicketId).Width(50);
+
+        columns.Bound(c => c.AssinedTo).Width(140);
+
+      //    columns.ForeignKey(c => c.AssinedTo, (System.Collections.IEnumerable)ViewData["SysUsers"], "CustomerID", "CustomerName").EditorTemplateName("GroupMemberEditor").Width(120);
+        columns.Bound(c => c.IsActive).ClientTemplate("<input type='checkbox' \\#=IsActive? checked='checked': checked='' \\# class='checkbox'  />").Width(80);
+          columns.Bound(c => c.IsTransfer).ClientTemplate("<input type='checkbox' \\#=IsTransfer? checked='checked': checked='' \\# class='checkbox'  />").Width(80);
+          columns.ForeignKey(c => c.TransferTo, (System.Collections.IEnumerable)ViewData["SysUsers"], "CustomerID", "CustomerName").EditorTemplateName("GroupMemberEditor").Width(120);
+
+          columns.Bound(c => c.Age).Width(80);
+
+          columns.Command(command => { command.Custom("SendForClosing").Text(" Send For Closing ").Click("SendForClosing").HtmlAttributes(new { @class = " glyphicon-envelope btn-Success k-grid-sendforclose  " }); command.Edit(); command.Destroy(); }).Width(250);
+      })
+      .Events(ev =>
+                                              {
+
+                                                  ev.DataBound("LineonDataBound");
+
+                                              }).Editable(editable => editable.Mode(GridEditMode.InLine))
+    
+
+      //    }))
+  
+                                                        .Scrollable(h => h.Height(500))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model =>
+              {model.Id(p => p.AssignTicketId);
+              model.Field(p => p.AssignTicketId).Editable(false);
+              model.Field(p=>p.Age).Editable(false);
+              model.Field(p => p.AssinedTo).Editable(false);
+              })
+              .Events(ev => ev
+                                                                                .Error("error_handler(\"Assigngrid_#=CustomerTicketID#\")")
+                                                                                .RequestStart("onRequestStart(\"Assigngrid_#=CustomerTicketID#\")")
+                                                                                .RequestEnd("onRequestEnd(\"Assigngrid_#=CustomerTicketID#\")"))
+                          .Read(read => read.Action("AssignTickets_Read", "AssignTicket", new { Id = "#=CustomerTicketID#" }))
+                          .Create(create => create.Action("AssignTickets_Create", "AssignTicket", new { Id = "#=CustomerTicketID#" }))
+          .Update(update => update.Action("AssignTickets_Update", "AssignTicket"))
+          .Destroy(destroy => destroy.Action("AssignTickets_Destroy", "AssignTicket"))
+      ).ToClientTemplate()
+                )
+
+            </text>
+            );
+
+         items.Add().Text("  Status  ").Content(
+            @<text>
+                <legend> Status   </legend>
+                @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.TicketStatusLog>()
+                  .Name("Statusgrid_#=CustomerTicketID#")
+      .Columns(columns =>
+      {
+          columns.ForeignKey(c => c.User, (System.Collections.IEnumerable)ViewData["SysUsers"], "CustomerID", "CustomerName").Width(100);
+           columns.Bound(c => c.Remark).Width(200);
+      })
+    .Events(ev =>
+                                              {
+
+                                                  ev.DataBound("onDataBound");
+
+                                              }).Editable(editable => editable.Mode(GridEditMode.InLine))
+
+
+      //    }))
+
+                                                        .Scrollable(h => h.Height(500))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model =>
+              {
+                  model.Id(p => p.TicketStatusLogId);
+                  model.Field(p => p.TicketStatusLogId).Editable(false);
+                 
+              })
+              .Events(ev => ev
+                                                                                        .Error("error_handler(\"Statusgrid_#=CustomerTicketID#\")")
+                                                                                        .RequestStart("onRequestStart(\"Statusgrid_#=CustomerTicketID#\")")
+                                                                                        .RequestEnd("onRequestEnd(\"Statusgrid_#=CustomerTicketID#\")"))
+                                  .Read(read => read.Action("TicketStatus_Read", "AssignTicket", new { Id = "#=CustomerTicketID#" }))
+               ).ToClientTemplate()
+                )
+
+            </text>
+            );
+         //*****************************************************************************************************//
+     }).ToClientTemplate())
+</script>
+
+
+<script>
+
+    function UpdateStatus(e) {
+
+
+        var wnd = $("#Details").data("kendoWindow");
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+
+        //wnd.content(detailsTemplate(dataItem));
+        $("#CustomerTicketID").val(dataItem.CustomerTicketID);
+        wnd.center().open();
+    }
+
+    function SendForClosing(e) {
+
+
+        var wnd = $("#SendDetails").data("kendoWindow");
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+
+        //wnd.content(detailsTemplate(dataItem));
+        $("#AssignTicketId").val(dataItem.AssignTicketId);
+        wnd.center().open();
+    }
+
+    function LineonDataBound(e) {
+        var grid = this;
+
+
+        var Checkgrid = $("#Assigngrid_" + masterId).data("kendoGrid");
+        var gridData = Checkgrid.dataSource.view();
+
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+            if (dataItem.IsClosed == true) {
+                $(this).find(".k-grid-sendforclose ").remove();
+            }
+
+         
+        });
+    }
+    var masterId;
+    var Group;
+    function MasterOnExpand(e) {
+        var masterRow = e.masterRow;
+
+        var masterGrid = $("#grid").data("kendoGrid");
+
+        var masterDataItem = masterGrid.dataItem(masterRow);
+
+        masterId = masterDataItem.CustomerTicketID;
+        Group = masterDataItem.TicketGroup;
+
+    }
+    function MemeberGroup() {
+        return {
+            Group: Group
+        };
+    }
+   
+    function onDataBound(e) {
+        var grid = this;
+
+
+        var Checkgrid = $("#grid").data("kendoGrid");
+        var gridData = Checkgrid.dataSource.view();
+
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+            if (dataItem.IsSendForClosing == false)
+            {
+                $(this).find(".k-grid-finalize ").remove();
+            }
+             
+            if (dataItem.Status == "3") {
+
+                $(this).find(".k-grid-edit").remove();
+                $(this).find(".k-grid-delete").remove();
+                $(this).find(".k-grid-update").remove();
+
+            }
+        });
+    }
+</script>
+
+
+@(Html.Kendo().Window().Name("Details")
+              .Title(" Update Ticket Status ")
+    .Visible(false)
+    .Modal(true)
+    .Draggable(true)
+    .Width(600).Content(@<text><div class="form-group">
+
+            <form action="@Url.Action("UpdateStatus", "AssignTicket")" method="post">
+
+                <input type="hidden" name="Id" id="CustomerTicketID">
+                <label>Status :</label>
+                @(Html.Kendo().DropDownListFor(model => model).HtmlAttributes(new { @class = "form-control" }).Name("Name").DataTextField("Name").DataValueField("StatusTypeId").OptionLabel("Select").DataSource(d => { d.Read(r => { r.Action("GetStatusType", "CRMDataProvider"); }).ServerFiltering(true); }).AutoBind(true).Template("<span class=\"k-state-default\" > <p style=\"background-color:#:data.Color#;\">  #: data.Name #</p></span>").HtmlAttributes(new { @required = "required" }))
+              <br/> 
+                <textarea type="text" name="Name" cols="80" rows="10" value="" placeholder="Remark Here..."></textarea>
+                <input type="submit" class="btn-primary k-button" value=" Update " />
+
+            </form>
+        </div></text>))
+
+
+@(Html.Kendo().Window().Name("SendDetails")
+              .Title(" Send For Closing ")
+    .Visible(false)
+    .Modal(true)
+    .Draggable(true)
+    .Width(600).Content(@<text><div class="form-group">
+
+            <form action="@Url.Action("SendForClosing", "AssignTicket")" method="post">
+
+                <input type="hidden" name="Id" id="AssignTicketId">
+                 <br />
+                <textarea type="text" name="Name" cols="80" rows="10" value="" placeholder="Remark Here..."></textarea>
+                <input type="submit" class="btn-primary k-button" value=" Send " />
+
+            </form>
+        </div></text>))
+
+

@@ -1,0 +1,9 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.HRM
+@(Html.Kendo().DropDownListFor(m => m)
+            .OptionLabel("Select Association Type..")
+                     .DataTextField("Text")
+                            .DataValueField("Value")
+                                         .BindTo(EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.Common.ApplicationType)))
+                         .ValuePrimitive(true)
+)

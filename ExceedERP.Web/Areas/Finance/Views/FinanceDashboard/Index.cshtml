@@ -1,0 +1,91 @@
+﻿@using ExceedERP.Core.Domain.Dashboard
+<legend>Dashboard Settings</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Dashboard.FinanceDashboard>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.Category);
+        columns.Bound(c => c.Name);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+         .Editable(editable => editable.Mode(GridEditMode.InLine))
+           .HtmlAttributes(new { style = "height: 550px;" })
+              .Pageable(pageable => pageable
+                  .Input(true)
+                  .Numeric(false)
+                  .Refresh(true)
+                  .PageSizes(true)
+                  .ButtonCount(20))
+              .Scrollable()
+              .ClientDetailTemplateId("rangeTemplates")
+      .DataSource(dataSource => dataSource
+          .Ajax()
+              .Events(events => events
+                               .Error("error_handler_one")
+                              .Sync("sync_handler"))
+          .Model(model => model.Id(p => p.FinanceDashboardId))
+          .Read(read => read.Action("FinanceDashboards_Read", "FinanceDashboard"))
+          .Create(create => create.Action("FinanceDashboards_Create", "FinanceDashboard"))
+          .Update(update => update.Action("FinanceDashboards_Update", "FinanceDashboard"))
+          .Destroy(destroy => destroy.Action("FinanceDashboards_Destroy", "FinanceDashboard"))
+      )
+)
+
+
+<script id="rangeTemplates" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+          .Name("FinanceDashboardRange#=FinanceDashboardId#")
+          .SelectedIndex(0)
+          .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+          .Items(items =>
+          {
+              items.Add().Text("Account Ranges").Content(@<text>
+                @(Html.Kendo().Grid<FinanceDashboardRange>()
+                      .Name("FinanceDashboardRange#=FinanceDashboardId#")
+                      .Columns(columns =>
+                      {
+                          columns.Bound(c => c.AccountFrom).EditorTemplateName("AccountCode").Width(220);
+                          columns.Bound(c => c.AccountTo).EditorTemplateName("AccountCode").Width(220);
+                          columns.Command(command =>
+                          {
+                              command.Edit();
+                              command.Destroy();
+                          });
+                      })
+                      .ToolBar(toolbar =>
+                      {
+                          toolbar.Create();
+                      })
+
+                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                      
+                      .Scrollable()
+                      .Sortable()
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+                          .Model(
+                              model =>
+                              {
+                                  model.Id(p => p.FinanceDashboardRangeId);
+                              })
+                          .Events(events => events
+                              .Error("error_handler_one")
+                              .Sync("sync_handler"))
+                          .Read(read => read.Action("FinanceDashboardRanges_Read", "FinanceDashboardRange", new { id = "#=FinanceDashboardId#" }))
+                          .Create(create => create.Action("FinanceDashboardRanges_Create", "FinanceDashboardRange", new { id = "#=FinanceDashboardId#" }))
+                          .Update(update => update.Action("FinanceDashboardRanges_Update", "FinanceDashboardRange", new { id = "#=FinanceDashboardId#" }))
+                          .Destroy(destroy => destroy.Action("FinanceDashboardRanges_Destroy", "FinanceDashboardRange"))
+                      )
+                      
+                      .ToClientTemplate())
+            </text>);
+
+          })
+
+          .ToClientTemplate()
+          )
+
+</script>

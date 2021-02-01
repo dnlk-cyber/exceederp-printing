@@ -1,0 +1,250 @@
+﻿@using System.Collections
+@using ExceedERP.Helpers.Common
+@using ExceedERP.Core.Localization
+@using Kendo.Mvc.UI
+@model ExceedERP.Core.Domain.Construction.MonthlyProjectPayment
+<form>
+    <div class="row">
+        <div class="col-md-1">
+
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.ApprovedTillPreMonth, htmlAttributes: new { @class = "control-label col-md-12" })
+
+                </div>
+                <div>
+                    @Html.Kendo().TextBoxFor(model => model.ApprovedTillPreMonth)
+                    @Html.ValidationMessageFor(model => model.ApprovedTillPreMonth, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.ExpectedToBeApprovedThisMonth, htmlAttributes: new { @class = "control-label col-md-12" })
+
+                </div>
+                <div>
+
+                    @Html.Kendo().TextBoxFor(model => model.ExpectedToBeApprovedThisMonth).Enable(false)
+                    @Html.ValidationMessageFor(model => model.ExpectedToBeApprovedThisMonth, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.AmountApprovedThisMonth, htmlAttributes: new { @class = "control-label col-md-12" })
+
+                </div>
+                <div>
+                    @Html.Kendo().TextBoxFor(model => model.AmountApprovedThisMonth)
+                    @Html.ValidationMessageFor(model => model.AmountApprovedThisMonth, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <br />
+
+
+    <div class="row">
+        <div class="col-md-1">
+
+        </div>
+
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.AmounNotApprovedThisMonth, htmlAttributes: new { @class = "control-label col-md-12" })
+
+                </div>
+                <div>
+                    @Html.Kendo().TextBoxFor(model => model.AmounNotApprovedThisMonth).Enable(false)
+                    @Html.ValidationMessageFor(model => model.AmounNotApprovedThisMonth, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.ApprovedToDate, htmlAttributes: new { @class = "control-label col-md-12" })
+
+                </div>
+                <div>
+                    @Html.Kendo().TextBoxFor(model => model.ApprovedToDate).Enable(false)
+                    @Html.ValidationMessageFor(model => model.ApprovedToDate, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.AmountNotApprovedToDate, htmlAttributes: new { @class = "control-label col-md-12" })
+
+                </div>
+                <div>
+                    @Html.Kendo().TextBoxFor(model => model.AmountNotApprovedToDate).Enable(false)
+                    @Html.ValidationMessageFor(model => model.AmountNotApprovedToDate, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-md-1">
+
+        </div>
+        <div class=" col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.PriceAdjustmentTillPreMonth, htmlAttributes: new { @class = "control-label col-md-12" })
+
+                </div>
+                <div>
+                    @Html.Kendo().TextBoxFor(model => model.PriceAdjustmentTillPreMonth)
+                    @Html.ValidationMessageFor(model => model.PriceAdjustmentTillPreMonth, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.PriceAdjustmentThisMonth, htmlAttributes: new { @class = "control-label col-md-12" })
+
+                </div>
+                <div>
+                    @Html.Kendo().TextBoxFor(model => model.PriceAdjustmentThisMonth)
+                    @Html.ValidationMessageFor(model => model.PriceAdjustmentThisMonth, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.PriceAdjustmentApprovedToDate, htmlAttributes: new { @class = "control-label col-md-12" })
+
+                </div>
+                <div>
+                    @Html.Kendo().TextBoxFor(model => model.PriceAdjustmentApprovedToDate)
+                    @Html.ValidationMessageFor(model => model.PriceAdjustmentApprovedToDate, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <br />
+    <div class="row">
+        <div class="col-md-1">
+
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.MatOnSiteThisMonth, htmlAttributes: new { @class = "control-label col-md-12" })
+
+                </div>
+                <div>
+                    @Html.Kendo().TextBoxFor(model => model.MatOnSiteThisMonth)
+                    @Html.ValidationMessageFor(model => model.MatOnSiteThisMonth, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.MatOnSiteApprovedThisMonth, htmlAttributes: new { @class = "control-label col-md-12" })
+
+                </div>
+                <div>
+                    @Html.Kendo().TextBoxFor(model => model.MatOnSiteApprovedThisMonth)
+                    @Html.ValidationMessageFor(model => model.MatOnSiteApprovedThisMonth, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.MatOnSiteNotAppprovedThiMonth, htmlAttributes: new { @class = "control-label col-md-12" })
+
+                </div>
+                <div>
+                    @Html.Kendo().TextBoxFor(model => model.MatOnSiteNotAppprovedThiMonth).Enable(false)
+                    @Html.ValidationMessageFor(model => model.MatOnSiteNotAppprovedThiMonth, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <hr />
+    <div class="row">
+        <div class="col-md-12" style="text-align:center;padding-bottom:10px;">
+            <strong style="text-align:center; "> Payment Approval time</strong>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-1">
+
+        </div>
+        <div class="col-md-3">
+            <br />
+            <br />
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.ApprovalTime, htmlAttributes: new { @class = "control-label col-md-10" })
+
+                </div>
+                <div>
+                    @(Html.Kendo().DropDownListFor(model => model.ApprovalTime)
+                                    //.Placeholder(Resources.Select)
+                                    .DataTextField("Text")
+                                    .DataValueField("Value")
+                                    .ValuePrimitive(true)
+                                    .Name("ApprovalTime")
+                                    .BindTo(EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.Construction.MonthlyDueDate)))
+                                .Events(events =>
+                                {
+                                    events.Change("changeDaysTextBox");
+                                })
+                    )
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <br />
+            <br />
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.Days, htmlAttributes: new { @class = "control-label col-md-10", @id = "approvalTimeDaysLabel" })
+
+                </div>
+                <div>
+                    @Html.Kendo().TextBoxFor(model => model.Days).Enable(false).HtmlAttributes(new { @id = "approvalTimeDays" })
+                    @Html.ValidationMessageFor(model => model.Days, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.Points, "Point (monthly=4, delayed 15days=3, delayed 30days=2, delayed morethan30 days = 0)", htmlAttributes: new { @class = "control-label col-md-10" })
+
+                </div>
+                <div>
+                    @Html.Kendo().TextBoxFor(model => model.Points)
+                    @Html.ValidationMessageFor(model => model.Points, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+</form>
+
+

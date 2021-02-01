@@ -1,0 +1,282 @@
+﻿@using System.Collections
+@using System.Security.AccessControl
+@using ExceedERP.Core.Domain.HRM.EmployeeDetail
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>@Resources.NavigatorPlacment_EmployeePlacment</legend>
+
+@(Html.Kendo().Grid<Placement>()
+              .Name("PlacementGrid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.EmployeeCode).Width(150);
+          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "PersonId", "FullNameWithOutCode").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).Width(200);
+          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeListEnglish"], "PersonId", "FullNameEng").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
+
+          // columns.ForeignKey(c => c.JobTitleCode, (IEnumerable)ViewData["jobTitle"], "OrgStructureId", "Name").EditorTemplateName("JobTitles").Width(130);
+          columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["workunits"], "OrgStructureId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(200);
+
+          columns.Bound(c => c.JobTitleName).Filterable(ftb => ftb.Multi(true).Search(true)).Width(140);
+          columns.Bound(c => c.IsHead).Width(90).ClientTemplate(
+            "<input type='checkbox' disabled = 'true' value='#= IsHead#' " +
+            "# if (IsHead) { #" +
+            "checked='checked'" +
+            "# } #" +
+            "/>"
+            );
+          columns.Bound(c => c.AssignmentDateAmharic).Width(200);
+          columns.ForeignKey(c => c.RankId, (IEnumerable)ViewData["RankList"], "RankId", "RankName").EditorTemplateName("Rank").Width(100);
+          columns.ForeignKey(c => c.StepId, (IEnumerable)ViewData["StepList"], "StepId", "StepName").EditorTemplateName("Step").Width(100);
+          columns.Bound(c => c.Salary).Width(100);
+          columns.Bound(c => c.AssignmentType).Width (150);
+          columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["branches"], "BranchId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(80);
+
+          // columns.ForeignKey(c => c.ReportsTo, (IEnumerable)ViewData["jobTitle"], "OrgStructureId", "Name").EditorTemplateName("JobTitles").Width(200);
+          // columns.Bound(c => c.ResponsibilityLevel);
+          // columns.Bound(c => c.Remark);
+          columns.Command(command =>
+          {
+              //command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+              command.Destroy().Text(Resources.ActionButton_Cancel);
+          }).Width(200);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+          if (HttpContext.Current.User.IsInRole("HR_Admin"))
+          {
+              toolbar.Excel().Text(Resources.ActionButton_ExportExcel).HtmlAttributes(new { @class = "btn btn-primary btn-xs pull-right" });
+              toolbar.Pdf().Text(Resources.ActionButton_ExportPDF).HtmlAttributes(new { @class = "btn btn-primary btn-xs pull-right" });
+          }
+          toolbar.Custom().Text(Resources.ActionButton_Refersh);
+      })
+           .Excel(excel => excel
+                                                                    .FileName(Resources.NavigatorPlacment_EmployeePlacment + ".xlsx")
+                                            .Filterable(true)
+                                                .AllPages(true)
+                                                                            .ProxyURL(Url.Action("Excel_Export_Save", "EmployeePlacment"))
+                                        )
+                                             .Pdf(pdf => pdf
+                                            .AllPages()
+                                                                        .FileName(Resources.NavigatorPlacment_EmployeePlacment + ".pdf")
+                                                                            .ProxyURL(Url.Action("Pdf_Export_Save", "EmployeePlacment"))
+                                        )
+            .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("Placement").Window(window => { window.Title(Resources.NavigatorPlacment_EmployeePlacment); window.Scrollable(false); }))
+         .Scrollable(h => h.Height(500))
+             .Groupable()
+                      .Sortable(sortable =>
+                      {
+                          sortable.SortMode(GridSortMode.SingleColumn);
+                      })
+          .Filterable()
+                        .Events(e =>
+                        {
+                            e.Save("GetDate");
+                            e.Edit("GetDate");
+                        })
+             .Pageable(pageable => pageable
+                                        .Input(true)
+                                        .Numeric(false)
+                                        .Refresh(true)
+                                        .PageSizes(true)
+                                        .ButtonCount(5))
+
+      .DataSource(dataSource => dataSource
+          .Ajax()
+                  .Sort(sort => sort.Add("EmployeeCode"))
+               .Events(events =>
+               {
+                   events.Error("error_handler(\"PlacementGrid\")");
+                   events.RequestStart("onRequestStart(\"PlacementGrid\")");
+                   events.RequestEnd("onRequestEnd(\"PlacementGrid\")");
+               })
+
+          .Model(model => model.Id(p => p.PlacementId))
+                  .Read(read => read.Action("Placements_Read", "EmployeePlacment"))
+                          .Create(create => create.Action("Placements_Create", "EmployeePlacment"))
+                  .Update(update => update.Action("Placements_Update", "EmployeePlacment"))
+                  .Destroy(destroy => destroy.Action("Placements_Destroy", "EmployeePlacment"))
+
+      )
+)
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 700px;
+    }
+</style>
+<script>
+    function GetEmployeeNameEmploye(e) {
+        var autocomplete = $("#EmployeeId").data("kendoAutoComplete");
+        var id = autocomplete.value();
+
+        $.ajax({
+            url: '@Url.Action("SetEmployeeId", "EmployeePlacment")',
+            contentType: "application/json; charset=utf-8",
+            data: { 'fullName': id },
+            type: 'GET',
+            cache: false,
+            success: function (result) {
+                r = result;
+            }
+
+        });
+    }
+</script>
+<script>
+    //function error_handler(e) {
+    //    if (e.errors) {
+    //        var message = "Errors:\n";
+    //        $.each(e.errors, function (key, value) {
+    //            if ('errors' in value) {
+    //                $.each(value.errors, function () {
+    //                    message += this + "\n";
+    //                });
+    //            }
+    //        });
+    //        alert(message);
+
+    //    }
+
+    //}
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+</script>
+
+
+<script>
+    function GetSalary() {
+        $("#Salary").val(0);
+        var Ranks = $("#RankId").data("kendoDropDownList");
+        var rank = Ranks.value();
+        var Steps = $("#StepId").data("kendoDropDownList");
+        var step = Steps.value();
+        var Titles = $("#LookupId").data("kendoDropDownList");
+        var title = Titles.value();
+
+        if (rank !== 0 && step !== 0 && title!==0)
+        {
+
+        $.ajax({
+            url: '@Url.Action("GetSalaryAmount", "EmployeePlacment")',
+
+            data: { rank: rank, step: step, title: title },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                r = result;
+
+                $("#Salary").val(r);
+            }
+
+        });
+
+        
+    }
+    }
+
+</script>
+
+
+<script>
+    function GetDepartment() {
+
+        $("#Salary").val(0);
+        $("#RankName").val("");
+        $("#StepName").val("");
+        var Titles = $("#OrgStructureId").data("kendoDropDownList");
+        var OrgId = Titles.value();
+        var jobs = $("#LookupId").data("kendoDropDownList");
+        var title = jobs.value();
+        $.ajax({
+            url: '@Url.Action("GetDepartment", "EmployeePlacment")',
+
+            data: { OrgId: OrgId, title: title },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                r = result;
+                var s = r.split(/-/);
+
+                $("#Salary").val(s[0]);
+                $("#RankName").val(s[1]);
+                $("#StepName").val(s[2]);
+            }
+
+        });
+    }
+
+</script>
+<script>
+    function filterCategories() {
+        return {
+            OrgStructureId: $("#OrgStructureId").val()
+        };
+    }
+    function filterStructure() {
+        return {
+            OrgStructureId: $("#OrgStructureId").val()
+        };
+    }
+</script>
+
+<script>
+    function GetDate() {
+
+        var x = AssignDate();
+        var y = x;
+        $("#AssignmentDateAmharic").trigger("change");
+        for (var o in y) {
+            $.ajax({
+                contentType: "application/json; charset=utf-8",
+                url: '@Url.Action("SetDate", "EmployeePlacment")',
+                data: { name: y[o].id, value: y[o].date },
+                type: 'GET',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                }
+
+            });
+        }
+    }
+
+</script>
+<script>
+    function AssignDate() {
+        var list = AssignDates();
+        return list;
+    }
+
+
+    //function valueMapper(options) {
+    //    $.ajax({
+    //        url: "/HRM/EmployeePlacmentWithOJ/Employee_ValueMapper/",
+    //        data: {
+    //            value: options.value || 0,
+    //            status: 1,
+    //            excludeId: -1
+    //        },
+    //        success: function (data) {
+    //            options.success(data);
+    //        }
+    //    });
+    //}
+
+    function convertValues(value) {
+        var data = {};
+
+        value = $.isArray(value) ? value : [value];
+
+        for (var idx = 0; idx < value.length; idx++) {
+            data["values[" + idx + "]"] = value[idx];
+        }
+
+        return data;
+    }
+
+</script>

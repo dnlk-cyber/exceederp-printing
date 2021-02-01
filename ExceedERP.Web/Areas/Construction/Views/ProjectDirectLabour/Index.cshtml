@@ -1,0 +1,27 @@
+﻿@using ExceedERP.Core.Localization
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.ProjectDirectLabour>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.UnitOfMeasurementId);
+        columns.Bound(c => c.Quantity);
+        columns.Bound(c => c.UnitFactory);
+        columns.Bound(c => c.DailyPay);
+        columns.Bound(c => c.TotalCost);
+        columns.Bound(c => c.ManpowerUnitCost);
+        columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.ProjectDirectLabourId))
+          .Read(read => read.Action("ProjectDirectLabour_Read", "ProjectDirectLabour"))
+          .Create(create => create.Action("ProjectDirectLabour_Create", "ProjectDirectLabour"))
+          .Update(update => update.Action("ProjectDirectLabour_Update", "ProjectDirectLabour"))
+          .Destroy(destroy => destroy.Action("ProjectDirectLabour_Destroy", "ProjectDirectLabour"))
+      )
+)

@@ -1,0 +1,28 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Finance.Bank.ReconciliationBankServiceChargeValidation>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.Status);
+        columns.Bound(c => c.Remark);
+        columns.Bound(c => c.OrgBranchName);
+        columns.Bound(c => c.DateCreated);
+        columns.Bound(c => c.LastModified);
+        columns.Bound(c => c.CreatedBy);
+        columns.Bound(c => c.ModifiedBy);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.ReconciliationBankServiceChargeValidationId))
+          .Read(read => read.Action("ReconciliationBankServiceChargeValidations_Read", "ReconciliationBankServiceChargeValidation"))
+          .Create(create => create.Action("ReconciliationBankServiceChargeValidations_Create", "ReconciliationBankServiceChargeValidation"))
+          .Update(update => update.Action("ReconciliationBankServiceChargeValidations_Update", "ReconciliationBankServiceChargeValidation"))
+          .Destroy(destroy => destroy.Action("ReconciliationBankServiceChargeValidations_Destroy", "ReconciliationBankServiceChargeValidation"))
+      )
+)

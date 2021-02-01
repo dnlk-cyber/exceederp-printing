@@ -1,0 +1,4 @@
+﻿@(Html.Kendo().DropDownListFor(model => model)
+                                              .DataTextField("EquipmentTypeName")
+                                                      .DataValueField("EquipmentTypeID").Filter(FilterType.Contains).OptionLabel("Select").HtmlAttributes(new { style = "width:100%" })
+                                                  .DataSource(d => d.Read(r => r.Action("EquipmentTypeDDDBind", "EquipmentType")).ServerFiltering(false)))

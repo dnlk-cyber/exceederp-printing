@@ -1,0 +1,30 @@
+﻿
+
+
+
+    <form action='EquipmentAttachment/EquipmentAttachment_Create' method='post' enctype='multipart/form-data'>
+        <fieldset>
+            
+            <div class='editor-field'>
+              <input  type="file" name='files' />
+            </div>
+            <input type="text" name='files' value='' />
+
+            <div class='editor-field'>
+                <input type='submit' value='Upload' />
+            </div>
+
+        </fieldset>
+    </form>
+@(Html.Kendo().Editor()
+      .Name("editor")
+      .HtmlAttributes(new { style = "width: 740px;height:440px" })
+      .Tools(tools => tools.Clear().InsertImage())
+      .ImageBrowser(imageBrowser => imageBrowser
+    .Image("Image", "ImageBrowser", new { path = "{0}" })
+    .Read("Read", "ImageBrowser")
+    .Create("Create", "ImageBrowser")
+    .Destroy("Destroy", "ImageBrowser")
+    .Upload("Upload", "ImageBrowser")
+    .Thumbnail("Thumbnail", "ImageBrowser"))
+)

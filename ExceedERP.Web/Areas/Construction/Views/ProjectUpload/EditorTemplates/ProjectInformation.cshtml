@@ -1,0 +1,173 @@
+﻿@using System.Collections
+@using ExceedERP.Helpers.Common
+@using ExceedERP.Core.Localization
+@using Kendo.Mvc.UI
+@model ExceedERP.Core.Domain.Construction.ProjectInformation 
+
+<form>
+    <div class="row">
+    <div class="col-md-1">
+
+    </div>
+    <div class="col-md-3">
+        <div class="form-group">
+            <div class="k-label">
+                @Html.LabelFor(model => model.Name, htmlAttributes: new {@class = "control-label col-md-8"})
+
+            </div>
+            <div>
+
+                @Html.Kendo().TextBoxFor(model => model.Name)
+                @Html.ValidationMessageFor(model => model.Name, "", new { @class = "text-danger" })
+
+
+
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="form-group">
+            <div class="k-label">
+                @Html.LabelFor(model => model.Code, htmlAttributes: new { @class = "control-label col-md-8" })
+
+            </div>
+            <div>
+
+                @Html.Kendo().TextBoxFor(model => model.Code)
+                @Html.ValidationMessageFor(model => model.Code, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="form-group">
+            <div class="k-label">
+                @Html.LabelFor(model => model.Category, htmlAttributes: new { @class = "control-label col-md-8" })
+
+            </div>
+            <div>
+
+                @(Html.Kendo().DropDownListFor(model => model.Category)
+                
+                  .OptionLabel(Resources.Select)
+                                  .DataTextField("Text")
+                                  .DataValueField("Value")
+                                           .ValuePrimitive(true)
+                                                          .BindTo(EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.Common.ProjectCategory))))
+            </div>
+        </div>
+    </div>
+  
+   
+
+</div>
+
+<br/>
+
+
+<div class="row">
+    <div class="col-md-1">
+
+    </div>
+    <div class="col-md-3">
+        <div>
+            @Html.LabelFor(model => model.Location, htmlAttributes: new { @class = "control-label col-md-8" })
+        </div>
+        <div class="form-group">
+            @Html.Kendo().TextBoxFor(model => model.Location)
+            @Html.ValidationMessageFor(model => model.Location, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="form-group">
+            <div class="k-label">
+                @Html.LabelFor(model => model.ContractAmount, htmlAttributes: new { @class = "control-label col-md-8" })
+
+            </div>
+            <div>
+                @Html.Kendo().TextBoxFor(model => model.ContractAmount)
+                @Html.ValidationMessageFor(model => model.ContractAmount, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div>
+            @Html.LabelFor(model => model.ProjectScope , htmlAttributes: new { @class = "control-label col-md-8" })
+        </div>
+        <div class="form-group">
+
+            @Html.Kendo().TextBoxFor(model => model.ProjectScope)
+            @Html.ValidationMessageFor(model => model.ProjectScope, "", new { @class = "text-danger" })
+        </div>
+    </div>
+ 
+   
+
+
+</div>
+<br/>
+    <div class="row">
+        <div class="col-md-1">
+
+        </div>
+        <div class="col-md-3">
+            <div>
+                @Html.LabelFor(model => model.EmployeeId, htmlAttributes: new { @class = "control-label col-md-8" })
+            </div>
+            <div class="form-group">
+                @Html.Kendo().TextBoxFor(model => model.EmployeeId)
+                @Html.ValidationMessageFor(model => model.EmployeeId, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.Client, htmlAttributes: new { @class = "control-label col-md-8" })
+
+                </div>
+                <div>
+                    @Html.Kendo().TextBoxFor(model => model.Client)
+                    @Html.ValidationMessageFor(model => model.Client, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div>
+                @Html.LabelFor(model => model.Consultant, htmlAttributes: new { @class = "control-label col-md-8" })
+            </div>
+            <div class="form-group">
+
+                @Html.Kendo().TextBoxFor(model => model.Consultant)
+                @Html.ValidationMessageFor(model => model.Consultant, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+
+
+
+    </div>
+
+    <br />
+    @*<div class="row">
+        <div class="col-md-1">
+
+        </div>
+        <div class="col-md-3">
+            <div>
+                @Html.LabelFor(model => model.PeriodId , htmlAttributes: new { @class = "control-label col-md-8" })
+            </div>
+            <div class="form-group">
+                @(Html.Kendo().DropDownListFor(model => model.PeriodId)
+                  .AutoBind(false)
+                  .OptionLabel(Resources.Select)
+                           .BindTo((IEnumerable)ViewData["PeriodList"])
+                                  .DataTextField("PeriodName")
+                                  .DataValueField("PeriodId")
+                                           .ValuePrimitive(true)
+                )
+            </div>
+        </div>
+      
+    </div>*@
+    
+
+</form>

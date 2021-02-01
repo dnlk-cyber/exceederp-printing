@@ -1,0 +1,142 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<Legend>@Resources.NavigatorPayroll_Association</Legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.HRM.Payroll.Association>()
+          .Name("Associationgrid")
+      .Columns(columns =>
+      {
+          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "PersonId", "FullNameWithOutCode").EditorTemplateName("PayrollListOfEmployee").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
+          columns.Bound(c => c.Type).EditorTemplateName("AssociationType").Width(100);
+          columns.ForeignKey(c => c.GLPeriodId, (IEnumerable)ViewData["PeriodList"], "GLPeriodId", "Name").EditorTemplateName("GLPeriod").Width(100);
+          columns.Bound(c => c.MonthlyAmount).Width(120);
+          columns.Bound(c => c.Amount).Width(80);
+          columns.Bound(c => c.AdditionalAmount).Width(140);
+          columns.Bound(c => c.IsMemeber).ClientTemplate("<input type='checkbox'  disabled='true' value='#=IsMemeber #' " + " # if (IsMemeber) { #" + "checked='checked'" + "# } #" + " />").Width(100);
+          columns.Bound(c => c.ApplyToAll).ClientTemplate("<input type='checkbox'  disabled='true' value='#=ApplyToAll #' " + " # if (ApplyToAll) { #" + "checked='checked'" + "# } #" + " />").Width(150);
+        columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel); });
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                              toolbar.Excel().Text(Resources.ActionButton_ExportExcel).HtmlAttributes(new { @class = "btn btn-primary btn-xs pull-right" });
+                              toolbar.Pdf().Text(Resources.ActionButton_ExportPDF).HtmlAttributes(new { @class = "btn btn-primary btn-xs pull-right" });
+      })
+                      .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("Assocation").Window(window => { window.Title(Resources.NavigatorPayroll_Association); window.Scrollable(false); }))
+      .Excel(excel => excel
+          .FileName(Resources.NavigatorPayroll_Association + ".xlsx")
+          .Filterable(true)
+          .AllPages(true)
+          .ProxyURL(Url.Action("Excel_Export_Save", "Association"))
+      )
+      .Pdf(pdf => pdf
+          .AllPages()
+          .FileName(Resources.NavigatorPayroll_Association + ".pdf")
+          .ProxyURL(Url.Action("Pdf_Export_Save", "Association"))
+      )
+      .Selectable(selectable => {
+            selectable.Mode(GridSelectionMode.Single);
+            selectable.Type(GridSelectionType.Row);
+      })
+          .Scrollable(h => h.Height(500))
+             .Groupable()
+                      .Sortable(sortable =>
+                      {
+                          sortable.SortMode(GridSortMode.SingleColumn);
+                      })
+          .Filterable()
+             .Pageable(pageable => pageable
+                                        .Input(true)
+                                        .Numeric(false)
+                                        .Refresh(true)
+                                        .PageSizes(true)
+                                        .ButtonCount(5))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+              .Events(events =>
+                        {
+                            events.Error("error_handler(\"Associationgrid\")");
+                            events.RequestStart("onRequestStart(\"Associationgrid\")");
+                            events.RequestEnd("onRequestEnd(\"Associationgrid\")");
+                        })
+                      
+          .Model(model => model.Id(p => p.AssociationId))
+          .Read(read => read.Action("Associations_Read", "Association"))
+          .Create(create => create.Action("Associations_Create", "Association"))
+          .Update(update => update.Action("Associations_Update", "Association"))
+          .Destroy(destroy => destroy.Action("Associations_Destroy", "Association"))
+      )
+)
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 1000px;
+    }
+</style>
+
+<script>
+    //function error_handler(e) {
+    //    if (e.errors) {
+    //        var message = "Errors:\n";
+    //        $.each(e.errors, function(key, value) {
+    //            if ('errors' in value) {
+    //                $.each(value.errors, function() {
+    //                    message += this + "\n";
+    //                });
+    //            }
+    //        });
+    //        alert(message);
+
+    //    }
+
+    //}
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+</script>
+<script>
+    function Change(e) {
+
+        // var amt = $("#AmtPercnet").data("kendoDropDownList");
+        var x = e.value;
+        if (x == "1") {
+            $("#MonthlyAmount").prop("disabled", false).addClass("k-state-disabled");
+            $("#AdditionalAmount").prop("disabled", false).addClass("k-state-disabled");
+            $("#Amount").prop("disabled", true).addClass("k-state-disabled");
+            $("#NetGross").prop("disabled", false).addClass("k-state-disabled");
+        }
+        else {
+            $("#MonthlyAmount").prop("disabled", true).addClass("k-state-disabled");
+            $("#AdditionalAmount").prop("disabled", true).addClass("k-state-disabled");
+            $("#Amount").prop("disabled", false).addClass("k-state-disabled");
+            $("#NetGross").prop("disabled", true).addClass("k-state-disabled");
+        }
+    }
+    function valueMapper(options) {
+        $.ajax({
+            url: "/HRM/Loan/Employee_ValueMapper/",
+            data: {
+                value: options.value || 0,
+                status: 1,
+                excludeId: -1
+            },
+            success: function (data) {
+                options.success(data);
+            }
+        });
+    }
+
+    function convertValues(value) {
+        var data = {};
+
+        value = $.isArray(value) ? value : [value];
+
+        for (var idx = 0; idx < value.length; idx++) {
+            data["values[" + idx + "]"] = value[idx];
+        }
+
+        return data;
+    }
+</script>

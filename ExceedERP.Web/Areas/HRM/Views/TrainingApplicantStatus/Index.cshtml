@@ -1,0 +1,196 @@
+﻿@using System.Collections
+@using System.Security.AccessControl
+@using ExceedERP.Core.Domain.HRM.SelfCare
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legnd >@Resources.NavigatorTraining_TrainingApplicantStatus</legnd>
+@(Html.Kendo().Grid<TrainingApplicant>()
+          .Name("TrainingApplicantgrid")
+      .Columns(columns =>
+      {
+          columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["Depo"], "OrgStructureId", "Name").EditorTemplateName("Department").Filterable(ftb => ftb.Multi(true).Search(true)).Width(200);
+        columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["CourseList"], "LookupId", "Description").EditorTemplateName("Course").Width(150);
+        columns.Bound(c => c.DateAmharic).Width(150);
+        columns.Bound(c => c.Remark).Width (150);
+        //columns.Command(command =>
+        //{
+        //    command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel);
+        //}).Width(180);
+      })
+      .ToolBar(toolbar => {
+           // toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+            .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("TrainingRequest").Window(window => { window.Title("Training Request"); window.Scrollable(false); }))
+         .Selectable(selectable =>
+         {
+             selectable.Mode(GridSelectionMode.Single);
+             selectable.Type(GridSelectionType.Row);
+         })
+             .Events(e =>
+             {
+
+                 e.DetailExpand("onDetailExpandUser");
+             })
+             .Scrollable(h => h.Height(500))
+                 .Groupable()
+                          .Sortable(sortable =>
+                          {
+                              sortable.SortMode(GridSortMode.SingleColumn);
+                          })
+              .Filterable()
+                 .Pageable(pageable => pageable
+                                            .Input(true)
+                                            .Numeric(false)
+                                            .Refresh(true)
+                                            .PageSizes(true)
+                                            .ButtonCount(5))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+              //.Sort(sort => sort.Add("DateCreated").Descending()) 
+              .Events(events =>
+                             {
+                                 events.Error("error_handler(\"TrainingApplicantgrid\")");
+                                 events.RequestStart("onRequestStart(\"TrainingApplicantgrid\")");
+                                 events.RequestEnd("onRequestEnd(\"TrainingApplicantgrid\")");
+                             })
+                      
+          .Model(model => model.Id(p => p.TrainingApplicantId))
+              .Read(read => read.Action("TrainingApplicants_Read", "TrainingApplicantStatus"))
+              .Create(create => create.Action("TrainingApplicants_Create", "TrainingApplicantStatus"))
+              .Update(update => update.Action("TrainingApplicants_Update", "TrainingApplicantStatus"))
+              .Destroy(destroy => destroy.Action("TrainingApplicants_Destroy", "TrainingApplicantStatus"))
+          ).ClientDetailTemplateId("template")
+      )
+
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                  .Name("tabstrip_#=TrainingApplicantId#")
+          .SelectedIndex(0)
+          .Items(items =>
+          {
+              items.Add().Text(Resources .HR_RequestStatus ).Content(
+                @<text>
+                @*    <legend>Status</legend>*@
+
+                    @(Html.Kendo().Grid<RequestesStatus>()
+                                  .Name("RequestesStatusgrid_#=TrainingApplicantId#")
+                          .Columns(columns =>
+                          {
+                              //columns.Bound(c => c.RequestId);
+                              columns.Bound(c => c.DateReqStatAm).Width(150);
+                              columns.Bound(c => c.Status).EditorTemplateName("Enum").Width(300);
+                              columns.ForeignKey(c => c.ApproverId, (IEnumerable)ViewData["EmployeeName"], "EmployeeId", "FullNameAmharic").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
+                              columns.ForeignKey(c => c.ApproverDepartment, (IEnumerable)ViewData["Depo"], "OrgStructureId", "Name").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
+                              columns.Bound(c => c.Remark).Width(150);
+                              columns.Command(command =>
+                              {
+                                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                  //  command.Destroy().Text(Resources.ActionButton_Cancel);
+                              }).Width(180);
+                          })
+                          .ToolBar(toolbar =>
+                          {
+                              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                          })
+                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                          .Scrollable()
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+                                      .Events(events =>
+                                      {
+                                          events.Error("error_handler(\"RequestesStatusgrid_#=TrainingApplicantId#\")");
+                                          events.RequestStart("onRequestStart(\"RequestesStatusgrid_#=TrainingApplicantId#\")");
+                                          events.RequestEnd("onRequestEnd(\"RequestesStatusgrid_#=TrainingApplicantId#\")");
+                                      })
+
+                              .Model(model =>
+                              {
+                                  model.Id(p => p.RequestStatusId);
+                                  model.Field(p => p.Date).Editable(false).DefaultValue(DateTime.Today);
+                              })
+                                                             .Read(read => read.Action("RequestesStatus_Read", "RequestesStatus", new { id = "#=TrainingApplicantId#", referenceType = "Training" }))
+                                                                                                                          .Create(create => create.Action("RequestesStatus_Create", "RequestesStatus", new { id = "#=TrainingApplicantId#", referenceType2 = "Training" }))
+                                                          .Update(update => update.Action("RequestesStatus_Update", "RequestesStatus"))
+                                                          .Destroy(destroy => destroy.Action("RequestesStatus_Destroy", "RequestesStatus"))
+                          ).ToClientTemplate()
+                    )
+
+
+                </text>
+                  );
+              //*****************************************************************************************************//
+
+          }).ToClientTemplate())
+</script>
+<style>
+    div.k-edit-form-container {
+        width: 700px;
+    }
+</style>
+<script>
+    //function error_handler(e) {
+    //    if (e.errors) {
+    //        var message = "Errors:\n";
+    //        $.each(e.errors, function(key, value) {
+    //            if ('errors' in value) {
+    //                $.each(value.errors, function() {
+    //                    message += this + "\n";
+    //                });
+    //            }
+    //        });
+    //        alert(message);
+
+    //    }
+
+    //}
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+    function onDetailExpandUser(e) {
+        var masterRow = e.masterRow;
+
+        var masterGrid = $("#TrainingApplicantgrid").data("kendoGrid");
+
+        var masterDataItem = masterGrid.dataItem(masterRow);
+
+        masterId = masterDataItem.TrainingApplicantId;
+        var gridName = "#RequestesStatusgrid_" + masterId;
+        $.ajax({
+            url: '@Url.Action("CheckStatus", "TrainingApplicant")',
+
+            data: { masterId: masterId },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                r = result;
+                if (r == "true") {
+                    $(gridName).find(".k-toolbar").hide(); //hide toolbar
+                    $(".k-grid-add", gridName).hide();
+                }
+                else if (r == "approved") {
+                    $(gridName).find(".k-toolbar").hide(); //hide toolbar
+                    $(".k-grid-top", gridName).hide();
+                    $(".k-grid-edit", gridName).hide();
+                    $(".k-grid-delete", gridName).hide();
+                }
+                else if (r == "Dapproved") {
+                    $(gridName).find(".k-toolbar").hide(); //hide toolbar
+                    $(".k-grid-top", gridName).hide();
+                    $(".k-grid-edit", gridName).show();
+                    $(".k-grid-delete", gridName).show();
+                }
+                else {
+                    $(gridName).find(".k-toolbar").show(); //hide toolbar
+                    $(".k-grid-add", gridName).show();
+                }
+
+            }
+
+        });
+
+    }
+</script>

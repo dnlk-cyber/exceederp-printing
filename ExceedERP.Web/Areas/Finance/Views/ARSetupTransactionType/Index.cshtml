@@ -1,0 +1,47 @@
+﻿@using ExceedERP.Core.Domain.Finance.AR
+@(Html.Kendo().Grid<ARSetupTransactionType>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.TransactionName);
+        columns.Bound(c => c.TransactionClass);
+        columns.Bound(c => c.Description);
+        columns.Bound(c => c.StartDate);
+        columns.Bound(c => c.CreationSign);
+        columns.Bound(c => c.OpenReceivable);
+        columns.Bound(c => c.PosttoGL);
+        columns.Bound(c => c.IsActive);
+        columns.Bound(c => c.ReceivableAccount);
+        columns.Bound(c => c.RevenueAccount);
+        columns.Bound(c => c.TaxAccount);
+        columns.Bound(c => c.FreightAccount);
+        columns.Bound(c => c.ClearingAccount);
+        columns.Bound(c => c.UnearnedAccount);
+        columns.Bound(c => c.OrgBranchName);
+        columns.Bound(c => c.DateCreated);
+        columns.Bound(c => c.LastModified);
+        columns.Bound(c => c.CreatedBy);
+        columns.Bound(c => c.ModifiedBy);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+            toolbar.Excel();
+           // toolbar.Pdf();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Pageable()
+      .Sortable(sortable => {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Filterable()
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.ARSetupTransactionTypeID))
+          .Read(read => read.Action("ARSetupTransactionTypes_Read", "ARSetupTransactionType"))
+          .Create(create => create.Action("ARSetupTransactionTypes_Create", "ARSetupTransactionType"))
+          .Update(update => update.Action("ARSetupTransactionTypes_Update", "ARSetupTransactionType"))
+          .Destroy(destroy => destroy.Action("ARSetupTransactionTypes_Destroy", "ARSetupTransactionType"))
+      )
+)

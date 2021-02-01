@@ -1,0 +1,251 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.HRM.Attendance
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>@Resources.NavigatorAttendance_LateComingSummary</legend>
+@(Html.Kendo().Grid<LateComingSummary>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+      columns.Bound(c => c.Check).Template(@<text></text>).ClientTemplate("<input type='checkbox' #= Check ? checked='checked':'' # class='chkbx' />")
+                    .HeaderTemplate("<input type='checkbox' id='masterCheckBox' onclick='checkAll(this)'/>").Width(120);
+          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "PersonId", "FullName").EditorTemplateName("ListOfEmployee").Width(200);
+          columns.ForeignKey(c => c.GLPeriodId, (IEnumerable)ViewData["PeriodList"], "GLPeriodId", "Name").EditorTemplateName("GLPeriodSelector").Width(200);
+          columns.Bound(c => c.TotalDays).Width(120);
+          columns.Bound(c => c.TotalHours).Width(120);
+          columns.Bound(c => c.Remark).Width(120);
+          columns.Bound(c => c.Processed).Width(120).Visible (false );
+          //columns.Command(command =>
+          //{
+          //    if (HttpContext.Current.User.IsInRole("HR_Attendance_User"))
+          //    {
+          //        command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+          //    }
+
+          //}).Width(200);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Template(@<text>
+<div class="toolbar">
+    @item.SaveButton(Resources.ActionButton_SaveChanges, Resources.ActionButton_Cancel)
+
+    @(Html.Kendo().ComboBox()
+                                   .Name("GlFiscalYearId")
+                                   .Placeholder("Year")
+                                           .DataTextField("Name")
+                                              .DataValueField("GlFiscalYearId")
+                                                   .DataSource(dataSource =>
+                                 {
+                                            dataSource.Read(read => read.Action("GetFisicalYear", "HRMDataProvider", new { area = "HRM" }))
+                                                                  .ServerFiltering(false);
+                                        })
+                                                
+                           .AutoBind(false)
+
+                           .HtmlAttributes(new { style = "width: 150px;" })
+
+    )
+    <label class="category-label" for="Period">@Resources.HR_PerformanceManagment_EmployeeMeasurementDefinition_PeriodId</label>
+    @(Html.Kendo().ComboBox()
+                                    .Name("Period")
+                                    .Placeholder("Period")
+                                            .DataTextField("Name")
+                                            .CascadeFrom("GlFiscalYearId")
+                                             .DataValueField("GLPeriodId")
+                                                    .DataSource(dataSource =>
+                                  {
+                                            dataSource.Read(read => read.Action("GetPeriods", "HRMDataProvider", new { area = "HRM" }).Data("filterPeriod"))
+                                                                  .ServerFiltering(true);
+                                        })
+                                                   
+                            .AutoBind(false)
+
+                            .HtmlAttributes(new { style = "width: 150px;" })
+
+    )
+    @*<label class="category-label" for="EmployeeId">@Resources.HR_PerformanceManagment_EmployeeMeasurementDefinition_PersonEmployee</label>
+        @(Html.Kendo().ComboBox()
+                                     .Placeholder("Employee..")
+                                     .Name("PersonId")
+
+                                     .BindTo((IEnumerable)ViewData["EmployeeList"])
+
+                                     .DataTextField("FullName")
+                                     .DataValueField("PersonId")
+                                     .AutoBind(false)
+                                     //.Events(e => e.Change("Employee"))
+                                     .HtmlAttributes(new { style = "width: 150x;" })
+
+        )*@
+
+
+
+    @(Html.Kendo().Button()
+          .Name("btnRefresh")
+          .HtmlAttributes(new { type = "button", @class = "k-primary" })
+                  .Events(e => e.Click("Process"))
+                  .Content(Resources.HR_LateComingSummary_Summary))
+
+
+
+</div>
+    </text>);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InCell))
+       .Events(x =>
+       {
+
+           x.DataBound("onDataBound");
+
+           x.Edit("onEdit");
+       })
+           .Scrollable(h => h.Height(500))
+
+                      .Filterable()
+                         .Pageable(pageable => pageable
+                                                    .Input(true)
+                                                    .Numeric(false)
+                                                    .Refresh(true)
+                                                    .PageSizes(true)
+                                                    .ButtonCount(5))
+
+      .DataSource(dataSource => dataSource
+
+          .Ajax()
+          .Batch (true)
+              .Events(events =>
+              {
+
+                  events.Error("error_handler(\"grid\")");
+                  events.RequestStart("onRequestStart(\"grid\")");
+                  events.RequestEnd("onRequestEnd(\"grid\")");
+              })
+
+              .Model(model =>
+              {
+                  model.Id(p => p.LateComingSummaryId);
+                  model.Field(p => p.EmployeeId).Editable(false);
+              })
+          .Read(read => read.Action("LateComingSummaries_Read", "DeptLateComingSummary"))
+          .Create(create => create.Action("Editing_Create", "DeptLateComingSummary"))
+          .Update(update => update.Action("Editing_Create", "DeptLateComingSummary"))
+          .Destroy(destroy => destroy.Action("LateComingSummaries_Destroy", "DeptLateComingSummary"))
+      )
+)
+<script>
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+    function Process(e)
+    {
+          
+        var Periods = $("#Period").data("kendoComboBox");
+          var periodId = Periods.value();
+        // $("#EvaluationType").val(0);
+        $.ajax({
+            url: '@Url.Action("Summary", "DeptLateComingSummary")',
+            //contentType: "application/json; charset=utf-8",
+            data: { periodId: periodId },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                r = result;
+               
+                    $("#grid").data("kendoGrid").dataSource.read();
+                    $("#grid").data("kendoGrid").refresh();
+                
+            }
+
+        });
+    }
+</script>
+<script type="text/javascript">
+    $(function () {
+        $('#grid').on('click', '.chkbx', function () {
+            var checked = $(this).is(':checked');
+            var grid = $('#grid').data().kendoGrid;
+            var dataItem = grid.dataItem($(this).closest('tr'));
+            dataItem.set('Check', checked);
+        })
+    })
+
+    function checkAll(ele) {
+        var state = $(ele).is(':checked');
+        var grid = $('#grid').data().kendoGrid;
+        $.each(grid.dataSource.view(), function () {
+            if (this['Check'] != state)
+                this.dirty = true;
+            this['Check'] = state;
+        });
+        grid.refresh();
+    }
+     function onDataBound(e) {
+        var grid = this;
+      
+        var gridRows = grid.tbody.find("tr");
+        for (var i = 0; i < gridRows.length; i++) {
+            var row = $(gridRows[i]);
+            var dataItem = grid.dataItem(row);
+         
+            if (dataItem.Processed === true)
+            {
+               
+                row.css("background-color", "grey");
+                //row.;
+            }
+
+
+        }
+    }
+     function onEdit(e)
+     {
+         var grid = this;
+         if (e.model.Processed == true) {
+             //e.container
+             $("#grid").data("kendoGrid").closeCell();
+             this.closeCell();
+            
+         }
+     }
+    function valueMapper(options) {
+        $.ajax({
+            url: "/HRM/HRMDataProvider/Employee_ValueMapper/",
+            data: {
+                value: options.value || 0,
+                status: 1,
+                excludeId: -1
+            },
+            success: function (data) {
+                options.success(data);
+            }
+        });
+    }
+
+    function convertValues(value) {
+        var data = {};
+
+        value = $.isArray(value) ? value : [value];
+
+        for (var idx = 0; idx < value.length; idx++) {
+            data["values[" + idx + "]"] = value[idx];
+        }
+
+        return data;
+    }
+</script>
+
+<script>
+
+    function filterPeriod() {
+        return {
+            GlFiscalYearId: $("#GlFiscalYearId").val()
+        };
+    }
+
+
+</script>

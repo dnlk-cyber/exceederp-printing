@@ -1,0 +1,190 @@
+﻿<legend>Create New LC Management</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Procurement.LC.LCManagement>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.RequestDate).Width(200);
+          columns.Bound(c => c.RequestAmount).Width(200);
+          columns.Bound(c => c.RequestCurrency).Width(200);
+
+          columns.Bound(c => c.ApprovedDate).Width(200);
+          columns.Bound(c => c.ApprovedAmount).Width(200);
+          columns.Bound(c => c.ApprovedCurrency).Width(200);
+          columns.Bound(c => c.ApprovedCurrency).Width(200);
+
+        columns.Bound(c => c.SwiftCode).Width(150);
+        columns.Bound(c => c.LCNo).Width(100);
+          
+        //columns.Bound(c => c.OrgBranchName).Width(200);
+        //columns.Bound(c => c.DateCreated).Width(200);
+        //columns.Bound(c => c.LastModified).Width(200);
+        //columns.Bound(c => c.CreatedBy).Width(200);
+        //columns.Bound(c => c.ModifiedBy).Width(200);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+            toolbar.Excel();
+           // toolbar.Pdf();
+      })
+      .Events(ev => ev.DataBound("onDataBound"))
+      .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("LCManagement").Window(x => x.Title("LC Management")))
+        .HtmlAttributes(new { style = "height: 550px;" })
+              .Pageable(pageable => pageable
+                        .Input(true)
+                        .Numeric(false)
+                        .Refresh(true)
+                        .PageSizes(true)
+                        .ButtonCount(5))
+
+              .Scrollable()
+              .Sortable()
+              .Filterable()
+              .Groupable()
+              .ClientDetailTemplateId("template")
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.LCManagementID))
+          .Events(events => events .Error("error_handler_one"))
+          .Read(read => read.Action("LCManagements_Read", "LCManagement"))
+          .Create(create => create.Action("LCManagements_Create", "LCManagement"))
+          .Update(update => update.Action("LCManagements_Update", "LCManagement"))
+          .Destroy(destroy => destroy.Action("LCManagements_Destroy", "LCManagement"))
+      )
+
+            
+    )
+
+<script id="template" type="text/kendo-tmpl">
+    <table class="table table-borderless" cellpadding="0">
+        <tbody>
+            <tr>
+                <th align="right">LCOpeningDate :</th>
+                <td>#= LCOpeningDate #</td>
+                <th>LCPeriod :</th>
+                <td>#= LCPeriod #</td>
+                <th>CustomTaxCharge :</th>
+                <td>#= CustomTaxCharge #</td>
+                <th>InsuranceCost :</th>
+                <td>#= InsuranceCost #</td>
+            </tr>
+            <tr>
+                <th>LCBeneficiary :</th>
+                <td>#= LCBeneficiary #</td>
+                <th>LCAmendementAmount :</th>
+                <td>#= LCAmendementAmount #</td>
+                <th>LogisticsCharge :</th>
+                <td>#= LogisticsCharge #</td>
+                <th>FreightCost :</th>
+                <td>#= FreightCost #</td>
+            </tr>
+            <tr>
+                <th>OpeningChargeAmount :</th>
+                <td>#= OpeningChargeAmount #</td>
+                <th>LCAmendementCurrency :</th>
+                <td>#= LCAmendementCurrency #</td>
+                <th>GoodDeliveryDate :</th>
+                <td>#= GoodDeliveryDate #</td>
+                <th>InlandHaulageRevenue :</th>
+                <td>#= InlandHaulageRevenue #</td>
+            </tr>
+            <tr>
+                <th>OpeningChargeCurrency :</th>
+                <td>#= OpeningChargeCurrency #</td>
+                <th>LCAdditionalPeriodRequested:</th>
+                <td>#= LCAdditionalPeriodRequested #</td>
+                <th>ContractRefNo :</th>
+                <td>#= ContractRefNo #</td>
+                <th>Remark :</th>
+                <td>#= Remark #</td>
+            </tr>           
+        </tbody>
+    </table> 
+</script>
+
+
+<script>
+        
+    
+</script>
+
+    <script type="text/javascript">
+        function error_handler(e) {
+            if (e.errors) {
+                var message = "Errors:\n";
+                $.each(e.errors, function (key, value) {
+                    if ('errors' in value) {
+                        $.each(value.errors, function () {
+                            message += this + "\n";
+                        });
+                    }
+                });
+                alert(message);
+            }
+        }
+        function dateDiffInDays(a, b) {
+            var date1 = a;
+            var date2 = b;
+
+
+
+            var yearDiff = date1.getFullYear() - date2.getFullYear();
+            var y1 = date1.getFullYear();
+            var y2 = date2.getFullYear();
+            var monthDiff = (date1.getMonth() + y1 * 12) - (date2.getMonth() + y2 * 12);
+            var day1 = parseInt(date1.getDate());
+            var day2 = parseInt(date2.getDate());
+            var dayDiff = (day1 - day2) + (monthDiff * 30) + (yearDiff * 365);
+            return Math.abs(dayDiff);
+        }
+        function onDataBound(e) {
+            var rows = e.sender.tbody.children();
+
+            for (var j = 0; j < rows.length; j++) {
+                var row = $(rows[j]);
+                var dataItem = e.sender.dataItem(row);
+
+                var today = new Date();
+                var dateDiff = 15;
+                var periodc = 15;
+                if (dataItem.RequestDate != null) {
+                    dateDiff = dateDiffInDays(dataItem.RequestDate, today);
+
+                }
+                if (dataItem.LCPeriod != null) {
+                    periodc = dataItem.LCPeriod;
+                }
+
+                if (periodc - dateDiff < 15) {
+                    row.css("background-color", "crimson");;
+                }
+            }
+
+        }
+    </script>
+
+<style type="text/css">
+    
+
+     .table-borderless tbody tr td, .table-borderless tbody tr th, .table-borderless thead tr th {
+        border: none;
+
+    }
+
+    .table-borderless th {
+        text-align: right;
+    }
+
+     div.k-edit-form-container {
+         width: 700px;
+     }
+
+    div.k-content {
+        overflow: hidden;
+        height: auto;
+    }
+        
+    .k-grid {
+        width: 100%;
+    }
+</style>

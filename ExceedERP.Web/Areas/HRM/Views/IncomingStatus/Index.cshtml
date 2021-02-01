@@ -1,0 +1,72 @@
+﻿@using ExceedERP.Core.Domain.HRM.Letters
+@using ExceedERP.Core.Localization
+
+@(Html.Kendo().Grid<IncommingStatus>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.Incomming);
+        columns.Bound(c => c.Date);
+        columns.Bound(c => c.Decsion);
+        columns.Bound(c => c.Remark);
+        columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Selectable(selectable => {
+            selectable.Mode(GridSelectionMode.Single);
+            selectable.Type(GridSelectionType.Row);
+      })
+         .Scrollable(h => h.Height(500))
+             .Groupable()
+                      .Sortable(sortable =>
+                      {
+                          sortable.SortMode(GridSortMode.SingleColumn);
+                      })
+          .Filterable()
+             .Pageable(pageable => pageable
+                                        .Input(true)
+                                        .Numeric(false)
+                                        .Refresh(true)
+                                        .PageSizes(true)
+                                        .ButtonCount(5))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+                    .Events(events =>
+                                                  {
+
+                                                      events.Error("error_handler(\"grid\")");
+                                                      events.RequestStart("onRequestStart(\"grid\")");
+                                                      events.RequestEnd("onRequestEnd(\"grid\")");
+                                                  })
+          .Model(model => model.Id(p => p.IncommingStatusId))
+          .Read(read => read.Action("IncommingStatus_Read", "IncomingStatus"))
+          .Create(create => create.Action("IncommingStatus_Create", "IncomingStatus"))
+          .Update(update => update.Action("IncommingStatus_Update", "IncomingStatus"))
+          .Destroy(destroy => destroy.Action("IncommingStatus_Destroy", "IncomingStatus"))
+      )
+)
+<script>
+    function error_handler(e) {
+        if (e.errors) {
+            var message = "Errors:\n";
+            $.each(e.errors, function(key, value) {
+                if ('errors' in value) {
+                    $.each(value.errors, function() {
+                        message += this + "\n";
+                    });
+                }
+            });
+            alert(message);
+
+        }
+
+    }
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+</script>

@@ -1,0 +1,71 @@
+﻿@{
+    Layout = "~/Views/Shared/_Popup.cshtml";
+}
+
+<div class="form">
+    <div class="row fullrow">
+
+        <div class="col-md-3 ro1">
+            <div class="form-group">
+                @Html.Label("Users", htmlAttributes: new { @class = "control-label col-md-6" })
+                <div class="col-md-6">
+                    @(Html.Kendo().DropDownList()
+                                  .Name("User")
+                                  .SelectedIndex(0)
+                                  .HtmlAttributes(new { style = "width:200px" })
+                                  .ValuePrimitive(true)
+                                  .DataTextField("UserName")
+                                  .DataValueField("UserName")
+                                  .Filter("contains")
+                                  .DataSource(dataSource =>
+                                  {
+                                      dataSource.Read(read => read.Action("GetProcurementCheckers", "GlobalDataProvider"))
+                                          .ServerFiltering(false);
+                                  })
+                    )
+                </div>
+            </div>
+            <div class="row"></div>
+
+            <div class="col-md-offset-3 col-md-9">
+                <button type="submit" class="saveBtn btn btn-primary" onclick="javascript:changeparent();"><i class="fa fa-suitcase"></i> Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script language="javascript">
+
+    var supplier ="";
+
+    function changeparent() {
+
+        if ((document.getElementById('User').value.length === 0)) {
+            alert("Please select.");
+        }
+        else {
+            supplier = document.getElementById('User').value;
+            window.opener.setChoice(supplier);
+            window.close();
+        }
+    }
+    function closeWin() {
+        document.close();
+    }
+
+
+</script>
+
+<style>
+    .k-list-container ul li.k-item {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .k-list-container ul {
+        overflow: hidden !important;
+    }
+</style>

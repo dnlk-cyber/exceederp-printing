@@ -1,0 +1,17 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@(Html.Kendo().DropDownListFor(m => m)
+    .OptionLabel(Resources.Select)
+            .DataTextField("Name")
+            .DataValueField("ProductionSiteId")
+            .DataSource(dataSource =>
+            {
+                dataSource.Read(read => read.Action("GetSitesInBranch", "ProductionDataProvider", new { area = "Production" }).Data("getSelectedBranchId"))
+                .ServerFiltering(true);
+            })
+            .CascadeFrom("BranchId")
+            //.Enable(false)
+            .Filter("contains")
+            .MinLength(2)
+            .ValuePrimitive(true)
+)

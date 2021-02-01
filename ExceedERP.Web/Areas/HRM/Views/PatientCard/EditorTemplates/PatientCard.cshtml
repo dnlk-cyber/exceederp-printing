@@ -1,0 +1,153 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@using Kendo.Mvc.UI
+@model ExceedERP.Core.Domain.HRM.HealthAndInsurance.PatientCard 
+
+
+<form>
+
+<div class="row">
+    <div class="col-md-1">
+
+    </div>
+    <div class="col-md-3">
+        <div class="form-group">
+            <div class="k-label">
+                @Html.LabelFor(model => model.EmployeeId, htmlAttributes: new { @class = "control-label col-md-8" })
+
+            </div>
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.EmployeeId)
+                        //  .Name("EmployeeId")
+                                              .DataValueField("PersonId")
+                        .DataTextField("FullName")
+                           .OptionLabel("Select Employee..")
+                            .Filter("contains")
+                            .MinLength(2)
+                                     .Events(e => e.Change("GetAgeSex"))
+                            .HtmlAttributes(new { style = "width:200px" })
+                            .Virtual(v => v.ValueMapper("valueMapper").ItemHeight(26))
+                        .DataSource(source =>
+                        {
+                            source.Custom()
+                                  .ServerFiltering(true)
+                                  .ServerPaging(true)
+                                  .Type("aspnetmvc-ajax")
+                                  .Transport(transport => transport.Read(r => r.Action("GetEmployees", "HRMDataProvider")))
+                                  .Schema(schema =>
+                                  {
+                                      schema.Data("Data")
+                                            .Total("Total");
+                                  });
+                        })
+
+                                           .ValuePrimitive(true)
+
+
+                                                                  .Height(400)
+                                                                          .HeaderTemplate("<div class=\"dropdown-header k-widget k-header\">" +
+                                                        "<span>Photo</span>" +
+                                                        "<span>Full Name</span>" +
+                                                    "</div>")
+                                                            .Template(@"<div class='Employee-photo' style='background-image: url(" + Url.Content("~/Content/Images/") + "#:data.PersonId#-Photo/" + "#:data.PersonId#.jpg" + ");'></div>" +
+                                                            "<div class='Employee-name'>#:FullName#</div>")
+                )
+            
+
+
+
+            </div>
+        </div>
+    </div>
+
+
+    <div class="col-md-3">
+        <div class="form-group">
+            <div class="k-label">
+                @Html.LabelFor(model => model.DateAmharic, htmlAttributes: new { @class = "control-label col-md-8" })
+
+            </div>
+            <div>
+                @Html.TextBoxFor(model => model.DateAmharic, htmlAttributes: new { disabled = "disabled", @class = "et-popup-picker" }) <img src="~/Scripts/etp/images/calendar-blue.gif" onclick="SelectDate(this)" />
+            
+                @Html.ValidationMessageFor(model => model.DateAmharic, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    </div>
+
+
+   
+  
+</div>
+
+<br/>
+    
+<div class="row">
+    <div class="col-md-1">
+
+    </div>
+
+    <div class="col-md-3">
+        <div>
+            @Html.LabelFor(model => model.PatientCardId, htmlAttributes: new { @class = "control-label col-md-8" })
+        </div>
+        <div class="form-group">
+            @(Html.Kendo().TextBoxFor(model => model.PatientCardId).Enable(false))
+            @Html.ValidationMessageFor(model => model.PatientCardId, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div>
+            @Html.LabelFor(model => model.Age, htmlAttributes: new { @class = "control-label col-md-8" })
+        </div>
+        <div class="form-group">
+            @(Html.Kendo().TextBoxFor(model => model.Age)
+                .Enable(false)
+            )
+            @Html.ValidationMessageFor(model => model.Age, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div>
+            @Html.LabelFor(model => model.Sex, htmlAttributes: new { @class = "control-label col-md-8" })
+        </div>
+        <div class="form-group">
+            @(Html.Kendo().TextBoxFor(model => model.Sex)
+.Enable( false))
+            @Html.ValidationMessageFor(model => model.Sex, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+   
+
+  
+
+
+</div>
+<br/>
+
+
+</form>
+<style >
+    .Employee-photo {
+        display: inline-block;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background-size: 32px 35px;
+        background-position: center center;
+        vertical-align: middle;
+        line-height: 32px;
+        box-shadow: inset 0 0 1px #999, inset 0 0 10px rgba(0,0,0,.2);
+        margin-left: 5px;
+    }
+
+    .Employee-name {
+        display: inline-block;
+        vertical-align: middle;
+        line-height: 32px;
+        padding-left: 3px;
+    }
+</style>

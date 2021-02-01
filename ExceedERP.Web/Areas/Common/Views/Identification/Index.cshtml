@@ -1,0 +1,31 @@
+﻿@using ExceedERP.Core.Domain.Common.HRM
+
+@(Html.Kendo().Grid<Identification>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.Reference);
+        columns.Bound(c => c.Description);
+        columns.Bound(c => c.IdNumber);
+        columns.Bound(c => c.Type);
+        columns.Bound(c => c.IssueDate);
+        columns.Bound(c => c.ExpiryDate);
+        columns.Bound(c => c.Issuer);
+        columns.Bound(c => c.Remark);
+        columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Pageable()
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.IdentificationId))
+          .Read(read => read.Action("Identifications_Read", "Identification"))
+          .Create(create => create.Action("Identifications_Create", "Identification"))
+          .Update(update => update.Action("Identifications_Update", "Identification"))
+          .Destroy(destroy => destroy.Action("Identifications_Destroy", "Identification"))
+      )
+)

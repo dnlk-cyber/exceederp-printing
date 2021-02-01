@@ -1,0 +1,70 @@
+﻿@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Setting | Working Days </legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.SettingCalendar>()
+      .Name("ProjectCalandergrid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Day);
+          columns.Bound(c => c.WorkingHourType);
+          columns.Bound(c => c.FromHour);
+          columns.Bound(c => c.ToHour);
+          columns.Command(command =>
+          {
+              command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+              command.Destroy().Text(Resources.ActionButton_Cancel);
+          }).Width(200);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+    //.Editable(editable => editable.Mode(GridEditMode.InLine))
+    //.Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("Calendar").Window(window => { window.Title("Calender"); window.Scrollable(false); }))
+
+      .Scrollable(h => h.Height(700))
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Filterable()
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(5))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .PageSize(20)
+          .Events(events =>
+          {
+              events.Error("error_handler(\"ProjectCalandergrid\")");
+              events.RequestStart("onRequestStart(\"ProjectCalandergrid\")");
+              events.RequestEnd("onRequestEnd(\"ProjectCalandergrid\")");
+          })
+              .Model(model => {
+                  model.Id(p => p.SettingCalendarId);
+                  model.Field(f => f.FromHour).Editable(false);
+                  model.Field(f => f.ToHour).Editable(false);
+              })
+          .Read(read => read.Action("Calander_Read", "Calendar"))
+          .Create(create => create.Action("Calander_Create", "Calendar"))
+          .Update(update => update.Action("Calander_Update", "Calendar"))
+          .Destroy(destroy => destroy.Action("Calander_Destroy", "Calendar"))
+      )
+)
+<script>
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+</script>

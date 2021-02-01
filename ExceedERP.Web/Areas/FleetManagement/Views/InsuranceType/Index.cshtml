@@ -1,0 +1,38 @@
+﻿<legend>Insurance Type</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetRegistration.FleetInsuranceType>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.Name);
+        columns.Bound(c => c.Description);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+         .HtmlAttributes(new { style = "height: 520px;" })
+                          .Pageable(pageable => pageable
+                                            .Input(true)
+                                            .Numeric(false)
+                                            .Refresh(true)
+                                            .PageSizes(true)
+                                            .ButtonCount(5))
+
+                                .Scrollable()
+                                .Sortable()
+                                .Filterable()
+                                 .Scrollable(h => h.Height(500))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+              .Model(model => model.Id(p => p.FleetInsuranceTypeId))
+                    .Events(ev => ev
+                                            .Error("error_handler(\"grid\")")
+                                            .RequestStart("onRequestStart(\"grid\")")
+                                            .RequestEnd("onRequestEnd(\"grid\")"))
+          .Read(read => read.Action("FleetInsuranceTypes_Read", "InsuranceType"))
+          .Create(create => create.Action("FleetInsuranceTypes_Create", "InsuranceType"))
+          .Update(update => update.Action("FleetInsuranceTypes_Update", "InsuranceType"))
+          .Destroy(destroy => destroy.Action("FleetInsuranceTypes_Destroy", "InsuranceType"))
+      )
+)

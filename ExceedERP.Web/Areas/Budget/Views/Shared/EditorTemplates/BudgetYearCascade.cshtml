@@ -1,0 +1,15 @@
+﻿
+@(Html.Kendo().DropDownListFor(model => model).HtmlAttributes(new { @class = "k-dropdown-clientValidation form-control" , required = "required" })
+                            .DataTextField("Text")
+                                        .DataValueField("Text").OptionLabel(" Select ").Filter(FilterType.Contains)
+                    .HtmlAttributes(new { style = "width:100%" })
+                    .DataSource(d =>
+                    {
+                        d.Read(r =>
+                        {
+                            r.Action("PlanYearByGroup", "BudgetDataProvider").Data("filterCategory");
+                        })
+                      .ServerFiltering(false);
+                    })
+                       .AutoBind(false) 
+                       .CascadeFrom("BudgetGroup"))

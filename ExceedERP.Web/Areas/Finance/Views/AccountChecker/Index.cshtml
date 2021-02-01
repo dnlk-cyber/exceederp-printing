@@ -1,0 +1,300 @@
+﻿@using System.Collections
+
+@using ExceedERP.Web.Areas.Finance.Controllers
+<legend>Checker Status</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Finance.ViewModels.AccountChekerVm>()
+                  .Name("grid")
+                  .Columns(columns =>
+                  {
+          // columns.Bound(c => c.Id).Width(120);
+          columns.Bound(c => c.Type).Width(130);
+                      columns.Bound(c => c.Description).Width(130);
+                      columns.Bound(c => c.Details).Width(350);
+
+                      columns.Command(
+                          command =>
+                          {
+                              command.Custom("✅").Click("fixIssue");
+
+                          }).Width(180);
+                  })
+              .ToolBar(toolbar =>
+              {
+
+                  toolbar.Template(@<text>
+                    <div class="toolbar">
+
+                        <table>
+                            <tr>
+                                <td>
+                                    <i>Error Type:</i>
+                                    @(Html.Kendo().DropDownListFor(m => m)
+                                                                  .Name("ErrorTypeList")
+                                                                  .BindTo((IEnumerable)ViewData["ErrorTypeList"])
+                                                                  .DataTextField("Name")
+                                                                  .DataValueField("Code")
+                                                                  .HtmlAttributes(new { style = "width: 300px;" })
+                                                          .ValuePrimitive(true))
+
+                                    @(Html.Kendo().Button()
+                                                          .Name("btnFilter")
+                                                          .HtmlAttributes(new { type = "search", @class = "k-primary" })
+                                                          .Events(e => e.Click("filterErrors"))
+                                                          .Content("Check Error"))
+                                </td>
+
+
+                                <td>
+                                    <i>Year:</i>
+                                    @(Html.Kendo().DropDownListFor(m => m)
+                                                .OptionLabel("Please Select Year")
+                                                                  .Name("FiscalYears")
+                                                                  .BindTo((IEnumerable)ViewData["ErrorTypeList"])
+                                                                  .DataTextField("Name")
+                                                                  .DataValueField("GlFiscalYearId")
+                                                                  .HtmlAttributes(new { style = "width: 200px;" })
+                                                          .ValuePrimitive(true)
+                                                          .DataSource(dataSource =>
+                                                          {
+                                                                                    dataSource.Read(read => read.Action("GetYearsOpenYearSinceBeginning", "GlobalDataProvider", new { area = "Common" }))
+                                                                            .ServerFiltering(false);
+                                                                                }).Events(events => events.Change("change")))
+
+                                    @(Html.Kendo().Button()
+                                                          .Name("btnUpdate")
+                                                          .HtmlAttributes(new { type = "search", @class = "k-primary" })
+                                                          .Events(e => e.Click("updateBalance"))
+                                                          .Content("Update Balance"))
+                                </td>
+
+
+                            </tr>
+                        </table>
+
+                    </div>
+                </text>);
+                    })
+                                            .HtmlAttributes(new { style = "height: 300px;" })
+                                            .Pageable(pageable => pageable
+                                                .Input(true)
+                                                .Numeric(false)
+                                                .Refresh(true)
+                                                .PageSizes(true)
+                                                .ButtonCount(20))
+                                            .Scrollable()
+                                            .Selectable(selectable =>
+                                            {
+                                                selectable.Mode(GridSelectionMode.Single);
+                                                selectable.Type(GridSelectionType.Row);
+                                            })
+                                            .Sortable(sortable =>
+                                            {
+                                                sortable.SortMode(GridSortMode.SingleColumn);
+                                            })
+                                            .Filterable()
+
+
+                                            .Scrollable(h => h.Height(500))
+
+                                            .DataSource(dataSource => dataSource
+                                                .Ajax()
+
+                                                .PageSize(20)
+
+                                                .Model(
+                                                    model =>
+                                                    {
+                                                        model.Id(p => p.Description);
+
+                                                    })
+                                                .Events(events => events
+                                                    .Error("error_handler_one")
+                                                    .Sync("sync_handler"))
+                                                .Read(read => read.Action("Checker_Read", "AccountChecker").Data("passSearchData"))
+                                            ))
+
+
+<legend>Periods</legend>
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Finance.GL.GLPeriod>()
+              .Name("gridPeriod")
+              .Columns(columns =>
+              {
+                  columns.Bound(c => c.GLPeriodId).Hidden();
+                  columns.Bound(c => c.Index).Width(50);
+                  columns.Bound(c => c.Name).Width(100);
+                  columns.Bound(c => c.DateFrom).Width(120);
+                  columns.Bound(c => c.DateTo).Width(120);
+                  columns.Bound(c => c.Status).EditorTemplateName("PeriodStatus").Width(150);
+                  columns.Command(command =>
+                  {
+
+                      command.Custom("Update Daily Balance").Click("UpdateDaily");
+          //command.Custom("Open").Click("OpenPeriod");
+      }).Width(180);
+              })
+
+
+              .HtmlAttributes(new { style = "height: 450px;" })
+                    .Scrollable()
+                    .Selectable()
+                         .Selectable(selectable =>
+                         {
+                             selectable.Mode(GridSelectionMode.Single);
+                             selectable.Type(GridSelectionType.Row);
+                         })
+                                .Sortable(sortable =>
+                                {
+                                    sortable.SortMode(GridSortMode.SingleColumn);
+                                })
+
+              .DataSource(dataSource => dataSource
+                  .Ajax()
+                    .Model(
+                    model =>
+                    {
+                        model.Id(p => p.GLPeriodId);
+                        model.Field(p => p.Index).Editable(false);
+                        model.Field(p => p.Status).Editable(false);
+                        model.Field(p => p.OrgBranchName).Editable(false);
+                        model.Field(p => p.CreatedBy).Editable(false);
+                        model.Field(p => p.ModifiedBy).Editable(false);
+                        model.Field(p => p.LastModified).Editable(false);
+                        model.Field(p => p.DateCreated).Editable(false);
+
+                    })
+
+                        .Read(read => read.Action("GLPeriods_Read", "GLPeriod").Data("data"))
+
+              )
+
+)
+
+<script>
+
+    function change() {
+        $("#gridPeriod").data("kendoGrid").dataSource.read();
+    }
+
+    function data() {
+        var periodObject = $("#FiscalYears").data("kendoDropDownList");
+        var fiscalYearId = periodObject.value();
+
+        return {
+            id: fiscalYearId
+        };
+    }
+
+    function UpdateDaily(e) {
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        var id = dataItem.GLPeriodId;
+        $("#loading-image").show();
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("UpdateDailyBalance", "AccountChecker", new {area = "Finance"})',
+            data: { period: id },
+            success: function (result) {
+                //toastr.error(result.Message);
+               alert(result.Message);
+               // console.log(result);
+                $("#loading-image").hide();
+
+            }, //end succ
+
+            error: function (result) {
+                alert(result);
+            }
+        });
+
+        //$('#gridPeriod').data('kendoGrid').dataSource.read();
+        //$('#gridPeriod').data('kendoGrid').refresh();
+        //location.reload();
+    }
+
+
+
+    function updateBalance() {
+        var conf = confirm("Are you sure you want to update balance");
+        if (conf === true) {
+                            var periodObject = $("#FiscalYears").data("kendoDropDownList");
+                            var fiscalYearId = periodObject.value();
+
+                            if (fiscalYearId != null) {
+
+                                $.ajax({
+                                    type: "POST",
+                                    url: '@Url.Action("UpdateBalance", "AccountChecker", new {area = "Finance"})',
+                                data: { id: fiscalYearId },
+                                success: function (result) {
+                                    // toastr.warnning(result.Message);
+                                    alert(result.Message);
+                                    location.reload(true);
+                                }, //end succ
+                                beforeSend: function(){
+                                    // Show image container
+                                    $("#loading-image").show();
+                                },
+                                complete:function(data){
+                                    // Hide image container
+                                    $("#loading-image").hide();
+                                },
+                                error: function (result) {
+                                    alert(result);
+                                }
+                            });
+
+
+                            $("#grid").data("kendoGrid").dataSource.read();
+                           }
+                            else {
+                            alert("Please select year.");
+                                }
+                }
+
+    }
+
+
+    function filterErrors() {
+        var errorObject = $("#ErrorTypeList").data("kendoDropDownList");
+        var errorValue = errorObject.value();
+
+        if (errorValue != null) {
+            $("#grid").data("kendoGrid").dataSource.read();
+        } else {
+            alert("Please select error.");
+        }
+    }
+
+    function passSearchData() {
+        var errorObject = $("#ErrorTypeList").data("kendoDropDownList");
+        var errorValue = errorObject.value();
+        return {
+            type: errorValue
+        };
+    }
+
+    function fixIssue(e) {
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        $("#loading-image").show();
+        $.ajax({
+            type: "GET",
+            data: { type:dataItem.Type, id:dataItem.Id},
+            url: '@Url.Action("FixeIssue", "AccountChecker")',
+            success: function (result) {
+                //toastr.error(result.Message);
+                alert(result.Message);
+                // console.log(result);
+                $("#loading-image").hide();
+
+            }, //end succ
+
+            error: function (result) {
+                alert(result);
+            }
+
+        });
+    }
+</script>
+
+
+

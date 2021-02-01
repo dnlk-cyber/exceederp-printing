@@ -1,0 +1,26 @@
+﻿@using ExceedERP.Core.Domain.Procurement.Proforma
+
+@(Html.Kendo().Grid<RequestedSupplier>()
+      .Name("requestedSuppliergrid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.InventoryItem);
+        columns.Bound(c => c.Supplier);
+        columns.Bound(c => c.Remark);
+        
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.RequestedSupplierID))
+              .Read(read => read.Action("RequestedSuppliers_Read", "ProformaRequestedSuppliers", new { id = "#= ProformaPurchaseID #" }))
+              .Create(create => create.Action("RequestedSuppliers_Create", "ProformaRequestedSuppliers", new { id = "#= ProformaPurchaseID #" }))
+          .Update(update => update.Action("RequestedSuppliers_Update", "ProformaRequestedSuppliers"))
+          .Destroy(destroy => destroy.Action("RequestedSuppliers_Destroy", "ProformaRequestedSuppliers"))
+      )
+)

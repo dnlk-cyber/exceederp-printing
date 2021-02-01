@@ -1,0 +1,16 @@
+﻿@using System.Collections
+@(Html.Kendo().DropDownListFor(m => m)
+                  .ValuePrimitive(true)
+                  .OptionLabel("Select Item...")
+                      .DataTextField("Name")
+                          .DataValueField("ItemCode")
+                              .Filter("contains")
+                               .DataSource(dataSource =>
+                              {
+                                  dataSource.Read(read => read.Action("GetProformaItems", "DataProvider", new { area = "Inventory" }).Data("filtercategoryitems"))
+                                            .ServerFiltering(true);
+                              })
+                              .CascadeFrom("CatCode")
+                                   
+)
+@Html.ValidationMessageFor(m => m)

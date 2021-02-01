@@ -1,0 +1,188 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.HRM.SelfCare
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<Legend>@Resources.NavigatorRecruitment_RecruitmentRequest</Legend>
+@(Html.Kendo().Grid<RecruitmentRequest>()
+          .Name("RecruitmentRequestgrid")
+      .Columns(columns =>
+      {
+          columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["Department"], "OrgStructureId", "Name").EditorTemplateName("Department").Width(150);
+          columns.Bound(c => c.EmploymentType).EditorTemplateName("EmpType").Width(200);
+          columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["jobTitles"], "LookupId", "Description").EditorTemplateName("JobTitles").Width(150);
+          columns.Bound(c => c.PlanType).EditorTemplateName("PlanType").Width(120);
+          columns.Bound(c => c.NoOfShouldBeStaff);
+        columns.Bound(c => c.NoOfCurrentStaff);
+       
+        columns.Bound(c => c.NoOfVaccantPostion);
+        //columns.Command(command =>
+        //{
+        //    //command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel);
+        //}).Width(180);
+      })
+      .ToolBar(toolbar => {
+          //  toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+          .Events(events => events.DetailExpand("onDetailExpandUser"))
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+           .HtmlAttributes(new { style = "height: 550px;" })
+                               .Groupable()
+                              .Sortable(sortable =>
+                              {
+                                  sortable.SortMode(GridSortMode.SingleColumn);
+                              })
+                               .Filterable()
+                              .Scrollable()
+                          .Pageable(pageable => pageable
+                                                .Input(true)
+                                                .Numeric(false)
+                                                .Refresh(true)
+                                                .PageSizes(true)
+                                                .ButtonCount(5))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+                  .Sort(sort => sort.Add("DateCreated").Descending()) 
+              .Events(events =>
+                 {
+                     events.Error("error_handler(\"RecruitmentRequestgrid\")");
+                     events.RequestStart("onRequestStart(\"RecruitmentRequestgrid\")");
+                     events.RequestEnd("onRequestEnd(\"RecruitmentRequestgrid\")");
+                 })
+                     
+          .Model(model => model.Id(p => p.RecruitmentRequestId))
+              .Read(read => read.Action("RecruitmentRequest_Read", "RecruitmentRequestStatus"))
+              .Create(create => create.Action("RecruitmentRequest_Create", "RecruitmentRequestStatus"))
+              .Update(update => update.Action("RecruitmentRequest_Update", "RecruitmentRequestStatus"))
+              .Destroy(destroy => destroy.Action("RecruitmentRequest_Destroy", "RecruitmentRequestStatus"))
+          ).ClientDetailTemplateId("template")
+      )
+
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+          .Name("tabstrip_#=RecruitmentRequestId#")
+          .SelectedIndex(0)
+          .Items(items =>
+          {
+              items.Add().Text(Resources.HR_RequestStatus).Content(
+                  @<text>
+                    @*<legend>Status</legend>*@
+
+                    @(Html.Kendo().Grid<RequestesStatus>()
+                                  .Name("RequestesStatusgrid_#=RecruitmentRequestId#")
+                          .Columns(columns =>
+                          {
+                              //columns.Bound(c => c.RequestId);
+                              columns.Bound(c => c.DateReqStatAm).Width(150);
+                              columns.Bound(c => c.Status).EditorTemplateName("Enum").Width (300);
+                              columns.ForeignKey(c => c.ApproverId, (IEnumerable)ViewData["EmployeeName"], "EmployeeId", "FullNameAmharic").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
+                              columns.ForeignKey(c => c.ApproverDepartment, (IEnumerable)ViewData["Department"], "OrgStructureId", "Name").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
+                              columns.Bound(c => c.Remark).Width (150);
+                              columns.Command(command =>
+                              {
+                                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                  command.Destroy().Text(Resources.ActionButton_Cancel);//
+                              }).Width(180);
+                          })
+                          //.ToolBar(toolbar =>
+                          //{
+                          //    toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                          //})
+                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                          .Scrollable()
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+                                       .Events(events =>
+                                       {
+                                           events.Error("error_handler(\"RequestesStatusgrid_#=RecruitmentRequestId#\")");
+                                           events.RequestStart("onRequestStart(\"RequestesStatusgrid_#=RecruitmentRequestId#\")");
+                                           events.RequestEnd("onRequestEnd(\"RequestesStatusgrid_#=RecruitmentRequestId#\")");
+                                       })
+
+                                      .Model(model =>
+                                      {
+                                          model.Id(p => p.RequestStatusId);
+                                          model.Field(p => p.Date).Editable(false).DefaultValue(DateTime.Today);
+                                      })
+
+                                                    .Read(read => read.Action("RequestesStatus_Read", "RequestesStatus", new { id = "#=RecruitmentRequestId#", referenceType = "Recruitment" }))
+                                                                                                          .Create(create => create.Action("RequestesStatus_Create", "RequestesStatus", new { id = "#=RecruitmentRequestId#", referenceType2 = "Recruitment" }))
+                                                  .Update(update => update.Action("RequestesStatus_Update", "RequestesStatus"))
+                                                  .Destroy(destroy => destroy.Action("RequestesStatus_Destroy", "RequestesStatus"))
+                          ).ToClientTemplate()
+                          )
+
+
+                </text>
+                  );
+              //*****************************************************************************************************//
+
+          }).ToClientTemplate())
+</script>
+
+<script>
+                        //function error_handler(e) {
+                        //    if (e.errors) {
+                        //        var message = "Errors:\n";
+                        //        $.each(e.errors, function (key, value) {
+                        //            if ('errors' in value) {
+                        //                $.each(value.errors, function () {
+                        //                    message += this + "\n";
+                        //                });
+                        //            }
+                        //        });
+                        //        alert(message);
+
+                        //    }
+
+                        //}
+
+                        function sync_handler(e) {
+                            this.read();
+
+                        }
+                        function onDetailExpandUser(e) {
+                            var masterRow = e.masterRow;
+
+                            var masterGrid = $("#RecruitmentRequestgrid").data("kendoGrid");
+
+                            var masterDataItem = masterGrid.dataItem(masterRow);
+
+                            masterId = masterDataItem.RecruitmentRequestId;
+                            var gridName = "#RequestesStatusgrid_" + masterId;
+                            $.ajax({
+                                url: '@Url.Action("CheckStatus", "RecruitmentRequestStatus")',
+
+                                data: { masterId: masterId },
+                                type: 'POST',
+                                cache: false,
+                                success: function (result) {
+                                    r = result;
+                                    if (r == "true") {
+                                        $(gridName).find(".k-toolbar").hide(); //hide toolbar
+                                        $(".k-grid-top", gridName).hide();
+                                    }
+                                    else if (r == "approved") {
+                                        $(gridName).find(".k-toolbar").hide(); //hide toolbar
+                                        $(".k-grid-top", gridName).hide();
+                                        $(".k-grid-edit", gridName).hide();
+                                        $(".k-grid-delete", gridName).hide();
+                                    }
+                                    else if (r == "Dapproved") {
+                                        $(gridName).find(".k-toolbar").hide(); //hide toolbar
+                                        $(".k-grid-top", gridName).hide();
+                                        $(".k-grid-edit", gridName).show();
+                                        $(".k-grid-delete", gridName).show();
+                                    }
+                                    else {
+                                        $(gridName).find(".k-toolbar").show(); //hide toolbar
+                                        $(".k-grid-top", gridName).show();
+                                    }
+
+                                }
+
+                            });
+
+                        }
+</script>

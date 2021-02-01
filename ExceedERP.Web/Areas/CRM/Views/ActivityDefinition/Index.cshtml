@@ -1,0 +1,30 @@
+﻿<legend>Activity Definition</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.ActivityDefinition>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.Reference);
+        columns.Bound(c => c.Description);
+        columns.Bound(c => c.Index);
+        columns.Bound(c => c.HasIssuingEffect);
+        columns.Bound(c => c.Remark);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.ActivityDefinitionID))
+                    .Events(ev => ev
+                                                                .Error("error_handler(\"grid\")")
+                                                                .RequestStart("onRequestStart(\"grid\")")
+                                                                .RequestEnd("onRequestEnd(\"grid\")"))
+          .Read(read => read.Action("ActivityDefinitions_Read", "ActivityDefinition"))
+          .Create(create => create.Action("ActivityDefinitions_Create", "ActivityDefinition"))
+          .Update(update => update.Action("ActivityDefinitions_Update", "ActivityDefinition"))
+          .Destroy(destroy => destroy.Action("ActivityDefinitions_Destroy", "ActivityDefinition"))
+      )
+)

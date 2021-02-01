@@ -1,0 +1,302 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.Common.HRM
+@using ExceedERP.Core.Domain.HRM.HealthAndInsurance
+@using ExceedERP.Core.Localization 
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<Legend>@Resources.NavigatorHealthAndInsurance_AccidentRecord</Legend>
+@(Html.Kendo().Grid<AccidentRecord>()
+          .Name("AccidentRecordgrid")
+      .Columns(columns =>
+      {
+         // columns.Bound(c => c.EmployeeCode).Width(150);
+          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["AllEmployeeList"], "EmployeeId", "FullNameaEnglish").EditorTemplateName("ListOfEmployee").Width(180);
+        //  columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["AllEmployeeList"], "EmployeeId", "FullNameaEnglish").EditorTemplateName("ListOfEmployee").Width(180);
+          columns.Bound(c => c.DateAmharic).EditorTemplateName ("Calander").Width( 200);
+          columns.Bound(c => c.DetailDescription).Width( 150);
+          columns.Bound(c => c.AccidentPlace).Width(150);
+          columns.Bound(c => c.Witness).Width( 150);
+          columns.Bound(c => c.IsInWorkPlace).Width(140).ClientTemplate("<input type='checkbox'  disabled='true' value='#=IsInWorkPlace #' " + " # if (IsInWorkPlace) { #" + "checked='checked'" + "# } #" + " />");
+          columns.Bound(c => c.IsInOnJob).Width(140).ClientTemplate("<input type='checkbox'  disabled='true' value='#=IsInOnJob #' " + " # if (IsInOnJob) { #" + "checked='checked'" + "# } #" + " />");
+          columns.Bound(c => c.Remark).Width(150);
+          columns.Command(command =>
+          {
+              if (HttpContext.Current.User.IsInRole("Health_User"))
+              {
+                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+              }
+              if (HttpContext.Current.User.IsInRole("Health_Admin"))
+              {
+                  command.Destroy().Text(Resources.ActionButton_Cancel);
+              }
+          }).Width(200);
+      })
+      .ToolBar(toolbar => {
+          if (HttpContext.Current.User.IsInRole("Health_User"))
+          {
+
+              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+          }
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+           .Scrollable(h => h.Height(500))
+                                         .Groupable()
+                                                  .Sortable(sortable =>
+                                                  {
+                                                      sortable.SortMode(GridSortMode.SingleColumn);
+                                                  })
+                                      .Filterable()
+                                      .Events (x=> {x.Save ("GetDate");
+                                          x.Edit ("GetDate");})
+                                         .Pageable(pageable => pageable
+                                                                    .Input(true)
+                                                                    .Numeric(false)
+                                                                    .Refresh(true)
+                                                                    .PageSizes(true)
+                                                                    .ButtonCount(5))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+              .Events(events =>
+              {
+                  events.Error("error_handler(\"AccidentRecordgrid\")");
+                  events.RequestStart("onRequestStart(\"AccidentRecordgrid\")");
+                  events.RequestEnd("onRequestEnd(\"AccidentRecordgrid\")");
+              }
+                      )
+
+
+            .Model(model =>
+            {
+                model.Id(p => p.AccidentRecordId);
+            })
+          .Read(read => read.Action("AccidentRecords_Read", "AccidentRecord"))
+          .Create(create => create.Action("AccidentRecords_Create", "AccidentRecord"))
+          .Update(update => update.Action("AccidentRecords_Update", "AccidentRecord"))
+          .Destroy(destroy => destroy.Action("AccidentRecords_Destroy", "AccidentRecord"))
+          ).ClientDetailTemplateId("template")
+)
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                          .Name("tabstrip_#=AccidentRecordId#")
+          .SelectedIndex(0)
+          .Items(items =>
+          {
+              items.Add().Text(Resources.NavigatorHealthAndInsurance_MedicalRequests).Content(
+                @<text>
+    @(Html.Kendo().Grid<AccidentMedicalRecord>()
+                      .Name("AccidentMedicalRecord_#=AccidentRecordId#")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.MedicalTreatment);
+          columns.Bound(c => c.InstitutionName);
+          columns.Bound(c => c.MedicalCost);
+          columns.Bound(c => c.Ramrk);
+          columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+                  .Events(events =>
+                          {
+                              events.Error("error_handler(\"AccidentMedicalRecord_#=AccidentRecordId#\")");
+                              events.RequestStart("onRequestStart(\"AccidentMedicalRecord_#=AccidentRecordId#\")");
+                              events.RequestEnd("onRequestEnd(\"AccidentMedicalRecord_#=AccidentRecordId#\")");
+                          }
+                          )
+                                   
+
+          .Model(model => model.Id(p => p.AccidentMedicalRecordId))
+                  .Read(read => read.Action("AccidentMedicalRecords_Read", "AccidentMedicalRecord", new { id = "#=AccidentRecordId#" }))
+                  .Create(create => create.Action("AccidentMedicalRecords_Create", "AccidentMedicalRecord", new { id = "#=AccidentRecordId#"}))
+          .Update(update => update.Action("AccidentMedicalRecords_Update", "AccidentMedicalRecord"))
+          .Destroy(destroy => destroy.Action("AccidentMedicalRecords_Destroy", "AccidentMedicalRecord"))
+      ).ToClientTemplate() 
+    )
+                    
+    
+                </text>
+    );
+              items.Add().Text(Resources.NavigatorHealthAndInsurance_Restitution).Content(
+                @<text>
+
+    @(Html.Kendo().Grid<Restitution>()
+                      .Name("Restitution_#=AccidentRecordId#")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.RestitutionAmount);
+          columns.Bound(c => c.Remark);
+          columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+                  .Events(events =>
+                                  {
+                                      events.Error("error_handler(\"Restitution_#=AccidentRecordId#\")");
+                                      events.RequestStart("onRequestStart(\"Restitution_#=AccidentRecordId#\")");
+                                      events.RequestEnd("onRequestEnd(\"Restitution_#=AccidentRecordId#\")");
+                                  }
+                                  )
+                                 
+
+          .Model(model => model.Id(p => p.RestitutionId))
+                  .Read(read => read.Action("Restitutions_Read", "Restitution", new { id = "#=AccidentRecordId#" }))
+                  .Create(create => create.Action("Restitutions_Create", "Restitution", new { id = "#=AccidentRecordId#" }))
+          .Update(update => update.Action("Restitutions_Update", "Restitution"))
+          .Destroy(destroy => destroy.Action("Restitutions_Destroy", "Restitution"))
+              ).ToClientTemplate() 
+    )
+
+
+
+
+
+
+                </text>
+
+
+                  );
+              items.Add().Text(Resources.Navigator_Company_UploadDocument).Content(
+                @<text>
+                    @* <Legend>Photo</Legend>*@
+
+                    @(Html.Kendo().Grid<Attachment>()
+                  .Name("Documents_#=AccidentRecordId#")
+          .Columns(columns =>
+          {
+              columns.Bound(c => c.FileName);
+              columns.Bound(c => c.Description); //.Title("File Name").ClientTemplate((@Html.ActionLink("#=Description#", "DownloadFile", "DownloadDocument", new { filename = "#=Description#" }, null).ToHtmlString()));
+              columns.Bound(c => c.FileType).ClientTemplate(Html.ActionLink("DownLoad", "DownloadDoument", new { filename = "#=AccidentRecordId#" }).ToHtmlString());
+              columns.Command(command =>
+              {
+                  command.Destroy().Text(Resources.ActionButton_Cancel);
+                  //    command.Custom("Download").Click("DownloadAttachmnets");
+
+              }).Width(300);
+
+          })
+          .Events(e =>
+          {
+              e.Change("onChange");
+              e.Edit("onGridEdit");
+          })
+                       .ToolBar(toolbar =>
+              {
+                  toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+              })
+                              .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("UploadDocument").Window(window =>
+                      {
+                          window.Scrollable(false);
+                          window.Title(Resources.Navigator_Company_UploadDocument);
+                      }))
+
+              .Scrollable()
+              .Selectable()
+              .DataSource(dataSource => dataSource
+                  .Ajax()
+                          .Events(events =>
+                                          {
+                                              events.Error("error_handler(\"Documents_#=AccidentRecordId#\")");
+                                              events.RequestStart("onRequestStart(\"Documents_#=AccidentRecordId#\")");
+                                              events.RequestEnd("onRequestEnd(\"Documents_#=AccidentRecordId#\")");
+                                          }
+                                          )
+                                           
+
+                  .Model(model => model.Id(p => p.AttachmentId))
+                                                          .Read(read => read.Action("Attachments_Read", "Attachment", new { Area = "Common", attachmentReferenceType = "DOCUMENT", id = "#=AccidentRecordId#", fileOwner = "AccidentRecord" }))
+                                                                 .Create(create => create.Action("Attachments_Create", "Attachment", new { Area = "Common", attachmentReferenceType = "DOCUMENT", id = "#=AccidentRecordId#", fileOwner = "AccidentRecord" }))
+                                          .Destroy(destroy => destroy.Action("Attachments_Destroy", "AccidentRecord"))
+
+              ).ToClientTemplate()
+                    )
+                </text>
+                  );
+          }).ToClientTemplate()
+)
+</script>
+
+<script>
+    //function error_handler(e) {
+    //    if (e.errors) {
+    //        var message = "Errors:\n";
+    //        $.each(e.errors, function(key, value) {
+    //            if ('errors' in value) {
+    //                $.each(value.errors, function() {
+    //                    message += this + "\n";
+    //                });
+    //            }
+    //        });
+    //        alert(message);
+
+    //    }
+
+    //}
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+    function onGridEdit(e) {
+        e.container.find(".k-button.k-grid-update").hide();
+        e.container.find(".k-button.k-grid-cancel").hide();
+
+    }
+    function onChange(e) {
+        var grid = e.sender;
+        var selectedRows = this.select();
+        var rowData = this.dataItem(selectedRows[0]);
+        var id = rowData.AttachmentID;
+        $.ajax({
+            contentType: "application/json; charset=utf-8",
+            url: '@Url.Action("Download", "AccidentRecord")',
+            data: { 'id': id },
+            type: 'GET',
+            cache: false,
+            success: function (result) {
+                r = result;
+            }
+
+        });
+    }
+</script>
+<script>
+    function GetDate() {
+
+        var x = AssignDate();
+        var y = x;
+        $("#DateAmharic").trigger("change");
+        for (var o in y) {
+            $.ajax({
+                contentType: "application/json; charset=utf-8",
+                url: '@Url.Action("SetDate", "AccidentRecord")',
+                data: { name: y[o].id, value: y[o].date },
+                type: 'GET',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                }
+
+            });
+        }
+    }
+
+</script>
+<script>
+    function AssignDate() {
+        var list = AssignDates();
+        return list;
+    }
+
+</script>

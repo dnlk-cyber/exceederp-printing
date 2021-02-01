@@ -1,0 +1,144 @@
+﻿@model ExceedERP.Web.Areas.InfoDesk.Models.AssignTicketViewModel
+<form>
+
+    <div class="row">
+        <div class="col-md-1">
+
+        </div>
+    
+ 
+
+        <div class="col-md-3">
+
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.TicketName)
+                </div>
+                <div>
+                    @(Html.Kendo().DropDownListFor(model => model.TicketId)
+                              .AutoBind(false)
+                              .OptionLabel("Select")
+                                        .DataTextField("Name")
+                                              .DataValueField("Value").DataSource(dataSource =>
+                              {
+                                  dataSource.Read(read => read.Action("PendingCustomerTicketDDBind", "CRMDataProvider"));
+
+                              }).ValuePrimitive(true).Template("<span class=\"k-state-default\" > <p style=\"background-color:#:data.Color#;\">#: data.Name #</p></span>")
+                    )
+                    @Html.ValidationMessageFor(model => model.TicketId)
+                </div>
+
+            </div>
+        </div>
+
+
+
+  <div class="col-md-3">
+
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.TicketDefintion)
+                </div>
+                <div>
+                    @(Html.Kendo().DropDownListFor(model => model.TicketDefintion)
+                              .AutoBind(false)
+                              .OptionLabel("Select")
+                                      .DataTextField("Description")
+                                              .DataValueField("Description")
+                              .DataSource(dataSource =>
+                              {
+                                  dataSource.Read(read => read.Action("GetTicketDefintion", "CRMDataProvider"));
+
+                              }).ValuePrimitive(true))
+                    @Html.ValidationMessageFor(model => model.TicketDefintion)
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.AssinedTo)
+                </div>
+                <div>
+                    @(Html.Kendo().DropDownListFor(model => model.AssinedTo)
+                              .AutoBind(false)
+                              .OptionLabel("Select")
+                              .DataTextField("Name")
+                                              .DataValueField("Value")
+                              .DataSource(dataSource =>
+                              {
+                                  dataSource.Read(read => read.Action("UserDDBind", "CRMDataProvider"));
+
+                              }).ValuePrimitive(true))
+                </div>
+            </div>
+        </div>
+
+
+
+    </div>
+   
+    <br />
+    <div class="row">
+
+        <div class="col-md-1">
+
+        </div>
+        
+      
+
+
+        <div class="col-md-3">
+
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.IsTransfer)
+                </div>
+                <div>
+                    @Html.Kendo().CheckBoxFor(model => model.IsTransfer) 
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.TransferTo)
+                </div>
+                <div>
+                    @(Html.Kendo().DropDownListFor(model => model.TransferTo)
+                              .AutoBind(false)
+                              .OptionLabel("Select")
+                              .DataTextField("Name")
+                                              .DataValueField("Value")
+                              .DataSource(dataSource =>
+                              {
+                                  dataSource.Read(read => read.Action("UserDDBind", "CRMDataProvider"));
+
+                              }).ValuePrimitive(true))
+                </div>
+            </div>
+        </div>
+
+
+
+
+        <div class="col-md-3">
+
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.AssignedDate)
+                </div>
+                <div>
+                    @Html.Kendo().DatePickerFor(model => model.AssignedDate)
+                </div>
+            </div>
+        </div>
+
+    </div>
+   
+    <br />
+
+</form>

@@ -1,0 +1,47 @@
+﻿.dashboard {
+
+}
+
+ .row {
+     margin-top: 1px;
+     padding: 0 1px;
+ }
+
+ .clickable {
+     cursor: pointer;
+ }
+
+ .panel-heading span {
+     margin-top: -5px;
+     font-size: 12px;
+ }
+ .demo-section.k-content.wide {
+     padding: 0px;
+     border: 0px;
+     padding-bottom: 0;
+     border-radius: 2px;
+ }
+    
+
+ div.row {
+     padding: 0px;
+     border: 0px;
+     background: #526069;
+     border-radius: 12px;
+ }
+ div.chartcontainer {
+     padding: 5px;
+     padding-bottom: 0;
+     margin-bottom: 0;
+     border: 5px;
+     border-bottom: 0px;
+     color: #707478;
+     -webkit-font-smoothing: antialiased;
+     border-radius: 12px;
+ }
+    
+ canvas {
+     -moz-user-select: none;
+     -webkit-user-select: none;
+     -ms-user-select: none;
+ }

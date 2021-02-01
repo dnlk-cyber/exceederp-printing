@@ -1,0 +1,15 @@
+﻿@using Kendo.Mvc.UI
+
+
+@(Html.Kendo().DropDownListFor(m => m)
+                  .AutoBind(false)
+                  .OptionLabel("Select Rule...")
+                  .DataTextField("Name")
+                  .DataValueField("FixedAssetGroupID")
+                  .DataSource(dataSource =>
+                  {
+                      dataSource.Read(read => read.Action("GetFixedAssetRule", "DepreciationRule"))
+                                .ServerFiltering(true);
+                  })
+)
+@Html.ValidationMessageFor(m => m)

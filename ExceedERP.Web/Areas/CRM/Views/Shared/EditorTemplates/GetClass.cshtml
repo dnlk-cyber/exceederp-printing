@@ -1,0 +1,5 @@
+﻿@(Html.Kendo().DropDownListFor(model => model).HtmlAttributes(new { @class = "form-control" })
+                            .DataTextField("Name")
+                                .DataValueField("Name").OptionLabel("Select Product")
+                                                    .DataSource(d => d.Read(r => r.Action("ClassDDBind", "Variety"))))
+

@@ -1,0 +1,8 @@
+﻿
+
+
+@(Html.Kendo().DropDownListFor(model => model).HtmlAttributes(new { @class = "form-control" })
+                            .DataTextField("TradeName")
+                                .DataValueField("OrganizationCustomerID").OptionLabel("Select")
+                            .DataSource(d => d.Read(r => r.Action("OrgCustomerDDBind", "OrganizationCustomer"))))
+

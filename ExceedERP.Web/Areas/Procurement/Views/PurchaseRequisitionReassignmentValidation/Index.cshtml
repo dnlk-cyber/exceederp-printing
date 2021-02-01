@@ -1,0 +1,28 @@
+﻿@using ExceedERP.Core.Domain.Procurement.PR
+
+@(Html.Kendo().Grid<PurchaseRequisitionReassignmentValidation>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Status);
+          columns.Bound(c => c.Remark);
+          columns.Bound(c => c.OrgBranchName);
+          columns.Bound(c => c.DateCreated);
+          columns.Bound(c => c.LastModified);
+          columns.Bound(c => c.CreatedBy);
+          columns.Bound(c => c.ModifiedBy);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.PurchaseRequisitionReassignmentValidationId))
+          .Read(read => read.Action("PurchaseRequisitionReassignmentValidations_Read", "PurchaseRequisitionReassignmentValidation"))
+          .Create(create => create.Action("PurchaseRequisitionReassignmentValidations_Create", "PurchaseRequisitionReassignmentValidation"))
+          .Update(update => update.Action("PurchaseRequisitionReassignmentValidations_Update", "PurchaseRequisitionReassignmentValidation"))
+          .Destroy(destroy => destroy.Action("PurchaseRequisitionReassignmentValidations_Destroy", "PurchaseRequisitionReassignmentValidation"))
+      ))

@@ -1,0 +1,16 @@
+﻿
+
+@(Html.Kendo().DropDownListFor(model => model).HtmlAttributes(new { @class = "form-control", @required = "required" })
+                        .DataTextField("Name")
+                                    .DataValueField("Name").OptionLabel(" Select ").Filter(FilterType.Contains)
+                    .HtmlAttributes(new { style = "width:100%" })
+                    .DataSource(d =>
+                    {
+                        d.Read(r =>
+                        {
+                            r.Action("PeriodDDBind", "BudgetDataProvider").Data("filterPeriod");
+                        })
+                      .ServerFiltering(false);
+                    })
+                       .AutoBind(false)
+                   .CascadeFrom("BudgetYear"))

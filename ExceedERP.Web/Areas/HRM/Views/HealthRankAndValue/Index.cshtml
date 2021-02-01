@@ -1,0 +1,117 @@
+﻿@using System.Collections
+@using System.Security.AccessControl
+@using ExceedERP.Core.Domain.HRM.HealthAndInsurance
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Health Value By Rank</legend>
+@(Html.Kendo().Grid<HealthRankAndValue>()
+                      .Name("Healthgrid")
+                  .Columns(columns =>
+                  {
+                      columns.Bound(c => c.EmployeeCode).Width(150).ClientGroupHeaderTemplate("#=value# // Total Used Amount : #=aggregates.UsedAmount.sum#");
+                      columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["Employee"], "EmployeeId", "FullNameaEnglish").EditorTemplateName("EmployeeList").Width(200).Filterable(ftb => ftb.Multi(true).Search(true));//.ClientGroupFooterTemplate("#=aggregates.UsedAmount.sum#");
+                      columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["Branch"], "BranchId", "Name").EditorTemplateName("Branch").Width(200).Filterable(ftb => ftb.Multi(true).Search(true));
+                      //columns.Bound(c => c.FiscalYearName).Width(200).ClientGroupHeaderTemplate("#=value# //  Used Amount Per Budget Year : #=aggregates.UsedAmount.sum# //  Remaining Per Budget Year : #=aggregates.RemainingAmount.min#");
+                      columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["FiscalYear"], "GlFiscalYearId", "Name").EditorTemplateName("GLYearSelector").Width(200).Filterable(ftb => ftb.Multi(true).Search(true));//.ClientGroupHeaderTemplate("#=value# //  Used Amount Per Budget Year : #=aggregates.UsedAmount.sum# //  Remaining Per Budget Year : #=aggregates.RemainingAmount.min#");
+                      columns.ForeignKey(c => c.GLPeriodId, (IEnumerable)ViewData["Period"], "GLPeriodId", "Name").EditorTemplateName("GLFPeriods").Width(200).Filterable(ftb => ftb.Multi(true).Search(true));
+                      columns.Bound(c => c.ClinicName).Width(200);
+                      columns.Bound(c => c.DateAmh).EditorTemplateName("Calander").Width(150);
+                      columns.Bound(c => c.RecoredDateAmh).EditorTemplateName("Calander").Width(150);
+                      columns.Bound(c => c.AllowedAmount).Width(130);
+                      columns.Bound(c => c.UsedAmount).Width(130);//.ClientGroupFooterTemplate("UsedAmount: #=sum#").Title("UsedAmount");//.ClientFooterTemplate("UsedAmount: #=sum#");//.Title("UsedAmount")
+
+                      columns.Bound(c => c.RemainingAmount).Width(150);
+                      columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit); command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+                  })
+                  .ToolBar(toolbar =>
+                  {
+                      toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                  })
+                            .Editable(editable => editable.Mode(GridEditMode.InLine))
+                 .Selectable(selectable =>
+                 {
+                     selectable.Mode(GridSelectionMode.Single);
+                     selectable.Type(GridSelectionType.Row);
+                 })
+
+                     .Scrollable(h => h.Height(500))
+                                  //.Groupable()
+                                  .Sortable(sortable =>
+                                  {
+                                      sortable.SortMode(GridSortMode.SingleColumn);
+                                  })
+                      .Filterable()
+                      .Events(x =>
+                      {
+                          x.Edit("GetDate");
+                          x.Save("GetDate");
+                      })
+                         .Pageable(pageable => pageable
+                                                    .Input(true)
+                                                    .Numeric(false)
+                                                    .Refresh(true)
+                                                    .PageSizes(true)
+                                                    .ButtonCount(5))
+              .DataSource(dataSource => dataSource
+                  .Ajax()
+                  .Aggregates(x=> {
+                      x.Add(f => f.UsedAmount).Sum();
+                      x.Add(f => f.RemainingAmount).Min();
+                  })
+                  .Sort(sort => sort.Add("RecoredDate").Descending())
+                  .Group(x=>x.Add(p=>p.EmployeeCode))
+                   // .Group(x => x.Add(p => p.EmployeeId))
+                   .Group(x => x.Add(p => p.GlFiscalYearId))
+                       .Events(events =>
+                       {
+                           events.Error("error_handler(\"Healthgrid\")");
+                           events.RequestStart("onRequestStart(\"Healthgrid\")");
+                           events.RequestEnd("onRequestEnd(\"Healthgrid\")");
+                       })
+
+                  .Model(
+                  model =>
+                  {
+                      model.Id(p => p.HealthRankAndValueId);
+                      model.Field(p => p.AllowedAmount).Editable(false);
+                      model.Field(p => p.RemainingAmount).Editable(false);
+                      model.Field(p => p.BranchId).Editable(false);
+                      model.Field(p => p.EmployeeCode).Editable(false);
+                  }
+          )
+          .Read(read => read.Action("HealthRankAndValue_Read", "HealthRankAndValue"))
+          .Create(create => create.Action("HealthRankAndValue_Create", "HealthRankAndValue"))
+          .Update(update => update.Action("HealthRankAndValue_Update", "HealthRankAndValue"))
+          .Destroy(destroy => destroy.Action("HealthRankAndValue_Destroy", "HealthRankAndValue"))
+          )
+)
+)
+
+
+<style>
+    div.k-edit-form-container {
+        width: 700px;
+    }
+</style>
+
+<script>
+    function GetDate() {
+
+        $("#DateAmh").trigger("change");
+        $("#RecoredDateAmh").trigger("change");
+    }
+
+</script>
+
+<script>
+
+    function filterperiods() {
+       
+        return {
+            GlFiscalYearId: $("#GlFiscalYearId").val()
+        };
+    }   
+
+</script>

@@ -1,0 +1,61 @@
+﻿@using ExceedERP.Core.Domain.Common
+
+@{
+    ViewBag.Title = "Notification";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<legend>Notifications</legend>
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Common.Notification>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Date).ClientTemplate("#= kendo.toString(Date, 'dd MMM yyyy hh:mm') #").Width(110);
+          columns.Bound(c => c.Title).Width(300);
+          columns.Bound(c => c.Details).Width(300);
+          columns.Bound(c => c.DeadLine).Width(130);
+          columns.Bound(c => c.DetailsUrl).Title("Go").Width(130).ClientTemplate("<a href='#=DetailsUrl#'>#=DetailsUrl#</a>");
+          
+      })
+      
+                  .HtmlAttributes(new { style = "height: 550px;" })
+                    .Pageable(pageable => pageable
+                                .Input(true)
+                                .Numeric(false)
+                                .Refresh(true)
+                                .PageSizes(true)
+                                .ButtonCount(20))
+                    .Scrollable()
+                    .Sortable()
+                    .Filterable()
+                       .Selectable(selectable =>
+                        {
+                            selectable.Mode(GridSelectionMode.Single);
+                            selectable.Type(GridSelectionType.Row);
+                        })
+                    .Sortable(sortable =>
+                    {
+                        sortable.SortMode(GridSortMode.SingleColumn);
+                    })
+                   
+
+      .DataSource(dataSource => dataSource
+          .Ajax()
+              .Model(model =>
+                        {
+                            model.Id(p => p.Id);
+
+                        })
+          .Events(ev => ev
+              .Error("error_handler(\"grid\")")
+              .RequestStart("onRequestStart(\"grid\")")
+              .RequestEnd("onRequestEnd(\"grid\")"))
+          .Read(read => read.Action("Notifications_Read", "Notification"))
+      )
+
+)
+
+
+
+

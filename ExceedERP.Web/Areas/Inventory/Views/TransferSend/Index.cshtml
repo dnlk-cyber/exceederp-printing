@@ -1,0 +1,541 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.Inventory
+@using Kendo.Mvc.UI
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Item Transfer Send</legend>
+
+@(Html.Kendo().Grid<ItemTransfer>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.ItemTransferID).Title("Transfer No.").Width(120).ClientTemplate("#=appendZeros(ItemTransferID)#");
+          columns.Bound(c => c.StoreRequisitionID).Title("Req. No.").EditorTemplateName("TransferStoreRequistion").Width(110).ClientTemplate("#=appendZeros(StoreRequisitionID)#"); ;
+          columns.Bound(c => c.DocumentRef).Title("Doc Ref No.").Width(110);
+          columns.ForeignKey(p => p.GLPeriodId, (IEnumerable)ViewData["inventoryPeriods"], "GLPeriodId", "Name").Width(110).Title("Period").EditorTemplateName("InventoryPeriodSelector"); 
+          columns.Bound(c => c.TransferDate).Title("Transfer Date").Width(130);
+          columns.ForeignKey(p => p.FromStore, (IEnumerable)ViewData["stores"], "StoreCode", "Name").Title("From Store").Width(120);
+          columns.ForeignKey(p => p.ToStore, (IEnumerable)ViewData["stores"], "StoreCode", "Name").Title("To Store").Width(120);
+          columns.Bound(c => c.DriverType).EditorTemplateName("TransferType").Width(130);
+          columns.ForeignKey(p => p.DeliveredBy, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Title("Driver Name").Width(150).EditorTemplateName("EmployeeSelector");
+          columns.ForeignKey(p => p.SupplierName, (IEnumerable)ViewData["suppliers"], "SupplierId", "Name").Title("Supplier Name").Width(150).EditorTemplateName("SupplierSelector");
+          columns.ForeignKey(p => p.EmployeeId, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Title("Requester").Width(130).EditorTemplateName("EmployeeSelector");
+          columns.Bound(c => c.PlateNo).Title("Plate No.").Width(130);
+          columns.Bound(c => c.Remark).Width(90);
+          columns.Bound(c => c.Status).Width(90);
+          columns.Bound(c => c.BranchId).Hidden().Width(100);
+
+          
+           
+          columns.Command(command => {
+                                         command.Edit();
+                                         command.Destroy(); 
+          }).Width(180);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create();
+      })
+      .Events(ev => ev.DetailExpand("detailExpand").Edit("onMasterEdit"))
+      .Sortable()
+      .Filterable()
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Groupable()
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(5))
+      .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("ItemTransfer").Window(w => w.Title("Transfer")))
+      .Scrollable(height => height.Height(500))
+      .Events(x => x.DataBound("onDataBoundMaster"))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Sort(sort => sort.Add("ItemTransferID").Descending())
+          .Events(ev => ev
+              .Error("error_handler(\"grid\")")
+              .RequestStart("onRequestStart(\"grid\")")
+              .RequestEnd("onRequestEnd(\"grid\")"))
+          .Model(model =>
+          {
+              model.Id(p => p.ItemTransferID);
+              model.Field(p => p.ItemTransferID).Editable(false);
+              model.Field(p => p.FromStore).Editable(false);
+              model.Field(p => p.ToStore).Editable(false);
+              model.Field(p => p.Status).Editable(false);
+              model.Field(p => p.BranchId).Editable(false);
+              model.Field(p => p.EmployeeId).Editable(false);
+
+              model.Field(p => p.CreatedBy).Editable(false);
+              model.Field(p => p.DateCreated).Editable(false);
+              model.Field(p => p.ModifiedBy).Editable(false);
+              model.Field(p => p.LastModified).Editable(false);
+                  
+          })
+          .Read(read => read.Action("ItemTransfers_Read", "TransferSend"))
+          .Create(create => create.Action("ItemTransfers_Create", "TransferSend"))
+          .Update(update => update.Action("ItemTransfers_Update", "TransferSend"))
+          .Destroy(destroy => destroy.Action("ItemTransfers_Destroy", "TransferSend"))
+      ).Resizable(x => x.Columns(true)).Reorderable(x => x.Columns(true))
+      .ClientDetailTemplateId("Itemtransfertemplate"))
+
+<script id="Itemtransfertemplate" type="text/Kendo-tmpl">
+    @(Html.Kendo().TabStrip().SelectedIndex(0).Name("tabStrip_#=ItemTransferID#").Items(items =>
+                      {
+                          items.Add().Text("Detail").Content(
+                            @<text>
+
+
+                                # if (!IsOnlineApproved&&!IsSendForApproval)
+                                {#
+                                <a onclick='return sendForApproval("#=ItemTransferID#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                                <br />
+                                # } #
+
+                                # if (IsOnlineApproved)
+                                {#
+                                <a href='@Url.Action("ItemTransferPrint", "InventoryPrint")/#=ItemTransferID#' title="Print"><i class="fa fa-print fa-2x"></i></a>
+                                <br />
+                                # } #
+                                <div>
+                                    <hr>
+                                    <dl class="dl-horizontal">
+                                        <dt>
+                                            Requisition Ref No.
+                                        </dt>
+                                        <dd>
+                                            #= StoreRequisitionID #
+                                        </dd>
+                                        <dt>
+                                            Transfer Date
+                                        </dt>
+                                        <dd>
+
+                                            #=kendo.toString(kendo.parseDate(TransferDate), 'dd/MM/yyyy') #
+                                        </dd>
+                                        <dt>
+                                            Ship From
+                                        </dt>
+                                        <dd>
+                                            #=FromStore #
+                                        </dd>
+                                        <dt>
+                                            Ship To
+                                        </dt>
+                                        <dd>
+                                            #=ToStore #
+                                        </dd>
+                                        <dt>
+                                            Deliverer Name
+                                        </dt>
+                                        <dd>
+                                            #= DeliveredBy #
+                                        </dd>
+                                        <dt>
+                                            Deliverer Type
+                                        </dt>
+                                        <dd>
+                                            #= DriverType #
+                                        </dd>
+                                        <dt>
+                                            Vehicle Plate No
+                                        </dt>
+                                        <dd>
+                                            #= PlateNo #
+                                        </dd>
+                                        <dt>
+                                            Status
+                                        </dt>
+                                        <dd>
+                                            #= Status #
+                                        </dd>
+                                        <dt>
+                                            CreatedOn
+                                        </dt>
+                                        <dd>
+                                            #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+
+                                        </dd>
+                                        <dt>
+                                            CreatedBy
+                                        </dt>
+                                        <dd>
+                                            #= CreatedBy #
+                                        </dd>
+                                        <dt>
+                                            Modified By
+                                        </dt>
+                                        <dd>
+                                            #= ModifiedBy #s
+                                        </dd>
+                                        <dt>
+                                            Modified Date
+                                        </dt>
+                                        <dd>
+                                            #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+                                        </dd>
+                                    </dl>
+                                </div>
+
+                                <hr>
+
+                                # if (IsOnlineApproved&&!IsVoid&&!IsOnlineTransferred)
+                                {#
+                                @if (HttpContext.Current.User.IsInRole("Property_Void"))
+                                            {
+                                    <a onclick='return voidRecord("#=ItemTransferID#")' href='\#' title='Void Record'><i class='fa  fa-bolt fa-2x' style='color:red'></i></a>
+                                            }
+                                /**/
+
+                                # } #
+
+                                <hr>
+                                <p>for old record</p>
+                                # if (IsOnlineApproved&&IsVoid&&Status=="ReceiverVoid")
+                                {#
+                                @if (HttpContext.Current.User.IsInRole("Property_Void"))
+                                            {
+                                    <a onclick='return voidRecord("#=ItemTransferID#")' href='\#' title='Void Record'><i class='fa  fa-bolt fa-2x' style='color:red'></i></a>
+                                            }
+                                /**/
+
+                                # } #
+
+                            </text>
+                                            );
+
+                                  items.Add().Text("Item").Content(
+                        @<text>
+                            @(Html.Kendo().Grid<ItemTransferItem>()
+                                          .Name("ItemTransferItem_#=ItemTransferID#")
+                                          .Columns(columns =>
+                                          {
+                                                      columns.ForeignKey(p => p.ItemCategoryCode, (IEnumerable)ViewData["Category"], "ItemCategoryCode", "Name").Title("Category").EditorTemplateName("ItemCategorySelector").Width(160);
+                                                      columns.ForeignKey(p => p.ItemCode, (IEnumerable)ViewData["Items"], "ItemCode", "Name").Title("Items").EditorTemplateName("ItemSelector").Width(160);
+                                                      columns.Bound(c => c.PartOrCodeNumber).Width(100);
+                                                      columns.Bound(c => c.RequestedQuantity).Title("Requested QTY").Width(80);
+                                                      columns.Bound(c => c.ShippedQuantity).Title("Shipped QTY").Width(80);
+                                                      columns.Bound(c => c.UPrice).Width(70);
+                                                      columns.Bound(c => c.TPrice).Width(70);
+                                                      columns.Bound(c => c.ReceivedQuantity).Title("Received QTY").Width(80);
+                                                      columns.Bound(c => c.Remark).Width(60);
+
+                                                      columns.Bound(c => c.CreatedBy).Hidden();
+                                                      columns.Bound(c => c.DateCreated).Hidden();
+                                                      columns.Bound(c => c.ModifiedBy).Hidden();
+                                                      columns.Bound(c => c.LastModified).Hidden();
+
+                                                      columns.Command(command =>
+                                                      {
+                                                          command.Edit();
+                                                          command.Destroy();
+                                                      }).Width(180);
+                                                  })
+
+                                          .Events(ev => ev.Edit("onItemEdit"))
+                                          .Events(x => x.DataBound("onDataBoundLines"))
+                                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                          .Scrollable()
+                                          .DataSource(dataSource => dataSource
+                                              .Ajax()
+                                              .Events(ev => ev
+                                                  .Error("error_handler(\"ItemTransferItem_#=ItemTransferID#\")")
+                                                  .RequestStart("onRequestStart(\"ItemTransferItem_#=ItemTransferID#\")")
+                                                  .RequestEnd("onRequestEnd(\"ItemTransferItem_#=ItemTransferID#\")"))
+                                              .Model(model =>
+                                              {
+                                                          model.Id(p => p.ItemTransferItemID);
+                                                          model.Field(p => p.TPrice).Editable(false);
+                                                          model.Field(p => p.UPrice).Editable(false);
+                                                          model.Field(p => p.ReceivedQuantity).Editable(false);
+                                                          model.Field(p => p.ItemCategoryCode).Editable(false);
+                                                          model.Field(p => p.ItemCode).Editable(false);
+                                                          model.Field(p => p.RequestedQuantity).Editable(false);
+                                                          model.Field(p => p.PartOrCodeNumber).Editable(false);
+                                                          model.Field(p => p.ItemTransferID).Editable(false);
+                                                          model.Field(p => p.DateCreated).Editable(false);
+                                                          model.Field(p => p.CreatedBy).Editable(false);
+                                                          model.Field(p => p.LastModified).Editable(false);
+                                                          model.Field(p => p.ModifiedBy).Editable(false);
+
+                                                      })
+                                              .Read(read => read.Action("ItemTransferItems_Read", "TransferSendItem", new { id = "#=ItemTransferID#" }))
+                                              .Create(create => create.Action("ItemTransferItems_Create", "TransferSendItem", new { id = "#=ItemTransferID#" }))
+                                              .Update(update => update.Action("ItemTransferItems_Update", "TransferSendItem", new { id = "#=ItemTransferID#" }))
+                                              .Destroy(destroy => destroy.Action("ItemTransferItems_Destroy", "TransferSendItem"))
+                                          ).ToClientTemplate())
+
+                        </text>
+                      );
+
+                      items.Add().Text("Validation").Content(
+            @<text>
+                @(Html.Kendo().Grid<ItemTransferValidation>()
+                              .Name("ItemTransferValidation_#=ItemTransferID#")
+                              .Columns(columns =>
+                              {
+                                          columns.Bound(c => c.Status).Width(170).EditorTemplateName("ValidationStatus");
+                                          columns.Bound(c => c.Remark).Width(170);
+                                          columns.Command(command =>
+                                          {
+                                              command.Edit();
+                                  //command.Destroy();
+                              });
+                                      })
+                              .ToolBar(toolbar =>
+                              {
+                                          toolbar.Create();
+                                      })
+                              .Editable(editable => editable.Mode(GridEditMode.InLine))
+                              .Scrollable()
+                              .Events(x => x.DataBound("onDataBoundFisrtValidation"))
+                              .DataSource(dataSource => dataSource
+                                  .Ajax()
+                                  .Events(ev => ev
+                                      .Error("error_handler(\"ItemTransferValidation_#=ItemTransferID#\")")
+                                      .RequestStart("onRequestStart(\"ItemTransferValidation_#=ItemTransferID#\")")
+                                      .RequestEnd("onRequestEnd(\"ItemTransferValidation_#=ItemTransferID#\")"))
+                                  .Model(model => model.Id(p => p.ItemTransferValidationID))
+                                  .Read(read => read.Action("ItemTransferValidations_Read", "TransferSendValidation", new { id = "#=ItemTransferID#" }))
+                                  .Create(create => create.Action("ItemTransferValidations_Create", "TransferSendValidation", new { id = "#=ItemTransferID#" }))
+                                  .Update(update => update.Action("ItemTransferValidations_Update", "TransferSendValidation"))
+                                  .Destroy(destroy => destroy.Action("ItemTransferValidations_Destroy", "TransferSendValidation"))
+                              ).ToClientTemplate())
+
+
+            </text>);
+}).ToClientTemplate())
+    <br />
+    Distribution
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Inventory.ItemTransferDistribution>()
+                  .Name("ItemTransferDistribution_#=ItemTransferID#")
+                  .Columns(columns =>
+                  {
+                      columns.Bound(c => c.AccountCode);
+                      columns.Bound(c => c.AccountDesc);
+                      columns.Bound(c => c.Debit);
+                      columns.Bound(c => c.Credit);
+                      columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+                  })
+                  .ToolBar(toolbar =>
+                  {
+
+                  })
+                  .Editable(editable => editable.Mode(GridEditMode.InLine))
+                  .Scrollable()
+                  .DataSource(dataSource => dataSource
+                      .Ajax()
+                      .Model(model =>
+                      {
+                          model.Id(p => p.ItemTransferDistributionID);
+                          model.Field(p => p.AccountDesc).Editable(false);
+                          model.Field(p => p.Credit).Editable(false);
+                          model.Field(p => p.Debit).Editable(false);
+
+
+                      })
+                      .Aggregates(aggregate =>
+                      {
+                          aggregate.Add(p => p.Credit).Sum();
+                          aggregate.Add(p => p.Debit).Sum();
+
+                      })
+                      .Read(read => read.Action("ItemTransferDistributions_Read", "TransferSendDistribution", new { id = "#=ItemTransferID #" }))
+                      .Create(create => create.Action("ItemTransferDistributions_Create", "TransferSendDistribution"))
+                      .Update(update => update.Action("ItemTransferDistributions_Update", "TransferSendDistribution"))
+                      .Destroy(destroy => destroy.Action("ItemTransferDistributions_Destroy", "TransferSendDistribution"))
+                  ).ToClientTemplate())
+
+</script>
+
+<script>
+
+    function onSelectDriverType(e) {
+
+        var grid = $("#grid").data("kendoGrid");
+        var type = $("#DriverType").data("kendoDropDownList");
+        var typeValue = type.value();
+
+        if (typeValue === "1") {
+            $("#supplierDiv").show();
+            $("#employeeDiv").hide();
+        } else if (typeValue === "0") {
+            $("#supplierDiv").hide();
+            $("#employeeDiv").show();
+        }
+    }
+
+    function voidRecord(id) {
+        var recordStatus = "";
+        var conf = confirm("Are you sure you want to void this record number: " + id + " ?");
+        if (conf === true) {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("Void", "TransferSend", new { area = "Inventory" })',
+                data: { id: id },
+                success: function (result) {
+                    // toastr.warnning(result.Message);
+                    alert(result.Message);
+                    recordStatus = result.Status;
+                    location.reload(true);
+                }, //end succ
+                error: function (result) {
+                    alert(result);
+                }
+            });
+        }
+    }
+
+    function sendForApproval(id) {
+        var recordStatus = "";
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("SendForApproval", "TransferSend", new { area = "Inventory" })',
+            data: { id: id },
+            success: function(result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                recordStatus = result.Status;
+                location.reload(true);
+            }, //end succ
+            error: function(result) {
+                alert(result);
+            }
+        });
+    }
+
+
+    function onSelectedPeriod() {
+        var periodId = $("#GLPeriodId").data("kendoDropDownList").value();
+        var min = "";
+        var max = "";
+        if (periodId) {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("GetPeriodDateRangeById", "DataProvider", new {area = "Inventory"})',
+            data: { id: periodId },
+            success: function (result) {
+                min = result.Min;
+                max = result.Max;
+                //update
+                var datepicker = $("#TransferDate").data("kendoDatePicker");
+                datepicker.setOptions({
+                    format: "yyyy-MM-dd",
+                    min:min,
+                    max:max,
+                    value: new Date(),
+                    change: onDOBChange
+                });
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+
+                });
+                }
+
+    }
+
+    function filterPeriodsByMyStore() {
+        return {
+            store: $("#FromStore").val(),
+            text: null
+        }
+    }
+
+    function onSelectStoreRequisitionID(e) {
+        var id = $("#StoreRequisitionID").data("kendoDropDownList").value();
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("GetTransferStoreCodes", "DataProvider", new { area = "Inventory" })',
+            data: { id: id },
+            success: function (result) {
+                console.log(result);
+                if (result.length > 0) {
+
+                    for (var i = 0; i < result.length; i++) {
+                        $("#FromStore").val(result[i].FromStoreCode).trigger("change");
+                        $("#ToStore").val(result[i].ToStoreCode).trigger("change");
+                    }
+                }
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+
+
+    }
+
+    function onMasterEdit(e) {
+        //var grid = $("#grid").data("kendoGrid");
+        //grid.hideColumn("SupplierName");
+
+        if (e.model.isNew() === false) {
+            $("#StoreRequisitionID").kendoDropDownList({
+                enable: false
+            });
+
+        }
+
+    }
+
+
+
+    var storeCode;
+    var codeid;
+
+    function onItemEdit(e) {
+        var masterRow = this.wrapper.closest("tr.k-detail-row").prev(".k-master-row");
+        var masterGrid = $("#grid").data("kendoGrid");
+
+        var masterDataItem = masterGrid.dataItem(masterRow);
+        storeCode = masterDataItem.FromStore;
+        codeid = masterDataItem.ItemTransferID;
+    }
+
+
+    function getItems() {
+
+        return {
+            StoreCode: storeCode
+        }
+
+    }
+
+    var masterDataItem;
+    //var masterRow;
+    //var masterGrid;
+
+    //function detailExpand(e) {
+
+    //    masterRow = e.masterRow;
+
+    //    masterGrid = $("#grid").data("kendoGrid");
+
+    //    masterDataItem = masterGrid.dataItem(masterRow);
+
+    //    //  var masterDataItem = masterGrid.dataItem();
+    //    codeid = masterDataItem.ItemTransferID;
+    //}
+
+    function OnIndexCall(elem) {
+
+        //var a = codeid;
+        //$(elem).attr('href', $(elem).attr('href') + '?id=' + a);
+
+
+    }
+</script>

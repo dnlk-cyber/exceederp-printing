@@ -1,0 +1,24 @@
+﻿@using ExceedERP.Core.Domain.Finance.Report.IFRS
+
+@(Html.Kendo().Grid<IfrsScoiDiscontinuedOperation>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Description);
+          columns.Bound(c => c.AccountFrom);
+          columns.Bound(c => c.AccountTo);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.IfrsScoiDiscontinuedOperationId))
+          .Read(read => read.Action("IfrsScoiDiscontinuedOperations_Read", "IfrsScoiDiscontinuedOperation"))
+          .Create(create => create.Action("IfrsScoiDiscontinuedOperations_Create", "IfrsScoiDiscontinuedOperation"))
+          .Update(update => update.Action("IfrsScoiDiscontinuedOperations_Update", "IfrsScoiDiscontinuedOperation"))
+          .Destroy(destroy => destroy.Action("IfrsScoiDiscontinuedOperations_Destroy", "IfrsScoiDiscontinuedOperation"))
+      ))

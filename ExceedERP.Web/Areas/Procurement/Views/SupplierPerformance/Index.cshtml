@@ -1,0 +1,37 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Procurement.Supplier.SupplierPerformance>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.ProfurementRef);
+          columns.Bound(c => c.Quality);
+          columns.Bound(c => c.PlannedDeliveryPeriod);
+          columns.Bound(c => c.ActualDeliveryPeriod);
+          columns.Bound(c => c.Remark);
+          columns.Bound(c => c.Status);
+          columns.Bound(c => c.IsOnlineApproved);
+          columns.Bound(c => c.OnlineApprovedBy);
+          columns.Bound(c => c.OnlineApprovedTime);
+          columns.Bound(c => c.isVoid);
+          columns.Bound(c => c.VoidBy);
+          columns.Bound(c => c.VoidTime);
+          columns.Bound(c => c.OrgBranchName);
+          columns.Bound(c => c.DateCreated);
+          columns.Bound(c => c.LastModified);
+          columns.Bound(c => c.CreatedBy);
+          columns.Bound(c => c.ModifiedBy);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.SupplierPerformanceId))
+          .Read(read => read.Action("SupplierPerformances_Read", "SupplierPerformance"))
+          .Create(create => create.Action("SupplierPerformances_Create", "SupplierPerformance"))
+          .Update(update => update.Action("SupplierPerformances_Update", "SupplierPerformance"))
+          .Destroy(destroy => destroy.Action("SupplierPerformances_Destroy", "SupplierPerformance"))
+      ))

@@ -1,0 +1,51 @@
+﻿
+<legend>    Employee Job Type Map </legend>
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetRegistration.HRFleetMapping>()
+    .Name("grid")
+    .Columns(columns =>
+    {
+
+        columns.Bound(e => e.PlacmentType).EditorTemplateName("PlacmentTypeEditor").Width(140);
+        columns.ForeignKey(c => c.JobTitleCode, (System.Collections.IEnumerable)ViewData["JobTitleCodes"], "LookupId", "Description").EditorTemplateName("EmoployeeTypeEditor").Width(140);
+        columns.Bound(e => e.Remark).Width(140);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
+
+    })
+              .ToolBar(commands => commands.Create())
+         .Editable(editable =>
+         {
+             editable.Mode(GridEditMode.InLine);
+             editable.DisplayDeleteConfirmation("Are You Sure To Remove ");
+         })  .HtmlAttributes(new { style = "height: 520px;" })
+                      .Pageable(pageable => pageable
+                                        .Input(true)
+                                        .Numeric(false)
+                                        .Refresh(true)
+                                        .PageSizes(true)
+                                        .ButtonCount(5))
+
+                            .Scrollable()
+                            .Sortable()
+                            .Filterable()
+                             .Scrollable(h => h.Height(500))
+    .DataSource(dataSource => dataSource
+        .Ajax()
+        .ServerOperation(false)
+        .Model(model =>
+              {
+                  model.Id(p => p.HRFleetMappingId);
+
+                
+
+              })                          .Events(ev => ev
+                                    .Error("error_handler(\"grid\")")
+                                    .RequestStart("onRequestStart(\"grid\")")
+                                    .RequestEnd("onRequestEnd(\"grid\")"))
+                            .Create(update => update.Action("EmployeeFleetMap_Create", "EmployeeFleetMap"))
+                            .Read(read => read.Action("EmployeeFleetMap_Read", "EmployeeFleetMap"))
+                            .Update(update => update.Action("EmployeeFleetMap_Update", "EmployeeFleetMap"))
+                            .Destroy(update => update.Action("EmployeeFleetMap_Destroy", "EmployeeFleetMap"))
+  )
+)
+

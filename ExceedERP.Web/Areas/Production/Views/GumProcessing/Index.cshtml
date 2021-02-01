@@ -1,0 +1,206 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>  Natural Gum Processing  </legend>
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Production.GumProcessingOrder>()
+                                .Name("gumProcessingGrid")
+                                .Columns(columns =>
+                                {
+                                    columns.ForeignKey(c => c.ProductionPeriodId, (IEnumerable)ViewData["ProductionPeriods"], "ProductionPeriodId", "Name").EditorTemplateName("ProductionPeriods");
+                                    columns.ForeignKey(c => c.ProcessingPlantId, (IEnumerable)ViewData["ProcessingPlants"], "ProcessingPlantId", "Name").EditorTemplateName("ProcessingPlants");
+
+                                    columns.Command(command =>
+                                    {
+                                        command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                        command.Destroy().Text(Resources.ActionButton_Cancel);
+                                    }).Width(200);
+                                })
+                                .ToolBar(toolbar =>
+                                {
+                                    toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                                })
+                                .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                .Scrollable(h => h.Height(500))
+                                .Sortable(sortable =>
+                                {
+                                    sortable.SortMode(GridSortMode.SingleColumn);
+                                })
+                                .Selectable(selectable =>
+                                {
+                                    selectable.Mode(GridSelectionMode.Single);
+                                    selectable.Type(GridSelectionType.Row);
+                                })
+                                .Filterable()
+                                .Pageable(pageable => pageable
+                                    .Input(true)
+                                    .Numeric(false)
+                                    .Refresh(true)
+                                    .PageSizes(true)
+                                    .ButtonCount(5))
+                                .DataSource(dataSource => dataSource
+                                    .Ajax()
+                                    .Events(events =>
+                                    {
+                                        events.Error("error_handler(\"gumProcessingGrid\")");
+                                        events.RequestStart("onRequestStart(\"gumProcessingGrid\")");
+                                        events.RequestEnd("onRequestEnd(\"gumProcessingGrid\")");
+                                    })
+                                    .Model(model =>
+                                    {
+                                        model.Id(p => p.GumProcessingOrderId);
+                                    })
+                                    .Read(read => read.Action("ProcessingItems_Read", "GumProcessingOrder"))
+                                    .Create(create => create.Action("ProcessingItem_Create", "GumProcessingOrder"))
+                                    .Update(update => update.Action("ProcessingItem_Update", "GumProcessingOrder"))
+                                    .Destroy(destroy => destroy.Action("ProcessingItem_Destroy", "GumProcessingOrder"))
+                                    ).ClientDetailTemplateId("order_items")
+)
+<script id="order_items" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+        .SelectedIndex(0)
+        .Name("tabst_#=GumProcessingOrderId#")
+        .Items(items => {
+            items.Add().Text("Processing Oerder Items").Content(
+                @<text>
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Production.GumProcessingOrderItem>()
+                                .Name("processingItem_#=GumProcessingOrderId#")
+                                .Columns(columns =>
+                                {
+                                    //columns.ForeignKey(c => c.StoreCode, (IEnumerable)ViewData["InventoryStores"], "StoreCode", "Name").EditorTemplateName("InventoryStoreSelector");
+                                    columns.ForeignKey(c => c.ItemCategoryCode, (IEnumerable)ViewData["ItemCategorys"], "ItemCategoryCode", "Name").EditorTemplateName("MasterItemCategory");
+                                    columns.ForeignKey(c => c.ItemCode, (IEnumerable)ViewData["Items"], "ItemCode", "Name").EditorTemplateName("MasterItemSelector");
+                                    columns.Bound(c => c.RawQuantity);
+                                    columns.Bound(c => c.ProcessingCode);
+
+                                    columns.Command(command =>
+                                    {
+                                        command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                        command.Destroy().Text(Resources.ActionButton_Cancel);
+                                    }).Width(200);
+                                })
+                                .ToolBar(toolbar =>
+                                {
+                                    toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                                })
+                                .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                .Scrollable(h => h.Height(500))
+                                .Sortable(sortable =>
+                                {
+                                    sortable.SortMode(GridSortMode.SingleColumn);
+                                })
+                                .Selectable(selectable =>
+                                {
+                                    selectable.Mode(GridSelectionMode.Single);
+                                    selectable.Type(GridSelectionType.Row);
+                                })
+                                .Filterable()
+                                .Pageable(pageable => pageable
+                                    .Input(true)
+                                    .Numeric(false)
+                                    .Refresh(true)
+                                    .PageSizes(true)
+                                    .ButtonCount(5))
+                                .DataSource(dataSource => dataSource
+                                    .Ajax()
+                                    .Events(events =>
+                                    {
+                                        events.Error("error_handler(\"processingItem_#=GumProcessingOrderId#\")");
+                                        events.RequestStart("onRequestStart(\"processingItem_#=GumProcessingOrderId#\")");
+                                        events.RequestEnd("onRequestEnd(\"processingItem_#=GumProcessingOrderId#\")");
+                                    })
+                                    .Model(model =>
+                                    {
+                                        model.Id(p => p.GumProcessingOrderItemId);
+                                    })
+                                    .Read(read => read.Action("ProcessingItems_Read", "GumProcessingOrderItem", new { id = "#=GumProcessingOrderId#" }))
+                                    .Create(create => create.Action("ProcessingItem_Create", "GumProcessingOrderItem", new { id = "#=GumProcessingOrderId#" }))
+                                    .Update(update => update.Action("ProcessingItem_Update", "GumProcessingOrderItem"))
+                                    .Destroy(destroy => destroy.Action("ProcessingItem_Destroy", "GumProcessingOrderItem"))
+
+                                    ).ClientDetailTemplateId("template_gumProcessingActivities")
+                                    .ToClientTemplate()
+                    )
+                </text>
+                );
+        }).ToClientTemplate()
+    )
+</script>
+
+<script id="template_gumProcessingActivities" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+            .Name("tab_str_#=GumProcessingOrderItemId#")
+            .SelectedIndex(0)
+            .Items(items =>
+            {
+            items.Add().Text("Detail").Content(
+                @<text>
+                    @(Html.Kendo().PanelBar()
+                              .Name("panelbar_#=GumProcessingOrderItemId#")
+                              .ExpandMode(PanelBarExpandMode.Single)
+                              .Items(panelbar =>
+                              {
+                                  panelbar.Add()
+                                      .Expanded(true)
+                                      .Content(
+                                         "<div class='workItem-details'>" +
+                                            "<ul>" +
+                                                 //"<li> <label> <strong> Status </label> #= Status# </strong></li>" +
+                                                 "<li> <label> <b>(A)</b> Material Cost </label> #= kendo.toString(MaterialCost, 'N2')# </li>" +
+                                                 "<li> <label> <b>(B)</b> Labor Cost :</label> #= kendo.toString(LaborCost, 'N2')# </li>" +
+                                                 "<li> <label> <b>(C)</b> Machinery Cost:</label> #= kendo.toString(EquipmentCost, 'N2')# </li>" +
+                                                 "<li> <label> <b>(D)</b> Direct Cost: <b>(A + B + C) = </b> </label> #= kendo.toString(DirectCost, 'N2')# </li>" +
+                                                 "<li> <label> <b>(E)</b> Over head Cost:</label> #= kendo.toString(OverheadCost, 'N2')# </li>" +
+                                                 //"<li> <label> Profit Cost:</label> #= kendo.toString(ProfitCost, 'N2')# </li>" +
+                                                 "<li> <label>Total  Cost : <b>(D + E) = </b> </label><b> #= kendo.toString(TotalCost, 'N2')# </b></li>" +
+                                            "</ul>" +
+                                        "</div>"
+                                );
+                              }).ToClientTemplate()
+                    )
+                </text>
+                );
+            }).ToClientTemplate())
+</script>
+
+<script>
+    function getSelectedStoreCode() {
+        //
+        // summary:
+        //      send the filtering text along with the parent widget's value
+        var dropdownlist = $("#ItemCategoryCode").data("kendoDropDownList");
+        var filterInput = dropdownlist.filterInput;
+        return {
+            storeCode: $("#StoreCode").val(), filterString: filterInput.val()
+        };
+    }
+    function filterCategories() {
+        //
+        // summary:
+        //      send the filtering text along with the parent widget's value
+        var dropdownlist = $("#ItemCode").data("kendoDropDownList");
+        var filterInput = dropdownlist.filterInput;
+        return {
+            ItemCategoryCode: $("#ItemCategoryCode").val(), storeCode: $("#StoreCode").val(), filterString: filterInput.val()
+        };
+    }
+    function rawProductChanged(e) {
+        var itmCode = $('#ItemCode').val();
+        var storeCode = $('#StoreCode').val();
+
+        $.ajax({
+            url: '@Url.Action("GetRawQuantityFromStore", "SeedProcessing", new {area = "Production"})',
+            data: { storeCode: storeCode, itemCode: itmCode },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                $("#RawQuantity").val(result);
+                $("#RawQuantity").trigger("change");
+            }
+
+        });
+    }
+</script>
+

@@ -1,0 +1,48 @@
+﻿@using ExceedERP.Core.Domain.Finance.AP
+@(Html.Kendo().Grid<ApPaybleInvoicesLines>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Name).Width(150);
+          columns.Bound(c => c.Description).Width(150);
+          columns.Bound(c => c.AccountCode).Width(150);
+          columns.Bound(c => c.AccountDesc).Hidden(true).Width(150);
+          columns.Bound(c => c.InvoiceAmount).Width(150);
+          columns.Bound(c => c.AdvanceAmount).Hidden(true).Width(150);
+          columns.Bound(c => c.NetPayable).Hidden(true).Width(150);
+          columns.Bound(c => c.ReceiptNo).Width(150);
+          columns.Bound(c => c.TaxType).Width(150);
+          columns.Bound(c => c.TaxAmount).Hidden(true);
+          columns.Bound(c => c.WithholdingType).Width(150);
+          columns.Bound(c => c.WithholdingAmount).Hidden(true);
+          columns.Bound(c => c.WithholdTax).Width(150);
+          columns.Bound(c => c.WithholdTaxAmount).Hidden(true);
+          columns.Bound(c => c.PoNo).Hidden(true);
+          
+          columns.Bound(c => c.OrgBranchName).Hidden(true);
+          columns.Bound(c => c.DateCreated).Hidden(true);
+          columns.Bound(c => c.LastModified).Hidden(true);
+          columns.Bound(c => c.CreatedBy).Hidden(true);
+          columns.Bound(c => c.ModifiedBy).Hidden(true);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+                              toolbar.Excel();
+                              // toolbar.Pdf();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Pageable()
+      .Sortable(sortable => {
+                                sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Filterable()
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.ApPaybleInvoicesLinesId))
+          .Read(read => read.Action("APPaybleInvoicesLines_Read", "ApInvoicesLines"))
+          .Create(create => create.Action("APPaybleInvoicesLines_Create", "ApInvoicesLines"))
+          .Update(update => update.Action("APPaybleInvoicesLines_Update", "ApInvoicesLines"))
+          .Destroy(destroy => destroy.Action("APPaybleInvoicesLines_Destroy", "ApInvoicesLines"))
+      ))

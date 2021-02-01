@@ -1,0 +1,15 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.HRM
+@using ExceedERP.Core.Localization
+@(Html.Kendo().DropDownListFor(m => m)
+            .DataTextField("CurrentValue")
+            .OptionLabel(Resources.Select)
+            .DataValueField("ConfigurationId")
+            //.BindTo((IEnumerable)ViewData["StructureType"])
+            .DataSource(dataSource =>
+            {
+                dataSource.Read(read => read.Action("GetRoadStructureTypes", "DataProvider"));
+            })
+            .ValuePrimitive(true)
+            .Filter("contains")
+)

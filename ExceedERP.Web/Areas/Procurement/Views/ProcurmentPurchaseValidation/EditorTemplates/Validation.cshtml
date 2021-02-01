@@ -1,0 +1,8 @@
+﻿@using ExceedERP.Core.Domain.Inventory
+@(
+ Html.Kendo().DropDownListFor(m => m)
+        .DataTextField("Text")
+        .DataValueField("Value")
+            .BindTo(EnumExtension.EnumToSelectList(typeof(ValidationStatus)))
+)
+

@@ -1,0 +1,50 @@
+﻿<legend>Product Category</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.ProductCategory>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Description).Width(120);
+          columns.Bound(c => c.Index).Width(80);
+          columns.Bound(c => c.SalesAccountCode).EditorTemplateName("AccountCode").Width(220);
+          columns.Bound(c => c.InventoryAccountCode).EditorTemplateName("AccountCode").Width(220);
+          columns.Bound(c => c.IsActive).ClientTemplate("<input type='checkbox'  disabled='true' value='#=IsActive #' " + " # if (IsActive) { #" + "checked='checked'" + "# } #" + " />").Title("Is Active").Width(100);
+          columns.ForeignKey(c => c.Parent, (System.Collections.IEnumerable)ViewData["CategoryList"], "ProductCategoryId", "Description").EditorTemplateName("Parent").Width(100);
+          columns.Bound(c => c.Remark).Width(150);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create();
+      })
+
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+             .HtmlAttributes(new { style = "height: 520px;" })
+                              .Pageable(pageable => pageable
+                                                .Input(true)
+                                                .Numeric(false)
+                                                .Refresh(true)
+                                                .PageSizes(true)
+                                                .ButtonCount(5))
+
+                                    .Scrollable()
+                                    .Sortable()
+                                    .Filterable()
+                                    .Groupable()
+                                    .Scrollable(h => h.Height(500))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+              .Model(model => model.Id(p => p.ProductCategoryId)).Events(ev => ev
+                                                                    .Error("error_handler(\"grid\")")
+                                                                 .RequestStart("onRequestStart(\"grid\")")
+                                                               .RequestEnd("onRequestEnd(\"grid\")"))
+          .Read(read => read.Action("ProductCategories_Read", "ProductCategory"))
+          .Create(create => create.Action("ProductCategories_Create", "ProductCategory"))
+          .Update(update => update.Action("ProductCategories_Update", "ProductCategory"))
+          .Destroy(destroy => destroy.Action("ProductCategories_Destroy", "ProductCategory"))
+
+
+
+                              )
+)
+
+ 

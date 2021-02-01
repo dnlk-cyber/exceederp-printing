@@ -1,0 +1,15 @@
+﻿@(Html.Kendo().DropDownListFor(m => m)
+                  .AutoBind(false)
+                  .OptionLabel("--Select Object State Definition--")
+                  .DataTextField("Description")
+                  .DataValueField("ObjectStateDefinitionID")
+                  .DataSource(dataSource =>
+                  {
+                      dataSource.Read(read => read.Action("GetObjectStateDefinitionList", "CRMDataProvider"))
+                                .ServerFiltering(true);
+                  })
+
+)
+@Html.ValidationMessageFor(m => m)
+
+

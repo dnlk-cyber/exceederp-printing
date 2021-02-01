@@ -1,0 +1,358 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.HRM.RecruitmentManagment
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend >@Resources.Navigator_Recruitment_Vacancy</legend>
+
+@(Html.Kendo().Grid<Vacancy>()
+                  .Name("VaccancyPlangrid")
+      .Columns(columns =>
+      {
+          //columns.Bound(c => c.VacancyId).Width(130);
+          @*columns.Bound(c => c.IsComplete).Template(@<text></text>).ClientTemplate("<input type='checkbox' #= Check ? checked='checked':'' # class='chkbx' />")
+                              .HeaderTemplate("<input type='checkbox' id='masterCheckBox' onclick='checkAll(this)'/>").Width(60);*@
+          columns.Bound(c => c.VaccancyCode).Width(120);
+          columns.Bound(c => c.IsComplete).ClientTemplate("<input type='checkbox' disabled = 'true' #=IsComplete ? checked='checked' :'' # >").Width(100);
+          columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "AmharicName").EditorTemplateName("BranchSelectorFromPlan").Filterable(ftb => ftb.Multi(true).Search(true)).Width(130);
+          columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["workunits"], "OrgStructureId", "Name").EditorTemplateName("OrganizationDept").Filterable(ftb => ftb.Multi(true).Search(true)).Width(200);
+          columns.ForeignKey(c => c.RecruitmentPlanId, (IEnumerable)ViewData["Recruitments"], "RecruitmentPlanId", "JobTitle").EditorTemplateName("RecruitmentPlan").Filterable(ftb => ftb.Multi(true).Search(true)).Width(200);
+          columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["PeriodList"], "GlFiscalYearId", "Name").EditorTemplateName("GLYearSelector").Width(80);
+
+          columns.Bound(c => c.RecruSource).EditorTemplateName("Enum").Width(150);
+          columns.Bound(c => c.FromVacAm).EditorTemplateName("Calander").Width(150);
+          columns.Bound(c => c.ToVacAm).EditorTemplateName("Calander").Width(150);
+          columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["Media"], "LookupId", "Description").Width(90).EditorTemplateName("Media");
+          columns.Bound(c => c.VacancyType).EditorTemplateName("Enum").Width(120);
+
+
+          columns.Command(command =>
+          {
+              if (HttpContext.Current.User.IsInRole("HR_Recruitment_User"))
+              {
+                  command.Custom("").Text("Close").Click("terminate");
+               
+                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+              }
+              if (HttpContext.Current.User.IsInRole("HR_Recruitment_Admin") || HttpContext.Current.User.IsInRole("HR_Admin"))
+              {
+                  command.Destroy().Text(Resources.ActionButton_Cancel);
+              }
+          }).Width(300);
+
+      })
+
+      .ToolBar(toolbar =>
+      {
+
+
+      toolbar.Template(@<text>
+                               
+  @if (HttpContext.Current.User.IsInRole("HR_Recruitment_User"))
+  {
+ 
+      @item.CreateButton(Resources.ActionButton_AddNewRecord)
+      @*@item.SaveButton()*@
+  }
+
+        </text>);
+
+
+      })
+      .Filterable()
+      .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("Vacancy"))
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+
+                .Events(e =>
+                {
+                    e.Save("GetDate");
+                    e.Edit("GetDate");
+                })
+      .Scrollable(h => h.Height(500))
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(5))
+
+      .DataSource(dataSource => dataSource
+                .Ajax()
+              //.Batch(true)
+              //.ServerOperation(false)
+              .Sort(sort => sort.Add("VacancyId").Descending())
+          .Events(events =>
+          {
+              events.Error("error_handler(\"VaccancyPlangrid\")");
+              events.RequestStart("onRequestStart(\"VaccancyPlangrid\")");
+              events.RequestEnd("onRequestEnd(\"VaccancyPlangrid\")");
+          })
+
+                      .Model(model => { model.Id(p => p.VacancyId);
+                          model.Field(p => p.VacancyId).Editable (false);
+                          model.Field(p => p.VaccancyCode).Editable(false);
+                                          model.Field(p => p.IsComplete).Editable(false);
+                      })
+               .Read(read => read.Action("VaccancyPlans_Read", "Vacancy", new { Area = "HRM" }))
+            .Create(create => create.Action("VaccancyPlans_Create", "Vacancy", new { Area = "HRM"}))
+          .Update(update => update.Action("VaccancyPlans_Update", "Vacancy"))
+           //.Update(update => update.Action("ChangingStatus_Edit", "Vacancy"))
+           .Destroy(destroy => destroy.Action("VaccancyPlans_Destroy", "Vacancy"))
+      )
+)
+
+
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 700px;
+    }
+</style>
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 700px;
+    }
+
+    .Employee-photo {
+        display: inline-block;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background-size: 32px 35px;
+        background-position: center center;
+        vertical-align: middle;
+        line-height: 32px;
+        box-shadow: inset 0 0 1px #999, inset 0 0 10px rgba(0, 0, 0, .2);
+        margin-left: 5px;
+    }
+
+    .Employee-name {
+        display: inline-block;
+        vertical-align: middle;
+        line-height: 32px;
+        padding-left: 3px;
+    }
+</style>
+<script>
+    //function error_handler(e) {
+    //    if (e.errors) {
+    //        var message = "Errors:\n";
+    //        $.each(e.errors, function(key, value) {
+    //            if ('errors' in value) {
+    //                $.each(value.errors, function() {
+    //                    message += this + "\n";
+    //                });
+    //            }
+    //        });
+    //        alert(message);
+
+    //    }
+
+    //}
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+</script>
+<Script>
+    function onDataBound(e) {
+        var rows = e.sender.tbody.children();
+
+        for (var j = 0; j < rows.length; j++) {
+            var row = $(rows[j]);
+            var dataItem = e.sender.dataItem(row);
+            if (dataItem.Status === 0) {
+
+
+                row.css("background-color", "red");
+
+            } else {
+                row.css("background-color", "green");
+            }
+
+        }
+
+    }
+    function AssignDate() {
+        var list = AssignDates();
+        return list;
+    }
+    function GetDate() {
+
+        var x = AssignDate();
+        var y = x;
+        $("#FromVacAm").trigger("change");
+        $("#ToVacAm").trigger("change");
+        for (var o in y) {
+            $.ajax({
+                contentType: "application/json; charset=utf-8",
+                url: '@Url.Action("SetDate", "Vacancy")',
+                data: { name: y[o].id, value: y[o].date },
+                type: 'GET',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                }
+
+            });
+        }
+    }
+</Script>
+<script>
+    function Branch() {
+
+
+        var value = this.value(),
+            grid = $("#VaccancyPlangrid").data("kendoGrid");
+
+        if (value) {
+            grid.dataSource.filter({ field: "BranchId", operator: "eq", value: parseInt(value) });
+        } else {
+            grid.dataSource.filter({});
+        }
+    }
+</script>
+<script>
+    function RecruitmentType() {
+
+
+        var value = this.value(),
+            grid = $("#VaccancyPlangrid").data("kendoGrid");
+
+        if (value) {
+            grid.dataSource.filter({ field: "VacancyType", operator: "eq", value: parseInt(value) });
+        } else {
+            grid.dataSource.filter({});
+        }
+    }
+</script>
+<script>
+    function Transfer() {
+       
+        var value = this.value(),
+            grid = $("#VaccancyPlangrid").data("kendoGrid");
+
+        if (value) {
+            grid.dataSource.filter({ field: "VaccancyCode", operator: "eq", value: parseInt(value) });
+        } else {
+            grid.dataSource.filter({});
+        }
+        
+    }
+</script>
+<script>
+    function terminate(e) {
+       // var value = e;
+        //var grid = $("#VaccancyPlangrid").data("kendoGrid");
+        
+        //var selectedRow = grid.dataItem(grid.select());//grid.select();
+        //var id = selectedRow.VacancyId;
+
+        var row = $(e.target).closest("tr");
+        var grid = $("#VaccancyPlangrid").data("kendoGrid");
+        var dataItem = grid.dataItem(row);
+        var id = dataItem.VacancyId;
+
+
+        if (id.length !== 0 )
+        {
+
+            $.ajax({
+                url: '@Url.Action("Close", "Vacancy")',
+
+                data: { id: id},
+                type: 'POST',
+                cache: false,
+                success: function (result) {
+                    r = result;
+
+
+                   // $("#OrgStructureId").val(r).trigger("change");;
+
+
+                }
+
+
+
+            });
+
+        }
+    }
+</script>
+<script>
+    function GetWorkUnits() {
+        $("#OrgStructureId").val(0);
+        var BranchId = $("#BranchId").data("kendoDropDownList");
+        var branch = BranchId.value();
+
+
+
+        if (branch.length !== 0 )
+        {
+
+            $.ajax({
+                url: '@Url.Action("GetWorkUnitFromRecruitmentPlan", "HRMDataProvider")',
+
+                data: { branch: branch},
+                type: 'POST',
+                cache: false,
+                success: function (result) {
+                    r = result;
+
+
+                    $("#OrgStructureId").val(r).trigger("change");;
+
+
+                }
+
+
+
+            });
+
+        }
+    }
+
+</script>
+<script>
+
+    function filterWorkunit() {
+        return {
+            BranchId: $("#BranchId").val(),
+            searchText: $("#OrgStructureId").data("kendoDropDownList").filterInput.val()
+        };
+    }
+    function filterJobTitle() {
+        return {
+            OrgStructureId: $("#BranchId").val()+"-"+$("#OrgStructureId").val()
+        };
+    }
+
+</script>
+
+<script type="text/javascript">
+    $(function () {
+        $('#VaccancyPlangrid').on('click', '.chkbx', function () {
+            var checked = $(this).is(':checked');
+            var grid = $('#VaccancyPlangrid').data().kendoGrid;
+            var dataItem = grid.dataItem($(this).closest('tr'));
+            dataItem.set('Check', checked);
+        })
+    })
+
+    function checkAll(ele) {
+        var state = $(ele).is(':checked');
+        var grid = $('#VaccancyPlangrid').data().kendoGrid;
+        $.each(grid.dataSource.view(), function () {
+            if (this['Check'] != state)
+                this.dirty = true;
+            this['Check'] = state;
+        });
+        grid.refresh();
+    }
+
+</script>

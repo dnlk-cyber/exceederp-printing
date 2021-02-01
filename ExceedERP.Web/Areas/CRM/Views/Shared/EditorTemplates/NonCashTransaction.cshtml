@@ -1,0 +1,106 @@
+﻿@using Kendo.Mvc.UI
+@model ExceedERP.Core.Domain.CRM.NonCashTransaction
+
+<form>
+    <div class="row">
+        <div class="col-md-1">
+
+        </div>
+
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.Consignee)
+                </div>
+                <div>
+                    @Html.Kendo().TextBoxFor(model => model.Consignee).Name("Consignee").Enable(false)
+                  
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.ReceiveMethod)
+                </div>
+                <div>
+                    @Html.Kendo().TextBoxFor(model => model.ReceiveMethod).Name("ReceiveMethod").Enable(false)
+
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.ReceiveProcessor)
+                </div>
+                <div>
+                    @Html.Kendo().TextBoxFor(model => model.ReceiveProcessor)
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-md-1">
+
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.Index)
+                </div>
+                <div>
+                    @Html.Kendo().NumericTextBoxFor(model => model.Index).Min(0)
+                    @Html.ValidationMessageFor(model => model.Index)
+                </div>
+            </div>
+
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.IssueDate)
+                </div>
+                <div>
+                    @Html.Kendo().DatePickerFor(model => model.IssueDate)
+                    @Html.ValidationMessageFor(model => model.IssueDate)
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.MaturityDate)
+                </div>
+                <div>
+                    @Html.Kendo().DatePickerFor(model => model.MaturityDate)
+                    @Html.ValidationMessageFor(model => model.MaturityDate)
+                </div>
+            </div>
+
+        </div>
+
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-md-1">
+
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.Number)
+                </div>
+                <div>
+                    @Html.Kendo().NumericTextBoxFor(model => model.Number).Min(0)
+                    @Html.ValidationMessageFor(model => model.Number)
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+</form>

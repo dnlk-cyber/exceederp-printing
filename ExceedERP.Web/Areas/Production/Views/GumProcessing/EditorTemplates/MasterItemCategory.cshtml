@@ -1,0 +1,17 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@(Html.Kendo().DropDownListFor(m => m)
+        .OptionLabel( Resources.Select)
+        .Name("ItemCategoryCode")
+        .DataTextField("Name")
+        .DataValueField("ItemCategoryCode")
+        .DataSource(dataSource =>
+        {
+            dataSource.Read(read => read.Action("GetItemCategoriesAvailableInStore", "ProductionDataProvider", new { area = "Production"}).Data("getSelectedStoreCode"))
+            .ServerFiltering(true);
+        })
+        .CascadeFrom("StoreCode")
+        .Filter("contains")
+        .MinLength(2)
+        .ValuePrimitive(true)
+)

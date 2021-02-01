@@ -1,0 +1,61 @@
+﻿@using ExceedERP.Core.Domain.Procurement.Settings
+
+<legend>Service Category</legend>
+@(Html.Kendo().Grid<ServiceCategory>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.ServiceCategoryCode).Width(120);
+          columns.Bound(c => c.Name).Width(150);
+          columns.Bound(c => c.HaveParent).EditorTemplateName("IsParent").ClientTemplate("<input type='checkbox' disabled = 'true'  value='#=HaveParent #' " + " # if (HaveParent) { #" + "checked='checked'" + "# } #" + " />").Width(100);
+          columns.Bound(c => c.ParentName).EditorTemplateName("ParentList").Width(150).Hidden();
+          columns.Bound(c => c.Description).Width(150);
+          columns.Bound(c => c.AccountCode).EditorTemplateName("AccountCode").Width(220);
+          columns.Bound(c => c.IssueAccountCode).EditorTemplateName("AccountCode").Width(220);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .HtmlAttributes(new { style = "height: 550px;" })
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(20))
+      .Scrollable()
+      .Sortable()
+      .Filterable()
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Groupable()
+      .Events(events => events.Edit("edit"))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.ServiceCategoryCode))
+          .Events(ev => ev
+              .Error("error_handler(\"grid\")")
+              .RequestStart("onRequestStart(\"grid\")")
+              .RequestEnd("onRequestEnd(\"grid\")"))
+          .Read(read => read.Action("ServiceCategories_Read", "ServiceCategory"))
+          .Create(create => create.Action("ServiceCategories_Create", "ServiceCategory"))
+          .Update(update => update.Action("ServiceCategories_Update", "ServiceCategory"))
+          .Destroy(destroy => destroy.Action("ServiceCategories_Destroy", "ServiceCategory"))
+      ))
+
+<script>
+    function edit(e) {
+        if (e.model.isNew() === false) {
+            $("#ServiceCategoryCode").attr("readonly", true);
+        }
+    }
+</script>

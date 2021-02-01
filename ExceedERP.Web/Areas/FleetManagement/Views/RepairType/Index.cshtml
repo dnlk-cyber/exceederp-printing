@@ -1,0 +1,75 @@
+﻿@{
+    ViewBag.Title = "Repair Type";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Repair Type</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetMaintenance.RepairType>()
+    .Name("grid")
+    .Columns(columns =>
+    {
+        columns.Bound(e => e.Name).Width(140);
+        columns.Bound(e => e.Code).Width(140);
+        columns.Bound(e => e.Description).Width(140);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
+
+    })         .ToolBar(commands => commands.Create())
+       .Editable(editable =>
+         {
+             editable.Mode(GridEditMode.InLine);
+             editable.DisplayDeleteConfirmation("Are You Sure To Remove Repair Type");
+         })
+        .HtmlAttributes(new { style = "height: 520px;" })
+                          .Pageable(pageable => pageable
+                                            .Input(true)
+                                            .Numeric(false)
+                                            .Refresh(true)
+                                            .PageSizes(true)
+                                            .ButtonCount(5))
+
+                                .Scrollable()
+                                .Sortable()
+                                .Filterable()
+                                .Groupable()
+                                .Scrollable(h => h.Height(500))
+    .DataSource(dataSource => dataSource
+        .Ajax()
+        .ServerOperation(false)
+                  .Model(model =>
+              {
+                  model.Id(p => p.RepairTypeID);
+
+                  model.Field(p => p.RepairTypeID).Editable(false);
+
+              })                .Events(ev => ev
+                                                        .Error("error_handler(\"grid\")")
+                                                        .RequestStart("onRequestStart(\"grid\")")
+                                                        .RequestEnd("onRequestEnd(\"grid\")")) 
+                        .Create(update => update.Action("RepairType_Create", "RepairType"))
+                        .Read(read => read.Action("RepairType_Read", "RepairType"))
+                        .Update(update => update.Action("RepairType_Update", "RepairType"))
+                        .Destroy(update => update.Action("RepairType_Destroy", "RepairType"))
+  )
+)
+
+<script type="text/javascript">
+    function error_handler(e) {
+        if (e.errors) {
+            var message = "Errors:\n";
+            $.each(e.errors, function (key, value) {
+                if ('errors' in value) {
+                    $.each(value.errors, function () {
+                        message += this + "\n";
+                    });
+                }
+            });
+            alert(message);
+        }
+    }
+    function sync_handler(e) {
+        this.read();
+
+    }
+    function onClick() {
+        $("#grid").data("kendoGrid").addRow();
+    }
+</script>

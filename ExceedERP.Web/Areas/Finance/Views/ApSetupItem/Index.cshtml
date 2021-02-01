@@ -1,0 +1,72 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Finance.AP.ApSetupItem>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Name);
+          columns.Bound(c => c.Description).Width(180);
+           columns.Bound(c => c.AccountCode).EditorTemplateName("AccountCode").Width(220);
+          columns.Bound(c => c.CreationSign);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+                              toolbar.Excel();
+                              // toolbar.Pdf();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .HtmlAttributes(new { style = "height: 550px;" })
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(5))
+      .Scrollable()
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Filterable()
+      .Groupable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(
+              model =>
+              {
+                  model.Id(p => p.ApSetupItemId);
+                  model.Field(p => p.CreatedBy).Editable(false);
+                  model.Field(p => p.ModifiedBy).Editable(false);
+                  model.Field(p => p.LastModified).Editable(false);
+                  model.Field(p => p.DateCreated).Editable(false);
+              })
+          .Events(events => events
+              .Error("error_handler_one")
+              .Sync("sync_handler"))
+          .Read(read => read.Action("ApSetupItems_Read", "ApSetupItem"))
+          .Create(create => create.Action("ApSetupItems_Create", "ApSetupItem"))
+          .Update(update => update.Action("ApSetupItems_Update", "ApSetupItem"))
+          .Destroy(destroy => destroy.Action("ApSetupItems_Destroy", "ApSetupItem"))
+      ))
+
+<script>
+    //var popup;
+    //var aCode;
+
+    //function SelectAccCode() {
+    //    popup = window.open('/Finance/AccountCode/GLAccountSelector', 'WindowPopup', 'top=100, left=400, width=300, height=320,resizable=no,');
+    //    popup.focus();
+    //    return false;
+    //}
+
+    //function setLang(accCode) {
+    //    aCode = accCode;
+    //    $("#AccountCode").val(aCode).trigger("change");
+    //}
+</script>
+

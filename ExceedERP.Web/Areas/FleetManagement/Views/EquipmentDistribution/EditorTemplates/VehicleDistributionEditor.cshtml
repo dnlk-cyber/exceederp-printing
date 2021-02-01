@@ -1,0 +1,42 @@
+﻿@model ExceedERP.Core.Domain.FleetManagement.FleetResource.VehicleDistribution
+
+
+<script>
+    function filterRentRequest() {
+        return {
+            requestType: 'Company'
+        };
+    }
+</script>
+
+<div class="demo-section k-content">
+   
+
+                        <div class="col-md-9">
+                            <div class="form-group">
+
+                                <div class="k-label">
+                                    @Html.LabelFor(model => model.RequestID)
+                                </div>
+                                @(Html.Kendo().DropDownListFor(model => model.RequestID).Name("RequestID").HtmlAttributes(new { style = "width: 100%" })
+                        .DataTextField("Description")
+                                .DataValueField("RentRequestID").OptionLabel(" Select ").Filter(FilterType.Contains)
+                                                .DataSource(d =>
+                                {
+                                    d.Read(r =>
+                                    {
+                                        r.Action("RentRequestDDBind", "RentRequest").Data("filterRentRequest");
+                                    })
+                                    .ServerFiltering(false);
+                                })
+                                        .Enable(true)
+                                        .AutoBind(true))
+                              
+                            </div>
+                        </div>
+
+
+
+                    </div>
+
+ 

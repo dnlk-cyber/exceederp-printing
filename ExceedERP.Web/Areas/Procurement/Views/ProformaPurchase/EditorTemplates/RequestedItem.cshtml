@@ -1,0 +1,14 @@
+﻿
+@(Html.Kendo().DropDownListFor(m => m)
+                  .AutoBind(false)
+                  .OptionLabel("...Select Participant...")
+                          .DataTextField("Supplier")
+                          .DataValueField("Supplier")
+                          .ValuePrimitive(true)
+                  .DataSource(dataSource =>
+                  {
+                      dataSource.Read(read => read.Action("GetProformaItem", "ProformaItem"))
+                                .ServerFiltering(true);
+                  })
+)
+@Html.ValidationMessageFor(m => m)

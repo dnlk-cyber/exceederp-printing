@@ -1,0 +1,5 @@
+﻿@(Html.Kendo().DropDownListFor(m => m)
+        .DataTextField("Text")
+                        .DataValueField("Text").OptionLabel(" Select ").ValuePrimitive(true)
+        .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.FleetManagement.FleetTireManagement.TireIssue.TireTubeenum)))
+)

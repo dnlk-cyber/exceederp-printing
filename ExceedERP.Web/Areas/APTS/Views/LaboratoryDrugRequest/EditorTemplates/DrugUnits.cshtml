@@ -1,0 +1,13 @@
+﻿@(Html.Kendo().DropDownListFor(m => m)
+                  .ValuePrimitive(true)
+                  .OptionLabel("Select")
+                      .DataTextField("UnitName")
+                          .DataValueField("DrugUnitId")
+                          .Filter("contains")
+                                .DataSource(dataSource =>
+                                {
+                                    dataSource.Read(read => read.Action("GetUnits", "APTSDataProvider"))
+                                    .ServerFiltering(false);
+                                })
+)
+@Html.ValidationMessageFor(m => m)

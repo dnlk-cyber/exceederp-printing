@@ -1,0 +1,27 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Finance.AR.SalesOrder.ArSalesOrderBroadcastTime>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.BroadcastDateTime);
+          columns.Bound(c => c.Remark);
+          columns.Bound(c => c.OrgBranchName);
+          columns.Bound(c => c.DateCreated);
+          columns.Bound(c => c.LastModified);
+          columns.Bound(c => c.CreatedBy);
+          columns.Bound(c => c.ModifiedBy);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.ArSalesOrderBroadcastTimeId))
+          .Read(read => read.Action("ArSalesOrderBroadcastTimes_Read", "ArSalesOrderBroadcastTime"))
+          .Create(create => create.Action("ArSalesOrderBroadcastTimes_Create", "ArSalesOrderBroadcastTime"))
+          .Update(update => update.Action("ArSalesOrderBroadcastTimes_Update", "ArSalesOrderBroadcastTime"))
+          .Destroy(destroy => destroy.Action("ArSalesOrderBroadcastTimes_Destroy", "ArSalesOrderBroadcastTime"))
+      ))

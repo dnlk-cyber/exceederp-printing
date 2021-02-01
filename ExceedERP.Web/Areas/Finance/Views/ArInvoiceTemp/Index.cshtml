@@ -1,0 +1,513 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.Finance.AR
+<legend>Receivable Invoice</legend>
+@(Html.Kendo().Grid<ArInvoice>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.ArInvoiceId).Title("ID").Width(60).ClientTemplate("#=appendZeros(ArInvoiceId)#");
+          columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["customers"], "CustomerId", "CompanyName").Width(150).Title("Customer").EditorTemplateName("ActiveCustomerSelectorAR");
+          columns.Bound(c => c.TransactionClass).EditorTemplateName("TransactionClass").Width(60);
+        
+          columns.Bound(c => c.Date).Width(130).Format("{0:dd/MM/yyyy}");
+          columns.ForeignKey(c => c.PaymentTerm, (IEnumerable)ViewData["terms"], "PaymentTermsDays", "PaymentTermsDays").Width(100).EditorTemplateName("PaymentTermsSelector");
+          columns.Bound(c => c.DueDate).Width(130);
+
+
+          columns.Bound(c => c.AmountDue).Format("{0:n2}").Width(140);
+          columns.Bound(c => c.InvoiceStatus).Width(130);
+          columns.Bound(c => c.Reference).Width(100);
+          columns.Bound(c => c.CreatedBy).Width(100);
+          columns.Bound(c => c.Status).Width(80);
+          columns.Command(command => { command.Edit();
+             
+                                         
+          }).Width(280);
+      })
+      
+      //.Events(events => events.DetailExpand("detailExpand"))
+      // .Events(events => events.DataBound("onDataBoundMaster"))
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .HtmlAttributes(new { style = "height: 550px;" })
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(5))
+
+      .Scrollable()
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Filterable()
+      .Groupable()
+      //.ClientDetailTemplateId("templates")
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable(h => h.Height(500))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Sort(sort => sort.Add("ArInvoiceId").Descending())
+          .Model(
+              model =>
+              {
+                  model.Id(p => p.ArInvoiceId);
+                  model.Field(p => p.ArInvoiceId).Editable(false);
+                  model.Field(p => p.CustomerId).Editable(false);
+                  model.Field(p => p.IsManual).Editable(false);
+                  model.Field(p => p.CustomerName).Editable(false);
+                  model.Field(p => p.IsPostedToSecondLedger).Editable(false);
+                  model.Field(p => p.ArSalesOrderId).Editable(false);
+                  model.Field(p => p.ArSalesOrderPartialPrintId).Editable(false);
+                  model.Field(p => p.DueDate).Editable(false);
+                  model.Field(p => p.BranchId).Editable(false);
+                  model.Field(p => p.Reference).Editable(false);
+                  model.Field(p => p.Date).Editable(false);
+                  model.Field(p => p.Remark).Editable(false);
+                  model.Field(p => p.PaymentTerm).Editable(false);
+                  model.Field(p => p.TransactionClass).Editable(false);
+                  model.Field(p => p.SourceInvoiceId).Editable(false);
+                  model.Field(p => p.LineAmount).Editable(false);
+                  model.Field(p => p.TaxAmount).Editable(false);
+                  model.Field(p => p.TotalAmount).Editable(false);
+                  //model.Field(p => p.AmountDue).Editable(false);
+                  model.Field(p => p.InvoiceStatus).Editable(false);
+
+                  model.Field(p => p.VoidTime).Editable(false);
+                  model.Field(p => p.VoidBy).Editable(false);
+                  model.Field(p => p.IsVoid).Editable(false);
+                  model.Field(p => p.OnlineApprovedTime).Editable(false);
+                  model.Field(p => p.OnlineApprovedBy).Editable(false);
+                  model.Field(p => p.IsOnlineApproved).Editable(false);
+                  model.Field(p => p.Status).Editable(false);
+                  model.Field(p => p.IsSendForApproval).Editable(false);
+                  model.Field(p => p.OrgBranchName).Editable(false);
+                  model.Field(p => p.CreatedBy).Editable(false);
+                  model.Field(p => p.ModifiedBy).Editable(false);
+                  model.Field(p => p.LastModified).Editable(false);
+                  model.Field(p => p.DateCreated).Editable(false);
+
+
+              })
+          .Events(events => events
+              .Error("error_handler(\"grid\")")
+              .RequestStart("onRequestStart(\"grid\")")
+              .RequestEnd("onRequestEnd(\"grid\")"))
+          .Read(read => read.Action("ARInvoices_Read", "ArInvoiceTemp").Data("passReadData"))
+          .Create(create => create.Action("ARInvoices_Create", "ArInvoiceTemp"))
+          .Update(update => update.Action("ARInvoices_Update", "ArInvoiceTemp"))
+          .Destroy(destroy => destroy.Action("ARInvoices_Destroy", "ArInvoiceTemp"))
+      ))
+
+<script id="templates" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+          .Name("tabStrip#=ArInvoiceId#")
+          .SelectedIndex(0)
+          .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+          .Items(items =>
+          {
+              items.Add().Text("Invoice Detail").Content(@<text>
+
+    <div>
+        <p><b>Record Status :#= Status #</b></p>
+
+        # if (!IsSendForApproval&&!IsOnlineApproved)
+        {#
+        <a onclick='return sendForApproval("#=ArInvoiceId#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+        # } #
+
+        # if (IsOnlineApproved)
+        {#
+        <a target="new" href='@Url.Action("ArInvoice", "FinancePrint")/#=ArInvoiceId#'><i class="fa fa-print fa-2x"></i></a>
+        <br />
+        # } #
+
+        # if (IsOnlineApproved && !IsOnlineTransferred )
+        {#      
+        <a onclick='return transferToGl("#=ArInvoiceId#")' href=' \#' title="Send for Approval"><i class="fa fa-paper-plane fa-2x"></i></a>
+        # } #
+    </div>
+                  <div>
+        <hr>
+        <dl class="dl-horizontal">
+
+
+            <dt>
+                Created On
+            </dt>
+            <dd>
+                #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+
+            </dd>
+            <dt>
+                Created By
+            </dt>
+            <dd>
+                #= CreatedBy #
+            </dd>
+            <dt>
+                Modified By
+            </dt>
+            <dd>
+                #= ModifiedBy #
+            </dd>
+            <dt>
+                Modified Date
+            </dt>
+            <dd>
+                #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+            </dd>
+        </dl>
+    </div>
+     <hr>
+
+        # if (IsOnlineApproved&&!IsVoid&&!IsOnlineTransferred)
+        {#
+        @if (HttpContext.Current.User.IsInRole("Account_Receivable_Void"))
+        {
+            <a onclick='return voidRecord("#=ArInvoiceId#")' href='\#' title='Void Record'><i class='fa  fa-bolt fa-2x' style='color:red'></i></a>
+        }
+        /**/
+        # } #
+                    </text>
+                  );
+              items.Add().Text("Invoice Lines").Content(@<text>
+                        @(Html.Kendo().Grid<ArInvoiceLines>()
+                              .Name("ARInvoiceLines#=ArInvoiceId#")
+                              .Columns(columns =>
+                              {
+                                  columns.Bound(c => c.Items).EditorTemplateName("ProductAndServiceSelectorAR").Width(200);
+                                  columns.Bound(c => c.Description).Width(150);
+                                  columns.Bound(c => c.AccountCode).EditorTemplateName("AccountCode").Width(220);
+                                  columns.Bound(c => c.AccountDesc).Hidden(true).Title("Account Description").Width(170);
+                                  columns.Bound(c => c.Quantity).Width(100);
+                                  columns.Bound(c => c.UnitPrice).Width(100);
+                                  columns.Bound(c => c.SubTotal).Width(100).ClientFooterTemplate(" \\#=sum\\# ");
+                                  columns.Bound(c => c.GLTaxRateID).Width(100).EditorTemplateName("TaxSelectorAR");
+                                  columns.Bound(c => c.TaxAmount).Width(110).ClientFooterTemplate(" \\#=sum\\# ");
+                                  columns.Bound(c => c.TotalAmount).Width(110).ClientFooterTemplate(" \\#=sum\\# ");
+                                  columns.Bound(c => c.OrgBranchName).Width(100).Hidden(true);
+                                  columns.Bound(c => c.DateCreated).Width(150).Format("{0:dd/MM/yyyy}").Hidden(true);
+                                  columns.Bound(c => c.LastModified).Width(150).Format("{0:dd/MM/yyyy}").Hidden(true);
+                                  columns.Bound(c => c.CreatedBy).Width(100).Hidden(true);
+                                  columns.Bound(c => c.ModifiedBy).Width(100).Hidden(true);
+                                  columns.Command(command =>
+                                  {
+
+                                      command.Edit();
+                                      command.Destroy();
+
+                                  }).Width(180);
+                              })
+                              .ToolBar(toolbar =>
+                              {
+                                  toolbar.Create();
+                              })
+
+                              .Editable(editable => editable.Mode(GridEditMode.InLine))
+                              .Events(x => x.DataBound("onDataBoundLines"))
+                              .Scrollable()
+                              .Sortable()
+                              .Filterable()
+                              .DataSource(dataSource => dataSource
+                                  .Ajax()
+                                  .Aggregates(aggregates =>
+                                  {
+                                      aggregates.Add(p => p.SubTotal).Sum();
+                                      aggregates.Add(p => p.TaxAmount).Sum();
+                                      aggregates.Add(p => p.TotalAmount).Sum();
+                                  })
+                                  .Model(
+                                      model =>
+                                      {
+                                          model.Id(p => p.ArInvoiceLinesId);
+                                          model.Field(p => p.ArSalesOrderLineId).Editable(false);
+                                          model.Field(p => p.SubTotal).Editable(false);
+                                          model.Field(p => p.TaxAmount).Editable(false);
+                                          model.Field(p => p.TotalAmount).Editable(false);
+                                          model.Field(p => p.AccountDesc).Editable(false);
+                                          model.Field(p => p.OrgBranchName).Editable(false);
+                                          model.Field(p => p.CreatedBy).Editable(false);
+                                          model.Field(p => p.ModifiedBy).Editable(false);
+                                          model.Field(p => p.LastModified).Editable(false);
+                                          model.Field(p => p.DateCreated).Editable(false);
+                                      })
+                                  .Events(events => events
+                                      .Error("error_handler(\"ARInvoiceLines#=ArInvoiceId#\")")
+                                      .RequestStart("onRequestStart(\"ARInvoiceLines#=ArInvoiceId#\")")
+                                      .RequestEnd("onRequestEnd(\"ARInvoiceLines#=ArInvoiceId#\")"))
+                                  .Read(read => read.Action("ARInvoiceLines_Read", "ArInvoiceManualLines", new {id = "#=ArInvoiceId#"}))
+                                  .Create(create => create.Action("ARInvoiceLines_Create", "ArInvoiceManualLines", new { id = "#=ArInvoiceId#" }))
+                                  .Update(update => update.Action("ARInvoiceLines_Update", "ArInvoiceManualLines", new { id = "#=ArInvoiceId#" }))
+                                  .Destroy(destroy => destroy.Action("ARInvoiceLines_Destroy", "ArInvoiceManualLines"))
+                              )
+                              
+                              .ToClientTemplate())
+                    </text>);
+
+              items.Add().Text("Validation").Content(
+                  @<text>
+                            @(Html.Kendo().Grid<ArInvoiceValidation>()
+                                  .Name("ARInvoiceValidation#=ArInvoiceId#")
+                                  .Columns(columns =>
+                                  {
+                                      columns.Bound(c => c.ArInvoiceValidationId).Hidden(true);
+                                      columns.Bound(c => c.Status).EditorTemplateName("ApprovalStatus").Width(150);
+                                      columns.Bound(c => c.Remark).Width(200);
+
+                                      columns.Bound(c => c.DateCreated).Width(200).Title("Time").Format("{0:dd/MM/yyyy}");
+                                      columns.Bound(c => c.LastModified).Hidden(true);
+                                      columns.Bound(c => c.CreatedBy).Width(200).Title("User");
+                                      columns.Bound(c => c.ModifiedBy).Hidden(true);
+                                      columns.Command(command =>
+                                      {
+                                          command.Edit();
+
+                                      });
+
+                                  })
+                                  .ToolBar(toolbar =>
+                                  {
+                                      toolbar.Create();
+                                  })
+                                  .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                  .Events(events => events.DataBound("onDataBoundFisrtValidation"))
+                                  .Sortable(sortable =>
+                                  {
+                                      sortable.SortMode(GridSortMode.SingleColumn);
+                                  })
+                                  .Filterable()
+                                  .Scrollable()
+                                  .DataSource(dataSource => dataSource
+                                      .Ajax()
+                                      .Model(
+                                          model =>
+                                          {
+                                              model.Id(p => p.ArInvoiceValidationId);
+                                              model.Field(p => p.OrgBranchName).Editable(false);
+                                              model.Field(p => p.CreatedBy).Editable(false);
+                                              model.Field(p => p.ModifiedBy).Editable(false);
+                                              model.Field(p => p.LastModified).Editable(false);
+                                              model.Field(p => p.DateCreated).Editable(false);
+                                          })
+                                       .Events(events => events
+                                            .Error("error_handler(\"ARInvoiceValidation#=ArInvoiceId#\")")
+                                            .RequestStart("onRequestStart(\"ARInvoiceValidation#=ArInvoiceId#\")")
+                                            .RequestEnd("onRequestEnd(\"ARInvoiceValidation#=ArInvoiceId#\")"))
+                                        .Read(read => read.Action("ARInvoiceValidations_Read", "ARInvoiceValidation", new {id = "#=ArInvoiceId#"}))
+                                      .Create(create => create.Action("ARInvoiceValidations_Create", "ARInvoiceValidation", new {id = "#=ArInvoiceId#"}))
+                                      .Update(update => update.Action("ARInvoiceValidations_Update", "ARInvoiceValidation", new {id = "#=ArInvoiceId#"}))
+                                      .Destroy(destroy => destroy.Action("ARInvoiceValidations_Destroy", "ARInvoiceValidation"))
+                                  )
+                                      
+                                  .ToClientTemplate()
+                                  )
+
+                        </text>);
+
+              items.Add().Text("Distribution").Content(
+                  @<text>
+                    @(Html.Kendo().Grid<ArInvoiceDistribution>()
+                          .Name("ArInvoiceDistribution#=ArInvoiceId#")
+                          .Columns(columns =>
+                          {
+                              columns.Bound(c => c.ArInvoiceId).Hidden(true);
+                               columns.Bound(c => c.AccountCode).EditorTemplateName("AccountCode").Width(300);
+                              columns.Bound(c => c.AccountDesc).Title("Account Description").Width(300);
+                              columns.Bound(c => c.Debit).Width(150).ClientFooterTemplate("Total Debit: \\#=sum\\# ");
+                              columns.Bound(c => c.Credit).Width(150).ClientFooterTemplate("Total Credit: \\#=sum\\# ");
+                              columns.Bound(c => c.DateCreated).Hidden(true).Width(200).Title("Time").Format("{0:dd/MM/yyyy}");
+                              columns.Bound(c => c.LastModified).Hidden(true);
+                              columns.Bound(c => c.CreatedBy).Width(200).Title("User").Hidden(true);
+                              columns.Bound(c => c.ModifiedBy).Hidden(true);
+                              columns.Command(command =>
+                              {
+
+                                  command.Edit();
+                                  command.Destroy();
+
+                              }).Width(380).ClientFooterTemplate("Difference: \\#=Debit.sum-Credit.sum\\# ");
+
+                          })
+                          .ToolBar(toolbar =>
+                          {
+                              toolbar.Create();
+                          })
+                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                          
+                          .Sortable(sortable =>
+                          {
+                              sortable.SortMode(GridSortMode.SingleColumn);
+                          })
+                          .Filterable()
+                          .Scrollable()
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+                              .Aggregates(aggregates =>
+                              {
+                                  aggregates.Add(p => p.Debit).Sum();
+                                  aggregates.Add(p => p.Credit).Sum();
+                              })
+                              .Model(
+                                  model =>
+                                  {
+                                      model.Id(p => p.ArInvoiceId);
+                                      model.Field(p => p.AccountDesc).Editable(false);
+                                      model.Field(p => p.OrgBranchName).Editable(false);
+                                      model.Field(p => p.CreatedBy).Editable(false);
+                                      model.Field(p => p.ModifiedBy).Editable(false);
+                                      model.Field(p => p.LastModified).Editable(false);
+                                      model.Field(p => p.DateCreated).Editable(false);
+                                  })
+                              .Events(events => events
+                                        .Error("error_handler(\"ArInvoiceDistribution#=ArInvoiceId#\")")
+                                                .RequestStart("onRequestStart(\"ArInvoiceDistribution#=ArInvoiceId#\")")
+                                                .RequestEnd("onRequestEnd(\"ArInvoiceDistribution#=ArInvoiceId#\")"))
+                              .Read(read => read.Action("ARInvoiceDistributions_Read", "ARInvoiceDistribution", new {id = "#=ArInvoiceId#"}))
+                              .Create(create => create.Action("ARInvoiceDistributions_Create", "ARInvoiceDistribution", new {id = "#=ArInvoiceId#"}))
+                              .Update(update => update.Action("ARInvoiceDistributions_Update", "ARInvoiceDistribution", new {id = "#=ArInvoiceId#"}))
+                              .Destroy(destroy => destroy.Action("ARInvoiceDistributions_Destroy", "ARInvoiceDistribution"))
+                          )
+                                  .Events(events => events.DataBound("onDataBoundDistribution"))
+                          .ToClientTemplate()
+                          )
+
+                </text>);
+          })
+
+          .ToClientTemplate()
+          )
+
+</script>
+
+<script>
+
+    function voidRecord(id) {
+        var recordStatus = "";
+        var conf = confirm("Are you sure you want to void this record number: " + id + " ?");
+        if (conf === true) {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("Void", "ArInvoice", new {area = "Finance"})',
+                data: { id: id },
+                success: function (result) {
+                    // toastr.warnning(result.Message);
+                    alert(result.Message);
+                    recordStatus = result.Status;
+                    location.reload(true);
+                }, //end succ
+                error: function (result) {
+                    alert(result);
+                }
+            });
+        }
+    }
+
+    function sendForApproval(id) {
+        var recordStatus = "";
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("SendForApproval", "ArInvoice", new { area = "Finance" })',
+            data: { id: id },
+            success: function (result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                recordStatus = result.Status;
+                location.reload(true);
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+
+    function transferToGl(id) {
+        var desc = prompt("Please enter transaction description:");
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("TransferDistribution", "ArInvoice", new { area = "Finance" })',
+            data: {
+                id: id,
+                description: desc
+            },
+            success: function (result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                location.reload(true);
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+
+    function onSelect(e) {
+        //alert("change");
+        var dataItem = this.dataItem(e.item);
+        //begin
+        var item = dataItem.Product;
+        $.ajax({
+            url: '/Finance/FinanceDataProvider/GetProductAccount',
+            type: 'POST',
+            data: { id: item },
+            success: function (result) {
+                if (result.length > 0) {
+                    for (var i = 0; i < result.length; i++) {
+                        $("#AccountCode").val(result[i].AccountCode).trigger("change");
+                        $("#Description").val(result[i].Description).trigger("change");
+                    }
+                }
+                else {
+
+                }
+
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        }); //end post
+        //end
+    }
+
+    function filterInvoices() {
+       
+        return {
+            customerid: $("#CustomerId").data("kendoDropDownList").value(),
+            text: $("#SourceInvoiceId").data("kendoDropDownList").filterInput.val()
+        }
+    }
+
+    var isNotTransffered = false;
+
+    function isNotTransferredCheck(obj) {
+        if ($(obj).is(":checked")) {
+            isNotTransffered = true;
+            $("#grid").data("kendoGrid").dataSource.read();
+
+        } else {
+            isNotTransffered = false;
+            $("#grid").data("kendoGrid").dataSource.read();
+
+        }
+
+    }
+
+    function passReadData() {
+        return {
+            isNotTransffered: isNotTransffered
+        };
+    }
+
+
+</script>
+
+
+

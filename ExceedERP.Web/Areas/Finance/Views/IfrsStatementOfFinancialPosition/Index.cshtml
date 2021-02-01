@@ -1,0 +1,347 @@
+﻿@using ExceedERP.Core.Domain.Finance.Report
+@using ExceedERP.Core.Domain.Finance.Report.IFRS
+<legend>Statement of Financial Position</legend>
+@(Html.Kendo().Grid<IfrsStatementOfFinancialPosition>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.IfrsStatementOfFinancialPositionId).Title("ID").Width(30);
+          columns.Command(command =>
+          {
+              if (ViewBag.Count > 0)
+              {
+                  return;
+              }
+              command.Edit();
+              command.Destroy();
+          }).Width(180);
+      })
+      .ToolBar(toolbar =>
+      {
+          if (ViewBag.Count <= 0)
+          {
+              toolbar.Create();
+          }
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .HtmlAttributes(new { style = "height: 550px;" })
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(20))
+      .Scrollable()
+      .ClientDetailTemplateId("templates")
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Events(ev => ev
+              .Error("error_handler(\"grid\")")
+              .RequestStart("onRequestStart(\"grid\")")
+              .RequestEnd("onRequestEnd(\"grid\")"))
+          .Model(model =>
+          {
+              model.Id(p => p.IfrsStatementOfFinancialPositionId);
+              model.Field(p => p.IfrsStatementOfFinancialPositionId).Editable(false);
+          }
+          )
+          .Model(model => model.Id(p => p.IfrsStatementOfFinancialPositionId))
+          .Read(read => read.Action("IfrsStatementOfFinancialPositions_Read", "IfrsStatementOfFinancialPosition"))
+          .Create(create => create.Action("IfrsStatementOfFinancialPositions_Create", "IfrsStatementOfFinancialPosition"))
+          .Update(update => update.Action("IfrsStatementOfFinancialPositions_Update", "IfrsStatementOfFinancialPosition"))
+          .Destroy(destroy => destroy.Action("IfrsStatementOfFinancialPositions_Destroy", "IfrsStatementOfFinancialPosition"))
+      )
+      .Events(events => events.DataBound("dataBound")))
+
+<script id="templates" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                  .Name("tabStrip#=IfrsStatementOfFinancialPositionId#")
+          .SelectedIndex(0)
+          .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+          .Items(items =>
+          {
+
+              items.Add().Text("Assets").Content(@<text>
+                @(Html.Kendo().Grid<IfrsSofpAsset>()
+                      .Name("IfrsSofpAsset#=IfrsStatementOfFinancialPositionId#")
+                      .Columns(columns =>
+                      {
+                          columns.Bound(c => c.Category).EditorTemplateName("AssetTypes").Width(150);
+                          columns.Bound(c => c.Description).Width(300);
+                          columns.Bound(c => c.NoteNumber).Width(100);
+                          columns.Command(command =>
+                          {
+                              command.Edit();
+                              command.Destroy();
+                          });
+                      })
+                      .ToolBar(toolbar =>
+                      {
+                          toolbar.Create();
+                      })
+
+                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                      .HtmlAttributes(new { style = "height: 550px;" })
+                             
+                      .Scrollable()
+                      .Sortable()
+                      .ClientDetailTemplateId("assetTemplates")
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+                          .Model(
+                              model =>
+                              {
+                                  model.Id(p => p.IfrsSofpAssetId);
+                              })
+                          .Events(events => events
+                              .Error("error_handler_one")
+                              .Sync("sync_handler"))
+                          .Read(read => read.Action("IfrsSofpAssets_Read", "IfrsSofpAsset", new { id = "#=IfrsStatementOfFinancialPositionId#" }))
+                          .Create(create => create.Action("IfrsSofpAssets_Create", "IfrsSofpAsset", new { id = "#=IfrsStatementOfFinancialPositionId#" }))
+                          .Update(update => update.Action("IfrsSofpAssets_Update", "IfrsSofpAsset", new { id = "#=IfrsStatementOfFinancialPositionId#" }))
+                          .Destroy(destroy => destroy.Action("IfrsSofpAssets_Destroy", "IfrsSofpAsset"))
+                      )
+                      .ToClientTemplate())
+            </text>);
+
+              items.Add().Text("Equity and Liability").Content(
+                @<text>
+                    @(Html.Kendo().Grid<IfrsSofpEquityAndLiablity>()
+                          .Name("IfrsSofpEquityAndLiablity#=IfrsStatementOfFinancialPositionId#")
+                          .Columns(columns =>
+                          {
+                              columns.Bound(c => c.Category).EditorTemplateName("EquityAndLiablityTypes").Width(150);
+                              columns.Bound(c => c.Description).Width(300);
+                              columns.Bound(c => c.NoteNumber).Width(100);
+                              columns.Command(command =>
+                              {
+                                  command.Edit();
+                                  command.Destroy();
+                              });
+                          })
+                          .ToolBar(toolbar =>
+                          {
+                              toolbar.Create();
+                          })
+                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                          .HtmlAttributes(new { style = "height: 550px;" })
+                                  
+                          .Sortable(sortable =>
+                          {
+                              sortable.SortMode(GridSortMode.SingleColumn);
+                          })
+                          .Scrollable()
+                          .ClientDetailTemplateId("equityandliabilityTemplates")
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+                              .Model(
+                                  model =>
+                                  {
+                                      model.Id(p => p.IfrsSofpEquityAndLiablityId);
+                                  })
+                              .Events(events => events
+                                  .Error("error_handler_one")
+                                  .Sync("sync_handler"))
+                              .Read(read => read.Action("IfrsSofpEquityAndLiablities_Read", "IfrsSofpEquityAndLiablity", new { id = "#=IfrsStatementOfFinancialPositionId#" }))
+                              .Create(create => create.Action("IfrsSofpEquityAndLiablities_Create", "IfrsSofpEquityAndLiablity", new { id = "#=IfrsStatementOfFinancialPositionId#" }))
+                              .Update(update => update.Action("IfrsSofpEquityAndLiablities_Update", "IfrsSofpEquityAndLiablity", new { id = "#=IfrsStatementOfFinancialPositionId#" }))
+                              .Destroy(destroy => destroy.Action("IfrsSofpEquityAndLiablities_Destroy", "IfrsSofpEquityAndLiablity"))
+                          )
+                          .ToClientTemplate())
+
+                </text>);
+
+
+          })
+
+             .ToClientTemplate()
+    )
+
+</script>
+
+<script id="assetTemplates" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+           .Name("tabStrip-IfrsSofpAsset#=IfrsSofpAssetId#")
+          .SelectedIndex(0)
+          .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+          .Items(items =>
+          {
+              items.Add().Text("Account Ranges").Content(@<text>
+                @(Html.Kendo().Grid<IfrsSofpAssetRange>()
+                      .Name("IfrsSofpAssetRange#=IfrsSofpAssetId#")
+                      .Columns(columns =>
+                      {
+                          columns.Bound(c => c.AccountFrom).EditorTemplateName("AccountCodeZZZ").Width(220);
+                          columns.Bound(c => c.AccountTo).EditorTemplateName("AccountCodeZZZ").Width(220);
+                          columns.Command(command =>
+                          {
+                              command.Edit();
+                              command.Destroy();
+                          });
+                      })
+                      .ToolBar(toolbar =>
+                      {
+                          toolbar.Create();
+                      })
+
+                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                      
+                      .Scrollable()
+                      .Sortable()
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+                          .Model(
+                              model =>
+                              {
+                                  model.Id(p => p.IfrsSofpAssetId);
+                              })
+                          .Events(events => events
+                              .Error("error_handler_one")
+                              .Sync("sync_handler"))
+                          .Read(read => read.Action("IfrsSofpAssetRanges_Read", "IfrsSofpAssetRange", new { id = "#=IfrsSofpAssetId#" }))
+                          .Create(create => create.Action("IfrsSofpAssetRanges_Create", "IfrsSofpAssetRange", new { id = "#=IfrsSofpAssetId#" }))
+                          .Update(update => update.Action("IfrsSofpAssetRanges_Update", "IfrsSofpAssetRange", new { id = "#=IfrsSofpAssetId#" }))
+                          .Destroy(destroy => destroy.Action("IfrsSofpAssetRanges_Destroy", "IfrsSofpAssetRange"))
+                      )
+                      .Events(events => events.DataBound("dataBound"))
+                      .ToClientTemplate())
+            </text>);
+
+          })
+
+          .ToClientTemplate()
+          )
+
+</script>
+
+
+<script id="equityandliabilityTemplates" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+           .Name("tabStrip-IfrsSofpEquityAndLiablity#=IfrsSofpEquityAndLiablityId#")
+          .SelectedIndex(0)
+          .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+          .Items(items =>
+          {
+              items.Add().Text("Account Ranges").Content(@<text>
+                @(Html.Kendo().Grid<IfrsSofpEquityAndLiablityRange>()
+                      .Name("IfrsSofpEquityAndLiablityRange#=IfrsSofpEquityAndLiablityId#")
+                      .Columns(columns =>
+                      {
+                          columns.Bound(c => c.AccountFrom).EditorTemplateName("AccountCodeZZZ").Width(220);
+                          columns.Bound(c => c.AccountTo).EditorTemplateName("AccountCodeZZZ").Width(220);
+                          columns.Command(command =>
+                          {
+                              command.Edit();
+                              command.Destroy();
+                          });
+                      })
+                      .ToolBar(toolbar =>
+                      {
+                          toolbar.Create();
+                      })
+
+                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                      
+                      .Scrollable()
+                      .Sortable()
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+                          .Model(
+                              model =>
+                              {
+                                  model.Id(p => p.IfrsSofpEquityAndLiablityRangeId);
+                              })
+                          .Events(events => events
+                              .Error("error_handler_one")
+                              .Sync("sync_handler"))
+                          .Read(read => read.Action("IfrsSofpEquityAndLiablityRanges_Read", "IfrsSofpEquityAndLiablityRange", new { id = "#=IfrsSofpEquityAndLiablityId#" }))
+                          .Create(create => create.Action("IfrsSofpEquityAndLiablityRanges_Create", "IfrsSofpEquityAndLiablityRange", new { id = "#=IfrsSofpEquityAndLiablityId#" }))
+                          .Update(update => update.Action("IfrsSofpEquityAndLiablityRanges_Update", "IfrsSofpEquityAndLiablityRange", new { id = "#=IfrsSofpEquityAndLiablityId#" }))
+                          .Destroy(destroy => destroy.Action("IfrsSofpEquityAndLiablityRanges_Destroy", "IfrsSofpEquityAndLiablityRange"))
+                      )
+                      .Events(events => events.DataBound("dataBound"))
+                      .ToClientTemplate())
+            </text>);
+
+          })
+
+              .ToClientTemplate()
+    )
+
+</script>
+
+<script>
+    var popupFrom;
+    var aCodeFrom;
+
+    var popupTo;
+    var aCodeTo;
+
+    function SelectFromAccCode() {
+        popupFrom = window.open('/Finance/AccountCode/GLAccountFromSelector', 'WindowPopup', 'top=100, left=400, width=300, height=320,resizable=no,');
+        popupFrom.focus();
+        return false;
+    }
+
+    function setFromAccountCode(accCode) {
+        aCodeFrom = accCode;
+        $("#AccountFrom").val(aCodeFrom).trigger("change");
+    }
+
+    function SelectToAccCode() {
+        popupFrom = window.open('/Finance/AccountCode/GLAccountToSelector', 'WindowPopup', 'top=100, left=400, width=300, height=320,resizable=no,');
+        popupFrom.focus();
+        return false;
+    }
+
+    function setToAccountCode(accCode) {
+        aCodeTo = accCode;
+        $("#AccountTo").val(aCodeTo).trigger("change");
+    }
+
+</script>
+
+
+<script type="text/javascript">
+
+    function dataBound() {
+        this.expandRow(this.tbody.find("tr.k-master-row").first());
+    }
+
+    function error_handler(e) {
+        if (e.errors) {
+            var message = "Errors:\n";
+            $.each(e.errors, function (key, value) {
+                if ('errors' in value) {
+                    $.each(value.errors, function () {
+                        message += this + "\n";
+                    });
+                }
+            });
+            alert(message);
+
+            var grid = $("#grid").data("kendoGrid");
+            grid.one("dataBinding", function (e) {
+                e.preventDefault();
+            });
+        }
+    }
+
+    function sync_handler(e) {
+        this.read();
+    }
+</script>
+
+
+
+
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 700px;
+    }
+
+    div.k-content {
+        overflow: hidden;
+        height: auto;
+    }
+</style>

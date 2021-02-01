@@ -1,0 +1,303 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.Finance.GL
+<legend>General Ledger</legend>
+
+
+@(Html.Kendo().DropDownList()
+                                                      .OptionLabel("Select Year")
+                                                      .Name("yearSelector")
+                                                      .AutoBind(false)
+                                                      .DataValueField("GlFiscalYearId")
+                                                      .DataTextField("Name")
+                                                      // .HtmlAttributes(new { style = "width: 200px;" })
+                                                      .DataSource(dataSource =>
+                                                      {
+                                                          dataSource.Read(read => read.Action("GetPeriods", "GlobalDataProvider", new { area = "Common" }))
+                                                  .ServerFiltering(false);
+                                                      }))
+
+
+@(Html.Kendo().DropDownList()
+                                     .OptionLabel("From Period")
+                                      .Name("fromPeriod")
+                                      .AutoBind(false)
+                                      .DataValueField("GLPeriodId")
+                                      .DataTextField("Name")
+                                      //.HtmlAttributes(new { style = "width: 200px;" })
+                                      .ValuePrimitive(true)
+                                      .DataSource(dataSource =>
+                                      {
+                                          dataSource.Read(read => read.Action("GetPeriods", "GlobalDataProvider", new { area = "Common" }).Data("getFiscalYear"))
+                                                  .ServerFiltering(true);
+                                      })
+                                      .CascadeFrom("yearSelector")
+)
+
+@(Html.Kendo().DropDownList()
+                                     .OptionLabel("To Period")
+                                      .Name("toPeriod")
+                                      .AutoBind(false)
+                                      .DataValueField("GLPeriodId")
+                                      .DataTextField("Name")
+                                      //.HtmlAttributes(new { style = "width: 200px;" })
+                                      .ValuePrimitive(true)
+                                      .DataSource(dataSource =>
+                                      {
+                                          dataSource.Read(read => read.Action("GetOpenPeriods", "GlobalDataProvider", new { area = "Common" }).Data("getFiscalYear"))
+                                                  .ServerFiltering(true);
+                                      })
+                                      .CascadeFrom("yearSelector")
+)
+
+@(Html.Kendo().DropDownList()
+                                .OptionLabel("From Account")
+                                .Name("fromAccount")
+                                .AutoBind(false)
+                                .DataValueField("Values")
+                                .DataTextField("Description")
+                                .Filter("contains")
+                                // .HtmlAttributes(new { style = "width: 200px;" })
+                                .DataSource(dataSource =>
+                                {
+                                    dataSource.Read(read => read.Action("GetAccounts", "FinanceDataProvider", new { area = "Finance" }))
+                            .ServerFiltering(false);
+                                }))
+
+@(Html.Kendo().DropDownList()
+                                .OptionLabel("To Account")
+                                .Name("toAccount")
+                                .AutoBind(false)
+                                .DataValueField("Values")
+                                .DataTextField("Description")
+                                .Filter("contains")
+                                // .HtmlAttributes(new { style = "width: 200px;" })
+                                .DataSource(dataSource =>
+                                {
+                                    dataSource.Read(read => read.Action("GetAccounts", "FinanceDataProvider", new { area = "Finance" }))
+                            .ServerFiltering(false);
+                                }))
+
+@(Html.Kendo().DropDownList()
+                                .OptionLabel("From Sub Account")
+                                .Name("fromSubAccount")
+                                .AutoBind(false)
+                                .DataValueField("Values")
+                                .DataTextField("Description")
+                                .Filter("contains")
+                                // .HtmlAttributes(new { style = "width: 200px;" })
+                                .DataSource(dataSource =>
+                                {
+                                    dataSource.Read(read => read.Action("GetSubAccounts", "FinanceDataProvider", new { area = "Finance" }))
+                            .ServerFiltering(false);
+                                }))
+
+@(Html.Kendo().DropDownList()
+                                .OptionLabel("To Account")
+                                .Name("toSubAccount")
+                                .AutoBind(false)
+                                .DataValueField("Values")
+                                .DataTextField("Description")
+                                .Filter("contains")
+                                // .HtmlAttributes(new { style = "width: 200px;" })
+                                .DataSource(dataSource =>
+                                {
+                                    dataSource.Read(read => read.Action("GetSubAccounts", "FinanceDataProvider", new { area = "Finance" }))
+                            .ServerFiltering(false);
+                                }))
+
+
+
+@Html.Kendo().Button().Name("btnGet").HtmlAttributes(new { type = "button", @class = "k-primary" }).Content("Get Report").Events(ev => ev.Click("GetReport"))
+
+
+
+
+
+<script>
+
+
+
+    
+
+    function GetReport() {
+        var fromperiodObject = $("#fromPeriod").data("kendoDropDownList");
+        var fromperiodid = fromperiodObject.value();
+
+        var toperiodObject = $("#toPeriod").data("kendoDropDownList");
+        var toperiodid = toperiodObject.value();       
+
+        if (fromperiodid != null && toperiodid!=null) {
+            $("#btnPost").attr("disabled", true);
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("GetGLBalanceXLS", "FinanceReports", new {area = "Finance"})',
+                data: {
+                    year: year,
+                    fromPeriod: fromperiodid,
+                    toPeriod: toperiodid,
+                    fromAccount: fromAccount,
+                    toAccount: toAccount,
+                    fromSubAccount: fromSubAccount,
+                    toSubAccount: toSubAccount
+                },
+                success: function (result) {
+                    // toastr.warnning(result.Message);
+                    alert(result.Message);
+                    location.reload(true);
+                }, //end succ
+                beforeSend: function(){
+                    // Show image container
+                    $("#loading-image").show();
+                },
+                complete:function(data){
+                    // Hide image container
+                    $("#loading-image").hide();
+                },
+                error: function (result) {
+                    alert(result);
+                }
+            });
+
+
+            $("#grid").data("kendoGrid").dataSource.read();
+        } else {
+            alert("Please select period.");
+        }
+
+    }
+
+    function getFiscalYear() {
+        return { year: $("#yearSelector").data("kendoDropDownList").value() }
+    }
+
+    var masterDataItem;
+    var masterRow;
+    var masterGrid;
+
+    var codeid;
+    var isapproved;
+    var issecondapproved;
+    var isPosted;
+
+    function detailExpandPost(e) {
+
+        masterRow = e.masterRow;
+        masterGrid = $("#grid").data("kendoGrid");
+        masterDataItem = masterGrid.dataItem(masterRow);
+        isapproved = masterDataItem.IsOnlineApproved;
+        isPosted = masterDataItem.isPosted;
+        codeid = masterDataItem.GlRecordJournalId;
+
+    }
+
+    function onDataBoundPostLines(e) {
+
+        var detailGrid = "#" + e.sender.element[0].id;
+        if (isapproved) {
+
+            $(".k-grid-add", detailGrid).hide();
+            $(".k-grid-delete", detailGrid).hide();
+        }
+        if (isPosted) {
+            $(".k-grid-edit", detailGrid).hide();
+        }
+    }
+
+
+    $("a.send").click(function (event) {
+        //alert("sent");
+        //event.preventDefault();
+
+        var item = $(this).text();//$(this).attr('id');
+        $.ajax({
+            url: '/Finance/JSON/Description',
+            type: 'POST',
+            data: { id: item },
+            success: function (result) {
+                if (result.length > 0) {
+                    for (var i = 0; i < result.length; i++) {
+                        $("#DescriptionArea").text('');
+                        $("<a>")
+                            .append(result[i].Description)
+                            .appendTo("#DescriptionArea");
+                    }
+                }
+                else {
+                    alert("Description not found");
+                }
+
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        }); //end post
+    });//end of click
+
+    function PostrJournal(e) {
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        var id = dataItem.GlRecordJournalId;
+        $.ajax({
+            type: "GET",
+            data: id,
+            url: '@Url.Action("PostLedger", "GlPostJournal")/' + id
+
+        });
+
+        //$('#grid').data('kendoGrid').dataSource.read();
+        //$('#grid').data('kendoGrid').refresh();
+        //location.reload();
+    };
+
+    function SendforApproval(e) {
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        var id = dataItem.GlRecordJournalId;
+        $.ajax({
+            type: "GET",
+            data: id,
+            url: '@Url.Action("SendforApproval", "GlRecordJournal")/' +id
+
+        });
+
+        //$('#grid').data('kendoGrid').dataSource.read();
+        //$('#grid').data('kendoGrid').refresh();
+        //location.reload();
+    };
+
+    function Reverse(id) {
+        //var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        //var id = dataItem.GlRecordJournalId;
+        $.ajax({
+             type: "POST",
+            url: '@Url.Action("Reverse", "GlRecordJournal", new { area = "Finance" })',
+            data: { id: id },
+
+            success: function (result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                location.reload(true);
+            }, //end succ
+            beforeSend: function () {
+                // Show image container
+                $("#loading-image").show();
+            },
+            complete: function (data) {
+                // Hide image container
+                $("#loading-image").hide();
+            },
+            error: function (result) {
+                alert(result);
+            }
+
+        });
+
+        //$('#grid').data('kendoGrid').dataSource.read();
+        //$('#grid').data('kendoGrid').refresh();
+        //location.reload();
+    };
+
+</script>
+
+
+
+
+

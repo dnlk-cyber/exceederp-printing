@@ -1,0 +1,51 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Countries</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Common.HRM.Country>()
+          .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.Name);
+        columns.Bound(c => c.PolticalName);
+        columns.Bound(c => c.Continent).EditorTemplateName("ContinentType");
+        columns.Bound(c => c.TelephoneCode);
+        columns.Bound(c => c.TimeZone);
+        columns.Bound(c => c.Nationality);
+        columns.Bound(c => c.CountryCode);
+        columns.Bound(c => c.Remark);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+          .HtmlAttributes(new { style = "height: 520px;" })
+                                                  .Pageable(pageable => pageable
+                                                                    .Input(true)
+                                                                    .Numeric(false)
+                                                                    .Refresh(true)
+                                                                    .PageSizes(true)
+                                                                    .ButtonCount(5))
+        .Selectable(selectable =>
+        {
+            selectable.Mode(GridSelectionMode.Single);
+            selectable.Type(GridSelectionType.Row);
+        })
+                                                        .Scrollable()
+                                                        .Sortable()
+                                                        .Filterable()
+                                                        .Groupable()
+                                                        .Scrollable(h => h.Height(500))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+              .Model(model => model.Id(p => p.CountryId)).Events(ev => ev
+                                                                    .Error("error_handler(\"grid\")")
+                                                                    .RequestStart("onRequestStart(\"grid\")")
+                                                                    .RequestEnd("onRequestEnd(\"grid\")"))
+          .Read(read => read.Action("Countries_Read", "Country"))
+          .Create(create => create.Action("Countries_Create", "Country"))
+          .Update(update => update.Action("Countries_Update", "Country"))
+          .Destroy(destroy => destroy.Action("Countries_Destroy", "Country"))
+      )
+)

@@ -1,0 +1,93 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.APTS
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Drug Lists</legend>
+@(Html.Kendo().Grid<DrugLists>()
+          .Name("DrugListsIdgrid")
+      .Columns(columns =>
+      {
+          columns.ForeignKey(c => c.ItemCategoryCode, (IEnumerable)ViewData["Catagory"], "ItemCategoryCode", "ItemCategoryCodeWithName").EditorTemplateName("ItemCategorySelector").Width(130).Title("Item Category");
+          columns.ForeignKey(c => c.ItemCode, (IEnumerable)ViewData["Items"], "ItemCode", "ItemCodeWithName").EditorTemplateName("ItemSelector").Filterable(ftb => ftb.Multi(true).Search(true)).Width(250);
+
+          columns.Bound(c => c.DrugCode);
+          //columns.Bound(c => c.InternalDrugCode);
+
+          columns.Bound(c => c.Description);
+          columns.Bound(c => c.IsActive).ClientTemplate(
+           "<input type='checkbox' disabled = 'true' value='#= IsActive#' " +
+           "# if (IsActive) { #" +
+           "checked='checked'" +
+           "# } #" +
+           "/>"
+           ).Width(120);
+          columns.Bound(c => c.IsOur).ClientTemplate(
+           "<input type='checkbox' disabled = 'true' value='#= IsOur#' " +
+           "# if (IsOur) { #" +
+           "checked='checked'" +
+           "# } #" +
+           "/>"
+           ).Width(120);
+          columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit); command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+        .Scrollable(h => h.Height(500))
+
+
+                         .Groupable()
+                                  .Sortable(sortable =>
+                                  {
+                                      sortable.SortMode(GridSortMode.SingleColumn);
+                                  })
+                      .Filterable()
+                         .Pageable(pageable => pageable
+                                                    .Input(true)
+                                                    .Numeric(false)
+                                                    .Refresh(true)
+                                                    .PageSizes(true)
+                                                    .ButtonCount(5))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+                 .Events(events =>
+                 {
+                     events.Error("error_handler(\"DrugListsIdgrid\")");
+                     events.RequestStart("onRequestStart(\"DrugListsIdgrid\")");
+                     events.RequestEnd("onRequestEnd(\"DrugListsIdgrid\")");
+                 }
+              )
+
+              .Model(model =>
+              {
+                  model.Id(p => p.DrugListsId);
+                  model.Field(p => p.Description).Editable(false);
+                  //model.Field(p => p.DrugCode).Editable(false);
+              })
+          .Read(read => read.Action("MedicineLists_Read", "MedicineLists"))
+          .Create(create => create.Action("MedicineLists_Create", "MedicineLists"))
+          .Update(update => update.Action("MedicineLists_Update", "MedicineLists"))
+          .Destroy(destroy => destroy.Action("MedicineLists_Destroy", "MedicineLists"))
+      )
+)
+<script>
+   
+    function sync_handler(e) {
+        this.read();
+    </script>
+
+
+    <script>
+
+        function filterInventoryItems() {
+    return {
+        ItemCode: $("#ItemCode").val()
+    };
+}
+
+
+</script>

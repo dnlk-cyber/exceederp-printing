@@ -1,0 +1,49 @@
+﻿@using System.Collections
+<legend>Fuel Items</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Inventory.FuelItemSetting>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.ForeignKey(p => p.ItemCategoryCode, (IEnumerable)ViewData["Category"], "ItemCategoryCode", "Name").EditorTemplateName("ItemCategorySelector").Width(200);
+          columns.ForeignKey(p => p.ItemCode, (IEnumerable)ViewData["Items"], "ItemCode", "Name").Title("Item Name").EditorTemplateName("ItemSelector").Width(200);
+          columns.Bound(c => c.DateCreated).Width(150).Hidden(true);
+          columns.Bound(c => c.LastModified).Width(150).Hidden(true);
+          columns.Bound(c => c.CreatedBy).Width(100).Hidden(true);
+          columns.Bound(c => c.ModifiedBy).Width(100).Hidden(true);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .HtmlAttributes(new { style = "height: 550px;" })
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(20))
+      .Scrollable()
+      .Sortable()
+      .Filterable()
+      .Groupable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Events(ev => ev
+              .Error("error_handler(\"grid\")")
+              .RequestStart("onRequestStart(\"grid\")")
+              .RequestEnd("onRequestEnd(\"grid\")"))
+          .Model(
+              model =>
+              {
+                  model.Id(p => p.FuelItemSettingId);
+                  model.Field(p => p.CreatedBy).Editable(false);
+                  model.Field(p => p.ModifiedBy).Editable(false);
+                  model.Field(p => p.LastModified).Editable(false);
+                  model.Field(p => p.DateCreated).Editable(false);
+              })
+          .Read(read => read.Action("FuelItemSettings_Read", "FuelItemSetting"))
+          .Create(create => create.Action("FuelItemSettings_Create", "FuelItemSetting"))
+          .Update(update => update.Action("FuelItemSettings_Update", "FuelItemSetting"))
+          .Destroy(destroy => destroy.Action("FuelItemSettings_Destroy", "FuelItemSetting"))
+      ))

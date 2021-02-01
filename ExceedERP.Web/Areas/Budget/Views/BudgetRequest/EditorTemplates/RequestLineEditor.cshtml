@@ -1,0 +1,376 @@
+﻿@model  ExceedERP.Core.Domain.Budget.BudgetRequestLine
+
+
+
+
+<div class="demo-section k-content">
+    <form>
+
+        <div class="row">
+            <div class="col-md-1">
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.BudgetRequestType)
+
+                    </div>
+                    <div>
+                        @(Html.Kendo().DropDownListFor(model => model.BudgetRequestType).Name("BudgetRequestType")
+                                                                                                      .DataTextField("Text")
+                                                .DataValueField("Value").OptionLabel(" Select ").Events(x => x.Change("BindDetail").DataBound("BindDetail"))
+.BindTo(EnumHelper.GetSelectList(typeof(ExceedERP.Core.Domain.Budget.BudgetRequestType))))
+
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.AccountCode)
+
+                    </div>
+                    <div>
+                        <input   data-val="true" data-val-required="The AccountCode field is required." disabled="  disabled" id="AccountCode" name="AccountCode" data-bind="value:AccountCode">
+  <img src="~/Content/Images/search.png" onclick="SelectAccCode(this)" />
+
+
+                    </div>
+
+                </div>
+            </div>
+
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.Remark)
+                    </div>
+                    <div>
+                        @Html.Kendo().TextBoxFor(model => model.Remark)
+                        @Html.ValidationMessageFor(model => model.Remark)
+                    </div>
+
+                </div>
+            </div>
+
+
+
+        </div>
+
+        <div id="Purchase" style="display:none;">
+            <div class="row">
+                <div class="col-md-1">
+                </div>
+
+
+
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <div class="k-label">
+                            @Html.LabelFor(model => model.Unit)
+                        </div>
+                        <div>
+                            @Html.Kendo().TextBoxFor(model => model.Unit)
+                            @Html.ValidationMessageFor(model => model.Unit)
+                        </div>
+
+
+
+                    </div>
+
+
+
+
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <div class="k-label">
+                            @Html.LabelFor(model => model.PurchasedRequestUnit)
+                        </div>
+                        <div>
+                            @Html.Kendo().TextBoxFor(model => model.PurchasedRequestUnit).HtmlAttributes(new { @type = "number" })
+                            @Html.ValidationMessageFor(model => model.PurchasedRequestUnit)
+                        </div>
+
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <div class="k-label">
+                            @Html.LabelFor(model => model.PurchasedRequestUnitPrice)
+                        </div>
+                        <div>
+                            @Html.Kendo().TextBoxFor(model => model.PurchasedRequestUnitPrice).HtmlAttributes(new { @type = "number" })
+                            @Html.ValidationMessageFor(model => model.PurchasedRequestUnitPrice)
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+
+        <div id="OutSourceService" style="display:none;">
+            <div class="row">
+                <div class="col-md-1">
+                </div>
+
+
+
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <div class="k-label">
+                            @Html.LabelFor(model => model.PurchasedRequestUnitPrice)
+                        </div>
+                        <div>
+                            @Html.Kendo().TextBoxFor(model => model.PurchasedRequestUnitPrice).HtmlAttributes(new { @type = "number" })
+                            @Html.ValidationMessageFor(model => model.PurchasedRequestUnitPrice)
+                        </div>
+
+
+
+                    </div>
+
+
+
+
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+
+
+        <div id="Rent" style="display:none;">
+            <div class="row">
+                <div class="col-md-1">
+                </div>
+
+
+
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <div class="k-label">
+                            @Html.LabelFor(model => model.RentPerHour)
+                        </div>
+                        <div>
+                            @Html.Kendo().TextBoxFor(model => model.RentPerHour).HtmlAttributes(new { @type = "number" })
+                            @Html.ValidationMessageFor(model => model.RentPerHour)
+                        </div>
+
+
+
+                    </div>
+
+
+
+
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <div class="k-label">
+                            @Html.LabelFor(model => model.RentTotalHr)
+                        </div>
+                        <div>
+                            @Html.Kendo().TextBoxFor(model => model.RentTotalHr).HtmlAttributes(new { @type = "number" })
+                            @Html.ValidationMessageFor(model => model.RentTotalHr)
+                        </div>
+
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <div class="k-label">
+                            @Html.LabelFor(model => model.PurchasedRequestUnit)
+                        </div>
+                        <div>
+                            @Html.Kendo().TextBoxFor(model => model.PurchasedRequestUnit).HtmlAttributes(new { @type = "number" })
+                            @Html.ValidationMessageFor(model => model.PurchasedRequestUnit)
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+
+        <div id="DailyLabour" style="display:none;">
+            <div class="row">
+                <div class="col-md-1">
+                </div>
+
+
+
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <div class="k-label">
+                            @Html.LabelFor(model => model.DailySalary)
+                        </div>
+                        <div>
+                            @Html.Kendo().TextBoxFor(model => model.DailySalary).HtmlAttributes(new { @type = "number" })
+                            @Html.ValidationMessageFor(model => model.DailySalary)
+                        </div>
+
+
+
+                    </div>
+
+
+
+
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <div class="k-label">
+                            @Html.LabelFor(model => model.NoWorkingDay)
+                        </div>
+                        <div>
+                            @Html.Kendo().TextBoxFor(model => model.NoWorkingDay).HtmlAttributes(new { @type = "number" })
+                            @Html.ValidationMessageFor(model => model.NoWorkingDay)
+                        </div>
+
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <div class="k-label">
+                            @Html.LabelFor(model => model.PurchasedRequestUnit)
+                        </div>
+                        <div>
+                            @Html.Kendo().TextBoxFor(model => model.PurchasedRequestUnit).HtmlAttributes(new { @type = "number" })
+                            @Html.ValidationMessageFor(model => model.PurchasedRequestUnit)
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+
+
+        <div id="Labour" style="display:none;">
+            <div class="row">
+                <div class="col-md-1">
+                </div>
+
+
+
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <div class="k-label">
+                            @Html.LabelFor(model => model.SalaryPerMonth)
+                        </div>
+                        <div>
+                            @Html.Kendo().TextBoxFor(model => model.SalaryPerMonth).HtmlAttributes(new { @type = "number" })
+                            @Html.ValidationMessageFor(model => model.SalaryPerMonth)
+                        </div>
+
+
+
+                    </div>
+
+
+
+
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <div class="k-label">
+                            @Html.LabelFor(model => model.NoWorkingDay)
+                        </div>
+                        <div>
+                            @Html.Kendo().TextBoxFor(model => model.NoWorkingDay).HtmlAttributes(new { @type = "number" })
+                            @Html.ValidationMessageFor(model => model.NoWorkingDay)
+                        </div>
+
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <div class="k-label">
+                            @Html.LabelFor(model => model.OverTime)
+                        </div>
+                        <div>
+                            @Html.Kendo().TextBoxFor(model => model.OverTime).HtmlAttributes(new { @type = "number" })
+                            @Html.ValidationMessageFor(model => model.OverTime)
+                        </div>
+
+                    </div>
+                </div>
+
+            </div>
+            <div class="row">
+                <div class="col-md-1">
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <div class="k-label">
+                            @Html.LabelFor(model => model.ResponsibleAllowance)
+                        </div>
+                        <div>
+                            @Html.Kendo().TextBoxFor(model => model.ResponsibleAllowance).HtmlAttributes(new { @type = "number" })
+                            @Html.ValidationMessageFor(model => model.ResponsibleAllowance)
+                        </div>
+
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <div class="k-label">
+                            @Html.LabelFor(model => model.DisturbanceAllowance)
+                        </div>
+                        <div>
+                            @Html.Kendo().TextBoxFor(model => model.DisturbanceAllowance).HtmlAttributes(new { @type = "number" })
+                            @Html.ValidationMessageFor(model => model.DisturbanceAllowance)
+                        </div>
+
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <div class="k-label">
+                            @Html.LabelFor(model => model.ProffiessionalAllowance)
+                        </div>
+                        <div>
+                            @Html.Kendo().TextBoxFor(model => model.ProffiessionalAllowance)
+                        </div>
+
+                    </div>
+                </div>
+
+
+
+
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-md-1">
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.Description)
+                    </div>
+                    <div>
+                        @Html.Kendo().TextBoxFor(model => model.Description)
+                        @Html.ValidationMessageFor(model => model.Description)
+                    </div>
+
+                </div>
+            </div>
+
+
+        </div>
+    </form>
+</div>
+

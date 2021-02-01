@@ -1,0 +1,17 @@
+﻿ 
+@(Html.Kendo().DropDownListFor(m => m)
+                  .AutoBind(false)
+                  .OptionLabel("Select Store...")
+                              .DataTextField("GoodReceiveId")
+                              .DataValueField("GoodReceiveId")
+                  .DataSource(dataSource =>
+                  {
+                      dataSource.Read(read => read.Action("GetGoodReceiveId", "DataProvider"))
+                                .ServerFiltering(false);
+                  })
+                .Events(e =>
+                        {
+                            e.Select("onSelectGoodReceiveId");
+                        })
+)
+@Html.ValidationMessageFor(m => m)

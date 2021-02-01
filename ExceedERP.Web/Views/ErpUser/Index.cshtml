@@ -1,0 +1,20 @@
+﻿@using ExceedERP.Web.Models
+
+@(Html.Kendo().Grid<RegisterViewModel>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.UserName);
+        columns.Bound(c => c.Email);
+        columns.Bound(c => c.FirstName);
+        columns.Bound(c => c.MiddleName);
+        columns.Bound(c => c.LastName);
+        columns.Bound(c => c.PhoneNo);
+       
+      })
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Read(read => read.Action("InventoryItems_Read", "Grid"))
+      )
+)

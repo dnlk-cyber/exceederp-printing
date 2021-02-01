@@ -1,0 +1,27 @@
+﻿@using ExceedERP.Core.Domain.Procurement.Tender.Lot
+
+@(Html.Kendo().Grid<LotFinancialOffer>()
+      .Name("lotFinancialOffergrid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Supplier);
+          columns.Bound(c => c.Price);
+          columns.Bound(c => c.Description);
+        
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+                              toolbar.Excel();
+                              // toolbar.Pdf();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.LotFinancialOfferID))
+          .Read(read => read.Action("LotFinancialOffers_Read", "FinancialOffer"))
+          .Create(create => create.Action("LotFinancialOffers_Create", "FinancialOffer"))
+          .Update(update => update.Action("LotFinancialOffers_Update", "FinancialOffer"))
+          .Destroy(destroy => destroy.Action("LotFinancialOffers_Destroy", "FinancialOffer"))
+      ))

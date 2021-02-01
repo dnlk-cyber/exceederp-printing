@@ -1,0 +1,636 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Project Inputs</legend>
+@(Html.Kendo().TabStrip()
+         .Name("tabstrip")
+          .SelectedIndex(0)
+          .Items(items =>
+          {
+              items.Add().Text("Labor Cost").Content(
+                @<text>
+
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.ProjectEstimationIndexLabour>()
+                            .Name("ProjectEstimationIndexLabour")
+                            .Columns(columns =>
+                            {
+                                // columns.Bound(c => c.FormHr).Width(150).ClientTemplate("<input type='checkbox' disabled='true'  onclick='FromHr(this.checked) value='#=FormHr #' " + " # if (FormHr) { #" + "checked='checked'" + "# } #" + " />");
+                                columns.ForeignKey(c => c.ProjectJobTitleId, (IEnumerable)ViewData["titles"], "ProjectJobTitleId", "JobTitle").EditorTemplateName("JobTitle").Width(200);
+
+                                columns.Group(g => g.Title("Monthly Range").HeaderHtmlAttributes(new { style = "text-align: center; font-weight: bold; " })
+                                .Columns(info =>
+                                {
+                                    info.Bound(x => x.SalaryperMonthMin).Width(80).Format("{0:N2}");
+                                    info.Bound(x => x.SalaryperMonthMax).Width(80).Format("{0:N2}");
+
+                                })
+                                );
+                                columns.Bound(c => c.Unit).Width(110).Format("{0:N2}");
+                                columns.Group(g => g.Title("Daily Range").HeaderHtmlAttributes(new { style = "text-align: center; font-weight: bold;" })
+                                  .Columns(info =>
+                                  {
+                                      info.Bound(x => x.SalaryperdayMin).Width(80).Format("{0:N2}");
+                                      info.Bound(x => x.SalaryperdayMax).Width(80).Format("{0:N2}");
+
+                                  })
+                                  );
+                                columns.Bound(c => c.IndexFactory).Width(100);
+                                columns.Group(g => g.Title("Hourly Range").HeaderHtmlAttributes(new { style = "text-align: center; font-weight: bold;" })
+                                    .Columns(detail =>
+                                    {
+                                        detail.Bound(jt => jt.HourlyAverageSalary).Width(80);
+                                        detail.Bound(jt => jt.IndexedHourlySalary).Width(80).Filterable(false);
+                                        detail.Bound(jt => jt.ApprovedIndexedHourlySalary).Width(100).Filterable(false);
+                                    })
+                                    );
+                                //columns.Group(g => g.Title("Gross Salary").HeaderHtmlAttributes(new { style = "text-align: center" })
+                                //    .Columns(info =>
+                                //    {
+                                //        info.Bound(x => x.BirrMonth).Width(100);
+                                //        info.Bound(x => x.IdealBirrDay).Width(100);
+                                //        info.Bound(x => x.ActualBirrDay).Width(100);
+                                //    })
+                                //    );
+                                //columns.Group(g => g.Title("Per dime").HeaderHtmlAttributes(new { style = "text-align: center" })
+                                //    .Columns(info =>
+                                //    {
+                                //        info.Bound(x => x.IdealBirrDays).Width(100);
+                                //        info.Bound(x => x.ActualBirrDays).Width(100);
+
+                                //    })
+                                //    );
+
+
+                                //columns.Bound(c => c.DesertBirrDays).Width(120);
+                                //columns.Group(g => g.Title("Net pay").HeaderHtmlAttributes(new { style = "text-align: center" })
+                                //    .Columns(info =>
+                                //    {
+                                //        info.Bound(x => x.NetBirrDays).Width(150);
+                                //        info.Bound(x => x.NetBirrHour).Width(150);
+
+                                //    })
+                                //    );
+
+                                columns.Command(command =>
+                                {
+                                    command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                    command.Destroy().Text(Resources.ActionButton_Cancel);
+                                }).Width(200);
+                            })
+                            .ToolBar(toolbar =>
+                            {
+                                toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                            })
+                            .Editable(editable => editable.Mode(GridEditMode.InLine))
+                            .Scrollable(h => h.Height(500))
+                            //.Groupable()
+                            .Sortable(sortable =>
+                            {
+                                sortable.SortMode(GridSortMode.SingleColumn);
+                            })
+                            .Selectable(selectable =>
+                            {
+                                selectable.Mode(GridSelectionMode.Single);
+                                selectable.Type(GridSelectionType.Row);
+                            })
+                            .Filterable()
+                            .Pageable(pageable => pageable
+                                .Input(true)
+                                .Numeric(false)
+                                .Refresh(true)
+                                .PageSizes(true)
+                                .ButtonCount(5))
+                            // .Events(e => e.Edit("onEdit"))
+                            .DataSource(dataSource => dataSource
+                                .Ajax()
+                                .Events(events =>
+                                {
+                                    events.Error("error_handler(\"ProjectEstimationIndexLabour\")");
+                                    events.RequestStart("onRequestStart(\"ProjectEstimationIndexLabour\")");
+                                    events.RequestEnd("onRequestEnd(\"ProjectEstimationIndexLabour\")");
+                                })
+                                .Model(model =>
+                                {
+                                    model.Id(p => p.ProjectEstimationIndexLabourId);
+                                    model.Field(x => x.ActualBirrDay).Editable(false);
+                                    model.Field(x => x.ActualBirrDays).Editable(false);
+                                    model.Field(x => x.DesertBirrDays).Editable(false);
+                                    model.Field(x => x.IdealBirrDay).Editable(false);
+                                    model.Field(x => x.IdealBirrDays).Editable(false);
+                                    model.Field(x => x.BirrMonth).Editable(false);
+                                    model.Field(x => x.ActualBirrDay).Editable(false);
+                                    model.Field(x => x.NetBirrDays).Editable(false);
+                                    model.Field(x => x.NetBirrHour).Editable(false);
+                                    model.Field(x => x.Unit).Editable(false);
+                                    model.Field(x => x.IndexFactory).Editable(false);
+                                    model.Field(x => x.IndexedHourlySalary).Editable(false);
+                                    model.Field(x => x.HourlyAverageSalary).Editable(false);
+                                    model.Field(x => x.SalaryperdayMin).Editable(false);
+                                    model.Field(x => x.SalaryperdayMax).Editable(false);
+                                    model.Field(x => x.SalaryperMonthMin).Editable(false);
+                                    model.Field(x => x.SalaryperMonthMax).Editable(false);
+                                })
+                                .Read(read => read.Action("ProjectEstimationIndexLabour_Read", "ProjectEstimationIndexLabour"))
+                                .Create(create => create.Action("ProjectEstimationIndexLabour_Create", "ProjectEstimationIndexLabour"))
+                                .Update(update => update.Action("ProjectEstimationIndexLabour_Update", "ProjectEstimationIndexLabour"))
+                                .Destroy(destroy => destroy.Action("ProjectEstimationIndexLabour_Destroy", "ProjectEstimationIndexLabour"))
+                            )
+                    )
+                </text>
+
+                  );
+              items.Add().Text("Work Category").Content(
+                @<text>
+
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.WorkCategory>()
+                                .Name("WorkCategory")
+                                .Columns(columns =>
+                                {
+                                    columns.ForeignKey(c => c.ConfigurationId, (IEnumerable)ViewData["StructureType"], "ConfigurationId", "CurrentValue").EditorTemplateName("StructureTypes").Width(300);
+                                    columns.Bound(c => c.Name);
+                                    columns.Bound(c => c.Description);
+                                    columns.Bound(c => c.Index).Width(100).Title("Index/Code");
+                                    columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit); command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+                                })
+                                .ToolBar(toolbar =>
+                                {
+                                    toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                                })
+                                .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                .Scrollable(h => h.Height(500))
+                                //.Groupable()
+                                .Sortable(sortable =>
+                                {
+                                    sortable.SortMode(GridSortMode.SingleColumn);
+                                })
+                                .Selectable(selectable =>
+                                {
+                                    selectable.Mode(GridSelectionMode.Single);
+                                    selectable.Type(GridSelectionType.Row);
+                                })
+                                .Filterable()
+                                .Pageable(pageable => pageable
+                                            .Input(true)
+                                            .Numeric(false)
+                                            .Refresh(true)
+                                            .PageSizes(true)
+                                            .ButtonCount(5))
+                                .DataSource(dataSource => dataSource
+                                .Ajax()
+
+                                    .Events(events =>
+                                    {
+                                        events.Error("error_handler(\"WorkCategory\")");
+                                        events.RequestStart("onRequestStart(\"WorkCategory\")");
+                                        events.RequestEnd("onRequestEnd(\"WorkCategory\")");
+
+                                    })
+                                    .Sort(srt =>
+                                    {
+                                        srt.Add(f => f.Index);
+                                    })
+                                    .Model(model => model.Id(p => p.WorkCategoryId))
+                                    .Read(read => read.Action("WorkCategory_Read", "WorkCategory"))
+                                    .Create(create => create.Action("WorkCategory_Create", "WorkCategory"))
+                                    .Update(update => update.Action("WorkCategory_Update", "WorkCategory"))
+                                    .Destroy(destroy => destroy.Action("WorkCategory_Destroy", "WorkCategory"))
+                                )
+                    )
+                </text>
+
+                  );
+
+              items.Add().Text("External Equipment Rent").Content(
+                @<text>
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.MachinaryRent>()
+                                  .Name("MachinaryRentgrid")
+                              .Columns(columns =>
+                              {
+                                  columns.ForeignKey(c => c.FleetsID, (IEnumerable)ViewData["ExternalEquipments"], "FleetsID", "EquipmentName").EditorTemplateName("ExternalEqpType").Width(120);
+                                  // columns.Bound(c => c.Model).Width( 100);
+                                  //  columns.Bound(c => c.YearManufacture).Width( 200);
+                                  columns.ForeignKey(c => c.ItemCode, (IEnumerable)ViewData["FuelTypes"], "ItemCode", "Name").Width(120).EditorTemplateName("FuelTypes");
+                                  columns.Bound(c => c.RatedCapaciy).Width(100).Filterable(false);
+                                  columns.Bound(c => c.HP).Width(100).Filterable(false);
+                                  columns.Bound(c => c.Rental).Width(100).Filterable(false).Format("{0:N2}");
+                                  columns.Bound(c => c.FuelPerHour).Width(100).Filterable(false);
+                                  columns.Bound(c => c.BirrPerLitter).Width(100).Filterable(false);
+                                  columns.Bound(c => c.FuelCostPerHr).Width(100).Filterable(false);
+                                  columns.Bound(c => c.RentalWithFuel).Width(100).ClientTemplate("<strong>#: kendo.toString(RentalWithFuel, 'N4') #</strong>");
+                                  columns.Bound(c => c.ApprovedCost).Width(100).ClientTemplate("<strong>#: kendo.toString(ApprovedCost, 'N4') #</strong>");
+
+                                  columns.Command(command =>
+                                  {
+                                      command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                      command.Destroy().Text(Resources.ActionButton_Cancel);
+                                  }).Width(200);
+                              })
+                              .ToolBar(toolbar =>
+                              {
+                                  toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                              })
+                              .Editable(editable => editable.Mode(GridEditMode.InLine))
+                              .Selectable(selectable =>
+                              {
+                                  selectable.Mode(GridSelectionMode.Single);
+                                  selectable.Type(GridSelectionType.Row);
+                              })
+                              .Scrollable(h => h.Height(500))
+                                    //.Groupable()
+                                    .Sortable(sortable =>
+                                    {
+                                        sortable.SortMode(GridSortMode.SingleColumn);
+                                    })
+                                .Filterable()
+                                .Pageable(pageable => pageable
+                                                    .Input(true)
+                                                    .Numeric(false)
+                                                    .Refresh(true)
+                                                    .PageSizes(true)
+                                                    .ButtonCount(5))
+                              .DataSource(dataSource => dataSource
+                                  .Ajax()
+                                    .Events(events =>
+                                    {
+                                        events.Error("error_handler(\"MachinaryRentgrid\")");
+                                        events.RequestStart("onRequestStart(\"MachinaryRentgrid\")");
+                                        events.RequestEnd("onRequestEnd(\"MachinaryRentgrid\")");
+
+                                    })
+                                  .Model(model =>
+                                  {
+                                      model.Id(p => p.MachinaryRentId);
+                                      model.Field(p => p.RentalWithFuel).Editable(false);
+                                      model.Field(p => p.FuelCostPerHr).Editable(false);
+                                      model.Field(p => p.BirrPerLitter).Editable(false);
+                                      model.Field(p => p.Rental).Editable(false);
+                                  })
+                                  .Read(read => read.Action("MachinaryRent_Read", "MachinaryRent"))
+                                  .Create(create => create.Action("MachinaryRent_Create", "MachinaryRent"))
+                                  .Update(update => update.Action("MachinaryRent_Update", "MachinaryRent"))
+                                  .Destroy(destroy => destroy.Action("MachinaryRent_Destroy", "MachinaryRent"))
+                              )
+                    )
+                </text>
+
+                  );
+              items.Add().Text("Internal Equipment Rent").Content(
+                @<text>
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.InternalMachinaryRent>()
+                              .Name("InternalMachinaryRentgrid")
+                              .Columns(columns =>
+                              {
+                                  columns.ForeignKey(c => c.FleetsID, (IEnumerable)ViewData["InternalItems"], "FleetsID", "EquipmentName").EditorTemplateName("InternalItem").Width(200);
+                                  columns.Bound(c => c.Model).Width(70);
+                                  columns.Bound(c => c.Capacity).Width(70);
+                                  columns.Bound(c => c.PurchaseCost).Width(70).Format("{0:N2}");
+                                  columns.Bound(c => c.MaximumLife).Width(70).Format("{0:N2}");
+                                  columns.Bound(c => c.HoursUsedPerYear).Format("{0:N2}").Width(70).HeaderHtmlAttributes(new { style = "text-align: center;" });
+                                  columns.Group(g => g.Title("Owning Cost").HeaderHtmlAttributes(new { style = "text-align: center" })
+                                                .Columns(info =>
+                                                {
+                                                    info.Bound(c => c.DepCostPerHour).Width(70).Format("{0:N2}");
+                                                    info.Bound(c => c.InvestmentCost).Width(70).Format("{0:N2}");
+                                                    info.Bound(c => c.TotalOwningCost).Width(70).ClientTemplate("<strong>#: kendo.toString( TotalOwningCost, 'N2') #</strong>");
+                                                })
+                                                );
+                                  columns.Group(g => g.Title("Operating Cost").HeaderHtmlAttributes(new { style = "text-align: center" })
+                                                .Columns(info =>
+                                                {
+                                                    info.Bound(c => c.FuelCost).Width(70).Format("{0:N2}");
+                                                    info.Bound(c => c.LubCost).Width(70).Format("{0:N2}");
+                                                    info.Bound(c => c.MaintAndRepair).Width(70).Format("{0:N2}");
+                                                    info.Bound(c => c.TyreCost).Width(70).Format("{0:N2}");
+                                                    info.Bound(c => c.TotalOperatingCost).Width(70).ClientTemplate("<strong>#: kendo.toString( TotalOperatingCost, 'N2') #</strong>");
+                                                })
+                                                );
+                                  columns.Bound(c => c.HourlyRate).Width(70).ClientTemplate("<strong>#: kendo.toString( HourlyRate, 'N2') #</strong>");
+                                  columns.Bound(c => c.IndexForSeverCondition).Width(70).Format("{0:N2}");
+                                  columns.Bound(c => c.RatePerHourWithoutFuel).Width(70).ClientTemplate("<strong>#: kendo.toString(RatePerHourWithoutFuel, 'N2') #</strong>");
+                                  //columns.Bound(c => c.Remark);
+                                  columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit); command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+                              })
+                              .ToolBar(toolbar =>
+                              {
+                                  toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                              })
+                              .Events(ev =>
+                              {
+                                  ev.DataBound("internalMachinaryDataBound");
+                              })
+                              .Selectable(selectable =>
+                              {
+                                  selectable.Mode(GridSelectionMode.Single);
+                                  selectable.Type(GridSelectionType.Row);
+                              })
+                              .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                .Scrollable(h => h.Height(500))
+                                //.Groupable()
+                                .Sortable(sortable =>
+                                {
+                                    sortable.SortMode(GridSortMode.SingleColumn);
+                                })
+                                //.Filterable()
+                                .Pageable(pageable => pageable
+                                                        .Input(true)
+                                                        .Numeric(false)
+                                                        .Refresh(true)
+                                                        .PageSizes(true)
+                                                        .ButtonCount(5))
+                                .DataSource(dataSource => dataSource
+                                  .Ajax()
+
+                                          .Events(events =>
+                                          {
+                                              events.Error("error_handler(\"InternalMachinaryRentgrid\")");
+                                              events.RequestStart("onRequestStart(\"InternalMachinaryRentgrid\")");
+                                              events.RequestEnd("onRequestEnd(\"InternalMachinaryRentgrid\")");
+
+                                          })
+
+                                  .Model(model =>
+                                  {
+                                      model.Id(p => p.InternalMachinaryRentId);
+                                      //model.Field(p => p.DailyRentalCost).Editable(false);
+                                      model.Field(p => p.DepCostPerHour).Editable(false);
+                                      model.Field(p => p.PurchaseCost).Editable(false);
+                                      model.Field(p => p.Model).Editable(false);
+                                      model.Field(p => p.Capacity).Editable(false);
+                                      model.Field(p => p.HoursUsedPerYear).DefaultValue(1800);
+                                      model.Field(p => p.MaximumLife).DefaultValue(1);
+                                      model.Field(p => p.TotalOwningCost).Editable(false);
+                                      model.Field(p => p.TotalOperatingCost).Editable(false);
+                                      model.Field(p => p.HourlyRate).Editable(false);
+                                      model.Field(p => p.IndexForSeverCondition).Editable(false);
+                                      model.Field(p => p.RatePerHourWithoutFuel).Editable(false);
+                                  })
+                                    .Read(read => read.Action("InternalMachinaryRent_Read", "InternalMachinaryRent"))
+                                    .Create(create => create.Action("InternalMachinaryRent_Create", "InternalMachinaryRent"))
+                                    .Update(update => update.Action("InternalMachinaryRent_Update", "InternalMachinaryRent"))
+                                    .Destroy(destroy => destroy.Action("InternalMachinaryRent_Destroy", "InternalMachinaryRent"))
+                              )
+                    )
+                </text>
+                  );
+
+          items.Add().Text("Material Cost")
+              //.Selected(true)
+              .Content(innerTab => Html.Kendo().TabStrip()
+              .Name("material_tab")
+              .SelectedIndex(0)
+              .Items(innerItems =>
+              {
+              innerItems.Add().Text("Material Price Index").Content(
+                @<text>
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.MaterialPriceIndex>()
+                      .Name("MaterialPriceIndexgrid")
+                        .Columns(columns =>
+                        {
+                            columns.ForeignKey(c => c.ItemCategoryCode, (IEnumerable)ViewData["ItemPriceCatego"], "ItemCategoryCode", "Name").EditorTemplateName("ItemCategory").Width(150);
+                            columns.ForeignKey(c => c.ItemCode, (IEnumerable)ViewData["ItemPriceIndex"], "ItemCode", "Name").EditorTemplateName("Item").Width(120);
+                            columns.Bound(c => c.Uom).Width(75);
+                            columns.Bound(c => c.OrginalCostGRN).Width(80).Format("{0:N2}");
+                            columns.Bound(c => c.ExternalCost).Width(80).Format("{0:N2}");
+                            columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("Branches").Width(120);
+                            columns.Bound(c => c.TransportCost).Width(90);
+                            //columns.Bound(c => c.LoadingUnloading).Width(90);
+                            columns.Bound(c => c.TotalCost).Width(90).ClientTemplate("<strong>#: kendo.toString(TotalCost, 'N4') #</strong>");
+                            columns.Bound(c => c.ApprovedCost).Width(100).ClientTemplate("<strong>#: kendo.toString(ApprovedCost, 'N4') #</strong>");
+                            columns.ForeignKey(c => c.GLPeriodId, (IEnumerable)ViewData["GLPeriods"], "InventoryPeriodId", "Name").EditorTemplateName("GLPeriods").Width(120);
+                            columns.Bound(c => c.DateOfInformation).Width(100);
+                            columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit); command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+                        })
+                        .ToolBar(toolbar =>
+                        {
+                            toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                            toolbar.Custom().Name("FetchLatestPrices").Text("&nbsp;&nbsp;Fetch Latest Prices").IconClass("fa fa-refresh").Url(Url.Action("FetchLatestPricesFromInventoryPriceIndex", "ProjectInputs", new { area = "Construction" }));
+                        })
+                        .Editable(editable => editable.Mode(GridEditMode.InLine))
+                        .Scrollable(h => h.Height(500))
+                        //.Groupable()
+                        .Sortable(sortable =>
+                        {
+                            sortable.SortMode(GridSortMode.SingleColumn);
+                        })
+                        .Selectable(selectable =>
+                        {
+                            selectable.Mode(GridSelectionMode.Single);
+                            selectable.Type(GridSelectionType.Row);
+                        })
+                        .Events(ev =>
+                        {
+                            ev.DataBound("onDataBound");
+                        })
+                        .Filterable()
+                        .Pageable(pageable => pageable
+                                    .Input(true)
+                                    .Numeric(false)
+                                    .Refresh(true)
+                                    .PageSizes(true)
+                                    .ButtonCount(5))
+                        .DataSource(dataSource => dataSource
+                            .Ajax()
+                            .Events(events =>
+                            {
+                                events.Error("error_handler(\"MaterialPriceIndexgrid\")");
+                                events.RequestStart("onRequestStart(\"MaterialPriceIndexgrid\")");
+                                events.RequestEnd("onRequestEnd(\"MaterialPriceIndexgrid\")");
+
+                            })
+
+                            .Model(model =>
+                            {
+                                model.Id(p => p.MaterialPriceIndexId);
+                                model.Field(p => p.Uom).Editable(false);
+                                model.Field(p => p.OrginalCostGRN).Editable(false);
+                                model.Field(p => p.TotalCost).Editable(false);
+                                //model.Field(p => p.BranchId).Editable(false);
+                            })
+                            .Read(read => read.Action("MaterialPriceIndex_Read", "MaterialPriceIndex"))
+                            .Create(create => create.Action("MaterialPriceIndex_Create", "MaterialPriceIndex"))
+                            .Update(update => update.Action("MaterialPriceIndex_Update", "MaterialPriceIndex"))
+                            .Destroy(destroy => destroy.Action("MaterialPriceIndex_Destroy", "MaterialPriceIndex"))
+                        )//.ToClientTemplate()
+                    )
+                </text>
+                          );
+                  innerItems.Add().Text("Material Transportation Cost").Content(
+                    @<text>
+                        @(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.MaterialTransportationCost>()
+                      .Name("transportaionCostGrid")
+                        .Columns(columns =>
+                        {
+                            columns.ForeignKey(c => c.ItemCategoryCode, (IEnumerable)ViewData["ItemPriceCatego"], "ItemCategoryCode", "Name").EditorTemplateName("ItemCategory").Width(150);
+                            columns.ForeignKey(c => c.ItemCode, (IEnumerable)ViewData["ItemPriceIndex"], "ItemCode", "Name").EditorTemplateName("Item").Width(120);
+                            columns.Bound(c => c.UoM).Width(75);
+                            columns.Bound(c => c.TrackCapacityPerTrip).Width(80).Format("{0:N2}");
+                            columns.Bound(c => c.AverageSpeedOfTrack).Width(80).Format("{0:N2}");
+                            columns.Bound(c => c.RentalCostWithFuel).Width(80).Format("{0:N2}");
+                            columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("Branches").Width(120);
+                            columns.Bound(c => c.DriverPerdiem).Width(90);
+                            columns.Bound(c => c.AssistantDriverPerdiem).Width(90);
+                            columns.Bound(c => c.AverageDistanceFromSourceToSite).Width(80).Format("{0:N2}");
+                            columns.Bound(c => c.RequiredTime).Width(80).Format("{0:N2}");
+
+                            columns.Bound(c => c.TotalCost).Width(90).ClientTemplate("<strong>#: kendo.toString(TotalCost, 'N4') #</strong>");
+                            columns.Bound(c => c.CostPerUnit).Width(100).ClientTemplate("<strong>#: kendo.toString(CostPerUnit, 'N4') #</strong>");
+                            columns.Bound(c => c.LoadingUnloadingCost).Width(80).Format("{0:N2}");
+                            columns.Bound(c => c.TotalCostPerUnit).Width(80).ClientTemplate("<strong>#: kendo.toString(TotalCostPerUnit, 'N4') #</strong>");
+
+                            // columns.ForeignKey(c => c.GLPeriodId, (IEnumerable)ViewData["GLPeriods"], "InventoryPeriodId", "Name").EditorTemplateName("GLPeriods").Width(120);
+                            // columns.Bound(c => c.DateOfInformation).Width(100);
+                            columns.Command(command =>
+                            {
+                                command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                command.Destroy().Text(Resources.ActionButton_Cancel);
+                            }).Width(200);
+                        })
+                        .ToolBar(toolbar =>
+                        {
+                            toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                        })
+                        .Editable(editable => editable.Mode(GridEditMode.InLine))
+                        .Scrollable(h => h.Height(500))
+                        ////.Groupable()
+                        .Sortable(sortable =>
+                        {
+                            sortable.SortMode(GridSortMode.SingleColumn);
+                        })
+                        .Selectable(selectable =>
+                        {
+                            selectable.Mode(GridSelectionMode.Single);
+                            selectable.Type(GridSelectionType.Row);
+                        })
+                        //.Events(ev =>
+                        //{
+                        //    ev.DataBound("onDataBound");
+                        //})
+                        //.Filterable()
+                        .Pageable(pageable => pageable
+                                    .Input(true)
+                                    .Numeric(false)
+                                    .Refresh(true)
+                                    .PageSizes(true)
+                                    .ButtonCount(5))
+                        .DataSource(dataSource => dataSource
+                            .Ajax()
+                            .Events(events =>
+                            {
+                                events.Error("error_handler(\"transportaionCostGrid\")");
+                                events.RequestStart("onRequestStart(\"transportaionCostGrid\")");
+                                events.RequestEnd("onRequestEnd(\"transportaionCostGrid\")");
+
+                            })
+
+                            .Model(model =>
+                            {
+                                model.Id(p => p.MaterialTransportationCostId);
+                                model.Field(p => p.UoM).Editable(false);
+                                model.Field(p => p.TotalCostPerUnit).Editable(false);
+                                model.Field(p => p.TotalCost).Editable(false);
+                                model.Field(p => p.CostPerUnit).Editable(false);
+                                model.Field(f => f.RequiredTime).Editable(false);
+                            })
+                            .Read(read => read.Action("TransportCosts_Read", "MaterialTransportationCost"))
+                            .Create(create => create.Action("TransportCost_Create", "MaterialTransportationCost"))
+                            .Update(update => update.Action("TransportCost_Update", "MaterialTransportationCost"))
+                            .Destroy(destroy => destroy.Action("TransportCost_Destroy", "MaterialTransportationCost"))
+                        )//.ToClientTemplate()
+                        )
+                    </text>
+                          );
+              })//.ToClientTemplate()
+
+                  );
+          }))
+
+<script>
+
+    function internalMachinaryDataBound(e) {
+        var grid = this;
+        grid.element.delegate("tbody>tr", "dblclick", function () {
+            grid.editRow($(this));
+        });
+    }
+    function sync_handler(e) {
+        this.read();
+    }
+
+    function FromHr(falg) {
+
+        //var isChecked= $("#FormHRM");
+        var grid = $("#ProjectEstimationIndexLabour").data("kendoGrid");
+        var gridRow = grid.current().closest("tr");
+
+
+        if (falg == true) {
+            gridRow.cells[1].disabled = false;
+        }
+        else {
+            gridRow.cells[1].disabled = true;
+        }
+
+
+    }
+    function filterCategories() {
+        //
+        // summary:
+        //      send the filtering text along with the parent widget's value
+        var dropdownlist = $("#ItemCode").data("kendoDropDownList");
+        var filterInput = dropdownlist.filterInput;
+        return {
+            ItemCategoryCode: $("#ItemCategoryCode").val(), filterString: filterInput.val()
+        };
+    }
+    function onDataBound(e) {
+        //var grid = $("#MaterialPriceIndexgrid").data("kendoGrid");
+        //var gridData = grid.dataSource.view();
+
+        //for (var i = 0; i < gridData.length; i++) {
+        //    if (gridData[i].IsExpired == 'true') {
+        //        grid.table.find("tr[data-uid='" + gridData[i].uid + "']").addClass("highlighted-row");
+        //    }
+        //}
+
+        $(".k-grid-FetchLatestPrices").find("span").addClass("fa fa-refresh ");
+
+
+        var rows = e.sender.tbody.children();
+
+        for (var j = 0; j < rows.length; j++) {
+            var row = $(rows[j]);
+            var dataItem = e.sender.dataItem(row);
+
+            if (dataItem.get("IsExpired")) {
+                row.addClass("highlighted-row");
+            }
+        }
+
+    }
+
+    function materialSelectChanged(e){
+            var itmCode = $('#ItemCode').val();
+            $.ajax({
+                url: '@Url.Action("GetMaterialTransportaionCost", "MaterialTransportationCost", new {area = "Construction"})',
+                data: { itemCode: itmCode },
+                type: 'POST',
+                cache: false,
+                success: function (result) {
+                    $("#TransportCost").val(result);
+                    $("#TransportCost").trigger("change");
+                }
+            });
+    }
+</script>
+
+<style type="text/css">
+    .highlighted-row {
+        background-color: #ff6a6a;
+    }
+
+        .highlighted-row.k-alt {
+            background-color: #ff8f68;
+        }
+</style>

@@ -1,0 +1,119 @@
+﻿@model ExceedERP.Core.Domain.FleetManagement.FleetMaintenance.OutsourceMaintenance
+
+
+
+<div class = "demo-section k-content">
+    <form>
+    @(Html.Kendo().TabStrip()
+          .Name("tabstrip")
+          .Animation(animation =>
+              animation.Open(effect =>
+                  effect.Fade(FadeDirection.In)))
+          .Items(tabstrip =>
+          {
+              tabstrip.Add().Text("Maintenance For External")
+                 .Selected(true)
+                 .Content(@<text>
+                              <div class = "row">
+                                  <div class = "col-md-1">
+                                  </div>
+                                  <div class = "col-md-3">
+                                      <div class = "form-group">
+                                          <div class = "k-label">
+                                              @Html.LabelFor(model => model.ReasonForMaintenace)
+                                          </div>
+                                          <div>
+                                              @Html.Kendo().TextBoxFor(model => model.ReasonForMaintenace)
+                                              @Html.ValidationMessageFor(model => model.ReasonForMaintenace)
+                                          </div>
+
+                                      </div>
+                                  </div>
+
+
+                                 
+
+                                  <div class="col-md-3">
+                                      <div class="form-group">
+                                          <div class="k-label">
+                                              @Html.LabelFor(model => model.TypeOfRepair)
+                                              @(Html.Kendo().DropDownListFor(model => model.TypeOfRepair).Name("TypeOfRepair")
+                          .DataTextField("Name")
+                          .DataValueField("Name").OptionLabel("Select  Repair Type").HtmlAttributes(new { style = "width:100%" })
+                          .DataSource(d => d.Read(r => r.Action("RepairTypeDDBind", "RepairType"))))
+                                          </div>
+                                      </div>
+                                  </div>
+                                  <div class = "col-md-3">
+                                      <div class = "form-group">
+                                          <div class = "k-label">
+                                              @Html.LabelFor(model => model.TotalCost)
+                                          </div>
+                                          <div>
+                                              @Html.Kendo().NumericTextBoxFor(model => model.TotalCost).Min(0)
+                                              @Html.ValidationMessageFor(model => model.TotalCost)
+                                          </div>
+
+                                      </div>
+                                  </div>
+                              </div>
+        <div class="row">
+            <div class="col-md-1">
+            </div>
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.fromDate)
+                    </div>
+                    <div>
+                        @Html.Kendo().DatePickerFor(model => model.fromDate)
+                        @Html.ValidationMessageFor(model => model.fromDate)
+                    </div>
+
+                </div>
+            </div>
+
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.toDate)
+                    </div>
+                    <div>
+                        @Html.Kendo().DatePickerFor(model => model.toDate)
+                        @Html.ValidationMessageFor(model => model.toDate)
+                    </div>
+
+                </div>
+            </div>
+
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        <h6 style="margin-top: 0em;"> Equipment</h6>
+                        @(Html.Kendo().DropDownListFor(model => model.FleetID).Name("FleetID")
+                              .DataTextField("PlateNumber")
+                              .DataValueField("FleetsID").OptionLabel(" Select Equipment")
+                              .DataSource(d => d.Read(r => r.Action("FleetsDDBind", "EquipmentRegistration"))))
+
+
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+
+
+
+
+        </text>);
+
+
+          })
+        )
+
+</form>
+</div>

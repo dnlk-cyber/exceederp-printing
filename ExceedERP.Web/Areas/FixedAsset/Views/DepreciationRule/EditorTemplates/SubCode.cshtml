@@ -1,0 +1,15 @@
+﻿@using Kendo.Mvc.UI
+
+
+@(Html.Kendo().DropDownListFor(m => m)
+                  .AutoBind(false)
+                  .OptionLabel("Select ItemCategory...")
+                      .DataTextField("Name")
+                     .DataValueField("ItemCategoryCode")
+                  .DataSource(dataSource =>
+                  {
+                      dataSource.Read(read => read.Action("GetSubCat", "DepreciationRule").Data("getCategoryCode"))
+                                .ServerFiltering(true);
+                  }).CascadeFrom("ItemCategoryCode")
+)
+@Html.ValidationMessageFor(m => m)

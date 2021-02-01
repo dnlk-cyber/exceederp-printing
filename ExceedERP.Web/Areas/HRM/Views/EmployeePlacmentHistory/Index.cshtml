@@ -1,0 +1,167 @@
+﻿@using System.Collections
+@using System.Security.AccessControl
+@using ExceedERP.Core.Domain.HRM.EmployeeDetail
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>@Resources.NavigatorPlacment_EmployeeAssignmentHistory</legend>
+
+
+@(Html.Kendo().Grid<PlacementHistory>()
+              .Name("PlacementHistoryGrid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.EmployeeCode).Width(150);
+          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "PersonId", "FullNameWithOutCode").EditorTemplateName("ListOfEmployee").Width(200);
+          columns.Bound(c => c.FromAmharic).Width (200);
+          columns.Bound(c => c.ToAmharic).Width (200);
+          columns.Bound(c => c.JobTitle).Width (120);//, (IEnumerable)ViewData["jobTitle"], "OrgStructureId", "Name").EditorTemplateName("JobTitles").Width(120);
+          columns.Bound(c => c.Rank).Width (70);//, (IEnumerable)ViewData["RankList"], "RankId", "RankName").EditorTemplateName("RankList");
+          columns.Bound(c => c.Step).Width (70);//, (IEnumerable)ViewData["StepList"], "StepId", "StepName").EditorTemplateName("StepList");
+          columns.Bound(c => c.Salary).Width (80);
+        
+          //columns.Bound(c => c.Remark);//
+          columns.Command(command =>
+          {
+              if (HttpContext.Current.User.IsInRole("HR_Placement_User"))
+              {
+                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+              }
+              if (HttpContext.Current.User.IsInRole("HR_Placement_Admin") || HttpContext.Current.User.IsInRole("HR_Admin"))
+              {
+                   command.Destroy().Text(Resources.ActionButton_Cancel);//
+              }
+          }).Width(200);
+      })
+      .ToolBar(toolbar =>
+      {
+          if (HttpContext.Current.User.IsInRole("HR_Placement_User"))
+          {
+              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+          }
+      })
+                          .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("EmployeePlacmentHistory").Window(window => { window.Title(Resources.NavigatorPlacment_EmployeeAssignmentHistory); window.Scrollable(false); }))
+          .Scrollable(h => h.Height(500))
+             .Groupable()
+                      .Sortable(sortable =>
+                      {
+                          sortable.SortMode(GridSortMode.SingleColumn);
+                      })
+          .Filterable()
+                                    .Events(e =>
+                                       {
+                                           e.Save("GetDate");
+                                           e.Edit("GetDate");
+                                       })
+             .Pageable(pageable => pageable
+                                        .Input(true)
+                                        .Numeric(false)
+                                        .Refresh(true)
+                                        .PageSizes(true)
+                                        .ButtonCount(5))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+               .Events(events =>
+                 {
+                     events.Error("error_handler(\"PlacementHistoryGrid\")");
+                     events.RequestStart("onRequestStart(\"PlacementHistoryGrid\")");
+                     events.RequestEnd("onRequestEnd(\"PlacementHistoryGrid\")");
+                 })
+                       
+          .Model(model => model.Id(p => p.PlacementHistoryId))
+                              .Read(read => read.Action("PlacementHistories_Read", "EmployeePlacmentHistory"))
+                              .Create(create => create.Action("PlacementHistories_Create", "EmployeePlacmentHistory"))
+                      .Update(update => update.Action("PlacementHistories_Update", "EmployeePlacmentHistory"))
+                      .Destroy(destroy => destroy.Action("PlacementHistories_Destroy", "EmployeePlacmentHistory"))
+              )
+)
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 700px;
+    }
+</style>
+
+<script>
+    function GetEmployeeNameEmploye(e) {
+        var autocomplete = $("#EmployeeId").data("kendoAutoComplete");
+        var id = autocomplete.value();
+
+        $.ajax({
+            url: '@Url.Action("SetEmployeeId", "EmployeePlacmentHistory")',
+            contentType: "application/json; charset=utf-8",
+            data: { 'fullName': id },
+            type: 'GET',
+            cache: false,
+            success: function (result) {
+                r = result;
+            }
+
+        });
+    }
+</script>
+<script>
+    //function error_handler(e) {
+    //    if (e.errors) {
+    //        var message = "Errors:\n";
+    //        $.each(e.errors, function (key, value) {
+    //            if ('errors' in value) {
+    //                $.each(value.errors, function () {
+    //                    message += this + "\n";
+    //                });
+    //            }
+    //        });
+    //        alert(message);
+
+    //    }
+
+    //}
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+</script>
+
+<script>
+    function GetDate() {
+
+        var x = AssignDate();
+        var y = x;
+        $("#FromAmharic").trigger("change");
+        $("#ToAmharic").trigger("change");
+        for (var o in y) {
+            $.ajax({
+                contentType: "application/json; charset=utf-8",
+                url: '@Url.Action("SetDate", "EmployeePlacmentHistory")',
+                data: { name: y[o].id, value: y[o].date },
+                type: 'GET',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                }
+
+            });
+        }
+    }
+    function valueMapper(options) {
+        $.ajax({
+            url: "/HRM/Leave/Employee_ValueMapper/",
+            data: {
+                value: options.value || 0,
+                status: 1,
+                excludeId: -1
+            },
+            success: function (data) {
+                options.success(data);
+            }
+        });
+    }
+</script>
+<script>
+    function AssignDate() {
+        var list = AssignDates();
+        return list;
+    }
+
+</script>

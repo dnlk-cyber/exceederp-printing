@@ -1,0 +1,296 @@
+﻿@using ExceedERP.Core.Localization
+@using ExceedERP.Core.Domain.HRM.Allowance
+
+@using System.Collections
+@using System.Security.AccessControl
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>@Resources.NavigatorBenefit_EmployeeAllowance</legend>
+@(Html.Kendo().Grid<AllowancePerEmployee>()
+              .Name("AllowancePerEmployeegrid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.EmployeeCode).Width(120);
+          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "PersonId", "FullNameWithOutCode").EditorTemplateName("PayrollListOfEmployee").Width(200);
+          columns.ForeignKey(c => c.AllowanceDefinationId, (IEnumerable)ViewData["AllowanceList"], "AllowanceDefinationId", "AllowanceName").EditorTemplateName("Allowance").Width(200);
+                   columns.Bound(c => c.Pend).ClientTemplate("<input type='checkbox' #= Pend ? checked='checked':'' # class='chkbx' />")
+                        .Width (120);
+                   columns.Bound(c => c.From).Width(150);
+                   columns.Bound(c => c.To).Width(150);
+          columns.Bound(c => c.From);
+          columns.Command(command =>
+          {
+              //if (HttpContext.Current.User.IsInRole("HR_Benefit_User"))
+              //{
+              //    command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+              //}
+              if (HttpContext.Current.User.IsInRole("HR_Admin") || HttpContext.Current.User.IsInRole("HR_Benefit_Admin"))
+              {
+                  command.Destroy().Text(Resources.ActionButton_Cancel);
+              }
+          }).Width(200);
+      })
+      .ToolBar(toolbar =>
+          {
+             
+           toolbar.Template(@<text>
+                                <div class="toolbar">
+                                    @if (HttpContext.Current.User.IsInRole("HR_Benefit_User"))
+                                    {
+                                    @(Html.Kendo().Button()
+                                          .Content(Resources.HR_AllowanceMaping_Refresh_Allowance)
+                                          .Name("Assign")
+                                          .HtmlAttributes(new {@style = "width:200px"})
+
+                                          .Events(e => e.Click("ReAssign"))
+                                          //  .Content(Resources.HR_Allowance_AllowanceDefination_To)
+                                          )
+                                    @item.CreateButton(Resources.ActionButton_AddNewRecord)
+                                    @item.SaveButton(Resources.ActionButton_SaveChanges)
+                                         
+                                    }
+                                    <label class="category-label"></label>
+                                    @*@(Html.Kendo().Button()
+                      .Name("btnSave")
+                      .HtmlAttributes(new { type = "button", @class = "k-primary" })
+                      .Events(e => e.Click("Referesh"))
+                                      .Content(Resources.NavigatorBenefit_EmployeeAllowance_Referesh))*@
+                                    <label class="category-label">@Resources.Rpt_From</label>
+                                    @(Html.Kendo().DatePicker()
+                                          .Name("FromT")
+                                          //   .HtmlAttributes(new { type = "button", @class = "k-primary" })
+                                          .Events(e => e.Change("Referesh"))
+                                          // .Content(Resources.HHR_Allowance_AllowanceDefination_From)
+                                          )
+                                    @if (HttpContext.Current.User.IsInRole("HR_Benefit_User"))
+                                    {
+                                        <label class="category-label">@Resources.Rpt_To</label>
+                                        @(Html.Kendo().DatePicker()
+                                              .Name("ToT")
+                                              .HtmlAttributes(new {@style = "width:200px"})
+
+                                              .Events(e => e.Change("Referesh"))
+                                              //  .Content(Resources.HR_Allowance_AllowanceDefination_To)
+                                              )
+                                    }
+                                    @item.CustomCommandToolBarButton("Excel", "<span class='k-icon k-i-excel'></span>" + Resources.ActionButton_ExportExcel, "Excel_Export_Save", "Branch", "", new { @class = "k-button k-button-icontext k-grid-excel btn btn-primary btn-xs pull-right" })
+                                    @item.CustomCommandToolBarButton("PDF", "<span class='k-icon k-i-pdf'></span>" + Resources.ActionButton_ExportPDF, "Pdf_Export_Save", "Branch", "", new { @class = "k-button k-button-icontext k-grid-pdf  btn btn-primary btn-xs pull-right" })
+                                </div>
+                              
+
+         </text>);
+             
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InCell))
+      .Excel(excel => excel
+          .FileName(Resources.NavigatorBenefit_EmployeeAllowance + ".xlsx")
+          .Filterable(true)
+          .AllPages(true)
+          .ProxyURL(Url.Action("Excel_Export_Save", "EmployeAllowance"))
+      )
+      .Pdf(pdf => pdf
+          .AllPages()
+          .FileName(Resources.NavigatorBenefit_EmployeeAllowance + ".pdf")
+          .ProxyURL(Url.Action("Pdf_Export_Save", "EmployeAllowance"))
+      )
+         .Scrollable(h => h.Height(500))
+             .Groupable()
+                      .Sortable(sortable =>
+                      {
+                          sortable.SortMode(GridSortMode.SingleColumn);
+                      })
+          .Filterable()
+             .Pageable(pageable => pageable
+                                        .Input(true)
+                                        .Numeric(false)
+                                        .Refresh(true)
+                                        .PageSizes(true)
+                                        .ButtonCount(5))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Batch(true )
+                                                    .Events(events =>
+                                                                             {
+                                                                                 events.Error("error_handler(\"AllowancePerEmployeegrid\")");
+                                                                                 events.RequestStart("onRequestStart(\"EmpDisciplineMeasuregrid\")");
+                                                                                 events.RequestEnd("onRequestEnd(\"AllowancePerEmployeegrid\")");
+                                                                             })
+                                                   
+          .Model(model =>
+          {
+              model.Id(p => p.AllowanceId);
+              model.Field(p => p.EmployeeCode).Editable(false);
+          })
+                  .Read(read => read.Action("AllowancePerEmployees_Read", "EmployeAllowance"))
+                                      .Create(create => create.Action("Editing_Create", "EmployeAllowance"))
+                              .Update(update => update.Action("Editing_Create", "EmployeAllowance"))
+          .Destroy(destroy => destroy.Action("AllowancePerEmployees_Destroy", "EmployeAllowance"))
+              )
+)
+
+
+<script>
+    //function error_handler(e) {
+    //    if (e.errors) {
+    //        var message = "Errors:\n";
+    //        $.each(e.errors, function (key, value) {
+    //            if ('errors' in value) {
+    //                $.each(value.errors, function () {
+    //                    message += this + "\n";
+    //                });
+    //            }
+    //        });
+    //        alert(message);
+
+    //    }
+
+    //}
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 700px;
+    }
+</style>
+
+<style>
+    .Employee-photo {
+        display: inline-block;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background-size: 32px 35px;
+        background-position: center center;
+        vertical-align: middle;
+        line-height: 32px;
+        box-shadow: inset 0 0 1px #999, inset 0 0 10px rgba(0,0,0,.2);
+        margin-left: 5px;
+    }
+
+    .Employee-name {
+        display: inline-block;
+        vertical-align: middle;
+        line-height: 32px;
+        padding-left: 3px;
+    }
+</style>
+
+
+<script>
+    function error_handler(e) {
+        if (e.errors) {
+            var message = "Errors:\n";
+            $.each(e.errors, function(key, value) {
+                if ('errors' in value) {
+                    $.each(value.errors, function() {
+                        message += this + "\n";
+                    });
+                }
+            });
+            alert(message);
+
+        }
+
+    }
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+    function Referesh(e) {
+        try {
+            var fromDate = $("#FromT").data("kendoDatePicker");
+            var toDate = $("#ToT").data("kendoDatePicker");
+            var fromd = fromDate.value();
+            var tod = toDate.value();
+
+            var from = kendo.toString(kendo.parseDate(fromd), 'dd/MM/yyyy');
+            var to = kendo.toString(kendo.parseDate(tod), 'dd/MM/yyyy')
+            $.ajax({
+                url: '@Url.Action("SetDate", "EmployeAllowance")',
+                contentType: "application/json; charset=utf-8",
+                data: { 'from': from, 'to': to },
+                type: 'GET',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                    $("#From").val(fromd);
+                    $("#From").trigger("change");
+                //    $("#AllowancePerEmployeegrid").data("kendoGrid").dataSource.read();
+                   // $("#AllowancePerEmployeegrid").data("kendoGrid").refresh();
+                }
+
+            });
+          
+        } catch (e) {
+            //alert("Please select the row!!");
+        }
+    }
+</script>
+<script type="text/javascript">
+    $(function () {
+        $('#AllowancePerEmployeegrid').on('click', '.chkbx', function () {
+            var checked = $(this).is(':checked');
+            var grid = $('#AllowancePerEmployeegrid').data().kendoGrid;
+            var dataItem = grid.dataItem($(this).closest('tr'));
+            dataItem.set('Pend', checked);
+        })
+    })
+
+    function checkAll(ele) {
+        var state = $(ele).is(':checked');
+        var grid = $('#AllowancePerEmployeegrid').data().kendoGrid;
+        $.each(grid.dataSource.view(), function () {
+            if (this['Pend'] != state)
+                this.dirty = true;
+            this['Pend'] = state;
+        });
+        grid.refresh();
+    }
+    function ReAssign()
+    {
+        $.ajax({
+            url: '@Url.Action("PerapreEmployeeAllowance", "EmployeAllowance")',
+            contentType: "application/json; charset=utf-8",
+          //  data: { 'from': from, 'to': to },
+            type: 'GET',
+            cache: false,
+            success: function (result) {
+                r = result;
+                //$("#From").val(fromd);
+                //$("#From").trigger("change");
+                   $("#AllowancePerEmployeegrid").data("kendoGrid").dataSource.read();
+                $("#AllowancePerEmployeegrid").data("kendoGrid").refresh();
+            }
+
+        });
+
+    }
+</script>
+

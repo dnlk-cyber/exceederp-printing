@@ -1,0 +1,245 @@
+﻿<legend>Logistic Plan</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetMaintenance.LogisticPlan>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.GlFiscalYearId).EditorTemplateName("FiscalYearEditor").ClientTemplate("<label>  #=FiscalYear#    <label/>");
+          columns.Bound(c => c.GLPeriodId).EditorTemplateName("GlPeriod").ClientTemplate("<label>  #=Period#    <label/>");
+          columns.Bound(c => c.EquipmentTypeId).EditorTemplateName("EquipmentTypeEditor").ClientTemplate("<label>  #=Type#    <label/>");
+          columns.Bound(c => c.Model).EditorTemplateName("ModelByTypeEditor");
+          columns.Bound(c => c.Location).EditorTemplateName("BranchEditor"); 
+         // columns.Bound(c => c.Status);
+          columns.Bound(c => c.Remark);
+
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                   .HtmlAttributes(new { style = "height: 520px;" })
+                                      .Pageable(pageable => pageable
+                                                        .Input(true)
+                                                        .Numeric(false)
+                                                        .Refresh(true)
+                                                        .PageSizes(true)
+                                                        .ButtonCount(5))
+
+                                            .Scrollable()
+                                            .Sortable()
+                                            .Filterable()
+                                              .Scrollable(h => h.Height(500))
+      .ClientDetailTemplateId("template")
+
+      .DataSource(dataSource => dataSource
+          .Ajax()
+                  .Model(model => { model.Id(p => p.LogisticPlanId); model.Field(p => p.Status).Editable(false); })
+                               .Events(ev => ev
+                                                                    .Error("error_handler(\"grid\")")
+                                                                    .RequestStart("onRequestStart(\"grid\")")
+                                                                    .RequestEnd("onRequestEnd(\"grid\")"))
+          .Read(read => read.Action("LogisticPlans_Read", "LogisticPlan"))
+          .Create(create => create.Action("LogisticPlans_Create", "LogisticPlan"))
+          .Update(update => update.Action("LogisticPlans_Update", "LogisticPlan"))
+          .Destroy(destroy => destroy.Action("LogisticPlans_Destroy", "LogisticPlan"))
+      )
+)
+
+
+
+
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                            .Name("tabStrip_#=LogisticPlanId#")
+            .SelectedIndex(0)
+            .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+            .Items(items =>
+            {
+
+
+
+                items.Add().Text(" Plans ").Content(@<text>
+
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetMaintenance.LogisticPlanDetail>()
+                      .Name("Detail_#=LogisticPlanId#")
+      .Columns(columns =>
+      {
+          columns.ForeignKey(c => c.ServiceId, (System.Collections.IEnumerable)ViewData["Service"], "ServiceId", "ServiceName").EditorTemplateName("PMServiceEditor");
+         columns.ForeignKey(c => c.ItemCode, (System.Collections.IEnumerable)ViewData["InventoryItem"], "ItemCode", "Name").EditorTemplateName("InventoryItemEditor");
+         columns.Bound(c => c.Quantity).EditorTemplateName("NumEditor");
+            columns.Bound(c => c.Remark);
+
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+                          .Model(model => { model.Id(p => p.LogisticPlanDetailId); model.Field(x => x.Status).Editable(false); })
+                         .Events(ev => ev
+                                                                                .Error("error_handler(\"Detail_#=LogisticPlanId#\")")
+                                                                                .RequestStart("onRequestStart(\"Detail_#=LogisticPlanId#\")")
+                                                                                .RequestEnd("onRequestEnd(\"Detail_#=LogisticPlanId#\")"))
+                          
+                          .Read(read => read.Action("LogisticPlanDetails_Read", "LogisticPlanDetail", new { Id = "#=LogisticPlanId#" }))
+                  .Create(create => create.Action("LogisticPlanDetails_Create", "LogisticPlanDetail", new { Id = "#=LogisticPlanId#" }))
+          .Update(update => update.Action("LogisticPlanDetails_Update", "LogisticPlanDetail"))
+          .Destroy(destroy => destroy.Action("LogisticPlanDetails_Destroy", "LogisticPlanDetail"))
+      )
+
+
+
+                        .ToClientTemplate())
+                </text>
+                );
+
+                items.Add().Text("  Approval").Content(@<text>
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetMaintenance.AdministrativeJobApproval>()
+                                                          .Name("JobOrderAdmingrid_#=LogisticPlanId#")
+                        .Columns(columns =>
+                        {
+                            columns.Bound(o => o.Status).EditorTemplateName("ApprovalStatusBind").Width(126);
+                            columns.Bound(o => o.Remark).Width(160);
+                            columns.Bound(o => o.CreatedBy).Width(120);
+                            columns.Bound(o => o.DateCreated).Format("{0:d}").Width(120);
+                            columns.Command(command => { command.Edit().Text("Approve"); }).Width(250);
+
+                        }).Events(ev =>
+                        {
+                            ev.DataBound("approveonDataBound");
+                        })
+                .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                  .DataSource(dataSource => dataSource
+                            .Ajax()
+                            .PageSize(5)
+                                                      .Model(model =>
+              {
+                  model.Id(p => p.AdministrativeJobApprovalID);
+                  model.Field(p => p.CreatedBy).Editable(false);
+                  model.Field(p => p.DateCreated).Editable(false);
+              }).Events(ev => ev
+                                                                                    .Error("error_handler(\"JobOrderAdmingrid_#=LogisticPlanId#\")")
+                                                                                    .RequestStart("onRequestStart(\"JobOrderAdmingrid_#=LogisticPlanId#\")")
+                                                                                    .RequestEnd("onRequestEnd(\"JobOrderAdmingrid_#=LogisticPlanId#\")"))
+                                                                                                                       .Create(create => create.Action("Admin_Approve", "JobRequest", new { Id = "#=LogisticPlanId#" }))
+                                                                                                   .Read(read => read.Action("Admin_Read", "JobRequest", new { Id = "#=LogisticPlanId#" }))
+                                                                                                 .Update(update => update.Action("Admin_Approve", "JobRequest", new { Id = "#=LogisticPlanId#" }))
+
+
+                                                      )
+
+                        .ToClientTemplate())
+                </text>
+                );
+
+
+            })
+                                                                                                                                                                                                                                                                                                                                                                                    .ToClientTemplate())
+</script>
+
+
+
+<script type="text/javascript">
+    var IsApproved;
+    var IsSendForApproval;
+    var HeaderStat;
+    var masterId;
+    var FiscalYear;
+    function filterPeriod() {
+        return { Year: $("#GlFiscalYearId").val() }
+    }
+    function filterModel() {
+        return { Type: $("#EquipmentTypeId").val() }
+    }
+
+    function dataBound() {
+        this.expandRow(this.tbody.find("tr.k-master-row").first());
+        var grid = this;
+
+
+        grid.tbody.find("tr[role='row']").each(function () {
+            var masterDataItem = grid.dataItem(this);
+
+            isapproved = masterDataItem.IsOnlineApproved;
+            isSendForApproval = masterDataItem.IsSendForApproval;
+
+            issecondapproved = masterDataItem.IsSecondOnlineApproved;
+            Status = masterDataItem.Status;
+
+            if (masterDataItem.IsSendForApproval == true) {
+                $(this).find(".k-grid-edit").remove();
+                $(this).find(".k-grid-delete").remove();
+            }
+        });
+    }
+
+
+    function onDetailExpandUser(e) {
+        var masterRow = e.masterRow;
+
+        var masterGrid = $("#grid").data("kendoGrid");
+
+        var masterDataItem = masterGrid.dataItem(masterRow);
+        IsApproved = masterDataItem.IsOnlineApproved;
+        IsSendForApproval = masterDataItem.IsSendForApproval;
+        masterId = masterDataItem.JobRequestId;
+        FiscalYear = masterDataItem.GlFiscalYearId;
+    
+        if (masterDataItem.IsSendForApproval == true) {
+
+            $(".k-grid-top", linegridName).hide();
+            $(".k-grid-edit", linegridName).hide();
+            $(".k-grid-delete", linegridName).hide();
+
+            $(".k-grid-top", firstValidationgridName).hide();
+            $(".k-grid-edit", firstValidationgridName).hide();
+            $(".k-grid-delete", firstValidationgridName).hide();
+        }
+        if (masterDataItem.IsOnlineApproved == true) {
+
+
+            $(".k-grid-top", SecondValidationgridName).hide();
+            $(".k-grid-edit", SecondValidationgridName).hide();
+            $(".k-grid-delete", SecondValidationgridName).hide();
+        }
+
+
+
+    }
+    function approveonDataBound(e) {
+        var grid = this;
+
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+            if (IsApproved == true) {
+                $(this).find(".k-grid-edit").remove();
+                $(this).find(".k-grid-delete").remove();
+            }
+
+
+
+        });
+    }
+
+    function lineonDataBound(e) {
+        var grid = this;
+
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+            if (IsSendForApproval == true) {
+                $(this).find(".k-grid-edit").remove();
+                $(this).find(".k-grid-delete").remove();
+            }
+
+
+
+        });
+    }
+</script>
+
+

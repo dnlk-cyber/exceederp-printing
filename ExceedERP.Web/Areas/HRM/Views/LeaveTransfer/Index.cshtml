@@ -1,0 +1,321 @@
+﻿@using System.Collections
+@using System.Security.AccessControl
+@using ExceedERP.Core.Domain.HRM.LeaveManagment
+@using ExceedERP.Core.Domain.HRM.SelfCare
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>@Resources.NavigatorLeave_LeaveTransfer</legend>
+<div class="toolbar">
+    <label class="category-label" for="From">@Resources.HR_LeaveManagment_Leave_From</label>
+    @(Html.Kendo().ComboBox()
+                                                .Placeholder(Resources.HR_LeaveManagment_Leave_From)
+                                               .Name("From")
+
+                                            .DataSource(dataSource =>
+                                            {
+                                                dataSource.Read(read => read.Action("GetPeriod", "Leave", new { area = "HRM" }))
+                                                              .ServerFiltering(false);
+                                            })
+
+                                                      .DataTextField("Name")
+                                                     .DataValueField("GlFiscalYearId")
+                                                   .AutoBind(false)
+                                        // .Events(e => e.Change("Period"))
+                                        .HtmlAttributes(new { style = "width: 300px;" })
+
+    )
+    <label class="category-label" for="To">@Resources.HR_LeaveManagment_LeaveTransfer_To</label>
+    @(Html.Kendo().ComboBox()
+                                    .Name("To")
+                                                    .Placeholder(Resources.HR_LeaveManagment_LeaveTransfer_To)
+                                            .DataTextField("Name")
+                                                                   .DataSource(dataSource =>
+                                                                   {
+                                                                       dataSource.Read(read => read.Action("GetPeriod", "Leave", new { area = "HRM" }))
+                                                                                             .ServerFiltering(false);
+                                                                   })
+                                                            .DataValueField("GlFiscalYearId")
+                            .AutoBind(false)
+                            //   .Events(e => e.Change("ToPeriod"))
+                            .HtmlAttributes(new { style = "width: 300px;" })
+
+    )
+    @if (HttpContext.Current.User.IsInRole("HR_Leave_User"))
+    {
+        @(Html.Kendo().Button()
+                      .Name("btnSave")
+                      .HtmlAttributes(new { type = "button", @class = "k-primary" })
+                              .Events(e => e.Click("Transfer"))
+          .Content("Generate"))
+    }
+</div>
+
+@(Html.Kendo().Grid<LeaveTransfer>()
+          .Name("LeaveTransfergrid")
+      .Columns(columns =>
+      {
+      columns.Bound(c => c.Check).Template(@<text></text>).ClientTemplate("<input type='checkbox' #= Check ? checked='checked':'' # class='chkbx' />")
+                    .HeaderTemplate("<input type='checkbox' id='masterCheckBox' onclick='checkAll(this)'/>").Width(120);
+          columns.Bound(c => c.EmployeeCode).Width(150);
+          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "PersonId", "FullNameWithOutCode").EditorTemplateName("ListOfEmployee").Width(200);
+          columns.ForeignKey(c => c.From, (IEnumerable)ViewData["PeriodList"], "GlFiscalYearId", "Name").EditorTemplateName("GLFPeriod").Width(120);
+          columns.ForeignKey(c => c.To, (IEnumerable)ViewData["PeriodList"], "GlFiscalYearId", "Name").EditorTemplateName("GLFPeriod").Width(120);
+          columns.Bound(c => c.Amount).Width(150);
+          // columns.Bound(c => c.Check).Width(200);
+          //  columns.Bound(c => c.Remark).Width (100);
+          // columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+      })
+      .ToolBar(toolbar =>
+      {
+          if (HttpContext.Current.User.IsInRole("HR_Leave_User"))
+          {
+              toolbar.Save();
+          }
+          if (HttpContext.Current.User.IsInRole("HR_Admin") || HttpContext.Current.User.IsInRole("HR_Leave_Admin"))
+          {
+              toolbar.Excel().Text(Resources.ActionButton_ExportExcel).HtmlAttributes(new { @class = "btn btn-primary btn-xs pull-right" });
+              toolbar.Pdf().Text(Resources.ActionButton_ExportPDF).HtmlAttributes(new { @class = "btn btn-primary btn-xs pull-right" });
+          }
+
+      })
+           .Excel(excel => excel
+                                            .FileName(Resources.NavigatorLeave_LeaveTransfer + ".xlsx")
+                               .Filterable(true)
+                                    .AllPages(true)
+                                                    .ProxyURL(Url.Action("Excel_Export_Save", "LeaveTransfer"))
+                            )
+                                 .Pdf(pdf => pdf
+                                .AllPages()
+                                                .FileName(Resources.NavigatorLeave_LeaveTransfer + ".pdf")
+                                                    .ProxyURL(Url.Action("Pdf_Export_Save", "LeaveTransfer"))
+                            )
+          .Editable(editable => editable.Mode(GridEditMode.InCell))
+       .Scrollable(h => h.Height(500))
+             .Groupable()
+             //.Sortable(sortable =>
+             //{
+             //    sortable.SortMode(GridSortMode.SingleColumn);
+             //})
+             .Filterable()
+             .Pageable(pageable => pageable
+                                        .Input(true)
+                                        .Numeric(false)
+                                        .Refresh(true)
+                                        .PageSizes(true)
+                                        .ButtonCount(5))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+              .Batch(true)
+                  .Events(events =>
+                  {
+                      events.Error("error_handler(\"LeaveTransfergrid\")");
+                      events.RequestStart("onRequestStart(\"LeaveTransfergrid\")");
+                      events.RequestEnd("onRequestEnd(\"LeaveTransfergrid\")");
+                  })
+
+                      .Model(model =>
+                      {
+                          model.Id(p => p.LeaveTransferId);
+                          model.Field(p => p.EmployeeCode).Editable(false);
+                          model.Field(p => p.From).Editable(false); model.Field(p => p.To).Editable(false);
+                      })
+          .Read(read => read.Action("LeaveTransfer_Read", "LeaveTransfer"))
+                      .Create(create => create.Action("Editing_Create", "LeaveTransfer"))
+                      .Update(update => update.Action("Editing_Create", "LeaveTransfer"))
+          .Destroy(destroy => destroy.Action("LeaveTransfer_Destroy", "LeaveTransfer"))
+                  )//.ClientDetailTemplateId("template")
+)
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                                  .Name("tabstrip_#=LeaveTransferId#")
+          .SelectedIndex(0)
+          .Items(items =>
+          {
+          items.Add().Text(Resources.HR_RequestStatus).Content(
+            @<text>
+                @* <legend>Status</legend>*@
+
+                @(Html.Kendo().Grid<RequestesStatus>()
+                                          .Name("RequestesStatusgrid_#=LeaveTransferId#")
+                          .Columns(columns =>
+                          {
+                              //columns.Bound(c => c.RequestId);
+                              columns.Bound(c => c.DateReqStatAm);
+                              columns.Bound(c => c.Status).EditorTemplateName("Enum");
+                              columns.Bound(c => c.Remark);
+                              //columns.Command(command =>
+                              //{
+                              //    //command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                              //   command.Destroy().Text(Resources.ActionButton_Cancel);//
+                              //}).Width(180);
+                          })
+                          .ToolBar(toolbar =>
+                          {
+                              toolbar.Custom().Action("SendForApproval", "LeaveTransfer").Text(Resources.HR_Send_For_Approval);
+                          })
+                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                          .Scrollable()
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+                                      .Events(events =>
+                                      {
+                                          events.Error("error_handler(\"RequestesStatusgrid_#=LeaveTransferId#\")");
+                                          events.RequestStart("onRequestStart(\"RequestesStatusgrid_#=LeaveTransferId#\")");
+                                          events.RequestEnd("onRequestEnd(\"RequestesStatusgrid_#=LeaveTransferId#\")");
+                                      })
+
+           .Model(model =>
+           {
+               model.Id(p => p.RequestStatusId);
+               model.Field(p => p.Date).Editable(false).DefaultValue(DateTime.Today);
+           })
+                                                  .Read(read => read.Action("RequestesStatus_Read", "RequestesStatus", new { id = "#=LeaveTransferId#", referenceType = "LeaveTransfer" }))
+                                                  .Create(create => create.Action("RequestesStatus_Create", "RequestesStatus", new { id = "#=LeaveTransferId#", referenceType2 = "LeaveTransfer" }))
+                                                  .Update(update => update.Action("RequestesStatus_Update", "RequestesStatus"))
+                                                  .Destroy(destroy => destroy.Action("RequestesStatus_Destroy", "RequestesStatus"))
+                          ).ToClientTemplate()
+                )
+
+
+            </text>
+                  );
+              //*****************************************************************************************************//
+
+          }).ToClientTemplate())
+</script>
+<script>
+    function Period() {
+
+
+        var value = this.value(),
+            grid = $("#LeaveTransfergrid").data("kendoGrid");
+
+        if (value) {
+            grid.dataSource.filter({ field: "From", operator: "eq", value: parseInt(value) });
+        } else {
+            grid.dataSource.filter({});
+        }
+    }
+</script>
+<script>
+    function ToPeriod() {
+
+
+        var value = this.value(),
+            grid = $("#LeaveTransfergrid").data("kendoGrid");
+
+        if (value) {
+            grid.dataSource.filter({ field: "To", operator: "eq", value: parseInt(value) });
+        } else {
+            grid.dataSource.filter({});
+        }
+    }
+</script>
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 700px;
+    }
+
+    .Employee-photo {
+        display: inline-block;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background-size: 32px 35px;
+        background-position: center center;
+        vertical-align: middle;
+        line-height: 32px;
+        box-shadow: inset 0 0 1px #999, inset 0 0 10px rgba(0,0,0,.2);
+        margin-left: 5px;
+    }
+
+    .Employee-name {
+        display: inline-block;
+        vertical-align: middle;
+        line-height: 32px;
+        padding-left: 3px;
+    }
+</style>
+
+
+<script>
+    //function error_handler(e) {
+    //    if (e.errors) {
+    //        var message = "Errors:\n";
+    //        $.each(e.errors, function(key, value) {
+    //            if ('errors' in value) {
+    //                $.each(value.errors, function() {
+    //                    message += this + "\n";
+    //                });
+    //            }
+    //        });
+    //        alert(message);
+
+    //    }
+
+    //}
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+</script>
+<script type="text/javascript">
+    $(function () {
+        $('#LeaveTransfergrid').on('click', '.chkbx', function () {
+            var checked = $(this).is(':checked');
+            var grid = $('#LeaveTransfergrid').data().kendoGrid;
+            var dataItem = grid.dataItem($(this).closest('tr'));
+            dataItem.set('Check', checked);
+        })
+    })
+
+    function checkAll(ele) {
+        var state = $(ele).is(':checked');
+        var grid = $('#LeaveTransfergrid').data().kendoGrid;
+        $.each(grid.dataSource.view(), function () {
+            if (this['Check'] != state)
+                this.dirty = true;
+            this['Check'] = state;
+        });
+        grid.refresh();
+    }
+
+</script>
+<script>
+	function Transfer() {
+		var from = $("#From").data("kendoComboBox");
+		var to = $("#To").data("kendoComboBox");
+		try {
+
+			var period = from.value();
+			var toPeriod = to.value();
+			//$("#run").on("click", function (eve) {
+			$.ajax({
+				url: '@Url.Action("TransferLeave", "LeaveTransfer")',
+				//contentType: "application/json; charset=utf-8",
+				data: { period: period ,toPeriod:toPeriod},
+				type: 'POST',
+				cache: false,
+				success: function (result) {
+					r = result;
+					$("#LeaveTransfergrid").data("kendoGrid").dataSource.read();
+					$("#LeaveTransfergrid").data("kendoGrid").refresh();
+				}
+
+
+			});
+
+
+
+		} catch (e) {
+			alert("Please select Period!!");
+		}
+		//});
+	}
+</script>
+
+
+

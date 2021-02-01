@@ -1,0 +1,412 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.Inventory
+@using ExceedERP.Core.Domain.Procurement.PurchaseOrder
+@using Kendo.Mvc.UI
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Local Purchase Status </legend>
+@(Html.Kendo().Grid<PurchaseFollowUp>()
+      .Name("grid")
+      .Columns(columns =>
+          {
+              columns.Bound(c => c.PurchaseFollowUpID).Title("No.").Width(90);
+              columns.Bound(c => c.PurchaseRequisitionID).Title("PR No.").EditorTemplateName("StoreRequisitionSelector").Width(90);
+              columns.Bound(c => c.ReferenceNo).Title("Reference").Width(140);
+              //columns.ForeignKey(p => p.EmployeeId, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Title("Store Keeper").Width(150).EditorTemplateName("EmployeeSelector");
+              //columns.ForeignKey(p => p.OrgStructureId, (IEnumerable)ViewData["costCenters"], "Code", "Name").Title("Work Unit").Width(160).EditorTemplateName("WorkUnitCostCenterSelector");
+              columns.ForeignKey(p => p.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("BranchSelector").Width(170);
+              columns.ForeignKey(p => p.ProcurementOfficer, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Title("Purchaser").Width(170).EditorTemplateName("EmployeeSelector");
+              columns.Bound(c => c.PurchaseCategory).EditorTemplateName("PurchaseCategory").Width(130); 
+              columns.Bound(c => c.ProcurementMethod).EditorTemplateName("ProcurementMethod").Width(130);
+              columns.Bound(c => c.PurchaseStatus).Width(110);
+             
+          })
+             .Events(ev => ev.DetailExpand("detailExpandPurchase"))
+             .Editable(editable => editable.Mode(GridEditMode.InLine))
+             .HtmlAttributes(new { style = "height: 550px;" })
+            .Pageable(pageable => pageable
+                        .Input(true)
+                        .Numeric(false)
+                        .Refresh(true)
+                        .PageSizes(true)
+                        .ButtonCount(20))
+            .Scrollable()
+            .Sortable()
+            .Filterable()
+            .Groupable()
+
+
+               .Events(x => x.DataBound("onDataBoundMasterPurchase"))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+              .Sort(sort => sort.Add("PurchaseFollowUpID").Descending())
+          .Events(ev => ev
+              .Error("error_handler(\"grid\")")
+              .RequestStart("onRequestStart(\"grid\")")
+              .RequestEnd("onRequestEnd(\"grid\")"))
+              .Model(model =>
+                    {
+                        model.Id(p => p.PurchaseFollowUpID);
+                        model.Field(p => p.PurchaseFollowUpID).Editable(false);
+                        model.Field(p => p.PurchaseRequisitionID).Editable(false);
+                        model.Field(p => p.OrgStructureId).Editable(false);
+                        model.Field(p => p.EmployeeId).Editable(false);
+                        model.Field(p => p.BranchId).Editable(false);
+                        model.Field(p => p.ReferenceNo).Editable(false);
+                        model.Field(p => p.PurchaseStatus).Editable(false);
+                    })
+          .Read(read => read.Action("PurchaseFollowUps_Read", "PurchaseFollowUp"))
+          ).Resizable(resizable => resizable.Columns(true))
+          .ClientDetailTemplateId("purchaserequsitiontemplate")
+)
+
+<script id="purchaserequsitiontemplate" type="text/Kendo-tmpl">
+    @(Html.Kendo().TabStrip().Name("tabStrip_#=PurchaseFollowUpID#").SelectedIndex(0).Items(itemn =>
+      {
+          itemn.Add().Text("Detail").Content(
+            @<text>
+                <hr />
+              
+                <div>
+                    <hr>
+                    <dl class="dl-horizontal">
+
+                        <dt>
+                            Purchase Requisition Number
+                        </dt>
+                        <dd>
+                            #= PurchaseRequisitionID #
+                        </dd>
+                        <dt>
+                            Requester
+                        </dt>
+                        <dd>
+                            #= EmployeeId #
+                        </dd>
+
+                        <dt>
+                            Procurement Officer
+                        </dt>
+                        <dd>
+                            #= ProcurementOfficer #
+
+                        </dd>
+                        <dt>
+                            Request Date
+                        </dt>
+                        <dd>
+
+                            #=kendo.toString(kendo.parseDate(RequestDate), 'dd/MM/yyyy') #
+
+
+                        </dd>
+                      
+                        <dt>
+                            CreatedOn
+                        </dt>
+                        <dd>
+                            #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+                        </dd>
+                        <dt>
+                            CreatedBy
+                        </dt>
+                        <dd>
+                            #= CreatedBy #
+
+                        </dd>
+                        <dt>
+                            Modified By
+                        </dt>
+                        <dd>
+                            #= ModifiedBy #s
+                        </dd>
+                        <dt>
+                            Modified Date
+                        </dt>
+                        <dd>
+                            #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+                        </dd>
+                    </dl>
+
+                </div>
+
+
+
+            </text>);
+        
+          itemn.Add().Text("Items").Content(
+            @<text>
+                @(Html.Kendo().Grid<PurchaseFollowUpItems>()
+                      .Name("PurchaseFollowUpItems_#=PurchaseFollowUpID#")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.CatCode).Width(170);
+          columns.Bound(c => c.ItmCode).Width(170); 
+          columns.Bound(c => c.PartNo).Width(120);
+          columns.Bound(c => c.UoM).Width(100);
+          columns.Bound(c => c.Quantity).Width(100);
+          columns.Bound(c => c.ItemSpecification).Width(150);
+          
+      })
+          
+             
+                      .Events(x => x.DataBound("onDataBoundPurchaseLines"))
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Events(ev => ev
+              .Error("error_handler(\"PurchaseFollowUpItems_#=PurchaseFollowUpID#\")")
+              .RequestStart("onRequestStart(\"PurchaseFollowUpItems_#=PurchaseFollowUpID#\")")
+              .RequestEnd("onRequestEnd(\"PurchaseFollowUpItems_#=PurchaseFollowUpID#\")"))
+          .Model(model =>
+              {
+                  model.Id(p => p.PurchaseFollowUpItemsID);
+                  model.Field(p => p.CatCode).Editable(false);
+                  model.Field(p => p.ItmCode).Editable(false);
+                  model.Field(p => p.UoM).Editable(false);
+                  model.Field(p => p.PartNo).Editable(false);
+                  model.Field(p => p.ItemSpecification).Editable(false);
+
+              })
+                .Read(read => read.Action("PurchaseFollowUpItems_Read", "PurchaseFollowUpItems", new { id = "#=PurchaseFollowUpID#" }))
+                        .Update(update => update.Action("PurchaseFollowUpItems_Update", "PurchaseFollowUpItems", new { id = "#=PurchaseFollowUpID#" }))
+      ).ToClientTemplate()
+                )
+
+
+            </text>);
+
+          @*itemn.Add().Text("Service").Content(
+            @<text>
+                @(Html.Kendo().Grid<PurchaseFollowUpServiceItem>()
+                 .Name("PurchaseFollowUpServiceItem_#=PurchaseFollowUpID#")
+      .Columns(columns =>
+      {
+          columns.ForeignKey(p => p.ServiceCategoryCode, (IEnumerable)ViewData["ServiceCategory"], "ServiceCategoryCode", "Name").Title("Category").EditorTemplateName("ServiceCategorySelector").Width(200);
+          columns.ForeignKey(p => p.ServiceItemCode, (IEnumerable)ViewData["ServiceItems"], "ServiceItemCode", "Name").Title("Service").EditorTemplateName("ServiceItemSelector").Width(200);
+          columns.Bound(c => c.Quantity).Width(100);
+          columns.Bound(c => c.ItemSpecification).Title("Description").Width(150);
+          
+      })   
+              
+              .Events(x => x.DataBound("onDataBoundLines"))
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+
+        .Events(ev => ev
+                            .Error("error_handler(\"PurchaseFollowUpServiceItem_#=PurchaseFollowUpID#\")")
+                            .RequestStart("onRequestStart(\"PurchaseFollowUpServiceItem_#=PurchaseFollowUpID#\")")
+                            .RequestEnd("onRequestEnd(\"PurchaseFollowUpServiceItem_#=PurchaseFollowUpID#\")"))
+          .Model(model =>
+              {
+                  model.Id(p => p.PurchaseFollowUpServiceItemID);
+                  model.Field(p => p.ServiceCategoryCode).Editable(false);
+                  model.Field(p => p.ServiceItemCode).Editable(false);
+                  model.Field(p => p.Quantity).Editable(false);
+                  model.Field(p => p.ItemSpecification).Editable(false);
+              })
+                                    .Read(read => read.Action("PurchaseFollowUpServiceItems_Read", "PurchaseFollowUpServiceItem", new { id = "#=PurchaseFollowUpID#" }))
+                                         .Update(update => update.Action("PurchaseFollowUpServiceItems_Update", "PurchaseFollowUpServiceItem"))
+                        ).ToClientTemplate()
+                )
+
+
+            </text>);*@
+
+          itemn.Add().Text("Manual Status").Content(
+            @<text>
+                @(Html.Kendo().Grid<PurchaseFollowUpStatus>()
+                 .Name("PurchaseFollowUpStatus_#=PurchaseFollowUpID#")
+              .Columns(columns =>
+              {
+                  columns.Bound(c => c.Date).Width(130);
+                  columns.Bound(c => c.Description).Width(250);
+                  columns.Bound(c => c.Remark).Width(150);
+                  columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+              })
+                        .ToolBar(toolbar =>
+                          {
+                              toolbar.Create();
+                          })
+                      .Events(x => x.DataBound("onDataBoundPurchaseLines"))
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+
+          .Events(ev => ev
+                      .Error("error_handler(\"PurchaseFollowUpStatus_#=PurchaseFollowUpID#\")")
+                      .RequestStart("onRequestStart(\"PurchaseFollowUpStatus_#=PurchaseFollowUpID#\")")
+                      .RequestEnd("onRequestEnd(\"PurchaseFollowUpStatus_#=PurchaseFollowUpID#\")"))
+          .Model(model =>
+              {
+                  model.Id(p => p.PurchaseFollowUpStatusId);
+                  model.Field(p => p.CreatedBy).Editable(false);
+                  model.Field(p => p.DateCreated).Editable(false);
+                  model.Field(p => p.ModifiedBy).Editable(false);
+                  model.Field(p => p.LastModified).Editable(false);
+
+
+              })
+                                  .Read(read => read.Action("PurchaseFollowUpstatus_Read", "PurchaseFollowUpstatus", new { id = "#=PurchaseFollowUpID#" }))
+                                  .Create(create => create.Action("PurchaseFollowUpstatus_Create", "PurchaseFollowUpstatus", new { id = "#=PurchaseFollowUpID#" }))
+                                  .Update(update => update.Action("PurchaseFollowUpstatus_Update", "PurchaseFollowUpstatus"))
+                                  .Destroy(destroy => destroy.Action("PurchaseFollowUpstatus_Destroy", "PurchaseFollowUpstatus"))
+      ).ToClientTemplate()
+                )
+
+
+            </text>);
+
+          itemn.Add().Text("System Status").Content(
+            @<text>
+                @(Html.Kendo().Grid<PurchaseFollowUpSystemStatus>()
+                .Name("PurchaseFollowUpSystemStatus_#=PurchaseFollowUpID#")
+              .Columns(columns =>
+              {
+                  columns.Bound(c => c.Date).Width(150).Format("{0:dd/MM/yyyy HH:mm:ss}"); 
+                  columns.Bound(c => c.Description).Width(300);
+                  columns.Bound(c => c.User).Width(100);
+              })
+
+                      .Events(x => x.DataBound("onDataBoundPurchaseLines"))
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+
+          .Events(ev => ev
+                      .Error("error_handler(\"PurchaseFollowUpSystemStatus_#=PurchaseFollowUpID#\")")
+                      .RequestStart("onRequestStart(\"PurchaseFollowUpSystemStatus_#=PurchaseFollowUpID#\")")
+                      .RequestEnd("onRequestEnd(\"PurchaseFollowUpSystemStatus_#=PurchaseFollowUpID#\")"))
+          .Model(model =>
+              {
+                  model.Id(p => p.PurchaseFollowUpSystemStatusId);
+
+              })
+                .Read(read => read.Action("PurchaseFollowUpSystemStatus_Read", "PurchaseFollowUpstatus", new { id = "#=PurchaseFollowUpID#" }))
+      ).ToClientTemplate()
+                )
+
+
+            </text>);
+
+
+
+
+      }).ToClientTemplate())
+</script>
+
+<script>
+
+    var masterDataItem;
+    var masterRow;
+    var masterGrid;
+
+    var codeid;
+    var isapproved;
+    var issecondapproved;
+    var status;
+
+    function detailExpandPurchase(e) {
+
+        masterRow = e.masterRow;
+        masterGrid = $("#grid").data("kendoGrid");
+        masterDataItem = masterGrid.dataItem(masterRow);
+        codeid = masterDataItem.StoreRequisitionID;
+        isapproved = masterDataItem.IsOnlineApproved;
+        issecondapproved = masterDataItem.IsSecondOnlineApproved;
+        status = masterDataItem.PurchaseStatus;
+
+    }
+    function onDataBoundMasterPurchase() {
+        //this.expandRow(this.tbody.find("tr.k-master-row").first());
+
+        //approved
+        var grid = $("#grid").data("kendoGrid");
+        var gridData = grid.dataSource.view();
+
+        for (var i = 0; i < gridData.length; i++) {
+            var currentUid = gridData[i].uid;
+            var currenRow = grid.table.find("tr[data-uid='" + currentUid + "']");
+            var deleteButton = $(currenRow).find(".k-grid-delete");
+            deleteButton.hide();
+            if (gridData[i].IsSecondOnlineApproved) {
+                var editButton = $(currenRow).find(".k-grid-edit");
+                editButton.hide();
+            }
+        }
+    }
+    function onDataBoundPurchaseLines(e) {
+
+        var detailGrid = "#" + e.sender.element[0].id;
+        if (status === "2")
+            {
+                $(".k-grid-add", detailGrid).hide();
+                $(".k-grid-delete", detailGrid).hide();
+                $(".k-grid-edit", detailGrid).hide();
+            }
+       
+    }
+    function onDataBoundPurchaseValidation(e) {
+        var detailGrid = "#" + e.sender.element[0].id;
+        $(".k-grid-delete", detailGrid).hide();
+        if (issecondapproved) {
+            $(".k-grid-add", detailGrid).hide();
+            $(".k-grid-edit", detailGrid).hide();
+        }
+
+        this.table.find(".k-grid-edit").hide();
+    }
+
+    function onItemEdit(e) {
+
+        if (e.model.isNew() === false) {
+            $("#ItemCategoryCode").attr("readonly", true);
+            $("#ItemCode").attr("readonly", true);
+            $("#PartNo").attr("readonly", true);
+            $("#Quantity").attr("readonly", true);
+
+            var dropdownlistCat = $("#ItemCategoryCode").data("kendoDropDownList");
+            dropdownlistCat.enable(false);
+
+           
+        }
+    }
+
+    
+    function OnIndexCall(elem) {
+
+        var a = codeid;
+        $(elem).attr('href', $(elem).attr('href') + '?id=' + a);
+
+
+    }
+    function autocompleteValue(e) {
+        var DataItem = this.dataItem(e.item.index());
+        var code = DataItem.code;
+        $("#ProcurementOfficer").val(code);
+
+
+    }
+</script>
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 400px;
+    }
+
+        div.k-edit-form-container div.editor-field textarea, input.k-textbox {
+            width: auto;
+        }
+
+    div.k-popup-edit-form.k-window-content.k-content {
+    }
+
+    div.k-content {
+        height: auto;
+    }
+</style>

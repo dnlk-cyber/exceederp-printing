@@ -1,0 +1,27 @@
+﻿@using ExceedERP.Core.Domain.Finance.GL.Dynamic
+
+@(Html.Kendo().Grid<GLCrossValidationRuleElement>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.SegmentType);
+          columns.Bound(c => c.From);
+          columns.Bound(c => c.To);
+          columns.Bound(c => c.DateCreated);
+          columns.Bound(c => c.LastModified);
+          columns.Bound(c => c.CreatedBy);
+          columns.Bound(c => c.ModifiedBy);
+          columns.Command(command => { command.Edit(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.GLCrossValidationRuleElementId))
+          .Read(read => read.Action("GlCrossValidationRuleElements_Read", "GlCrossValidationRuleElement"))
+          .Create(create => create.Action("GlCrossValidationRuleElements_Create", "GlCrossValidationRuleElement"))
+          .Update(update => update.Action("GlCrossValidationRuleElements_Update", "GlCrossValidationRuleElement"))
+      ))

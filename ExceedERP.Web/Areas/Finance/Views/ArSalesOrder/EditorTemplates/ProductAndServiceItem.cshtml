@@ -1,0 +1,18 @@
+﻿@(Html.Kendo().DropDownListFor(m => m)
+                  .ValuePrimitive(true)
+                  .OptionLabel("Select Item...")
+                          .DataTextField("Name")
+                            .DataValueField("Code")
+                          .Filter("contains")
+                                .DataSource(dataSource =>
+                                {
+                                    dataSource.Read(read => read.Action("GetProductsAndServiceSubItem", "FinanceDataProvider", new { area = "Finance" }).Data("filterProductItems"))
+                                    .ServerFiltering(true);
+                                })
+                              .Events(e =>
+                              {
+                                  e.Select("onSelectProductItem");
+                              })
+                            .CascadeFrom("ItemName")
+)
+@Html.ValidationMessageFor(m => m)

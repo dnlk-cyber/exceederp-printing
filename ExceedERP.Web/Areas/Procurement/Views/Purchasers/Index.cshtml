@@ -1,0 +1,67 @@
+﻿@using System.Collections
+<legend>Purchasers</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Procurement.Settings.Purchaser>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.ForeignKey(p => p.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("BranchSelector").Width(150);
+          columns.ForeignKey(p => p.EmployeeId, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Title("Purchaser").Width(150).EditorTemplateName("EmployeeSelector");
+          columns.Bound(c => c.AccountCode).Width(200).EditorTemplateName("AccountCode");
+          columns.Bound(c => c.Enable).Width(90).Title("Enable").ClientTemplate(
+              "<input type='checkbox' disabled = 'true' value='#= Enable #' " +
+              "# if (Enable) { #" +
+              "checked='checked'" +
+              "# } #" +
+              "/>"
+              );
+       
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(280);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .HtmlAttributes(new { style = "height: 550px;" })
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(5))
+
+      .Scrollable()
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Filterable()
+      .Groupable()
+      .Events(events => events
+          .DataBound("onDataBoundMaster"))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Events(ev => ev
+              .Error("error_handler(\"grid\")")
+              .RequestStart("onRequestStart(\"grid\")")
+              .RequestEnd("onRequestEnd(\"grid\")"))
+          .Model(
+              model =>
+              {
+                  model.Id(p => p.PurchaserId);
+                  model.Field(p => p.CreatedBy).Editable(false);
+                  model.Field(p => p.ModifiedBy).Editable(false);
+                  model.Field(p => p.LastModified).Editable(false);
+                  model.Field(p => p.DateCreated).Editable(false);
+
+              })
+             
+          .Read(read => read.Action("Purchasers_Read", "Purchasers"))
+          .Create(create => create.Action("Purchasers_Create", "Purchasers"))
+          .Update(update => update.Action("Purchasers_Update", "Purchasers"))
+          .Destroy(destroy => destroy.Action("Purchasers_Destroy", "Purchasers"))
+      ))

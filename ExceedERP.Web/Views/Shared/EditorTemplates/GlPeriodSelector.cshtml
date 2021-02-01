@@ -1,0 +1,15 @@
+﻿@(Html.Kendo().DropDownListFor(m => m)
+      .ValuePrimitive(true)
+      .OptionLabel("Select Period")
+      .DataTextField("Name")
+      .DataValueField("Code")
+      .Filter("contains")
+      .DataSource(dataSource =>
+      {
+          dataSource.Read(read => read.Action("GetGlPeriod", "FinanceDataProvider", new { area = "Finance" }).Data("filterGlPeriods"))
+              .ServerFiltering(true);
+      })
+          .CascadeFrom("GlFiscalYearId")
+                             
+      )
+@Html.ValidationMessageFor(m => m)

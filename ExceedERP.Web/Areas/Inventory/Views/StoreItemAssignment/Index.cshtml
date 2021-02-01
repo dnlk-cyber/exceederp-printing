@@ -1,0 +1,460 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.Inventory
+@using Kendo.Mvc.UI
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Store Items </legend>
+
+@(Html.Kendo().Grid<StoreItemAssignment>()
+                                             .Name("grid")
+                                              .Columns(columns =>
+                                              {
+                                                  columns.ForeignKey(p => p.StoreCode, (IEnumerable)ViewData["Stores"], "StoreCode", "Name").Title("Store").EditorTemplateName("StoresSelector").Width(130);
+                                                  columns.ForeignKey(p => p.ItemCategoryCode, (IEnumerable)ViewData["Category"], "ItemCategoryCode", "Name").Title("Category").EditorTemplateName("ItemCategorySelector").Width(150);
+                                      //columns.ForeignKey(p => p.ItemCode, (IEnumerable) ViewData["Items"], "ItemCode", "Name").Title("Item Name").EditorTemplateName("ItemSelector").Width(200);
+                                      columns.Bound(c => c.ItemCode).Width(110).EditorTemplateName("ItemSelector");
+                                                  columns.Bound(c => c.ItemName).Width(150);
+                                                  columns.Bound(c => c.ItemLocation).Width(100);
+                                                  columns.Bound(c => c.Balance).Width(100);
+                                                  columns.Bound(c => c.AvgPrice).Width(100);
+                                                  columns.Bound(c => c.MinPoint).Width(100).Title("Min. Point");
+                                                  columns.Bound(c => c.MaxPoint).Width(100).Title("Max. Point");
+                                                  columns.Bound(c => c.ReOrderPoint).Width(100);
+                                                  columns.Bound(c => c.SafetyPoint).Width(100);
+                                                  columns.Bound(c => c.DangerPoint).Width(100);
+                                                  columns.Bound(c => c.Remark).Width(100);
+                                                  columns.Command(
+                                                      command =>
+                                                      {
+                                                          command.Edit();
+
+
+                                              // command.Destroy();
+                                          }).Width(180);
+
+                                              }).Filterable()
+                                              .ToolBar(toolbar =>
+                                              {
+                                                  toolbar.Template(@<text>
+                                                    <div class="row">
+                                                        <div class="col-md-4">
+                                                            <b>Select Store</b>
+
+                                                            @(Html.Kendo().DropDownList()
+                                                                                                                                                          .OptionLabel("Select Store")
+                                                                                                                                                          .Name("storeSelector")
+                                                                                                                                                          .AutoBind(false)
+                                                                                                                                                          .DataValueField("StoreCode")
+                                                                                                                                                          .DataTextField("Name")
+                                                                                                                                                          .Filter("Contains")
+                                                                                                                                                          .HtmlAttributes(new { style = "width: 200px;" })
+                                                                                                                                                          .DataSource(dataSource =>
+                                                                                                                                                          {
+                                                                                                                            dataSource.Read(read => read.Action("GetAllStores", "DataProvider", new { area = "Inventory" }))
+                                                .ServerFiltering(false);
+                                                                                                                        }))
+
+
+
+                                                            @Html.Kendo().Button().Name("filterStore").HtmlAttributes(new { type = "button", @class = "k-primary" }).Content("Filter").Events(ev => ev.Click("filterClicked"))
+                                                        </div>
+                                                        <div class="col-md-6 pull-right">
+                                                            @(Html.Kendo().CheckBox()
+                                                                                                                .Name("checkDanger")
+                                                                                                                .Label("Danger")
+                                                                                                                .HtmlAttributes(new { onchange = "isDanger(this)", @style = "border:2px dotted #00f;display:block;background:#ff0000;" })
+                                                            )
+
+                                                            @(Html.Kendo().CheckBox()
+                                                                                                            .Name("checkSafety")
+                                                                                                            .Label("Safety")
+                                                                                                            .HtmlAttributes(new { onchange = "isSafety(this)" })
+                                                            )
+                                                            @(Html.Kendo().CheckBox()
+                                                                                                            .Name("checkReorder")
+                                                                                                            .Label("Reorder")
+                                                                                                            .HtmlAttributes(new { onchange = "isReorder(this)" })
+                                                            )
+
+                                                            @(Html.Kendo().CheckBox()
+                                                                                                            .Name("checkMin")
+                                                                                                            .Label("Min")
+                                                                                                            .HtmlAttributes(new { onchange = "isMin(this)" })
+                                                            )
+
+                                                            @(Html.Kendo().CheckBox()
+                                                                                                            .Name("checkMax")
+                                                                                                            .Label("Max")
+                                                                                                            .HtmlAttributes(new { onchange = "isMax(this)" })
+                                                            )
+
+                                                        </div>
+                                                    </div>
+                                                </text>);
+
+
+
+                                                    })
+                              .Editable(editable => editable.Mode(GridEditMode.InLine))
+                            .HtmlAttributes(new { style = "height: 450px;" })
+                            .Pageable(pageable => pageable
+                                .Input(true)
+                                .Numeric(false)
+                                .Refresh(true)
+                                .PageSizes(true)
+                                .ButtonCount(10))
+                            .Selectable()
+                            .Scrollable()
+                            .Selectable(selectable =>
+                            {
+                                selectable.Mode(GridSelectionMode.Single);
+                                selectable.Type(GridSelectionType.Row);
+                            })
+                            .Sortable(sortable =>
+                            {
+                                sortable.SortMode(GridSortMode.SingleColumn);
+                            })
+                            .Filterable()
+                              .Events(x => x.DataBound("onDataBoundItemGrid"))
+
+                              .DataSource(dataSource => dataSource
+                                  .Ajax()
+                                  .Model(model =>
+                                  {
+                                      model.Id(p => p.StoreItemAssignmentID);
+                                      model.Field(p => p.StoreItemAssignmentID).Editable(false);
+                                      model.Field(p => p.StoreCode).Editable(false);
+                                      model.Field(p => p.ItemCategoryCode).Editable(false);
+                                      model.Field(p => p.ItemCode).Editable(false);
+                                      model.Field(p => p.ItemName).Editable(false);
+                                      model.Field(p => p.Balance).Editable(false);
+                                      model.Field(p => p.AvgPrice).Editable(false);
+                                      model.Field(p => p.BegAvgPrice).Editable(false);
+                                      model.Field(p => p.BegBalance).Editable(false);
+                                      model.Field(p => p.Type).Editable(false);
+
+                                      model.Field(p => p.DateCreated).Editable(false);
+                                      model.Field(p => p.CreatedBy).Editable(false);
+                                      model.Field(p => p.LastModified).Editable(false);
+                                      model.Field(p => p.ModifiedBy).Editable(false);
+                                  })
+                                  .Events(ev => ev
+                                      .Error("error_handler(\"grid\")")
+                                      .RequestStart("onRequestStart(\"grid\")")
+                                      .RequestEnd("onRequestEnd(\"grid\")"))
+                                  .Read(read => read.Action("StoreItemAssignments_Read", "StoreItemAssignment").Data("passSearchData"))
+                                  .Create(create => create.Action("StoreItemAssignments_Create", "StoreItemAssignment"))
+                                  .Update(update => update.Action("StoreItemAssignments_Update", "StoreItemAssignment"))
+                                  .Destroy(destroy => destroy.Action("StoreItemAssignments_Destroy", "StoreItemAssignment"))
+                              ).Events(events => events.Change("change")))
+
+
+
+
+<div id="item_code"><h5>BinCard Records </h5></div>
+
+@(Html.Kendo().Grid<BinCardLine>()
+                                                    .Name("BinCardLineGrid")
+                                                    .Columns(columns =>
+                                                    {
+                                                        columns.Bound(c => c.BinCardLineID).Width(60).Title("ID");
+                                                        columns.Bound(c => c.Date).Width(120);
+                                                        columns.Bound(c => c.ReferenceDoc).Width(130);
+                                                        columns.Bound(c => c.Reference).Width(100);
+                                                        columns.Bound(c => c.ReceivedQTY).Width(90);
+                                                        columns.Bound(c => c.ReceivedUPrice).Width(90);
+                                                        columns.Bound(c => c.ReceivedTPrice).Width(90);
+                                                        columns.Bound(c => c.IssuedQTY).Width(90);
+                                                        columns.Bound(c => c.IssuedUPrice).Width(90);
+                                                        columns.Bound(c => c.IssuedTPrice).Width(90);
+                                                        columns.Bound(c => c.BalanceUPrice).Width(90);
+                                                        columns.Bound(c => c.BalanceQTY).Width(90);
+                                                        columns.Bound(c => c.BalanceTPrice).Width(90);
+                                                        columns.Command(command =>
+                                                        {
+                                                            if (HttpContext.Current.User.IsInRole("Property_Bincard"))
+                                                            {
+                                                                command.Edit();
+
+                                                                command.Custom("Recalculate").Click("RecalculateTransaction");
+                                                            }
+
+                                                        }).Width(280);
+                                                    })
+
+
+                                                .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                              .HtmlAttributes(new { style = "height: 450px;" })
+                                              .Pageable(pageable => pageable
+                                                  .Input(true)
+                                                  .Numeric(false)
+                                                  .Refresh(true)
+                                                  .PageSizes(true)
+                                                  .ButtonCount(10))
+                                              .Selectable()
+                                              .Scrollable()
+                                              .Selectable(selectable =>
+                                              {
+                                                  selectable.Mode(GridSelectionMode.Single);
+                                                  selectable.Type(GridSelectionType.Row);
+                                              })
+                                              .Sortable(sortable =>
+                                              {
+                                                  sortable.SortMode(GridSortMode.SingleColumn);
+                                              })
+                                              .Filterable()
+                                              .AutoBind(false)//very important
+                                                .DataSource(dataSource => dataSource
+                                                    .Ajax()
+                                                     .Sort(sort => 
+                                                     { sort.Add("Date").Ascending();
+                                                       sort.Add("BinCardLineID").Ascending();
+                                                     })
+                                                    .Events(ev => ev
+                                                        .Error("error_handler(\"BinCardLineGrid\")")
+                                                        .RequestStart("onRequestStart(\"BinCardLineGrid\")")
+                                                        .RequestEnd("onRequestEnd(\"BinCardLineGrid\")"))
+                                                    .Model(model =>
+                                                    {
+                                                        model.Id(p => p.BinCardLineID);
+                                                        model.Field(p => p.BinCardLineID).Editable(false);
+                                                        // model.Field(p => p.Date).Editable(false);
+                                                        model.Field(p => p.ReferenceDoc).Editable(false);
+                                                        // model.Field(p => p.ReceivedQTY).Editable(false);
+                                                        //model.Field(p => p.ReceivedUPrice).Editable(false);
+                                                        model.Field(p => p.ReceivedTPrice).Editable(false);
+
+                                                        //model.Field(p => p.IssuedQTY).Editable(false);
+                                                        model.Field(p => p.IssuedUPrice).Editable(false);
+                                                        model.Field(p => p.IssuedTPrice).Editable(false);
+
+                                                        model.Field(p => p.BalanceTPrice).Editable(false);
+                                                        //model.Field(p => p.BalanceUPrice).Editable(false);
+                                                        // model.Field(p => p.BalanceQTY).Editable(false);
+
+                                                        model.Field(p => p.GlFiscalYearId).Editable(false);
+                                                        model.Field(p => p.GLPeriodId).Editable(false);
+                                                        model.Field(p => p.Reference).Editable(false);
+                                                        model.Field(p => p.TimeStamp).Editable(false);
+                                                        model.Field(p => p.IssuedTo).Editable(false);
+                                                        model.Field(p => p.SupplierName).Editable(false);
+                                                        model.Field(p => p.IsVoid).Editable(false);
+
+
+                                                    })
+                                                    .Read(read => read.Action("BinCardLines_Read", "BinCardLine").Data("data"))
+                                                    .Create(create => create.Action("BinCardLines_Create", "BinCardLine").Data("data"))
+                                                    .Update(update => update.Action("BinCardLines_Update", "BinCardLine").Data("data"))
+                                                    .Destroy(destroy => destroy.Action("BinCardLines_Destroy", "BinCardLine").Data("data"))
+                                                                )
+)
+
+<style>
+    .k-checkbox #checkDanger {
+        color: red;
+        border-color: red !important;
+    }
+</style>
+
+<script>
+
+    function change() {
+        $("#BinCardLineGrid").data("kendoGrid").dataSource.read();
+
+        //var grid = $("#grid").data("kendoGrid");
+
+        //console.log(grid);
+        //console.log(grid.dataItem(grid.select()).StoreItemAssignmentID);
+    }
+
+    function data() {
+        var grid = $("#grid").data("kendoGrid");
+
+        //console.log(grid);
+        //console.log(grid.dataItem(grid.select()).StoreItemAssignmentID);
+        var itemCode = grid.dataItem(grid.select()).ItemCode;
+        var itemName = grid.dataItem(grid.select()).ItemName;
+        var store = grid.dataItem(grid.select()).StoreCode;
+
+        var itemElement = document.getElementById('item_code');
+        itemElement.innerHTML = "BinCard Records for -> "+itemCode + "-" + itemName + " in store: " +store;
+        return {
+            id: grid.dataItem(grid.select()).StoreItemAssignmentID
+        };
+    }
+
+    function RecalculateTransaction (e) {
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        var storeitem = dataItem.StoreItemAssignmentID;
+        var bincard = dataItem.BinCardLineID;
+
+        $('#loading-image').show();
+
+        $.ajax({
+            type: "POST",
+            data: { assignmentid: storeitem, binid: bincard},
+            url: '@Url.Action("RecalculateTransaction", "StoreItemAssignment")',// + id,
+            success: function (result) {
+                alert(result.Message);
+                //toastr.error(result.Message);
+                //console.log(result);
+                $('#loading-image').hide();
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+
+        $('#BinCardLineGrid').data('kendoGrid').dataSource.read();
+        $('#BinCardLineGrid').data('kendoGrid').refresh();
+        //location.reload();
+    }
+
+    function filterItems() {
+        return {
+            StoreItemAssignmentID: $("#StoreItemAssignmentID").data("kendoDropDownList").value()
+        };
+    }
+
+    function filterClicked() {
+        var storeObject = $("#storeSelector").data("kendoDropDownList");
+        var storeValue = storeObject.value();
+
+        if (storeValue != null) {
+            $("#grid").data("kendoGrid").dataSource.read();
+        } else {
+            alert("Please select a store.");
+        }
+    }
+    function passSearchData() {
+        var storeObject = $("#storeSelector").data("kendoDropDownList");
+        var storeValue = storeObject.value();
+        return {
+            storecode: storeValue,
+            isMinValue: isMinValue,
+            isMaxValue: isMaxValue,
+            isDangerValue: isDangerValue,
+            isSafetyValue: isSafetyValue,
+            isReorderValue: isReorderValue,
+        };
+    }
+
+    var isMinValue = false;
+    var isMaxValue = false;
+    var isDangerValue = false;
+    var isSafetyValue = false;
+    var isReorderValue = false;
+
+    function isMin(obj) {
+        if ($(obj).is(":checked")) {
+            isMinValue = true;
+            $("#grid").data("kendoGrid").dataSource.read();
+
+        } else {
+            isMinValue = false;
+            $("#grid").data("kendoGrid").dataSource.read();
+
+        }
+
+    }
+    function isMax(obj) {
+        if ($(obj).is(":checked")) {
+            isMaxValue = true;
+            $("#grid").data("kendoGrid").dataSource.read();
+
+        } else {
+            isMaxValue = false;
+            $("#grid").data("kendoGrid").dataSource.read();
+
+        }
+
+    }
+    function isDanger(obj) {
+        if ($(obj).is(":checked")) {
+            isDangerValue = true;
+            $("#grid").data("kendoGrid").dataSource.read();
+
+        } else {
+            isDangerValue = false;
+            $("#grid").data("kendoGrid").dataSource.read();
+
+        }
+
+    }
+    function isSafety(obj) {
+        if ($(obj).is(":checked")) {
+            isSafetyValue = true;
+            $("#grid").data("kendoGrid").dataSource.read();
+
+        } else {
+            isSafetyValue = false;
+            $("#grid").data("kendoGrid").dataSource.read();
+
+        }
+
+    }
+    function isReorder(obj) {
+        if ($(obj).is(":checked")) {
+            isReorderValue = true;
+            $("#grid").data("kendoGrid").dataSource.read();
+
+        } else {
+            isReorderValue = false;
+            $("#grid").data("kendoGrid").dataSource.read();
+
+        }
+
+    }
+
+   
+
+
+    function onDataBoundItemGrid(e) {
+        //this.expandRow(this.tbody.find("tr.k-master-row").first());
+
+        //changing colors
+        var rows = e.sender.tbody.children();
+        for (var j = 0; j < rows.length; j++) {
+            var row = $(rows[j]);
+            var dataItem = e.sender.dataItem(row);
+            var balance = dataItem.Balance;
+            var danger = dataItem.DangerPoint;
+            var safe = dataItem.SafetyPoint;
+            var min = dataItem.MinPoint;
+            var max = dataItem.MaxPoint;
+            var reorder = dataItem.ReOrderPoint;
+
+
+
+            if (balance <= danger) {
+                row.css("background-color", "red");
+                row.css("color", "white");
+            }
+            else if (balance <= min) {
+                row.css("background-color", "orangered");
+                row.css("color", "white");
+            }
+
+            else if (balance <= reorder) {
+                row.css("background-color", "lightcoral");
+                row.css("color", "white");
+            }
+
+            else if (balance <= safe) {
+                row.css("background-color", "lightgreen");
+                row.css("color", "white");
+            }
+
+            else if (balance <= max) {
+                row.css("background-color", "green");
+                row.css("color", "white");
+            }
+
+            else if (balance > max) {
+                row.css("background-color", "blueviolet");
+                row.css("color", "white");
+            }
+        }
+    }
+</script>

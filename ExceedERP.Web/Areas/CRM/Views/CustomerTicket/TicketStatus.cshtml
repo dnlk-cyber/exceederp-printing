@@ -1,0 +1,76 @@
+﻿@model ExceedERP.Core.Domain.CRM.CustomerTicket
+    <legend> Ticket Status</legend>
+<div class="panel">
+  <label> Status :</label>  @(Html.Kendo().DropDownListFor(m=>m.Status).Events(x=>x.Change("FilterTicket")).OptionLabel("Select ")
+        .DataTextField("Text")
+                .DataValueField("Value")
+            .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.CRM.FinalizeType)))
+                 .ValuePrimitive(true)
+    )
+</div>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.CustomerTicket>()
+          .Name("grid")
+      .Columns(columns =>
+      {
+          columns.ForeignKey(c => c.CustomerID, (System.Collections.IEnumerable)ViewData["CustomerList"], "CustomerID", "CustomerName").Width(150);
+          columns.Bound(c => c.Description).Width(120);
+          columns.Bound(c => c.Priority).HtmlAttributes(new { style = "background-color:#:PriorityColor#;" });
+          columns.Bound(c => c.StatusType).HtmlAttributes(new { style = "background-color:#:StatusColor#;" });
+          columns.Bound(c => c.TicketGroup);
+          columns.Bound(c => c.EscalationLevel).Title("Escalation");
+          columns.Bound(c => c.Source);
+          columns.Bound(c => c.CreatedOn);
+          columns.Bound(c => c.DueDate);
+          columns.Bound(c => c.Status);
+
+          columns.Command(command => { }).Width(10);
+      }).ToolBar(t => { t.Excel(); t.Pdf(); })
+
+
+           .HtmlAttributes(new { style = "height: 520px;" })
+                                                  .Pageable(pageable => pageable
+                                                                    .Input(true)
+                                                                    .Numeric(false)
+                                                                    .Refresh(true)
+                                                                    .PageSizes(true)
+                                                                    .ButtonCount(5))
+
+                                                        .Scrollable()
+                                                        .Sortable()
+                                                        .Filterable()
+                                                        .Groupable()
+                                                        .Scrollable(h => h.Height(500))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+         
+          .Model(model => model.Id(p => p.CustomerTicketID))
+              .Events(ev => ev
+                                                                        .Error("error_handler(\"grid\")")
+                                                                        .RequestStart("onRequestStart(\"grid\")")
+                                                                        .RequestEnd("onRequestEnd(\"grid\")"))
+                  .Read(read => read.Action("CustomerTickets_Read", "CustomerTicket"))
+      )
+)
+
+
+
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 700px;
+    }
+</style>
+
+<script>
+    function FilterTicket(e) {
+        event.preventDefault();
+        var Status = $("#Status").data("kendoDropDownList").value();
+          var grid = $('#grid').data('kendoGrid');
+        
+
+        if (Status != "") {
+            grid.dataSource.filter({ field: "Status", operator: "eq", value: Status });
+        } else {
+            grid.dataSource.filter({});
+        }
+    }
+</script>

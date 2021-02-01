@@ -1,0 +1,276 @@
+﻿@using ExceedERP.Core.Domain.Finance.Report
+@using ExceedERP.Core.Domain.Finance.Report.GAAP
+<legend>Cash Flow</legend>
+@(Html.Kendo().Grid<GaapCashFlow>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.GaapCashFlowId).Title("ID").Width(30);
+          columns.Command(command =>
+          {
+              if (ViewBag.Count > 0)
+              {
+                  return;
+              }
+              command.Edit(); command.Destroy();
+          }).Width(180);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .HtmlAttributes(new { style = "height: 550px;" })
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(20))
+      .Scrollable()
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .ClientDetailTemplateId("templates")
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Events(ev => ev
+              .Error("error_handler(\"grid\")")
+              .RequestStart("onRequestStart(\"grid\")")
+              .RequestEnd("onRequestEnd(\"grid\")"))
+          .Model(
+              model =>
+              {
+                  model.Id(p => p.GaapCashFlowId);
+                  model.Field(p => p.GaapCashFlowId).Editable(false);
+              })
+          .Read(read => read.Action("GaapCashFlows_Read", "GaapCashFlow"))
+          .Create(create => create.Action("GaapCashFlows_Create", "GaapCashFlow"))
+          .Update(update => update.Action("GaapCashFlows_Update", "GaapCashFlow"))
+          .Destroy(destroy => destroy.Action("GaapCashFlows_Destroy", "GaapCashFlow"))
+      ))
+
+
+<script id="templates" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+          .Name("GaapCashFlowReceipt#=GaapCashFlowId#")
+          .SelectedIndex(0)
+          .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+          .Items(items =>
+          {
+              items.Add().Text("Receipts").Content(@<text>
+                @(Html.Kendo().Grid<GaapCashFlowReceipt>()
+                      .Name("GaapCashFlowReceipt#=GaapCashFlowId#")
+                      .Columns(columns =>
+                      {
+                          columns.Bound(c => c.Description).Width(300);
+                          columns.Bound(c => c.NoteNumber).Width(100);
+                          columns.Command(command =>
+                          {
+                              command.Edit();
+                              command.Destroy();
+                          });
+                      })
+                      .ToolBar(toolbar =>
+                      {
+                          toolbar.Create();
+                      })
+
+                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                      .HtmlAttributes(new { style = "height: 500px;" })
+                      .Scrollable()
+                      .Sortable()
+                      .ClientDetailTemplateId("revenueTemplates")
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+                          .Model(
+                              model =>
+                              {
+                                  model.Id(p => p.GaapCashFlowReceiptId);
+                              })
+                          .Events(ev => ev
+                              .Error("error_handler(\"GaapCashFlowReceipt#=GaapCashFlowId#\")")
+                              .RequestStart("onRequestStart(\"GaapCashFlowReceipt#=GaapCashFlowId#\")")
+                              .RequestEnd("onRequestEnd(\"GaapCashFlowReceipt#=GaapCashFlowId#\")"))
+                          .Read(read => read.Action("GaapCashFlowReceipts_Read", "GaapCashFlowReceipt", new { id = "#=GaapCashFlowId#" }))
+                          .Create(create => create.Action("GaapCashFlowReceipts_Create", "GaapCashFlowReceipt", new { id = "#=GaapCashFlowId#" }))
+                          .Update(update => update.Action("GaapCashFlowReceipts_Update", "GaapCashFlowReceipt", new { id = "#=GaapCashFlowId#" }))
+                          .Destroy(destroy => destroy.Action("GaapCashFlowReceipts_Destroy", "GaapCashFlowReceipt"))
+                      )
+                      
+                      .ToClientTemplate())
+            </text>);
+
+               items.Add().Text("Paid Out").Content(@<text>
+                @(Html.Kendo().Grid<GaapCashFlowPayOut>()
+                      .Name("GaapCashFlowPayOut#=GaapCashFlowId#")
+                      .Columns(columns =>
+                      {
+                          columns.Bound(c => c.Description).Width(300);
+                          columns.Bound(c => c.NoteNumber).Width(100);
+                          columns.Command(command =>
+                          {
+                              command.Edit();
+                              command.Destroy();
+                          });
+                      })
+                      .ToolBar(toolbar =>
+                      {
+                          toolbar.Create();
+                      })
+
+                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                      .HtmlAttributes(new { style = "height: 500px;" })
+                      .Scrollable()
+                      .Sortable()
+                      .ClientDetailTemplateId("expenseTemplates")
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+                          .Model(
+                              model =>
+                              {
+                                  model.Id(p => p.GaapCashFlowPayOutId);
+                              })
+                          .Events(ev => ev
+                              .Error("error_handler(\"GaapCashFlowPayOut#=GaapCashFlowId#\")")
+                              .RequestStart("onRequestStart(\"GaapCashFlowPayOut#=GaapCashFlowId#\")")
+                              .RequestEnd("onRequestEnd(\"GaapCashFlowPayOut#=GaapCashFlowId#\")"))
+                          .Read(read => read.Action("GaapCashFlowPayOuts_Read", "GaapCashFlowPayOut", new { id = "#=GaapCashFlowId#" }))
+                          .Create(create => create.Action("GaapCashFlowPayOuts_Create", "GaapCashFlowPayOut", new { id = "#=GaapCashFlowId#" }))
+                          .Update(update => update.Action("GaapCashFlowPayOuts_Update", "GaapCashFlowPayOut", new { id = "#=GaapCashFlowId#" }))
+                          .Destroy(destroy => destroy.Action("GaapCashFlowPayOuts_Destroy", "GaapCashFlowPayOut"))
+                      )
+                      
+                      .ToClientTemplate())
+            </text>);
+
+                    
+
+          })
+          .ToClientTemplate()
+    )
+
+</script>
+
+
+<script id="revenueTemplates" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+          .Name("GaapCashFlowReceiptRange#=GaapCashFlowReceiptId#")
+          .SelectedIndex(0)
+          .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+          .Items(items =>
+          {
+              items.Add().Text("Account Ranges").Content(@<text>
+                @(Html.Kendo().Grid<GaapCashFlowReceiptRange>()
+                      .Name("GaapCashFlowReceiptRange#=GaapCashFlowReceiptId#")
+                      .Columns(columns =>
+                      {
+                          columns.Bound(c => c.AccountFrom).EditorTemplateName("AccountCodeZZZ").Width(220);
+                          columns.Bound(c => c.AccountTo).EditorTemplateName("AccountCodeZZZ").Width(220);
+                          columns.Command(command =>
+                          {
+                              command.Edit();
+                              command.Destroy();
+                          });
+                      })
+                      .ToolBar(toolbar =>
+                      {
+                          toolbar.Create();
+                      })
+
+                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                      
+                      .Scrollable()
+                      .Sortable()
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+                          .Model(
+                              model =>
+                              {
+                                  model.Id(p => p.GaapCashFlowReceiptRangeId);
+                              })
+                          .Events(events => events
+                              .Error("error_handler_one")
+                              .Sync("sync_handler"))
+                          .Read(read => read.Action("GaapCashFlowReceiptRanges_Read", "GaapCashFlowReceiptRange", new { id = "#=GaapCashFlowReceiptId#" }))
+                          .Create(create => create.Action("GaapCashFlowReceiptRanges_Create", "GaapCashFlowReceiptRange", new { id = "#=GaapCashFlowReceiptId#" }))
+                          .Update(update => update.Action("GaapCashFlowReceiptRanges_Update", "GaapCashFlowReceiptRange", new { id = "#=GaapCashFlowReceiptId#" }))
+                          .Destroy(destroy => destroy.Action("GaapCashFlowReceiptRanges_Destroy", "GaapCashFlowReceiptRange"))
+                      )
+                      
+                      .ToClientTemplate())
+            </text>);
+
+          })
+
+          .ToClientTemplate()
+          )
+
+</script>
+
+<script id="expenseTemplates" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+          .Name("GaapCashFlowPayOutRange#=GaapCashFlowPayOutId#")
+          .SelectedIndex(0)
+          .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+          .Items(items =>
+          {
+              items.Add().Text("Account Ranges").Content(@<text>
+                @(Html.Kendo().Grid<GaapCashFlowPayOutRange>()
+                      .Name("GaapCashFlowPayOutRange#=GaapCashFlowPayOutId#")
+                      .Columns(columns =>
+                      {
+                          columns.Bound(c => c.AccountFrom).EditorTemplateName("AccountCodeZZZ").Width(220);
+                          columns.Bound(c => c.AccountTo).EditorTemplateName("AccountCodeZZZ").Width(220);
+                          columns.Command(command =>
+                          {
+                              command.Edit();
+                              command.Destroy();
+                          });
+                      })
+                      .ToolBar(toolbar =>
+                      {
+                          toolbar.Create();
+                      })
+
+                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                      
+                      .Scrollable()
+                      .Sortable()
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+                          .Model(
+                              model =>
+                              {
+                                  model.Id(p => p.GaapCashFlowPayOutRangeId);
+                              })
+                          .Events(events => events
+                              .Error("error_handler_one")
+                              .Sync("sync_handler"))
+                          .Read(read => read.Action("GaapCashFlowPayOutRanges_Read", "GaapCashFlowPayOutRange", new { id = "#=GaapCashFlowPayOutId#" }))
+                          .Create(create => create.Action("GaapCashFlowPayOutRanges_Create", "GaapCashFlowPayOutRange", new { id = "#=GaapCashFlowPayOutId#" }))
+                          .Update(update => update.Action("GaapCashFlowPayOutRanges_Update", "GaapCashFlowPayOutRange", new { id = "#=GaapCashFlowPayOutId#" }))
+                          .Destroy(destroy => destroy.Action("GaapCashFlowPayOutRanges_Destroy", "GaapCashFlowPayOutRange"))
+                      )
+                      
+                      .ToClientTemplate())
+            </text>);
+
+          })
+
+          .ToClientTemplate()
+          )
+
+</script>
+
+
+<script>
+   
+</script>
+

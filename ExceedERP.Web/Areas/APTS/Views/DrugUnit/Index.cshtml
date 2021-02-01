@@ -1,0 +1,68 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.APTS
+@using ExceedERP.Core.Localization
+@{
+                /**/
+
+                Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Drug Units</legend>
+@(Html.Kendo().Grid<DrugUnit>()
+              .Name("DrugUnitgrid")
+          .Columns(columns =>
+          {
+              columns.Bound(c => c.UoMName).EditorTemplateName("DrugUnitsList").Width(200).Title("Unit Name");
+
+              columns.Bound(c => c.UnitName).Visible(false);
+              columns.Bound(c => c.Remark).Width(150);
+              columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                  command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(250);
+          })
+          .ToolBar(toolbar =>
+          {
+              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+          })
+          .Editable(editable => editable.Mode(GridEditMode.InLine))
+            .Scrollable(h => h.Height(500))
+
+
+                             .Groupable()
+                                      .Sortable(sortable =>
+                                      {
+                                          sortable.SortMode(GridSortMode.SingleColumn);
+                                      })
+                          .Filterable()
+                             .Pageable(pageable => pageable
+                                                        .Input(true)
+                                                        .Numeric(false)
+                                                        .Refresh(true)
+                                                        .PageSizes(true)
+                                                        .ButtonCount(5))
+          .DataSource(dataSource => dataSource
+              .Ajax()
+                     .Events(events =>
+                     {
+                         events.Error("error_handler(\"DrugUnitgrid\")");
+                         events.RequestStart("onRequestStart(\"DrugUnitgrid\")");
+                         events.RequestEnd("onRequestEnd(\"DrugUnitgrid\")");
+                     }
+                  )
+
+                  .Model(model =>
+                  {
+                      model.Id(p => p.DrugUnitId);
+                  })
+              .Read(read => read.Action("DrugUnit_Read", "DrugUnit"))
+              .Create(create => create.Action("DrugUnit_Create", "DrugUnit"))
+              .Update(update => update.Action("DrugUnit_Update", "DrugUnit"))
+              .Destroy(destroy => destroy.Action("DrugUnit_Destroy", "DrugUnit"))
+          )
+)
+<script>
+
+    function sync_handler(e) {
+        this.read();
+</script>
+
+
+

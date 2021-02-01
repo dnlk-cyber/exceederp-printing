@@ -1,0 +1,46 @@
+﻿@using ExceedERP.Core.Domain.Procurement.Guarantee
+
+@(Html.Kendo().Grid<GuaranteeMode>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Mode).Width(120);
+          columns.Bound(c => c.Remark).Width(150);
+          columns.Bound(c => c.DateCreated).Hidden();
+          columns.Bound(c => c.LastModified).Hidden();
+          columns.Bound(c => c.CreatedBy).Hidden();
+          columns.Bound(c => c.ModifiedBy).Hidden();
+          columns.Command(command =>
+          {
+              command.Edit();
+              command.Destroy();
+          });
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .HtmlAttributes(new { style = "height: 550px;" })
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(5))
+
+      .Scrollable()
+      .Sortable()
+      .Filterable()
+      .Groupable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Events(ev => ev
+              .Error("error_handler(\"grid\")")
+              .RequestStart("onRequestStart(\"grid\")")
+              .RequestEnd("onRequestEnd(\"grid\")"))
+          .Model(model => model.Id(p => p.GuaranteeModeId))
+          .Read(read => read.Action("GuaranteeModes_Read", "GuaranteeMode"))
+          .Create(create => create.Action("GuaranteeModes_Create", "GuaranteeMode"))
+          .Update(update => update.Action("GuaranteeModes_Update", "GuaranteeMode"))
+          .Destroy(destroy => destroy.Action("GuaranteeModes_Destroy", "GuaranteeMode"))
+      ))

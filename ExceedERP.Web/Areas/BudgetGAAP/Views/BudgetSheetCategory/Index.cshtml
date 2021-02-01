@@ -1,0 +1,38 @@
+﻿<legend> Sheet Category </legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Budget.GAAP.BudgetSheetCategory>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.BalanceSheetType).EditorTemplateName("BalanceSheetTypeBind");
+        columns.Bound(c => c.Name);
+        columns.Bound(c => c.Remark);
+       
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+          .Editable(editable => editable.Mode(GridEditMode.InLine))
+             .HtmlAttributes(new { style = "height: 520px;" })
+                          .Pageable(pageable => pageable
+                                            .Input(true)
+                                            .Numeric(false)
+                                            .Refresh(true)
+                                            .PageSizes(true)
+                                            .ButtonCount(5))
+
+                                .Scrollable()
+                                .Sortable()
+                                .Filterable()
+                                .Groupable()
+                                .Scrollable(h => h.Height(500))
+
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.BalanceSheetCategoryId))
+              .Read(read => read.Action("BalanceSheetCategories_Read", "BudgetSheetCategory"))
+              .Create(create => create.Action("BalanceSheetCategories_Create", "BudgetSheetCategory"))
+              .Update(update => update.Action("BalanceSheetCategories_Update", "BudgetSheetCategory"))
+              .Destroy(destroy => destroy.Action("BalanceSheetCategories_Destroy", "BudgetSheetCategory"))
+      )
+)

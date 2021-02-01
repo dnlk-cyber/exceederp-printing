@@ -1,0 +1,138 @@
+﻿@using ExceedERP.Core.Domain.Finance.AR
+@using ExceedERP.Helpers.Common
+@model ExceedERP.Core.Domain.Finance.AR.ArStandardCollection
+
+
+
+@Html.HiddenFor(c => c.ArStandardCollectionId)
+<div class="form">
+    <div class="row fullrow">
+
+        <div class="col-md-3 ro1">
+            
+           
+                <div class="form-group">
+                    @Html.LabelFor(model => model.ReceiptNumber, htmlAttributes: new { @class = "control-label col-md-8" })
+                    <div class="col-md-6">
+                        @Html.Kendo().TextBoxFor(model => model.ReceiptNumber)
+                        @Html.ValidationMessageFor(model => model.ReceiptNumber, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+            <div class="row"></div>
+            
+            
+            <div class="form-group">
+                @Html.LabelFor(model => model.CustomerId, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @(Html.Kendo().DropDownListFor(model => model.CustomerId)
+                          .ValuePrimitive(true)
+                          .OptionLabel("Select customer...")
+                          .DataTextField("CompanyName")
+                          .DataValueField("CustomerId")
+                          .Filter("contains")
+                          .DataSource(dataSource =>
+                          {
+                              dataSource.Read(read => read.Action("GetActiveCustomers", "FinanceDataProvider", new { area = "Finance" }))
+                                  .ServerFiltering(false);
+                          })
+                          )
+                    @Html.ValidationMessageFor(model => model.CustomerId, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>  
+           
+                
+            @*<div class="form-group">
+                @Html.LabelFor(model => model.ReceiptAmount, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @Html.Kendo().NumericTextBoxFor(model => model.ReceiptAmount)
+                    @Html.ValidationMessageFor(model => model.ReceiptAmount, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>*@
+                
+             
+        </div>
+
+        <div class="col-md-3 ro1">
+            
+            <div class="form-group">
+                @Html.LabelFor(model => model.ReceiptDate, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @Html.Kendo().DatePickerFor(model => model.ReceiptDate)
+                    @Html.ValidationMessageFor(model => model.ReceiptDate, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+            
+            <br/>
+            <div class="form-group">
+                @Html.LabelFor(model => model.IsNewCustomer, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @Html.Kendo().CheckBoxFor(model => model.IsNewCustomer).HtmlAttributes(new { onchange = "isNewCustomer(this)" })
+                    @Html.ValidationMessageFor(model => model.IsNewCustomer, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+            <br/>
+            
+        </div>
+
+        <div class="col-md-3 ro1">
+           
+            <div class="form-group">
+                @Html.LabelFor(model => model.ReceiptMethod, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @(Html.Kendo().DropDownListFor(model => model.ReceiptMethod)
+                          .ValuePrimitive(true)
+                          .OptionLabel("Select Method...")
+                          .DataTextField("Method")
+                          .DataValueField("Method")
+                          .Filter("contains")
+                          .DataSource(dataSource =>
+                          {
+                              dataSource.Read(read => read.Action("GetArPaymentMethods", "FinanceDataProvider", new { area = "Finance" }))
+                                  .ServerFiltering(false);
+                          })
+                          )
+                    @Html.ValidationMessageFor(model => model.ReceiptMethod, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+            
+            <div class="form-group" id="customernameDiv" style="display: none">
+                @Html.LabelFor(model => model.CustomerName, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @(Html.Kendo().DropDownListFor(model => model.CustomerName)
+                          .ValuePrimitive(true)
+                          .OptionLabel("Select customer...")
+                          .DataTextField("CustomerName")
+                          .DataValueField("CustomerName")
+                          .Filter("contains")
+                          .DataSource(dataSource =>
+                          {
+                              dataSource.Read(read => read.Action("GetSalesOrderNewCustomers", "FinanceDataProvider", new { area = "Finance" }))
+                                  .ServerFiltering(false);
+                          })
+                          )
+                    @Html.ValidationMessageFor(model => model.CustomerName, "", new { @class = "text-danger" })
+                </div>
+            </div>
+          
+            <div class="row"></div>
+            
+            <div class="form-group">
+                @Html.LabelFor(model => model.Reference, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(model => model.Reference).HtmlAttributes(new { onchange = "isNewCustomer(this)" })
+                    @Html.ValidationMessageFor(model => model.Reference, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+            
+
+        </div>
+    </div>
+</div>
+
+

@@ -1,0 +1,11 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@using ExceedERP.Core.Domain.Construction
+
+@(Html.Kendo().DropDownListFor(m => m)
+                .OptionLabel(Resources.Select)
+                .DataTextField("Text")
+                .DataValueField("Text")
+                .ValuePrimitive(true)
+                .BindTo(EnumExtension.EnumToSelectList(typeof(WorkItemCostNegotiationTypes))))
+

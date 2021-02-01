@@ -1,0 +1,17 @@
+﻿@using Kendo.Mvc.UI
+
+@(Html.Kendo().DropDownListFor(m => m)
+                 .ValuePrimitive(true)
+                  .AutoBind(false)
+                  .OptionLabel("Select GRN/SRN...")
+                      .DataTextField("Name")
+                      .DataValueField("Code")
+                      .Filter("contains")
+                     .CascadeFrom("ItemType")
+                  .DataSource(dataSource =>
+                  {
+                      dataSource.Read(read => read.Action("GetContractGrns", "ProcurementDataProvider", new { area = "Procurement" }).Data("getContractId"))
+                       .ServerFiltering(false);
+                  })
+)
+@Html.ValidationMessageFor(m => m)

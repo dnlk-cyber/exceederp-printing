@@ -1,0 +1,33 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Web.Models.RoleViewModel>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.Name);
+        columns.Bound(c => c.Description);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+            toolbar.Excel();
+           // toolbar.Pdf();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Selectable(selectable => {
+            selectable.Mode(GridSelectionMode.Single);
+            selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable => {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Filterable()
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.RoleViewModelId))
+          .Read(read => read.Action("RoleViewModels_Read", "ApplicationRole"))
+          .Create(create => create.Action("RoleViewModels_Create", "ApplicationRole"))
+          .Update(update => update.Action("RoleViewModels_Update", "ApplicationRole"))
+          .Destroy(destroy => destroy.Action("RoleViewModels_Destroy", "ApplicationRole"))
+      )
+)

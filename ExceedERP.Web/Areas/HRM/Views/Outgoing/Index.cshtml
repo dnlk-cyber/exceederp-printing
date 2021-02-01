@@ -1,0 +1,305 @@
+﻿@using ExceedERP.Core.Domain.Common.HRM
+@using ExceedERP.Core.Domain.HRM.Letters
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend >@Resources.NavigatorLetter_OutgoingLetter</legend>
+@(Html.Kendo().Grid<Outgoing>()
+          .Name("Outgoing")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.Name);
+        columns.Bound(c => c.DateAmharic).EditorTemplateName ("Calander").Width (200);
+        columns.Bound(c => c.FolderNo);
+        columns.Bound(c => c.CardSerialNo);
+        columns.Bound(c => c.Owner).EditorTemplateName("Enum");
+        columns.Command(command =>
+        {
+            if (HttpContext.Current.User.IsInRole("HR_Letters_User"))
+            {
+                command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+            }
+            if (HttpContext.Current.User.IsInRole("HR_Admin"))
+            {
+                command.Destroy().Text(Resources.ActionButton_Cancel);
+            }
+        }).Width(200);
+      })
+      .ToolBar(toolbar => {
+           toolbar.Template(@<text>
+                                <div class="toolbar">
+                                    @if (HttpContext.Current.User.IsInRole("HR_Letters_User"))
+                                    {
+                                        @item.CreateButton(Resources.ActionButton_AddNewRecord);
+                                    }
+                                    <label class="category-label" for="CardSerialNo">@Resources.HR_Letters_Outgoing_CardSerialNo</label>
+                                    @(Html.Kendo().DropDownList()
+                                          .Name("CardSerialNo")
+                                          .OptionLabel(Resources.Select)
+                                          .DataTextField("Text")
+                                          .DataValueField("CardSerialNo")
+                                          .ValuePrimitive(false)
+                                          .Events(e => e.Change("categoriesChange"))
+                                          .HtmlAttributes(new {style = "width: 150px;"})
+                                          .DataSource(ds =>
+                                          {
+                                              ds.Read("GetLetterCardSerialNo", "Outgoing", new {Area = "HRM"});
+                                          })
+                                          )
+                                </div>
+           
+</text>);
+      })
+     .Scrollable(h => h.Height(500))
+             .Groupable()
+                      .Sortable(sortable =>
+                      {
+                          sortable.SortMode(GridSortMode.SingleColumn);
+                      })
+          .Filterable()
+               .Events(e =>
+                    {
+                        e.Save("GetDate");
+                        e.Edit("GetDate");
+                    })
+
+             .Pageable(pageable => pageable
+                                        .Input(true)
+                                        .Numeric(false)
+                                        .Refresh(true)
+                                        .PageSizes(true)
+                                        .ButtonCount(5))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+                              .Events(events =>
+                                    {
+                                        events.Error("error_handler(\"Outgoing\")");
+                                        events.RequestStart("onRequestStart(\"Outgoing\")");
+                                        events.RequestEnd("onRequestEnd(\"Outgoing\")");
+                                    })                         
+          .Model(model => model.Id(p => p.OutgoingId))
+          .Read(read => read.Action("Outgoing_Read", "Outgoing"))
+          .Create(create => create.Action("Outgoing_Create", "Outgoing"))
+          .Update(update => update.Action("Outgoing_Update", "Outgoing"))
+          .Destroy(destroy => destroy.Action("Outgoing_Destroy", "Outgoing"))
+          ).ClientDetailTemplateId("template")
+)
+<script id="template" type="text/kendo-tmpl">
+   @(Html.Kendo().TabStrip()
+                           .Name("tabstrip_#=OutgoingId#")
+    .SelectedIndex(0)
+    .Items(items =>
+     {
+         items.Add().Text(Resources.HR_Letters_IncommingStatus_IncommingStatus).Content(
+            @<text>
+        @(Html.Kendo().Grid<OutgoingStatus>()
+                         .Name("OutgoingStatus_#=OutgoingId#")
+         .Columns(columns =>
+         {
+           
+             columns.Bound(c => c.NoOfAttachment);
+             columns.Bound(c => c.Subject);
+             columns.Bound(c => c.Destination).Width(250);
+             columns.Command(command =>
+             {
+                 if (HttpContext.Current.User.IsInRole("HR_Letters_User"))
+                 {
+                     command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                 }
+                 if (HttpContext.Current.User.IsInRole("HR_Admin"))
+                 {
+                     command.Destroy().Text(Resources.ActionButton_Cancel);
+                 }
+             }).Width(200);
+         })
+         .ToolBar(toolbar => {
+                                 if (HttpContext.Current.User.IsInRole("HR_Letters_User"))
+                                 {
+                                     toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                                 }
+         })
+         .Editable(editable => editable.Mode(GridEditMode.InLine))
+         .Selectable(selectable =>
+         {
+             selectable.Mode(GridSelectionMode.Single);
+             selectable.Type(GridSelectionType.Row);
+         })
+         .Scrollable()
+         .DataSource(dataSource => dataSource
+             .Ajax()
+                      .Events(events =>
+                                            {
+                                                events.Error("error_handler(\"OutgoingStatus_#=OutgoingId#\")");
+                                                events.RequestStart("onRequestStart(\"OutgoingStatus_#=OutgoingId#\")");
+                                                events.RequestEnd("onRequestEnd(\"OutgoingStatus_#=OutgoingId#\")");
+                                            })               
+                                   
+
+             .Model(model => model.Id(p => p.StatusId))
+                     .Read(read => read.Action("OutgoingStatus_Read", "OutgoingStatus", new { id = "#=OutgoingId#" }))
+                     .Create(create => create.Action("OutgoingStatus_Create", "OutgoingStatus", new { id = "#=OutgoingId#" }))
+             .Update(update => update.Action("OutgoingStatus_Update", "OutgoingStatus"))
+             .Destroy(destroy => destroy.Action("OutgoingStatus_Destroy", "OutgoingStatus"))
+         ).ToClientTemplate()
+        )
+
+
+    </text>
+    );
+
+    //*********************************Attachment***********************************************************//
+         items.Add().Text(Resources .HR_File ).Content(
+        @<text>
+         @(Html.Kendo().Grid<Attachment>()
+                              .Name("AttachmentGrid_#=OutgoingId#")
+                      .Columns(columns =>
+                      {
+
+                          columns.Bound(c => c.Description);
+                          //columns.Bound(c => c.Reference);
+                          columns.Bound(c => c.FileType).ClientTemplate(Html.ActionLink("DownLoad", "DownloadFile", new { filename = "#=OutgoingId#" }).ToHtmlString()); 
+                          columns.Bound(c => c.BinaryFile).Visible(false);
+                          columns.Command(command =>
+                          {
+                             command.Destroy().Text(Resources.ActionButton_Cancel);
+                             // command.Custom("Download").Click("DownloadAttachmnets");
+                          }).Width(300);
+
+                      })
+                              .Events(e => e.Edit("onGridEdit"))
+                      .ToolBar(toolbar =>
+                      {
+                          toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                      })
+                      .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("Upload").Window(window =>
+                      {
+                          window.Scrollable(false);
+                          window.Title(Resources .HR_Upload_File);
+                      }))
+                      .Scrollable()
+                      .Selectable()
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+                                    .Events(events =>
+                                                    {
+                                                        events.Error("error_handler(\"AttachmentGrid_#=OutgoingId#\")");
+                                                        events.RequestStart("onRequestStart(\"AttachmentGrid_#=OutgoingId#\")");
+                                                        events.RequestEnd("onRequestEnd(\"AttachmentGrid_#=OutgoingId#\")");
+                                                    })  
+                                  //                 .Events(events => events.Error("error_handler(\"AttachmentGrid_#=OutgoingId#\")")
+                                  ////.Sync("sync_handler")
+                                  //)
+
+                          .Model(model => model.Id(p => p.AttachmentId))
+                          .Read(read => read.Action("Attachments_Read", "Attachment", new {Area = "Common", attachmentReferenceType = "OutgoingLetter", id = "#=OutgoingId#",fileOwner="#=OutgoingId#"}))
+                                                   .Create(create => create.Action("Attachments_Create", "Attachment", new { Area = "Common", attachmentReferenceType = "OutgoingLetter", id = "#=OutgoingId#", fileOwner = "#=OutgoingId#" }))
+
+                                  .Destroy(destroy => destroy.Action("Attachments_Destroy", "Outgoing"))
+
+                      ).ToClientTemplate()
+        )
+    </text>
+    );
+    //*****************************************************************************************************//
+
+    }).ToClientTemplate())
+
+</script>
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 700px;
+    }
+</style>
+
+
+
+<script>
+    function DownloadAttachmnets(e) {
+
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        var dd = dataItem.Description;
+        var id = dataItem.AttachmentID;
+      $.ajax({
+
+            url: '@Url.Action("Download", "Outgoing")',
+         // contentType: "application/json; charset=utf-8",
+          data: { 'data': dd ,'id':id},
+          type: 'GET',
+          cache: false,
+          success: function (result) {
+              r = result;
+}
+
+        });
+
+    }
+</script>
+<script>
+    function error_handler(e) {
+        if (e.errors) {
+            var message = "Errors:\n";
+            $.each(e.errors, function (key, value) {
+                if ('errors' in value) {
+                    $.each(value.errors, function () {
+                        message += this + "\n";
+                    });
+                }
+            });
+            alert(message);
+
+        }
+
+    }
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+    function onGridEdit(e) {
+        e.container.find(".k-button.k-grid-update").hide();
+        e.container.find(".k-button.k-grid-cancel").hide();
+
+    }
+</script>
+<script>
+    function GetDate() {
+
+        var x = AssignDate();
+        var y = x;
+        $("#DateAmharic").trigger("change");
+        for (var o in y) {
+            $.ajax({
+                contentType: "application/json; charset=utf-8",
+                url: '@Url.Action("SetDate", "Outgoing")',
+                data: { name: y[o].id, value: y[o].date },
+                type: 'GET',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                }
+
+            });
+        }
+    }
+
+</script>
+<script>
+    function AssignDate() {
+        var list = AssignDates();
+        return list;
+    }
+
+</script>
+<script>
+    function categoriesChange() {
+        var value = this.value(),
+		 	 grid = $("#Outgoing").data("kendoGrid");
+
+        if (value) {
+            grid.dataSource.filter({ field: "CardSerialNo", operator: "eq", value: parseInt(value) });
+        } else {
+            grid.dataSource.filter({});
+        }
+    }
+</script>

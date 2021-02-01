@@ -1,0 +1,67 @@
+﻿@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Project Estimation Unit Rate></legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.ProjectEstimationUnitRate>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.ItemNo);
+        columns.Bound(c => c.ItemName);
+        columns.Bound(c => c.DirectCost);
+        columns.Bound(c => c.Overheard);
+        columns.Bound(c => c.Profit);
+        columns.Bound(c => c.UnitRate);
+        columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+          .Scrollable(h => h.Height(500))
+                                                                                 .Groupable()
+                                                                                          .Sortable(sortable =>
+                                                                                          {
+                                                                                              sortable.SortMode(GridSortMode.SingleColumn);
+                                                                                          })
+                                                                              .Filterable()
+                                                                                 .Pageable(pageable => pageable
+                                                                                                            .Input(true)
+                                                                                                            .Numeric(false)
+                                                                                                            .Refresh(true)
+                                                                                                            .PageSizes(true)
+                                                                                                            .ButtonCount(5))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+              .Events(events => events.Error("error_handler")
+                                                                                  .Sync("sync_handler"))
+          .Model(model => model.Id(p => p.ProjectEstimationUnitRateId))
+          .Read(read => read.Action("ProjectEstimationUnitRate_Read", "ProjectEstimationUnitRate"))
+          .Create(create => create.Action("ProjectEstimationUnitRate_Create", "ProjectEstimationUnitRate"))
+          .Update(update => update.Action("ProjectEstimationUnitRate_Update", "ProjectEstimationUnitRate"))
+          .Destroy(destroy => destroy.Action("ProjectEstimationUnitRate_Destroy", "ProjectEstimationUnitRate"))
+      )
+)
+<script>
+    function error_handler(e) {
+        if (e.errors) {
+            var message = "Errors:\n";
+            $.each(e.errors, function(key, value) {
+                if ('errors' in value) {
+                    $.each(value.errors, function() {
+                        message += this + "\n";
+                    });
+                }
+            });
+            alert(message);
+
+        }
+
+    }
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+</script>

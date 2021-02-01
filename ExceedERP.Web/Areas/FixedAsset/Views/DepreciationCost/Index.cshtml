@@ -1,0 +1,227 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.FixedAsset.Depreciation
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Depreciation Cost</legend>
+
+@(Html.Kendo().Grid<DepreciationForCost>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.ForeignKey(p => p.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").Width(150);
+          columns.ForeignKey(p => p.GLPeriodId, (IEnumerable)ViewData["Periods"], "GLPeriodId", "Name").Width(150);
+          columns.ForeignKey(p => p.AssetRegistrationId, (IEnumerable)ViewData["Assets"], "AssetRegistrationId", "Tag").Width(150);
+          columns.Bound(c => c.DepreciationAmount).Width(130);
+          columns.Bound(c => c.BookValue).Width(130);
+          
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Template(@<text>
+                               
+                               @(Html.Kendo().DropDownList( )
+                                     .OptionLabel("Select Branch")
+                                     .Name("branchSelector")
+                                     .AutoBind(false)
+                                     .DataValueField("Code")
+                                     .DataTextField("Name")
+                                     .HtmlAttributes(new {style = "width: 200px;"})
+                                     .DataSource(dataSource =>
+                                     {
+                                         dataSource.Read(read => read.Action("GetBranches", "GlobalDataProvider", new { area = "Common" }))
+                                             .ServerFiltering(false);
+                                     }))
+                                
+                               @(Html.Kendo().DropDownList()
+                                     .OptionLabel("Select Year")
+                                     .Name("yearSelector")
+                                     .AutoBind(false)
+                                     .DataValueField("GlFiscalYearId")
+                                     .DataTextField("Name")
+                                     .HtmlAttributes(new { style = "width: 200px;" })
+                                     .DataSource(dataSource =>
+                                     {
+                                         dataSource.Read(read => read.Action("GetOpenYears", "GlobalDataProvider", new { area = "Common" }))
+                                             .ServerFiltering(false);
+                                     }))
+
+
+
+
+                               @(Html.Kendo().DropDownList()
+                                     .Name("periodSelector")
+                                     .AutoBind(false)
+                                     .DataValueField("GLPeriodId")
+                                     .DataTextField("Name")
+                                     .HtmlAttributes(new {style = "width: 200px;"})
+                                     .DataSource(dataSource =>
+                                     {
+                                         dataSource.Read(read => read.Action("GetPeriods", "GlobalDataProvider", new { area = "Common"} ).Data("getFiscalYear"))
+                                             .ServerFiltering(true);
+                                     })
+                                     .CascadeFrom("yearSelector"))
+
+                              
+
+                               @Html.Kendo().Button().Name("AnnualDepreciation").HtmlAttributes(new { type = "button", @class = "k-primary" }).Content("Run Depreciation").Events(ev => ev.Click("RunDepreciation"))
+                               @*@Html.Kendo().Button().Name("Reverse").HtmlAttributes(new { type = "button", @class = "k-primary" }).Content("Reverse").Events(ev => ev.Click("reverseClicked"))
+                            @Html.Kendo().Button().Name("Close").HtmlAttributes(new { type = "button", @class = "k-primary" }).Content("Close").Events(ev => ev.Click("closeClicked"))*@
+
+
+                            </text>);
+
+
+
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Pageable()
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Filterable()
+      .Scrollable(h => h.Height(500))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model =>
+          {
+              model.Id(p => p.AssetRegistrationId);
+
+          })
+
+          .Read(read => read.Action("Depreciations_Read", "DepreciationCost"))
+      //.Create(create => create.Action("DepretiationRules_Create", "DepreciationRule"))
+      //.Update(update => update.Action("DepretiationRules_Update", "DepreciationRule"))
+      //.Destroy(destroy => destroy.Action("DepretiationRules_Destroy", "DepreciationRule"))
+      ))
+<script>
+    var selectedYear;
+    var selectedBranch;
+    var selectedPeriod;
+
+    function RunDepreciation(e) {
+        
+        var year = $("#yearSelector").data("kendoDropDownList").value();
+        var branch = $("#branchSelector").data("kendoDropDownList").value();
+        var period = $("#periodSelector").data("kendoDropDownList").value();
+        selectedYear = year;
+        selectedPeriod = period;
+        selectedBranch = branch;
+        $('#loading-image').show();
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("RunDepreciation", "DepreciationCost")',
+            contentType: "application/json; charset=utf-8",
+            data: { fiscalyearid: year ,periodid:selectedPeriod, branchid:selectedBranch},
+            dataType: "json",
+            success: function (result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                $('#loading-image').hide();
+                location.reload(true);
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+
+        });
+    }
+
+
+    function reverseClicked(e) {
+        var year = $("#yearSelector").data("kendoDropDownList").value();
+        var branch = $("#branchSelector").data("kendoDropDownList").value();
+        var period = $("#periodSelector").data("kendoDropDownList").value();
+        selectedYear = year;
+        selectedPeriod = period;
+        selectedBranch = branch;
+
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("ReverseDepreciation", "AnnualDepreciation")',
+            contentType: "application/json; charset=utf-8",
+            data: { year: year, period: period, branch: branch },
+            dataType: "json"
+
+        });
+    }
+    function closeClicked(e) {
+        var year = $("#yearSelector").data("kendoDropDownList").value();
+        var branch = $("#branchSelector").data("kendoDropDownList").value();
+        var period = $("#periodSelector").data("kendoDropDownList").value();
+        selectedYear = year;
+        selectedPeriod = period;
+        selectedBranch = branch;
+
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("CloseDepreciation", "AnnualDepreciation")',
+            contentType: "application/json; charset=utf-8",
+            data: { year: year, period: period, branch: branch },
+            dataType: "json"
+
+        });
+    }
+    function getFiscalYear(){
+        return { year: $("#yearSelector").data("kendoDropDownList").value() }
+    }
+
+    function checkForEvaluation(e) {
+        var year = $("#yearSelector").data("kendoDropDownList").value();
+        var branch = $("#branchSelector").data("kendoDropDownList").value();
+        var period = $("#periodSelector").data("kendoDropDownList").value();
+        selectedYear = year;
+        selectedPeriod = period;
+        selectedBranch = branch;
+        var depreciationBtn = $("#Depreciation").data("kendoButton");
+        var reverseBtn = $("#Reverse").data("kendoButton");
+        var closeBtn = $("#Close").data("kendoButton");
+
+        $.ajax({
+            type: "GET",
+
+            dataType: 'json',
+            contentType: "application/json;charset=utf-8",
+            url: "/AnnualDepreciation/GetAnnualDepreciationState",
+            data:  { year:selectedYear  , period: selectedPeriod , branch: selectedBranch },
+             
+            success: function (result) {
+                debugger;
+                
+                if (result === "onEdit") {
+                    depreciationBtn.enable(false);
+                    reverseBtn.enable(true);
+                    closeBtn.enable(true);
+                }
+                if (result === "Reversed") {
+                    depreciationBtn.enable(true);
+                    reverseBtn.enable(false);
+                    closeBtn.enable(false);
+
+                }
+                if (result === "depreciation") {
+                    depreciationBtn.enable(true);
+                    reverseBtn.enable(false);
+                    closeBtn.enable(false);
+
+                }
+                if (result === "previous") {
+                    depreciationBtn.enable(false);
+                    reverseBtn.enable(false);
+                    closeBtn.enable(false);
+                }
+                
+            },
+            error: function (response) {
+                debugger;
+                alert('Unkown Error');
+            }
+        });
+    }
+</script>

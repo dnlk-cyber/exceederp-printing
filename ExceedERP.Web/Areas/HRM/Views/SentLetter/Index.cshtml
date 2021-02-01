@@ -1,0 +1,279 @@
+﻿@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>@Resources.NavigatorArchiveManagement_SentLetter</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.HRM.LetterSender>()
+              .Name("RecivedLetters")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Date);
+          columns.Bound(c => c.OwnerName);
+          columns.Bound(c => c.Sender);
+          columns.Bound(c => c.Receiver);
+          columns.Bound(c => c.Description);
+          columns.Bound(c => c.Status).EditorTemplateName("Status") ;
+          columns.Bound(c => c.StatusName).Visible(false);
+          columns.Bound(c => c.FileName).ClientTemplate(Html.ActionLink("DownLoad", "DownloadFile", new { filename = "#=LetterSenderId#" }).ToHtmlString());
+         // columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Template(@<text>
+            <div class="toolbar">
+
+                @(Html.Kendo().Button()
+        .Name("btnAnswer")
+                .HtmlAttributes(new { type = "button", @class = "k-primary", width = "200px" })
+                        .Events(e => e.Click("Answer"))
+                      .Content("Answer"))
+
+                @(Html.Kendo().Button()
+        .Name("btnTransfer")
+        .HtmlAttributes(new { type = "button", @class = "k-primary", width = "200px" })
+                        .Events(e => e.Click("Transfer"))
+                      .Content("Transfer"))
+
+                @*@(Html.Kendo().Button()
+                    .Name("btnDownload")
+                    .HtmlAttributes(new { type = "button", @class = "k-primary", width = "200px" })
+                                    .Events(e => e.Click("Download"))
+                                                  .Content("Download"))*@
+
+            </div>
+        </text>);
+      })
+                         .Editable(editable => editable.Mode(GridEditMode.InLine))
+                              .Events(ev => ev.DataBinding("onDataBound"))
+                            .Scrollable(h => h.Height(500))
+                                                  .Selectable(selectable =>
+                             {
+                                 selectable.Mode(GridSelectionMode.Single);
+                                 selectable.Type(GridSelectionType.Row);
+                             })
+                                         .Groupable()
+                                                  .Sortable(sortable =>
+                                                  {
+                                                      sortable.SortMode(GridSortMode.SingleColumn);
+                                                  })
+                                      .Filterable()
+                                         .Pageable(pageable => pageable
+                                                                    .Input(true)
+                                                                    .Numeric(false)
+                                                                    .Refresh(true)
+                                                                    .PageSizes(true)
+                                                                    .ButtonCount(5))
+                                                                                        .Events(x => x.Change("CheckDisablity"))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+                               .Events(events =>
+                             {
+                                 events.Error("error_handler(\"RecivedLetters\")");
+                                 events.RequestStart("onRequestStart(\"RecivedLetters\")");
+                                 events.RequestEnd("onRequestEnd(\"RecivedLetters\")");
+                             })
+                                                                      
+          .Model(model => model.Id(p => p.LetterSenderId))
+                                                  .Read(read => read.Action("LetterSender_Read", "SentLetter"))
+                                                  .Create(create => create.Action("LetterSender_Create", "SentLetter"))
+                                                  .Update(update => update.Action("LetterSender_Update", "SentLetter"))
+                                                  .Destroy(destroy => destroy.Action("LetterSender_Destroy", "SentLetter"))
+      )
+)
+<script>
+    //function error_handler(e) {
+    //    if (e.errors) {
+    //        var message = "Errors:\n";
+    //        $.each(e.errors, function(key, value) {
+    //            if ('errors' in value) {
+    //                $.each(value.errors, function() {
+    //                    message += this + "\n";
+    //                });
+    //            }
+    //        });
+    //        alert(message);
+
+    //    }
+
+    //}
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+
+    function onChange(e) {
+        var grid = e.sender;
+        var selectedRows = this.select();
+        var rowData = this.dataItem(selectedRows[0]);
+        var id = rowData.AttachmentID;
+        $.ajax({
+            contentType: "application/json; charset=utf-8",
+            url: '@Url.Action("Download", "SentLetter")',
+            data: { 'id': id },
+            type: 'GET',
+            cache: false,
+            success: function (result) {
+                r = result;
+            }
+
+        });
+
+    }
+</script>
+
+<script>
+    function onDataBound(e) {
+      
+            var rows = e.sender.tbody.children();
+
+        try {
+            for (var j = 0; j < rows.length; j++) {
+                var row = $(rows[j]);
+                var dataItem = e.items[j];//sender.dataItem(row);
+                if (dataItem !== "undefined") {
+                    if (dataItem.StatusName === 0) {
+
+                       // row.addClass("green");
+                        row.css("background-color", "green");
+
+                    } else {
+                        row.css("background-color", "gray");
+                    }
+                }
+
+            }
+
+        } catch (ee) {
+
+        }
+
+    }
+
+</script>
+<script>
+    function Answer() {
+        try{
+        var grid = $("#RecivedLetters").data("kendoGrid");
+
+        var dataItem = grid.dataItem(grid.select());
+
+        var id = dataItem.LetterSenderId;
+        $.ajax({
+            url: '@Url.Action("SetAnswer", "SentLetter")',
+            //contentType: "application/json; charset=utf-8",
+            data: { id: id },
+            type: 'POST',
+            cache: false,
+            success: function(result) {
+                // r = result;
+            }
+
+
+        });
+    } catch (e) {
+       // alert("Please select the row!!");
+    }
+
+    }
+</script>
+<script>
+    function Transfer() {
+        try {
+            var grid = $("#RecivedLetters").data("kendoGrid");
+
+            var dataItem = grid.dataItem(grid.select());
+
+            var id = dataItem.LetterSenderId;
+
+
+            $.ajax({
+                url: '@Url.Action("SetTransfer", "SentLetter")',
+                //contentType: "application/json; charset=utf-8",
+                data: { id: id },
+                type: 'POST',
+                cache: false,
+                success: function(result) {
+                    // r = result;
+                }
+
+
+            });
+
+        } catch (e) {
+            alert("Please select the row!!");
+        }
+
+
+    }
+</script>
+
+<script>
+    function Download() {
+        try {
+            var grid = $("#RecivedLetters").data("kendoGrid");
+
+            var dataItem = grid.dataItem(grid.select());
+
+            var id = dataItem.LetterSenderId;
+
+
+            $.ajax({
+                url: '@Url.Action("DownloadFile", "SentLetter")',
+                //contentType: "application/json; charset=utf-8",
+                data: { filename: id },
+                type: 'POST',
+                cache: false,
+                success: function (result) {
+                    // r = result;
+                }
+
+
+            });
+
+        } catch (e) {
+            alert("Please select the row!!");
+        }
+
+
+    }
+</script>
+
+
+<script>
+    function CheckDisablity(e) {
+        var answer = $("#btnAnswer").data("kendoButton");
+        var transfer = $("#btnTransfer").data("kendoButton");
+        var dwonload = $("#btnDownload").data("kendoButton");
+
+        var grid = $("#RecivedLetters").data("kendoGrid");
+
+        var dataItem = grid.dataItem(grid.select());
+        var id = dataItem.LetterSenderId;
+
+        $.ajax({
+            url: '@Url.Action("CheckStatus", "SentLetter")',
+            contentType: "application/json; charset=utf-8",
+            data: { 'id': id },
+            type: 'GET',
+            cache: false,
+            success: function (result) {
+                r = result;
+                if (r == "c") {
+                    answer.enable(true);
+                    transfer.enable(true);
+
+
+                } else {
+                    answer.enable(false);
+                    transfer.enable(false);
+
+
+                }
+            }
+
+        });
+
+
+    }
+</script>

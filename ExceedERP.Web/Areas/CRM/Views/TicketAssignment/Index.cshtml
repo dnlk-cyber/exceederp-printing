@@ -1,0 +1,45 @@
+﻿<legend>Ticket Assignment</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.TicketAssignment>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.TicketID);
+        columns.Bound(c => c.TicketActivityDefinitionID);
+        columns.Bound(c => c.AssignedBy);
+        columns.Bound(c => c.ProcessedBy);
+        columns.Bound(c => c.AssignmentDate);
+        columns.Bound(c => c.DueDate);
+        columns.Bound(c => c.EndDate);
+        columns.Bound(c => c.Remark);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+        .HtmlAttributes(new { style = "height: 520px;" })
+                                                  .Pageable(pageable => pageable
+                                                                    .Input(true)
+                                                                    .Numeric(false)
+                                                                    .Refresh(true)
+                                                                    .PageSizes(true)
+                                                                    .ButtonCount(5))
+
+                                                        .Scrollable()
+                                                        .Sortable()
+                                                        .Filterable()
+                                                        .Groupable()
+                                                        .Scrollable(h => h.Height(500))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.TicketAssignmentID))
+                       .Events(ev => ev
+                                                                        .Error("error_handler(\"grid\")")
+                                                                     .RequestStart("onRequestStart(\"grid\")")
+                                                                   .RequestEnd("onRequestEnd(\"grid\")"))
+          .Read(read => read.Action("TicketAssignments_Read", "TicketAssignment"))
+          .Create(create => create.Action("TicketAssignments_Create", "TicketAssignment"))
+          .Update(update => update.Action("TicketAssignments_Update", "TicketAssignment"))
+          .Destroy(destroy => destroy.Action("TicketAssignments_Destroy", "TicketAssignment"))
+      )
+)

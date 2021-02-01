@@ -1,0 +1,36 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Finance.AR.ArMiscelaneousCollectionLine>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Activity);
+          columns.Bound(c => c.Amount);
+          columns.Bound(c => c.RevenueAccount);
+          columns.Bound(c => c.RevenueAccountDesc);
+          columns.Bound(c => c.TaxType);
+          columns.Bound(c => c.TaxAmount);
+          columns.Bound(c => c.WithholdingType);
+          columns.Bound(c => c.WithholdingAmount);
+          columns.Bound(c => c.WithholdTax);
+          columns.Bound(c => c.WithholdTaxAmount);
+          columns.Bound(c => c.TotalAmount);
+          columns.Bound(c => c.NetReceipt);
+          columns.Bound(c => c.DateCreated);
+          columns.Bound(c => c.LastModified);
+          columns.Bound(c => c.CreatedBy);
+          columns.Bound(c => c.ModifiedBy);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.ArMiscelaneousCollectionLineId))
+          .Read(read => read.Action("ArMiscelaneousCollectionLines_Read", "ArMiscelaneousCollectionLine"))
+          .Create(create => create.Action("ArMiscelaneousCollectionLines_Create", "ArMiscelaneousCollectionLine"))
+          .Update(update => update.Action("ArMiscelaneousCollectionLines_Update", "ArMiscelaneousCollectionLine"))
+          .Destroy(destroy => destroy.Action("ArMiscelaneousCollectionLines_Destroy", "ArMiscelaneousCollectionLine"))
+      ))

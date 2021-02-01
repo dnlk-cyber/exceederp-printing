@@ -1,0 +1,239 @@
+﻿@using ExceedERP.Core.Domain.InfoDesk.Support
+@model ExceedERP.Core.Domain.InfoDesk.Support.CustomerTicket_HelpDesk
+
+<legend> Ticket</legend>
+@(Html.Kendo().Grid<CustomerTicket_HelpDesk>()
+                      .Name("grid")
+                  .Columns(columns =>
+                  {
+                      columns.Bound(c => c.CustomerTicket_HelpDeskId).Width(50).Title("#");
+                      columns.ForeignKey(c => c.SpecificTicketTypeId, (System.Collections.IEnumerable)ViewData["TicketTypes"], "TicketType_HelpDeskId", "Type").EditorTemplateName("SpecificTicket").Title("Ticket Type").Width(180);
+                      columns.Bound(c => c.Description).Width(180);
+                      columns.Bound(c => c.Priority).HtmlAttributes(new { style = "background-color:#:PriorityColor#;" }).Width(100);
+
+                      columns.Bound(c => c.TicketGroup).Width(120);
+
+                      columns.Bound(c => c.Status)/*.HtmlAttributes(new { style = "background-color:#:StatusColor#;" })*/.Width(100);
+
+
+                      columns.Bound(c => c.AgeOfTicket).Width(150);
+                      columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+                  })
+                  .ToolBar(toolbar =>
+                  {
+                      toolbar.Create();
+
+                  }).Events(ev =>
+                  {
+
+                      ev.DataBound("onDataBound");
+                      ev.DetailExpand("onExpand");
+                  })
+                  .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("CustomerTicketEditor").Window(window =>
+                  {
+                      window.Title("Open Ticket");
+                      window.Scrollable(false);
+
+
+
+                  }))
+                       .HtmlAttributes(new { style = "height: 520px;" })
+                           .Pageable(pageable => pageable
+                                             .Input(true)
+                                             .Numeric(false)
+                                             .Refresh(true)
+                                             .PageSizes(true)
+                                             .ButtonCount(5))
+
+                                 .Scrollable()
+                                 .Sortable()
+                                 .Filterable()
+
+                                 .Scrollable(h => h.Height(500))
+                  .DataSource(dataSource => dataSource
+                      .Ajax()
+                       .Sort(x => x.Add(s => s.DateCreated).Descending())
+                          //  .Group(x => x.Add(p => p.Status))
+                          .Model(model =>
+                          {
+                              model.Id(p => p.CustomerTicket_HelpDeskId);
+                              model.Field(p => p.Status).Editable(false);
+                              model.Field(p => p.LastModified).Editable(false);
+
+                              model.Field(p => p.ModifiedBy).Editable(false);
+                              model.Field(p => p.DateCreated).Editable(false);
+                              model.Field(p => p.CreatedBy).Editable(false);
+
+                          })
+                          .Events(ev => ev
+                                 .Error("error_handler(\"grid\")")
+                                 .RequestStart("onRequestStart(\"grid\")")
+                                 .RequestEnd("onRequestEnd(\"grid\")"))
+
+                      .Read(read => read.Action("CustomerTickets_Read", "CustomerTicket"))
+                      .Create(create => create.Action("CustomerTickets_Create", "CustomerTicket"))
+                      .Update(update => update.Action("CustomerTickets_Update", "CustomerTicket"))
+                      .Destroy(destroy => destroy.Action("CustomerTickets_Destroy", "CustomerTicket"))
+                    ).ClientDetailTemplateId("template")
+)
+
+
+
+
+
+
+
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                                                                                            .Name("tabstrip_#=CustomerTicket_HelpDeskId#")
+                                            .SelectedIndex(0)
+                                            .Items(items =>
+                                             {
+                                                 items.Add().Text("  Detail  ").Content(
+                                                    @<text>
+    <dl class="dl-horizontal">
+
+
+        <dt>
+            Created On
+        </dt>
+        <dd>
+            #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+
+        </dd>
+        <dt>
+            Created By
+        </dt>
+        <dd>
+            #= CreatedBy #
+        </dd>
+    
+        <dt>
+            DueDate
+        </dt>
+        <dd>
+            #=kendo.toString(kendo.parseDate(DueDate), 'dd/MM/yyyy') #
+
+        </dd>
+
+
+
+        <dt>
+            Modified By
+        </dt>
+        <dd>
+            #= ModifiedBy #
+        </dd>
+        <dt>
+            Modified Date
+        </dt>
+        <dd>
+            #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+        </dd>
+        <dt>
+            Remark
+        </dt>
+        <dd>
+            @Html.LabelFor(model => model.Remark)
+
+        </dd>
+    </dl>  </text>
+              );
+    
+
+
+                                                   
+             }).ToClientTemplate())
+
+
+
+   
+
+
+</script>
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 700px;
+    }
+</style>
+<script>
+   
+      //   if ($("#Source").val() == 1) {
+         
+       // }
+
+
+
+
+
+
+    function onDataBound(e) {
+        var grid = this;
+
+
+        var Checkgrid = $("#grid").data("kendoGrid");
+        var gridData = Checkgrid.dataSource.view();
+
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+
+            if (dataItem.Status != "0") {
+
+                $(this).find(".k-grid-edit").remove();
+                $(this).find(".k-grid-delete").remove();
+                $(this).find(".k-grid-update").remove();
+
+            }
+        });
+    }
+
+
+    function changeSource() {
+        var value = $("#Source").val();
+        if (value == 1) {
+            $(".employee").removeClass("hidden");
+        }
+        if (value != 1 && !($(".employee").hasClass("hidden"))) {
+            $(".employee").addClass("hidden");
+        }
+
+    }
+    function filterCustomer() {
+        return {
+            CustomerId: $("#CustomerID").val()
+        };
+    }
+
+
+</script>
+
+<script type="text/javascript">
+    var id1;
+
+    var masterDataItem1;
+    var masterRow1;
+    var masterGrid1;
+
+    var masterDataItem;
+    var masterRow;
+    var masterGrid;
+    var id;
+
+    function onExpand(e) {
+        masterRow = e.masterRow;
+        masterGrid = $("#grid").data("kendoGrid");
+        masterDataItem = masterGrid.dataItem(masterRow);
+        id = masterDataItem.CustomerTicket_HelpDeskId;
+        id1 = masterDataItem.SiteId;
+        var a = document.getElementById("a");
+        a.href += id1;
+        a.target = "_blank";
+
+         }
+
+        
+    function onExpand1(e){ }
+    function start() { $(".employee").removeClass("hidden");}   
+
+</script>
+

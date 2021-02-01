@@ -1,0 +1,30 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Procurement.PurchaseOrder.PurchaseOrderValidation>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.CreatedBy).Title("User").Width(130);
+          columns.Bound(c => c.DateCreated).Width(130).Title("Time");
+          columns.Bound(c => c.Status).Width(130);
+          columns.Bound(c => c.Remark).Width(130);
+          columns.Bound(c => c.LastModified);
+          columns.Bound(c => c.ModifiedBy);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+                              toolbar.Excel();
+                              // toolbar.Pdf();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Pageable()
+      .Filterable()
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.PurchaseOrderValidationID))
+          .Read(read => read.Action("PurchaseOrderValidations_Read", "PurchaseOrderValidation"))
+          .Create(create => create.Action("PurchaseOrderValidations_Create", "PurchaseOrderValidation"))
+          .Update(update => update.Action("PurchaseOrderValidations_Update", "PurchaseOrderValidation"))
+          .Destroy(destroy => destroy.Action("PurchaseOrderValidations_Destroy", "PurchaseOrderValidation"))
+      ))

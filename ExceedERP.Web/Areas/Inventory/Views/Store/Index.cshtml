@@ -1,0 +1,281 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.Inventory
+@using Kendo.Mvc.UI
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Store</legend>
+
+@(Html.Kendo().Grid<InventoryStore>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.StoreCode).Width(150);
+          columns.Bound(c => c.Name).Width(200);
+          columns.ForeignKey(p => p.BusinessUnitId, (IEnumerable)ViewData["businessUnits"], "BusinessUnitId", "Name").Title("Business Unit").EditorTemplateName("BusinessUnitSelector").Width(200);
+          columns.ForeignKey(p => p.BranchId, (IEnumerable)ViewData["branches"], "BranchId", "Name").EditorTemplateName("BranchSelector").Width(200);
+          columns.Bound(c => c.Location).Width(150);
+          columns.Bound(c => c.Enable).Width(100).Title("Enable").ClientTemplate(
+                "<input type='checkbox' disabled = 'true' value='#= Enable #' " +
+                    "# if (Enable) { #" +
+                        "checked='checked'" +
+                    "# } #" +
+                "/>"
+            );
+          columns.Bound(c => c.IsTemp).Width(100).Title("IsTemp").ClientTemplate(
+               "<input type='checkbox' disabled = 'true' value='#= IsTemp #' " +
+                   "# if (IsTemp) { #" +
+                       "checked='checked'" +
+                   "# } #" +
+               "/>"
+           );
+          columns.Bound(c => c.Remark).Width(150);
+          columns.Command(command =>
+          {
+              command.Edit();
+              command.Custom("En").Click("Enable");
+          }).Width(180);
+      })
+      .ToolBar(toolbar => {
+          toolbar.Create();
+      })
+              .Editable(editable => editable.Mode(GridEditMode.InLine))
+                      .HtmlAttributes(new { style = "height: 550px;" })
+                        .Pageable(pageable => pageable
+                                    .Input(true)
+                                    .Numeric(false)
+                                    .Refresh(true)
+                                    .PageSizes(true)
+                                    .ButtonCount(20))
+                        .Scrollable()
+                             .Selectable(selectable =>
+                             {
+                                 selectable.Mode(GridSelectionMode.Single);
+                                 selectable.Type(GridSelectionType.Row);
+                             })
+                            .Sortable(sortable =>
+                            {
+                                sortable.SortMode(GridSortMode.SingleColumn);
+                            })
+                        .Filterable()
+                        .Groupable()
+                        .Events(events => events.Edit("edit"))
+      .Events(ev => ev.DetailExpand("detailExpand"))
+      .ClientDetailTemplateId("periodtemplate")
+      .DataSource(dataSource => dataSource
+          .Ajax()
+              .Model(model =>
+              {
+                  model.Id(p => p.StoreCode);
+                  model.Field(p => p.Enable).Editable(false);
+              })
+                     .Events(ev => ev
+                                        .Error("error_handler(\"grid\")")
+                                        .RequestStart("onRequestStart(\"grid\")")
+                                        .RequestEnd("onRequestEnd(\"grid\")"))
+          .Read(read => read.Action("Stores_Read", "Store"))
+          .Create(create => create.Action("Stores_Create", "Store"))
+          .Update(update => update.Action("Stores_Update", "Store"))
+          .Destroy(destroy => destroy.Action("Stores_Destroy", "Store"))
+      )
+)
+
+<script id="periodtemplate" type="text/Kendo-tmpl">
+    
+                       
+
+                            @(Html.Kendo().Grid<InventoryStorePeriodStatus>()
+                                  .Name("store#=StoreCode#")
+                                  .Columns(columns =>
+                                  {
+                                      columns.Bound(c => c.PeriodName).Width(80);
+                                      columns.Bound(c => c.Status).Width(80);
+                                      columns.Command(command =>
+                                      {
+                                          command.Custom("Close").Click("ClosePeriods");
+                                          command.Custom("Open").Click("OpenPeriod");
+
+                                      }).Width(180);
+                                  })
+                                  .ToolBar(toolbar =>
+                                  {
+                                      toolbar.Template(
+                                          @<text>   
+                                   
+                                      
+                                        @Html.Kendo().Button().Name("closeAll").Content("Close All").Events(events => events.Click("closeAll")).ToClientTemplate()                             
+                                        @Html.Kendo().Button().Name("openAll").Content("Open All").Events(events => events.Click("openAll")).ToClientTemplate()  
+                                      
+                                        </text>);
+                                  })
+                         
+                                  .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                  .Scrollable()
+                                  .Selectable()
+                                  .DataSource(dataSource => dataSource
+                                      .Ajax()
+                                      .Events(ev => ev
+                                          .Error("error_handler(\"store#=StoreCode#\")")
+                                          .RequestStart("onRequestStart(\"store#=StoreCode#\")")
+                                          .RequestEnd("onRequestEnd(\"store#=StoreCode#\")"))
+                                      .Model(model =>
+                                      {
+                                          model.Id(p => p.InventoryStorePeriodStatusId);
+                                          model.Field(p => p.InventoryPeriodId).Editable(false);
+                                          model.Field(p => p.StoreCode).Editable(false);
+                                          model.Field(p => p.CreatedBy).Editable(false);
+                                          model.Field(p => p.DateCreated).Editable(false);
+                                          model.Field(p => p.ModifiedBy).Editable(false);
+                                          model.Field(p => p.LastModified).Editable(false);
+
+                                      })
+                                      .Read(read => read.Action("InventoryStorePeriodStatuses_Read", "InventoryStorePeriodStatus", new { storecode = "#=StoreCode#" }))
+                    
+                                  ).ToClientTemplate())
+ 
+  </script>
+<script type="text/javascript">
+
+    var masterDataItem;
+    var masterRow;
+    var masterGrid;
+    var codeid;
+    var isclosed;
+
+    function detailExpand(e) {
+
+        masterRow = e.masterRow;
+
+        masterGrid = $("#grid").data("kendoGrid");
+
+        masterDataItem = masterGrid.dataItem(masterRow);
+
+        //  var masterDataItem = masterGrid.dataItem();
+        codeid = masterDataItem.StoreCode;
+       // isclosed = masterDataItem.IsClosed;
+
+
+    }
+    function Enable(e) {
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        $.ajax({
+            type: "GET",
+            data: dataItem.Values,
+            url: '@Url.Action("Enable_Disable", "Store")/' + dataItem.StoreCode
+
+        });
+
+        $('#grid').data('kendoGrid').dataSource.read();
+        $('#grid').data('kendoGrid').refresh();
+        location.reload();
+    }
+
+    function edit(e) {
+        if (e.model.isNew() === false) {
+            $("#StoreCode").attr("readonly", true);
+        }
+    }
+
+    function ClosePeriods(e) {
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        var id = dataItem.InventoryStorePeriodStatusId;
+        $.ajax({
+            type: "POST",
+            data: id,
+            url: '@Url.Action("ClosePeriod", "InventoryStorePeriodStatus")/' + id,
+            success: function (result) {
+                toastr.error(result.Message);
+                console.log(result);
+
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+
+        //$('#gridPeriod').data('kendoGrid').dataSource.read();
+        //$('#gridPeriod').data('kendoGrid').refresh();
+        //location.reload();
+    }
+
+    function OpenPeriod(e) {
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        var id = dataItem.InventoryStorePeriodStatusId;
+        console.log(dataItem);
+        $.ajax({
+            type: "POST",
+            data: id,
+            url: '@Url.Action("OpenPeriod", "InventoryStorePeriodStatus")/' + id,
+            success: function (result) {
+               // toastr.error(result.Message);
+                alert(result.Message);
+                //console.log(result);
+
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+
+        //$('#gridPeriod').data('kendoGrid').dataSource.read();
+        //$('#gridPeriod').data('kendoGrid').refresh();
+        //location.reload();
+    }
+
+    function closeAll(e) {
+      
+        var conf = confirm("Are you sure you want to Close All ?");
+        if (conf === true) {
+
+            $('#loading-image').show();
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("CloseAllPeriod", "InventoryStorePeriodStatus")',
+                contentType: "application/json; charset=utf-8",
+                data: { id: codeid },
+                dataType: "json",
+                success: function (result) {
+                    // toastr.warnning(result.Message);
+                    alert(result.Message);
+                    //location.reload(true);
+                }, //end succ
+                error: function (result) {
+                    alert(result);
+                },
+                complete: function () {
+                    $('#loading-image').hide();
+                }
+            });
+        }
+       
+    }
+
+    function openAll(e) {
+      
+        var conf = confirm("Are you sure you want to Open All ?");
+        if (conf === true) {
+
+            $('#loading-image').show();
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("OpenAllPeriod", "InventoryStorePeriodStatus")',
+                contentType: "application/json; charset=utf-8",
+                data: { id: codeid },
+                dataType: "json",
+                success: function (result) {
+                    // toastr.warnning(result.Message);
+                    alert(result.Message);
+                    //location.reload(true);
+                }, //end succ
+                error: function (result) {
+                    alert(result);
+                },
+                complete: function () {
+                    $('#loading-image').hide();
+                }
+            });
+        }
+       
+    }
+
+</script>

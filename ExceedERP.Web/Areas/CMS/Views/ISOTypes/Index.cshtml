@@ -1,0 +1,113 @@
+﻿<legend>ISO Types Set up</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.CMS.ISOType>()
+              .Name("grid")
+              .Columns(columns =>
+              {
+                  columns.Bound(c => c.Name);
+                  columns.Bound(c => c.Description);
+                  columns.Bound(c => c.IsDefault).ClientTemplate("<input type='checkbox'" + " # if (IsDefault) { #" + "checked='checked'" + "# } #" + " />");
+
+                  columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+              })
+              .ToolBar(toolbar =>
+              {
+                  toolbar.Create();
+                  toolbar.Excel();
+                  toolbar.Pdf();
+              })
+              .Editable(editable => editable.Mode(GridEditMode.InLine))
+              .Pageable()
+              .Navigatable()
+              .Sortable(sortable =>
+              {
+                  sortable.SortMode(GridSortMode.SingleColumn);
+              })
+              .Filterable()
+              .Scrollable(s => s.Height(700))
+              .DataSource(dataSource => dataSource
+                  .Ajax()
+                  .Model(model => model.Id(p => p.ISOTypeId))
+
+                  .Events(ev => ev
+                            .Error("error_handler(\"grid\")")
+                            .RequestStart("onRequestStart(\"grid\")")
+                            .RequestEnd("onRequestEnd(\"grid\")"))
+
+                  .Read(read => read.Action("ISOTypes_Read", "ISOTypes"))
+                  .Create(create => create.Action("ISOType_Create", "ISOTypes"))
+                  .Update(update => update.Action("ISOType_Update", "ISOTypes"))
+                  .Destroy(destroy => destroy.Action("ISOType_Destroy", "ISOTypes"))
+              ).ClientDetailTemplateId("checklist__template")
+)
+<script id="checklist__template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+        .Name("trainee_tab_str_#=ISOTypeId#")
+        .SelectedIndex(0)
+        .Items(items =>
+        {
+            items.Add().Text("ISO Checklists").Content(@<text>
+                @(Html.Kendo().Grid<ExceedERP.Core.Domain.CMS.ISOChecklist>()
+                  .Name("checklist_grid_#=ISOTypeId#")
+                  .Columns(columns =>
+                  {
+                      columns.Bound(c => c.Code);
+                      columns.Bound(c => c.Name);
+                      columns.Bound(c => c.Description);
+                      columns.Bound(c => c.ValueType).EditorTemplateName("ISOChecklistValueTypeEditorTemplate");
+
+
+
+                      columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+                  })
+                  .ToolBar(toolbar =>
+                  {
+                      toolbar.Create();
+                      //toolbar.Excel();
+                      //toolbar.Pdf();
+                  })
+
+                  .Editable(editable =>
+                  {
+                      editable.Mode(GridEditMode.InLine);
+
+                      //editable.TemplateName("CompanyEditorTemplate");
+                      //editable.Window(window =>
+                      //{
+                      //    window.Title("Company Registration");
+                      //    window.Scrollable(true);
+                      //    window.Height(550);
+                      //});
+                  })
+                  .Pageable()
+                  .Navigatable()
+                  .Selectable(selectable => {
+                      selectable.Mode(GridSelectionMode.Single);
+                      selectable.Type(GridSelectionType.Row);
+                  })
+                  .Sortable(sortable => {
+                      sortable.SortMode(GridSortMode.SingleColumn);
+                  })
+                  .Filterable()
+                  .Scrollable()
+                  .DataSource(dataSource => dataSource
+                      .Ajax()
+                      .Model(model =>
+                      {
+                          model.Id(p => p.ISOChecklistId);
+                      })
+                      .Events(ev => ev
+                            .Error("error_handler(\"checklist_grid_#=ISOTypeId#\")")
+                            .RequestStart("onRequestStart(\"checklist_grid_#=ISOTypeId#\")")
+                            .RequestEnd("onRequestEnd(\"checklist_grid_#=ISOTypeId#\")"))
+
+                      .Read(read => read.Action("ISOChecklists_Read", "ISOChecklists", new { id = "#=ISOTypeId#" }))
+                      .Create(create => create.Action("ISOChecklist_Create", "ISOChecklists", new { id = "#=ISOTypeId#" }))
+                      .Update(update => update.Action("ISOChecklist_Update", "ISOChecklists"))
+                      .Destroy(destroy => destroy.Action("ISOChecklist_Destroy", "ISOChecklists"))
+                  ).ToClientTemplate()
+            )
+            </text>);
+        }).ToClientTemplate()
+    )
+</script>
+

@@ -1,0 +1,80 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Finance.AR.SalesOrder.PartnerType>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.TypeName).Width(150);
+          columns.Bound(c => c.Description).Width(150);
+          columns.Bound(c => c.Enable).Width(90).Title("Enable").ClientTemplate(
+              "<input type='checkbox' disabled = 'true' value='#= Enable #' " +
+              "# if (Enable) { #" +
+              "checked='checked'" +
+              "# } #" +
+              "/>"
+              );
+          columns.Command(command => { command.Edit(); command.Custom("En").Click("Enable"); }).Width(380);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .HtmlAttributes(new { style = "height: 550px;" })
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(5))
+
+      .Scrollable()
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Filterable()
+      .Groupable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Events(ev => ev
+              .Error("error_handler(\"grid\")")
+              .RequestStart("onRequestStart(\"grid\")")
+              .RequestEnd("onRequestEnd(\"grid\")"))
+          .Model(model =>
+          {
+              model.Id(p => p.PartnerTypeId);
+              model.Field(p => p.CreatedBy).Editable(false);
+              model.Field(p => p.DateCreated).Editable(false);
+              model.Field(p => p.LastModified).Editable(false);
+              model.Field(p => p.ModifiedBy).Editable(false);
+          })
+          .Model(model => model.Id(p => p.PartnerTypeId))
+          .Read(read => read.Action("PartnerTypes_Read", "PartnerType"))
+          .Create(create => create.Action("PartnerTypes_Create", "PartnerType"))
+          .Update(update => update.Action("PartnerTypes_Update", "PartnerType"))
+          .Destroy(destroy => destroy.Action("PartnerTypes_Destroy", "PartnerType"))
+      ))
+
+
+<script>
+
+    function Enable(e) {
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+
+        $.ajax({
+            type: "GET",
+            data: dataItem.PartnerTypeId,
+            url: '@Url.Action("Enable_Disable", "PartnerType")/' + dataItem.PartnerTypeId
+
+        });
+
+        $('#grid').data('kendoGrid').dataSource.read();
+        $('#grid').data('kendoGrid').refresh();
+        location.reload();
+    };
+
+</script>

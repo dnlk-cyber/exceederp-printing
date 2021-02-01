@@ -1,0 +1,10 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@(Html.Kendo().DropDownListFor(x=> x).BindTo((IEnumerable)ViewData["Relationship"])
+.OptionLabel(Resources.Select)
+        .DataTextField("Description")
+        .DataValueField("LookupId")
+)
+
+
+

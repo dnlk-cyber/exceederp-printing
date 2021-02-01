@@ -1,0 +1,150 @@
+﻿
+@using Kendo.Mvc.UI
+
+@{
+    Layout = "~/Views/Shared/_Popup.cshtml";
+}
+<div class="form">
+    <div class="row fullrow">
+
+        <div class="col-md-3 ro1">
+
+            <div class="form-group">
+                @Html.Label("Account", htmlAttributes: new { @class = "control-label col-md-6" })
+                <div class="col-md-6">
+                    @(Html.Kendo().DropDownList()
+                          .Name("Accounts")
+                          .HtmlAttributes(new { style = "width:200px" })
+                          .ValuePrimitive(true)
+                          .OptionLabel("...Account...")
+                          .DataTextField("GlchartAccunt")
+                          .DataValueField("GlValue")
+                          .DataSource(dataSource =>
+                          {
+                              dataSource.Read(read => read.Action("GetAccountCode", "DataProvider"))
+                                  .ServerFiltering(true);
+                          })
+                    )
+                </div>
+            </div>
+
+            <div class="row"></div>
+
+            <div class="form-group">
+                @Html.Label("Location", htmlAttributes: new { @class = "control-label col-md-6" })
+                <div class="col-md-6">
+                    @(Html.Kendo().DropDownList()
+                          .Name("location")
+                          .ValuePrimitive(true)
+                          .OptionLabel("...Location...")
+                          .HtmlAttributes(new { style = "width:200px" })
+                            .DataTextField("Name")
+                            .DataValueField("Value")
+                          .DataSource(dataSource =>
+                          {
+                              dataSource.Read(read => read.Action("GetCompany", "DataProvider"))
+                                  .ServerFiltering(true);
+                          })
+                    )
+                </div>
+            </div>
+            <div class="row"></div>
+
+            <div class="form-group">
+                @Html.Label("Cost Center", htmlAttributes: new { @class = "control-label col-md-6" })
+                <div class="col-md-6">
+                    @(Html.Kendo().DropDownList()
+                          .Name("costCenter")
+                          .ValuePrimitive(true)
+                          .OptionLabel("...Cost Center...")
+                          .HtmlAttributes(new { style = "width:200px" })
+                                  .DataTextField("Name")
+                                          .DataValueField("code")
+                          .DataSource(dataSource =>
+                          {
+                              dataSource.Read(read => read.Action("GetCostCenter", "DataProvider"))
+                                  .ServerFiltering(true);
+                          })
+                    )
+                </div>
+            </div>
+            <div class="row"></div>
+
+            <div class="form-group">
+                @Html.Label("Sub Account", htmlAttributes: new { @class = "control-label col-md-6" })
+                <div class="col-md-6">
+                    @(Html.Kendo().DropDownList()
+                          .Name("SubAccounts")
+                          .ValuePrimitive(true)
+                          .OptionLabel("...SubAccount...")
+                          .HtmlAttributes(new { style = "width:200px" })
+                                  .DataTextField("GlchartSubAccunt")
+                                  .DataValueField("GlValue")
+                          .DataSource(dataSource =>
+                          {
+                              dataSource.Read(read => read.Action("GetSubAccountCode", "DataProvider"))
+                                  .ServerFiltering(true);
+                          })
+                    )
+                </div>
+            </div>
+            <div class="row"></div>
+
+            <div class="row"></div>
+
+
+            <div class="row"></div>
+            <div class="col-md-offset-3 col-md-9">
+                <button type="submit" class="saveBtn btn btn-primary" onclick="javascript:changeparent()"><i class="fa fa-suitcase"></i> Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script language="javascript">
+
+    function changeparent() {
+        //window.opener.document.getElementById('AccountCode').value = '@@ViewBag.AccountCode'
+        //if (( (document.getElementById('Accounts').value.length === 0) || (document.getElementById('SubAcconts').value.length === 0) )) {
+        //    alert("Please select.");
+        //}
+        //else {
+             
+        var account = document.getElementById('Accounts').value;
+
+        var subaccount = document.getElementById('SubAccounts').value;
+        var cost = document.getElementById('costCenter').value;
+        var company = document.getElementById('location').value;
+
+
+        var accCode = account + "-" + company + "-" + cost + "-" + subaccount;
+            //window.opener.document.getElementById('AccountCode').value = account + "-" + company + "-" + costcenter + "-" + subaccount;
+           //window.opener.document.getElementById('AccountCode').val(accCode).trigger("change");
+        if (opener.caseto === "clearing") {
+            opener.setLangc(accCode);
+        }
+        else {
+            opener.setLang(accCode);
+
+        }
+            window.close();
+     //   }
+    }
+    function closeWin() {
+        document.close();
+    }
+</script>
+
+<style>
+    .k-list-container ul li.k-Item {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .k-list-container ul {
+        overflow: hidden !important;
+    }
+</style>

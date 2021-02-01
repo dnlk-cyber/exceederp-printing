@@ -1,0 +1,62 @@
+﻿<legend>Sales Quote Voucher Document</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.SalesQuoteVoucherView>()
+          .Name("SalesQuoteVoucherViewGrid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.Consignee);
+        columns.Bound(c => c.IssuedDate);
+        //columns.Bound(c => c.IsIssued);
+        columns.Bound(c => c.Date);
+        //columns.Bound(c => c.IsVoid);
+        columns.Bound(c => c.GrandTotal);
+        columns.Bound(c => c.Period);
+        columns.Bound(c => c.LastObjectState);
+        columns.Bound(c => c.PaymentMethod);
+        columns.Bound(c => c.Remark);
+        //columns.Bound(c => c.Discount);
+        //columns.Bound(c => c.SubTotal);
+        //columns.Bound(c => c.AdditionalCharge);
+        columns.Command(command =>
+        {
+           command.Custom("Forward").Click("showDetails");
+           command.Custom("Print").Click("showDetails");
+        }).Width(180);
+          
+      })
+      .ToolBar(toolbar => {
+            toolbar.Excel();
+            toolbar.Pdf();
+      })
+      
+      .Pageable()
+      .Navigatable()
+      .Selectable(selectable => {
+            selectable.Mode(GridSelectionMode.Single);
+            selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable => {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Filterable()
+          .Scrollable(s => s.Height(500))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Read(read => read.Action("SalesQuoteVoucherViews_Read", "SalesQuoteVoucherView"))
+      )
+)
+<script>
+    function showDetails(e) {
+        e.preventDefault();
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        var wnd = $("#Details").data("kendoWindow");
+        var code = dataItem.SalesQuoteVoucherID;
+        $.ajax({
+            url: "/SalesQuoteVoucherView/SalesQuoteVoucherViews_Forward",
+            data: { userRole: code, salesQuoteVoucherViewID: code }
+        });
+        //wnd.content(detailsTemplate(dataItem));
+        //wnd.center().open();
+    }
+
+
+</script>

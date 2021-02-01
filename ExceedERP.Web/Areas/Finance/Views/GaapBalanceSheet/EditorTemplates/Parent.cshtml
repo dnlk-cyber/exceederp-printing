@@ -1,0 +1,9 @@
+﻿@using System.Collections
+@(Html.Kendo().DropDownListFor(m => m)
+                  .ValuePrimitive(true)
+                  .OptionLabel("Select parent...")
+                                  .DataTextField("Name")
+                                  .DataValueField("Name")
+                              .BindTo((IEnumerable)ViewData["parents"])
+)
+@Html.ValidationMessageFor(m => m)

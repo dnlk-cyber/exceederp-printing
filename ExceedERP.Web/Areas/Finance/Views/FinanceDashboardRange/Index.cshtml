@@ -1,0 +1,23 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Dashboard.FinanceDashboardRange>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.AccountFrom);
+        columns.Bound(c => c.AccountTo);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.FinanceDashboardRangeId))
+          .Read(read => read.Action("FinanceDashboardRanges_Read", "FinanceDashboardRange"))
+          .Create(create => create.Action("FinanceDashboardRanges_Create", "FinanceDashboardRange"))
+          .Update(update => update.Action("FinanceDashboardRanges_Update", "FinanceDashboardRange"))
+          .Destroy(destroy => destroy.Action("FinanceDashboardRanges_Destroy", "FinanceDashboardRange"))
+      )
+)

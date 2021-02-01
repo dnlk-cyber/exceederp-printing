@@ -1,0 +1,15 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@(Html.Kendo().DropDownListFor(m => m)
+      .OptionLabel(Resources.Select)
+      //.Name("WithholdingType")
+      .DataTextField("TaxName")
+      .DataValueField("GLTaxRateID")
+      .DataSource(dataSource =>
+      {
+          dataSource.Read(read => read.Action("GetWitholdingtaxRates", "DataProvider"));
+      })
+      .Filter("contains")
+      .MinLength(2)
+      .ValuePrimitive(true)
+      )

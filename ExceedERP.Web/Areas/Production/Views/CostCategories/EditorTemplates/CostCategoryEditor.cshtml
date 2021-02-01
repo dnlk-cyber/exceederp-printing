@@ -1,0 +1,116 @@
+﻿@using System.Collections
+@using ExceedERP.Helpers.Common
+@using ExceedERP.Core.Localization
+@using Kendo.Mvc.UI,
+@using ExceedERP.Core.Domain.Production
+@model ExceedERP.Core.Domain.Production.ProductionAndProcessingCostCategory
+
+<form>
+    <div class="row">
+        <div class="col-sm-1">
+        </div>
+
+        <div class="col-sm-6">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.Title, htmlAttributes: new { @class = "control-label col-sm-12" })
+
+                </div>
+                <div>
+                    @Html.Kendo().TextBoxFor(model => model.Title).HtmlAttributes(new { style = "width:300px;" })
+                    @Html.ValidationMessageFor(model => model.Title, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-sm-1">
+
+        </div>
+        <div class="col-sm-6">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.ParentId, "Parent", htmlAttributes: new { @class = "control-label col-sm-12" })
+
+                </div>
+                <div>
+                    @(Html.Kendo().DropDownListFor(model => model.ParentId)
+                                                                   .OptionLabel(Resources.Select)
+                                                                   .DataTextField("Title")
+                                                                   .DataValueField("ProductionAndProcessingCostCategoryId")
+                                                                   .ValuePrimitive(true)
+                                                                   .HtmlAttributes(new { style = "width:280px;" })
+                                                                   //.BindTo(EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.Construction.AgingPeriodTimeUnit)))
+                                                                   .DataSource(dataSource =>
+                                                                   {
+                                                                       dataSource.Read(read => read.Action("GetCostCategories", "ProductionDataProvider", new { area = "Production" }));
+                                                                   })
+                                                                   .Filter("contains")
+                    //.Events(ev => {
+                    //    ev.DataBound("dropdownListDataBound");
+                    //})
+                    )
+                </div>
+            </div>
+        </div>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-sm-1">
+
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                @*<div class="k-label">
+                    @Html.LabelFor(model => model.IsDeductive, htmlAttributes: new { @class = "control-label col-sm-12" })
+
+                </div>*@
+                <div>
+
+                    @Html.Kendo().CheckBoxFor(model => model.IsDeductive).Label("Is Deductive?")
+                    @*@Html.ValidationMessageFor(model => model.IsDeductive, "", new { @class = "text-danger" })*@
+                </div>
+            </div>
+
+        </div>
+
+        @*<div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.Max, "To", htmlAttributes: new { @class = "control-label col-sm-12" })
+
+                </div>
+                <div>
+                    @Html.Kendo().TextBoxFor(model => model.Max).HtmlAttributes(new { style = "width:130px;" })
+                    @Html.ValidationMessageFor(model => model.Max, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>*@
+
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-sm-1">
+        </div>
+
+        <div class="col-sm-6">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.Remark, htmlAttributes: new { @class = "control-label col-sm-12" })
+
+                </div>
+                <div>
+                    @Html.Kendo().TextBoxFor(model => model.Remark).HtmlAttributes(new { style = "width:300px;" })
+                    @Html.ValidationMessageFor(model => model.Remark, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <br />
+</form>
+
+
+

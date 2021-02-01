@@ -1,0 +1,676 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.Finance.AR
+<legend>Standard Collection</legend>
+@(Html.Kendo().Grid<ArStandardCollection>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.ArStandardCollectionId).Title("ID").Width(80).ClientTemplate("#=appendZeros(ArStandardCollectionId)#");
+          columns.Bound(c => c.ReceiptNumber).Width(110);
+         
+          columns.Bound(c => c.ReceiptDate).Width(110).Format("{0:dd/MM/yyyy}");
+          columns.ForeignKey(c => c.ReceiptMethod, (IEnumerable)ViewData["methods"], "Method", "Method").Width(120);
+          columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["customers"], "CustomerId", "CompanyName").Width(150);
+          columns.Bound(c => c.IsNewCustomer).Width(100).Title("New Customer").ClientTemplate(
+              "<input type='checkbox' disabled = 'true' value='#= IsNewCustomer #' " +
+              "# if (IsNewCustomer) { #" +
+              "checked='checked'" +
+              "# } #" +
+              "/>"
+              );
+          columns.Bound(c => c.CustomerName).Width(130);
+          columns.Bound(c => c.LineAmount).Format("{0:n2}").Width(120);
+          columns.Bound(c => c.TaxAmount).Format("{0:n2}").Width(120);
+          columns.Bound(c => c.TotalAmount).Format("{0:n2}").Width(120);
+          columns.Bound(c => c.Reference).Width(110);
+          columns.Bound(c => c.CreatedBy).Width(100);
+          columns.Bound(c => c.Status).Width(100);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(280);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Template(
+              @<text>
+
+                    <a class="k-button k-button-icontext k-grid-add" href='\#'><span class="k-icon k-i-add"></span> Add new record</a>
+                    <button class="k-button k-button-icontext k-grid-excel" href='\#'> <span class="k-icon k-i-excel"></span>Export to Excel</button>
+
+                    @(Html.Kendo().CheckBox()
+                                    .Name("checktransfferable")
+                                    .Label("Show Transferrable Only")
+                                    .HtmlAttributes(new { onchange = "isNotTransferredCheck(this)" })
+                    )
+
+
+
+                </text>);
+      })
+      .Excel(excel => excel
+          .FileName("AR Misc Collection.xlsx")
+          .Filterable(true)
+          .AllPages(true)
+      )
+        .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("Collection").Window(w => w.Title("Collection Registration")))
+        .HtmlAttributes(new { style = "height: 550px;" })
+              .Pageable(pageable => pageable
+                                .Input(true)
+                                .Numeric(false)
+                                .Refresh(true)
+                                .PageSizes(true)
+                                .ButtonCount(5))
+
+                    .Scrollable()
+                         .Selectable(selectable =>
+                            {
+                                selectable.Mode(GridSelectionMode.Single);
+                                selectable.Type(GridSelectionType.Row);
+                            })
+                        .Sortable(sortable =>
+                        {
+                            sortable.SortMode(GridSortMode.SingleColumn);
+                        })
+                    .Filterable()
+                    .Groupable()
+              .Events(events => events.DetailExpand("detailExpandCollection"))
+              .Events(events => events.DataBound("onDataBoundMasterCollection"))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+              .Sort(sort => sort.Add("ArStandardCollectionId").Descending())
+              .Model(
+                model =>
+                {
+                    model.Id(p => p.ArStandardCollectionId);
+                    model.Field(p => p.ArStandardCollectionId).Editable(false);
+                    model.Field(p => p.LineAmount).Editable(false);
+                    model.Field(p => p.TaxAmount).Editable(false);
+                    model.Field(p => p.TotalAmount).Editable(false);
+                    model.Field(p => p.UnidentifiedBalance).Editable(false);
+                    model.Field(p => p.AppliedBalance).Editable(false);
+                    model.Field(p => p.OnAccountBalance).Editable(false);
+                    model.Field(p => p.UnappliedBalance).Editable(false);
+                    model.Field(p => p.PrepaymentBalance).Editable(false);
+
+                    model.Field(p => p.VoidTime).Editable(false);
+                    model.Field(p => p.VoidBy).Editable(false);
+                    model.Field(p => p.IsVoid).Editable(false);
+                    
+                    model.Field(p => p.OnlineApprovedTime).Editable(false);
+                    model.Field(p => p.OnlineApprovedBy).Editable(false);
+                    model.Field(p => p.IsOnlineApproved).Editable(false);
+                    model.Field(p => p.Status).Editable(false);
+                    
+                    model.Field(p => p.IsSendForApproval).Editable(false);
+                     model.Field(p => p.IsOnlineTransferred).Editable(false);
+                    model.Field(p => p.IsOnlineTransferredBy).Editable(false);
+                    model.Field(p => p.OnlineTransferredTime).Editable(false);
+                    
+                    model.Field(p => p.OrgBranchName).Editable(false);
+                    model.Field(p => p.CreatedBy).Editable(false);
+                    model.Field(p => p.ModifiedBy).Editable(false);
+                    model.Field(p => p.LastModified).Editable(false);
+                    model.Field(p => p.DateCreated).Editable(false);
+
+
+                })
+          .Events(ev => ev
+              .Error("error_handler(\"grid\")")
+              .RequestStart("onRequestStart(\"grid\")")
+              .RequestEnd("onRequestEnd(\"grid\")"))
+          .Read(read => read.Action("ARStandardCollections_Read", "ARStandardCollection").Data("passReadData"))
+          .Create(create => create.Action("ARStandardCollections_Create", "ARStandardCollection"))
+          .Update(update => update.Action("ARStandardCollections_Update", "ARStandardCollection"))
+          .Destroy(destroy => destroy.Action("ARStandardCollections_Destroy", "ARStandardCollection"))
+      )
+      .ClientDetailTemplateId("templates")
+     
+)
+
+<script id="templates" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+          .Name("tabStrip#=ArStandardCollectionId#")
+          .SelectedIndex(0)
+          .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+          .Items(items =>
+          {
+              items.Add().Text("Collection Detail").Content(@<text>
+
+               <div>
+                    <p><b>Record Status :#= Status #</b></p>
+
+                    # if (!IsSendForApproval&&!IsOnlineApproved)
+                    {#
+                    <a onclick='return sendForApproval("#=ArStandardCollectionId#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                    # } #
+                    
+                    # if (IsOnlineApproved)
+                    {#
+                    <a target="new" href='@Url.Action("ArCollection", "FinancePrint")/#=ArStandardCollectionId#'><i class="fa fa-print fa-2x"></i></a>
+                    <br />
+                    # } #
+
+                   # if (IsOnlineApproved && !IsOnlineTransferred )
+                   {#
+                   <a onclick='return transferToGl("#=ArStandardCollectionId#")' href=' \#' title="Transfer to GL"><i class="fa fa-paper-plane fa-2x"></i></a>
+                   # } #
+
+                   
+                </div>
+    <div>
+        <hr>
+        <dl class="dl-horizontal">
+
+
+            <dt>
+                Created On
+            </dt>
+            <dd>
+                #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+
+            </dd>
+            <dt>
+                Created By
+            </dt>
+            <dd>
+                #= CreatedBy #
+            </dd>
+            <dt>
+                Modified By
+            </dt>
+            <dd>
+                #= ModifiedBy #
+            </dd>
+            <dt>
+                Modified Date
+            </dt>
+            <dd>
+                #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+            </dd>
+        </dl>
+    </div>
+    
+      <hr>
+
+        # if (IsOnlineApproved&&!IsVoid&&!IsOnlineTransferred)
+        {#
+        @if (HttpContext.Current.User.IsInRole("Account_Receivable_Void"))
+        {
+            <a onclick='return voidRecord("#=ArStandardCollectionId#")' href='\#' title='Void Record'><i class='fa  fa-bolt fa-2x' style='color:red'></i></a>
+        }
+        # } #
+
+            </text>
+                  );
+              items.Add().Text("Collection Lines").Content(@<text>
+                    @(Html.Kendo().Grid<ArStandardCollectionLines>()
+                          .Name("ARStandardCollectionLines#=ArStandardCollectionId#")
+                          .Columns(columns =>
+                          {
+                              columns.Bound(c => c.IsPrepayment).Title("Is Prepayment ?").Width(120).ClientTemplate(
+                                  "<input type='checkbox' disabled = 'true' value='\\#= IsPrepayment\\#' " +
+                                  "\\# if (IsPrepayment) { \\#" +
+                                  "checked='checked'" +
+                                  "\\# } \\#" +
+                                  "/>"
+                                  );
+                              columns.Bound(c => c.InvoiceNumber).EditorTemplateName("Invoices").Width(130);
+                              columns.Bound(c => c.InstallmentNo).Width(130).Hidden(true);
+                              columns.Bound(c => c.ApplyAmount).Width(140).ClientFooterTemplate(" \\#=sum\\# ");
+
+                              columns.Bound(c => c.BalanceDue).Width(140).ClientFooterTemplate(" \\#=sum\\# ");
+                              columns.Bound(c => c.ApplyDate).Width(150).Hidden(true);
+                              //columns.Bound(c => c.HasPrepayment).Title("Has Prepayment ?").Width(160).ClientTemplate(
+                              //    "<input type='checkbox' disabled = 'true' value='\\#= HasPrepayment\\#' " +
+                              //        "\\# if (HasPrepayment) { \\#" +
+                              //            "checked='checked'" +
+                              //        "\\# } \\#" +
+                              //    "/>"
+                              //);
+                              columns.Bound(c => c.PrepaymentAmount).Width(160);
+                              columns.Bound(c => c.TaxType).EditorTemplateName("TaxType").Width(120);
+                              columns.Bound(c => c.TaxAmount).Width(130);
+                              columns.Bound(c => c.WithholdingType).Width(150).EditorTemplateName("WithholdingType");
+                              columns.Bound(c => c.WithholdTax).Width(130).ClientTemplate("<input type='checkbox' disabled = 'true' \\#= WithholdTax ? checked='checked' :'' \\# />");
+                              columns.Bound(c => c.NetAmount).Width(120);
+
+                              columns.Command(command =>
+                              {
+
+                                  command.Edit();
+                                  command.Destroy();
+
+                              }).Width(480);
+                          })
+                          .ToolBar(toolbar =>
+                          {
+                              toolbar.Create();
+                          })
+
+                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                          .HtmlAttributes(new { style = "height: 400px;" })
+                          .Events(x => x.DataBound("onDataBoundLinesCollection"))
+                          .Scrollable()
+                          .Sortable()
+
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+                              .Aggregates(aggregates =>
+                              {
+                                  aggregates.Add(p => p.ApplyAmount).Sum();
+                                  aggregates.Add(p => p.BalanceDue).Sum();
+                              })
+                              .Model(
+                                  model =>
+                                  {
+                                      model.Id(p => p.ArStandardCollectionLinesId);
+                                      model.Field(c => c.TaxAmount).Editable(false);
+                                      model.Field(c => c.WithholdTaxAmount).Editable(false);
+                                      model.Field(c => c.WithholdingAmount).Editable(false);
+
+                                      model.Field(p => p.InstallmentNo).Editable(false);
+                                      model.Field(c => c.NetAmount).Editable(false);
+                                      model.Field(p => p.BalanceDue).Editable(false);
+                                      model.Field(p => p.Source).Editable(false);
+                                      model.Field(p => p.OrgBranchName).Editable(false);
+                                      model.Field(p => p.CreatedBy).Editable(false);
+                                      model.Field(p => p.ModifiedBy).Editable(false);
+                                      model.Field(p => p.LastModified).Editable(false);
+                                      model.Field(p => p.DateCreated).Editable(false);
+                                  })
+                              .Events(events => events
+                                  .Error("error_handler(\"ARStandardCollectionLines#=ArStandardCollectionId#\")")
+                                  .RequestStart("onRequestStart(\"ARStandardCollectionLines#=ArStandardCollectionId#\")")
+                                  .RequestEnd("onRequestEnd(\"ARStandardCollectionLines#=ArStandardCollectionId#\")"))
+                              .Read(read => read.Action("ARStandardCollectionLines_Read", "ARStandardCollectionLines", new {id = "#=ArStandardCollectionId#"}))
+                              .Create(create => create.Action("ARStandardCollectionLines_Create", "ARStandardCollectionLines", new {id = "#=ArStandardCollectionId#"}))
+                              .Update(update => update.Action("ARStandardCollectionLines_Update", "ARStandardCollectionLines", new {id = "#=ArStandardCollectionId#"}))
+                              .Destroy(destroy => destroy.Action("ARStandardCollectionLines_Destroy", "ARStandardCollectionLines"))
+                          )
+
+                          .ToClientTemplate()
+                          )
+            </text>);
+
+              items.Add().Text("Validation").Content(
+                  @<text>
+                    @(Html.Kendo().Grid<ArStandardCollectionValidation>()
+                          .Name("ARStandardCollectionValidation#=ArStandardCollectionId#")
+                          .Columns(columns =>
+                          {
+                              columns.Bound(c => c.ArStandardCollectionValidationId).Hidden(true);
+                              columns.Bound(c => c.Status).EditorTemplateName("ApprovalStatus").Width(150);
+                              columns.Bound(c => c.Remark).Width(200);
+
+                              columns.Bound(c => c.DateCreated).Width(200).Title("Time").Format("{0:dd/MM/yyyy}");
+                              columns.Bound(c => c.LastModified).Hidden(true);
+                              columns.Bound(c => c.CreatedBy).Width(200).Title("User");
+                              columns.Bound(c => c.ModifiedBy).Hidden(true);
+                              columns.Command(command =>
+                              {
+                                  command.Edit();
+
+                              }).Width(480);
+
+                          })
+                          .ToolBar(toolbar =>
+                          {
+                              toolbar.Create();
+                          })
+                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                          .Events(x => x.DataBound("onDataBoundFisrtValidationCollection"))
+                          .Sortable(sortable =>
+                          {
+                              sortable.SortMode(GridSortMode.SingleColumn);
+                          })
+                          
+                          .Scrollable()
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+                              .Model(
+                                  model =>
+                                  {
+                                      model.Id(p => p.ArStandardCollectionValidationId);
+                                      model.Field(p => p.OrgBranchName).Editable(false);
+                                      model.Field(p => p.CreatedBy).Editable(false);
+                                      model.Field(p => p.ModifiedBy).Editable(false);
+                                      model.Field(p => p.LastModified).Editable(false);
+                                      model.Field(p => p.DateCreated).Editable(false);
+                                  })
+                              .Events(events => events
+                                  .Error("error_handler(\"ARStandardCollectionValidation#=ArStandardCollectionId#\")")
+                                  .RequestStart("onRequestStart(\"ARStandardCollectionValidation#=ArStandardCollectionId#\")")
+                                  .RequestEnd("onRequestEnd(\"ARStandardCollectionValidation#=ArStandardCollectionId#\")"))
+                              .Read(read => read.Action("ARStandardCollectionValidations_Read", "ArStandardCollectionValidation", new {id = "#=ArStandardCollectionId#"}))
+                              .Create(create => create.Action("ARStandardCollectionValidations_Create", "ArStandardCollectionValidation", new {id = "#=ArStandardCollectionId#"}))
+                              .Update(update => update.Action("ARStandardCollectionValidations_Update", "ArStandardCollectionValidation", new {id = "#=ArStandardCollectionId#"}))
+                              .Destroy(destroy => destroy.Action("ARStandardCollectionValidations_Destroy", "ArStandardCollectionValidation"))
+                          )
+                          .ToClientTemplate())
+
+                </text>);
+
+              items.Add().Text("Distribution").Content(
+                  @<text>
+                    @(Html.Kendo().Grid<ArStandardCollectionDistribution>()
+                          .Name("ARStandardCollectionDistribution#=ArStandardCollectionId#")
+                          .Columns(columns =>
+                          {
+                              columns.Bound(c => c.ArStandardCollectionDistributionId).Hidden(true);
+                               columns.Bound(c => c.AccountCode).EditorTemplateName("AccountCode").Width(150);
+                              columns.Bound(c => c.AccountDesc).Title("Account Description").Width(250);
+                              columns.Bound(c => c.AdditionalDescription).Title("Additional Description").Width(150);
+                              columns.Bound(c => c.Debit).Width(150).ClientFooterTemplate("Total Debit: \\#=sum\\# ");
+                              columns.Bound(c => c.Credit).Width(150).ClientFooterTemplate("Total Credit: \\#=sum\\# ");
+
+                              columns.Bound(c => c.DateCreated).Hidden(true).Width(130).Title("Time").Format("{0:dd/MM/yyyy}");
+                              columns.Bound(c => c.LastModified).Hidden(true);
+                              columns.Bound(c => c.CreatedBy).Width(200).Title("User").Hidden(true);
+                              columns.Bound(c => c.ModifiedBy).Hidden(true);
+                              columns.Command(command =>
+                              {
+
+                                  command.Edit();
+                                  command.Destroy();
+
+                              }).Width(480).ClientFooterTemplate("Difference: \\#=Debit.sum-Credit.sum\\# ");
+
+                          })
+                          .ToolBar(toolbar =>
+                          {
+                              toolbar.Create();
+                          })
+                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                          
+                          .Sortable(sortable =>
+                          {
+                              sortable.SortMode(GridSortMode.SingleColumn);
+                          })
+                         
+                          .Scrollable()
+                          .HtmlAttributes(new { style = "height: 400px;" })
+                          .Events(x => x.DataBound("onDataBoundDistributionCollection"))
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+                              .Aggregates(aggregates =>
+                              {
+                                  aggregates.Add(p => p.Debit).Sum();
+                                  aggregates.Add(p => p.Credit).Sum();
+                              })
+                              .Model(
+                                  model =>
+                                  {
+                                      model.Id(p => p.ArStandardCollectionDistributionId);
+                                      model.Field(p => p.AccountDesc).Editable(false);
+                                      model.Field(p => p.OrgBranchName).Editable(false);
+                                      model.Field(p => p.CreatedBy).Editable(false);
+                                      model.Field(p => p.ModifiedBy).Editable(false);
+                                      model.Field(p => p.LastModified).Editable(false);
+                                      model.Field(p => p.DateCreated).Editable(false);
+                                  })
+                              .Events(events => events
+                                  .Error("error_handler(\"ARStandardCollectionDistribution#=ArStandardCollectionId#\")")
+                                  .RequestStart("onRequestStart(\"ARStandardCollectionDistribution#=ArStandardCollectionId#\")")
+                                  .RequestEnd("onRequestEnd(\"ARStandardCollectionDistribution#=ArStandardCollectionId#\")"))
+                              .Read(read => read.Action("ARStandardCollectionDistributions_Read", "ARStandardCollectionDistribution", new {id = "#=ArStandardCollectionId#"}))
+                              .Create(create => create.Action("ARStandardCollectionDistributions_Create", "ARStandardCollectionDistribution", new {id = "#=ArStandardCollectionId#"}))
+                              .Update(update => update.Action("ARStandardCollectionDistributions_Update", "ARStandardCollectionDistribution", new {id = "#=ArStandardCollectionId#"}))
+                              .Destroy(destroy => destroy.Action("ARStandardCollectionDistributions_Destroy", "ARStandardCollectionDistribution"))
+                          )
+                          .ToClientTemplate()
+                          )
+
+                </text>);
+          })
+
+          .ToClientTemplate()
+          )
+
+</script>
+
+<script>
+
+    function voidRecord(id) {
+        var recordStatus = "";
+        var conf = confirm("Are you sure you want to void this record number: " + id + " ?");
+        if (conf === true) {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("Void", "ArStandardCollection", new {area = "Finance"})',
+                data: { id: id },
+                success: function (result) {
+                    // toastr.warnning(result.Message);
+                    alert(result.Message);
+                    recordStatus = result.Status;
+                    location.reload(true);
+                }, //end succ
+                error: function (result) {
+                    alert(result);
+                }
+            });
+        }
+    }
+    function transferToGl(id) {
+        var desc = prompt("Please enter transaction description:");
+        if (desc != null) {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("TransferDistribution", "ArStandardCollection", new { area = "Finance" })',
+                data: {
+                    id: id,
+                    description: desc
+                },
+                success: function (result) {
+                    // toastr.warnning(result.Message);
+                    alert(result.Message);
+                    location.reload(true);
+                }, //end succ
+                error: function (result) {
+                    alert(result);
+                }
+            });
+        }
+    }
+
+    function sendForApproval(id) {
+        var recordStatus = "";
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("SendForApproval", "ArStandardCollection", new { area = "Finance" })',
+            data: { id: id },
+            success: function (result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                recordStatus = result.Status;
+                location.reload(true);
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+
+
+    function isNewCustomer(obj) {
+        if ($(obj).is(":checked")) {
+            $("#customernameDiv").show();
+
+        } else {
+            $("#customernameDiv").hide();
+
+        }
+
+    }
+
+    function getCustomerId() {
+        return {
+            id: codeid,
+            text: $("#InvoiceNumber").data("kendoDropDownList").filterInput.val()
+        };
+    }
+
+    
+
+    function onSelect(e) {
+        //alert("change");
+        var dataItem = this.dataItem(e.item);
+        //begin
+        var item = dataItem.Code;
+        $.ajax({
+            url: '/Finance/FinanceDataProvider/GetInvoiceDueAmount',
+            type: 'POST',
+            data: { id: item },
+            success: function (result) {
+                if (result.length > 0) {
+                    for (var i = 0; i < result.length; i++) {
+                        $("#ApplyAmount").val(result[i].AmountDue).trigger("change");
+                    }
+                }
+                else {
+
+                }
+
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        }); //end post
+        //end
+    }
+</script>
+
+<script>
+    var popup;
+    var aCode;
+    function SelectAccCode() {
+        popup = window.open('/Finance/AccountCode/GLAccountSelector', 'WindowPopup', 'top=100, left=400, width=300, height=320,resizable=no,');
+        popup.focus();
+        return false;
+    }
+
+    function setLang(accCode) {
+        aCode = accCode;
+        $("#AccountCode").val(aCode).trigger("change");
+    }
+
+
+    var masterDataItem;
+    var masterRow;
+    var masterGrid;
+
+    var codeid;
+    var isapproved;
+    var issecondapproved;
+    var isSendForApproval;
+    var isOnlineTransferred;
+    var customerid;
+
+    function detailExpandCollection(e) {
+
+        masterRow = e.masterRow;
+        masterGrid = $("#grid").data("kendoGrid");
+        masterDataItem = masterGrid.dataItem(masterRow);
+        codeid = masterDataItem.ArStandardCollectionId;
+        isapproved = masterDataItem.IsOnlineApproved;
+        isSendForApproval = masterDataItem.IsSendForApproval;
+        isOnlineTransferred = masterDataItem.IsOnlineTransferred;
+        customerid = masterDataItem.CustomerId;
+
+    }
+    function onDataBoundMasterCollection() {
+        //this.expandRow(this.tbody.find("tr.k-master-row").first());
+
+        //approved
+        var grid = $("#grid").data("kendoGrid");
+        var gridData = grid.dataSource.view();
+
+        for (var i = 0; i < gridData.length; i++) {
+            var currentUid = gridData[i].uid;
+            if (gridData[i].IsOnlineApproved || gridData[i].IsSendForApproval) {
+                var currenRow = grid.table.find("tr[data-uid='" + currentUid + "']");
+                var editButton = $(currenRow).find(".k-grid-edit");
+                var deleteButton = $(currenRow).find(".k-grid-delete");
+                editButton.hide();
+                deleteButton.hide();
+            }
+        }
+
+        //changing colors
+        var data = this.dataSource.data();
+        $.each(data, function (i, row) {
+            if (row.get("IsOnlineApproved") === "true") {
+                var element1 = $('tr[data-uid="' + row.uid + '"] ');
+                element1.addClass("approved-row");
+            }
+
+            if (row.get("IsSecondOnlineApproved") === "true") {
+                var element2 = $('tr[data-uid="' + row.uid + '"] ');
+                element2.addClass("secondapproved-row");
+            }
+
+            if (row.get("IsVoid") === "true") {
+                var element3 = $('tr[data-uid="' + row.uid + '"] ');
+                element3.addClass("void-row");
+            }
+        });
+    }
+    function onDataBoundLinesCollection(e) {
+
+        var detailGrid = "#" + e.sender.element[0].id;// "#StoreRequisitionItem_" + codeid;
+        if (isapproved || isSendForApproval) {
+
+            $(".k-grid-add", detailGrid).hide();
+            $(".k-grid-delete", detailGrid).hide();
+            $(".k-grid-edit", detailGrid).hide();
+        }
+    }
+    function onDataBoundFisrtValidationCollection(e) {
+
+        var detailGrid = "#" + e.sender.element[0].id;// "#StoreRequisitionValidation_" + codeid;
+
+        if (isapproved || !isSendForApproval) {
+
+            $(".k-grid-add", detailGrid).hide();
+            $(".k-grid-delete", detailGrid).hide();
+            $(".k-grid-edit", detailGrid).hide();
+        }
+
+        this.table.find(".k-grid-edit").hide();
+    }
+    function onDataBoundDistributionCollection(e) {
+
+        var detailGrid = "#" + e.sender.element[0].id;
+
+        if (isOnlineTransferred) {
+
+            $(".k-grid-add", detailGrid).hide();
+            $(".k-grid-delete", detailGrid).hide();
+            $(".k-grid-edit", detailGrid).hide();
+        }
+
+        //alert(isOnlineTransferred);
+    }
+
+
+    var isNotTransffered = false;
+
+    function isNotTransferredCheck(obj) {
+        if ($(obj).is(":checked")) {
+            isNotTransffered = true;
+            $("#grid").data("kendoGrid").dataSource.read();
+
+        } else {
+            isNotTransffered = false;
+            $("#grid").data("kendoGrid").dataSource.read();
+
+        }
+
+    }
+
+    function passReadData() {
+        return {
+            isNotTransffered: isNotTransffered
+        };
+    }
+
+</script>
+

@@ -1,0 +1,60 @@
+﻿
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Branch or Project Sub Account</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Common.HRM.Branch>()
+      .Name("Branchgrid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.Code).Width (110);
+        columns.Bound(c => c.Name).Width (200);
+        columns.Bound(c => c.BranchTypes).EditorTemplateName("Enum").Width(150);
+        columns.ForeignKey(c => c.SubAccount, (System.Collections.IEnumerable)ViewData["subaccounts"], "Values", "Description").EditorTemplateName("SubAccountSelector").Width(200);
+     
+        columns.Command(command =>
+        {
+            command.Edit();
+        }).Width (130);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Excel();
+      })
+
+       .Editable(editable => editable.Mode(GridEditMode.InLine))
+          .Selectable(selectable =>
+             {
+                 selectable.Mode(GridSelectionMode.Single);
+                 selectable.Type(GridSelectionType.Row);
+             })
+                 .Scrollable(h => h.Height(500))
+                  .Filterable()
+                     .Pageable(pageable => pageable
+                                                .Input(true)
+                                                .Numeric(false)
+                                                .Refresh(true)
+                                                .PageSizes(true)
+                                                .ButtonCount(5))
+      .DataSource(dataSource => dataSource
+              
+          .Ajax()
+              .Model(model =>
+                        {
+                            model.Id(p => p.BranchId);
+                            model.Field(p => p.BranchId).Editable(false);
+                            model.Field(p => p.BranchTypes).Editable(false);
+                            model.Field(p => p.Code).Editable(false);
+                            model.Field(p => p.Name).Editable(false);
+                            model.Field(p => p.AmharicName).Editable(false);
+                            model.Field(p => p.Abbreviation).Editable(false);
+                        })
+              .Events(events => events .Error("error_handler_one")
+                                  .Sync("sync_handler"))
+          .Model(model => model.Id(p => p.BranchId))
+          .Read(read => read.Action("Branch_Read", "CompanyBranches"))
+          .Update(update => update.Action("Branch_Update", "CompanyBranches"))
+      )
+)
+
+

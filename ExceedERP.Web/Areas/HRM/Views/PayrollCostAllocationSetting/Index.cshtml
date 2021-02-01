@@ -1,0 +1,49 @@
+﻿@using ExceedERP.Core.Domain.HRM.Payroll.Setting
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Cost Allocation Setting</legend>
+@(Html.Kendo().Grid<PayrollCostAllocationSetting>()
+          .Name("PayrollCostAllocationSettinggrid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.CostCenter).Width(120).EditorTemplateName("CostCenterSelector");
+          columns.Bound(c => c.ProductAccount).Width(120).EditorTemplateName("ProductSelector");
+          columns.Bound(c => c.Percentage).Width(120);
+          columns.Bound(c => c.Remark).Width(150);
+          columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(300);
+      })
+      .ToolBar(toolbar => {
+          toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+           .Scrollable(h => h.Height(500))
+                 .Groupable()
+                          .Sortable(sortable =>
+                          {
+                              sortable.SortMode(GridSortMode.SingleColumn);
+                          })
+              .Filterable()
+                 .Pageable(pageable => pageable
+                                            .Input(true)
+                                            .Numeric(false)
+                                            .Refresh(true)
+                                            .PageSizes(true)
+                                            .ButtonCount(5))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+               .Events(events =>
+               {
+                   events.Error("error_handler(\"PayrollCostAllocationSettinggrid\")");
+                   events.RequestStart("onRequestStart(\"PayrollCostAllocationSettinggrid\")");
+                   events.RequestEnd("onRequestEnd(\"PayrollCostAllocationSettinggrid\")");
+               })
+
+          .Model(model => model.Id(p => p.PayrollCostAllocationSettingId))
+          .Read(read => read.Action("PayrollCostAllocationSetting_Read", "PayrollCostAllocationSetting"))
+          .Create(create => create.Action("PayrollCostAllocationSetting_Create", "PayrollCostAllocationSetting"))
+          .Update(update => update.Action("PayrollCostAllocationSetting_Update", "PayrollCostAllocationSetting"))
+          .Destroy(destroy => destroy.Action("PayrollCostAllocationSetting_Destroy", "PayrollCostAllocationSetting"))
+      )
+)

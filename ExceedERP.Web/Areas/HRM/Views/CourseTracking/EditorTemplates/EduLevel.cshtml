@@ -1,0 +1,35 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.Common
+@using ExceedERP.Core.Domain.HRM
+@using ExceedERP.Core.Localization
+@(Html.Kendo().DropDownListFor(x=> x ) 
+     
+      .DataTextField("Description")
+      .DataValueField("LookupId")
+      .OptionLabel(Resources.Select )
+      .Filter(FilterType.Contains)
+      .MinLength(2)
+      .HtmlAttributes(new { style = "width:100%" })
+          .DataSource(source =>
+          {
+              source.Read(read =>
+              {
+                  read.Action("GetEducationLevelList", "HRMDataProvider");
+
+              });
+              // .ServerFiltering(true);
+          })
+     // .BindTo((IEnumerable) ViewData["EmployeeList"])
+     .ValuePrimitive( true)
+      .Height(400)
+//      .HeaderTemplate("<div class=\"dropdown-header k-widget k-header\">" +
+//                      "<span>Photo</span>" +
+//                      //"<span>Id </span>" +
+//                      "<span>Full Name</span>" +
+//                      "</div>")
+//      .Template(@"<div class='Employee-photo'
+//                        style='background-image: url(" + Url.Content("~/Content/Images/") + "#:data.PersonId#-Photo/" + "#:data.PersonId#.jpg" + ");'></div>" +  "<div class='Employee-name'>#:FullName#</div>")
+  )
+
+
+

@@ -1,0 +1,12 @@
+﻿@(Html.Kendo().DropDownListFor(m => m)
+                  .ValuePrimitive(true)
+                  .OptionLabel("Select Period...")
+                      .DataTextField("Name")
+                      .DataValueField("GLPeriodId")
+                            .DataSource(dataSource =>
+                                    {
+                                        dataSource.Read(read => read.Action("GetGlPeriods", "DataProvider", new { area = "Inventory" }))
+                                        .ServerFiltering(false);
+                                    })
+)
+@Html.ValidationMessageFor(m => m)

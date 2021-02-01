@@ -1,0 +1,129 @@
+﻿@using System.Security.AccessControl
+@using ExceedERP.Core.Domain.Common.HRM
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend  >@Resources.NavigatorPayrollSetup_Bank</legend>
+@(Html.Kendo().Grid<MainCompany>()
+          .Name("MainCompanygrid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.TradeName);
+        columns.Bound(c => c.BrandName);
+        columns.ForeignKey(c => c.BusinessType, (System.Collections.IEnumerable)ViewData["BusinessTypes"], "Value", "Text").EditorTemplateName("BusinessType").Width(150);
+        //columns.Bound(c => c.IsActive).ClientTemplate("<input type='checkbox' disabled = 'true' \\#=IsActive ? checked='checked' :'' \\# />").Width(100);
+        columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+      })
+      .ToolBar(toolbar => {
+           // toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+          .Scrollable(h => h.Height(500))
+             .Groupable()
+                      .Sortable(sortable =>
+                      {
+                          sortable.SortMode(GridSortMode.SingleColumn);
+                      })
+          .Filterable()
+             .Pageable(pageable => pageable
+                                        .Input(true)
+                                        .Numeric(false)
+                                        .Refresh(true)
+                                        .PageSizes(true)
+                                        .ButtonCount(5))
+      
+      .DataSource(dataSource => dataSource
+          .Ajax()
+              .Events(events =>
+                                        {
+                                            events.Error("error_handler(\"MainCompanygrid\")");
+                                            events.RequestStart("onRequestStart(\"MainCompanygrid\")");
+                                            events.RequestEnd("onRequestEnd(\"MainCompanygrid\")");
+                                        })
+                       
+          .Model(model => model.Id(p => p.MainCompanyId))
+          .Read(read => read.Action("Companies_Read", "Company"))
+         .Create(create => create.Action("Companies_Create", "Company"))
+          .Update(update => update.Action("Companies_Update", "Company"))
+          .Destroy(destroy => destroy.Action("Companies_Destroy", "Company"))
+          ).ClientDetailTemplateId("template")
+)
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+          .Name("tabstrip_#=MainCompanyId#")
+          .SelectedIndex(0)
+          .Items(items =>
+          {
+             
+            
+
+              //*********************************BankInformation*************************************************//
+              items.Add().Text(Resources.NavigatorPayrollSetup_Bank).Content(
+                  @<text>
+    @*<legend>Bank</legend>*@
+    @(Html.Kendo().Grid<Bank>()
+                  .Name("BankGrid_#=MainCompanyId#")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Name);
+          // columns.Bound(c => c.Category);
+           columns.Bound(c => c.IsActive);
+          //columns.Bound(c => c.ParentID);
+          columns.Bound(c => c.Remark);
+          columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+           .Navigatable()
+          .Scrollable(s => s.Height(500))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+                  .Events(events =>
+                                                {
+                                                    events.Error("error_handler(\"BankGrid_#=MainCompanyId#\")");
+                                                    events.RequestStart("onRequestStart(\"BankGrid_#=MainCompanyId#\")");
+                                                    events.RequestEnd("onRequestEnd(\"BankGrid_#=MainCompanyId#\")");
+                                                })
+                                 
+          .Model(model => model.Id(p => p.BankId))
+                          .Read(read => read.Action("Organizations_Read", "Bank"))
+                          .Create(create => create.Action("Organizations_Create", "Bank"))
+                          .Update(update => update.Action("Organizations_Update", "Bank"))
+                          .Destroy(destroy => destroy.Action("Organizations_Destroy", "Bank"))
+          ).ToClientTemplate() 
+    )
+
+            
+                   </text>
+                  );
+              
+              //*****************************************************************************************************//
+          }).ToClientTemplate())
+</script>
+
+<script>
+    //function error_handler(e) {
+    //    if (e.errors) {
+    //        var message = "Errors:\n";
+    //        $.each(e.errors, function(key, value) {
+    //            if ('errors' in value) {
+    //                $.each(value.errors, function() {
+    //                    message += this + "\n";
+    //                });
+    //            }
+    //        });
+    //        alert(message);
+
+    //    }
+
+    //}
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+</script>

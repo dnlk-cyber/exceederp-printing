@@ -1,0 +1,26 @@
+﻿@using ExceedERP.Core.Domain.Common.HRM
+
+@(Html.Kendo().Grid<IndustryInvolved>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.Index);
+        columns.Bound(c => c.Reference);
+        columns.Bound(c => c.Industry);
+        columns.Bound(c => c.Remark);
+        columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.IndustryInvolvedID))
+          .Read(read => read.Action("IndustryInvolveds_Read", "IndustryInvolved"))
+          .Create(create => create.Action("IndustryInvolveds_Create", "IndustryInvolved"))
+          .Update(update => update.Action("IndustryInvolveds_Update", "IndustryInvolved"))
+          .Destroy(destroy => destroy.Action("IndustryInvolveds_Destroy", "IndustryInvolved"))
+      )
+)

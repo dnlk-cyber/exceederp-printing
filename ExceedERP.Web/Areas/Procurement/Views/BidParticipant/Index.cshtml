@@ -1,0 +1,31 @@
+﻿@using ExceedERP.Core.Domain.Procurement.Tender.Lot
+
+@(Html.Kendo().Grid<BidPParticipatingSuppliers>()
+      .Name("bidParticipantSupplier")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Supplier);
+          columns.Bound(c => c.Representative);
+          columns.Bound(c => c.Address);
+          columns.Bound(c => c.Telephone);
+          columns.Bound(c => c.BidSubmitionDate);
+          columns.Bound(c => c.BidSubmitionTime);
+          columns.Bound(c => c.Remark);
+        
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+                              toolbar.Excel();
+                              // toolbar.Pdf();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.BidPParticipatingSuppliersID))
+          .Read(read => read.Action("BidPParticipatingSupplierses_Read", "BidParticipant"))
+          .Create(create => create.Action("BidPParticipatingSupplierses_Create", "BidParticipant"))
+          .Update(update => update.Action("BidPParticipatingSupplierses_Update", "BidParticipant"))
+          .Destroy(destroy => destroy.Action("BidPParticipatingSupplierses_Destroy", "BidParticipant"))
+      ))

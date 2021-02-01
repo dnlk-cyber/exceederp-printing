@@ -1,0 +1,97 @@
+﻿@model ExceedERP.Core.Domain.FleetManagement.FleetTireManagement.TyreTransfer
+
+
+
+
+<script>
+    function filterTyre() {
+        return {
+            Id: $("#FromEquipment").val()
+        };
+    }
+</script>
+<div class="demo-section k-content">
+    <form>
+
+        <div class="row">
+            <div class="col-md-1">
+            </div>
+
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.FromEquipment)
+                    </div>
+                    @(Html.Kendo().DropDownListFor(model => model.FromEquipment).Name("FromEquipment")
+                                      .DataTextField("PlateNumber")
+                                      .DataValueField("FleetsID")
+                                              .OptionLabel("Select").Filter(FilterType.Contains)
+                                      .DataSource(d => d.Read(r => r.Action("FleetsDDBind", "EquipmentRegistration")).ServerFiltering(false)))
+                </div>
+            </div>
+
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.TyreSerialNo)
+
+                    </div>
+                    <div>
+                        @(Html.Kendo().DropDownListFor(model => model.TyreSerialNo).Name("TyreSerialNo")
+                                              .DataTextField("Text")
+                                                      .DataValueField("Value")
+                                      .OptionLabel("Select ").DataSource(d =>
+                                                         {
+                                                         d.Read(r =>
+                                                         {
+                                                         r.Action("TyreByFleet", "EquipmentTyre").Data("filterTyre");
+                                                         })
+                                                         .ServerFiltering(true);
+                                                         })
+                                                         .Enable(false)
+                                                         .AutoBind(false)
+                                                         .CascadeFrom("FromEquipment"))
+
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.ToEquipment)
+                    </div>
+                    <div>
+                        @(Html.Kendo().DropDownListFor(model => model.ToEquipment).Name("ToEquipment")
+                                      .DataTextField("PlateNumber")
+                                      .DataValueField("FleetsID")
+                                              .OptionLabel("Select ").Filter(FilterType.Contains)
+                                      .DataSource(d => d.Read(r => r.Action("FleetsDDBind", "EquipmentRegistration")).ServerFiltering(false)))
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-1">
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.Description)
+                    </div>
+                    <div>
+                        @Html.Kendo().EditorFor(model => model.Description) 
+                        @Html.ValidationMessageFor(model => model.Description)
+                    </div>
+
+                </div>
+            </div>
+
+
+        </div>
+    </form>
+</div>

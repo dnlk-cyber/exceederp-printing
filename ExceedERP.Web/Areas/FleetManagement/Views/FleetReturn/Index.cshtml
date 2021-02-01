@@ -1,0 +1,346 @@
+﻿@model ExceedERP.Core.Domain.FleetManagement.FleetRegistration.FleetReturn
+@{
+    ViewBag.Title = "Equipment Plan and Evaluations";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script>
+    function filterEquipmentIdentity() {
+        return {
+            EquipmentIdentityID: $("#EquipmentTypeId").val()
+        };
+    }
+</script>
+<legend>Equipment Return</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetRegistration.FleetReturn>()
+    .Name("grid")
+    .Columns(columns =>
+    {
+    columns.Bound(e => e.FleetReturnId).Width(100);
+
+        columns.Bound(e => e.PlateNo).Width(100);
+        columns.Bound(e => e.EquipmentName).Width(100);
+        columns.Bound(e => e.Manufacturer).Width(100);
+        columns.Bound(e => e.From).Width(100);
+        columns.Bound(e => e.DeliveredTo).Width(100);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(200);
+
+    })
+               .ToolBar(commands => commands.Create())
+         .Editable(editable =>
+         {
+             editable.Mode(GridEditMode.PopUp).TemplateName("ReturnEditor").Window(x => x.Title("Equipment Return "));
+             editable.DisplayDeleteConfirmation("Are You Sure To Remove Plan");
+         })
+           .HtmlAttributes(new { style = "height: 520px;" })
+                        .Pageable(pageable => pageable
+                                          .Input(true)
+                                          .Numeric(false)
+                                          .Refresh(true)
+                                          .PageSizes(true)
+                                          .ButtonCount(5))
+
+                              .Scrollable()
+                              .Sortable()
+                              .Filterable()
+                              .Groupable()
+                              .Scrollable(h => h.Height(500))
+                                           .ClientDetailTemplateId("template")
+                                        .Groupable().Events(ev => { ev.DetailExpand("onDetailExpandUser"); ev.DataBound("onDataBound"); })
+
+                              .DataSource(dataSource => dataSource
+        .Ajax()
+        .ServerOperation(false)
+              .Model(model => model.Id(p => p.FleetReturnId))
+                                       .Events(ev => ev
+                                      .Error("error_handler(\"grid\")")
+                                      .RequestStart("onRequestStart(\"grid\")")
+                                      .RequestEnd("onRequestEnd(\"grid\")"))
+                                   .Create(update => update.Action("FleetReturns_Create", "FleetReturn"))
+                                              .Read(read => read.Action("FleetReturns_Read", "FleetReturn"))
+                                          .Update(update => update.Action("FleetReturns_Update", "FleetReturn"))
+                                    .Destroy(update => update.Action("FleetReturn_Destroy", "FleetReturn"))
+  )
+)
+
+
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 700px;
+    }
+</style>
+
+
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                                            .Name("tabStrip_#=FleetReturnId#")
+            .SelectedIndex(0)
+            .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+            .Items(items =>
+            {
+                items.Add().Text("Detail").Content(
+                    @<text>
+                        <div>
+                            <div class="box">
+
+                                <div class="box-col">
+                                    <a href='@Url.Action("EquipmentReturn", "PrintJob")/?Id=#=FleetReturnId#' title="Print"><i class="fa fa-print fa-2x"></i></a>
+
+                                    # if (IsSendForApproval == false || IsSendForApproval == "false")
+                                    {#
+
+                                    <a href='@Url.Action("FleetReturn_SendForOnlineApproval", "FleetReturn")/?Id=#=FleetReturnId#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                                    # }#
+                                </div>
+                            </div>
+                            <div class="demo-section k-header export-app">
+                                <div class="demo-section content-wrapper">
+
+                                    <form>
+
+
+
+                                        <div class="row">
+                                            <div class="col-md-1">
+                                            </div>
+                                            <div class="col-md-2">
+                                                <div class="form-group">
+                                                    <div class="label">
+                                                        @Html.LabelFor(model => model.CreatedBy)
+                                                    </div>
+                                                    <div>
+                                                        #=CreatedBy#
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <div class="form-group">
+                                                    <div class="label">
+                                                        @Html.LabelFor(model => model.DateCreated)
+                                                    </div>
+                                                    <div>
+                                                        #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-2">
+                                                <div class="form-group">
+                                                    <div class="label">
+                                                        @Html.LabelFor(model => model.ModifiedBy)
+                                                    </div>
+                                                    <div>
+
+                                                        #=ModifiedBy#
+
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-2">
+                                                <div class="form-group">
+                                                    <div class="label">
+                                                        @Html.LabelFor(model => model.LastModified)
+                                                    </div>
+                                                    <div>
+                                                        #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                        </div>
+
+                                    </form>
+
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </text>
+
+
+            );
+
+                items.Add().Text(" Part ").Content(@<text>
+
+                @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetRegistration.FleetReturnItem>()
+                                                                                                .Name("FleetReturnItem#=FleetReturnId#")
+                        .Columns(columns =>
+                        {
+                            columns.Bound(o => o.FleetReturnItemId).Width(120);
+                            columns.Bound(o => o.IdentifcationNo).Width(120);
+                            columns.Bound(o => o.PartNo).Width(200);
+                            columns.Bound(o => o.CostCode).Width(120);
+                            columns.Bound(o => o.Location).Width(200);
+                            columns.Bound(o => o.Requested).Width(120);
+                            columns.Bound(o => o.Recieved).Width(200);
+                            columns.Bound(o => o.Unit).Width(200);
+                            columns.Bound(c => c.UnitPriceCent).Width(150);
+                            columns.Bound(c => c.UnitPriceBirr).Width(150);
+                            columns.Bound(c => c.TotalPriceCent).Width(150);
+                            columns.Bound(c => c.TotalPriceBirr).Width(150);
+                            columns.Command(command => { command.Edit(); }).Width(250);
+
+                        })
+                        .ToolBar(t=>t.Create())
+                        .Events(ev =>
+                        {
+                            ev.DataBound("approveonDataBound");
+                        })
+                             .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                       .DataSource(dataSource => dataSource
+                            .Ajax()
+                            .PageSize(5)
+                                                            .Model(model =>
+                                      {
+                                          model.Id(p => p.FleetReturnItemId);
+                                          model.Field(p => p.FleetReturnItemId).Editable(false);
+                                         
+                                      })
+
+                                                                                .Events(ev => ev
+                                                            .Error("error_handler(\"FleetReturnItem#=FleetReturnId#\")")
+                                                            .RequestStart("onRequestStart(\"FleetReturnItem#=FleetReturnId#\")")
+                                                            .RequestEnd("onRequestEnd(\"FleetReturnItem#=FleetReturnId#\")"))
+                                                                                                                                           .Create(update => update.Action("FleetReturnItems_Create", "FleetReturnItem", new { Id = "#=FleetReturnId#" }))
+                                                                                                                     .Read(read => read.Action("FleetReturnItems_Read", "FleetReturnItem", new { Id = "#=FleetReturnId#" }))
+                                                                                                                           .Update(update => update.Action("FleetReturnItems_Update", "PlanAndEvaluationApproval"))
+                                                                                                                           .Destroy(update => update.Action("FleetReturnItems_Destroy", "FleetReturnItem"))
+
+
+                                                      )
+                                               .ToClientTemplate())
+                </text>
+                );
+                items.Add().Text(" Approval").Content(@<text>
+
+                @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetRegistration.FleetReturnApproval>()
+                                                                                        .Name("Approval#=FleetReturnId#")
+                        .Columns(columns =>
+                        {
+                            columns.Bound(o => o.Status).EditorTemplateName("ApprovalEditor").Width(126);
+
+                            columns.Bound(o => o.Remark).Width(200);
+                            columns.Bound(c => c.CreatedBy).Width(150);
+                            columns.Bound(c => c.DateCreated).Format("{0:yyyy-MM-dd}").Width(150);
+                            columns.Command(command => { command.Edit(); }).Width(250);
+
+                        }).Events(ev =>
+                        {
+                            ev.DataBound("approveonDataBound");
+                        })
+                             .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                       .DataSource(dataSource => dataSource
+                            .Ajax()
+                            .PageSize(5)
+                                                            .Model(model =>
+                                      {
+                                          model.Id(p => p.FleetReturnApprovalId);
+                                          model.Field(p => p.CreatedBy).Editable(false);
+                                          model.Field(p => p.DateCreated).Editable(false);
+                                      })
+
+                                                                                .Events(ev => ev
+                                                    .Error("error_handler(\"Approval#=FleetReturnId#\")")
+                                                    .RequestStart("onRequestStart(\"Approval#=FleetReturnId#\")")
+                                                    .RequestEnd("onRequestEnd(\"Approval#=FleetReturnId#\")"))
+                                                                                                                           .Create(update => update.Action("FleetReturn_Approve", "FleetReturn", new { Id = "#=FleetReturnId#" }))
+                                                                                                                     .Read(read => read.Action("FleetReturnApproval_Read", "FleetReturn", new { Id = "#=FleetReturnId#" }))
+                                                                                           .Update(update => update.Action("FleetReturn_Approve", "FleetReturn"))
+
+
+                                                      )
+                                               .ToClientTemplate())
+                </text>
+                );
+            })
+                                                                                                                                                                                                                                                                                                                                            .ToClientTemplate())
+</script>
+
+
+
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 700px;
+    }
+</style>
+<script type="text/javascript">
+
+    var IsApproved;
+    var IsSendForApproved;
+    function onDetailExpandUser(e) {
+        var masterRow = e.masterRow;
+
+        var masterGrid = $("#grid").data("kendoGrid");
+
+        var masterDataItem = masterGrid.dataItem(masterRow);
+        IsApproved = masterDataItem.IsOnlineApproved;
+        IsSendForApproved = masterDataItem.IsSendForApproval;
+
+
+        var masterFleetReturnId = masterDataItem.FleetReturnId;
+        var linegridName = "#FleetReturnItem" + masterFleetReturnId;
+        if (masterDataItem.IsSendForApproval == true) {
+
+            $(".k-grid-top", linegridName).hide();
+            $(".k-grid-edit", linegridName).hide();
+        }
+
+    }
+    function onDataBound(e) {
+        var grid = this;
+
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+            if (dataItem.IsSendForApproval == true || dataItem.IsSendForApproval == "true") {
+                console.log("Approved");
+                $(this).find(".k-grid-edit").remove();
+                $(this).find(".k-grid-delete").remove();
+            }
+        });
+    }
+
+    function approveonDataBound(e) {
+        var grid = this;
+
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+            if (dataItem.Status == "Approve" || IsApproved == true) {
+                console.log("Approved");
+                $(this).find(".k-grid-edit").remove();
+                $(this).find(".k-grid-delete").remove();
+            }
+        });
+    }
+
+</script>
+
+<script type="text/javascript">
+
+    function BindFuelDetail() {
+
+        var Fleetsobj = $("#FleetsID").data("kendoDropDownList");
+        var fleetID = Fleetsobj.value();
+
+        $.ajax({
+            url: '@Url.Action("FleetsDetailDDBind", "EquipmentRegistration")',
+            data: { FleetsID: fleetID },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                r = result;
+                if (r != 0) {
+                    var s = r.split(/_/);
+                    $("#RentalRate").val(s[2]);
+                } else {
+                    $("#RentalRate").val('0');
+
+                }
+            }
+
+        });
+    }
+</script>

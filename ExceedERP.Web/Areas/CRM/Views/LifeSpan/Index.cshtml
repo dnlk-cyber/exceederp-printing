@@ -1,0 +1,28 @@
+﻿<legend>LifeSpan</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.LifeSpan>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.Reference);
+        columns.Bound(c => c.ProductionDate);
+        columns.Bound(c => c.ExpiryDate);
+        columns.Bound(c => c.Remark);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+              .Model(model => model.Id(p => p.LifeSpanID)).Events(ev => ev
+                                                                            .Error("error_handler(\"grid\")")
+                                                                            .RequestStart("onRequestStart(\"grid\")")
+                                                                            .RequestEnd("onRequestEnd(\"grid\")"))
+          .Read(read => read.Action("LifeSpans_Read", "LifeSpan"))
+          .Create(create => create.Action("LifeSpans_Create", "LifeSpan"))
+          .Update(update => update.Action("LifeSpans_Update", "LifeSpan"))
+          .Destroy(destroy => destroy.Action("LifeSpans_Destroy", "LifeSpan"))
+      )
+)

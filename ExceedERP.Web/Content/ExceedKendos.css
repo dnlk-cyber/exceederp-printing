@@ -1,0 +1,89 @@
+﻿/*headers*/
+
+.k-grid th.k-header,
+.k-grid-header
+{
+    background: #438eb9;/*#778899;*/
+}
+
+.k-grid th.k-header,
+.k-grid th.k-header .k-link
+{
+    color:#e0ffff
+}
+
+/*rows*/
+
+.k-grid-content>table>tbody>tr
+{
+    background: #e6e6fa;
+}
+
+
+.k-grid-content>table>tbody>.k-alt
+{
+    background: #e6e6fa;
+}
+
+/*selection*/
+
+.k-grid table tr.k-state-selected
+{
+    background: #f99;
+    color: #fff;
+}
+
+/*button*/
+
+a.k-button.k-button-icontext.k-grid-add {
+    background-color: #428bca;
+    color: white;
+}
+
+a.k-button.k-button-icontext.k-grid-edit {
+    background-color: #20b2aa;
+}
+
+a.k-button.k-button-icontext.k-grid-delete {
+    background-color: #cd5c5c;
+}
+
+button.k-button.k-button-icontext.k-grid-excel {
+    background-color: #00ced1;
+}
+
+button.k-button.k-button-icontext.k-grid-pdf {
+    background-color: #dda0dd;
+}
+
+div.k-pager-wrap.k-grid-pager.k-widget.k-floatwrap {
+    background: #438eb9; /*#778899;*/
+    color: #f0f8ff;
+}
+
+ .k-window-titlebar{
+                    background: #00bfff;
+                }
+
+
+.approved-row {
+    background-color: lightblue;
+    color: white;
+}
+
+.secondapproved-row {
+    background-color: blue;
+    color: white;
+}
+
+.void-row {
+    background-color: red;
+    color: white;
+}
+
+.k-grid {
+    font-size: 10px;
+}
+.k-grid td {
+    line-height: 2em;
+}

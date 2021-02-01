@@ -1,0 +1,13 @@
+﻿@(Html.Kendo().DropDownListFor(m=> m)
+                        
+                        .ValuePrimitive(true)
+                        .OptionLabel("Select Tax Type...")
+                        .DataTextField("Name")
+                        .DataValueField("TaxId")
+                        .DataSource(dataSource =>
+                            {
+                                dataSource.Read(read => read.Action("GetTaxTypes", "PurchaseOrder"))
+                                .ServerFiltering(true);
+                            })
+)
+ 

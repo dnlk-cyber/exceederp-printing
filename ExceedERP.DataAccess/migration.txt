@@ -1,0 +1,11 @@
+﻿App
+
+Enable-Migrations -ContextTypeName ExceedERP.DataAccess.Context.ExceedDbContext -MigrationsDirectory:Migrations
+Add-Migration -configuration ExceedERP.DataAccess.Migrations.Configuration ExceedAppMigration
+Update-Database -configuration ExceedERP.DataAccess.Migrations.Configuration
+
+identity
+
+Enable-Migrations -ContextTypeName ExceedERP.Web.Models.ApplicationDbContext -MigrationsDirectory:Migrations
+Add-Migration -configuration ExceedERP.Web.Migrations.Configuration ExceedIdentityMigration
+Update-Database -configuration ExceedERP.Web.Migrations.Configuration

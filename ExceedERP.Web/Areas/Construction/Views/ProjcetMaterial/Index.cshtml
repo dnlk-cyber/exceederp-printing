@@ -1,0 +1,26 @@
+﻿@using ExceedERP.Core.Localization
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.ProjectMaterial>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.UnitOfMeasurementId);
+        columns.Bound(c => c.Quantity);
+        columns.Bound(c => c.UnitPrice);
+        columns.Bound(c => c.TotalCost);
+        columns.Bound(c => c.MaterialUnitCost);
+        columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.ProjectMaterialId))
+          .Read(read => read.Action("ProjectMaterial_Read", "ProjcetMaterial"))
+          .Create(create => create.Action("ProjectMaterial_Create", "ProjcetMaterial"))
+          .Update(update => update.Action("ProjectMaterial_Update", "ProjcetMaterial"))
+          .Destroy(destroy => destroy.Action("ProjectMaterial_Destroy", "ProjcetMaterial"))
+      )
+)

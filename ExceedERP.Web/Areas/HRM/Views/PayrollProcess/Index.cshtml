@@ -1,0 +1,1083 @@
+﻿@using System.Collections
+@using Kendo.Mvc.UI
+@using ExceedERP.Core.Localization
+@model ExceedERP.Core.Domain.HRM.Payroll.PeriodStatusViewModel  
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<Legend >@Resources.NavigatorPayrollProcess_PayrollProcess</Legend>
+<Form>
+     
+                <div>
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.HRM.Payroll.PeriodStatusViewModel>()
+          .Name("Periodgrid")
+          .Columns(columns =>
+          {
+              columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("Branch").Width(270);
+              columns.Bound(c => c.GLPeriodId).Visible(false);
+              columns.Bound(c => c.PeriodName);
+              columns.Bound(c => c.StartDate);
+              columns.Bound(c => c.EndDate);
+              columns.Bound(c => c.Status);
+           
+          })
+          .ToolBar(toolbar =>
+      {
+          toolbar.Template(@<text>
+            <div class="toolbar">
+               @* <h4>ProgressBar</h4>*@
+                @*@(Html.Kendo().ProgressBar()
+              .Name("progressBar")
+              .Min(0)
+              .Max(10)
+              
+              .Type(ProgressBarType.Percent)
+                      .Events(e =>
+                      {
+                         
+                        //  e.Change("onChange");
+                          e.Complete("onComplete");
+                      })
+                      
+                )*@
+                @(Html.Kendo().ComboBoxFor(m => m)
+
+                              .Name("GLPeriodId")
+                              .Placeholder(Resources.NavigatorPayrollSetup_PayrollPeriod)
+                              .DataSource(dataSource =>
+                                                  {
+                                                      dataSource.Read(read => read.Action("GetPeriod", "PayrollProcess", new { area = "HRM" }))
+                                                                            .ServerFiltering(false);
+                                                  })
+                      .DataTextField("Name")
+                              .DataValueField("GLPeriodId")
+                      .ValuePrimitive(true)
+                      .Events( x=> x.Change( "Enable"))
+
+                      )
+                @(Html.Kendo().ComboBoxFor(m => m)
+
+                              .Name("BranchId")
+                      .Placeholder(Resources .Common_Period_BranchId)
+                              .BindTo((IEnumerable)ViewData["branches"])
+                              .DataTextField("Name")
+                              .DataValueField("BranchId")
+                      .ValuePrimitive(true)
+                      .Events(x => x.Change("Enable"))
+
+                      )
+                @if (HttpContext.Current.User.IsInRole("All_Branch_Payroll_Process"))
+                {
+                    @(Html.Kendo().Button()
+                      .Name("btnAllProcess")
+                      .HtmlAttributes(new { type = "button", @class = "k-primary" })
+                          .Events(e => e.Click("ProcessAll"))
+                          .Content(Resources.Payroll_Process_All))
+                }
+                @if (HttpContext.Current.User.IsInRole("Payroll_Process"))
+                {
+                @(Html.Kendo().Button()
+                      .Name("btnSave")
+                      .HtmlAttributes(new { type = "button", @class = "k-primary" })
+                              .Events(e => e.Click("Process"))
+                      .Content(Resources.Payroll_Process_Process))
+}
+@if (HttpContext.Current.User.IsInRole("Payroll_Process"))
+{
+    @(Html.Kendo().Button()
+          .Name("btnReverse")
+          .HtmlAttributes(new {type = "button", @class = "k-primary"})
+          .Events(e => e.Click("Reverse"))
+          .Content(Resources.Payroll_Process_Reverse))
+}
+@if (HttpContext.Current.User.IsInRole("Payroll_Distribute"))
+{
+    @(Html.Kendo().Button()
+          .Name("btnDistribut")
+          .HtmlAttributes(new {type = "button", @class = "k-primary"})
+          .Events(e => e.Click("Distributions"))
+          .Content(Resources.Payroll_Process_Distribution))
+}
+@if (HttpContext.Current.User.IsInRole("Payroll_Close"))
+{
+
+    @(Html.Kendo().Button()
+          .Name("btnclose")
+          .HtmlAttributes(new {type = "button", @class = "k-primary"})
+          .Events(e => e.Click("Close"))
+          .Content(Resources.Payroll_Process_Close))
+}
+@if (HttpContext.Current.User.IsInRole("Payroll_Transfer"))
+{
+    @(Html.Kendo().Button()
+          .Name("btnTransfer")
+
+          .HtmlAttributes(new {type = "button", @class = "k-primary"})
+          .Events(e => e.Click("Transfer"))
+          .Content(Resources.Payroll_Process_Transfer))
+}
+                @(Html.Kendo().Button()
+          .Name("btnSendMail")
+
+          .HtmlAttributes(new { type = "button", @class = "k-primary" })
+          .Events(e => e.Click("SendMail"))
+                  .Content("Send Mail"))   
+            </div>
+        </text>);
+      })
+
+
+
+              .Editable(editable => editable.Mode(GridEditMode.InLine))
+                     .Scrollable(h => h.Height(500))
+                     .Groupable()
+                              .Sortable(sortable =>
+                              {
+                                  sortable.SortMode(GridSortMode.SingleColumn);
+                              })
+                              .Selectable( )
+                  .Filterable()
+                     .Pageable(pageable => pageable
+                                                .Input(true)
+                                                .Numeric(false)
+                                                .Refresh(true)
+                                                .PageSizes(true)
+                                                .ButtonCount(5))
+                                                    .Events(x => x.Change("CheckDisablity"))
+
+              .DataSource(dataSource => dataSource
+                  .Ajax()
+      .Events(events =>
+                                        {
+                                            events.Error("error_handler(\"Periodgrid\")");
+                                            events.RequestEnd("onRequestEnd(\"Periodgrid\")");
+                                        })
+                                   
+
+                      .Model(model => model.Id(p => p.GLPeriodId))
+                              .Read(read => read.Action("GetProcessingClosedPeriods", "PayrollProcess",new {area="HRM"}))
+              )
+                    )
+
+                
+</div>
+
+</form>
+
+<script>
+    function Distributions(e) {
+        try {
+            var grid = $("#Periodgrid").data("kendoGrid");
+
+            var dataItem = grid.dataItem(grid.select());
+            var id = dataItem.GLPeriodId;
+            var branchid = dataItem.BranchId;
+            var save = $("#btnDistribut").data("kendoButton");
+            if ($('#btnDistribut').length > 0) {
+                save.enable(false);
+            }
+            $('#divWaitingPanel').show();
+            //$('#divWaitingPanel').center().open();
+            //var passProgress = $("#progressBar").data("kendoProgressBar");
+            //passProgress.value(0);
+            //passProgress.value(20);
+            //passProgress.value(40);
+            //passProgress.value(55);
+
+            $.ajax({
+                url: '@Url.Action("Distribution", "PayrollProcess")',
+               // contentType: "application/json; charset=utf-8",
+                data: { 'id': id, 'branchid': branchid },
+                type: 'POST',
+                cache: false,
+                success: function (result) {
+                    var r = result;
+                    $("#Periodgrid").data("kendoGrid").dataSource.read();
+                    $("#Periodgrid").data("kendoGrid").refresh();
+                   
+                    
+                    if (r === "true") {
+                        $("#PayrollDistributiongrid").data("kendoGrid").dataSource.read();
+                        $("#PayrollDistributiongrid").data("kendoGrid").refresh();
+                        var wnd = $("#DisWindow").data("kendoWindow");
+                        wnd.center().open();
+                        $('#divWaitingPanel').hide();
+
+                    } 
+                    else if (r === "false") {
+                        alert("Distribution is not done.Please check payroll account assignment!!");
+                        $('#divWaitingPanel').hide();
+                    }
+                    if ($('#btnDistribut').length > 0) {
+                        save.enable(true);
+                    }
+                    $('#divWaitingPanel').hide();
+                }
+                 
+            });
+
+        } catch (ee) {
+            alert("Please select the row!!");
+        }
+    }
+   
+</script>
+
+<script>
+    function Transfer(e) {
+        try {
+            var grid = $("#Periodgrid").data("kendoGrid");
+
+            var dataItem = grid.dataItem(grid.select());
+            var id = dataItem.GLPeriodId;
+            var branchid = dataItem.BranchId;
+            var save = $("#btnTransfer").data("kendoButton");
+            if ($('#btnTransfer').length > 0) {
+                save.enable(false);
+            }
+            
+           //var passProgress = $("#progressBar").data("kendoProgressBar");
+           // passProgress.value(0);
+           // passProgress.value(20);
+           // passProgress.value(40);
+           // passProgress.value(55);
+            $.ajax({
+                url: '@Url.Action("TransferDistribution", "PayrollProcess")',
+                data: {branchid: branchid, id: id  },
+                type: 'POST',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                 
+                    $("#Periodgrid").data("kendoGrid").dataSource.read();
+                    $("#Periodgrid").data("kendoGrid").refresh();
+                    if ($('#btnTransfer').length > 0) {
+                        save.enable(true);
+                    }
+                    //passProgress.value(100);
+                }
+
+            });
+
+        } catch (ee) {
+            alert("Please select the row!!");
+        }
+    }
+
+    function SendMail(e) {
+        try {
+            var grid = $("#Periodgrid").data("kendoGrid");
+
+            var dataItem = grid.dataItem(grid.select());
+            var id = dataItem.GLPeriodId;
+            var branchid = dataItem.BranchId;
+            var save = $("#btnSendMail").data("kendoButton");
+            if ($('#btnSendMail').length > 0) {
+                save.enable(false);
+            }
+
+           
+            $.ajax({
+                url: '@Url.Action("SendMail", "PayrollProcess")',
+                data: { branchid: branchid, id: id },
+                type: 'POST',
+                cache: false,
+                success: function (result) {
+                    r = result;
+
+                    $("#Periodgrid").data("kendoGrid").dataSource.read();
+                    $("#Periodgrid").data("kendoGrid").refresh();
+                    if ($('#btnSendMail').length > 0) {
+                        save.enable(true);
+                    }
+                    passProgress.value(100);
+                }
+
+            });
+
+        } catch (ee) {
+            alert("Please select the row!!");
+        }
+    }
+    function Referesh(e) {
+        try {
+          
+            $.ajax({
+                url: '@Url.Action("Index", "PayrollProcess")',
+                contentType: "application/json; charset=utf-8",
+              //  data: { 'branchid': branchid, 'id': id },
+                type: 'GET',
+                cache: false,
+                success: function (result) {
+                    // r = result;
+                }
+
+            });
+            $("#Periodgrid").data("kendoGrid").datasource().read();
+            $("#Periodgrid").data("kendoGrid").Referesh();
+        } catch (e) {
+            //alert("Please select the row!!");
+        }
+    }
+</script>
+<script>
+    function Close(e) {
+        try {
+            if (confirm('Are you sure you want to colse this payroll?')) {
+                var grid = $("#Periodgrid").data("kendoGrid");
+                var dataItem = grid.dataItem(grid.select());
+                var id = dataItem.GLPeriodId;
+                var branchid = dataItem.BranchId;
+
+                var save = $("#btnclose").data("kendoButton");
+                if ($('#btnclose').length > 0) {
+                    save.enable(false);
+                }
+               
+
+                //passProgress = $("#progressBar").data("kendoProgressBar");
+                //passProgress.value(0);
+                //passProgress.value(20);
+                //passProgress.value(40);
+                //passProgress.value(55);
+                $.ajax({
+                    url: '@Url.Action("Close", "PayrollProcess")',
+                   // contentType: "application/json; charset=utf-8",
+                    data: { id: id, branchid: branchid },
+                    type: 'POST',
+                    cache: false,
+                    success: function (result) {
+                        r = result;
+                       
+                        $("#Periodgrid").data("kendoGrid").dataSource.read();
+                        $("#Periodgrid").data("kendoGrid").refresh();
+                        if ($('#btnclose').length > 0) {
+                            save.enable(true);
+                        }
+                        passProgress.value(100);
+                    }
+
+                });
+            } else {
+                // Do nothing!
+            }
+           
+        } catch (e) {
+            alert("Please select the row!!");
+        }
+
+    }
+
+</script>
+
+<script>
+    function Reverse(e) {
+        try {
+            var grid = $("#Periodgrid").data("kendoGrid");
+            var save = $("#btnReverse").data("kendoButton");
+            if ($('#btnReverse').length > 0) {
+                save.enable(false);
+            }
+            var dataItem = grid.dataItem(grid.select());
+            
+
+            //passProgress = $("#progressBar").data("kendoProgressBar");
+            //passProgress.value(0);
+            //passProgress.value(20);
+            //passProgress.value(40);
+            //passProgress.value(55);
+            var id = dataItem.GLPeriodId;
+            var branchid = dataItem.BranchId;
+           
+
+            $.ajax({
+                url: '@Url.Action("Reverse", "PayrollProcess")',
+              //  contentType: "application/json; charset=utf-8",
+                data: { id: id, branchid: branchid },
+                type: 'POST',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                   
+                     $("#Periodgrid").data("kendoGrid").dataSource.read();
+                     $("#Periodgrid").data("kendoGrid").refresh();
+                     $("#GLPeriodId").data("kendoComboBox").dataSource.read();
+                     $("#GLPeriodId").val(0);
+                     $("#BranchId").val(0);
+                     if ($('#btnReverse').length > 0) {
+                         save.enable(true);
+                     }
+                     passProgress.value(100);
+                }
+
+            });
+        } catch (e) {
+            alert("Please select the row!!");
+        }
+
+    }
+
+</script>
+
+<script>
+    function CheckDisablity(e) {
+        var save = $("#btnSave").data("kendoButton");
+        var allsave = $("#btnAllProcess").data("kendoButton");
+        var reverse = $("#btnReverse").data("kendoButton");
+        var distribute = $("#btnDistribut").data("kendoButton");
+        var close = $("#btnclose").data("kendoButton");
+        var transfer = $("#btnTransfer").data("kendoButton");
+        var grid = $("#Periodgrid").data("kendoGrid");
+        var sendmail = $("#btnSendMail").data("kendoButton");
+        var dataItem = grid.dataItem(grid.select());
+        var id = dataItem.GLPeriodId;
+        var branchid = dataItem.BranchId;
+        $.ajax({
+            url: '@Url.Action("CheckStatus", "PayrollProcess")',
+            contentType: "application/json; charset=utf-8",
+            data: { 'id': id, 'branchid': branchid },
+            type: 'GET',
+            cache: false,
+            success: function(result) {
+                r = result;
+                if (r == "c") {
+                    if ($('#btnSave').length > 0) {
+                        save.enable(false);
+                    }
+                    if ($('#btnAllProcess').length > 0) {
+                        allsave.enable(false);
+                    }
+                    if ($('#btnReverse').length > 0) {
+                        reverse.enable(false);
+                    }
+                    if ($('#btnclose').length > 0) {
+                    close.enable(false);
+                   }
+
+                    if ($('#btnTransfer').length > 0) {
+                        transfer.enable(true);
+                    }
+                    if ($('#btnSendMail').length > 0) {
+                        sendmail.enable(true);
+                    }
+                    //}
+
+                    if ($('#btnDistribut').length > 0) {
+                        distribute.enable(true);
+}
+                }
+                else if (r == "t") {
+                    if ($('#btnSave').length > 0) {
+                        save.enable(false);
+                    }
+                    if ($('#btnAllProcess').length > 0) {
+                        allsave.enable(false);
+                    }
+                    if ($('#btnReverse').length > 0) {
+                        reverse.enable(false);
+                    } if ($('#btnclose').length > 0) {
+                    close.enable(false);
+              }
+
+                    if ($('#btnTransfer').length > 0) {
+                        transfer.enable(false);
+                    }
+                    if ($('#btnSendMail').length > 0) {
+                        sendmail.enable(true);
+                    }
+                    if ($('#btnDistribut').length > 0) {
+
+                        distribute.enable(true);
+                    }
+                }
+                else if (r == "n") {
+                    if ($('#btnSave').length > 0) {
+                        save.enable(true);
+                    }
+                    if ($('#btnAllProcess').length > 0) {
+                        allsave.enable(false);
+                    }
+                    if ($('#btnReverse').length > 0) {
+                        reverse.enable(false);
+                    } if ($('#btnclose').length > 0) {
+                        close.enable(false);
+}
+
+                    if ($('#btnSendMail').length > 0) {
+                        sendmail.enable(false);
+                    }
+                    if ($('#btnTransfer').length > 0) {
+                        transfer.enable(false);
+                    }
+                    if ($('#btnDistribut').length > 0) {
+                        distribute.enable(false);
+                    }
+                } else {
+                    if ($('#btnSave').length > 0) {
+                        save.enable(false);
+                    }
+                    if ($('#btnAllProcess').length > 0) {
+                        allsave.enable(false);
+                    }
+                    if ($('#btnReverse').length > 0) {
+                        reverse.enable(true);
+                    }
+                    if ($('#btnclose').length > 0) {
+                        close.enable(true);
+}
+                    if ($('#btnTransfer').length > 0) {
+                        transfer.enable(false);
+                    }
+
+                    if ($('#btnSendMail').length > 0) {
+                        sendmail.enable(false);
+                    }
+                    if ($('#btnDistribut').length > 0) {
+                        distribute.enable(true);
+}
+                }
+            }
+
+        });
+
+
+    }
+</script>
+
+<script>
+    function Enable(e) {
+
+        var save = $("#btnSave").data("kendoButton");
+        var allsave = $("#btnAllProcess").data("kendoButton");
+        var reverse = $("#btnReverse").data("kendoButton");
+        var distribute = $("#btnDistribut").data("kendoButton");
+        var close = $("#btnclose").data("kendoButton");
+        var transfer = $("#btnTransfer").data("kendoButton");
+        if ($('#btnclose').length > 0) {
+            close.enable(false);
+        }
+        if ($('#btnSave').length > 0) {
+            save.enable(false);
+        }
+        if ($('#btnAllProcess').length > 0) {
+            allsave.enable(true);
+        }
+        if ($('#btnReverse').length > 0) {
+            reverse.enable(false);
+        }
+        if ($('#btnTransfer').length > 0) {
+      
+            transfer.enable(false);
+        }
+        if ($('#btnDistribut').length > 0) {
+        
+            distribute.enable(false);
+        }
+      
+             
+                 
+                  
+                  
+               
+                    var periods = $("#GLPeriodId").data("kendoComboBox");
+                    var branchs = $("#BranchId").data("kendoComboBox");
+       
+           
+                        var id = periods.value();
+                        var branchid = branchs.value();
+       
+                        $.ajax({
+                            url: '@Url.Action("CheckStatus", "PayrollProcess")',
+                            contentType: "application/json; charset=utf-8",
+                            data: { 'id': id, 'branchid': branchid },
+                            type: 'GET',
+                            cache: false,
+                            success: function(result) {
+                                r = result;
+                                if (r == "c") {
+                                    save.enable(false);
+                                   // pro.enable(false);
+                                    reverse.enable(false);
+                                    close.enable(false);
+                                    @*var checkTransefr=@String.valueOf(HttpContext.Current.User.IsInRole("Payroll_Transfer").ToString());
+                                    if (checkTransefr =="True")
+                                    {*@
+                                    if ($('#btnTransfer').length > 0) {
+
+                                        transfer.enable(true);
+}
+                                        //}
+                                    if ($('#btnDistribut').length > 0) {
+
+                                        distribute.enable(true);
+}
+                                    }
+                                else if (r == "t") {
+                                    if ($('#btnSave').length > 0) {
+                                        save.enable(false);
+                                    }
+                                    if ($('#btnAllProcess').length > 0) {
+                                        allsave.enable(false);
+                                    }
+                                    if ($('#btnReverse').length > 0) {
+                                        reverse.enable(false);
+}
+                                    if ($('#btnclose').length > 0) {
+                                            close.enable(false);
+}
+                                        if ($('#btnTransfer').length > 0) {
+
+
+                                            transfer.enable(false);
+}
+                                           
+                                        if ($('#btnDistribut').length > 0) {
+                                            distribute.enable(true);
+}
+                                    }
+                                else if (r == "n") {
+                                    if ($('#btnSave').length > 0) 
+                                    { 
+                                   
+                                        save.enable(true);
+                                    }
+                                    if ($('#btnAllProcess').length > 0) {
+                                        allsave.enable(true);
+                                    }
+                                    if ($('#btnReverse').length > 0) 
+                                    {
+                                  
+                                        reverse.enable(false);
+                                    } 
+                                    if ($('#btnclose').length > 0) {
+                                       
+                                            close.enable(false);
+}
+
+                                        if ($('#btnTransfer').length > 0) {
+
+                                            transfer.enable(false);
+}
+
+                                        if ($('#btnDistribut').length > 0) {
+                                            distribute.enable(false);
+}
+                                    }
+                                else {
+                                    if ($('#btnSave').length > 0) {
+                                        save.enable(false);
+                                    }
+                                    if ($('#btnAllProcess').length > 0) {
+                                        allsave.enable(false);
+                                    }
+                                    if ($('#btnReverse').length > 0) {
+                                        reverse.enable(true);
+}
+                                    if ($('#btnclose').length > 0) {
+                                                close.enable(true);
+}
+                                            if ($('#btnTransfer').length > 0) {
+                                                transfer.enable(false);
+                                            }
+                                            if ($('#btnDistribut').length > 0) {
+                                                distribute.enable(true);
+}
+                                    }
+                                }
+
+                            });
+
+    }
+</script>
+
+
+
+<script>
+            //function error_handler(e) {
+            //    if (e.errors) {
+            //        var message = "Errors:\n";
+            //        $.each(e.errors, function(key, value) {
+            //            if ('errors' in value) {
+            //                $.each(value.errors, function() {
+            //                    message += this + "\n";
+            //                });
+            //            }
+            //        });
+            //        alert(message);
+
+            //    }
+
+            //}
+
+            function sync_handler(e) {
+                this.read();
+
+            }
+        </script>
+
+
+<script>
+    function Process() {
+        var periods = $("#GLPeriodId").data("kendoComboBox");
+        var branchs = $("#BranchId").data("kendoComboBox");
+        var save = $("#btnSave").data("kendoButton");
+        try {
+            if ($('#btnSave').length > 0) {
+                save.enable(false);
+            }
+            $('body').addClass('waiting');
+            var period = periods.value();
+            var branchid = branchs.value();
+            //var passProgress = $("#progressBar").data("kendoProgressBar");
+            //passProgress.value(0);
+            //passProgress.value(20);
+            //passProgress.value(40);
+            //passProgress.value(55);
+
+            //var interval = setInterval(function () {
+            //    if (passProgress.value() <50) {
+
+            //        passProgress.value(passProgress.value() + 1);
+            //    }
+
+            //    else {
+            //        clearInterval(interval);
+            //    }
+            //}, 100);
+            $.ajax({
+                url: '@Url.Action("ProcessPayroll", "PayrollProcess")',
+                //contentType: "application/json; charset=utf-8",
+                data: { period: period, branchid: branchid},
+                type: 'POST',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                  
+                  //  alert("Successfully Processed");
+                    $("#Periodgrid").data("kendoGrid").dataSource.read();
+                    $("#Periodgrid").data("kendoGrid").refresh();
+                    $("#GLPeriodId").data("kendoComboBox").refresh();
+                    $("#BranchId").data("kendoComboBox").refresh();
+                    $("#GLPeriodId").data("kendoComboBox").dataSource.read();
+                    $("#BranchId").data("kendoComboBox").dataSource.read();
+                    if ($('#btnSave').length > 0) {
+                        save.enable(true);
+                    }
+                    $('body').removeClass('waiting');
+                }
+
+                
+            });
+           
+           
+           
+        } catch (e) {
+            alert("Please select Period and Branch!!");
+        }
+        //});
+    }
+    function ProcessAll() {
+        var periods = $("#GLPeriodId").data("kendoComboBox");
+        var branchs = $("#BranchId").data("kendoComboBox");
+        var save = $("#btnAllProcess").data("kendoButton");
+        try {
+            if ($('#btnAllProcess').length > 0) {
+                save.enable(false);
+            }
+            $('body').addClass('waiting');
+            var period = periods.value();
+            var branchid = branchs.value();
+           
+            $.ajax({
+                url: '@Url.Action("ProcessPayroll", "PayrollProcess")',
+                //contentType: "application/json; charset=utf-8",
+                data: { period: period,branchid:0, all: "all" },
+                type: 'POST',
+                cache: false,
+                success: function (result) {
+                    r = result;
+
+                    //  alert("Successfully Processed");
+                    $("#Periodgrid").data("kendoGrid").dataSource.read();
+                    $("#Periodgrid").data("kendoGrid").refresh();
+                    $("#GLPeriodId").data("kendoComboBox").refresh();
+                    $("#BranchId").data("kendoComboBox").refresh();
+                    $("#GLPeriodId").data("kendoComboBox").dataSource.read();
+                    $("#BranchId").data("kendoComboBox").dataSource.read();
+                    if ($('#btnAllProcess').length > 0) {
+                        save.enable(true);
+                    }
+                    $('body').removeClass('waiting');
+                }
+
+
+            });
+
+
+
+        } catch (e) {
+            alert("Please select Period");
+        }
+        //});
+    }
+</script>
+<style>
+    .demo-section p {
+        margin: 0 0 30px;
+        line-height: 50px;
+    }
+
+    .demo-section p .k-button {
+        margin: 0 10px 0 0;
+    }
+
+    .k-primary {
+        min-width: 100px;
+    }
+</style>
+
+
+@(Html.Kendo().Window().Name("DisWindow")
+        .Title("Distribution")
+    .Visible(false)
+    .Modal(true)
+      .Content(@<text>
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.HRM.Payroll.PayrollDistribution>()
+          .Name("PayrollDistributiongrid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.AccountDesc);
+           columns.Bound(c => c.AccountCode).EditorTemplateName("AccountCode").Width(200);
+          columns.Bound(c => c.Description).Width(200);
+          // columns.Bound(c => c.CostCenterCode);
+          // columns.Bound(c => c.OrgBranchName);
+          columns.Bound(c => c.Debit).Format("{0:N}")
+          .ClientFooterTemplate("Debit: #= kendo.toString(sum, 'N') #")
+            .ClientGroupFooterTemplate("Debit: #= kendo.toString(sum, 'N') #");
+          columns.Bound(c => c.Credit).Format("{0:N}")
+
+            .ClientFooterTemplate("Credit: #= kendo.toString(sum, 'N') #")
+         .ClientGroupFooterTemplate("Credit: #= kendo.toString(sum, 'N') #");
+          columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);  });
+      })
+         .ToolBar(toolbar =>
+         {
+             toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+             toolbar.Excel().Text(Resources.ActionButton_ExportExcel).HtmlAttributes(new { @class = "btn btn-primary btn-xs pull-right" });
+             toolbar.Pdf().Text(Resources.ActionButton_ExportPDF ).HtmlAttributes(new { @class = "btn btn-primary btn-xs pull-right" });
+         })
+             .Excel(excel => excel
+                                                                    .FileName("Distribution -"+DateTime.Now + ".xlsx")
+                                            .Filterable(true)
+                                                .AllPages(true)
+                                                                        .ProxyURL(Url.Action("Excel_Export_Save", "PayrollDistribution"))
+                                        )
+                                             .Pdf(pdf => pdf
+                                            .AllPages()
+                                                                                    .FileName("Distribution -" + DateTime.Now + ".pdf")
+                                                                                .ProxyURL(Url.Action("Pdf_Export_Save", "PayrollDistribution"))
+                                        )
+             .Events(e => e.Edit("edit"))
+     .DataSource(dataSource => dataSource
+          .Ajax()
+                        .Events(events =>
+                                            {
+                                                events.Error("error_handler(\"PayrollDistributiongrid\")");
+                                                events.RequestEnd("onRequestEnd(\"PayrollDistributiongrid\")");
+                                            })
+                                              .Group(groups => groups.Add(p => p.CostCenterCode))
+               .Aggregates(aggregates =>
+            {
+                aggregates.Add(p => p.Debit).Sum();
+                aggregates.Add(p => p.Credit).Sum();
+
+            })
+                     .Model(model => { model.Id(p => p.PayrollDistributionId);
+                     model.Field(p => p.AccountDesc).Editable (false);
+                     })
+                          .Read(read => read.Action("PayrollDistributions_Read", "PayrollProcess"))
+                                .Create(read => read.Action("PayrollDistributions_Create", "PayrollProcess"))
+                                      
+                                        .Update(read => read.Action("PayrollDistributions_Update", "PayrollProcess"))
+      )
+)
+                  
+                </text>)
+    .Draggable(true)
+    .Width(800)
+)
+
+
+<script>
+    function SelectAccounts() {
+
+        var wnd = $("#AccountsWindow").data("kendoWindow");
+        wnd.center().open();
+    }
+
+
+    function Accountclicked(e) {
+
+        var account = $("#Accounts").data("kendoComboBox").value();
+        var subaccount = $("#SubAccounts").data("kendoComboBox").value();
+        var company = $("#Company").data("kendoComboBox").value();
+        var costCenter = $("#CostCent").data("kendoComboBox").value();
+        var glAcc = account + "-" + company + "-" + costCenter + "-" + subaccount;
+        if (account !== "" && subaccount !== "" && company !== "") {
+
+            $("#AccountCode").val(glAcc).trigger("change");
+
+
+            var window = $("#AccountsWindow").data("kendoWindow");
+
+            window.close();
+        }
+        else {
+            alert("Please select all the neccessary Fields");
+        }
+
+    }
+    function edit(e) {
+        if (e.model.isNew() === true) {
+            $("#AccountDesc").attr("readonly", false);
+        }
+    }
+</script>
+
+
+
+@(Html.Kendo().Window().Name("AccountsWindow")
+            .Title(Resources.NavigatorPayrollSetup_PayrollAcounts)
+    .Visible(false)
+    .Modal(true)
+      .Content(@<text>
+        @(Html.Kendo().ComboBox()
+                         .Name("Accounts")
+                         .HtmlAttributes(new { style = "width:200px" })
+                         .ValuePrimitive(true)
+                         .Placeholder("Account...")
+                                  .Filter("contains")
+              .MinLength(2)
+                         .DataTextField("GlchartAccunt")
+                         .DataValueField("GlValue")
+                         .DataSource(dataSource =>
+                         {
+                             dataSource.Read(read => read.Action("GetAccountCode", "PayrollAcounts", new { area = "HRM" }));
+                             //.ServerFiltering(true);
+                         }))
+
+        <br />
+        <br />
+
+        @(Html.Kendo().ComboBox()
+                          .Name("Company")
+                          .ValuePrimitive(true)
+                          .Placeholder("Comapny...")
+                                   .Filter("contains")
+              .MinLength(2)
+                          .HtmlAttributes(new { style = "width:200px" })
+                                  .DataTextField("Name")
+                                  .DataValueField("Value")
+                          .DataSource(dataSource =>
+                          {
+                              dataSource.Read(read => read.Action("GetCompany", "PayrollAcounts", new { area = "HRM" }));
+                              //.ServerFiltering(true);
+                          })
+        )
+        <br />
+        <br />
+        @(Html.Kendo().ComboBox()
+                                              .Name("CostCent")
+                          .ValuePrimitive(true)
+                              .Placeholder("Cost Center...")
+                                       .Filter("contains")
+              .MinLength(2)
+                          .HtmlAttributes(new { style = "width:200px" })
+                                      .DataTextField("GlchartAccunt")
+                                  .DataValueField("GlValue")
+                          .DataSource(dataSource =>
+                          {
+                              dataSource.Read(read => read.Action("GetCostCenter", "PayrollAcounts", new { area = "HRM" }));
+                              //.ServerFiltering(true);
+                          })
+        )
+        <br />
+        <br />
+        @(Html.Kendo().ComboBox()
+                          .Name("SubAccounts")
+                          .ValuePrimitive(true)
+                          .Placeholder("SubAccount...")
+                                   .Filter("contains")
+              .MinLength(2)
+                          .HtmlAttributes(new { style = "width:200px" })
+                                  .DataTextField("GlchartSubAccunt")
+                                  .DataValueField("GlValue")
+                          .DataSource(dataSource =>
+                          {
+                              dataSource.Read(read => read.Action("GetSubAccountCode", "PayrollAcounts", new { area = "HRM" }))
+                                  .ServerFiltering(true);
+                          })
+        )
+        <br />
+        <br />
+
+        @Html.ValidationMessageFor(m => m)
+        <br />
+        <br /> <br />
+        <div class="pull-right">
+            @Html.Kendo().Button().Name("Save").Content("Submit").Events(ev => ev.Click("Accountclicked"))
+
+        </div>
+
+    </text>)
+    .Draggable(true)
+    .Width(300)
+)
+
+<script>
+   
+
+    function onComplete(e) {
+        $("#btnSave").removeClass("k-state-disabled");
+    }
+    function onChange(e) {
+        $("#progressBar").text(e.value + "%");
+    }
+
+    //function progress( ) {
+    //    var pb = $("#progressBar").data("kendoProgressBar");
+    // //   if ()
+    //    pb.value(0);
+
+    //    var interval = setInterval(function () {
+    //        if (pb.value() < 10) {
+    //            pb.value(pb.value() + 1);
+    //        } else {
+    //            clearInterval(interval);
+    //        }
+    //    }, 100);
+    //}
+</script>
+
+<style>
+    #progressBar {
+        display: block;
+        width: 100%;
+        margin-bottom: 10px;
+    }
+</style>
+
+<div id='divWaitingPanel' style='display: none;'>
+
+    <div>
+        <table border="0" style="background-color: #ffffff; border: 2px solid #908300;">
+            <tr>
+                <td>
+                    <img src="@Url.Content("~/Content/images/ajax-loading1.gif")">
+                </td>
+            </tr>
+        </table>
+    </div>
+</div>

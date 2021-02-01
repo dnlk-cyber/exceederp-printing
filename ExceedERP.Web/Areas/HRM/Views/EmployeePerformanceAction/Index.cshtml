@@ -1,0 +1,19 @@
+﻿@using ExceedERP.Core.Domain.HRM.PerformanceManagment
+
+@(Html.Kendo().Grid<EmployeePerformanceAction>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.MeasurementDefinitionId);
+        columns.Bound(c => c.MeasurementId);
+       // columns.Bound(c => c.EmployeePerformanceId);
+        columns.Bound(c => c.EmpPerfPercentageofWeight);
+        columns.Bound(c => c.Result);
+        columns.Bound(c => c.Remark);
+      })
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Read(read => read.Action("EmployeePerformanceAction_Read", "EmployeePerformanceAction"))
+      )
+)

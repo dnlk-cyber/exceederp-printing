@@ -1,0 +1,217 @@
+﻿@using ExceedERP.Core.Localization
+@using System.Collections@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Project Delay | Delay Information</legend>
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.ProjectInformation>()
+        .Name("ProjectInformationgrid")
+        .Columns(columns =>
+        {
+            columns.Bound(c => c.Name);
+            columns.Bound(c => c.ProjectType);
+            columns.Bound(c => c.Code);
+
+        })
+        .Scrollable(h => h.Height(500))
+        //.Groupable()
+        .Sortable(sortable =>
+        {
+            sortable.SortMode(GridSortMode.SingleColumn);
+        })
+        .Selectable(selectable =>
+        {
+            selectable.Mode(GridSelectionMode.Single);
+            selectable.Type(GridSelectionType.Row);
+        })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Template(@<text>
+                               <div class="toolbar row">                                  
+                                   <div class="pull-right" style="margin-right:10px;">
+                                       @Html.Kendo().Button().Name("goDelayAnalysisView").Content("View Delay Effects").Events(events => events.Click("delayAnalysisViewClicked")).Icon("").HtmlAttributes(new { @class = "btn btn-primary" })
+                                   </div>
+                               </div>
+                            </text>);
+      })
+        .Filterable()
+        .Pageable(pageable => pageable
+                                .Input(true)
+                                .Numeric(false)
+                                .Refresh(true)
+                                .PageSizes(true)
+                                .ButtonCount(5))
+        .DataSource(dataSource => dataSource
+            .Ajax()
+            .Events(events => events.Error("error_handler(\"ProjectInformationgrid\")")
+                )
+            .Model(model => model.Id(p => p.ProjectInformationId))
+            .Read(read => read.Action("ProjectInformation_Read", "WorkDelay"))
+        ).ClientDetailTemplateId("template_schedules")
+)
+
+<script id="template_schedules" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+          .Name("tabstrip_1_#=ProjectInformationId#")
+          .SelectedIndex(0)
+          .Items(items =>
+          {
+              items.Add().Text("Project Schedules").Content(
+                @<text>
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.ScheduleRevision>()
+                              .Name("revision_#=ProjectInformationId#")
+                              .Columns(columns =>
+                              {
+                                  columns.Bound(c => c.Version).ClientTemplate(
+                                      "\\# if (Version === 0) { \\#" +
+                                      " " +
+                                      "\\# } else {\\#" +
+                                      "V. \\#: Version\\#.00" +
+                                      "\\# } \\#"
+                                      );
+                                  columns.Bound(c => c.Status);
+                                  columns.Bound(c => c.DateOfApproval);
+
+                                 
+                              })
+                              
+                              .Editable(editable => editable.Mode(GridEditMode.InLine))
+                              .Selectable(selectable =>
+                              {
+                                  selectable.Mode(GridSelectionMode.Single);
+                                  selectable.Type(GridSelectionType.Row);
+                              })
+                              .Scrollable(h => h.Height(500))
+                              .Groupable()
+                              .Sortable(sortable =>
+                              {
+                                  sortable.SortMode(GridSortMode.SingleColumn);
+                              })
+                              .Filterable()
+                              .Pageable(pageable => pageable
+                                  .Input(true)
+                                  .Numeric(false)
+                                  .Refresh(true)
+                                  .PageSizes(true)
+                                  .ButtonCount(5))
+                              .DataSource(dataSource => dataSource
+                                  .Ajax()
+                                  .Events(events =>
+                                  {
+                                      events.Error("error_handler(\"revision_#=ProjectInformationId#\")");
+                                      events.RequestStart("onRequestStart(\"revision_#=ProjectInformationId#\")");
+                                      events.RequestEnd("onRequestEnd(\"revision_#=ProjectInformationId#\")");
+
+                                  })
+                                  .Model(model =>
+                                  {
+                                      model.Id(f => f.ScheduleRevisionId);
+                                      model.Field(f => f.Status).Editable(false);
+                                      model.Field(f => f.Version).Editable(false);
+                                      model.Field(f => f.DateOfApproval).Editable(false);
+                                  })
+
+                                  .Read(read => read.Action("ScheduleRevision_Read", "ScheduleRevision", new { projectIdRead = "#=ProjectInformationId#" }))
+                              ).ClientDetailTemplateId("task_template")
+                              .ToClientTemplate()
+                    )
+                </text>
+                  );
+          }).ToClientTemplate())
+</script>
+
+<script id="task_template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+          .Name("tabstr_#=ScheduleRevisionId#")
+          .SelectedIndex(0)
+          .Items(items =>
+          {
+              items.Add().Text("Delay Info").Content(
+                @<text>
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.WorkDelay>()
+                        .Name("delays__#=ScheduleRevisionId#")
+                        .Columns(columns =>
+                        {
+                            //columns.ForeignKey(c => c.Order, (IEnumerable)ViewData["Projects"], "ProjectInformationId", "Name").EditorTemplateName("Projects").Width(130).Title("Project");
+                            columns.ForeignKey(c => c.ID, (IEnumerable)ViewData["WorkItems"], "ID", "Title").Width(200).EditorTemplateName("ScheduleTasks");
+                            columns.Bound(c => c.PlannedDuration).Width(70);
+                            columns.Bound(c => c.Order).Width(70);
+                            columns.Group(g => g.Title("Delay Information").HeaderHtmlAttributes(new { style = "text-align: center; font-weight: bold;" })
+                                    .Columns(detail =>
+                                    {
+                                        detail.Bound(c => c.Description).Width(200);
+                                        detail.ForeignKey(c => c.DelayTypeId, (IEnumerable)ViewData["DalayTypes"], "DelayTypeId", "Abbriviation").Width(100).EditorTemplateName("DelayTypes");
+                                        detail.Bound(c => c.Start);
+                                        detail.Bound(c => c.End);
+                                        detail.Bound(c => c.Duration);
+                                    })
+                                    );
+                            columns.Command(command =>
+                            {
+                                command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                command.Destroy().Text(Resources.ActionButton_Cancel);
+                            }).Width(200);
+                        })
+                        .ToolBar(toolbar =>
+                        {
+                            toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                        })
+                        .Editable(editable => editable.Mode(GridEditMode.InLine))
+                        .Scrollable(h => h.Height(500))
+                        .Selectable(selectable =>
+                        {
+                            selectable.Mode(GridSelectionMode.Single);
+                            selectable.Type(GridSelectionType.Row);
+                        })
+                        .Groupable()
+                        .Sortable(sortable =>
+                        {
+                            sortable.SortMode(GridSortMode.SingleColumn);
+                        })
+                        //.Filterable()
+                        .Pageable(pageable => pageable
+                            .Input(true)
+                            .Numeric(false)
+                            .Refresh(true)
+                            .PageSizes(true)
+                            .ButtonCount(5))
+                        // .Events(e => e.Edit("onEdit"))
+                        .DataSource(dataSource => dataSource
+                            .Ajax()
+
+                            .Events(events =>
+                            {
+                                events.Error("error_handler(\"delays__#=ScheduleRevisionId#\")");
+                                events.RequestStart("onRequestStart(\"delays__#=ScheduleRevisionId#\")");
+                                events.RequestEnd("onRequestEnd(\"delays__#=ScheduleRevisionId#\")");
+                            })
+                            .Model(model =>
+                            {
+                                model.Id(p => p.WorkDelayId);
+                                model.Field(p => p.PlannedDuration).Editable(false);
+                                model.Field(p => p.Duration).Editable(false);
+                                model.Field(f => f.Order).Editable(false);
+                            })
+                            .Read(read => read.Action("WorkDelay_Read", "WorkDelay", new { projectIdRead = "#=ProjectInformationId#" , revisionId  = "#=ScheduleRevisionId#" }))
+                            .Create(create => create.Action("WorkDelay_Create", "WorkDelay"))
+                            .Update(update => update.Action("WorkDelay_Update", "WorkDelay"))
+                            .Destroy(destroy => destroy.Action("WorkDelay_Destroy", "WorkDelay"))
+                        ).ToClientTemplate()
+                    )
+                </text>
+                );
+          }).ToClientTemplate())
+</script>
+<script>
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+
+    function delayAnalysisViewClicked(e) {
+        e.preventDefault();
+        window.location.href = "@Url.Action("Index", "DelayAnalysis")";
+    }
+</script>
+

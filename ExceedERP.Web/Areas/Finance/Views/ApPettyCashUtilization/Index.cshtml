@@ -1,0 +1,32 @@
+﻿@using ExceedERP.Core.Domain.Finance.AP.PettyCash
+
+@(Html.Kendo().Grid<ApPettyCashUtilization>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Date);
+          columns.Bound(c => c.PaidTo);
+          columns.Bound(c => c.Purpose);
+          columns.Bound(c => c.Amount);
+          columns.Bound(c => c.AccountCode);
+          columns.Bound(c => c.Reference);
+          columns.Bound(c => c.OrgBranchName);
+          columns.Bound(c => c.DateCreated);
+          columns.Bound(c => c.LastModified);
+          columns.Bound(c => c.CreatedBy);
+          columns.Bound(c => c.ModifiedBy);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.ApPettyCashUtilizationId))
+          .Read(read => read.Action("ApPettyCashUtilizations_Read", "ApPettyCashUtilization"))
+          .Create(create => create.Action("ApPettyCashUtilizations_Create", "ApPettyCashUtilization"))
+          .Update(update => update.Action("ApPettyCashUtilizations_Update", "ApPettyCashUtilization"))
+          .Destroy(destroy => destroy.Action("ApPettyCashUtilizations_Destroy", "ApPettyCashUtilization"))
+      ))

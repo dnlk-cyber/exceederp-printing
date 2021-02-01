@@ -1,0 +1,25 @@
+﻿@using ExceedERP.Core.Domain.Common
+@(Html.Kendo().DropDownListFor(m => m)
+    .Name("PEAttribute")
+    .OptionLabel("Select Attribute..")
+    .ValuePrimitive(true)
+    .DataTextField("Text")
+    .DataValueField("Text")
+    .DataSource(source =>
+    {
+        source.Read(read =>
+        {
+            read.Action("GetPerformanceEvaluationAttributes", "Setting");
+                //.Data("filterCategories");
+        })
+        .ServerFiltering(true);
+    })
+    .AutoBind(false)
+)
+<script>
+    function filterCategories() {
+        return {
+            Reference: $("#Reference").val()
+        };
+    }
+</script>

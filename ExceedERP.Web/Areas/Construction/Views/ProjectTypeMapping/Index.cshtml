@@ -1,0 +1,77 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Setting | Project Type & Structure Type Mapping</legend>
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.ProjectTypeMapping>()
+    .Name("projectTypeMappingGrid")
+    .Columns(columns =>
+    {
+        columns.Bound(c => c.ProjectType).EditorTemplateName("ProjectTypes").ClientGroupHeaderTemplate(
+            "# if (value === 0) { #" +
+                " BUILDING " +
+              "# } else if (value === 1) {#" +
+                " ROAD " +
+              "# } else if (value === 2) {#" +
+                 " DAM " +
+              "# } else if (value === 3) {#" +
+                " IRRIGATION" +
+              "# } #"
+            );
+        columns.ForeignKey(c => c.ConfigurationId, (IEnumerable)ViewData["Types"], "ConfigurationId", "CurrentValue").EditorTemplateName("StructureTypes");
+        columns.Bound(c => c.Remark);
+        columns.Bound(c => c.CodeOrSeries);
+        columns.Command(command =>
+        {
+            command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+            command.Destroy().Text(Resources.ActionButton_Cancel);
+        }).Width(200);
+    })
+    .ToolBar(toolbar =>
+    {
+        toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+    })
+    .Editable(editable => editable.Mode(GridEditMode.InLine))
+    .Scrollable(h => h.Height(700))
+    .Sortable(sortable =>
+    {
+        sortable.SortMode(GridSortMode.SingleColumn);
+    })
+    .Selectable(selectable =>
+    {
+        selectable.Mode(GridSelectionMode.Single);
+        selectable.Type(GridSelectionType.Row);
+    })
+    .Filterable()
+    .Pageable(pageable => pageable
+        .Input(true)
+        .Numeric(false)
+        .Refresh(true)
+        .PageSizes(true)
+        .ButtonCount(5))
+    //.Events(e => e.Edit("onEdit"))
+    .DataSource(dataSource => dataSource
+        .Ajax()
+        .PageSize(20)
+        .Events(events =>
+        {
+            events.Error("error_handler(\"projectTypeMappingGrid\")");
+            events.RequestStart("onRequestStart(\"projectTypeMappingGrid\")");
+            events.RequestEnd("onRequestEnd(\"projectTypeMappingGrid\")");
+        })
+        .Group(group => {
+            group.Add(c => c.ProjectType);
+        })
+        .Model(model =>
+        {
+            model.Id(p => p.ProjectTypeMappingId);
+        }
+        )
+        .Read(read => read.Action("ProjectTypeMappings_Read", "ProjectTypeMapping"))
+        .Create(create => create.Action("ProjectTypeMappings_Create", "ProjectTypeMapping"))
+        .Update(update => update.Action("ProjectTypeMappings_Update", "ProjectTypeMapping"))
+        .Destroy(destroy => destroy.Action("ProjectTypeMappings_Destroy", "ProjectTypeMapping"))
+        )
+)

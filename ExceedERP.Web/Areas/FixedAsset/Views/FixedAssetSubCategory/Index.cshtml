@@ -1,0 +1,115 @@
+﻿@using ExceedERP.Core.Domain.FixedAsset.Setting
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Fixed Asset Sub Category</legend>
+@(Html.Kendo().Grid<FixedAssetSubCategory>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.SubCategoryCode).Width(120);
+          columns.ForeignKey(p => p.CategoryCode, (System.Collections.IEnumerable)ViewData["categories"], "CategoryCode", "CategoryName").Title("Category").Width(130);
+          columns.Bound(c => c.SubCategoryName).Width(130);
+          columns.Bound(c => c.Abbreviation).Width(110);
+          columns.Bound(c => c.IsGroup).Width(90).Title("Is Group?").ClientTemplate(
+              "<input type='checkbox' disabled = 'true' value='#= IsGroup #' " +
+              "# if (IsGroup) { #" +
+              "checked='checked'" +
+              "# } #" +
+              "/>"
+              );
+     
+          columns.Command(command =>
+          {
+              command.Edit(); 
+              //command.Destroy();
+          }).Width(380);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .HtmlAttributes(new { style = "height: 550px;" })
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(20))
+      .Scrollable()
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Filterable()
+      .Groupable()
+      //.Groupable().Events(ev => ev.DetailExpand("detailExpand"))
+      .Scrollable(h => h.Height(500))
+     // .Events(x => x.DataBound("onDataBoundMaster"))
+      .ClientDetailTemplateId("detailTemplate")
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Events(ev => ev
+              .Error("error_handler_one")
+              .Sync("sync_handler"))
+          .Model(model => model.Id(p => p.FixedAssetSubCategoryID))
+          .Read(read => read.Action("FixedAssetSubCategories_Read", "FixedAssetSubCategory"))
+          .Create(create => create.Action("FixedAssetSubCategories_Create", "FixedAssetSubCategory"))
+          .Update(update => update.Action("FixedAssetSubCategories_Update", "FixedAssetSubCategory"))
+          .Destroy(destroy => destroy.Action("FixedAssetSubCategories_Destroy", "FixedAssetSubCategory"))
+      ))
+
+
+<script id="detailTemplate" type="text/Kendo-tmpl">
+    @(Html.Kendo().TabStrip().Name("tabStrip_#=FixedAssetSubCategoryID#").SelectedIndex(0).Items(itemn =>
+                                              {
+                         itemn.Add().Text("Sub Category Names").Content(
+
+                @<text>
+
+                    @(Html.Kendo().Grid<FixedAssetSubCategoryName>()
+                          .Name("FixedAssetSubCategoryName#=FixedAssetSubCategoryID#")
+                          .Columns(columns =>
+                          {
+                              columns.Bound(c => c.Name).Width(130);
+                              columns.Command(command =>
+                              {
+                                  command.Edit();
+                                  command.Destroy();
+                              }).Width(480);
+                          })
+                          .ToolBar(toolbar =>
+                          {
+                              toolbar.Create();
+                          })
+                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                          .Scrollable()
+                          .Filterable()
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+                              .Events(ev => ev
+                                  .Error("error_handler(\"FixedAssetSubCategoryName#=FixedAssetSubCategoryID#\")")
+                                  .RequestStart("onRequestStart(\"FixedAssetSubCategoryName#=FixedAssetSubCategoryID#\")")
+                                  .RequestEnd("onRequestEnd(\"FixedAssetSubCategoryName#=FixedAssetSubCategoryID#\")"))
+                              .Model(model =>
+                              {
+                                  model.Id(p => p.FixedAssetSubCategoryNameId);
+                              })
+                              .Read(read => read.Action("FixedAssetSubCategoryNames_Read", "FixedAssetSubCategoryName", new { id = "#=FixedAssetSubCategoryID#" }))
+                              .Create(create => create.Action("FixedAssetSubCategoryNames_Create", "FixedAssetSubCategoryName", new { id = "#=FixedAssetSubCategoryID#" }))
+                              .Update(update => update.Action("FixedAssetSubCategoryNames_Update", "FixedAssetSubCategoryName", new { id = "#=FixedAssetSubCategoryID#" }))
+                              .Destroy(destroy => destroy.Action("FixedAssetSubCategoryNames_Destroy", "FixedAssetSubCategoryName", new { id = "#=FixedAssetSubCategoryID#" }))
+                          ).ToClientTemplate())
+
+
+                                                                </text>);
+
+                                                                     
+ }).ToClientTemplate())
+</script>

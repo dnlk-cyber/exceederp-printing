@@ -1,0 +1,357 @@
+﻿using System.Data.Entity;
+using System.Linq;
+using System.Web.Mvc;
+using ExceedERP.Core.Domain.Global;
+using ExceedERP.Core.Domain.Inventory;
+using ExceedERP.Core.Domain.Procurement.PR;
+using ExceedERP.Core.Domain.Procurement.Settings;
+using ExceedERP.Core.Domain.Procurement.Tender.Lot;
+using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
+using ExceedERP.Web.Helpers;
+using Kendo.Mvc.Extensions;
+using Kendo.Mvc.UI;
+
+namespace ExceedERP.Web.Areas.Procurement.Controllers.Bid
+{
+    public class LotPurchaseRequisitionController : Controller
+    {
+        private readonly ExceedDbContext _db = new ExceedDbContext();
+        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser, ProcurementConstants.ProcurementTenderApprover)]
+        public ActionResult Index()
+        {
+            return View();
+        }
+
+        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser, ProcurementConstants.ProcurementTenderApprover)]
+        public ActionResult LotPurchaseRequisitions_Read(int id,[DataSourceRequest]DataSourceRequest request)
+        {
+            IQueryable<LotPurchaseRequisition> lotpurchaserequisitions = _db.LotPurchaseRequisitions.Where(x=>x.LotID==id);
+            DataSourceResult result = lotpurchaserequisitions.ToDataSourceResult(request, lotPurchaseRequisition => new {
+                PurchaseRequisitionAssignmentId = lotPurchaseRequisition.PurchaseRequisitionAssignmentId,
+                LotPurchaseRequisitionId = lotPurchaseRequisition.LotPurchaseRequisitionId,
+                LotID = lotPurchaseRequisition.LotID,
+                StoreRequisitionID = lotPurchaseRequisition.StoreRequisitionID,
+                PurchaseRequisitionID = lotPurchaseRequisition.PurchaseRequisitionID,
+                OrgBranchName = lotPurchaseRequisition.OrgBranchName,
+                DateCreated = lotPurchaseRequisition.DateCreated,
+                LastModified = lotPurchaseRequisition.LastModified,
+                CreatedBy = lotPurchaseRequisition.CreatedBy,
+                ModifiedBy = lotPurchaseRequisition.ModifiedBy
+            });
+
+            return Json(result);
+        }
+
+        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AcceptVerbs(HttpVerbs.Post)]
+        public ActionResult LotPurchaseRequisitions_Create(int id,[DataSourceRequest]DataSourceRequest request, LotPurchaseRequisition lotPurchaseRequisition)
+        {
+            //var exist = db.LotPurchaseRequisitions.Where(x =>x.PurchaseRequisitionID == lotPurchaseRequisition.PurchaseRequisitionID).ToList();
+            //if (exist.Any())
+            //{
+            //    string tendereref = "";
+            //    var existlot = db.Lots.Find(exist.FirstOrDefault().LotID);
+            //    if (existlot != null)
+            //    {
+            //        var existtender = db.Tenders.Find(existlot.TenderID);
+            //        if (existtender != null && !existtender.IsCancelled) 
+            //            ModelState.AddModelError("exist", lotPurchaseRequisition.PurchaseRequisitionID + $" already exists in the system under tender { existtender.TenderReference }.");
+            //    }
+
+
+            //}
+            var assignment =
+                _db.PurchaseRequisitionAssignments.Find(lotPurchaseRequisition.PurchaseRequisitionAssignmentId);
+
+
+            if (assignment != null)
+            {
+                lotPurchaseRequisition.PurchaseRequisitionID = assignment.PurchaseRequisitionID;
+
+                var purchaseRequisition = _db.PurchaseRequisitions.Find(assignment.PurchaseRequisitionID);
+                if (purchaseRequisition != null)
+                    lotPurchaseRequisition.StoreRequisitionID = purchaseRequisition.StoreRequisitionID;
+            }
+
+            if (ModelState.IsValid)
+            {
+                var entity = new LotPurchaseRequisition
+                {
+                    LotID = id,
+                    PurchaseRequisitionAssignmentId= lotPurchaseRequisition.PurchaseRequisitionAssignmentId,
+                    StoreRequisitionID = lotPurchaseRequisition.StoreRequisitionID,
+                    PurchaseRequisitionID = lotPurchaseRequisition.PurchaseRequisitionID,
+                    OrgBranchName = lotPurchaseRequisition.OrgBranchName,
+                    DateCreated = lotPurchaseRequisition.DateCreated,
+                    LastModified = lotPurchaseRequisition.LastModified,
+                    CreatedBy = lotPurchaseRequisition.CreatedBy,
+                    ModifiedBy = lotPurchaseRequisition.ModifiedBy
+                };
+
+                _db.LotPurchaseRequisitions.Add(entity);
+                _db.SaveChanges();
+                lotPurchaseRequisition.LotPurchaseRequisitionId = entity.LotPurchaseRequisitionId;
+
+                AddPrItems(lotPurchaseRequisition.PurchaseRequisitionAssignmentId, id);
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "lot required document", "Success", User.Identity.Name, $"created lot PR {entity.PurchaseRequisitionID} under record {entity.LotID} ", Modules.Procurement);
+                #endregion
+            }
+
+            return Json(new[] { lotPurchaseRequisition }.ToDataSourceResult(request, ModelState));
+        }
+
+        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AcceptVerbs(HttpVerbs.Post)]
+        public ActionResult LotPurchaseRequisitions_Update([DataSourceRequest]DataSourceRequest request, LotPurchaseRequisition lotPurchaseRequisition)
+        {
+            //var exist = db.LotPurchaseRequisitions.Where(x => x.PurchaseRequisitionID == lotPurchaseRequisition.PurchaseRequisitionID).ToList();
+            //if (exist.Any())
+            //{
+            //    string tendereref = "";
+            //    var existlot = db.Lots.Find(exist.FirstOrDefault()?.LotID);
+            //    if (existlot != null)
+            //    {
+            //        var existtender = db.Tenders.Find(existlot.TenderID);
+            //        if (existtender != null && !existtender.IsCancelled)
+            //            ModelState.AddModelError("exist", lotPurchaseRequisition.PurchaseRequisitionID + $" already exists in the system under tender { existtender.TenderReference }.");
+            //    }
+
+
+            //}
+
+            var assignment =
+                _db.PurchaseRequisitionAssignments.Find(lotPurchaseRequisition.PurchaseRequisitionAssignmentId);
+
+
+            if (assignment != null)
+            {
+                lotPurchaseRequisition.PurchaseRequisitionID = assignment.PurchaseRequisitionID;
+
+                var purchaseRequisition = _db.PurchaseRequisitions.Find(assignment.PurchaseRequisitionID);
+                if (purchaseRequisition != null)
+                    lotPurchaseRequisition.StoreRequisitionID = purchaseRequisition.StoreRequisitionID;
+            }
+
+            if (ModelState.IsValid)
+            {
+                var entity = new LotPurchaseRequisition
+                {
+                    LotID = lotPurchaseRequisition.LotID,
+                    StoreRequisitionID = lotPurchaseRequisition.StoreRequisitionID,
+                    LotPurchaseRequisitionId = lotPurchaseRequisition.LotPurchaseRequisitionId,
+                    PurchaseRequisitionAssignmentId = lotPurchaseRequisition.PurchaseRequisitionAssignmentId,
+                    PurchaseRequisitionID = lotPurchaseRequisition.PurchaseRequisitionID,
+                    OrgBranchName = lotPurchaseRequisition.OrgBranchName,
+                    DateCreated = lotPurchaseRequisition.DateCreated,
+                    LastModified = lotPurchaseRequisition.LastModified,
+                    CreatedBy = lotPurchaseRequisition.CreatedBy,
+                    ModifiedBy = lotPurchaseRequisition.ModifiedBy
+                };
+
+                _db.LotPurchaseRequisitions.Attach(entity);
+                _db.Entry(entity).State = EntityState.Modified;
+                _db.SaveChanges();
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "lot required document", "Success", User.Identity.Name, $"updated lot PR {entity.PurchaseRequisitionID} under record {entity.LotID} ", Modules.Procurement);
+                #endregion
+            }
+
+            return Json(new[] { lotPurchaseRequisition }.ToDataSourceResult(request, ModelState));
+        }
+
+        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AcceptVerbs(HttpVerbs.Post)]
+        public ActionResult LotPurchaseRequisitions_Destroy([DataSourceRequest]DataSourceRequest request, LotPurchaseRequisition lotPurchaseRequisition)
+        {
+            if (ModelState.IsValid)
+            {
+                var entity = new LotPurchaseRequisition
+                {
+                    LotID = lotPurchaseRequisition.LotID,
+                    StoreRequisitionID = lotPurchaseRequisition.StoreRequisitionID,
+                    LotPurchaseRequisitionId = lotPurchaseRequisition.LotPurchaseRequisitionId,
+                    PurchaseRequisitionAssignmentId = lotPurchaseRequisition.PurchaseRequisitionAssignmentId,
+                    PurchaseRequisitionID = lotPurchaseRequisition.PurchaseRequisitionID,
+                    OrgBranchName = lotPurchaseRequisition.OrgBranchName,
+                    DateCreated = lotPurchaseRequisition.DateCreated,
+                    LastModified = lotPurchaseRequisition.LastModified,
+                    CreatedBy = lotPurchaseRequisition.CreatedBy,
+                    ModifiedBy = lotPurchaseRequisition.ModifiedBy
+                };
+
+                _db.LotPurchaseRequisitions.Attach(entity);
+                _db.LotPurchaseRequisitions.Remove(entity);
+                _db.SaveChanges();
+
+                RemovePrItems(lotPurchaseRequisition.PurchaseRequisitionAssignmentId, lotPurchaseRequisition.LotID);
+            }
+
+            return Json(new[] { lotPurchaseRequisition }.ToDataSourceResult(request, ModelState));
+        }
+
+        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        private void AddPrItems(int assignmentid, int id)
+        {
+            var record = _db.PurchaseRequisitionAssignments.Find(assignmentid);
+            if (record != null)
+            {
+                foreach (var item in record.PurchaseRequisitionReassignmentItems)
+                {
+
+                    if (item.ItemType == PurchaseItemType.FixedAsset)
+                    {
+                        #region fixed asset
+
+                        var existingLotItem = _db.LotItems
+                            .Where(x => x.LotID == id)
+                            .Where(x=>x.Name==item.Name)
+                            .Where(x => x.ItmCode == item.ItmCode)
+                            .FirstOrDefault(x => x.ModelNo == item.ModelNo);
+                        if (existingLotItem == null)
+                        {
+
+                            LotItems lotItems = new LotItems
+                            {
+                                LotID = id,
+                                CatCode = item.CatCode,
+                                CategoryName = item.CategoryName,
+                                ItmCode = item.ItmCode,
+                                ItemName = item.ItemName,
+                                Name = item.Name,
+                                ModelNo = item.ModelNo,
+                                PartNo = item.PartNo,
+                                Quantity = item.Quantity,
+                                ItemSpecification = item.ItemSpecification,
+                                UoM = item.UoM,
+                                ItemType = item.ItemType,
+                            };
+
+
+                            _db.LotItems.Add(lotItems);
+                            _db.SaveChanges();
+                        }
+                        else
+                        {
+                            existingLotItem.Quantity = existingLotItem.Quantity + item.Quantity;
+                            _db.Entry(existingLotItem).State = EntityState.Modified;
+                            _db.SaveChanges();
+                        }
+
+                        #endregion
+                    }
+
+                    else
+                    {
+                        #region sock and service
+
+                        var existingLotItem = _db.LotItems
+                            .Where(x => x.LotID == id)
+                            .Where(x => x.ItemSpecification == item.ItemSpecification)//added
+                            .FirstOrDefault(x => x.ItmCode == item.ItmCode);
+                        if (existingLotItem == null)
+                        {
+
+                            LotItems lotItems = new LotItems
+                            {
+                                LotID = id,
+                                CatCode = item.CatCode,
+                                CategoryName = item.CategoryName,
+                                ItmCode = item.ItmCode,
+                                ItemName = item.ItemName,
+                                PartNo = item.PartNo,
+                                Quantity = item.Quantity,
+                                ItemSpecification = item.ItemSpecification,
+                                UoM = item.UoM,
+                                ItemType = item.ItemType,
+                            };
+
+
+                            _db.LotItems.Add(lotItems);
+                            _db.SaveChanges();
+                        }
+                        else
+                        {
+                            existingLotItem.Quantity = existingLotItem.Quantity + item.Quantity;
+                            _db.Entry(existingLotItem).State = EntityState.Modified;
+                            _db.SaveChanges();
+                        }
+                        #endregion
+                    }
+
+
+                }
+            }
+        }
+        private void RemovePrItems(int assignmentid, int id)
+        {
+            var record = _db.PurchaseRequisitionAssignments.Find(assignmentid);
+            if (record != null)
+            {
+                foreach (var item in record.PurchaseRequisitionReassignmentItems)
+                {
+                    if (item.ItemType == PurchaseItemType.FixedAsset)
+                    {
+                        #region fixed asset
+
+                        var existingLotItem = _db.LotItems
+                            .Where(x => x.LotID == id)
+                            .Where(x => x.Name == item.Name)
+                            .FirstOrDefault(x => x.ItmCode == item.ItmCode);
+                        if (existingLotItem != null)
+                        {
+                            decimal qty = existingLotItem.Quantity - item.Quantity;
+                            if (qty <= 0)
+                            {
+                                _db.LotItems.Remove(existingLotItem);
+                                _db.SaveChanges();
+                            }
+                            else
+                            {
+                                existingLotItem.Quantity = qty;
+                                _db.Entry(existingLotItem).State = EntityState.Modified;
+                                _db.SaveChanges();
+                            }
+
+                        }
+
+                        #endregion
+                    }
+                    else
+                    {
+                        #region stock and service
+
+                        var existingLotItem = _db.LotItems.Where(x => x.LotID == id)
+                            .Where(x => x.ItemSpecification == item.ItemSpecification)//added
+                            .FirstOrDefault(x => x.ItmCode == item.ItmCode);
+                        if (existingLotItem != null)
+                        {
+                            decimal qty = existingLotItem.Quantity - item.Quantity;
+                            if (qty <= 0)
+                            {
+                                _db.LotItems.Remove(existingLotItem);
+                                _db.SaveChanges();
+                            }
+                            else
+                            {
+                                existingLotItem.Quantity = qty;
+                                _db.Entry(existingLotItem).State = EntityState.Modified;
+                                _db.SaveChanges();
+                            }
+
+                        }
+
+                        #endregion
+
+                    }
+                }
+            }
+        }
+        protected override void Dispose(bool disposing)
+        {
+            _db.Dispose();
+            base.Dispose(disposing);
+        }
+    }
+}

@@ -1,0 +1,49 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@using ExceedERP.Helpers.Common
+@using ExceedERP.Web.Areas.APTS
+@using Kendo.Mvc.UI
+
+
+<div class="form">
+
+    <div class="row fullrow">
+        <div class="col-md-3 ro1">
+
+
+            <div class="form-group">
+            
+
+                @(Html.Kendo().DropDownListFor(m => m)
+                  .OptionLabel(Resources.Select)
+                           .Filter("contains")
+                           .MinLength(2)
+                  .DataTextField("Description")
+                  .DataValueField("UoMName")
+                                  .DataSource(source =>
+                                  {
+
+                                      source.Read(read => read.Action("GetUoM", "DrugUnit"))
+                                      .ServerFiltering(false);
+
+                                  })
+            
+                  .ValuePrimitive(true)
+
+                )
+               
+            </div>
+
+
+
+        </div>
+
+
+
+
+    </div>
+
+</div>
+
+
+

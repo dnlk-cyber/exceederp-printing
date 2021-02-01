@@ -1,0 +1,16 @@
+﻿@using ExceedERP.Core.Domain.HRM
+@(Html.Kendo().DropDownListFor(m => m)
+            .Name("Reference")
+        .OptionLabel( "Select Category")
+        .DataTextField("Text")
+            .DataValueField("Text")
+               .DataSource(source =>
+                    {
+                        source.Read(read =>
+                        {
+                            read.Action("GetCategories", "Cmd");
+
+                        })
+                        .ServerFiltering(true);
+                    })
+)

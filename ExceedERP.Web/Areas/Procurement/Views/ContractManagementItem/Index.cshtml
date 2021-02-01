@@ -1,0 +1,39 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Procurement.Contract.ContractManagementItem>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.ItemCategory).Width(200);
+          columns.Bound(c => c.InventoryItem).Width(200);
+          columns.Bound(c => c.UoM).Width(200);
+          columns.Bound(c => c.Quantity).Width(200);
+          columns.Bound(c => c.UnitPrice).Width(200);
+          columns.Bound(c => c.Total).Width(200);
+          
+          columns.Bound(c => c.OrgBranchName).Width(200);
+          columns.Bound(c => c.DateCreated).Width(200);
+          columns.Bound(c => c.LastModified).Width(200);
+          columns.Bound(c => c.CreatedBy).Width(200);
+          columns.Bound(c => c.ModifiedBy).Width(200);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+                              toolbar.Excel();
+                              // toolbar.Pdf();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Pageable()
+      .Sortable(sortable => {
+                                sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Filterable()
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.ContractManagementItemID))
+          .Read(read => read.Action("ContractManagementItems_Read", "ContractManagementItem"))
+          .Create(create => create.Action("ContractManagementItems_Create", "ContractManagementItem"))
+          .Update(update => update.Action("ContractManagementItems_Update", "ContractManagementItem"))
+          .Destroy(destroy => destroy.Action("ContractManagementItems_Destroy", "ContractManagementItem"))
+      ))

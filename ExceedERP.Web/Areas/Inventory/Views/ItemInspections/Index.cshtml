@@ -1,0 +1,150 @@
+﻿@using ExceedERP.Core.Domain.Inventory
+@using Kendo.Mvc.UI
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+@(Html.Kendo().Grid<ItemInspection>()
+      .Name("grid").Mobile()
+      .Columns(columns =>
+      {
+         
+          columns.Bound(c => c.StoreCode);
+          columns.Bound(c => c.CommitteeMember1);
+          columns.Bound(c => c.CommitteeMember2);
+          columns.Bound(c => c.CommitteeMember3);
+          columns.Bound(c => c.CommitteeDecision);
+         
+        
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.PopUp))
+      .Scrollable(h => h.Height(500))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.ItemInspectionId))
+          .Read(read => read.Action("ItemInspections_Read", "ItemInspections"))
+          .Create(create => create.Action("ItemInspections_Create", "ItemInspections"))
+          .Update(update => update.Action("ItemInspections_Update", "ItemInspection"))
+          .Destroy(destroy => destroy.Action("ItemInspections_Destroy", "ItemInspections"))
+      ).ClientDetailTemplateId("Iteminspectiontemplate"))
+
+
+<script id="Iteminspectiontemplate" type="text/Kendo-tmpl">
+
+    @(Html.Kendo().TabStrip().SelectedIndex(0).Name("tabStrip_#=ItemInspectionId#").Items(Itemn =>
+      {
+          Itemn.Add().Text("Detail").Content(
+            @<text>
+                @(Html.Kendo().PanelBar().Name("panelbar").ExpandMode(PanelBarExpandMode.Single)
+                .Items(panelbar =>
+                {
+                    panelbar.Add().Text("Status").Expanded(true).Content(
+                        "<div class='goodsellandlend-details'>" +
+                        "<ul>" +
+                        "<li><label>Inspection DateCreated :</label>#= InspectionDateCreated #</li>" +
+                        "<li><label>Remark :</label>#= Remark #</li>" +
+                       "<li><label>Status :</label>#= Status #</li>" +
+
+                        "</ul>" +
+                        "</div>"
+                        );
+                    panelbar.Add().Text("Operation").Content(
+                        "<div class='goodsellandlend-details'>" +
+                        "<ul>" +
+                        "<li><label>IsVoid  :</label>#= IsVoid #</li>" +
+                        "<li><label>Void By  :</label>#= VoidBy #</li>" +
+                        "<li><label>Void Time :</label>#= VoidTime #</li>" +
+                        "<li><label>IsApproved :</label>#= IsOnlineApproved #</li>" +
+                        "<li><label>Approved By :</label>#= OnlineApprovedBy #</li>" +
+                        "<li><label>Approved Time :</label>#= OnlineApprovedTime #</li>" +
+                        "<li><label>Is Transfered :</label>#= IsOnlineTransferred #</li>" +
+                        "<li><label>Transferred By :</label>#= IsOnlineTransferredBy #</li>" +
+                        "<li><label>Transferred Time :</label>#= OnlineTransferredTime #</li>" +
+
+                        "</ul>" +
+                        "</div>"
+                        );
+                }).ToClientTemplate()
+
+                )
+
+            </text>
+              );
+
+          Itemn.Add().Text("Item").Content(
+            @<text>
+                @(Html.Kendo().Grid<ItemInspectionItem>()
+              .Name("IteminspectionItem_#=ItemInspectionId#")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.ItemCode);
+          columns.Bound(c => c.ItemDescription);
+          columns.Bound(c => c.Model);
+          columns.Bound(c => c.SerialNo);
+          columns.Bound(c => c.RequestedQuantity);
+          columns.Bound(c => c.SuppliedQuantity);
+          columns.Bound(c => c.ExtraQuantity);
+          columns.Bound(c => c.UnderQuantity);
+          columns.Bound(c => c.OutOfContractQuantity);
+          columns.Bound(c => c.Remark);
+          columns.Bound(c => c.OrgBranchName);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.ItemInspectionItemID))
+                  .Read(read => read.Action("ItemInspectionItems_Read", "ItemInspectionItem", new { id = "#=ItemInspectionId#" }))
+                  .Create(create => create.Action("ItemInspectionItems_Create", "ItemInspectionItem", new { id = "#=ItemInspectionId#" }))
+          .Update(update => update.Action("ItemInspectionItems_Update", "ItemInspectionItem"))
+          .Destroy(destroy => destroy.Action("ItemInspectionItems_Destroy", "ItemInspectionItem"))
+      ).ToClientTemplate()
+                )
+
+
+            </text>);
+
+          Itemn.Add().Text("Validation").Content(
+            @<text>
+
+                @(Html.Kendo().Grid<ItemInspectionValidation>()
+                      .Name("IteminspectionValidation_#=ItemInspectionId#")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Status);
+          columns.Bound(c => c.Remark);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.ItemInspectionValidationID))
+                          .Read(read => read.Action("ItemInspectionValidations_Read", "ItemInspectionValidation", new { id = "#=ItemInspectionId#" }))
+                          .Create(create => create.Action("ItemInspectionValidations_Create", "ItemInspectionValidation", new { id = "#=ItemInspectionId#" }))
+          .Update(update => update.Action("ItemInspectionValidations_Update", "ItemInspectionValidation"))
+          .Destroy(destroy => destroy.Action("ItemInspectionValidations_Destroy", "ItemInspectionValidation"))
+      ).ToClientTemplate()
+                )
+
+
+            </text>
+            );
+
+      }).ToClientTemplate())
+</script>

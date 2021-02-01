@@ -1,0 +1,34 @@
+﻿@using ExceedERP.Core.Domain.Inventory
+
+@(Html.Kendo().Grid<IssueFuelItem>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.IssueFuelID);
+          columns.Bound(c => c.ItemCode);
+          columns.Bound(c => c.Quantity);
+          columns.Bound(c => c.UnitPrice);
+          columns.Bound(c => c.Total);
+          columns.Bound(c => c.GLAccountCode);
+          columns.Bound(c => c.IssueGoodReceiveItemID);
+          columns.Bound(c => c.IssueGoodReceiveItemPrice);
+          columns.Bound(c => c.EmployeeOfFuelCompany);
+          columns.Bound(c => c.EmployeeWhoGotItRefuelled);
+          columns.Bound(c => c.FixedAssetSelector);
+          columns.Bound(c => c.Name);
+          columns.Bound(c => c.OrgBranchName);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.IssueFuelItemID))
+          .Read(read => read.Action("IssueFuelItems_Read", "IssueFuelItem"))
+          .Create(create => create.Action("IssueFuelItems_Create", "IssueFuelItem"))
+          .Update(update => update.Action("IssueFuelItems_Update", "IssueFuelItem"))
+          .Destroy(destroy => destroy.Action("IssueFuelItems_Destroy", "IssueFuelItem"))
+      ))

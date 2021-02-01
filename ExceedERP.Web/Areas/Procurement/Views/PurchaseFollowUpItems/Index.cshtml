@@ -1,0 +1,46 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Procurement.PurchaseOrder.PurchaseFollowUpItems>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.PartNo);
+        columns.Bound(c => c.Quantity);
+        columns.Bound(c => c.ItemSpecification);
+        columns.Bound(c => c.UoM);
+        columns.Bound(c => c.Supplier);
+        columns.Bound(c => c.PurchaserOrder);
+        columns.Bound(c => c.InsuranceAppliedDate);
+        columns.Bound(c => c.InsuranceNo);
+        columns.Bound(c => c.InsuranceCertificateDate);
+        columns.Bound(c => c.FCAppliedDate);
+        columns.Bound(c => c.FCPermitDate);
+        columns.Bound(c => c.FCPermitNo);
+        columns.Bound(c => c.FCPermitExpiryDate);
+        columns.Bound(c => c.LCAppliedDate);
+        columns.Bound(c => c.LCNo);
+        columns.Bound(c => c.LCOpenedDate);
+        columns.Bound(c => c.Vessel);
+        columns.Bound(c => c.Port);
+        columns.Bound(c => c.ShippedDate);
+        columns.Bound(c => c.VesselArriveDate);
+        columns.Bound(c => c.BillOfLoading);
+        columns.Bound(c => c.DocumentCollectionDate);
+        columns.Bound(c => c.DocumentSubmitDate);
+        columns.Bound(c => c.Maritimeno);
+        columns.Bound(c => c.ArriveDate);
+        columns.Bound(c => c.Condition);
+        columns.Bound(c => c.Damaged);
+        columns.Bound(c => c.Missing);
+        columns.Bound(c => c.ClaimDate);
+        columns.Bound(c => c.RefNo);
+        columns.Command(command => { command.Edit(); }).Width(180);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.PurchaseFollowUpItemsID))
+          .Read(read => read.Action("PurchaseFollowUpItems_Read", "PurchaseFollowUpItems"))
+          .Update(update => update.Action("PurchaseFollowUpItems_Update", "PurchaseFollowUpItems"))
+      )
+)

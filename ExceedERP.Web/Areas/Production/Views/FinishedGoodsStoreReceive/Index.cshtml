@@ -1,0 +1,1052 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@using Kendo.Mvc.UI
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Finished Goods | Store Receive </legend>
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Production.ProductionFinishedGoodsStoreReceive>()
+                          .Name("finishedStoreReceiveGrid")
+                          .Columns(columns =>
+                          {
+                              columns.ForeignKey(c => c.StoreCode, (IEnumerable)ViewData["InventoryStores"], "StoreCode", "Name").EditorTemplateName("InventoryStoreSelector");
+                              columns.ForeignKey(c => c.ProductionPeriodId, (IEnumerable)ViewData["ProductionPeriods"], "ProductionPeriodId", "Name").EditorTemplateName("ProductionPeriodSelector");
+                              columns.Bound(c => c.ReceiveDate);
+                              columns.Bound(c => c.ProductType);
+                              //columns.Bound(c => c.Remark);
+
+                              columns.Command(command =>
+                              {
+                                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                  command.Destroy().Text(Resources.ActionButton_Cancel);
+                              }).Width(200);
+
+                          })
+                          .ToolBar(toolbar =>
+                          {
+                              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                          })
+                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                          .Selectable(selectable =>
+                          {
+                              selectable.Mode(GridSelectionMode.Single);
+                              selectable.Type(GridSelectionType.Row);
+                          })
+                          .Scrollable(h => h.Height(500))
+                          .Sortable(sortable =>
+                          {
+                              sortable.SortMode(GridSortMode.SingleColumn);
+                          })
+                           .Events(ev =>
+                          {
+                              ev.DataBound("onDataBound");
+                          })
+                          .Filterable()
+                          .Pageable(pageable => pageable
+                              .Input(true)
+                              .Numeric(false)
+                              .Refresh(true)
+                              .PageSizes(true)
+                              .ButtonCount(5))
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+
+                              .Events(events =>
+                              {
+                                  events.Error("error_handler(\"finishedStoreReceiveGrid\")");
+                                  events.RequestStart("onRequestStart(\"finishedStoreReceiveGrid\")");
+                                  events.RequestEnd("onRequestEnd(\"finishedStoreReceiveGrid\")");
+                              })
+                              .Model(model =>
+                              {
+                                  model.Id(f => f.ProductionFinishedGoodsStoreReceiveId);
+                              })
+
+                              .Read(read => read.Action("StoreReceives_Read", "ProductionFinishedGoodsStoreReceive"))
+                              .Create(create => create.Action("StoreReceive_Create", "ProductionFinishedGoodsStoreReceive"))
+                              .Update(update => update.Action("StoreReceive_Update", "ProductionFinishedGoodsStoreReceive"))
+                              .Destroy(destroy => destroy.Action("StoreReceive_Destroy", "ProductionFinishedGoodsStoreReceive"))
+
+                          ).ClientDetailTemplateId("template_receive_items")
+)
+<<script id="template_receive_items" type="text/kendo-tmpl">
+    # if(ProductType == 0 && !IsOnlineApproved){ #
+    @(Html.Kendo().TabStrip()
+            .Name("tab_str_#=ProductionFinishedGoodsStoreReceiveId#")
+            .SelectedIndex(0)
+            .Items(items =>
+            {
+            items.Add().Text("Detail").Content(
+                @<text>
+                     # if (!IsOnlineApproved&&!IsSendForApproval)
+                     {#
+                     <a onclick='return sendForApproval("#=ProductionFinishedGoodsStoreReceiveId#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                     <br />
+                     # } #
+                     @(Html.Kendo().PanelBar()
+                                          .Name("panelbar_#=ProductionFinishedGoodsStoreReceiveId#")
+                                          .ExpandMode(PanelBarExpandMode.Single)
+                                          .Items(panelbar =>
+                                          {
+                                              panelbar.Add()
+                                                  .Expanded(true)
+                                                  .Content(
+                                                      "<div class='Invoice-details'>" +
+                                                      "<ul>" +
+                                                      "<li> <label> Status: </label> <strong> #= kendo.toString(Status)# </strong> <br /></li>" +
+                                                      "<li> <label> Created by: </label> <strong> #=CreatedBy# </strong> </li>" +
+                                                      "<li> <label> Created on: </label> #= kendo.toString(DateCreated, 'dd/MM/yyyy H:mm:ss')# </li>" +
+                                                      "<li> <label> Modified by :</label> #= ModifiedBy# </li>" +
+                                                      "<li> <label> Last Modified :</label> #= LastModified != null ? kendo.toString(LastModified, 'dd/MM/yyyy H:mm:ss') : ' '# </li>" +
+                                                      "</ul>" +
+                                                      "</div>"
+
+                                                  );
+                                          }).ToClientTemplate()
+                     )
+                </text>
+                );
+            items.Add().Text("Items").Content(
+                @<text>
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Production.ProductionFinishedGoodsStoreReceiveItem>()
+                                .Name("items_#=ProductionFinishedGoodsStoreReceiveId#")
+                                .Columns(columns =>
+                                {
+                                    columns.ForeignKey(c => c.SeedProcessingOrderItemId, (IEnumerable)ViewData["SeedProcessingOrderItems"], "SeedProcessingOrderItemId", "ProcessingCode").EditorTemplateName("SeedProcessingItems");
+                                    columns.ForeignKey(c => c.ItemCategoryCode, (IEnumerable)ViewData["ItemCategories"], "ItemCategoryCode", "Name");
+                                    columns.ForeignKey(c => c.ItemCode, (IEnumerable)ViewData["InventoryItems"], "ItemCode", "Name");
+                                    columns.Bound(c => c.AccountCode);
+                                    columns.Bound(c => c.Quantity);
+                                    columns.Bound(c => c.UnitPrice);
+                                    columns.Bound(c => c.SubTotal);
+                                    columns.ForeignKey(c => c.GLTaxRateID, (IEnumerable)ViewData["TaxTypes"], "GLTaxRateID", "TaxName").EditorTemplateName("TaxTypes");
+                                    columns.Bound(c => c.TaxAmount);
+                                    columns.Bound(c => c.Total);
+
+                                    columns.Command(command =>
+                                    {
+                                        command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                        command.Destroy().Text(Resources.ActionButton_Cancel);
+                                    }).Width(200);
+                                })
+                                .ToolBar(toolbar =>
+                                {
+                                    toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                                })
+                                .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                .Scrollable(h => h.Height(500))
+                                .Sortable(sortable =>
+                                {
+                                    sortable.SortMode(GridSortMode.SingleColumn);
+                                })
+                                .Selectable(selectable =>
+                                {
+                                    selectable.Mode(GridSelectionMode.Single);
+                                    selectable.Type(GridSelectionType.Row);
+                                })
+                                .Filterable()
+                                .Pageable(pageable => pageable
+                                    .Input(true)
+                                    .Numeric(false)
+                                    .Refresh(true)
+                                    .PageSizes(true)
+                                    .ButtonCount(5))
+                                .DataSource(dataSource => dataSource
+                                    .Ajax()
+                                    .Events(events =>
+                                    {
+                                        events.Error("error_handler(\"items_#=ProductionFinishedGoodsStoreReceiveId#\")");
+                                        events.RequestStart("onRequestStart(\"items_#=ProductionFinishedGoodsStoreReceiveId#\")");
+                                        events.RequestEnd("onRequestEnd(\"items_#=ProductionFinishedGoodsStoreReceiveId#\")");
+                                    })
+                                    .Model(model =>
+                                    {
+                                        model.Id(p => p.ProductionFinishedGoodsStoreReceiveItemId);
+                                        model.Field(f => f.Total).Editable(false);
+                                        model.Field(f => f.TaxAmount).Editable(false);
+                                        model.Field(f => f.ItemCategoryCode).Editable(false);
+                                        model.Field(f => f.ItemCode).Editable(false);
+                                        model.Field(f => f.Quantity).Editable(false);
+                                        model.Field(f => f.UnitPrice).Editable(false);
+                                        model.Field(f => f.SubTotal).Editable(false);
+
+                                        //model.Field(f => f.ItemCategoryCode).DefaultValue("0000");
+                                        //model.Field(f => f.ItemCode).DefaultValue("00000-0000-0000");
+
+                                    })
+                                    .Read(read => read.Action("ReceiveItems_Read", "ProductionFinishedGoodsStoreReceiveItem", new { id = "#=ProductionFinishedGoodsStoreReceiveId#" }))
+                                    .Create(create => create.Action("ReceiveItem_Create", "ProductionFinishedGoodsStoreReceiveItem", new { id = "#=ProductionFinishedGoodsStoreReceiveId#" }))
+                                    .Update(update => update.Action("ReceiveItem_Update", "ProductionFinishedGoodsStoreReceiveItem"))
+                                    .Destroy(destroy => destroy.Action("ReceiveItem_Destroy", "ProductionFinishedGoodsStoreReceiveItem"))
+                                    )
+                                    .ToClientTemplate()
+                    )
+                </text>
+                );
+                items.Add().Text("Validation").Content(
+                    @<text>
+                        @(Html.Kendo().Grid<ExceedERP.Core.Domain.Production.ProductionFinishedGoodsStoreReceiveValidation>()
+                          .Name("validation_#=ProductionFinishedGoodsStoreReceiveId#")
+                          .Columns(columns =>
+                          {
+
+                              columns.Bound(c => c.Status);
+                              columns.Bound(c => c.Remark);
+
+                              columns.Command(command =>
+                              {
+                                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                  command.Destroy().Text(Resources.ActionButton_Cancel);
+                              }).Width(200);
+                          })
+
+                          .ToolBar(toolbar =>
+                          {
+                              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                          })
+                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                          .Selectable(selectable =>
+                          {
+                              selectable.Mode(GridSelectionMode.Single);
+                              selectable.Type(GridSelectionType.Row);
+                          })
+                          .Scrollable(h => h.Height(500))
+                          //.Groupable()
+                          .Sortable(sortable =>
+                          {
+                              sortable.SortMode(GridSortMode.SingleColumn);
+                          })
+                          //.Filterable()
+                          .Pageable(pageable => pageable
+                              .Input(true)
+                              .Numeric(false)
+                              .Refresh(true)
+                              .PageSizes(true)
+                              .ButtonCount(5))
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+
+                              .Events(events =>
+                              {
+                                  events.Error("error_handler(\"validation_#=ProductionFinishedGoodsStoreReceiveId#\")");
+                                  events.RequestStart("onRequestStart(\"validation_#=ProductionFinishedGoodsStoreReceiveId#\")");
+                                  events.RequestEnd("onRequestEnd(\"validation_#=ProductionFinishedGoodsStoreReceiveId#\")");
+                              })
+                              .Model(model =>
+                              {
+                                  model.Id(f => f.ProductionFinishedGoodsStoreReceiveValidationId);
+
+                              })
+
+                              .Read(read => read.Action("ReceiveValidations_Read", "ProductionFinishedGoodsStoreReceiveValidation", new { id = "#=ProductionFinishedGoodsStoreReceiveId#" }))
+                              .Create(create => create.Action("ReceiveValidations_Create", "ProductionFinishedGoodsStoreReceiveValidation", new { id = "#=ProductionFinishedGoodsStoreReceiveId#" }))
+                              .Update(update => update.Action("ReceiveValidations_Update", "ProductionFinishedGoodsStoreReceiveValidation"))
+                              .Destroy(destroy => destroy.Action("ReceiveValidations_Destroy", "ProductionFinishedGoodsStoreReceiveValidation"))
+                          ) //.ClientDetailTemplateId("template_wip_detail")
+                          .ToClientTemplate()
+                        )
+                    </text>
+                );
+                items.Add().Text("Distribution").Content(
+                    @<text>
+                        @(Html.Kendo().Grid<ExceedERP.Core.Domain.Production.ProductionFinishedGoodsStoreReceiveDistribution>()
+                          .Name("distribtion_#=ProductionFinishedGoodsStoreReceiveId#")
+                          .Columns(columns =>
+                          {
+                              columns.Bound(c => c.AccountCode)
+                                .ClientGroupHeaderTemplate("\\#=value\\#");
+                              columns.Bound(c => c.AccountDesc);
+                              columns.Bound(c => c.Debit)
+                                .ClientTemplate(
+                                    "\\# if (Debit === 0) { \\#" +
+                                    "_" +
+                                    "\\# } else {\\#" +
+                                    "\\#: kendo.toString( Debit, 'N2') \\#" +
+                                    "\\# } \\#"
+                                )
+                                .ClientFooterTemplate("Total: \\#=kendo.toString(sum, 'N2')\\#")
+                                .ClientGroupFooterTemplate("Sub Total: \\#=kendo.toString(sum, 'N2')\\#");
+
+                              columns.Bound(c => c.Credit)
+                              .ClientTemplate(
+                                  "\\# if (Credit === 0) { \\#" +
+                                  "_" +
+                                  "\\# } else {\\#" +
+                                      "\\#: kendo.toString( Credit, 'N2') \\#" +
+                                  "\\# } \\#"
+                                )
+                              .ClientFooterTemplate("Total: \\#=kendo.toString(sum, 'N2')\\#")
+                              .ClientGroupFooterTemplate("Sub Total: \\#=kendo.toString(sum, 'N2')\\#");
+
+                              columns.Command(command =>
+                              {
+                                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                  command.Destroy().Text(Resources.ActionButton_Cancel);
+                              }).Width(200);
+                          })
+
+                          //.ToolBar(toolbar =>
+                          //{
+                          //    toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                          //})
+                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                          .Selectable(selectable =>
+                          {
+                              selectable.Mode(GridSelectionMode.Single);
+                              selectable.Type(GridSelectionType.Row);
+                          })
+                          .Scrollable(h => h.Height(500))
+                          //.Groupable()
+                          .Sortable(sortable =>
+                          {
+                              sortable.SortMode(GridSortMode.SingleColumn);
+                          })
+                          //.Filterable()
+                          .Pageable(pageable => pageable
+                              .Input(true)
+                              .Numeric(false)
+                              .Refresh(true)
+                              .PageSizes(true)
+                              .ButtonCount(5))
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+                              .Aggregates(ag =>
+                              {
+                                  ag.Add(d => d.Credit).Sum();
+                                  ag.Add(d => d.Debit).Sum();
+                              })
+                              //.Group(gr =>
+                              //{
+                              //    gr.Add(d => d.AccountCode);
+                              //})
+                              .Events(events =>
+                              {
+                                  events.Error("error_handler(\"distribtion_#=ProductionFinishedGoodsStoreReceiveId#\")");
+                                  events.RequestStart("onRequestStart(\"distribtion_#=ProductionFinishedGoodsStoreReceiveId#\")");
+                                  events.RequestEnd("onRequestEnd(\"distribtion_#=ProductionFinishedGoodsStoreReceiveId#\")");
+                              })
+                              .Model(model =>
+                              {
+                                  model.Id(f => f.ProductionFinishedGoodsStoreReceiveDistributionId);
+                              })
+                              .Read(read => read.Action("Distribution_Read", "ProductionFinishedGoodsStoreReceiveDistribution", new { id = "#=ProductionFinishedGoodsStoreReceiveId#" }))
+                              .Create(create => create.Action("Distribution_Create", "ProductionFinishedGoodsStoreReceiveDistribution", new { i = "#=ProductionFinishedGoodsStoreReceiveId#" }))
+                              .Update(update => update.Action("Distribution_Update", "ProductionFinishedGoodsStoreReceiveDistribution"))
+                              .Destroy(destroy => destroy.Action("Distribution_Destroy", "ProductionFinishedGoodsStoreReceiveDistribution"))
+                          )
+                          .ToClientTemplate()
+                    )
+                    </text>
+                    );
+            }).ToClientTemplate())
+
+    #} else if(ProductType == 0 && IsOnlineApproved){#
+     @(Html.Kendo().TabStrip()
+            .Name("tab_str_#=ProductionFinishedGoodsStoreReceiveId#")
+            .SelectedIndex(0)
+            .Items(items =>
+            {
+            items.Add().Text("Detail").Content(
+                @<text>
+                     @(Html.Kendo().PanelBar()
+                                          .Name("panelbar_#=ProductionFinishedGoodsStoreReceiveId#")
+                                          .ExpandMode(PanelBarExpandMode.Single)
+                                          .Items(panelbar =>
+                                          {
+                                              panelbar.Add()
+                                                  .Expanded(true)
+                                                  .Content(
+                                                      "<div class='Invoice-details'>" +
+                                                      "<ul>" +
+                                                      "<li> <label> Status: </label> <strong> #=Status# </strong> </li>" +
+                                                      "<li> <label> Created by: </label> <strong> #=CreatedBy# </strong> </li>" +
+                                                      "<li> <label> Created on: </label> #= kendo.toString(DateCreated, 'dd/MM/yyyy H:mm:ss')# </li>" +
+                                                      "<li> <label> Modified by :</label> #= ModifiedBy# </li>" +
+                                                      "<li> <label> Last Modified :</label> #= LastModified != null ? kendo.toString(LastModified, 'dd/MM/yyyy H:mm:ss') : ' '# </li>" +
+                                                      "</ul>" +
+                                                      "</div>"
+
+                                                  );
+                                          }).ToClientTemplate()
+                     )
+                </text>
+                );
+            items.Add().Text("Items").Content(
+                @<text>
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Production.ProductionFinishedGoodsStoreReceiveItem>()
+                                .Name("items_#=ProductionFinishedGoodsStoreReceiveId#")
+                                .Columns(columns =>
+                                {
+                                    columns.ForeignKey(c => c.SeedProcessingOrderItemId, (IEnumerable)ViewData["SeedProcessingOrderItems"], "SeedProcessingOrderItemId", "ProcessingCode").EditorTemplateName("SeedProcessingItems");
+                                    columns.ForeignKey(c => c.ItemCategoryCode, (IEnumerable)ViewData["ItemCategories"], "ItemCategoryCode", "Name");
+                                    columns.ForeignKey(c => c.ItemCode, (IEnumerable)ViewData["InventoryItems"], "ItemCode", "Name");
+                                    columns.Bound(c => c.AccountCode);
+                                    columns.Bound(c => c.Quantity);
+                                    columns.Bound(c => c.UnitPrice);
+                                    columns.Bound(c => c.SubTotal);
+                                    columns.ForeignKey(c => c.GLTaxRateID, (IEnumerable)ViewData["TaxTypes"], "GLTaxRateID", "TaxName").EditorTemplateName("TaxTypes");
+                                    columns.Bound(c => c.TaxAmount);
+                                    columns.Bound(c => c.Total);
+
+                                    //columns.Command(command =>
+                                    //{
+                                    //    command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                    //    command.Destroy().Text(Resources.ActionButton_Cancel);
+                                    //}).Width(200);
+                                })
+                                //.ToolBar(toolbar =>
+                                //{
+                                //    toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                                //})
+                                .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                .Scrollable(h => h.Height(500))
+                                .Sortable(sortable =>
+                                {
+                                    sortable.SortMode(GridSortMode.SingleColumn);
+                                })
+                                .Selectable(selectable =>
+                                {
+                                    selectable.Mode(GridSelectionMode.Single);
+                                    selectable.Type(GridSelectionType.Row);
+                                })
+                                .Filterable()
+                                .Pageable(pageable => pageable
+                                    .Input(true)
+                                    .Numeric(false)
+                                    .Refresh(true)
+                                    .PageSizes(true)
+                                    .ButtonCount(5))
+                                .DataSource(dataSource => dataSource
+                                    .Ajax()
+                                    .Events(events =>
+                                    {
+                                        events.Error("error_handler(\"items_#=ProductionFinishedGoodsStoreReceiveId#\")");
+                                        events.RequestStart("onRequestStart(\"items_#=ProductionFinishedGoodsStoreReceiveId#\")");
+                                        events.RequestEnd("onRequestEnd(\"items_#=ProductionFinishedGoodsStoreReceiveId#\")");
+                                    })
+                                    .Model(model =>
+                                    {
+                                        model.Id(p => p.ProductionFinishedGoodsStoreReceiveItemId);
+                                        model.Field(f => f.Total).Editable(false);
+                                        model.Field(f => f.TaxAmount).Editable(false);
+                                        model.Field(f => f.ItemCategoryCode).Editable(false);
+                                        model.Field(f => f.ItemCode).Editable(false);
+                                        model.Field(f => f.Quantity).Editable(false);
+                                        model.Field(f => f.UnitPrice).Editable(false);
+                                        model.Field(f => f.SubTotal).Editable(false);
+
+                                        //model.Field(f => f.ItemCategoryCode).DefaultValue("0000");
+                                        //model.Field(f => f.ItemCode).DefaultValue("00000-0000-0000");
+
+                                    })
+                                    .Read(read => read.Action("ReceiveItems_Read", "ProductionFinishedGoodsStoreReceiveItem", new { id = "#=ProductionFinishedGoodsStoreReceiveId#"}))
+                                    .Create(create => create.Action("ReceiveItem_Create", "ProductionFinishedGoodsStoreReceiveItem", new { id = "#=ProductionFinishedGoodsStoreReceiveId#" }))
+                                    .Update(update => update.Action("ReceiveItem_Update", "ProductionFinishedGoodsStoreReceiveItem"))
+                                    .Destroy(destroy => destroy.Action("ReceiveItem_Destroy", "ProductionFinishedGoodsStoreReceiveItem"))
+                                    )
+                                    .ToClientTemplate()
+                    )
+                </text>
+                );
+                items.Add().Text("Validation").Content(
+                    @<text>
+                        @(Html.Kendo().Grid<ExceedERP.Core.Domain.Production.ProductionFinishedGoodsStoreReceiveValidation>()
+                          .Name("validation_#=ProductionFinishedGoodsStoreReceiveId#")
+                          .Columns(columns =>
+                          {
+
+                              columns.Bound(c => c.Status);
+                              columns.Bound(c => c.Remark);
+
+                              //columns.Command(command =>
+                              //{
+                              //    command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                              //    command.Destroy().Text(Resources.ActionButton_Cancel);
+                              //}).Width(200);
+                          })
+
+                          //.ToolBar(toolbar =>
+                          //{
+                          //    toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                          //})
+                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                          .Selectable(selectable =>
+                          {
+                              selectable.Mode(GridSelectionMode.Single);
+                              selectable.Type(GridSelectionType.Row);
+                          })
+                          .Scrollable(h => h.Height(500))
+                          //.Groupable()
+                          .Sortable(sortable =>
+                          {
+                              sortable.SortMode(GridSortMode.SingleColumn);
+                          })
+                          //.Filterable()
+                          .Pageable(pageable => pageable
+                              .Input(true)
+                              .Numeric(false)
+                              .Refresh(true)
+                              .PageSizes(true)
+                              .ButtonCount(5))
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+
+                              .Events(events =>
+                              {
+                                  events.Error("error_handler(\"validation_#=ProductionFinishedGoodsStoreReceiveId#\")");
+                                  events.RequestStart("onRequestStart(\"validation_#=ProductionFinishedGoodsStoreReceiveId#\")");
+                                  events.RequestEnd("onRequestEnd(\"validation_#=ProductionFinishedGoodsStoreReceiveId#\")");
+                              })
+                              .Model(model =>
+                              {
+                                  model.Id(f => f.ProductionFinishedGoodsStoreReceiveValidationId);
+
+                              })
+
+                              .Read(read => read.Action("ReceiveValidations_Read", "ProductionFinishedGoodsStoreReceiveValidation", new { id = "#=ProductionFinishedGoodsStoreReceiveId#" }))
+                              .Create(create => create.Action("ReceiveValidations_Create", "ProductionFinishedGoodsStoreReceiveValidation", new { id = "#=ProductionFinishedGoodsStoreReceiveId#" }))
+                              .Update(update => update.Action("ReceiveValidations_Update", "ProductionFinishedGoodsStoreReceiveValidation"))
+                              .Destroy(destroy => destroy.Action("ReceiveValidations_Destroy", "ProductionFinishedGoodsStoreReceiveValidation"))
+                          ) //.ClientDetailTemplateId("template_wip_detail")
+                          .ToClientTemplate()
+                        )
+                    </text>
+                );
+                items.Add().Text("Distribution").Content(
+                    @<text>
+                         @(Html.Kendo().Grid<ExceedERP.Core.Domain.Production.ProductionFinishedGoodsStoreReceiveDistribution>()
+                          .Name("distribtion_#=ProductionFinishedGoodsStoreReceiveId#")
+                          .Columns(columns =>
+                          {
+                              columns.Bound(c => c.AccountCode)
+                                .ClientGroupHeaderTemplate("\\#=value\\#");
+                              columns.Bound(c => c.AccountDesc);
+                              columns.Bound(c => c.Debit)
+                                .ClientTemplate(
+                                    "\\# if (Debit === 0) { \\#" +
+                                    "_" +
+                                    "\\# } else {\\#" +
+                                    "\\#: kendo.toString( Debit, 'N2') \\#" +
+                                    "\\# } \\#"
+                                )
+                                .ClientFooterTemplate("Total: \\#=kendo.toString(sum, 'N2')\\#")
+                                .ClientGroupFooterTemplate("Sub Total: \\#=kendo.toString(sum, 'N2')\\#");
+
+                              columns.Bound(c => c.Credit)
+                              .ClientTemplate(
+                                  "\\# if (Credit === 0) { \\#" +
+                                  "_" +
+                                  "\\# } else {\\#" +
+                                      "\\#: kendo.toString( Credit, 'N2') \\#" +
+                                  "\\# } \\#"
+                                )
+                              .ClientFooterTemplate("Total: \\#=kendo.toString(sum, 'N2')\\#")
+                              .ClientGroupFooterTemplate("Sub Total: \\#=kendo.toString(sum, 'N2')\\#");
+
+                              //columns.Command(command =>
+                              //{
+                              //    command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                              //    command.Destroy().Text(Resources.ActionButton_Cancel);
+                              //}).Width(200);
+                          })
+
+                          //.ToolBar(toolbar =>
+                          //{
+                          //    toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                          //})
+                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                          .Selectable(selectable =>
+                          {
+                              selectable.Mode(GridSelectionMode.Single);
+                              selectable.Type(GridSelectionType.Row);
+                          })
+                          .Scrollable(h => h.Height(500))
+                          //.Groupable()
+                          .Sortable(sortable =>
+                          {
+                              sortable.SortMode(GridSortMode.SingleColumn);
+                          })
+                          //.Filterable()
+                          .Pageable(pageable => pageable
+                              .Input(true)
+                              .Numeric(false)
+                              .Refresh(true)
+                              .PageSizes(true)
+                              .ButtonCount(5))
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+                              .Aggregates(ag =>
+                              {
+                                  ag.Add(d => d.Credit).Sum();
+                                  ag.Add(d => d.Debit).Sum();
+                              })
+                              //.Group(gr =>
+                              //{
+                              //    gr.Add(d => d.AccountCode);
+                              //})
+                              .Events(events =>
+                              {
+                                  events.Error("error_handler(\"distribtion_#=ProductionFinishedGoodsStoreReceiveId#\")");
+                                  events.RequestStart("onRequestStart(\"distribtion_#=ProductionFinishedGoodsStoreReceiveId#\")");
+                                  events.RequestEnd("onRequestEnd(\"distribtion_#=ProductionFinishedGoodsStoreReceiveId#\")");
+                              })
+                              .Model(model =>
+                              {
+                                  model.Id(f => f.ProductionFinishedGoodsStoreReceiveDistributionId);
+                              })
+                              .Read(read => read.Action("Distribution_Read", "ProductionFinishedGoodsStoreReceiveDistribution", new { id = "#=ProductionFinishedGoodsStoreReceiveId#" }))
+                              .Create(create => create.Action("Distribution_Create", "ProductionFinishedGoodsStoreReceiveDistribution", new { i = "#=ProductionFinishedGoodsStoreReceiveId#" }))
+                              .Update(update => update.Action("Distribution_Update", "ProductionFinishedGoodsStoreReceiveDistribution"))
+                              .Destroy(destroy => destroy.Action("Distribution_Destroy", "ProductionFinishedGoodsStoreReceiveDistribution"))
+                          )
+                          .ToClientTemplate()
+                    )
+                    </text>
+                    );
+            }).ToClientTemplate())
+    #} else if(ProductType == 1 && !IsOnlineApproved){#
+        @(Html.Kendo().TabStrip()
+            .Name("tab_str_#=ProductionFinishedGoodsStoreReceiveId#")
+            .SelectedIndex(0)
+            .Items(items =>
+            {
+            items.Add().Text("Detail").Content(
+                @<text>
+                     # if (!IsOnlineApproved&&!IsSendForApproval)
+                     {#
+                     <a onclick='return sendForApproval("#=ProductionFinishedGoodsStoreReceiveId#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                     <br />
+                     # } #
+                     @(Html.Kendo().PanelBar()
+                                          .Name("panelbar_#=ProductionFinishedGoodsStoreReceiveId#")
+                                          .ExpandMode(PanelBarExpandMode.Single)
+                                          .Items(panelbar =>
+                                          {
+                                              panelbar.Add()
+                                                  .Expanded(true)
+                                                  .Content(
+                                                      "<div class='Invoice-details'>" +
+                                                      "<ul>" +
+                                                      "<li> <label> Status: </label> <strong> #=Status# </strong> </li>" +
+                                                      "<li> <label> Created by: </label> <strong> #=CreatedBy# </strong> </li>" +
+                                                      "<li> <label> Created on: </label> #= kendo.toString(DateCreated, 'dd/MM/yyyy H:mm:ss')# </li>" +
+                                                      "<li> <label> Modified by :</label> #= ModifiedBy# </li>" +
+                                                      "<li> <label> Last Modified :</label> #= LastModified != null ? kendo.toString(LastModified, 'dd/MM/yyyy H:mm:ss') : ' '# </li>" +
+                                                      "</ul>" +
+                                                      "</div>"
+
+                                                  );
+                                          }).ToClientTemplate()
+                     )
+                </text>
+                );
+            items.Add().Text("Items").Content(
+                @<text>
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Production.ProductionFinishedGoodsStoreReceiveItem>()
+                                .Name("items_#=ProductionFinishedGoodsStoreReceiveId#")
+                                .Columns(columns =>
+                                {
+                                    columns.ForeignKey(c => c.GumProcessingOrderItemId, (IEnumerable)ViewData["GumProcessingOrderItems"], "GumProcessingOrderItemId", "ProcessingCode").EditorTemplateName("GumProcessingItems");
+                                    columns.ForeignKey(c => c.ItemCategoryCode, (IEnumerable)ViewData["ItemCategories"], "ItemCategoryCode", "Name");
+                                    columns.ForeignKey(c => c.ItemCode, (IEnumerable)ViewData["InventoryItems"], "ItemCode", "Name");
+                                    columns.Bound(c => c.AccountCode);
+                                    columns.Bound(c => c.Quantity);
+                                    columns.Bound(c => c.UnitPrice);
+                                    columns.Bound(c => c.SubTotal);
+                                    columns.ForeignKey(c => c.GLTaxRateID, (IEnumerable)ViewData["TaxTypes"], "GLTaxRateID", "TaxName").EditorTemplateName("TaxTypes");
+                                    columns.Bound(c => c.TaxAmount);
+                                    columns.Bound(c => c.Total);
+
+                                    columns.Command(command =>
+                                    {
+                                        command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                        command.Destroy().Text(Resources.ActionButton_Cancel);
+                                    }).Width(200);
+                                })
+                                .ToolBar(toolbar =>
+                                {
+                                    toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                                })
+                                .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                .Scrollable(h => h.Height(500))
+                                .Sortable(sortable =>
+                                {
+                                    sortable.SortMode(GridSortMode.SingleColumn);
+                                })
+                                .Selectable(selectable =>
+                                {
+                                    selectable.Mode(GridSelectionMode.Single);
+                                    selectable.Type(GridSelectionType.Row);
+                                })
+                                .Filterable()
+                                .Pageable(pageable => pageable
+                                    .Input(true)
+                                    .Numeric(false)
+                                    .Refresh(true)
+                                    .PageSizes(true)
+                                    .ButtonCount(5))
+                                .DataSource(dataSource => dataSource
+                                    .Ajax()
+                                    .Events(events =>
+                                    {
+                                        events.Error("error_handler(\"items_#=ProductionFinishedGoodsStoreReceiveId#\")");
+                                        events.RequestStart("onRequestStart(\"items_#=ProductionFinishedGoodsStoreReceiveId#\")");
+                                        events.RequestEnd("onRequestEnd(\"items_#=ProductionFinishedGoodsStoreReceiveId#\")");
+                                    })
+                                    .Model(model =>
+                                    {
+                                        model.Id(p => p.ProductionFinishedGoodsStoreReceiveItemId);
+                                        model.Field(f => f.Total).Editable(false);
+                                        model.Field(f => f.TaxAmount).Editable(false);
+                                        model.Field(f => f.ItemCode).Editable(false);
+                                        model.Field(f => f.ItemCategoryCode).Editable(false);
+                                        model.Field(f => f.Quantity).Editable(false);
+                                        model.Field(f => f.UnitPrice).Editable(false);
+                                        model.Field(f => f.SubTotal).Editable(false);
+
+                                    })
+                                     .Read(read => read.Action("ReceiveItems_Read", "ProductionFinishedGoodsStoreReceiveItem", new { id = "#=ProductionFinishedGoodsStoreReceiveId#" }))
+                                    .Create(create => create.Action("ReceiveItem_Create", "ProductionFinishedGoodsStoreReceiveItem", new { id = "#=ProductionFinishedGoodsStoreReceiveId#" }))
+                                    .Update(update => update.Action("ReceiveItem_Update", "ProductionFinishedGoodsStoreReceiveItem"))
+                                    .Destroy(destroy => destroy.Action("ReceiveItem_Destroy", "ProductionFinishedGoodsStoreReceiveItem"))
+                                    )
+                                    .ToClientTemplate()
+                    )
+                </text>
+                );
+                items.Add().Text("Validation").Content(
+                    @<text>
+                        @(Html.Kendo().Grid<ExceedERP.Core.Domain.Production.ProductionFinishedGoodsStoreReceiveValidation>()
+                          .Name("validation_#=ProductionFinishedGoodsStoreReceiveId#")
+                          .Columns(columns =>
+                          {
+
+                              columns.Bound(c => c.Status);
+                              columns.Bound(c => c.Remark);
+
+                              columns.Command(command =>
+                              {
+                                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                  command.Destroy().Text(Resources.ActionButton_Cancel);
+                              }).Width(200);
+                          })
+
+                          .ToolBar(toolbar =>
+                          {
+                              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                          })
+                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                          .Selectable(selectable =>
+                          {
+                              selectable.Mode(GridSelectionMode.Single);
+                              selectable.Type(GridSelectionType.Row);
+                          })
+                          .Scrollable(h => h.Height(500))
+                          //.Groupable()
+                          .Sortable(sortable =>
+                          {
+                              sortable.SortMode(GridSortMode.SingleColumn);
+                          })
+                          //.Filterable()
+                          .Pageable(pageable => pageable
+                              .Input(true)
+                              .Numeric(false)
+                              .Refresh(true)
+                              .PageSizes(true)
+                              .ButtonCount(5))
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+
+                              .Events(events =>
+                              {
+                                  events.Error("error_handler(\"validation_#=ProductionFinishedGoodsStoreReceiveId#\")");
+                                  events.RequestStart("onRequestStart(\"validation_#=ProductionFinishedGoodsStoreReceiveId#\")");
+                                  events.RequestEnd("onRequestEnd(\"validation_#=ProductionFinishedGoodsStoreReceiveId#\")");
+                              })
+                              .Model(model =>
+                              {
+                                  model.Id(f => f.ProductionFinishedGoodsStoreReceiveValidationId);
+
+                              })
+
+                              .Read(read => read.Action("ReceiveValidations_Read", "ProductionFinishedGoodsStoreReceiveValidation", new { id = "#=ProductionFinishedGoodsStoreReceiveId#" }))
+                              .Create(create => create.Action("ReceiveValidations_Create", "ProductionFinishedGoodsStoreReceiveValidation", new { id = "#=ProductionFinishedGoodsStoreReceiveId#" }))
+                              .Update(update => update.Action("ReceiveValidations_Update", "ProductionFinishedGoodsStoreReceiveValidation"))
+                              .Destroy(destroy => destroy.Action("ReceiveValidations_Destroy", "ProductionFinishedGoodsStoreReceiveValidation"))
+                          ) //.ClientDetailTemplateId("template_wip_detail")
+                          .ToClientTemplate()
+                        )
+                    </text>
+                );
+                items.Add().Text("Distribution").Content(
+                    @<text>
+                        
+                    </text>
+                    );
+            }).ToClientTemplate())
+    #} else if(ProductType == 1 && IsOnlineApproved){#
+    @(Html.Kendo().TabStrip()
+            .Name("tab_str_#=ProductionFinishedGoodsStoreReceiveId#")
+            .SelectedIndex(0)
+            .Items(items =>
+            {
+            items.Add().Text("Detail").Content(
+                @<text>
+                     @(Html.Kendo().PanelBar()
+                                          .Name("panelbar_#=ProductionFinishedGoodsStoreReceiveId#")
+                                          .ExpandMode(PanelBarExpandMode.Single)
+                                          .Items(panelbar =>
+                                          {
+                                              panelbar.Add()
+                                                  .Expanded(true)
+                                                  .Content(
+                                                      "<div class='Invoice-details'>" +
+                                                      "<ul>" +
+                                                      "<li> <label> Status: </label> <strong> #=Status# </strong> </li>" +
+                                                      "<li> <label> Created by: </label> <strong> #=CreatedBy# </strong> </li>" +
+                                                      "<li> <label> Created on: </label> #= kendo.toString(DateCreated, 'dd/MM/yyyy H:mm:ss')# </li>" +
+                                                      "<li> <label> Modified by :</label> #= ModifiedBy# </li>" +
+                                                      "<li> <label> Last Modified :</label> #= LastModified != null ? kendo.toString(LastModified, 'dd/MM/yyyy H:mm:ss') : ' '# </li>" +
+                                                      "</ul>" +
+                                                      "</div>"
+
+                                                  );
+                                          }).ToClientTemplate()
+                     )
+                </text>
+                );
+            items.Add().Text("Items").Content(
+                @<text>
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Production.ProductionFinishedGoodsStoreReceiveItem>()
+                                .Name("items_#=ProductionFinishedGoodsStoreReceiveId#")
+                                .Columns(columns =>
+                                {
+                                    columns.ForeignKey(c => c.GumProcessingOrderItemId, (IEnumerable)ViewData["GumProcessingOrderItems"], "GumProcessingOrderItemId", "ProcessingCode").EditorTemplateName("GumProcessingItems");
+                                    columns.ForeignKey(c => c.ItemCategoryCode, (IEnumerable)ViewData["ItemCategories"], "ItemCategoryCode", "Name");
+                                    columns.ForeignKey(c => c.ItemCode, (IEnumerable)ViewData["InventoryItems"], "ItemCode", "Name");
+                                    columns.Bound(c => c.AccountCode);
+                                    columns.Bound(c => c.Quantity);
+                                    columns.Bound(c => c.UnitPrice);
+                                    columns.Bound(c => c.SubTotal);
+                                    columns.ForeignKey(c => c.GLTaxRateID, (IEnumerable)ViewData["TaxTypes"], "GLTaxRateID", "TaxName").EditorTemplateName("TaxTypes");
+                                    columns.Bound(c => c.TaxAmount);
+                                    columns.Bound(c => c.Total);
+
+                                    //columns.Command(command =>
+                                    //{
+                                    //    command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                    //    command.Destroy().Text(Resources.ActionButton_Cancel);
+                                    //}).Width(200);
+                                })
+                                //.ToolBar(toolbar =>
+                                //{
+                                //    toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                                //})
+                                .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                .Scrollable(h => h.Height(500))
+                                .Sortable(sortable =>
+                                {
+                                    sortable.SortMode(GridSortMode.SingleColumn);
+                                })
+                                .Selectable(selectable =>
+                                {
+                                    selectable.Mode(GridSelectionMode.Single);
+                                    selectable.Type(GridSelectionType.Row);
+                                })
+                                .Filterable()
+                                .Pageable(pageable => pageable
+                                    .Input(true)
+                                    .Numeric(false)
+                                    .Refresh(true)
+                                    .PageSizes(true)
+                                    .ButtonCount(5))
+                                .DataSource(dataSource => dataSource
+                                    .Ajax()
+                                    .Events(events =>
+                                    {
+                                        events.Error("error_handler(\"items_#=ProductionFinishedGoodsStoreReceiveId#\")");
+                                        events.RequestStart("onRequestStart(\"items_#=ProductionFinishedGoodsStoreReceiveId#\")");
+                                        events.RequestEnd("onRequestEnd(\"items_#=ProductionFinishedGoodsStoreReceiveId#\")");
+                                    })
+                                    .Model(model =>
+                                    {
+                                        model.Id(p => p.ProductionFinishedGoodsStoreReceiveItemId);
+                                        model.Field(f => f.Total).Editable(false);
+                                        model.Field(f => f.TaxAmount).Editable(false);
+                                        model.Field(f => f.ItemCode).Editable(false);
+                                        model.Field(f => f.ItemCategoryCode).Editable(false);
+                                        model.Field(f => f.Quantity).Editable(false);
+                                        model.Field(f => f.UnitPrice).Editable(false);
+                                        model.Field(f => f.SubTotal).Editable(false);
+
+                                    })
+                                     .Read(read => read.Action("ReceiveItems_Read", "ProductionFinishedGoodsStoreReceiveItem", new { id = "#=ProductionFinishedGoodsStoreReceiveId#" }))
+                                    .Create(create => create.Action("ReceiveItem_Create", "ProductionFinishedGoodsStoreReceiveItem", new { id = "#=ProductionFinishedGoodsStoreReceiveId#" }))
+                                    .Update(update => update.Action("ReceiveItem_Update", "ProductionFinishedGoodsStoreReceiveItem"))
+                                    .Destroy(destroy => destroy.Action("ReceiveItem_Destroy", "ProductionFinishedGoodsStoreReceiveItem"))
+                                    )
+                                    .ToClientTemplate()
+                    )
+                </text>
+                );
+                items.Add().Text("Validation").Content(
+                    @<text>
+                        @(Html.Kendo().Grid<ExceedERP.Core.Domain.Production.ProductionFinishedGoodsStoreReceiveValidation>()
+                          .Name("validation_#=ProductionFinishedGoodsStoreReceiveId#")
+                          .Columns(columns =>
+                          {
+
+                              columns.Bound(c => c.Status);
+                              columns.Bound(c => c.Remark);
+
+                              //columns.Command(command =>
+                              //{
+                              //    command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                              //    command.Destroy().Text(Resources.ActionButton_Cancel);
+                              //}).Width(200);
+                          })
+
+                          //.ToolBar(toolbar =>
+                          //{
+                          //    toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                          //})
+                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                          .Selectable(selectable =>
+                          {
+                              selectable.Mode(GridSelectionMode.Single);
+                              selectable.Type(GridSelectionType.Row);
+                          })
+                          .Scrollable(h => h.Height(500))
+                          //.Groupable()
+                          .Sortable(sortable =>
+                          {
+                              sortable.SortMode(GridSortMode.SingleColumn);
+                          })
+                          //.Filterable()
+                          .Pageable(pageable => pageable
+                              .Input(true)
+                              .Numeric(false)
+                              .Refresh(true)
+                              .PageSizes(true)
+                              .ButtonCount(5))
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+
+                              .Events(events =>
+                              {
+                                  events.Error("error_handler(\"validation_#=ProductionFinishedGoodsStoreReceiveId#\")");
+                                  events.RequestStart("onRequestStart(\"validation_#=ProductionFinishedGoodsStoreReceiveId#\")");
+                                  events.RequestEnd("onRequestEnd(\"validation_#=ProductionFinishedGoodsStoreReceiveId#\")");
+                              })
+                              .Model(model =>
+                              {
+                                  model.Id(f => f.ProductionFinishedGoodsStoreReceiveValidationId);
+                              })
+                              .Read(read => read.Action("ReceiveValidations_Read", "ProductionFinishedGoodsStoreReceiveValidation", new { id = "#=ProductionFinishedGoodsStoreReceiveId#" }))
+                          ).ToClientTemplate()
+                        )
+                    </text>
+                );
+                items.Add().Text("Distribution").Content(
+                    @<text>
+                        
+                    </text>
+                    );
+            }).ToClientTemplate())
+    #}#
+
+</script>
+
+<script>
+    function filterCategories() {
+        //
+        // summary:
+        //      send the filtering text along with the parent widget's value
+        var dropdownlist = $("#ItemCode").data("kendoDropDownList");
+        var filterInput = dropdownlist.filterInput;
+        return {
+            ItemCategoryCode: $("#ItemCategoryCode").val(), filterString: filterInput.val()
+        };
+    }
+
+
+    function sendForApproval(id) {
+        var recordStatus = "";
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("SendForApproval", "ProductionFinishedGoodsStoreReceive", new { area = "Production" })',
+            data: { id: id },
+            success: function (result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                recordStatus = result.Status;
+                location.reload(true);
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+
+    function periodChanged(e) {
+        var drp = this;
+        var id = drp.value();
+        var receiveDate = $("#ReceiveDate").data("kendoDatePicker");
+        
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("GetPeriodRanges", "ProductionDataProvider", new { area = "Production" })',
+            data: { periodId: id},
+            success: function (result) {
+                if (result) {
+                    var ranges = result.split('_');
+                    var start = ranges[0];
+                    var end = ranges[1];
+                    var startDate = new Date(start);
+                    var endDate = new Date(end);
+                    if (receiveDate) {
+                        receiveDate.min(startDate);
+                        receiveDate.max(endDate);
+                        receiveDate.value(startDate);
+                        receiveDate.trigger("change");
+                    } 
+                }
+            }, 
+            error: function (result) {
+            }
+        });
+    }
+    function onDataBound(e) {
+        var grid = this;
+        var gridRows = grid.tbody.find("tr");
+        //Selects all edit buttons
+        for (var i = 0; i < gridRows.length; i++) {
+            var row = $(gridRows[i]);
+            var dataItem = grid.dataItem(row);
+            //perform your custom check
+            if (dataItem.IsOnlineApproved === true) {
+                //hide buttons using jQuery
+                row.find(".k-grid-edit").hide();
+                row.find(".k-grid-delete").hide();
+                row.addClass("highlighted-row");
+                //row.find(".k-grid-customAction").text('ይከፈት');
+            } else {
+
+                row.find(".k-grid-edit").show();
+                row.find(".k-grid-delete").show();
+            }
+        }
+    }
+
+</script>
+<style>
+    .highlighted-row {
+        background-color: #aafeaa;
+    }
+
+        .highlighted-row.k-alt {
+            background-color: #bff1b4;
+        }
+</style>

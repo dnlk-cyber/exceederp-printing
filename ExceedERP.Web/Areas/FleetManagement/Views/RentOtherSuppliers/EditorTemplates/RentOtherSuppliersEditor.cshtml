@@ -1,0 +1,355 @@
+﻿@model ExceedERP.Core.Domain.FleetManagement.FleetEquipmentRent.RentOtherSuppliers
+
+
+
+    <script>
+        function onUploadSuccess(e) {
+
+        }
+
+    function checkFileType(e) {
+        var files = e.files;
+
+        $.each(files, function () {
+
+            if (this.extension.toLowerCase() === ".pdf" || this.extension.toLowerCase() === ".doc" || this.extension.toLowerCase() === ".docx") {
+
+            } else {
+                alert("Only .pdf or .docx or .doc files can be uploaded!");
+                e.preventDefault();
+            }
+
+        });
+    }
+
+    function filterEquipmentIdentity() {
+        var dropdownlist = $("#EquipmentTypeID").data("kendoDropDownList");
+        var filterInput = dropdownlist.filterInput;
+
+        return {
+            EquipmentIdentityID: $("#EquipmentIdentityID").val(),
+            Search: filterInput.val()
+        };
+
+    }
+    function filterByType() {
+        var dropdownlist = $("#EquipmentName").data("kendoDropDownList");
+        var filterInput = dropdownlist.filterInput;
+
+        return {
+            EquipmentTypeId: $("#EquipmentTypeID").val(),
+            Search: filterInput.val()
+        };
+
+    }
+    
+</script>
+<div class="demo-section k-content">
+    <form>
+
+
+        <div class="row">
+            <div class="col-md-1">
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+
+                        @Html.LabelFor(model => model.EquipmentTypeID)
+                    </div>
+                    @(Html.Kendo().DropDownListFor(model => model.EquipmentIdentityID).Name("EquipmentIdentityID")
+                                          .DataTextField("EquipmentCategoryName")
+                                          .DataValueField("EquipmentIdentityID").OptionLabel("Select").HtmlAttributes(new { style = "width:100%" }).Filter(FilterType.Contains)
+                                          .DataSource(d => d.Read(r => r.Action("EquipmentIdentityDDBind", "EquipmentCategory")).ServerFiltering(false)))
+
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+
+
+                        @Html.LabelFor(model => model.EquipmentIdentityID)
+                    </div>
+                    @(Html.Kendo().DropDownListFor(model => model.EquipmentTypeID)
+                    .DataTextField("EquipmentTypeName")
+                    .DataValueField("EquipmentTypeID").OptionLabel("Select")
+                    .HtmlAttributes(new { style = "width:100%" }).Filter(FilterType.Contains)
+                    .DataSource(d =>
+                    {
+                        d.Read(r =>
+                        {
+                            r.Action("EquipmentTypeDDBind", "EquipmentType").Data("filterEquipmentIdentity");
+                        })
+                      .ServerFiltering(true);
+                    })
+              .Enable(false)
+              .AutoBind(false)
+               .CascadeFrom("EquipmentIdentityID")
+                    )
+
+
+
+                </div>
+            </div>
+
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.EquipmentName)
+                    </div>
+                    @(Html.Kendo().DropDownList().Name("EquipmentName")
+                            .DataTextField("EquipmentName")
+                            .DataValueField("EquipmentName").OptionLabel("Select").Filter(FilterType.Contains)
+                    .HtmlAttributes(new { style = "width:100%" })
+                    .DataSource(d =>
+                    {
+                        d.Read(r =>
+                        {
+                            r.Action("EquipmentNameFilterDDBind", "EquipmentRegistration").Data("filterByType");
+                        })
+                      .ServerFiltering(true);
+                    })
+              .Enable(false)
+                              .AutoBind(false)
+                                               .CascadeFrom("EquipmentTypeID")
+                    )
+
+
+
+                </div>
+                </div>
+        
+
+        </div>
+        <div class="row">
+            <div class="col-md-1">
+            </div>
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.ProjectLocation)
+                    </div>
+                    <div>
+                        @(Html.Kendo().DropDownListFor(model => model.ProjectLocation)
+                                                  .DataTextField("Name")
+                                                  .DataValueField("Name").OptionLabel("Select").HtmlAttributes(new { style = "width:100%" })
+                                          .DataSource(d => d.Read(r => r.Action("BranchDDBind", "Branch"))))
+
+
+
+                    </div>
+
+                </div>
+            </div>
+            
+            
+            <div class="col-md-3">
+
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.Address)
+                    </div>
+                    <div>
+                        @Html.Kendo().TextBoxFor(model => model.Address)
+                        @Html.ValidationMessageFor(model => model.Address)
+
+                    </div>
+
+                </div>
+   
+            </div>
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.NameBankBranch)
+                    </div>
+                    <div>
+                        @Html.Kendo().TextBoxFor(model => model.NameBankBranch)
+                        @Html.ValidationMessageFor(model => model.NameBankBranch)
+                    </div>
+
+                </div>
+            </div>
+
+    
+
+   
+
+        </div>
+        <div class="row">
+            <div class="col-md-1">
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.Description)
+                    </div>
+                    <div>
+                        @Html.Kendo().TextBoxFor(model => model.Description)
+                        @Html.ValidationMessageFor(model => model.Description)
+                    </div>
+
+                </div>
+            </div>
+
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.WorkingCapacity)
+                    </div>
+                    <div>
+                        @Html.Kendo().TextBoxFor(model => model.WorkingCapacity)
+                        @Html.ValidationMessageFor(model => model.WorkingCapacity)
+                    </div>
+
+                </div>
+            </div>
+
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.AdvancePayment)
+                    </div>
+                    <div>
+                        @Html.Kendo().NumericTextBoxFor(model => model.AdvancePayment).Min(0)
+                        @Html.ValidationMessageFor(model => model.AdvancePayment)
+                    </div>
+
+                </div>
+            </div>
+
+        </div>
+        <div class="row">
+            <div class="col-md-1">
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.UnitOfWorkMeasurement)
+                    </div>
+                    <div>
+                        @Html.Kendo().TextBoxFor(model => model.UnitOfWorkMeasurement)
+                        @Html.ValidationMessageFor(model => model.UnitOfWorkMeasurement)
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.FuelCoveredBy)
+                        @(Html.Kendo().DropDownListFor(model => model.FuelCoveredBy)
+                          .OptionLabel(" Select ")
+                          .BindTo(new List<SelectListItem>
+                              ()
+                              {
+                                  new SelectListItem()
+                                      {
+                                          Text = "By Customer",
+                                          Value = "Customer"
+                                      },
+                                  new SelectListItem()
+                                      {
+                                          Text = "By Supplier",
+                                          Value = "Supplier"
+                                      }
+                              }))
+                    </div>
+
+                </div>
+            </div>
+        
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.Condition)
+                        @(Html.Kendo().DropDownListFor(model => model.Condition)
+                          .OptionLabel(" Select ")
+                          .BindTo(new List<SelectListItem>
+                              ()
+                              {
+                                  new SelectListItem()
+                                      {
+                                          Text = "Good",
+                                          Value = "Good"
+                                      },
+                                  new SelectListItem()
+                                      {
+                                          Text = "Normal",
+                                          Value = "Normal"
+                                      },
+                                  new SelectListItem()
+                                      {
+                                          Text = "Bad",
+                                          Value = "Bad"
+                                      }
+                              }))
+                    </div>
+
+                </div>
+            </div>
+
+
+                   </div>
+        <div class="row">
+            <div class="col-md-1">
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.Quantity)
+                    </div>
+                    <div>
+                        @Html.Kendo().NumericTextBoxFor(model => model.Quantity).Min(0)
+                        @Html.ValidationMessageFor(model => model.Quantity)
+                    </div>
+
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                      </div>
+                    <div>
+                        @Html.Kendo().CheckBoxFor(model => model.RentalRateIncludingVAT)
+                        @Html.ValidationMessageFor(model => model.RentalRateIncludingVAT)
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                      
+                    </div>
+                    <div>
+                        @Html.Kendo().CheckBoxFor(model => model.WithDriver)
+                        @Html.ValidationMessageFor(model => model.WithDriver)
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    Document Attachment:
+                    @(Html.Kendo().Upload()
+                       .Name("file")
+                                       .Async(a => a.Save("UploadReport", "Accident"))
+                       .Events(e => e.Complete("onUploadSuccess").Upload("checkFileType"))
+                       .ShowFileList(false).Events(events => events.Error("error_handler")))
+                </div>
+            </div>
+        </div>
+
+    </form>
+</div>

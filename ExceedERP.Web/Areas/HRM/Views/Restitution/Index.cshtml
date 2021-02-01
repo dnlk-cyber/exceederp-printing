@@ -1,0 +1,24 @@
+﻿@using ExceedERP.Core.Domain.HRM.HealthAndInsurance
+
+@(Html.Kendo().Grid<Restitution>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.RestitutionAmount);
+        columns.Bound(c => c.Remark);
+        columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.RestitutionId))
+          .Read(read => read.Action("Restitutions_Read", "Restitution"))
+          .Create(create => create.Action("Restitutions_Create", "Restitution"))
+          .Update(update => update.Action("Restitutions_Update", "Restitution"))
+          .Destroy(destroy => destroy.Action("Restitutions_Destroy", "Restitution"))
+      )
+)

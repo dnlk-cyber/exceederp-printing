@@ -1,0 +1,954 @@
+﻿@{
+
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+<script>
+
+    function SelectInventoryStore(e, JobOrderDetailID) {
+        popup = window.open('/FleetManagement/ServiceCenter/InventoryStoreSelector?Id=' + JobOrderDetailID, 'WindowPopup', 'top=200, left=400, width=350, height=200, resizable=no,');
+        popup.focus();
+        return false;
+    }
+
+</script>
+
+<legend>OutSource Maintenance</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetMaintenance.JobOrder>()
+        .Name("grid")
+    .Columns(columns =>
+    {
+        columns.Bound(e => e.Num).Width(120);
+        columns.Bound(e => e.EquipmentName).Width(140);
+
+        columns.Bound(e => e.ProjectName).Width(140);
+        columns.Bound(e => e.MaintenanceCenter).Width(200);
+        columns.Bound(e => e.Status).Width(200); ;
+
+
+        columns.Command(command => { }).Width(250);
+
+    })
+
+             .HtmlAttributes(new { style = "height: 520px;" })
+                          .Pageable(pageable => pageable
+                                            .Input(true)
+                                            .Numeric(false)
+                                            .Refresh(true)
+                                            .PageSizes(true)
+                                            .ButtonCount(5))
+
+                                .Scrollable()
+                                .Sortable()
+                                .Filterable()
+                                .Groupable()
+                                .Scrollable(h => h.Height(500))
+        .ClientDetailTemplateId("template")
+      .Groupable().Events(ev => ev.DetailExpand("onDetailExpandUser"))
+                      .DataSource(dataSource => dataSource
+            .Ajax()
+            .ServerOperation(false)
+        .Sort(x => x.Add(s => s.JobOrderNum).Descending())
+            .PageSize(6)
+            .Model(model =>
+                {
+                    model.Id(p => p.JobOrderID);
+                    model.Field(p => p.JobOrderID).Editable(false);
+                }
+                ).Events(ev => ev
+                                                    .Error("error_handler(\"grid\")")
+                                                    .RequestStart("onRequestStart(\"grid\")")
+                                                    .RequestEnd("onRequestEnd(\"grid\")"))
+                    .Create(update => update.Action("JobOrder_Create", "JobOrder"))
+                                .Read(read => read.Action("OutSource_Read", "JobOrder"))
+                    .Update(update => update.Action("JobOrder_Update", "JobOrder"))
+                          .Destroy(update => update.Action("TransferJob", "ServiceCenter"))
+
+        )
+   .Events(events => events.DataBound("dataBound"))
+)
+
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                    .Name("tabStripMain_#=JobOrderID#")
+            .SelectedIndex(0)
+            .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+            .Items(items =>
+            {
+                items.Add().Text("Job Services").Content(@<text>
+                    # if (IsSecondSendForApproval == false )
+                    {#
+
+                    <a href='@Url.Action("OutsourceMaintenance_SendForOnlineApproval", "OutsourceMaintenanceApproval")/?EId=#=JobOrderID#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                    # }#
+                    <a href='@Url.Action("Job", "PrintJob")/#=Num#' title="Print"><i class="fa fa-print fa-2x"></i></a>
+
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetMaintenance.JobOrderDetail>()
+                                                .Name("JobOrderDetailgrid_#=JobOrderID#")
+                        .Columns(columns =>
+                        {
+                            columns.Bound(o => o.ServiceName).EditorTemplateName("ServiceBinding").Width(156);
+                            columns.Bound(o => o.Status).EditorTemplateName("StatusEditor").Width(200);
+                            columns.Bound(o => o.ApprovalStatus).EditorTemplateName("ApprovalStatusBind").Width(200);
+                            columns.Command(command => { command.Edit(); }).Width(250);
+
+                        })
+
+                .Editable(editable => editable.Mode(GridEditMode.InLine))
+                           .ClientDetailTemplateId("lineItemTemplate")
+                          .Groupable().Events(ev => ev.DetailExpand("SpareonDetailExpandUser"))
+                                       .DataSource(dataSource => dataSource
+                            .Ajax()
+                            .PageSize(5)
+                                                        .Model(model =>
+              {
+                  model.Id(p => p.JobOrderDetailID);
+                  model.Field(p => p.ServiceName).Editable(false);
+                  model.Field(p => p.ApprovalStatus).Editable(false);
+
+              }).Events(ev => ev
+                                                        .Error("error_handler(\"JobOrderDetailgrid_#=JobOrderID#\")")
+                                                        .RequestStart("onRequestStart(\"JobOrderDetailgrid_#=JobOrderID#\")")
+                                                        .RequestEnd("onRequestEnd(\"JobOrderDetailgrid_#=JobOrderID#\")"))
+                                                       .Read(read => read.Action("SingleJobOrder", "JobOrderDetail", new { jobOrderID = "#=JobOrderID#" }))
+                                                      .Update(update => update.Action("JobOrderDetail_Update", "JobOrderDetail"))
+
+
+                                                              ).Events(events => events.DataBound("servicedataBound"))
+                                            .ToClientTemplate())
+                </text>
+                );
+
+
+                items.Add().Text(" SuperVisor  Approval").Content(@<text>
+
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetMaintenance.JobOrderDetail>()
+                                                        .Name("SuperVisorApprovalgrid_#=JobOrderID#")
+                        .Columns(columns =>
+                        {
+                            columns.Bound(o => o.ServiceName).EditorTemplateName("ServiceBinding").Width(156);
+                            columns.Bound(o => o.Status).EditorTemplateName("StatusEditor").Width(200);
+                            columns.Bound(o => o.ApprovalStatus).EditorTemplateName("ApprovalStatusBind").Width(200);
+                            columns.Bound(c => c.Remark).Width(120);
+                            columns.Command(command => { command.Edit().Text(" Approve"); }).Width(250);
+
+                        })
+
+
+                           .Editable(editable => editable.Mode(GridEditMode.InLine))
+                             .ClientDetailTemplateId("ApprovalItemTemplate")
+                                  .Groupable().Events(ev => ev.DetailExpand("SpareApprovalonDetailExpandUser"))
+                           .DataSource(dataSource => dataSource
+                            .Ajax()
+                            .PageSize(5)
+
+                                   .Model(model =>
+              {
+                  model.Id(p => p.JobOrderDetailID);
+                  model.Field(p => p.ServiceName).Editable(false);
+                  model.Field(p => p.Status).Editable(false);
+
+              })
+                      .Events(ev => ev
+                                                                                .Error("error_handler(\"SuperVisorApprovalgrid_#=JobOrderID#\")")
+                                                                                .RequestStart("onRequestStart(\"SuperVisorApprovalgrid_#=JobOrderID#\")")
+                                                                                .RequestEnd("onRequestEnd(\"SuperVisorApprovalgrid_#=JobOrderID#\")"))
+                .Read(read => read.Action("SingleJobOrder", "JobOrderDetail", new { jobOrderID = "#=JobOrderID#" }))
+                    .Update(update => update.Action("JobOrderDetail_Update", "JobOrderDetail"))
+
+
+                                                                              ).Events(events => events.DataBound("ServiceApprovaldataBound"))
+                                            .ToClientTemplate())
+                </text>
+                );
+                    items.Add().Text("Component ").Content(@<text>
+
+                        @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetMaintenance.ExternalComponent>()
+                                                            .Name("Componentgrid_#=JobOrderID#")
+                            .Columns(columns =>
+                            {
+                                columns.Bound(o => o.EnterpriseName).Width(156);
+                                columns.Bound(o => o.MaintaingCompany).Width(120);
+                                columns.Bound(o => o.Manufacturer).Width(120);
+                                columns.Bound(o => o.Code).Width(120);
+                                columns.Bound(o => o.Model).Width(120);
+                                columns.Command(command => { command.Edit(); }).Width(250);
+
+                            })
+                            .ToolBar(t => t.Create())
+                                                          .Editable(editable =>
+                        {
+                            editable.Mode(GridEditMode.PopUp).TemplateName("ComponentEditor");
+                            editable.DisplayDeleteConfirmation("Are You Sure To Remove ");
+                        })
+                                       .ClientDetailTemplateId("ComponentItemTemplate")
+                                     // .Groupable().Events(ev => ev.DetailExpand("onDetailServiceApproveExpandUser"))
+                               .DataSource(dataSource => dataSource
+                                .Ajax()
+                                          .PageSize(5)
+                                       .Model(model =>
+                  {
+                      model.Id(p => p.ExternalComponentId);
+                     
+
+                  }).Events(ev => ev
+                                                                                    .Error("error_handler(\"Componentgrid_#=JobOrderID#\")")
+                                                                                    .RequestStart("onRequestStart(\"Componentgrid_#=JobOrderID#\")")
+                                                                                    .RequestEnd("onRequestEnd(\"Componentgrid_#=JobOrderID#\")"))
+                                                                                                                                        .Create(create => create.Action("ExternalComponent_Create", "ExternalComponent", new { jobOrderID = "#=JobOrderID#" }))
+                                                                                                            .Read(read => read.Action("ExternalComponent_Read", "ExternalComponent", new { jobOrderID = "#=JobOrderID#" }))
+                                                                                  .Update(update => update.Action("ExternalComponent_Update", "ExternalComponent"))
+                                                                          
+
+
+                                                          )
+                                                .ToClientTemplate())
+                </text>
+                    );
+                items.Add().Text("Equipment Admin Approval").Content(@<text>
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetMaintenance.OutsourceMaintenanceApproval>()
+                                .Name("PropertyAdmingrid_#=JobOrderID#")
+                    .Columns(columns =>
+                    {
+                        columns.Bound(o => o.Status).EditorTemplateName("ApprovalStatusBind").Width(126);
+                        columns.Bound(c => c.Remark).Width(120);
+                        columns.Bound(c => c.CreatedBy).Width(120);
+                        columns.Bound(c => c.DateCreated).Format("{0:yyyy-MM-dd}").Width(100);
+                        columns.Command(command => { command.Edit().Text("Approve"); }).Width(250);
+
+                    })
+                       .Editable(editable =>
+                        {
+
+                            editable.DisplayDeleteConfirmation("Approve");
+                        })
+                                                                         .DataSource(dataSource => dataSource
+                            .Ajax()
+                            .ServerOperation(false)
+                                      .PageSize(6)
+                                                                             .Model(model =>
+                                                                             {
+                                                                                 model.Id(p => p.OutsourceMaintenanceApprovalId);
+                                                                                 model.Field(p => p.CreatedBy).Editable(false);
+                                                                                 model.Field(p => p.DateCreated).Editable(false);
+                                                                             }
+
+                                    ).Events(ev => ev
+                                                                                                                    .Error("error_handler(\"PropertyAdmingrid_#=JobOrderID#\")")
+                                                                                                                    .RequestStart("onRequestStart(\"PropertyAdmingrid_#=JobOrderID#\")")
+                                                                                                                    .RequestEnd("onRequestEnd(\"PropertyAdmingrid_#=JobOrderID#\")"))
+                                                                                     .Create(update => update.Action("OutsourceMaintenance_Approve", "OutsourceMaintenanceApproval", new { Id = "#=JobOrderID#" }))
+                                                                                                          .Read(read => read.Action("OutsourceMaintenanceApproval_Read", "OutsourceMaintenanceApproval", new { EId = "#=JobOrderID#" }))
+                                                                               .Update(update => update.Action("OutsourceMaintenance_Approve", "OutsourceMaintenanceApproval", new { Id = "#=JobOrderID#" }))
+
+
+
+                                        ).Events(events => events.DataBound("ServiceApprovaldataBound"))
+                                        .ToClientTemplate())
+                </text>
+                                );
+            })
+
+
+
+                                                                                                                                                                                                                                                                                                                                                                                                        .ToClientTemplate())
+</script>
+
+<script id="lineItemTemplate" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                        .Name("tabStripline_#=ServiceID#")
+                .SelectedIndex(0)
+                .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+                .Items(items =>
+                {
+                    items.Add().Text(" Internal Spare Part ").Content(@<text>
+                        #if (IsOnlineTransferred == false)
+                        {#
+                        <img src="~/Content/Images/default.png" width="30px" height="30px" onclick="SelectInventoryStore(this, '#=JobOrderDetailID#')" />
+                        #}#
+                        @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetMaintenance.ServiceSpare>()
+                          .Name("InternalSparegrid_#=JobOrderDetailID#")
+                  .Columns(columns =>
+                  {
+                      columns.Bound(o => o.ServiceName).Title(" Name").EditorTemplateName("SpareEditor").Width(120);
+                      columns.Bound(o => o.Quantity).EditorTemplateName("NumEditor").Width(100);
+                      columns.Bound(o => o.UsedQuantity).Width(100);
+                      columns.Bound(o => o.ApprovalStatus).EditorTemplateName("ApprovalStatusBind").Width(100);
+                      columns.Bound(o => o.CreatedBy).Width(100);
+                      columns.Bound(c => c.DateCreated).Format("{0:yyyy-MM-dd}").Width(100);
+                      columns.Command(command =>
+                      {
+                          command.Edit();
+                          command.Destroy();
+                      }).Width(250);
+                  }).Events(x=>x.DataBound("dataBound")).ToolBar(t => t.Create())
+
+                  .Editable(editable =>
+                  {
+                      editable.Mode(GridEditMode.InLine);
+                  })
+                  .DataSource(dataSource => dataSource
+                      .Ajax()
+                      .PageSize(5)
+                      .Model(model =>
+                      {
+                          model.Id(p => p.ServiceSpareID);
+                          model.Field(p => p.ApprovalStatus).Editable(false);
+                          model.Field(p => p.CreatedBy).Editable(false);
+                          model.Field(p => p.DateCreated).Editable(false);
+                          model.Field(p => p.UsedQuantity).Editable(false);
+                      }).Events(ev => ev
+                                  .Error("error_handler(\"InternalSparegrid_#=JobOrderDetailID#\")")
+                                  .RequestStart("onRequestStart(\"InternalSparegrid_#=JobOrderDetailID#\")")
+                                  .RequestEnd("onRequestEnd(\"InternalSparegrid_#=JobOrderDetailID#\")"))
+                              .Create(update => update.Action("OutSourceServiceSpare_Create", "ServiceSpare", new { sserviceID = "#=JobOrderDetailID#" }))
+                                      .Read(read => read.Action("OutSourceInternalSpareByService", "ServiceSpare", new { sserviceID = "#=JobOrderDetailID#" }))
+                      .Update(destroy => destroy.Action("ServiceSpare_Update", "ServiceSpare", new { sserviceID = "#=JobOrderDetailID#" }))
+                      .Destroy(destroy => destroy.Action("ServiceSpare_Destroy", "ServiceSpare"))
+                  )
+                  .Pageable()
+                  .ToClientTemplate())
+
+                    </text>
+                    );
+
+                    items.Add().Text("Store Requisition").Content(@<text>
+                        @(Html.Kendo().Grid<ExceedERP.Web.Areas.FleetManagement.Models.RequistionItemViewModel>()
+                                                                    .Name("Requisitiongrid_#=JobOrderDetailID#")
+                            .Columns(columns =>
+                            {
+                                columns.Bound(o => o.ItemCategoryCode).Title("Store ").Width(100);
+                                columns.Bound(o => o.ItemCode).Width(100);
+                                columns.Bound(o => o.IssuedQuantity).Width(100);
+                                columns.Bound(o => o.RemainingAmount).Width(100);
+                                columns.Bound(o => o.UsedAmount).Width(100);
+                                columns.Bound(o => o.UnitPrice).Width(100);
+                                columns.Bound(o => o.TotalPrice).Width(100);
+                                columns.Command(command =>
+                                 {
+                                 }).Width(250);
+                            })
+
+                                                   .Editable(editable =>
+                        {
+                            editable.Mode(GridEditMode.InLine);
+                        })
+                              .DataSource(dataSource => dataSource
+                                .Ajax()
+                                .PageSize(5)
+                                 .Model(model =>
+                                 {
+                                     model.Id(p => p.StoreRequisitionItemID);
+                                     model.Field(p => p.CreatedBy).Editable(false);
+                                     model.Field(p => p.DateCreated).Editable(false);
+                                 }).Events(ev => ev
+                                                                                                                .Error("error_handler(\"Requisitiongrid_#=JobOrderDetailID#\")")
+                                                                                                                .RequestStart("onRequestStart(\"Requisitiongrid_#=JobOrderDetailID#\")")
+                                                                                                                .RequestEnd("onRequestEnd(\"Requisitiongrid_#=JobOrderDetailID#\")"))
+                                                                                                                            .Read(read => read.Action("GetServiceRequisition", "ServiceCenter", new { Id = "#=JobOrderDetailID#" }))
+
+                                                                                              )
+                            .Pageable()
+                            .ToClientTemplate())
+                    </text>
+                    );
+                    items.Add().Text("External Spare Part ").Content(@<text>
+                        @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetMaintenance.ExternalMaterial>()
+                                                                            .Name("SpareExternalMaterialgrid_#=JobOrderDetailID#")
+                            .Columns(columns =>
+                            {
+                                columns.Bound(o => o.MaterialName).Title("SparePart Name").Width(160);
+                                columns.Bound(o => o.Type).EditorTemplateName("SpareTypeEditor").Width(100);
+                                columns.Bound(o => o.Quantity).EditorTemplateName("NumEditor").Width(100);
+                                columns.Bound(o => o.UnitPrice).EditorTemplateName("NumEditor").Width(100);
+                                columns.Bound(o => o.TotalAmount).Width(100);
+                                columns.Bound(o => o.ApprovalStatuses).EditorTemplateName("ApprovalStatusBind").Width(100);
+
+                                columns.Command(command => { command.Edit(); }).Width(250);
+
+                            }).Events(x=>x.DataBound("dataBound"))
+                                      .ToolBar(t => t.Create())
+                                                   .Editable(editable =>
+                        {
+                            editable.Mode(GridEditMode.InLine);
+                            editable.DisplayDeleteConfirmation("Are You Sure To Remove Material ");
+                        })
+                              .DataSource(dataSource => dataSource
+                                .Ajax()
+
+                                .PageSize(5)
+                                 .Model(model =>
+                                 {
+                                     model.Id(p => p.ExternalMaterialID);
+                                     model.Field(p => p.ApprovalStatuses).Editable(false);
+                                     model.Field(p => p.TotalAmount).Editable(false);
+                                 }).Events(ev => ev
+                                                                                                        .Error("error_handler(\"SpareExternalMaterialgrid_#=JobOrderDetailID#\")")
+                                                                                                        .RequestStart("onRequestStart(\"SpareExternalMaterialgrid_#=JobOrderDetailID#\")")
+                                                                                                        .RequestEnd("onRequestEnd(\"SpareExternalMaterialgrid_#=JobOrderDetailID#\")"))
+                           .Create(update => update.Action("ExternalServiceSpare_Create", "ServiceSpare", new { sserviceID = "#=JobOrderDetailID#" }))
+                       .Read(read => read.Action("ExternalServiceSpareByService", "ServiceSpare", new { RserviceID = "#=JobOrderDetailID#" }))
+                                                          .Update(destroy => destroy.Action("ExternalServiceSpare_Create", "ServiceSpare", new { cserviceID = "#=JobOrderDetailID#" }))
+
+                                                                                              )
+                            .Pageable()
+                            .ToClientTemplate())
+                    </text>
+                    );
+
+
+                }).ToClientTemplate()
+
+    )
+</script>
+
+
+
+
+
+<script id="ApprovalItemTemplate" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                        .Name("tabStripapproval_#=ServiceID#")
+                .SelectedIndex(0)
+                .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+                .Items(items =>
+                {
+                    items.Add().Text("Internal Spare Part ").Content(@<text>
+
+
+                        @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetMaintenance.ServiceSpare>()
+                              .Name("ApproveServiceSparegrid_#=JobOrderDetailID#")
+                      .Columns(columns =>
+                      {
+                          columns.Bound(o => o.ServiceName).Title("SparePart Name").EditorTemplateName("SpareEditor").Width(120);
+                          columns.Bound(o => o.Quantity).EditorTemplateName("NumEditor").Width(100);
+                          columns.Bound(o => o.ApprovalStatus).EditorTemplateName("ApprovalStatusBind").Width(100);
+                          columns.Bound(o => o.Remark).Width(100);
+                          columns.Bound(o => o.CreatedBy).Width(100);
+                          columns.Bound(c => c.DateCreated).Format("{0:yyyy-MM-dd}").Width(100);
+                          columns.Command(command =>
+                          {
+                              command.Edit().Text("Approve");
+
+                          }).Width(250);
+                      }).Events(x=>x.DataBound("dataBound"))
+
+                      .Editable(editable =>
+                      {
+                          editable.Mode(GridEditMode.InLine);
+                          editable.DisplayDeleteConfirmation("Are You Sure To Remove Spare Part");
+                      })
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+                          .PageSize(5)
+                          .Model(model =>
+                          {
+                              model.Id(p => p.ServiceSpareID);
+                              model.Field(p => p.ServiceName).Editable(false);
+                              model.Field(p => p.Quantity).Editable(false);
+                              model.Field(p => p.CreatedBy).Editable(false);
+                              model.Field(p => p.DateCreated).Editable(false);
+                          }).Events(ev => ev
+                                      .Error("error_handler(\"ApproveServiceSparegrid_#=JobOrderDetailID#\")")
+                                      .RequestStart("onRequestStart(\"ApproveServiceSparegrid_#=JobOrderDetailID#\")")
+                                      .RequestEnd("onRequestEnd(\"ApproveServiceSparegrid_#=JobOrderDetailID#\")"))
+                          .Create(update => update.Action("ServiceSpare_Create", "ServiceSpare", new { sserviceID = "#=JobOrderDetailID#" }))
+                                  .Read(read => read.Action("OutSourceInternalSpareByService", "ServiceSpare", new { sserviceID = "#=JobOrderDetailID#" }))
+                          .Destroy(destroy => destroy.Action("ServiceSpare_Destroy", "ServiceSpare"))
+                                  .Update(destroy => destroy.Action("ServiceSpare_Approve", "ServiceSpare", new { sserviceID = "#=JobOrderDetailID#" }))
+
+                      )
+                      .Pageable()
+                      .ToClientTemplate())
+
+                    </text>
+                        );
+                    items.Add().Text(" External Spare Part ").Content(@<text>
+                            @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetMaintenance.ExternalMaterial>()
+                                                                    .Name("ExternalMaterialApprovalgrid_#=JobOrderDetailID#")
+                            .Columns(columns =>
+                            {
+                                columns.Bound(o => o.MaterialName).Title("SparePart Name").Width(160);
+                                columns.Bound(o => o.Type).EditorTemplateName("SpareTypeEditor").Width(100);
+                                columns.Bound(o => o.Quantity).Width(100);
+                                columns.Bound(o => o.UnitPrice).Width(100);
+                                columns.Bound(o => o.TotalAmount).Width(100);
+                                columns.Bound(o => o.ApprovalStatuses).EditorTemplateName("ApprovalStatusBind").Width(100);
+
+                                columns.Command(command => { command.Edit(); }).Width(250);
+
+                            }).Events(x=>x.DataBound("dataBound"))
+                                
+                                                   .Editable(editable =>
+                        {
+                            editable.Mode(GridEditMode.InLine);
+                            editable.DisplayDeleteConfirmation("Are You Sure To Remove Material ");
+                        })
+                              .DataSource(dataSource => dataSource
+                                .Ajax()
+
+                                .PageSize(5)
+                                 .Model(model =>
+                                 {
+                                     model.Id(p => p.ExternalMaterialID);
+                                     model.Field(p => p.MaterialName).Editable(false);
+                                     model.Field(p => p.Type).Editable(false);
+
+                                     model.Field(p => p.UnitPrice).Editable(false);
+                                     model.Field(p => p.TotalAmount).Editable(false);
+                                     model.Field(p => p.Quantity).Editable(false);
+                                 }).Events(ev => ev
+                                                                                                        .Error("error_handler(\"ExternalMaterialApprovalgrid_#=JobOrderDetailID#\")")
+                                                                                                        .RequestStart("onRequestStart(\"ExternalMaterialApprovalgrid_#=JobOrderDetailID#\")")
+                                                                                                        .RequestEnd("onRequestEnd(\"ExternalMaterialApprovalgrid_#=JobOrderDetailID#\")"))
+                           .Create(update => update.Action("ExternalServiceSpare_Create", "ServiceSpare", new { sserviceID = "#=JobOrderDetailID#" }))
+                                       .Read(read => read.Action("ExternalServiceSpareByService", "ServiceSpare", new { RserviceID = "#=JobOrderDetailID#" }))
+                                                                          .Update(destroy => destroy.Action("ExternalServiceSpare_Approve", "ServiceSpare", new { cserviceID = "#=JobOrderDetailID#" }))
+
+                                                                                              )
+                            .Pageable()
+                            .ToClientTemplate())
+                    </text>
+                    );
+                }).ToClientTemplate()
+
+    )
+</script>
+
+
+
+<script id="ComponentDetailItemTemplate" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                                    .Name("tabStripComponentDetail_#=ExternalComponentDetailId#")
+                    .SelectedIndex(0)
+                    .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+                    .Items(items =>
+                    {
+
+                        items.Add().Text(" Spare Part ").Content(@<text>
+
+
+                            @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetMaintenance.ExternalMaterial>()
+                              .Name("ComponentServiceSparegrid_#=ExternalComponentDetailId#")
+                      .Columns(columns =>
+                      {
+                          columns.Bound(o => o.MaterialName).Title("SparePart Name").Width(120);
+                          columns.Bound(o => o.Quantity).EditorTemplateName("NumEditor").Width(100);
+                          columns.Bound(o => o.UnitPrice).EditorTemplateName("NumEditor").Width(100);
+                          columns.Bound(o => o.ApprovalStatuses).EditorTemplateName("ApprovalStatusBind").Width(100);
+                          columns.Bound(o => o.Remark).Width(100);
+                          columns.Bound(o => o.CreatedBy).Width(100);
+                          columns.Bound(c => c.DateCreated).Format("{0:yyyy-MM-dd}").Width(100);
+                          columns.Command(command =>
+                          {
+                              command.Edit().Text("Approve");
+
+                          }).Width(250);
+                      })
+                        .ToolBar(t => t.Create())
+                      .Editable(editable =>
+                      {
+                          editable.Mode(GridEditMode.InLine);
+                          editable.DisplayDeleteConfirmation("Are You Sure To Remove Spare Part");
+                      })
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+                          .PageSize(5)
+                          .Model(model =>
+                          {
+                              model.Id(p => p.ExternalMaterialID);
+                              model.Field(p => p.ApprovalStatuses).Editable(false);
+                              model.Field(p => p.CreatedBy).Editable(false);
+                              model.Field(p => p.DateCreated).Editable(false);
+                          }).Events(ev => ev
+                                      .Error("error_handler(\"ComponentServiceSparegrid_#=ExternalComponentDetailId#\")")
+                                      .RequestStart("onRequestStart(\"ComponentServiceSparegrid_#=ExternalComponentDetailId#\")")
+                                      .RequestEnd("onRequestEnd(\"ComponentServiceSparegrid_#=ExternalComponentDetailId#\")"))
+                                                   .Create(update => update.Action("ExternalServiceSpare_Create", "ServiceSpare", new { sserviceID = "#=ExternalComponentDetailId#" }))
+                                              .Read(read => read.Action("ExternalServiceSpareByService", "ServiceSpare", new { RserviceID = "#=ExternalComponentDetailId#" }))
+                                      .Destroy(destroy => destroy.Action("ServiceSpare_Destroy", "ServiceSpare"))
+                                  .Update(destroy => destroy.Action("ServiceSpare_Approve", "ServiceSpare", new { sserviceID = "#=ExternalComponentDetailId#" }))
+
+                      )
+                      .Pageable()
+                      .ToClientTemplate())
+
+                        </text>
+                        );
+
+
+                    }).ToClientTemplate()
+
+    )
+</script>
+
+
+<script id="ComponentDetailItemApproveTemplate" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                                    .Name("tabStripComponentDetailApproval_#=ExternalComponentDetailId#")
+                    .SelectedIndex(0)
+                    .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+                    .Items(items =>
+                    {
+
+                        items.Add().Text(" Spare Part ").Content(@<text>
+
+
+                            @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetMaintenance.ExternalMaterial>()
+                              .Name("ComponentServiceSpareApprovalgrid_#=ExternalComponentDetailId#")
+                      .Columns(columns =>
+                      {
+                          columns.Bound(o => o.MaterialName).Title("  Name").EditorTemplateName("SpareEditor").Width(120);
+                          columns.Bound(o => o.Quantity).EditorTemplateName("NumEditor").Width(100);
+                          columns.Bound(o => o.UnitPrice).EditorTemplateName("NumEditor").Width(100);
+                          columns.Bound(o => o.ApprovalStatuses).EditorTemplateName("ApprovalStatusBind").Width(100);
+                          columns.Bound(o => o.Remark).Width(100);
+                          columns.Bound(o => o.CreatedBy).Width(100);
+                          columns.Bound(c => c.DateCreated).Format("{0:yyyy-MM-dd}").Width(100);
+                          columns.Command(command =>
+                          {
+                              command.Edit().Text("Approve");
+
+                          }).Width(250);
+                      })
+
+                      .Editable(editable =>
+                      {
+                          editable.Mode(GridEditMode.InLine);
+                          editable.DisplayDeleteConfirmation("Are You Sure To Remove Spare Part");
+                      })
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+                          .PageSize(5)
+                          .Model(model =>
+                          {
+                              model.Id(p => p.ExternalMaterialID);
+                              model.Field(p => p.MaterialName).Editable(false);
+                              model.Field(p => p.Quantity).Editable(false);
+                              model.Field(p => p.UnitPrice).Editable(false);
+                              model.Field(p => p.CreatedBy).Editable(false);
+                              model.Field(p => p.DateCreated).Editable(false);
+                          }).Events(ev => ev
+                                              .Error("error_handler(\"ComponentServiceSpareApprovalgrid_#=ExternalComponentDetailId#\")")
+                                              .RequestStart("onRequestStart(\"ComponentServiceSpareApprovalgrid_#=ExternalComponentDetailId#\")")
+                                              .RequestEnd("onRequestEnd(\"ComponentServiceSpareApprovalgrid_#=ExternalComponentDetailId#\")"))
+                          .Create(update => update.Action("ServiceSpare_Create", "ServiceSpare", new { sserviceID = "#=ExternalComponentDetailId#" }))
+                                          .Read(read => read.Action("ExternalServiceSpareByService", "ServiceSpare", new { RserviceID = "#=ExternalComponentDetailId#" }))
+                          .Destroy(destroy => destroy.Action("ServiceSpare_Destroy", "ServiceSpare"))
+                                  .Update(destroy => destroy.Action("ServiceSpare_Approve", "ServiceSpare", new { sserviceID = "#=ExternalComponentDetailId#" }))
+
+                      )
+                      .Pageable()
+                      .ToClientTemplate())
+
+                        </text>
+                        );
+
+
+                    }).ToClientTemplate()
+
+    )
+</script>
+
+
+
+
+
+
+
+<script id="ComponentItemTemplate" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                                            .Name("tabStripComponentDetail_#=ExternalComponentId#")
+                    .SelectedIndex(0)
+                    .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+                    .Items(items =>
+                    {
+                        items.Add().Text(" Service ").Content(@<text>
+
+
+                            @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetMaintenance.ExternalComponentDetail>()
+                                      .Name("ComponentDetailgrid_#=ExternalComponentId#")
+                      .Columns(columns =>
+                      {
+                          columns.Bound(o => o.Name).Width(120);
+                          columns.Bound(o => o.Remark).Width(100);
+                          columns.Bound(o => o.ApprovalStatus).EditorTemplateName("ApprovalStatusBind").Width(100);
+                          columns.Bound(o => o.CreatedBy).Width(100);
+                          columns.Bound(c => c.DateCreated).Format("{0:yyyy-MM-dd}").Width(100);
+                          columns.Command(command =>
+                          {
+                              command.Edit();
+
+                          }).Width(250);
+                      })
+                      .ToolBar(t => t.Create())
+                      .Editable(editable =>
+                      {
+                          editable.Mode(GridEditMode.InLine);
+                          editable.DisplayDeleteConfirmation("Are You Sure To Remove ");
+                      }).ClientDetailTemplateId("ComponentDetailItemTemplate")
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+                          .PageSize(5)
+                          .Model(model =>
+                          {
+                              model.Id(p => p.ExternalComponentDetailId);
+                              model.Field(p => p.ApprovalStatus).Editable(false);
+                              model.Field(p => p.CreatedBy).Editable(false);
+                              model.Field(p => p.DateCreated).Editable(false);
+                          }).Events(ev => ev
+                                                              .Error("error_handler(\"ComponentDetailgrid_#=ExternalComponentId#\")")
+                                                              .RequestStart("onRequestStart(\"ComponentDetailgrid_#=ExternalComponentId#\")")
+                                                              .RequestEnd("onRequestEnd(\"ComponentDetailgrid_#=ExternalComponentId#\")"))
+                                                                        .Create(create => create.Action("ExternalComponentDetail_Create", "ExternalComponentDetail", new { Id = "#=ExternalComponentId#" }))
+                                                                                                            .Read(read => read.Action("ExternalComponentDetail_Read", "ExternalComponentDetail", new { Id = "#=ExternalComponentId#" }))
+                                                                                  .Update(update => update.Action("ExternalComponentDetail_Update", "ExternalComponentDetail"))
+                      )
+                      .Pageable()
+                      .ToClientTemplate())
+
+                        </text>
+                        );
+
+                        items.Add().Text(" Approval ").Content(@<text>
+
+
+                            @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetMaintenance.ExternalComponentDetail>()
+                                                      .Name("ComponentDetailApprovalgrid_#=ExternalComponentId#")
+                      .Columns(columns =>
+                      {
+                          columns.Bound(o => o.Name).Width(120);
+                          columns.Bound(o => o.Remark).Width(100);
+                          columns.Bound(o => o.ApprovalStatus).EditorTemplateName("ApprovalStatusBind").Width(100);
+                          columns.Bound(o => o.CreatedBy).Width(100);
+                          columns.Bound(c => c.DateCreated).Format("{0:yyyy-MM-dd}").Width(100);
+                          columns.Command(command =>
+                          {
+                              command.Edit().Text("Approve");
+
+                          }).Width(250);
+                      })
+
+                      .Editable(editable =>
+                      {
+                          editable.Mode(GridEditMode.InLine);
+                          editable.DisplayDeleteConfirmation("Are You Sure To Remove ");
+                      }).ClientDetailTemplateId("ComponentDetailItemApproveTemplate")
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+                          .PageSize(5)
+                          .Model(model =>
+                          {
+                              model.Id(p => p.ExternalComponentDetailId);
+                              model.Field(p => p.Name).Editable(false);
+                              model.Field(p => p.Remark).Editable(false);
+                              model.Field(p => p.CreatedBy).Editable(false);
+                              model.Field(p => p.DateCreated).Editable(false);
+                          }).Events(ev => ev
+                                                      .Error("error_handler(\"ComponentDetailApprovalgrid_#=ExternalComponentId#\")")
+                                                      .RequestStart("onRequestStart(\"ComponentDetailApprovalgrid_#=ExternalComponentId#\")")
+                                                      .RequestEnd("onRequestEnd(\"ComponentDetailApprovalgrid_#=ExternalComponentId#\")"))
+                                                                                                                    .Read(read => read.Action("ExternalComponentDetail_Read", "ExternalComponentDetail", new { Id = "#=ExternalComponentId#" }))
+                                                                                          .Update(update => update.Action("ExternalComponentDetail_Update", "ExternalComponentDetail"))
+
+                      )
+                      .Pageable()
+                      .ToClientTemplate())
+
+                        </text>
+                        );
+                    }).ToClientTemplate()
+
+    )
+</script>
+
+
+
+<script>
+    function dataBound() {
+        this.expandRow(this.tbody.find("tr.k-master-row").first());
+        var grid = this;
+
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+
+            if (dataItem.Status == "Closed" || dataItem.IsOnlineTransferred == true || IsTransfered == true) {
+                $(this).find(".k-grid-edit").remove();
+                $(this).find(".k-grid-delete").remove();
+            }
+        });
+    }
+
+</script>
+<script type="text/javascript">
+
+    var IsTransfered;
+    function servicedataBound() {
+        this.expandRow(this.tbody.find("tr.k-master-row").first());
+        var grid = this;
+
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+
+            if (dataItem.Status == "Completed" || IsTransfered == true ) {
+                $(this).find(".k-grid-edit").remove();
+                $(this).find(".k-grid-delete").remove();
+            }
+        });
+    }
+   
+    function ServiceApprovaldataBound() {
+        this.expandRow(this.tbody.find("tr.k-master-row").first());
+        var grid = this;
+
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+
+            if ( IsTransfered == true) {
+                $(this).find(".k-grid-edit").remove();
+                $(this).find(".k-grid-delete").remove();
+            }
+        });
+    }
+    function onDetailExpandUser(e) {
+        var masterRow = e.masterRow;
+
+        var masterGrid = $("#grid").data("kendoGrid");
+
+        var masterDataItem = masterGrid.dataItem(masterRow);
+
+        masterId = masterDataItem.JobOrderID;
+        IsTransfered = masterDataItem.IsOnlineTransferred;
+        var linegridName = "#JobOrderDetailgrid_" + masterId;
+
+        var firstValidationgridName = "#JobOrderApprovalgrid_" + masterId;
+        
+
+
+
+        if (IsTransfered == true) {
+
+                    $(linegridName).find(".k-toolbar").hide(); //hide toolbar
+                    $(".k-grid-top", linegridName).hide();
+                    $(".k-grid-edit", linegridName).hide();
+                    $(".k-grid-delete", linegridName).hide();
+
+
+                    $(".k-grid-top", firstValidationgridName).hide();
+                    $(".k-grid-edit", firstValidationgridName).hide();
+                    $(".k-grid-delete", firstValidationgridName).hide();
+
+                }
+
+ 
+
+    }
+
+
+    function SpareonDetailExpandUser(e) {
+        var masterRow = e.masterRow;
+
+        var masterGrid = $("#JobOrderDetailgrid_" + masterId).data("kendoGrid");
+
+        var masterDataItem = masterGrid.dataItem(masterRow);
+
+        var Id = masterDataItem.JobOrderDetailID;
+
+        var linegridName = "#ExternalMaterialgrid_" + Id;
+        var SecondlinegridName = "#InternalSparegrid_" + Id;
+        var SpareExternalMaterialgrid = "#SpareExternalMaterialgrid_" + Id;
+
+        if (IsTransfered == true) {
+            $(linegridName).find(".k-toolbar").hide(); //hide toolbar
+            $(".k-grid-top", linegridName).hide();
+            $(".k-grid-edit", linegridName).hide();
+            $(".k-grid-delete", linegridName).hide();
+
+            $(SecondlinegridName).find(".k-toolbar").hide(); //hide toolbar
+            $(".k-grid-top", SecondlinegridName).hide();
+            $(".k-grid-edit", SecondlinegridName).hide();
+            $(".k-grid-delete", SecondlinegridName).hide();
+
+            $(SpareExternalMaterialgrid).find(".k-toolbar").hide(); //hide toolbar
+            $(".k-grid-top", SpareExternalMaterialgrid).hide();
+            $(".k-grid-edit", SpareExternalMaterialgrid).hide();
+            $(".k-grid-delete", SpareExternalMaterialgrid).hide();
+
+
+        }
+    }
+
+
+
+        function SpareApprovalonDetailExpandUser(e) {
+            var masterRow = e.masterRow;
+
+            var masterGrid = $("#SuperVisorApprovalgrid_" + masterId).data("kendoGrid");
+
+            var masterDataItem = masterGrid.dataItem(masterRow);
+
+            var Id = masterDataItem.JobOrderDetailID;
+
+            var linegridName = "#ApproveServiceSparegrid_" + Id;
+            var SecondlinegridName = "#ExternalMaterialApprovalgrid_" + Id;
+
+
+            if (IsTransfered == true)
+            {
+                $(linegridName).find(".k-toolbar").hide(); //hide toolbar
+                $(".k-grid-top", linegridName).hide();
+                $(".k-grid-edit", linegridName).hide();
+                $(".k-grid-delete", linegridName).hide();
+
+                $(SecondlinegridName).find(".k-toolbar").hide(); //hide toolbar
+                $(".k-grid-top", SecondlinegridName).hide();
+                $(".k-grid-edit", SecondlinegridName).hide();
+                $(".k-grid-delete", SecondlinegridName).hide();
+
+
+            }
+
+
+
+        }
+
+
+</script>
+
+@(Html.Kendo().Window().Name("Details")
+    .Title(" Upload Picture ")
+    .Visible(false)
+    .Modal(true)
+    .Draggable(true)
+    .Width(500).Content(@<text><div class="form-group">
+
+            <form action="@Url.Action("UploadRecipt","OutSourceMaintenace")" method="post" enctype="multipart/form-data">
+
+                <input type="hidden" name="Id" id="UploadId">
+                <input type="file" class="form-control  " name="AttachmentFile" multiple />
+
+                <input type="submit" class="btn-success btn-block" value=" Upload " />
+
+            </form>
+        </div></text>))
+
+<script type="text/x-kendo-template" id="Rejectemplate">
+    <div id="details-container">
+        <div class="form-group">
+
+
+        </div>
+    </div>
+
+</script>
+
+
+
+
+
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 700px;
+    }
+</style> 

@@ -1,0 +1,95 @@
+﻿@model ExceedERP.Core.Domain.FleetManagement.FleetSalvageStore.SalvageStoreGoodReceiving
+
+
+
+
+<div class="demo-section k-content">
+
+    <form>
+
+
+
+        <div class="row">
+            <div class="col-md-1">
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.FleetsID)
+                        @(Html.Kendo().DropDownListFor(model => model.FleetsID).Name("FleetsID")
+                                          .DataTextField("PlateNumber")
+                                                  .DataValueField("FleetsID").OptionLabel(" Select ").Filter(FilterType.Contains)
+                                          .DataSource(d => d.Read(r => r.Action("FleetsDDBind", "EquipmentRegistration")).ServerFiltering(false)))
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @(Html.LabelFor(model => model.SparePartName))
+                        @(Html.Kendo().DropDownListFor(model => model.SparePartName).Name("SparePartName")
+                .DataTextField("Name")
+                                .DataValueField("Name").OptionLabel(" Select ").Filter(FilterType.Contains)
+                                .DataSource(d => d.Read(r => r.Action("SparePartDDBind", "SparePart")).ServerFiltering(false)))
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.VoucherNo)
+                    </div>
+                    <div>
+                        @Html.Kendo().NumericTextBoxFor(model => model.VoucherNo).Min(0)
+                        @Html.ValidationMessageFor(model => model.VoucherNo)
+                    </div>
+                </div>
+            </div>
+
+        </div>
+                    <div class="row">
+                        <div class="col-md-1">
+                        </div>
+                   
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <div class="k-label">
+                                    @Html.LabelFor(model => model.UnitPrice)
+                                </div>
+                                <div>
+                                    @Html.Kendo().NumericTextBoxFor(model => model.UnitPrice).Min(1)
+                                    @Html.ValidationMessageFor(model => model.UnitPrice)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <div class="k-label">
+                                    @Html.LabelFor(model => model.Quantity)
+                                </div>
+                                <div>
+                                    @Html.Kendo().NumericTextBoxFor(model => model.Quantity).Min(1)
+                                    @Html.ValidationMessageFor(model => model.Quantity)
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <div class="k-label">
+                                    @Html.LabelFor(model => model.Description)
+                                </div>
+                                <div>
+                                    @Html.Kendo().TextBoxFor(model => model.Description)
+                                    @Html.ValidationMessageFor(model => model.Description)
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+   
+    </form>
+</div>

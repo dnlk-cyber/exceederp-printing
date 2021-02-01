@@ -1,0 +1,240 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@using Kendo.Mvc.UI
+@using ExceedERP.Core.Domain.Production
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>  Custom Cleaning Service and Storage </legend>
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Production.CustomCleaningAndStorage>()
+                              .Name("customCleaningServiceGrid")
+                              .Columns(columns =>
+                              {
+                                  columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("Branches");
+                                  columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["FilscalYears"], "GlFiscalYearId", "Name").EditorTemplateName("YearSelector");
+                                  //columns.Bound(c => c.Remark);
+                                  columns.Command(command =>
+                                  {
+                                      command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                      command.Destroy().Text(Resources.ActionButton_Cancel);
+                                  }).Width(200);
+                              })
+                              .ToolBar(toolbar =>
+                              {
+                                  toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                              })
+                              .Editable(editable => editable.Mode(GridEditMode.InLine))
+                              .Selectable(selectable =>
+                              {
+                                  selectable.Mode(GridSelectionMode.Single);
+                                  selectable.Type(GridSelectionType.Row);
+                              })
+                              .Scrollable(h => h.Height(500))
+                              .Sortable(sortable =>
+                              {
+                                  sortable.SortMode(GridSortMode.SingleColumn);
+                              })
+                              .Filterable()
+                              .Pageable(pageable => pageable
+                                  .Input(true)
+                                  .Numeric(false)
+                                  .Refresh(true)
+                                  .PageSizes(true)
+                                  .ButtonCount(5))
+                              .DataSource(dataSource => dataSource
+                                  .Ajax()
+
+                                  .Events(events =>
+                                  {
+                                      events.Error("error_handler(\"customCleaningServiceGrid\")");
+                                      events.RequestStart("onRequestStart(\"customCleaningServiceGrid\")");
+                                      events.RequestEnd("onRequestEnd(\"customCleaningServiceGrid\")");
+                                  })
+                                  .Model(model =>
+                                  {
+                                      model.Id(f => f.CustomCleaningAndStorageId);
+                                  })
+
+                                  .Read(read => read.Action("Items_Read", "CustomCleaningAndStorage"))
+                                  .Create(create => create.Action("Item_Create", "CustomCleaningAndStorage"))
+                                  .Update(update => update.Action("Item_Update", "CustomCleaningAndStorage"))
+                                  .Destroy(destroy => destroy.Action("Item_Destroy", "CustomCleaningAndStorage"))
+                              ).ClientDetailTemplateId("custom_cleaning_items")
+)
+
+
+<script id="custom_cleaning_items" type="text/kendo-template">
+    @(Html.Kendo().TabStrip()
+        .Name("tab_#=CustomCleaningAndStorageId#")
+        .SelectedIndex(0)
+        .Items(items => {
+            items.Add().Text("").Content(
+                @<text>
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Production.CustomCleaningAndStorageItem>()
+                          .Name("items_#=CustomCleaningAndStorageId#")
+                          .Columns(columns =>
+                          {
+                              columns.ForeignKey(c => c.ItemCode, (IEnumerable)ViewData["Items"], "ItemCode", "Name").EditorTemplateName("Item");
+                              columns.Group(gr => {
+                                  gr.Title("Quantity").HeaderHtmlAttributes(new { style = "font-weight:bold; text-align:center;"});
+                                  gr.Columns(innerColumns =>
+                                  {
+                                      innerColumns.Bound(ic => ic.ExternalQuantity);
+                                      innerColumns.Bound(ic => ic.OnFarmQuantity);
+                                      innerColumns.Bound(ic => ic.TotalQuantity);
+                                  });
+                              });
+                              columns.Group(gr =>
+                              {
+                                  gr.Title("Unit Price").HeaderHtmlAttributes(new { style = "font-weight:bold; text-align:center;" });
+                                  gr.Columns(innerColumns =>
+                                  {
+                                      innerColumns.Bound(ic => ic.UnitPriceExternal);
+                                      innerColumns.Bound(ic => ic.UnitPriceOnFarm);
+
+                                  });
+                              });
+
+                              columns.Group(gr =>
+                              {
+                                  gr.Title("Total Value").HeaderHtmlAttributes(new { style = "font-weight:bold; text-align:center;" });
+                                  gr.Columns(innerColumns =>
+                                  {
+                                      innerColumns.Bound(ic => ic.ExternalAmount);
+                                      innerColumns.Bound(ic => ic.OnFarmAmount);
+                                      innerColumns.Bound(ic => ic.TotalAmount);
+                                  });
+                              });
+
+                              columns.Command(command =>
+                              {
+                                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                  command.Destroy().Text(Resources.ActionButton_Cancel);
+                              }).Width(200);
+                          })
+                          .ToolBar(toolbar =>
+                          {
+                              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                          })
+                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                          .Selectable(selectable =>
+                          {
+                              selectable.Mode(GridSelectionMode.Single);
+                              selectable.Type(GridSelectionType.Row);
+                          })
+                          .Scrollable(h => h.Height(500))
+                          .Sortable(sortable =>
+                          {
+                              sortable.SortMode(GridSortMode.SingleColumn);
+                          })
+                          //.Filterable()
+                          .Pageable(pageable => pageable
+                              .Input(true)
+                              .Numeric(false)
+                              .Refresh(true)
+                              .PageSizes(true)
+                              .ButtonCount(5))
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+
+                              .Events(events =>
+                              {
+                                  events.Error("error_handler(\"items_#=CustomCleaningAndStorageId#\")");
+                                  events.RequestStart("onRequestStart(\"items_#=CustomCleaningAndStorageId#\")");
+                                  events.RequestEnd("onRequestEnd(\"items_#=CustomCleaningAndStorageId#\")");
+                              })
+                              .Model(model =>
+                              {
+                                  model.Id(f => f.CustomCleaningAndStorageItemId);
+
+                                  model.Field(f => f.TotalQuantity).Editable(false);
+                                  model.Field(f => f.ExternalAmount).Editable(false);
+                                  model.Field(f => f.OnFarmAmount).Editable(false);
+                                  model.Field(f => f.TotalAmount).Editable(false);
+                              })
+
+                              .Read(read => read.Action("Items_Read", "CustomCleaningAndStorageItem", new { id = "#=CustomCleaningAndStorageId#" }))
+                              .Create(create => create.Action("Item_Create", "CustomCleaningAndStorageItem", new { id = "#=CustomCleaningAndStorageId#" }))
+                              .Update(update => update.Action("Item_Update", "CustomCleaningAndStorageItem"))
+                              .Destroy(destroy => destroy.Action("Item_Destroy", "CustomCleaningAndStorageItem"))
+                          ).ClientDetailTemplateId("monthly_items")
+                          .ToClientTemplate()
+                    )
+                </text>
+                );
+        })
+        .ToClientTemplate()
+    )
+</script>
+
+
+<script id="monthly_items" type="text/kendo-template">
+    @(Html.Kendo().TabStrip()
+        .Name("tab_str_#=CustomCleaningAndStorageItemId#")
+        .SelectedIndex(0)
+        .Items(items => {
+            items.Add().Text("").Content(
+                @<text>
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Production.CustomCleaningAndStorageItemPerMonth>()
+                          .Name("monthly_items_#=CustomCleaningAndStorageItemId#")
+                          .Columns(columns =>
+                          {
+                              columns.ForeignKey(c => c.ProductionPeriodId, (IEnumerable)ViewData["ProductionPeriods"], "ProductionPeriodId", "Name").EditorTemplateName("CustomCleaningAndStoragePeriodSelector");
+                              columns.Bound(c => c.Amount);
+
+                              columns.Command(command =>
+                              {
+                                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                  command.Destroy().Text(Resources.ActionButton_Cancel);
+                              }).Width(200);
+                          })
+                          .ToolBar(toolbar =>
+                          {
+                              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                          })
+                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                          .Selectable(selectable =>
+                          {
+                              selectable.Mode(GridSelectionMode.Single);
+                              selectable.Type(GridSelectionType.Row);
+                          })
+                          .Scrollable(h => h.Height(500))
+                          .Sortable(sortable =>
+                          {
+                              sortable.SortMode(GridSortMode.SingleColumn);
+                          })
+                          //.Filterable()
+                          .Pageable(pageable => pageable
+                              .Input(true)
+                              .Numeric(false)
+                              .Refresh(true)
+                              .PageSizes(true)
+                              .ButtonCount(5))
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+
+                              .Events(events =>
+                              {
+                                  events.Error("error_handler(\"monthly_items_#=CustomCleaningAndStorageItemId#\")");
+                                  events.RequestStart("onRequestStart(\"monthly_items_#=CustomCleaningAndStorageItemId#\")");
+                                  events.RequestEnd("onRequestEnd(\"monthly_items_#=CustomCleaningAndStorageItemId#\")");
+                              })
+                              .Model(model =>
+                              {
+                                  model.Id(f => f.CustomCleaningAndStorageItemPerMonthId);
+                              })
+
+                              .Read(read => read.Action("Items_Read", "CustomCleaningAndStorageItemPerMonth", new { itemId = "#=CustomCleaningAndStorageItemId#" }))
+                              .Create(create => create.Action("Item_Create", "CustomCleaningAndStorageItemPerMonth", new { itemId = "#=CustomCleaningAndStorageItemId#" }))
+                              .Update(update => update.Action("Item_Update", "CustomCleaningAndStorageItemPerMonth"))
+                              .Destroy(destroy => destroy.Action("Item_Destroy", "CustomCleaningAndStorageItemPerMonth"))
+                          )//.ClientDetailTemplateId("template_productionOrder_detail")
+                          .ToClientTemplate()
+                    )
+                </text>
+                );
+        })
+        .ToClientTemplate()
+    )
+</script>

@@ -1,0 +1,34 @@
+﻿@using ExceedERP.Core.Domain.Common.HRM
+@using ExceedERP.Core.Localization
+@(Html.Kendo().Window().Name("AttachmentWindow")
+        .Title(Resources.Templates)
+    .Visible(false)
+    .Modal(true)
+      .Content(@<text>
+
+        @(Html.Kendo().Grid<Attachment>()
+                  .Name("AttachmentGrid")
+          .Columns(columns =>
+          {
+              columns.Bound(c => c.Description); //.Title("File Name").ClientTemplate((@Html.ActionLink("#=Description#", "DownloadFile", "DownloadDocument", new { filename = "#=Description#" }, null).ToHtmlString()));
+              columns.Bound(c => c.FileType).ClientTemplate(Html.ActionLink("DownLoad", "/HRM/Rank/DownloadFile", new { area = "HRM", filename = "#=Description#" }).ToHtmlString());
+
+          })
+
+              .Scrollable()
+              .Selectable()
+              .DataSource(dataSource => dataSource
+                  .Ajax()
+                                           .Events(events => events.Error("error_handler(\"AttachmentGrid\")"))
+
+                  .Model(model => model.Id(p => p.AttachmentId))
+                                  .Read(read => read.Action("Attachments_Read", "Attachment", new { Area = "Common", attachmentReferenceType = "TEMPLATE", id = 0 }))
+
+
+              )
+        )
+
+    </text>)
+                .Draggable(true)
+                .Width(800)
+)

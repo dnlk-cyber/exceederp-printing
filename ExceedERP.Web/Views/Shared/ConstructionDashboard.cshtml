@@ -1,0 +1,593 @@
+﻿@using ExceedERP.Web.Controllers
+
+@{
+    ViewBag.Title = "Construction Dashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@*<link href="~/Content/dashboard.css" rel="stylesheet" />*@
+
+@if (true)
+{
+    <div class="dashboard">
+        <div class="row">
+            <div class="col-sm-7 col-lg-3 chartcontainer">
+                <div class="demo-section k-content wide">
+                    <canvas id="activSection" width="400" height="400"></canvas>
+                </div>
+            </div>
+            <div class="col-sm-7 col-lg-3 chartcontainer">
+
+                <div class="demo-section k-content wide">
+                    <canvas id="completedProjects" width="400" height="400"></canvas>
+                </div>
+            </div>
+        </div>
+        <hr />
+        <div class="row">
+            <div class="col-sm-12 col-lg-12 chartcontainer">
+                <div class="demo-section k-content wide">
+                    <canvas id="planVsAchivement" width="800" height="500"></canvas>
+                </div>
+            </div>
+        </div>
+        <hr />
+        <div class="row">
+            <div class="col-sm-12 col-lg-12 chartcontainer">
+                <div class="demo-section k-content wide">
+                    <canvas id="projectCostStatus" width="800" height="500"></canvas>
+                </div>
+            </div>
+        </div>
+        <hr />
+        <div class="row">
+            <div class="col-sm-12 col-lg-12 chartcontainer">
+                <div class="demo-section k-content wide">
+                    <canvas id="projectTimeStatus" width="800" height="500"></canvas>
+                </div>
+            </div>
+        </div>
+        <hr />
+        <div class="row">
+            <div class="col-sm-12 col-lg-12 chartcontainer">
+                <div class="demo-section k-content wide">
+                    <canvas id="projectPayment" width="800" height="500"></canvas>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+<script src="~/Scripts/Chart.bundle.js"></script>
+<script src="~/Scripts/Chart.PieceLabel.js"></script>
+
+<script>
+    window.chartColors = {
+        red: 'rgb(255, 99, 132)',
+        orange: 'rgb(255, 159, 64)',
+        yellow: 'rgb(255, 205, 86)',
+        green: 'rgb(75, 192, 192)',
+        blue: 'rgb(54, 162, 235)',
+        purple: 'rgb(153, 102, 255)',
+        grey: 'rgb(201, 203, 207)'
+    };
+
+    addActiveProjectsToChartArea();
+    addClosedProjectsToChartArea();
+    addProjectPlanVsAchivementStatus();
+    addProjectCostStatusToChart();
+    addProjectTimeStatusToChart();
+    addProjectPaymentToChart();
+
+    function addActiveProjectsToChartArea() {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetActiveProjectTypeData", "Dashboard", new {area = ""})',
+            success: function (result) {
+                //render
+                var ctx = document.getElementById("activSection").getContext('2d');
+                var myChart = new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: result.Types,
+                        datasets: [{
+                            label: 'Project Types',
+                            data: result.PCounts,
+                            backgroundColor: [
+                                window.chartColors.orange,
+                                window.chartColors.green,
+                                window.chartColors.yellow,
+                                window.chartColors.green,
+                                window.chartColors.blue
+                            ],
+                            borderColor: [
+                                window.chartColors.orange,
+                                window.chartColors.green,
+                                window.chartColors.yellow,
+                                window.chartColors.green,
+                                window.chartColors.blue
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+
+
+                    options: {
+
+                        title: {
+                            display: true,
+                            text: 'Active Projects'
+                        },
+                        gridLines: {
+                            display: false
+                        },
+                        pieceLabel: {
+                            render: 'value',
+                            fontColor: ['green', 'white', 'red'],
+                            precision: 2
+                        },
+                        legend: {
+                            position: 'bottom',
+                            fontSize: 8,
+                            fullWidth: true,
+                            padding: 6
+                        }
+                    }
+                });
+
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+
+    function addClosedProjectsToChartArea() {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetClosedProjectTypeData", "Dashboard", new {area = ""})',
+            success: function (result) {
+                //render
+                var ctx = document.getElementById("completedProjects").getContext('2d');
+                var myChart = new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: result.Types,
+                        datasets: [{
+                            label: 'Project Types',
+                            data: result.PCounts,
+                            backgroundColor: [
+                                window.chartColors.orange,
+                                window.chartColors.green,
+                                window.chartColors.yellow,
+                                window.chartColors.green,
+                                window.chartColors.blue
+                            ],
+                            borderColor: [
+                                window.chartColors.orange,
+                                window.chartColors.green,
+                                window.chartColors.yellow,
+                                window.chartColors.green,
+                                window.chartColors.blue
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+
+                    options: {
+
+                        title: {
+                            display: true,
+                            text: 'Closed Projects'
+                        },
+                        gridLines: {
+                            display: false
+                        },
+                        pieceLabel: {
+                            render: 'value',
+                            fontColor: ['green', 'white', 'red'],
+                            precision: 2
+                        },
+                        legend: {
+                            position: 'bottom',
+                            fontSize: 8,
+                            fullWidth: true,
+                            padding: 6
+                        }
+                    }
+                });
+
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+    function addProjectPlanVsAchivementStatus() {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetProjectPlanVsAchivementStatus", "Dashboard", new {area = ""})',
+            success: function (result) {
+                //render
+                var ctx = document.getElementById("planVsAchivement").getContext('2d');
+                ctx.Height = 1000;
+                var myChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: result.Labels,
+                        datasets: [
+                        {
+                            type: 'line',
+                            label: 'Variation',
+                            borderColor: window.chartColors.yellow,
+                            borderWidth: 2,
+                            fill: false,
+                            data: result.VariationCost
+                        },
+                          {
+                              type: 'bar',
+                              label: 'Plan',
+                              backgroundColor: window.chartColors.blue,
+                              data: result.PlannedCost,
+                              borderColor: 'white',
+                              borderWidth: 2
+                          }, {
+                              type: 'bar',
+                              label: 'Actual',
+                              backgroundColor: window.chartColors.green,
+                              data: result.ActualCost,
+                              borderColor: 'white',
+                              borderWidth: 2
+                          }]
+
+                    },
+
+
+                    options: {
+
+                        title: {
+                            display: true,
+                            text: 'Planned Vs. Actual Project Costs'
+                        },
+                        gridLines: {
+                            display: false
+                        },
+                        pieceLabel: {
+                            render: 'value',
+                            fontColor: ['green', 'white', 'black'],
+                            precision: 2
+                        },
+                        legend: {
+                            position: 'bottom',
+                            fontSize: 8,
+                            fullWidth: true,
+                            padding: 6,
+                            labels: {
+                                boxWidth: 15
+                            }
+                        },
+                        scales: {
+                            xAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Projects'
+                                },
+                                barPercentage: 0.4
+                            }],
+                            yAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Amount (ETH Birr)'
+                                },
+                                //ticks: {
+
+                                //    // forces step size to be 5 units
+                                //    stepSize: 1000
+                                //}
+                            }]
+                        },
+                        maintainAspectRatio: false
+
+                    }
+                });
+
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+
+    function addProjectCostStatusToChart() {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetProjectCostStatusData", "Dashboard", new {area = ""})',
+            success: function (result) {
+                //render
+                var ctx = document.getElementById("projectCostStatus").getContext('2d');
+                ctx.Height = 500;
+                var myChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: result.Labels,
+                        datasets: [
+                        {
+                            type: 'line',
+                            label: 'Remaining Amnt.',
+                            borderColor: window.chartColors.yellow,
+                            borderWidth: 2,
+                            fill: false,
+                            data: result.RemainingAmountData
+                        },
+                          {
+                              type: 'bar',
+                              label: 'Contract Amount',
+                              backgroundColor: window.chartColors.blue,
+                              data: result.ContractAmountData,
+                              borderColor: 'white',
+                              borderWidth: 2
+                          }, {
+                              type: 'bar',
+                              label: 'Cost to Date',
+                              backgroundColor: window.chartColors.green,
+                              data: result.ToDateAmountData,
+                              borderColor: 'white',
+                              borderWidth: 2
+                          }]
+
+                    },
+
+
+                    options: {
+
+                        title: {
+                            display: true,
+                            text: 'Cost Status'
+                        },
+                        gridLines: {
+                            display: false
+                        },
+                        pieceLabel: {
+                            render: 'value',
+                            fontColor: ['green', 'white', 'black'],
+                            precision: 2
+                        },
+                        legend: {
+                            position: 'bottom',
+                            fontSize: 8,
+                            fullWidth: true,
+                            padding: 6,
+                            labels: {
+                                boxWidth: 15
+                            }
+                        },
+                        scales: {
+                            xAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Projects'
+                                },
+                                barPercentage: 0.4
+                            }],
+                            yAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Amount (ETH Birr)'
+                                },
+                                //ticks: {
+
+                                //    // forces step size to be 5 units
+                                //    stepSize: 1000
+                                //}
+                            }]
+                        },
+                        maintainAspectRatio: false
+
+                    }
+                });
+
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+
+    function addProjectTimeStatusToChart() {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetProjectTimeStatusData", "Dashboard", new {area = ""})',
+            success: function (result) {
+                //render
+                var ctx = document.getElementById("projectTimeStatus").getContext('2d');
+                ctx.Height = 500;
+                var myChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: result.Labels,
+                        datasets: [
+                        {
+                            type: 'line',
+                            label: 'Remaining',
+                            borderColor: window.chartColors.yellow,
+                            borderWidth: 2,
+                            fill: false,
+                            data: result.RemainingTimeData
+                        },
+                          {
+                              type: 'bar',
+                              label: 'Total Project Time',
+                              backgroundColor: window.chartColors.blue,
+                              data: result.TotalContractTimeData,
+                              borderColor: 'white',
+                              borderWidth: 2
+                          }, {
+                              type: 'bar',
+                              label: 'Time Elapsed',
+                              backgroundColor: window.chartColors.green,
+                              data: result.TimeElapsedData,
+                              borderColor: 'white',
+                              borderWidth: 2
+                          }]
+
+                    },
+
+
+                    options: {
+
+                        title: {
+                            display: true,
+                            text: 'Time Status'
+                        },
+                        gridLines: {
+                            display: false
+                        },
+                        pieceLabel: {
+                            render: 'value',
+                            fontColor: ['green', 'white', 'black'],
+                            precision: 2
+                        },
+                        legend: {
+                            position: 'bottom',
+                            fontSize: 8,
+                            fullWidth: true,
+                            padding: 6,
+                            labels: {
+                                boxWidth: 15
+                            }
+                        },
+                        scales: {
+                            xAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Projects'
+                                },
+                                barPercentage: 0.4
+                            }],
+                            yAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Time (days)'
+                                },
+                                //ticks: {
+
+                                //    // forces step size to be 5 units
+                                //    stepSize: 1000
+                                //}
+                            }]
+                        },
+                        maintainAspectRatio: false
+
+                    }
+                });
+
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+
+
+    function addProjectPaymentToChart() {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetProjectPaymentStatusData", "Dashboard", new {area = ""})',
+            success: function (result) {
+                //render
+                var ctx = document.getElementById("projectPayment").getContext('2d');
+                ctx.Height = 500;
+                var myChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: result.Labels,
+                        datasets: [
+                        {
+                            type: 'line',
+                            label: 'Remaining',
+                            borderColor: window.chartColors.yellow,
+                            borderWidth: 2,
+                            fill: false,
+                            data: result.RemainingAmountData
+                        },
+                          {
+                              type: 'bar',
+                              label: 'Total Project Amnt.',
+                              backgroundColor: window.chartColors.blue,
+                              data: result.TotalContractAmountData,
+                              borderColor: 'white',
+                              borderWidth: 2
+                          }, {
+                              type: 'bar',
+                              label: 'Payment to date',
+                              backgroundColor: window.chartColors.green,
+                              data: result.PaymentAmountTodateData,
+                              borderColor: 'white',
+                              borderWidth: 2
+                          }]
+
+                    },
+
+
+                    options: {
+
+                        title: {
+                            display: true,
+                            text: 'Project Payments'
+                        },
+                        gridLines: {
+                            display: false
+                        },
+                        pieceLabel: {
+                            render: 'value',
+                            fontColor: ['green', 'white', 'black'],
+                            precision: 2
+                        },
+                        legend: {
+                            position: 'bottom',
+                            fontSize: 8,
+                            fullWidth: true,
+                            padding: 6,
+                            labels: {
+                                boxWidth: 15
+                            }
+                        },
+                        scales: {
+                            xAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Projects'
+                                },
+                                barPercentage: 0.4
+                            }],
+                            yAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Amount (ETH Birr)'
+                                },
+                                //ticks: {
+
+                                //    // forces step size to be 5 units
+                                //    stepSize: 1000
+                                //}
+                            }]
+                        },
+                        maintainAspectRatio: false
+
+                    }
+                });
+
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+</script>

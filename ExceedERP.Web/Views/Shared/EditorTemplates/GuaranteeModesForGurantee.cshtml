@@ -1,0 +1,14 @@
+﻿@(Html.Kendo().DropDownListFor(m => m)
+                  .ValuePrimitive(true)
+                  .OptionLabel("Select Mode...")
+                          .DataTextField("GuaranteeMode")
+                                  .DataValueField("GuaranteeMode")
+                            .DataSource(dataSource =>
+                                    {
+                                        dataSource.Read(read => read.Action("GetGuaranteeRuleModes", "ProcurementDataProvider", new { area = "Procurement" }).Data("filterGuaranteeModes"))
+                                        .ServerFiltering(true);
+                                    })
+                                 //.CascadeFrom("ProcurementCategory")
+                                 .CascadeFrom("GuaranteeType")
+)
+@Html.ValidationMessageFor(m => m)

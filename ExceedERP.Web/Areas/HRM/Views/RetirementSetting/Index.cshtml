@@ -1,0 +1,74 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.HRM.EmployeeDetail
+@using ExceedERP.Core.Localization
+@{
+                /**/
+
+                Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<Legend>Retirement Setting</Legend>
+@(Html.Kendo().Grid<RetirementSetting>()
+          .Name("RetirementSettinggrid")
+          .Columns(columns =>
+          {
+              columns.Bound(c => c.RetireSetting).EditorTemplateName("Enum").Width(150);
+              columns.Bound(c => c.CurrentValue).Width(150);
+
+              columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit); command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+          })
+          .ToolBar(toolbar =>
+          {
+              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+          })
+          .Editable(editable => editable.Mode(GridEditMode.InLine))
+            .Scrollable(h => h.Height(500))
+                 .Groupable()
+                          .Sortable(sortable =>
+                          {
+                              sortable.SortMode(GridSortMode.SingleColumn);
+                          })
+              .Filterable()
+                 .Pageable(pageable => pageable
+                                            .Input(true)
+                                            .Numeric(false)
+                                            .Refresh(true)
+                                            .PageSizes(true)
+                                            .ButtonCount(5))
+          .DataSource(dataSource => dataSource
+              .Ajax()
+                  .Events(events =>
+                  {
+                      events.Error("error_handler(\"RetirementSettinggrid\")");
+                      events.RequestStart("onRequestStart(\"RetirementSettinggrid\")");
+                      events.RequestEnd("onRequestEnd(\"RetirementSettinggrid\")");
+                  })
+
+              .Model(model => model.Id(p => p.RetirementSettingId))
+              .Read(read => read.Action("RetirementSetting_Read", "RetirementSetting"))
+              .Create(create => create.Action("RetirementSetting_Create", "RetirementSetting"))
+              .Update(update => update.Action("RetirementSetting_Update", "RetirementSetting"))
+              .Destroy(destroy => destroy.Action("RetirementSetting_Destroy", "RetirementSetting"))
+          )
+)
+<script>
+    //function error_handler(e) {
+    //    if (e.errors) {
+    //        var message = "Errors:\n";
+    //        $.each(e.errors, function(key, value) {
+    //            if ('errors' in value) {
+    //                $.each(value.errors, function() {
+    //                    message += this + "\n";
+    //                });
+    //            }
+    //        });
+    //        alert(message);
+
+    //    }
+
+    //}
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+</script>

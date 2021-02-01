@@ -1,0 +1,26 @@
+﻿<legend>Beginning</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.Beginning>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.Reference);
+        columns.Bound(c => c.Period);
+        columns.Bound(c => c.Value);
+        columns.Bound(c => c.IsProvisional);
+        columns.Bound(c => c.Remark);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.BeginningID))
+          .Read(read => read.Action("Beginnings_Read", "Beginning"))
+          .Create(create => create.Action("Beginnings_Create", "Beginning"))
+          .Update(update => update.Action("Beginnings_Update", "Beginning"))
+          .Destroy(destroy => destroy.Action("Beginnings_Destroy", "Beginning"))
+      )
+)

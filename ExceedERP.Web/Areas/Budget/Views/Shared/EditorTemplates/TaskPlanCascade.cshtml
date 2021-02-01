@@ -1,0 +1,16 @@
+﻿ 
+
+@(Html.Kendo().DropDownListFor(model => model).HtmlAttributes(new { @class = "form-control" }).Name("TaskPlanId")
+                            .DataTextField("Text")
+                                        .DataValueField("Value").OptionLabel(" Select ") 
+                    .HtmlAttributes(new { style = "width:100%" })
+                    .DataSource(d =>
+                    {
+                        d.Read(r =>
+                        {
+                            r.Action("TaskPlanDDBind", "BudgetDataProvider").Data("filterPlan");
+                        })
+                      .ServerFiltering(true);
+                    })
+                       .AutoBind(false) 
+                           .CascadeFrom("GLChartOfAccountCostCenterId"))

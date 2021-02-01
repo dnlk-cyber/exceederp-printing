@@ -1,0 +1,65 @@
+﻿@model ExceedERP.Core.Domain.FleetManagement.FleetRegistration.EquipmentBatteryLog
+ 
+<legend>Battery Usage History</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetRegistration.EquipmentBatteryLog>()
+    .Name("grid")
+    .Columns(columns =>
+    {
+        columns.Bound(e => e.SerialNo).Width(100);
+        columns.Bound(e => e.Type).Width(100);
+        columns.Bound(e => e.Make).Width(100);
+           columns.Bound(e => e.Type).Width(100);
+        columns.Bound(e => e.Size).Width(100); 
+        columns.Bound(e => e.UnitPrice).Width(100);
+      columns.Bound(e => e.Name).Title("Plate No./ Tag No.").Width(100);
+        columns.Bound(e => e.IntialOdoMeter).Width(100);
+        columns.Bound(e => e.FinalOdoMeter).Width(100);
+        columns.Bound(e => e.Reason).Title("Diffrence").Width(120).ClientGroupFooterTemplate("Total: #=sum#");      
+        columns.Bound(e => e.Efficency).Width(100).ClientGroupFooterTemplate("Average: #=average#"); ;
+     
+
+
+    })    .ToolBar(toolbar =>
+      {
+          
+          toolbar.Excel();
+          toolbar.Pdf();
+      })
+        .HtmlAttributes(new { style = "height: 520px;" })
+                      .Pageable(pageable => pageable
+                                        .Input(true)
+                                        .Numeric(false)
+                                        .Refresh(true)
+                                        .PageSizes(true)
+                                        .ButtonCount(5))
+
+                            .Scrollable()
+                            .Sortable()
+                            .Filterable()
+                           
+                            .Scrollable(h => h.Height(500)) 
+         .DataSource(dataSource => dataSource
+        .Ajax()
+                .Aggregates(aggregates =>
+            {
+                aggregates.Add(p => p.Efficency).Average();
+    
+              aggregates.Add(p => p.Reason).Sum();
+            })
+                .Group(x => { x.Add(y => y.SerialNo); x.Add(y => y.Name); })
+        .ServerOperation(false)
+       
+        .Model(model =>
+              {
+                  model.Id(p => p.EquipmentBatteryLogId);
+              })
+                         .Events(ev => ev
+                                .Error("error_handler(\"grid\")")
+                                .RequestStart("onRequestStart(\"grid\")")
+                                .RequestEnd("onRequestEnd(\"grid\")"))
+                        .Read(read => read.Action("BatteryUsageHistory_Read", "BatteryUsageHistory")) 
+  )
+)
+
+
+ 

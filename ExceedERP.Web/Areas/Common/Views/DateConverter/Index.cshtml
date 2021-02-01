@@ -1,0 +1,139 @@
+﻿@model ExceedERP.Web.Areas.HRM.Controllers.Common.DateVM
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Date Convertor</h2>
+<br /><br />
+@*<h5>Ethiopian Date</h5>
+    @(Html.Kendo().TextBox().Name("EthioDate"))*@
+
+@*<select id="day">
+    <option disabled selected> Day</option>
+    <option>1</option>
+    <option>2</option>
+    <option>3</option>
+    <option>4</option>
+    <option>5</option>
+    <option>6</option>
+    <option>7</option>
+    <option>8</option>
+    <option>9</option>
+    <option>10</option>
+    <option>11</option>
+    <option>12</option>
+    <option>13</option>
+    <option>14</option>
+    <option>15</option>
+    <option>16</option>
+    <option>17</option>
+    <option>18</option>
+    <option>19</option>
+    <option>20</option>
+    <option>21</option>
+    <option>22</option>
+    <option>23</option>
+    <option>24</option>
+    <option>25</option>
+    <option>26</option>
+    <option>27</option>
+    <option>28</option>
+    <option>29</option>
+    <option>30</option>
+</select>
+<select id="month">
+    <option disabled selected> Month</option>
+    <option>1</option>
+    <option>2</option>
+    <option>3</option>
+    <option>4</option>
+    <option>5</option>
+    <option>6</option>
+    <option>7</option>
+    <option>8</option>
+    <option>9</option>
+    <option>10</option>
+    <option>11</option>
+    <option>12</option>
+</select>
+<select id="year">
+    <option disabled selected> Year</option>
+    @for (int i = 1900; i <= 2100; i++)
+    {
+        <option>@i</option>
+    }
+</select>*@
+
+
+<h5>Ethiopian Date</h5>
+@Html.TextBoxFor(model => model.EthiopianDate, htmlAttributes: new { disabled = "disabled", @class = "et-popup-picker" }) <img src="~/Scripts/etp/images/calendar-blue.gif" onclick="SelectDate(this)" />
+
+&nbsp;&nbsp;
+&nbsp;&nbsp;
+@(Html.Kendo().TextBox().Name("ConvertedGergorian").Enable(false))
+<br /><br />
+@(Html.Kendo().Button()
+                                                                        .Name("ConvertToGergorian")
+                                                                        .HtmlAttributes(new { type = "button", @class = "k-primary" })
+                                                                            .Events(e => e.Click("ConvertToGergorian"))
+                                                                           .Content("Convert To Gergorian"))
+
+<br /><br />
+<h5>Gergorian Date</h5>
+@(Html.Kendo().DatePicker().Name("GergorianDate"))
+&nbsp;&nbsp;
+&nbsp;&nbsp;
+@(Html.Kendo().TextBox().Name("ConvertedEthiopian").Enable(false))
+<br /><br />
+@(Html.Kendo().Button()
+                                                                        .Name("ConvertToEthiopian")
+                                                                        .HtmlAttributes(new { type = "button", @class = "k-primary" })
+                                                                          .Events(e => e.Click("ConvertToEthiopian"))
+                                                                           .Content("Convert To Ethiopian"))
+
+
+<script>
+          function ConvertToGergorian() {
+
+
+              //var day = $("#day").val();
+              //var month = $("#month").val();
+              //var year = $("#year").val();
+
+              var date = $("#EthiopianDate").val();
+        $.ajax({
+            url: '@Url.Action("ConvertToGergorian", "DateConvertor")',
+            //contentType: "application/json; charset=utf-8",
+            data: { date: date,},
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                r = result;
+                $("#ConvertedGergorian").val(r);
+            }
+
+        });
+
+    }
+</script>
+
+<script>
+          function ConvertToEthiopian() {
+
+              var date = $("#GergorianDate").val();
+
+              $.ajax({
+            url: '@Url.Action("ConvertToEthiopian", "DateConvertor")',
+            //contentType: "application/json; charset=utf-8",
+                  data: { date: date },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                r = result;
+                $("#ConvertedEthiopian").val(r);
+            }
+
+        });
+
+    }
+</script>

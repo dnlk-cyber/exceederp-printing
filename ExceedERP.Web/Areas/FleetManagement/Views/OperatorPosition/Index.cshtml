@@ -1,0 +1,53 @@
+﻿@{
+    ViewBag.Title = "Operator Position";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend> Operator Position</legend>
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetRegistration.OperatorPosition>()
+    .Name("grid")
+    .Columns(columns =>
+    {
+        columns.Bound(e => e.Name).Width(140);
+        columns.Bound(e => e.Description).Width(140);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
+
+    })
+        .ToolBar(commands => commands.Create())
+       .Editable(editable =>
+         {
+             editable.Mode(GridEditMode.InLine);
+             editable.DisplayDeleteConfirmation("Are You Sure To Remove Operator Position");
+         })
+        .HtmlAttributes(new { style = "height: 520px;" })
+                          .Pageable(pageable => pageable
+                                            .Input(true)
+                                            .Numeric(false)
+                                            .Refresh(true)
+                                            .PageSizes(true)
+                                            .ButtonCount(5))
+
+                                .Scrollable()
+                                .Sortable()
+                                .Filterable()
+                                .Scrollable(h => h.Height(500))
+         .DataSource(dataSource => dataSource
+        .Ajax()
+        .ServerOperation(false)
+                       .Model(model =>
+              {
+                  model.Id(p => p.OperatorPositionID);
+
+                  model.Field(p => p.OperatorPositionID).Editable(false);
+
+              }).Events(ev => ev
+                                            .Error("error_handler(\"grid\")")
+                                            .RequestStart("onRequestStart(\"grid\")")
+                                            .RequestEnd("onRequestEnd(\"grid\")"))
+                        .Create(update => update.Action("OperatorPosition_Create", "OperatorPosition"))
+                        .Read(read => read.Action("OperatorPosition_Read", "OperatorPosition"))
+                        .Update(update => update.Action("OperatorPosition_Update", "OperatorPosition"))
+                        .Destroy(update => update.Action("OperatorPosition_Destroy", "OperatorPosition"))
+  )
+)
+

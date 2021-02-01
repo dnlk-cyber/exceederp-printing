@@ -1,0 +1,41 @@
+﻿@using ExceedERP.Core.Domain.Procurement.Proforma
+
+@(Html.Kendo().Grid<ParticipatingSupplier>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.InventoryItem).Width(200);
+          columns.Bound(c => c.UPrice).Width(200);
+          columns.Bound(c => c.TPrice).Width(200);
+          columns.Bound(c => c.Supplier).Width(200);
+          columns.Bound(c => c.Representative).Width(200);
+          columns.Bound(c => c.Address).Width(200);
+          columns.Bound(c => c.Telephone).Width(200);
+          columns.Bound(c => c.ProformaSubmitionDate).Width(200);
+          columns.Bound(c => c.ProformaSubmitionTime).Width(200);
+          columns.Bound(c => c.Remark).Width(200);
+
+          columns.Bound(c => c.OrgBranchName).Width(200);
+          columns.Bound(c => c.DateCreated).Width(200);
+          columns.Bound(c => c.LastModified).Width(200);
+          columns.Bound(c => c.CreatedBy).Width(200);
+          columns.Bound(c => c.ModifiedBy).Width(200);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+                              toolbar.Excel();
+                              // toolbar.Pdf();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Pageable()
+      .Filterable()
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.ParticipatingSupplierID))
+          .Read(read => read.Action("ParticipatingSuppliers_Read", "ParticipatingSupplier"))
+          .Create(create => create.Action("ParticipatingSuppliers_Create", "ParticipatingSupplier"))
+          .Update(update => update.Action("ParticipatingSuppliers_Update", "ParticipatingSupplier"))
+          .Destroy(destroy => destroy.Action("ParticipatingSuppliers_Destroy", "ParticipatingSupplier"))
+      ))

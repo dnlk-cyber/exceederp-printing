@@ -1,0 +1,13 @@
+﻿@(Html.Kendo().TextBoxFor(model => model).HtmlAttributes(new { @class = "form-control", })
+                                .DataTextField("Name")
+                                    .DataValueField("Name")
+                       @*.DataSource(d =>
+                          {
+                              d.Read(r =>
+                                  {
+                                      r.Action("GetCustomerInvoiceBalanceDDBind", "CashSalesInvoice").Data("filterInvoice");
+                                  })
+                                  .ServerFiltering(true);
+                          })             .AutoBind(false)
+                                *@
+                                               )

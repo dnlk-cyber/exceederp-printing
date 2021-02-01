@@ -1,0 +1,19 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.HRM
+@using ExceedERP.Web.Areas.Construction
+@using ExceedERP.Core.Localization
+@(Html.Kendo().DropDownListFor(m => m)
+        .OptionLabel(Resources.Select)
+                                 .DataTextField("Abbreviation")
+                                    .DataValueField("UnitOfMeasurementId")
+                                        .BindTo((IEnumerable)ViewData["uom"])
+        //                             .DataSource(dataSource =>
+        //{
+        //    dataSource.Read(read => read.Action("GetUom", "DataProvider"))
+        //                      .ServerFiltering(true);
+        //})
+
+                                       .Filter("contains")
+          .MinLength(2)
+                         .ValuePrimitive(true)
+)

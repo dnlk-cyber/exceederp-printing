@@ -1,0 +1,29 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Inventory.ServiceRequisitionItem>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.Quantity);
+        columns.Bound(c => c.IsApproved);
+        columns.Bound(c => c.ItemSpecification);
+        columns.Bound(c => c.UoM);
+        columns.Bound(c => c.DateCreated);
+        columns.Bound(c => c.LastModified);
+        columns.Bound(c => c.CreatedBy);
+        columns.Bound(c => c.ModifiedBy);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.ServiceRequisitionItemId))
+          .Read(read => read.Action("ServiceRequisitionItems_Read", "ServiceRequisitionItem"))
+          .Create(create => create.Action("ServiceRequisitionItems_Create", "ServiceRequisitionItem"))
+          .Update(update => update.Action("ServiceRequisitionItems_Update", "ServiceRequisitionItem"))
+          .Destroy(destroy => destroy.Action("ServiceRequisitionItems_Destroy", "ServiceRequisitionItem"))
+      )
+)

@@ -1,0 +1,200 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@using ExceedERP.Helpers.Common
+@using ExceedERP.Web.Areas.APTS
+@using Kendo.Mvc.UI
+@model ExceedERP.Core.Domain.APTS.RequisitionModel20
+
+<div class="form">
+
+    <div class="row fullrow">
+        <div class="col-md-3 ro1">
+
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.DrugListsId, htmlAttributes: new { @class = "control-label col-md-8" })
+
+                @(Html.Kendo().DropDownListFor(model => model.DrugListsId)
+                  .OptionLabel(Resources.Select)
+                           .Filter("contains")
+                           .MinLength(2)
+                  .DataTextField("Description")
+                  .DataValueField("DrugListsId")
+                                  .DataSource(source =>
+                                  {
+
+                                      source.Read(read => read.Action("GetDrugLists", "RequisitionModel20"));
+
+
+                                  })
+                  // .BindTo((IEnumerable)ViewData["organization"])
+                  .ValuePrimitive(true)
+
+                )
+                @Html.ValidationMessageFor(model => model.DrugListsId, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.GlFiscalYearId, htmlAttributes: new { @class = "control-label col-md-8" })
+
+                @(Html.Kendo().DropDownListFor(model => model.GlFiscalYearId)
+              
+                           .Filter("contains")
+                            .OptionLabel(Resources.Select)
+                           .MinLength(2)
+                  .DataTextField("Name")
+                  .DataValueField("GlFiscalYearId")
+                                  .DataSource(source =>
+                                  {
+
+                                      source.Read(read => read.Action("GetFisicalYear", "RequisitionModel20"));
+
+
+                                  })
+                  // .BindTo((IEnumerable)ViewData["organization"])
+                  .ValuePrimitive(true)
+
+                )
+                @Html.ValidationMessageFor(model => model.GlFiscalYearId, "", new { @class = "text-danger" })
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.GLPeriodId, htmlAttributes: new { @class = "control-label col-md-8" })
+
+                @(Html.Kendo().DropDownListFor(model => model.GLPeriodId)
+                  .OptionLabel(Resources.Select)
+                           .Filter("contains")
+                           .MinLength(2)
+                  .DataTextField("Name")
+                  .DataValueField("GLPeriodId")
+                                  .DataSource(source =>
+                                  {
+
+                                      source.Read(read => read.Action("GetGlPeriod", "RequisitionModel20"));
+
+
+                                  })
+                  // .BindTo((IEnumerable)ViewData["organization"])
+                  .ValuePrimitive(true)
+
+                )
+                @Html.ValidationMessageFor(model => model.GLPeriodId, "", new { @class = "text-danger" })
+            </div>
+
+
+
+           
+
+        </div>
+
+        <div class="col-md-4 ro1">
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.BegStock, htmlAttributes: new { @class = "control-label col-md-8" })
+
+                <div class="col-md-6">
+                    @(Html.Kendo().TextBoxFor(model => model.BegStock)
+                                  .HtmlAttributes(new { style = "width:150px" })
+                    )
+                    @Html.ValidationMessageFor(model => model.BegStock, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+
+                @Html.LabelFor(model => model.ReceivedQty, htmlAttributes: new { @class = "control-label col-md-8" })
+
+                <div class="col-md-6">
+                    @(Html.Kendo().TextBoxFor(model => model.ReceivedQty)
+                                  .HtmlAttributes(new { style = "width:150px" })
+                    )
+                    @Html.ValidationMessageFor(model => model.ReceivedQty, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.Loss, htmlAttributes: new { @class = "control-label col-md-8" })
+
+                <div class="col-md-6">
+                    @(Html.Kendo().TextBoxFor(model => model.Loss)
+                                  .HtmlAttributes(new { style = "width:150px" })
+                    )
+                    @Html.ValidationMessageFor(model => model.Loss, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.EndStock, htmlAttributes: new { @class = "control-label col-md-8" })
+
+                <div class="col-md-6">
+                    @(Html.Kendo().TextBoxFor(model => model.EndStock)
+                                          .HtmlAttributes(new { style = "width:150px" })
+                    )
+                    @Html.ValidationMessageFor(model => model.EndStock, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+        </div>
+
+        <div class="col-md-3 ro1">
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.Unit, htmlAttributes: new { @class = "control-label col-md-8" })
+
+                @(Html.Kendo().DropDownListFor(model => model.Unit)
+                          .OptionLabel(Resources.Select)
+                                   .Filter("contains")
+                                   .MinLength(2)
+                          .DataTextField("Description")
+                          .DataValueField("UoMName")
+                                          .DataSource(source =>
+                                          {
+
+                                              source.Read(read => read.Action("GetUnits", "RequisitionModel20"));
+
+
+                                          })
+                          // .BindTo((IEnumerable)ViewData["organization"])
+                          .ValuePrimitive(true)
+
+                )
+                @Html.ValidationMessageFor(model => model.Unit, "", new { @class = "text-danger" })
+            </div>
+
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.QtyToBeApproved, htmlAttributes: new { @class = "control-label col-md-8" })
+
+                <div class="col-md-6">
+                    @(Html.Kendo().TextBoxFor(model => model.QtyToBeApproved)
+                                          .HtmlAttributes(new { style = "width:150px" })
+                    )
+                    @Html.ValidationMessageFor(model => model.QtyToBeApproved, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            @* @Html.LabelFor(model => model.RequestDate, htmlAttributes: new { @class = "control-label col-md-8" })
+        <div class="col-md-6">
+
+            @(Html.Kendo().DatePickerFor(model => model.RequestDate)
+                      .HtmlAttributes(new { style = "width:150px" })
+            //.Enable(false)
+            )
+            @Html.ValidationMessageFor(model => model.RequestDate, "", new { @class = "text-danger" })
+        </div>*@
+            @Html.LabelFor(model => model.RequestDateAm, htmlAttributes: new { @class = "control-label col-md-8" })
+            <div class="col-md-10">
+                @Html.TextBoxFor(model => model.RequestDateAm, htmlAttributes: new { disabled = "disabled", @class = "et-popup-picker", @style = "width: 120px", }) <img src="~/Scripts/etp/images/calendar-blue.gif" onclick="SelectDate(this)" />
+                @Html.ValidationMessageFor(model => model.RequestDateAm, "", new { @class = "text-danger" })
+            </div>
+
+
+        </div>
+
+
+
+
+    </div>
+
+</div>
+
+
+

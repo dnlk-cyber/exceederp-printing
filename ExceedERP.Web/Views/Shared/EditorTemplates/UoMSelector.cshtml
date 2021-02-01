@@ -1,0 +1,13 @@
+﻿@(Html.Kendo().DropDownListFor(m => m)
+                  .ValuePrimitive(true)
+                  .OptionLabel("Select UoMs...")
+                      .DataTextField("Name")
+                          .DataValueField("Code")
+                          .Filter("contains")
+                                .DataSource(dataSource =>
+                                {
+                                    dataSource.Read(read => read.Action("GetUoMs", "GlobalDataProvider", new { area = "Common" }))
+                                    .ServerFiltering(false);
+                                })
+)
+@Html.ValidationMessageFor(m => m)

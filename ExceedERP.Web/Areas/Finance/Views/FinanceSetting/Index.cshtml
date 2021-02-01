@@ -1,0 +1,51 @@
+﻿<legend>General Settings</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Finance.FinanceSetting>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.ProfitTaxRate).Width(90);
+          columns.Bound(c => c.RetainedEarningAccount).Width(150).EditorTemplateName("AccountCode");
+          columns.Bound(c => c.RetentionPercentage).Width(80);
+          columns.Bound(c => c.RetentionApAccount).Width(150).EditorTemplateName("AccountCode");
+          columns.Bound(c => c.RetentionArAccount).Width(150).EditorTemplateName("AccountCode");
+          columns.Bound(c => c.DiscountArAccount).Width(150).EditorTemplateName("AccountCode");
+          columns.Bound(c => c.BankServiceChargeExpense).Width(150).EditorTemplateName("AccountCode");
+          columns.Bound(c => c.ProfitTaxCalculatedRate).Hidden();
+
+          columns.Command(command => { command.Edit();  }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              if(ViewBag.Count==0)
+                              {toolbar.Create();
+                              }
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .HtmlAttributes(new { style = "height: 550px;" })
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(5))
+
+      .Scrollable()
+      .Sortable()
+      .Filterable()
+      .Groupable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(
+              model =>
+              {
+                  model.Id(p => p.FinanceSettingId);
+                  model.Field(p => p.CreatedBy).Editable(false);
+                  model.Field(p => p.ModifiedBy).Editable(false);
+                  model.Field(p => p.LastModified).Editable(false);
+                  model.Field(p => p.DateCreated).Editable(false);
+
+              })
+          .Read(read => read.Action("FinanceSettings_Read", "FinanceSetting"))
+          .Create(create => create.Action("FinanceSettings_Create", "FinanceSetting"))
+          .Update(update => update.Action("FinanceSettings_Update", "FinanceSetting"))
+          .Destroy(destroy => destroy.Action("FinanceSettings_Destroy", "FinanceSetting"))
+      ))

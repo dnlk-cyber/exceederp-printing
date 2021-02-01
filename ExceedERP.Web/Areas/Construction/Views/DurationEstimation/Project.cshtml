@@ -1,0 +1,932 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend><a href='/Construction/DurationEstimation/' title="Back To All Projects"><i class="fa fa-chevron-circle-left fa-1.5x"></i></a> &nbsp; &nbsp; Duration Estimation / @ViewBag.Project</legend>
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.GenericWorkItemPerProjectViewModel>()
+                          .Name("WorkItemGrid")
+                          .Columns(columns =>
+                          {
+                              columns.Bound(c => c.SubProjectTypeName).Hidden(true)
+                              .ClientGroupHeaderTemplate(
+                                  "#=value#"
+                                  );
+                              columns.Bound(c => c.StructureyType).Hidden(true)
+                              .ClientGroupHeaderTemplate(
+                                  "#=value#"
+                                  );
+                              columns.Bound(c => c.WorkCategory).Hidden(true)
+                              .ClientGroupHeaderTemplate(
+                                  "#=value#"
+                                  );
+                              columns.Bound(c => c.ItemName).Width(300).Title("Item Name");
+                              columns.Bound(c => c.UnitOfMeasurement).Width(50).Filterable(false).Title("UoM");
+                              columns.Bound(c => c.TotalQuantityOfWork).Width(80).Filterable(false).ClientTemplate(
+                                "# if (IsSubCategory) { #" +
+                                    "  " +
+                                    "# } else {#" +
+                                    "# if (TotalQuantityOfWork == 0) { #" +
+                                        " " +
+                                    " # } else {#" +
+                                        "#: kendo.toString( TotalQuantityOfWork, 'N4') #" +
+                                    "# }} #"
+                                );
+                              columns.Bound(c => c.ProductivityOfCrewPerDay).Width(80).Filterable(false).ClientTemplate(
+                               "# if (IsSubCategory) { #" +
+                                "  " +
+                                "# } else {#" +
+                                  "# if (ProductivityOfCrewPerDay == 0) { #" +
+                                      " " +
+                                  " # } else {#" +
+                                      "#: kendo.toString( ProductivityOfCrewPerDay, 'N4') #" +
+                                "# }} #"
+                                 );
+
+                              columns.Bound(c => c.DurationPerCrew).Filterable(false).Width(70).ClientTemplate(
+                                  "# if (IsSubCategory) { #" +
+                                    "  " +
+                                    "# } else {#" +
+                                      "# if (DurationPerCrew == 0) { #" +
+                                          " " +
+                                      " # } else {#" +
+                                          "#: kendo.toString( DurationPerCrew, 'N4') #" +
+                                    "# }} #"
+                                      );
+                              columns.Bound(c => c.NumberOfCrew).Filterable(false).Width(70).ClientTemplate(
+                                  "# if (IsSubCategory) { #" +
+                                    "  " +
+                                    "# } else {#" +
+                                      "# if (NumberOfCrew == 0) { #" +
+                                          " " +
+                                      " # } else {#" +
+                                          "#: kendo.toString( NumberOfCrew, 'N4') #" +
+                                    "# }} #"
+                                      );
+                              columns.Bound(c => c.EstimatedDuration).Filterable(false).Width(70).ClientTemplate(
+                                  "# if (IsSubCategory) { #" +
+                                    "  " +
+                                    "# } else {#" +
+                                      "# if (EstimatedDuration == 0) { #" +
+                                          " " +
+                                      " # } else {#" +
+                                          "#: kendo.toString( EstimatedDuration, 'N4') #" +
+                                    "# }} #"
+                                      );
+                              columns.Bound(c => c.ItemCode).Width(70);
+                              columns.Command(command =>
+                              {
+                                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                  //command.Destroy().Text(Resources.ActionButton_Cancel);
+                              }).Width(200);
+                          })
+                          .ToolBar(toolbar =>
+                          {
+                          toolbar.Template(
+                                            @<text>
+                                                <div class="toolbar row">
+                                                    @*<div class="col-md-2">*@
+                                                    <a class="k-button k-button-icontext btn btn-primary" id="fetchLatestButtn" onclick='return fetchLatestInformationFromEstimation(@ViewBag.ProjectId)' href='#'><span class="fa fa-refresh"></span>&nbsp;&nbsp;Fetch Latest & Update Durations</a>
+                                                    <a id="fetchLoadingIcon" hidden> <i class="fa fa-spinner fa-spin fa-2x fa-fw"></i></a>
+                                                     <a class="k-button k-button-icontext btn btn-primary" id="addEstimationToScheduleButton" onclick='return addEstimationDataToSchedule(@ViewBag.ProjectId)' href='#'><span class="fa fa-share"></span>&nbsp;&nbsp;Add Estimation Data to Schedule</a>
+                                                    <a id="copyLoadingIcon" hidden> <i class="fa fa-spinner fa-spin fa-2x fa-fw"></i></a>
+                                                    @*</div>*@
+                                                   
+                                                </div>
+                                            </text>);
+                          })
+                          .Filterable()
+                          .Scrollable(h => h.Height(700))
+                          .Sortable(sortable =>
+                          {
+                              sortable.SortMode(GridSortMode.SingleColumn);
+                          })
+                          .Events(ev => {
+                              ev.DataBound("onDataBound");
+                          })
+                          .Selectable(selectable =>
+                          {
+                              selectable.Mode(GridSelectionMode.Single);
+                              selectable.Type(GridSelectionType.Row);
+                          })
+                          .Pageable(pageable => pageable
+                              .Input(true)
+                              .Numeric(false)
+                              .Refresh(true)
+                              .PageSizes(true)
+                              .ButtonCount(5))
+                          //.Events(e => e.Edit("onEdit"))
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+                              .PageSize(50)
+                              .Sort(srt => {
+                                  srt.Add(f => f.ItemCode);
+                              })
+                              .Group(g =>
+                              {
+                                  g.Add(f => f.SubProjectTypeName);
+                                  g.Add(f => f.StructureyType);
+                                  g.Add(f => f.WorkCategory);
+                              })
+                              .Events(events =>
+                              {
+                                  events.Error("error_handler(\"WorkItemGrid\")");
+                                  events.RequestStart("onRequestStart(\"WorkItemGrid\")");
+                                  events.RequestEnd("onRequestEnd(\"WorkItemGrid\")");
+                              })
+
+                              .Model(model =>
+                              {
+                                  model.Id(p => p.Id);
+                                  model.Field(p => p.ItemName).Editable(false);
+                                  model.Field(p => p.TotalQuantityOfWork).Editable(false);
+                                  model.Field(p => p.UnitOfMeasurement).Editable(false);
+                                  model.Field(p => p.DurationPerCrew).Editable(false);
+                                  model.Field(p => p.EstimatedDuration).Editable(false);
+                                  model.Field(p => p.ItemCode).Editable(false);
+                                  model.Field(p => p.OverheadRate).Editable(false);
+                                  model.Field(p => p.OverheadRate).Editable(false);
+                                  model.Field(p => p.OverheadRate).Editable(false);
+                              }
+                              )
+                              .Read(read => read.Action("WorkItem_Read", "DurationEstimation").Data("getIdOfOpenedProject"))
+                          //.Create(create => create.Action("WorkItemPerProject_Create", "ProjectList"))
+                          .Update(update => update.Action("WorkItem_Update", "DurationEstimation"))
+                          //.Destroy(destroy => destroy.Action("WorkItem_Destroy", "ProjectEstimation"))
+                          ).ClientDetailTemplateId("workItem_detail")
+                          //.ToClientTemplate()
+                          )
+
+<script id="workItem_detail" type="text/kendo-tmpl">
+    #if(!IsSubCategory && !ContainsWorkItemAsInput){#
+    @(Html.Kendo().TabStrip()
+                          .Name("tabstrip_#=Id#")
+                          .SelectedIndex(0)
+                          .Items(items =>
+                          {
+                              items.Add().Text("Detail").Content(
+                                @<text>
+                                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.WorkItemDetailViewModel>()
+                                                .Name("detail__#=Id#")
+                                                .Columns(columns =>
+                                                {
+
+                                                            columns.Bound(c => c.Attribute).Title(" ").ClientTemplate("\\#=Attribute\\#: \\#=Value\\#");
+                                                        })
+
+                                                    .Pageable(pageable => pageable
+                                                        .Input(true)
+                                                        .Numeric(false)
+                                                        .Refresh(true)
+                                                        .PageSizes(true)
+                                                        .ButtonCount(5))
+                                                .DataSource(dataSource => dataSource
+                                                    .Ajax()
+                                                    .Events(events =>
+                                                    {
+                                                                events.Error("error_handler(\"detail__#=Id#\")");
+                                                                events.RequestStart("onRequestStart(\"detail__#=Id#\")");
+                                                                events.RequestEnd("onRequestEnd(\"detail__#=Id#\")");
+                                                            })
+                                                    .Model(model =>
+                                                    {
+                                                                model.Id(p => p.Id);
+                                                            })
+                                                    .Read(read => read.Action("SpecificWorkItemDetail_Read", "GenericWorkItemPerProject", new { workItemId = "#=Id#" }))
+                                                ).ToClientTemplate()
+                                    )
+                                </text>
+
+                                                );
+                                      items.Add().Text("Material Cost").Content(
+                            @<text>
+                                @(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.GenericProjectMaterial>()
+                                                      .Name("ProjectMaterial_#=Id#")
+                                                      .Columns(columns =>
+                                                      {
+                                                          columns.ForeignKey(c => c.ItemCategoryCode, (IEnumerable)ViewData["ItemCategorys"], "ItemCategoryCode", "Name").EditorTemplateName("ItemCategory").Width(200);
+                                                          columns.ForeignKey(c => c.ItemCode, (IEnumerable)ViewData["Items"], "ItemCode", "Name").EditorTemplateName("Item").Width(200);
+                                                          columns.Bound(c => c.Unit).Width(100);//, (IEnumerable)ViewData["Unit"], "LookupId", "Description").EditorTemplateName("Unit").Width(75);
+                                                          columns.Bound(c => c.Quantity).Width(75);
+                                                          columns.Bound(c => c.UnitPrice).Width(75).Format("{0:N2}");
+                                                          columns.Bound(c => c.TotalCost).Width(75)
+                                                            .ClientFooterTemplate("Total: \\#= kendo.toString(sum, 'N2')\\#")
+                                                                .ClientGroupFooterTemplate("Total: \\#= kendo.toString(sum, 'N2')\\#");
+                                                      })
+
+                                                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                      .Selectable(selectable =>
+                                                      {
+                                                          selectable.Mode(GridSelectionMode.Single);
+                                                          selectable.Type(GridSelectionType.Row);
+                                                      })
+                                                      .DataSource(dataSource => dataSource
+                                                          .Ajax()
+                                                          .Events(events =>
+                                                          {
+                                                              events.Error("error_handler(\"ProjectMaterial_#=Id#\")");
+                                                              events.RequestStart("onRequestStart(\"ProjectMaterial_#=Id#\")");
+                                                              events.RequestEnd("onRequestEnd(\"ProjectMaterial_#=Id#\")");
+
+                                                          })
+
+                                                          .Aggregates(aggregates =>
+                                                          {
+                                                              aggregates.Add(p => p.TotalCost).Sum();
+                                                              aggregates.Add(p => p.Quantity).Sum();
+                                                              aggregates.Add(p => p.UnitPrice).Sum();
+                                                          })
+                                                          .Model(model =>
+                                                          {
+                                                              model.Id(p => p.GenericProjectMaterialId);
+                                                              model.Field(p => p.TotalCost).Editable(false);
+                                                              model.Field(p => p.Unit).Editable(false);
+                                                              //model.Field(p => p.UnitPrice).Editable(false);
+                                                          })
+                                                          .Read(read => read.Action("ProjectMaterial_Read", "GenericProjectMaterial", new { id = "#=Id#" }))
+
+                                                      ).ToClientTemplate()
+                                )
+                            </text>
+                          );
+                          items.Add().Text("Labour Cost").Content(
+                @<text>
+
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.GenericProjectDirectLabour>()
+                                          .Name("Labourgrid_#=Id#")
+                                          .Columns(columns =>
+                                          {
+                                              columns.ForeignKey(c => c.ProjectEstimationIndexLabourId, (IEnumerable)ViewData["titles"], "ProjectEstimationIndexLabourId", "Title").EditorTemplateName("JobTitle").Width(150);
+                                              columns.Bound(c => c.Quantity).Title("No").Width(40);
+                                              columns.Bound(c => c.UnitFactory).Title("Unit Factor").Width(50);
+                                              columns.Bound(c => c.IndexedHourlySalary).Title("Indexed Hourly Cost").Width(80);
+                                              columns.Bound(c => c.TotalCost).Title("Hourly Cost").Width(125)
+                                      .ClientFooterTemplate("Total hrly Cost: \\#= kendo.toString(sum, 'N2')\\#")
+                                      .ClientGroupFooterTemplate("Total: \\#= kendo.toString(sum, 'N2')\\#");
+                                          })
+
+                                          .Selectable(selectable =>
+                                          {
+                                              selectable.Mode(GridSelectionMode.Single);
+                                              selectable.Type(GridSelectionType.Row);
+                                          })
+                                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                          .DataSource(dataSource => dataSource
+                                              .Ajax()
+                                              .Events(events =>
+                                              {
+                                                  events.Error("error_handler(\"Labourgrid_#=Id#\")");
+                                                  events.RequestStart("onRequestStart(\"Labourgrid_#=Id#\")");
+                                                  events.RequestEnd("onRequestEnd(\"Labourgrid_#=Id#\")");
+                                              })
+                                              .Aggregates(aggregates =>
+                                              {
+                                                  aggregates.Add(p => p.TotalCost).Sum();
+                                                  aggregates.Add(p => p.Quantity).Sum();
+                                                  aggregates.Add(p => p.DailyPay).Sum();
+                                              })
+                                              .Model(model =>
+                                              {
+                                                  model.Id(p => p.GenericProjectDirectLabourId);
+                                                  model.Field(p => p.TotalCost).Editable(false);
+                                                  //model.Field(p => p.IndexedHourlySalary).Editable(false);
+                                                  model.Field(p => p.DailyPay).Editable(false);
+                                              })
+                                              .Read(read => read.Action("ProjectDirectLabour_Read", "GenericProjectDirectLabour", new { workItemId = "#=Id#" }))
+                                          ).ToClientTemplate()
+                    )
+                </text>
+      );
+      items.Add().Text("Equipment Cost").Content(
+@<text>
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.GenericProjectEquipment>()
+                          .Name("Equipmentgrid_#=Id#")
+                          .Columns(columns =>
+                          {
+                              columns.ForeignKey(c => c.FleetsID, (IEnumerable)ViewData["Equipment"], "FleetsID", "EquipmentName").EditorTemplateName("Equipment").Width(220);//,
+                              columns.Bound(c => c.Quantity).Title("No").Width(60);
+                              columns.Bound(c => c.UnitFactory).Title("U.F.").Width(80);
+                              columns.Bound(c => c.RentalCost).Title("Hourly Rental").Width(120).Format("{0:N2}");
+                              columns.Bound(c => c.TotalCost).Title("Hourly Cost").Format("{0:N2}")
+                      .ClientFooterTemplate("Total hrly Cost : \\#= kendo.toString(sum, 'N2')\\#")
+                      .ClientGroupFooterTemplate("Total : \\#=sum\\#");
+                          })
+
+                          .Selectable(selectable =>
+                          {
+                              selectable.Mode(GridSelectionMode.Single);
+                              selectable.Type(GridSelectionType.Row);
+                          })
+                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+                              .Events(events =>
+                              {
+                                  events.Error("error_handler(\"Equipmentgrid_#=Id#\")");
+                                  events.RequestStart("onRequestStart(\"Equipmentgrid_#=Id#\")");
+                                  events.RequestEnd("onRequestEnd(\"Equipmentgrid_#=Id#\")");
+
+                              })
+
+                              .Aggregates(aggregates =>
+                              {
+                                  aggregates.Add(p => p.TotalCost).Sum();
+                                  aggregates.Add(p => p.Quantity).Sum();
+                                  aggregates.Add(p => p.RentalCost).Sum();
+                              })
+                              .Model(model =>
+                              {
+                                  model.Id(p => p.GenericProjectEquipmentId);
+                                  model.Field(p => p.TotalCost).Editable(false);
+                              }
+                              )
+                              .Read(read => read.Action("ProjectEquipment_Read", "GenericProjectEquipment", new { workItemId = "#=Id#" }))
+                          ).ToClientTemplate()
+    )
+</text>
+);
+
+}).ToClientTemplate())
+    # } else if(!IsSubCategory && ContainsWorkItemAsInput) {#
+    @(Html.Kendo().TabStrip()
+                      .Name("tabstrip_#=Id#")
+                      .SelectedIndex(0)
+                      .Items(items =>
+                      {
+                          items.Add().Text("Detail").Content(
+                            @<text>
+                                @(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.WorkItemDetailViewModel>()
+                                            .Name("detail__#=Id#")
+                                            .Columns(columns =>
+                                            {
+
+                                                    columns.Bound(c => c.Attribute).Title(" ").ClientTemplate("\\#=Attribute\\#: \\#=Value\\#");
+                                                })
+
+                                                .Pageable(pageable => pageable
+                                                    .Input(true)
+                                                    .Numeric(false)
+                                                    .Refresh(true)
+                                                    .PageSizes(true)
+                                                    .ButtonCount(5))
+                                            .DataSource(dataSource => dataSource
+                                                .Ajax()
+                                                .Events(events =>
+                                                {
+                                                        events.Error("error_handler(\"detail__#=Id#\")");
+                                                        events.RequestStart("onRequestStart(\"detail__#=Id#\")");
+                                                        events.RequestEnd("onRequestEnd(\"detail__#=Id#\")");
+                                                    })
+                                                .Model(model =>
+                                                {
+                                                        model.Id(p => p.Id);
+                                                    })
+                                                .Read(read => read.Action("SpecificWorkItemDetail_Read", "GenericWorkItemPerProject", new { workItemId = "#=Id#" }))
+                                            ).ToClientTemplate()
+                                )
+                            </text>
+
+                                        );
+                              items.Add().Text("Work Items").Content(
+                                            @<text>
+                                                @(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.GenericProjectCustomWorkItemDetail>()
+                                                               .Name("customWorkItemDetail_#=Id#")
+                                                               .Columns(columns =>
+                                                               {
+                                                                   columns.ForeignKey(c => c.ProjectEstimationWorkItemId, (IEnumerable)ViewData["WorkItems"], "ProjectEstimationWorkItemId", "ItemName").EditorTemplateName("TemplateWorkItems").Width(250);
+                                                                   columns.Bound(c => c.QuantityPerUnit).Format("{0:N4}").Width(100);
+                                                                   columns.Bound(c => c.UnitCost).Format("{0:N4}").Width(100);
+                                                                   columns.Bound(c => c.TotalCost).Width(100).Format("{0:N4}")
+                                                                                           .ClientFooterTemplate("Total: \\#= kendo.toString(sum, 'N4')\\#");
+
+                                                               })
+
+                                                               .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                               .Scrollable(h => h.Height(500))
+                                                               //.Groupable()
+                                                               .Sortable(sortable =>
+                                                               {
+                                                                   sortable.SortMode(GridSortMode.SingleColumn);
+                                                               })
+                                                               .Filterable()
+                                                               .Selectable(selectable =>
+                                                               {
+                                                                   selectable.Mode(GridSelectionMode.Single);
+                                                                   selectable.Type(GridSelectionType.Row);
+                                                               })
+                                                               .Pageable(pageable => pageable
+                                                                           .Input(true)
+                                                                           .Numeric(false)
+                                                                           .Refresh(true)
+                                                                           .PageSizes(true)
+                                                                           .ButtonCount(5))
+                                                               .DataSource(dataSource => dataSource
+                                                               .Ajax()
+
+                                                                   .Events(events =>
+                                                                   {
+                                                                       events.Error("error_handler(\"customWorkItemDetail_#=Id#\")");
+                                                                       events.RequestStart("onRequestStart(\"customWorkItemDetail_#=Id#\")");
+                                                                       events.RequestEnd("onRequestEnd(\"customWorkItemDetail_#=Id#\")");
+
+                                                                   })
+                                                                   .Aggregates(agg =>
+                                                                   {
+                                                                       agg.Add(f => f.TotalCost).Sum();
+                                                                   })
+                                                                   .Model(model =>
+                                                                   {
+                                                                       model.Id(p => p.GenericProjectCustomWorkItemDetailId);
+                                                                       model.Field(p => p.UnitCost).Editable(false);
+                                                                       model.Field(p => p.TotalCost).Editable(false);
+                                                                   })
+                                                                   .Read(read => read.Action("CustomWorkItemDetails_Read", "GenericProjectCustomWorkItemDetail", new { workItemId = "#=Id#" }))
+                                                               ).ToClientTemplate()
+                                                )
+                                            </text>
+                                                );
+                                  items.Add().Text("Material Cost").Content(
+                            @<text>
+                                @(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.GenericProjectMaterial>()
+                                                      .Name("ProjectMaterial_#=Id#")
+                                                      .Columns(columns =>
+                                                      {
+                                                          columns.ForeignKey(c => c.ItemCategoryCode, (IEnumerable)ViewData["ItemCategorys"], "ItemCategoryCode", "Name").EditorTemplateName("ItemCategory").Width(200);
+                                                          columns.ForeignKey(c => c.ItemCode, (IEnumerable)ViewData["Items"], "ItemCode", "Name").EditorTemplateName("Item").Width(200);
+                                                          columns.Bound(c => c.Unit).Width(100);//, (IEnumerable)ViewData["Unit"], "LookupId", "Description").EditorTemplateName("Unit").Width(75);
+                                                          columns.Bound(c => c.Quantity).Width(75);
+                                                          columns.Bound(c => c.UnitPrice).Width(75).Format("{0:N2}");
+                                                          columns.Bound(c => c.TotalCost).Width(75)
+                                                      .ClientFooterTemplate("Total: \\#= kendo.toString(sum, 'N2')\\#")
+                                                      .ClientGroupFooterTemplate("Total: \\#= kendo.toString(sum, 'N2')\\#");
+                                                      })
+                                                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                      .Selectable(selectable =>
+                                                      {
+                                                          selectable.Mode(GridSelectionMode.Single);
+                                                          selectable.Type(GridSelectionType.Row);
+                                                      })
+                                                      //.Scrollable(h => h.Height(500))
+                                                      //.Events(e => e.Change("OnChange"))
+                                                      .DataSource(dataSource => dataSource
+                                                          .Ajax()
+                                                          .Events(events =>
+                                                          {
+                                                              events.Error("error_handler(\"ProjectMaterial_#=Id#\")");
+                                                              events.RequestStart("onRequestStart(\"ProjectMaterial_#=Id#\")");
+                                                              events.RequestEnd("onRequestEnd(\"ProjectMaterial_#=Id#\")");
+
+                                                          })
+
+                                                          .Aggregates(aggregates =>
+                                                          {
+                                                              aggregates.Add(p => p.TotalCost).Sum();
+                                                              aggregates.Add(p => p.Quantity).Sum();
+                                                              aggregates.Add(p => p.UnitPrice).Sum();
+                                                          })
+                                                          .Model(model =>
+                                                          {
+                                                              model.Id(p => p.GenericProjectMaterialId);
+                                                              model.Field(p => p.TotalCost).Editable(false);
+                                                              model.Field(p => p.Unit).Editable(false);
+                                                          })
+                                                          .Read(read => read.Action("ProjectMaterial_Read", "GenericProjectMaterial", new { id = "#=Id#" }))
+                                                      ).ToClientTemplate()
+                                )
+                            </text>
+                          );
+                      items.Add().Text("Labour Cost").Content(
+                @<text>
+
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.GenericProjectDirectLabour>()
+                                          .Name("Labourgrid_#=Id#")
+                                          .Columns(columns =>
+                                          {
+                                              columns.ForeignKey(c => c.ProjectEstimationIndexLabourId, (IEnumerable)ViewData["titles"], "ProjectEstimationIndexLabourId", "Title").EditorTemplateName("JobTitle").Width(150);
+                                              columns.Bound(c => c.Quantity).Title("No").Width(40);
+                                              columns.Bound(c => c.UnitFactory).Title("Unit Factor").Width(50);
+                                              columns.Bound(c => c.IndexedHourlySalary).Title("Indexed Hourly Cost").Width(80);
+                                              columns.Bound(c => c.TotalCost).Title("Hourly Cost").Width(125)
+                                          .ClientFooterTemplate("Total hrly Cost: \\#= kendo.toString(sum, 'N2')\\#")
+                                          .ClientGroupFooterTemplate("Total: \\#= kendo.toString(sum, 'N2')\\#");
+                                          })
+                                          .Selectable(selectable =>
+                                          {
+                                              selectable.Mode(GridSelectionMode.Single);
+                                              selectable.Type(GridSelectionType.Row);
+                                          })
+                                          //.Events(e => e.Save("actionSave"))
+                                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                          //.Events(e => e.Change("OnChange"))
+                                          //.Scrollable(h => h.Height(500))
+                                          .DataSource(dataSource => dataSource
+                                              .Ajax()
+                                              .Events(events =>
+                                              {
+                                                  events.Error("error_handler(\"Labourgrid_#=Id#\")");
+                                                  events.RequestStart("onRequestStart(\"Labourgrid_#=Id#\")");
+                                                  events.RequestEnd("onRequestEnd(\"Labourgrid_#=Id#\")");
+                                              })
+                                              .Aggregates(aggregates =>
+                                              {
+                                                  aggregates.Add(p => p.TotalCost).Sum();
+                                                  aggregates.Add(p => p.Quantity).Sum();
+                                                  aggregates.Add(p => p.DailyPay).Sum();
+                                              })
+                                              .Model(model =>
+                                              {
+                                                  model.Id(p => p.GenericProjectDirectLabourId);
+                                                  model.Field(p => p.TotalCost).Editable(false);
+                                                  //model.Field(p => p.IndexedHourlySalary).Editable(false);
+                                                  model.Field(p => p.DailyPay).Editable(false);
+                                              })
+                                              .Read(read => read.Action("ProjectDirectLabour_Read", "GenericProjectDirectLabour", new { workItemId = "#=Id#" }))
+                                          ).ToClientTemplate()
+                    )
+                </text>
+      );
+  items.Add().Text("Equipment Cost").Content(
+@<text>
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.GenericProjectEquipment>()
+                          .Name("Equipmentgrid_#=Id#")
+                          .Columns(columns =>
+                          {
+                              columns.ForeignKey(c => c.FleetsID, (IEnumerable)ViewData["Equipment"], "FleetsID", "EquipmentName").EditorTemplateName("Equipment").Width(220);//,
+                              columns.Bound(c => c.Quantity).Title("No").Width(60);
+                              columns.Bound(c => c.UnitFactory).Title("U.F.").Width(80);
+                              columns.Bound(c => c.RentalCost).Title("Hourly Rental").Width(120).Format("{0:N2}");
+                              columns.Bound(c => c.TotalCost).Title("Hourly Cost").Format("{0:N2}")
+                          .ClientFooterTemplate("Total hrly Cost : \\#= kendo.toString(sum, 'N2')\\#")
+                          .ClientGroupFooterTemplate("Total : \\#=sum\\#");
+                          })
+                          .Selectable(selectable =>
+                          {
+                              selectable.Mode(GridSelectionMode.Single);
+                              selectable.Type(GridSelectionType.Row);
+                          })
+                          //.Events(e => e.Save("actionSave"))
+                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                          //.Events(e => e.Change("OnChange"))
+                          //.Scrollable(h => h.Height(500))
+
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+                              .Events(events =>
+                              {
+                                  events.Error("error_handler(\"Equipmentgrid_#=Id#\")");
+                                  events.RequestStart("onRequestStart(\"Equipmentgrid_#=Id#\")");
+                                  events.RequestEnd("onRequestEnd(\"Equipmentgrid_#=Id#\")");
+
+                              })
+
+                              .Aggregates(aggregates =>
+                              {
+                                  aggregates.Add(p => p.TotalCost).Sum();
+                                  aggregates.Add(p => p.Quantity).Sum();
+                                  aggregates.Add(p => p.RentalCost).Sum();
+                              })
+                              .Model(model =>
+                              {
+                                  model.Id(p => p.GenericProjectEquipmentId);
+                                  model.Field(p => p.TotalCost).Editable(false);
+                                  //model.Field(p => p.RentalCost).Editable(false);
+                              })
+                              .Read(read => read.Action("ProjectEquipment_Read", "GenericProjectEquipment", new { workItemId = "#=Id#" }))
+                          ).ToClientTemplate()
+    )
+</text>
+);
+
+}).ToClientTemplate())
+    #} else {#
+    @(Html.Kendo().TabStrip()
+                          .Name("tab_#=Id#")
+                          .SelectedIndex(0)
+                          .Items(items =>
+                          {
+                              items.Add().Text(" ").Content(
+                                @<text>
+                                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.GenericWorkItemPerProjectViewModel>()
+                                                    .Name("workItem_#=Id#")
+                                                    .Columns(columns =>
+                                                    {
+                                                        columns.Bound(c => c.ItemName).Width(200).Title("Item Name");
+                                                        columns.Bound(c => c.UnitOfMeasurement).Width(50).Title("UoM");
+                                                        columns.Bound(c => c.TotalQuantityOfWork).Width(70).ClientTemplate(
+                                                      "\\# if (IsSubCategory) { \\#" +
+                                                          "  " +
+                                                          "\\# } else {\\#" +
+                                                            "\\# if (TotalQuantityOfWork == 0) { \\#" +
+                                                                " " +
+                                                            " \\# } else {\\#" +
+                                                                "\\#: kendo.toString( TotalQuantityOfWork, 'N4') \\#" +
+                                                          "\\# }} \\#"
+                                                      );
+                                                        columns.Bound(c => c.ProductivityOfCrewPerDay).Width(80).Filterable(false).ClientTemplate(
+                                                         "\\# if (IsSubCategory) { \\#" +
+                                                          "  " +
+                                                          "\\# } else {\\#" +
+                                                            "\\# if (ProductivityOfCrewPerDay == 0) { \\#" +
+                                                                " " +
+                                                            " \\# } else {\\#" +
+                                                                "\\#: kendo.toString( ProductivityOfCrewPerDay, 'N4') \\#" +
+                                                          "\\# }} \\#"
+                                                           );
+
+                                                        columns.Bound(c => c.DurationPerCrew).Filterable(false).Width(70).ClientTemplate(
+                                                            "\\# if (IsSubCategory) { \\#" +
+                                                              "  " +
+                                                              "\\# } else {\\#" +
+                                                                "\\# if (DurationPerCrew == 0) { \\#" +
+                                                                    " " +
+                                                                " \\# } else {\\#" +
+                                                                    "\\#: kendo.toString( DurationPerCrew, 'N4') \\#" +
+                                                              "\\# }} \\#"
+                                                                );
+                                                        columns.Bound(c => c.NumberOfCrew).Filterable(false).Width(70).ClientTemplate(
+                                                            "\\# if (IsSubCategory) { \\#" +
+                                                              "  " +
+                                                              "\\# } else {\\#" +
+                                                                "\\# if (NumberOfCrew == 0) { \\#" +
+                                                                    " " +
+                                                                " \\# } else {\\#" +
+                                                                    "\\#: kendo.toString( NumberOfCrew, 'N4') \\#" +
+                                                              "\\# }} \\#"
+                                                                );
+                                                        columns.Bound(c => c.EstimatedDuration).Filterable(false).Width(70).ClientTemplate(
+                                                            "\\# if (IsSubCategory) { \\#" +
+                                                              "  " +
+                                                              "\\# } else {\\#" +
+                                                                "\\# if (EstimatedDuration == 0) { \\#" +
+                                                                    " " +
+                                                                " \\# } else {\\#" +
+                                                                    "\\#: kendo.toString( EstimatedDuration, 'N4') \\#" +
+                                                              "\\# }} \\#"
+                                                                );
+                                                        columns.Bound(c => c.ItemCode).Width(80);
+                                                        columns.Command(command =>
+                                                        {
+                                                            command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                                        }).Width(200);
+                                                    })
+
+                                                    .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                    .Scrollable(h => h.Height("auto"))
+                                                    .Sortable(sortable =>
+                                                    {
+                                                        sortable.SortMode(GridSortMode.SingleColumn);
+                                                    })
+                                                    .Selectable(selectable =>
+                                                    {
+                                                        selectable.Mode(GridSelectionMode.Single);
+                                                        selectable.Type(GridSelectionType.Row);
+                                                    })
+                                                    .Events(ev => {
+                                                        ev.DataBound("onDataBound");
+                                                    })
+                                                    .Pageable(pageable => pageable
+                                                                        .Input(true)
+                                                                        .Numeric(false)
+                                                                        .Refresh(true)
+                                                                        .PageSizes(true)
+                                                                        .ButtonCount(5))
+                                                    .DataSource(dataSource => dataSource
+                                                    .Ajax()
+                                                    .Sort(srt => {
+                                                        srt.Add(f => f.ItemCode);
+                                                    })
+                                                    .Events(events =>
+                                                    {
+                                                        events.Error("error_handler(\"workItem_#=Id#\")");
+                                                        events.RequestStart("onRequestStart(\"workItem_#=Id#\")");
+                                                        events.RequestEnd("onRequestEnd(\"workItem_#=Id#\")");
+
+                                                    })
+
+                                                    .Model(model =>
+                                                    {
+                                                        model.Id(p => p.Id);
+                                                        model.Field(p => p.TotalUnitCost).Editable(false);
+                                                        model.Field(p => p.ItemName).Editable(false);
+                                                        model.Field(p => p.TotalQuantityOfWork).Editable(false);
+                                                        model.Field(p => p.ItemCode).Editable(false);
+                                                        model.Field(p => p.DurationPerCrew).Editable(false);
+                                                        model.Field(p => p.UnitOfMeasurement).Editable(false);
+                                                        model.Field(p => p.EstimatedDuration).Editable(false);
+                                                    }
+                                                    )
+                                                    .Read(read => read.Action("WorkItemUnderWorkItem_Read", "DurationEstimation", new { parentWorkItemId = "#=Id#" }))
+                                                    .Update(update => update.Action("WorkItem_Update", "DurationEstimation"))
+
+                                                    ).ClientDetailTemplateId("workItem_detail")
+                                                    .ToClientTemplate()
+                                    )
+
+                                </text>
+                                                );
+
+                                  }).ToClientTemplate())
+    #}#
+</script>
+
+<script>
+    var selectedProjectId = 0;
+    $(document).ready(function () {
+        var url = window.location.href;
+
+        var parameterName = 'p';
+        //if (!url) url = window.location.href;
+        parameterName = parameterName.replace(/[\[\]]/g, '\\$&');
+        var regex = new RegExp('[?&]' + parameterName + '(=([^&#]*)|&|#|$)');
+        var results = regex.exec(url);
+        if (!results) projectType = null;
+        if (!results[2]) projectType = '';
+        var stringValue = decodeURIComponent(results[2].replace(/\+/g, ' '));
+        selectedProjectId = parseInt(stringValue);
+        var grid = $("#WorkItemGrid").data("kendoGrid");
+        grid.dataSource.read();
+    });
+    
+    function getIdOfOpenedProject() {
+        return {
+            currentProjectId: selectedProjectId
+        };
+    }
+
+
+    function fetchLatestInformationFromEstimation(id) {
+         var recordStatus = "";
+        // primary buttons
+        var btn1 = $("#fetchLatestButtn");
+        var btn2 = $("#addEstimationToScheduleButton");
+        btn1.attr('disabled', true);
+        btn2.hide();
+        // rotating buttons
+        var bt1 = $("#fetchLoadingIcon");
+        var bt2 = $("#copyLoadingIcon");
+        bt1.show();
+        bt2.hide();
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("UpdateDurationDataFromEstimation", "DurationEstimation", new { area = "Construction" })',
+            data: { targetProjectId: id},
+            cache: false,
+            success: function (result) {
+                // toastr.warnning(result.Message);
+                bt1.hide();
+                bt2.hide();
+                btn1.attr('disabled', false);
+                btn2.show();
+                alert(result.Message);
+                recordStatus = result.Status;
+                if (recordStatus === "Ok") {
+                    location.reload(true);
+                }
+            }, //end succ
+            error: function (result) {
+                bt1.hide();
+                bt2.hide();
+                alert(result.Message);
+            }
+        });
+    }
+    function addEstimationDataToSchedule(id) {
+        var recordStatus = "";
+        // primary buttons
+        var btn1 = $("#fetchLatestButtn");
+        var btn2 = $("#addEstimationToScheduleButton");
+        btn1.hide();
+        btn2.attr('disabled', true);
+        // rotating buttons
+        var bt1 = $("#fetchLoadingIcon");
+        var bt2 = $("#copyLoadingIcon");
+        bt1.hide();
+        bt2.show();
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("CopyEstimationDataToSchedule", "DurationEstimation", new { area = "Construction" })',
+            data: { targetProjectId: id},
+            cache: false,
+            success: function (result) {
+                bt1.hide();
+                bt2.hide();
+                btn2.attr('disabled', false);
+                btn1.show();
+                alert(result.Message);
+                recordStatus = result.Status;
+                if (recordStatus === "Ok") {
+                    location.reload(true);
+                }
+            }, //end succ
+            error: function (result) {
+                bt1.hide();
+                bt2.hide();
+                alert(result.Message);
+            }
+        });
+    }
+    function filterCategories() {
+        // 
+        // summary:
+        //      send the filtering text along with the parent widget's value
+        var dropdownlist = $("#ItemCode").data("kendoDropDownList");
+        var filterInput = dropdownlist.filterInput;
+        return {
+            ItemCategoryCode: $("#ItemCategoryCode").val(), filterString: filterInput.val()
+        };
+    }
+    function filterType() {
+        return {
+            EquipmentIdentityID: $("#EquipmentIdentityID").val()
+        };
+    }
+    function FilterAsset() {
+        return {
+            EquipmentTypeID: $("#EquipmentTypeID").val()
+        };
+    }
+    function Refresh() {
+        window.location.reload();
+    }
+
+    function detailedViewClicked(e) {
+        e.preventDefault();
+        window.location.href = "@Url.Action("Index", "ProjectEstimationDetail")";
+    }
+    function materialChanged(e) {
+        var itmCode = $('#ItemCode').val();
+        $.ajax({
+            url: '@Url.Action("GetUnitPrice", "ProjectMaterial", new {area = "Construction"})',
+            data: { itemCode: itmCode },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                $("#UnitPrice").val(result);
+                $("#UnitPrice").trigger("change");
+            }
+
+        });
+    }
+    function laborDropDownListChanged(e) {
+        var jobTitleId = $('#ProjectEstimationIndexLabourId').val();
+        $.ajax({
+            url: '@Url.Action("GetIndexedHourlyPayPerJobTitle", "ProjectDirectLabour", new {area = "Construction"})',
+            data: { id: jobTitleId },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                $("#IndexedHourlySalary").val(result);
+                $("#IndexedHourlySalary").trigger("change");
+            }
+
+        });
+    }
+    function equipmentDropDownList(e) {
+        var fleetId = $('#FleetsID').val();
+        $.ajax({
+            url: '@Url.Action("GetRentalRate", "ProjectEquipment", new {area = "Construction"})',
+            data: { id: fleetId },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                $("#RentalCost").val(result);
+                $("#RentalCost").trigger("change");
+            }
+
+        });
+    }
+
+    function onDataBound(e) {
+        var grid = this;
+        var gridRows = grid.tbody.find("tr");
+        //Selects all edit buttons
+        for (var i = 0; i < gridRows.length; i++) {
+            var row = $(gridRows[i]);
+            var dataItem = grid.dataItem(row);
+            //perform your custom check
+            if (dataItem.IsSubCategory === true) {
+                //hide buttons using jQuery
+                row.find(".k-grid-edit").hide();
+                //row.find(".k-grid-delete").hide();
+                row.addClass("subcategory-workitem-datacontainer-row");
+                //row.find(".k-grid-customAction").text('ይከፈት');
+            } else {
+
+                row.find(".k-grid-edit").show();
+                //row.find(".k-grid-delete").show();
+            }
+        }
+    }
+
+</script>
+<style>
+    .subcategory-workitem-datacontainer-row {
+        /*background-color: #aafeaa;*/
+        font-weight: bold;
+    }
+
+        .subcategory-workitem-datacontainer-row.k-alt {
+            /*background-color: #bff1b4;*/
+        }
+</style>

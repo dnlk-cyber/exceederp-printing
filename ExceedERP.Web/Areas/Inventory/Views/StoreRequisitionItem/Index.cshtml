@@ -1,0 +1,27 @@
+﻿@using ExceedERP.Core.Domain.Inventory
+
+@(Html.Kendo().Grid<StoreRequisitionItem>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.StoreRequisitionItemID);
+          columns.Bound(c => c.ItemCode);
+          columns.Bound(c => c.PartNo);
+          columns.Bound(c => c.RequestedQuantity);
+          columns.Bound(c => c.ApprovedQuantity);
+          columns.Bound(c => c.OrgBranchName);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.StoreRequisitionItemCode))
+          .Read(read => read.Action("StoreRequisitionItems_Read", "StoreRequisitionItem"))
+          .Create(create => create.Action("StoreRequisitionItems_Create", "StoreRequisitionItem"))
+          .Update(update => update.Action("StoreRequisitionItems_Update", "StoreRequisitionItem"))
+          .Destroy(destroy => destroy.Action("StoreRequisitionItems_Destroy", "StoreRequisitionItem"))
+      ))

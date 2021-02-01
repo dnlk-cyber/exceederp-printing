@@ -1,0 +1,374 @@
+﻿@using ExceedERP.Core.Domain.Finance.Report
+@using ExceedERP.Core.Domain.Finance.Report.GAAP
+<legend>Balance Sheet</legend>
+@(Html.Kendo().Grid<GaapBalanceSheet>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.GaapBalanceSheetId).Title("ID").Width(30);
+          columns.Bound(c => c.ReportType).Title("Type").Width(60);
+          columns.Command(command =>
+          {
+              if (ViewBag.Count > 2)
+              {
+                  return;
+              }
+              command.Edit(); command.Destroy();
+          }).Width(180);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .HtmlAttributes(new { style = "height: 550px;" })
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(20))
+      .Scrollable()
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .ClientDetailTemplateId("templates")
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Events(ev => ev
+              .Error("error_handler(\"grid\")")
+              .RequestStart("onRequestStart(\"grid\")")
+              .RequestEnd("onRequestEnd(\"grid\")"))
+          .Model(
+              model =>
+              {
+                  model.Id(p => p.GaapBalanceSheetId);
+                  model.Field(p => p.GaapBalanceSheetId).Editable(false);
+              })
+          .Read(read => read.Action("GaapBalanceSheets_Read", "GaapBalanceSheet"))
+          .Create(create => create.Action("GaapBalanceSheets_Create", "GaapBalanceSheet"))
+          .Update(update => update.Action("GaapBalanceSheets_Update", "GaapBalanceSheet"))
+          .Destroy(destroy => destroy.Action("GaapBalanceSheets_Destroy", "GaapBalanceSheet"))
+      ))
+
+
+<script id="templates" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+          .Name("GaapBalanceSheetAsset#=GaapBalanceSheetId#")
+          .SelectedIndex(0)
+          .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+          .Items(items =>
+          {
+              items.Add().Text("Asset").Content(@<text>
+                @(Html.Kendo().Grid<GaapBalanceSheetAsset>()
+                      .Name("GaapBalanceSheetAsset#=GaapBalanceSheetId#")
+                      .Columns(columns =>
+                      {
+                          columns.Bound(c => c.Category).Width(150);
+                          columns.Bound(c => c.Description).Width(300);
+                          columns.Bound(c => c.NoteNumber).Width(100);
+                          columns.Command(command =>
+                          {
+                              command.Edit();
+                              command.Destroy();
+                          });
+                      })
+                      .ToolBar(toolbar =>
+                      {
+                          toolbar.Create();
+                      })
+
+                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                      .HtmlAttributes(new { style = "height: 500px;" })
+                      .Scrollable()
+                      .Sortable()
+                      .ClientDetailTemplateId("assetTemplates")
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+                          .Model(
+                              model =>
+                              {
+                                  model.Id(p => p.GaapBalanceSheetAssetId);
+                              })
+                          .Events(ev => ev
+                              .Error("error_handler(\"GaapBalanceSheetAsset#=GaapBalanceSheetId#\")")
+                              .RequestStart("onRequestStart(\"GaapBalanceSheetAsset#=GaapBalanceSheetId#\")")
+                              .RequestEnd("onRequestEnd(\"GaapBalanceSheetAsset#=GaapBalanceSheetId#\")"))
+                          .Read(read => read.Action("GaapBalanceSheetAssets_Read", "GaapBalanceSheetAsset", new { id = "#=GaapBalanceSheetId#" }))
+                          .Create(create => create.Action("GaapBalanceSheetAssets_Create", "GaapBalanceSheetAsset", new { id = "#=GaapBalanceSheetId#" }))
+                          .Update(update => update.Action("GaapBalanceSheetAssets_Update", "GaapBalanceSheetAsset", new { id = "#=GaapBalanceSheetId#" }))
+                          .Destroy(destroy => destroy.Action("GaapBalanceSheetAssets_Destroy", "GaapBalanceSheetAsset"))
+                      )
+                      
+                      .ToClientTemplate())
+            </text>);
+
+               items.Add().Text("Liability").Content(@<text>
+                @(Html.Kendo().Grid<GaapBalanceSheetLiability>()
+                      .Name("GaapBalanceSheetLiability#=GaapBalanceSheetId#")
+                      .Columns(columns =>
+                      {
+                          columns.Bound(c => c.Category).Width(150);
+                          columns.Bound(c => c.Description).Width(300);
+                          columns.Bound(c => c.NoteNumber).Width(100);
+                          columns.Command(command =>
+                          {
+                              command.Edit();
+                              command.Destroy();
+                          });
+                      })
+                      .ToolBar(toolbar =>
+                      {
+                          toolbar.Create();
+                      })
+
+                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                      .HtmlAttributes(new { style = "height: 500px;" })
+                      .Scrollable()
+                      .Sortable()
+                      .ClientDetailTemplateId("liabilityTemplates")
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+                          .Model(
+                              model =>
+                              {
+                                  model.Id(p => p.GaapBalanceSheetLiabilityId);
+                              })
+                          .Events(ev => ev
+                              .Error("error_handler(\"GaapBalanceSheetLiability#=GaapBalanceSheetId#\")")
+                              .RequestStart("onRequestStart(\"GaapBalanceSheetLiability#=GaapBalanceSheetId#\")")
+                              .RequestEnd("onRequestEnd(\"GaapBalanceSheetLiability#=GaapBalanceSheetId#\")"))
+                          .Read(read => read.Action("GaapBalanceSheetLiabilitys_Read", "GaapBalanceSheetLiability", new { id = "#=GaapBalanceSheetId#" }))
+                          .Create(create => create.Action("GaapBalanceSheetLiabilitys_Create", "GaapBalanceSheetLiability", new { id = "#=GaapBalanceSheetId#" }))
+                          .Update(update => update.Action("GaapBalanceSheetLiabilitys_Update", "GaapBalanceSheetLiability", new { id = "#=GaapBalanceSheetId#" }))
+                          .Destroy(destroy => destroy.Action("GaapBalanceSheetLiabilitys_Destroy", "GaapBalanceSheetLiability"))
+                      )
+                      
+                      .ToClientTemplate())
+            </text>);
+
+                    items.Add().Text("Capital").Content(@<text>
+                @(Html.Kendo().Grid<GaapBalanceSheetCapital>()
+                      .Name("GaapBalanceSheetCapital#=GaapBalanceSheetId#")
+                      .Columns(columns =>
+                      {
+                          columns.Bound(c => c.Category).Width(150);
+                          columns.Bound(c => c.Description).Width(300);
+                          columns.Bound(c => c.NoteNumber).Width(100);
+                          columns.Command(command =>
+                          {
+                              command.Edit();
+                              command.Destroy();
+                          });
+                      })
+                      .ToolBar(toolbar =>
+                      {
+                          toolbar.Create();
+                      })
+
+                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                      .HtmlAttributes(new { style = "height: 500px;" })
+                      .Scrollable()
+                      .Sortable()
+                      .ClientDetailTemplateId("capitalTemplates")
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+                          .Model(
+                              model =>
+                              {
+                                  model.Id(p => p.GaapBalanceSheetCapitalId);
+                              })
+                          .Events(ev => ev
+                              .Error("error_handler(\"GaapBalanceSheetCapital#=GaapBalanceSheetId#\")")
+                              .RequestStart("onRequestStart(\"GaapBalanceSheetCapital#=GaapBalanceSheetId#\")")
+                              .RequestEnd("onRequestEnd(\"GaapBalanceSheetCapital#=GaapBalanceSheetId#\")"))
+                          .Read(read => read.Action("GaapBalanceSheetCapitals_Read", "GaapBalanceSheetCapital", new { id = "#=GaapBalanceSheetId#" }))
+                          .Create(create => create.Action("GaapBalanceSheetCapitals_Create", "GaapBalanceSheetCapital", new { id = "#=GaapBalanceSheetId#" }))
+                          .Update(update => update.Action("GaapBalanceSheetCapitals_Update", "GaapBalanceSheetCapital", new { id = "#=GaapBalanceSheetId#" }))
+                          .Destroy(destroy => destroy.Action("GaapBalanceSheetCapitals_Destroy", "GaapBalanceSheetCapital"))
+                      )
+                      
+                      .ToClientTemplate())
+            </text>);
+
+          })
+          .ToClientTemplate()
+    )
+
+</script>
+
+
+<script id="assetTemplates" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+          .Name("GaapBalanceSheetAssetRange#=GaapBalanceSheetAssetId#")
+          .SelectedIndex(0)
+          .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+          .Items(items =>
+          {
+              items.Add().Text("Account Ranges").Content(@<text>
+                @(Html.Kendo().Grid<GaapBalanceSheetAssetRange>()
+                      .Name("GaapBalanceSheetAssetRange#=GaapBalanceSheetAssetId#")
+                      .Columns(columns =>
+                      {
+                          columns.Bound(c => c.AccountFrom).EditorTemplateName("AccountCodeZZZ").Width(220);
+                          columns.Bound(c => c.AccountTo).EditorTemplateName("AccountCodeZZZ").Width(220);
+                          columns.Command(command =>
+                          {
+                              command.Edit();
+                              command.Destroy();
+                          });
+                      })
+                      .ToolBar(toolbar =>
+                      {
+                          toolbar.Create();
+                      })
+
+                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                      
+                      .Scrollable()
+                      .Sortable()
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+                          .Model(
+                              model =>
+                              {
+                                  model.Id(p => p.GaapBalanceSheetAssetRangeId);
+                              })
+                          .Events(events => events
+                              .Error("error_handler_one")
+                              .Sync("sync_handler"))
+                          .Read(read => read.Action("GaapBalanceSheetAssetRanges_Read", "GaapBalanceSheetAssetRange", new { id = "#=GaapBalanceSheetAssetId#" }))
+                          .Create(create => create.Action("GaapBalanceSheetAssetRanges_Create", "GaapBalanceSheetAssetRange", new { id = "#=GaapBalanceSheetAssetId#" }))
+                          .Update(update => update.Action("GaapBalanceSheetAssetRanges_Update", "GaapBalanceSheetAssetRange", new { id = "#=GaapBalanceSheetAssetId#" }))
+                          .Destroy(destroy => destroy.Action("GaapBalanceSheetAssetRanges_Destroy", "GaapBalanceSheetAssetRange"))
+                      )
+                      
+                      .ToClientTemplate())
+            </text>);
+
+          })
+
+          .ToClientTemplate()
+          )
+
+</script>
+
+<script id="liabilityTemplates" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+          .Name("GaapBalanceSheetLiabilityRange#=GaapBalanceSheetLiabilityId#")
+          .SelectedIndex(0)
+          .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+          .Items(items =>
+          {
+              items.Add().Text("Account Ranges").Content(@<text>
+                @(Html.Kendo().Grid<GaapBalanceSheetLiabilityRange>()
+                      .Name("GaapBalanceSheetLiabilityRange#=GaapBalanceSheetLiabilityId#")
+                      .Columns(columns =>
+                      {
+                          columns.Bound(c => c.AccountFrom).EditorTemplateName("AccountCodeZZZ").Width(220);
+                          columns.Bound(c => c.AccountTo).EditorTemplateName("AccountCodeZZZ").Width(220);
+                          columns.Command(command =>
+                          {
+                              command.Edit();
+                              command.Destroy();
+                          });
+                      })
+                      .ToolBar(toolbar =>
+                      {
+                          toolbar.Create();
+                      })
+
+                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                      
+                      .Scrollable()
+                      .Sortable()
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+                          .Model(
+                              model =>
+                              {
+                                  model.Id(p => p.GaapBalanceSheetLiabilityRangeId);
+                              })
+                          .Events(events => events
+                              .Error("error_handler_one")
+                              .Sync("sync_handler"))
+                          .Read(read => read.Action("GaapBalanceSheetLiabilityRanges_Read", "GaapBalanceSheetLiabilityRange", new { id = "#=GaapBalanceSheetLiabilityId#" }))
+                          .Create(create => create.Action("GaapBalanceSheetLiabilityRanges_Create", "GaapBalanceSheetLiabilityRange", new { id = "#=GaapBalanceSheetLiabilityId#" }))
+                          .Update(update => update.Action("GaapBalanceSheetLiabilityRanges_Update", "GaapBalanceSheetLiabilityRange", new { id = "#=GaapBalanceSheetLiabilityId#" }))
+                          .Destroy(destroy => destroy.Action("GaapBalanceSheetLiabilityRanges_Destroy", "GaapBalanceSheetLiabilityRange"))
+                      )
+                      
+                      .ToClientTemplate())
+            </text>);
+
+          })
+
+          .ToClientTemplate()
+          )
+
+</script>
+
+<script id="capitalTemplates" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+           .Name("GaapBalanceSheetCapitalRange#=GaapBalanceSheetCapitalId#")
+          .SelectedIndex(0)
+          .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+          .Items(items =>
+          {
+              items.Add().Text("Account Ranges").Content(@<text>
+                @(Html.Kendo().Grid<GaapBalanceSheetCapitalRange>()
+                      .Name("GaapBalanceSheetCapitalRange#=GaapBalanceSheetCapitalId#")
+                      .Columns(columns =>
+                      {
+                          columns.Bound(c => c.AccountFrom).EditorTemplateName("AccountCodeZZZ").Width(220);
+                          columns.Bound(c => c.AccountTo).EditorTemplateName("AccountCodeZZZ").Width(220);
+                          columns.Command(command =>
+                          {
+                              command.Edit();
+                              command.Destroy();
+                          });
+                      })
+                      .ToolBar(toolbar =>
+                      {
+                          toolbar.Create();
+                      })
+
+                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                      
+                      .Scrollable()
+                      .Sortable()
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+                          .Model(
+                              model =>
+                              {
+                                  model.Id(p => p.GaapBalanceSheetCapitalRangeId);
+                              })
+                          .Events(events => events
+                              .Error("error_handler_one")
+                              .Sync("sync_handler"))
+                          .Read(read => read.Action("GaapBalanceSheetCapitalRanges_Read", "GaapBalanceSheetCapitalRange", new { id = "#=GaapBalanceSheetCapitalId#" }))
+                          .Create(create => create.Action("GaapBalanceSheetCapitalRanges_Create", "GaapBalanceSheetCapitalRange", new { id = "#=GaapBalanceSheetCapitalId#" }))
+                          .Update(update => update.Action("GaapBalanceSheetCapitalRanges_Update", "GaapBalanceSheetCapitalRange", new { id = "#=GaapBalanceSheetCapitalId#" }))
+                          .Destroy(destroy => destroy.Action("GaapBalanceSheetCapitalRanges_Destroy", "GaapBalanceSheetCapitalRange"))
+                      )
+                      
+                      .ToClientTemplate())
+            </text>);
+
+          })
+
+          .ToClientTemplate()
+          )
+
+</script>
+<script>
+   
+</script>
+

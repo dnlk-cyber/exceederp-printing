@@ -1,0 +1,1113 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{534BB567-A6C4-4750-94BE-357D96033BB1}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>ExceedERP.Core</RootNamespace>
+    <AssemblyName>ExceedERP.Core</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <SccProjectName>
+    </SccProjectName>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccProvider>
+    </SccProvider>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="FoolproofValidation">
+      <HintPath>..\ExceedERP.Web\Bin\FoolproofValidation.dll</HintPath>
+    </Reference>
+    <Reference Include="Kendo.Mvc, Version=2018.3.911.545, Culture=neutral, PublicKeyToken=121fae78165ba3d4, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\KENDOUIMVC\2018.3.911.545\Kendo.Mvc.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.Core, Version=2.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\Microsoft.AspNet.Identity.Core.2.1.0\lib\net45\Microsoft.AspNet.Identity.Core.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.EntityFramework">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.EntityFramework.1.0.0\lib\net45\Microsoft.AspNet.Identity.EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.AspNet.Identity.Owin">
+      <HintPath>..\packages\Microsoft.AspNet.Identity.Owin.2.1.0\lib\net45\Microsoft.AspNet.Identity.Owin.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=9.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.9.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.ComponentModel.DataAnnotations" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.Helpers.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Mvc, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Mvc.5.2.3\lib\net45\System.Web.Mvc.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Razor.3.2.3\lib\net45\System.Web.Razor.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Domain\Admin\UserRoleVm.cs" />
+    <Compile Include="Domain\APTS\APTSConstants.cs" />
+    <Compile Include="Domain\APTS\APTSEnum.cs" />
+    <Compile Include="Domain\APTS\APTSRequestStatus.cs" />
+    <Compile Include="Domain\APTS\AptsStatus.cs" />
+    <Compile Include="Domain\APTS\APTSValidation.cs" />
+    <Compile Include="Domain\APTS\DespensaryStore.cs" />
+    <Compile Include="Domain\APTS\DespensaryStoreItem.cs" />
+    <Compile Include="Domain\APTS\DrugLists.cs" />
+    <Compile Include="Domain\APTS\DrugPurchaseRequisition.cs" />
+    <Compile Include="Domain\APTS\DrugReceivalDetail.cs" />
+    <Compile Include="Domain\APTS\DrugReceivalModel19.cs" />
+    <Compile Include="Domain\APTS\DrugRequest.cs" />
+    <Compile Include="Domain\APTS\DrugRequestItem.cs" />
+    <Compile Include="Domain\APTS\DrugStore.cs" />
+    <Compile Include="Domain\APTS\DrugStoreItem.cs" />
+    <Compile Include="Domain\APTS\DrugStoreTransfer.cs" />
+    <Compile Include="Domain\APTS\DrugToTransferTemporaryLists.cs" />
+    <Compile Include="Domain\APTS\DrugUnit.cs" />
+    <Compile Include="Domain\APTS\EmergencyDrugRequest.cs" />
+    <Compile Include="Domain\APTS\EmergencyDrugRequestItem.cs" />
+    <Compile Include="Domain\APTS\LaboratoryDrugRequest.cs" />
+    <Compile Include="Domain\APTS\LaboratoryDrugRequestItem.cs" />
+    <Compile Include="Domain\APTS\LaboratoryRequest.cs" />
+    <Compile Include="Domain\APTS\LaboratoryRequestItem.cs" />
+    <Compile Include="Domain\APTS\Model22.cs" />
+    <Compile Include="Domain\APTS\PatientRegister.cs" />
+    <Compile Include="Domain\APTS\PatientRegisterDetail.cs" />
+    <Compile Include="Domain\APTS\RequisitionModel20.cs" />
+    <Compile Include="Domain\Budget\BudgetAllocation.cs" />
+    <Compile Include="Domain\Budget\BudgetAllocationApproval.cs" />
+    <Compile Include="Domain\Budget\BudgetBankAccountMap.cs" />
+    <Compile Include="Domain\Budget\BudgetCategory.cs" />
+    <Compile Include="Domain\Budget\BudgetControl.cs" />
+    <Compile Include="Domain\Budget\BudgetCurrency.cs" />
+    <Compile Include="Domain\Budget\BudgetEnums.cs" />
+    <Compile Include="Domain\Budget\BudgetPlan.cs" />
+    <Compile Include="Domain\Budget\BudgetPlanApproval.cs" />
+    <Compile Include="Domain\Budget\BudgetPlanMonthly.cs" />
+    <Compile Include="Domain\Budget\BudgetRequest.cs" />
+    <Compile Include="Domain\Budget\BudgetRequestApproval.cs" />
+    <Compile Include="Domain\Budget\budgetrequestline.cs" />
+    <Compile Include="Domain\Budget\BudgetRequestTransferDistribution.cs" />
+    <Compile Include="Domain\Budget\BudgetRequestTransferLog.cs" />
+    <Compile Include="Domain\Budget\BudgetRoles.cs" />
+    <Compile Include="Domain\Budget\BudgetTransfer.cs" />
+    <Compile Include="Domain\Budget\budgetTransferApproval.cs" />
+    <Compile Include="Domain\Budget\BudgetType.cs" />
+    <Compile Include="Domain\Budget\BudgetUsage.cs" />
+    <Compile Include="Domain\Budget\BudgetUsageApproval.cs" />
+    <Compile Include="Domain\Budget\GAAP\BalanceSheet.cs" />
+    <Compile Include="Domain\Budget\GAAP\BudgetSheetCategory.cs" />
+    <Compile Include="Domain\Budget\GAAP\CostOfServiceSold.cs" />
+    <Compile Include="Domain\Budget\GAAP\Enums.cs" />
+    <Compile Include="Domain\Budget\GAAP\Expenditure.cs" />
+    <Compile Include="Domain\Budget\GAAP\ForcastedIncomeStatement.cs" />
+    <Compile Include="Domain\Budget\GAAP\InvestmentPlan.cs" />
+    <Compile Include="Domain\Budget\GAAP\ProfitLossStatement.cs" />
+    <Compile Include="Domain\Budget\GAAP\ProfitLossStatementCategory.cs" />
+    <Compile Include="Domain\Budget\PlanCategory.cs" />
+    <Compile Include="Domain\Budget\RequestedMonth.cs" />
+    <Compile Include="Domain\Budget\Task\TaskCategory.cs" />
+    <Compile Include="Domain\Budget\Task\TaskPerformaceApproval.cs" />
+    <Compile Include="Domain\Budget\Task\TaskPerformance.cs" />
+    <Compile Include="Domain\Budget\Task\TaskPlan.cs" />
+    <Compile Include="Domain\Budget\Task\TaskPlanApproval.cs" />
+    <Compile Include="Domain\Budget\Task\TaskPlanMonthly.cs" />
+    <Compile Include="Domain\Budget\Task\TaskUnit.cs" />
+    <Compile Include="Domain\CMS\Common\CMSEnums.cs" />
+    <Compile Include="Domain\CMS\Common\CMSRoles.cs" />
+    <Compile Include="Domain\CMS\Common\CompanyStatusConstants.cs" />
+    <Compile Include="Domain\CMS\Common\TraineeStatusConstants.cs" />
+    <Compile Include="Domain\CMS\Settings\City.cs" />
+    <Compile Include="Domain\CMS\Settings\CMSCourse.cs" />
+    <Compile Include="Domain\CMS\Settings\CMSProgram.cs" />
+    <Compile Include="Domain\CMS\Settings\ISOChecklist.cs" />
+    <Compile Include="Domain\CMS\Settings\ISOType.cs" />
+    <Compile Include="Domain\CMS\Settings\RegistrationNumberPrefix.cs" />
+    <Compile Include="Domain\CMS\TraineeModels\CompanyEvaluation.cs" />
+    <Compile Include="Domain\CMS\TraineeModels\CompanyEvaluationDataEntryViewModel.cs" />
+    <Compile Include="Domain\CMS\TraineeModels\Trainee.cs" />
+    <Compile Include="Domain\CMS\TraineeModels\TraineeIdNumberComponent.cs" />
+    <Compile Include="Domain\CMS\TraineeModels\TraineeProgram.cs" />
+    <Compile Include="Domain\Common\Approval.cs" />
+    <Compile Include="Domain\Common\DocumentApproval\ApprovalDelegation.cs" />
+    <Compile Include="Domain\Common\DocumentApproval\ApprovalGroup.cs" />
+    <Compile Include="Domain\Common\DocumentApproval\ApprovalGroupRule.cs" />
+    <Compile Include="Domain\Common\DocumentApproval\AssignApprovalGroup.cs" />
+    <Compile Include="Domain\Common\DocumentApproval\AssignApprovalGroupAssignment.cs" />
+    <Compile Include="Domain\Common\DocumentApproval\DocumentApprovalRule.cs" />
+    <Compile Include="Domain\Common\DocumentApproval\Enums.cs" />
+    <Compile Include="Domain\Common\CommonConstants.cs" />
+    <Compile Include="Domain\Common\HRM\BusinessUnit.cs" />
+    <Compile Include="Domain\Common\Notification.cs" />
+    <Compile Include="Domain\Common\ViewModel\SelectorVM.cs" />
+    <Compile Include="Domain\Common\VoucherDistribution.cs" />
+    <Compile Include="Domain\Common\VoucherValidation.cs" />
+    <Compile Include="Domain\Common\BranchRelated.cs" />
+    <Compile Include="Domain\Common\Enum.cs" />
+    <Compile Include="Domain\Common\HRM\Address.cs" />
+    <Compile Include="Domain\Common\HRM\Attachment.cs" />
+    <Compile Include="Domain\Common\HRM\Bank.cs" />
+    <Compile Include="Domain\Common\HRM\BankReference.cs" />
+    <Compile Include="Domain\Common\HRM\Branch.cs" />
+    <Compile Include="Domain\Common\HRM\Configuration.cs" />
+    <Compile Include="Domain\Common\HRM\Country.cs" />
+    <Compile Include="Domain\Common\HRM\EmployeeIdView.cs" />
+    <Compile Include="Domain\Common\HRM\ExceedConstants.cs" />
+    <Compile Include="Domain\Common\HRM\Identification.cs" />
+    <Compile Include="Domain\Common\HRM\IndustryInvolved.cs" />
+    <Compile Include="Domain\Common\HRM\Language.cs" />
+    <Compile Include="Domain\Common\HRM\LanguageProficiency.cs" />
+    <Compile Include="Domain\Common\HRM\Lookup.cs" />
+    <Compile Include="Domain\Common\HRM\MainCompany.cs" />
+    <Compile Include="Domain\Common\HRM\MainCompanyStructure.cs" />
+    <Compile Include="Domain\Common\HRM\Period.cs" />
+    <Compile Include="Domain\Common\HRM\Person_Employee.cs" />
+    <Compile Include="Domain\Common\HRM\Relation.cs" />
+    <Compile Include="Domain\Common\HRM\Structure.cs" />
+    <Compile Include="Domain\Common\HRM\vwModel_Organization.cs" />
+    <Compile Include="Domain\Common\OtherAssignment.cs" />
+    <Compile Include="Domain\Common\OtherResponsiblityLevel.cs" />
+    <Compile Include="Domain\Common\TrackTransaction.cs" />
+    <Compile Include="Domain\Common\TrackUser.cs" />
+    <Compile Include="Domain\Construction\CalanderSettingModels.cs" />
+    <Compile Include="Domain\Construction\CashFlow.cs" />
+    <Compile Include="Domain\Construction\ConstructionConstants.cs" />
+    <Compile Include="Domain\Construction\ConstructionDashbord.cs" />
+    <Compile Include="Domain\Construction\ConstructionEnum.cs" />
+    <Compile Include="Domain\Construction\ConstructionPeriod.cs" />
+    <Compile Include="Domain\Construction\ConstructionPermissions.cs" />
+    <Compile Include="Domain\Construction\ContractManagement.cs" />
+    <Compile Include="Domain\Construction\DocumentManagement.cs" />
+    <Compile Include="Domain\Construction\ItemDurationBase.cs" />
+    <Compile Include="Domain\Construction\Project.cs" />
+    <Compile Include="Domain\Construction\ProjectBilling.cs" />
+    <Compile Include="Domain\Construction\ProjectCosting.cs" />
+    <Compile Include="Domain\Construction\ProjectEstimation .cs" />
+    <Compile Include="Domain\Construction\ProjectInformation.cs" />
+    <Compile Include="Domain\Construction\ProjectInputEstimation.cs" />
+    <Compile Include="Domain\Construction\ProjectPerformanceEvaluation.cs" />
+    <Compile Include="Domain\Construction\ProjectScheduling.cs" />
+    <Compile Include="Domain\Construction\ProjectSchedulingManagement.cs" />
+    <Compile Include="Domain\Construction\ProjectTracking.cs" />
+    <Compile Include="Domain\Construction\SortableEntityBase.cs" />
+    <Compile Include="Domain\Construction\UndoableUserOperationBase.cs" />
+    <Compile Include="Domain\CRM\AccountMap.cs" />
+    <Compile Include="Domain\CRM\AccountRequirement.cs" />
+    <Compile Include="Domain\CRM\Accounts.cs" />
+    <Compile Include="Domain\CRM\Activity.cs" />
+    <Compile Include="Domain\CRM\ActivityDefinition.cs" />
+    <Compile Include="Domain\CRM\AdditionalCost.cs" />
+    <Compile Include="Domain\CRM\AdditionalCostLog.cs" />
+    <Compile Include="Domain\CRM\AdvancePayment.cs" />
+    <Compile Include="Domain\CRM\AdvancePaymentLine.cs" />
+    <Compile Include="Domain\CRM\AdvancePaymentLog.cs" />
+    <Compile Include="Domain\CRM\AssignTicket.cs" />
+    <Compile Include="Domain\CRM\Beginning.cs" />
+    <Compile Include="Domain\CRM\Cart.cs" />
+    <Compile Include="Domain\CRM\CartTransaction.cs" />
+    <Compile Include="Domain\CRM\CashSalesInvoice.cs" />
+    <Compile Include="Domain\CRM\CashSalesPartialItem.cs" />
+    <Compile Include="Domain\CRM\CashSalesPartialLineItem.cs" />
+    <Compile Include="Domain\CRM\Common.cs" />
+    <Compile Include="Domain\CRM\CommunicationSource.cs" />
+    <Compile Include="Domain\CRM\ControlAccount.cs" />
+    <Compile Include="Domain\CRM\CreditSalesInvoice.cs" />
+    <Compile Include="Domain\CRM\CreditSetting.cs" />
+    <Compile Include="Domain\CRM\CreditSettlement.cs" />
+    <Compile Include="Domain\CRM\CRMEnums.cs" />
+    <Compile Include="Domain\CRM\CRMRoles.cs" />
+    <Compile Include="Domain\CRM\CustomerTicket.cs" />
+    <Compile Include="Domain\CRM\DefaultLedgerAccount.cs" />
+    <Compile Include="Domain\CRM\EmployeeCategory.cs" />
+    <Compile Include="Domain\CRM\GlobalTypeList.cs" />
+    <Compile Include="Domain\CRM\GlobalTypeTax.cs" />
+    <Compile Include="Domain\CRM\InventoryCateoryMap.cs" />
+    <Compile Include="Domain\CRM\IssueHistory.cs" />
+    <Compile Include="Domain\CRM\LifeSpan.cs" />
+    <Compile Include="Domain\CRM\LineCreditSettlement.cs" />
+    <Compile Include="Domain\CRM\LineItem.cs" />
+    <Compile Include="Domain\CRM\Marketing.cs" />
+    <Compile Include="Domain\CRM\NonCashTransaction.cs" />
+    <Compile Include="Domain\CRM\ObjectState.cs" />
+    <Compile Include="Domain\CRM\ObjectStateDefinition.cs" />
+    <Compile Include="Domain\CRM\OrganizationCategory.cs" />
+    <Compile Include="Domain\CRM\OrganizationCustomer.cs" />
+    <Compile Include="Domain\CRM\PersonCategory.cs" />
+    <Compile Include="Domain\CRM\Person_Contact.cs" />
+    <Compile Include="Domain\CRM\Price.cs" />
+    <Compile Include="Domain\CRM\PriorityType.cs" />
+    <Compile Include="Domain\CRM\Product.cs" />
+    <Compile Include="Domain\CRM\ProductCategory.cs" />
+    <Compile Include="Domain\CRM\ReceiveMethod.cs" />
+    <Compile Include="Domain\CRM\SalesInvoicePaymentDistibution.cs" />
+    <Compile Include="Domain\CRM\SalesOrderVoucher.cs" />
+    <Compile Include="Domain\CRM\SalesQuoteVoucher.cs" />
+    <Compile Include="Domain\CRM\SalesQuoteVoucherView.cs" />
+    <Compile Include="Domain\CRM\SalesStore.cs" />
+    <Compile Include="Domain\CRM\SerialCode.cs" />
+    <Compile Include="Domain\CRM\SerialDefinition.cs" />
+    <Compile Include="Domain\CRM\Service.cs" />
+    <Compile Include="Domain\CRM\ServiceLineItem.cs" />
+    <Compile Include="Domain\CRM\ServiceUsage.cs" />
+    <Compile Include="Domain\CRM\ServiceUsageApproval.cs" />
+    <Compile Include="Domain\CRM\Specification.cs" />
+    <Compile Include="Domain\CRM\StatusType.cs" />
+    <Compile Include="Domain\CRM\StockBalance.cs" />
+    <Compile Include="Domain\CRM\StockLevel.cs" />
+    <Compile Include="Domain\CRM\Store.cs" />
+    <Compile Include="Domain\CRM\StoreTransaction.cs" />
+    <Compile Include="Domain\CRM\SubCountry.cs" />
+    <Compile Include="Domain\CRM\SupportGroup.cs" />
+    <Compile Include="Domain\CRM\SupportGroupDetail.cs" />
+    <Compile Include="Domain\CRM\SystemConstant.cs" />
+    <Compile Include="Domain\CRM\Tax.cs" />
+    <Compile Include="Domain\CRM\TaxTransaction.cs" />
+    <Compile Include="Domain\CRM\Term.cs" />
+    <Compile Include="Domain\CRM\ThingCategory.cs" />
+    <Compile Include="Domain\CRM\Ticket.cs" />
+    <Compile Include="Domain\CRM\TicketActivityDefinition.cs" />
+    <Compile Include="Domain\CRM\TicketDefinition.cs" />
+    <Compile Include="Domain\CRM\TicketStatusLog.cs" />
+    <Compile Include="Domain\CRM\TransactionReference.cs" />
+    <Compile Include="Domain\CRM\Variety.cs" />
+    <Compile Include="Domain\CRM\VoucherExtension.cs" />
+    <Compile Include="Domain\CRM\VoucherExtensionTransaction.cs" />
+    <Compile Include="Domain\CRM\VoucherTerm.cs" />
+    <Compile Include="Domain\CRM\VoucherValue.cs" />
+    <Compile Include="Domain\Dashboard\Dashboard.cs" />
+    <Compile Include="Domain\Dashboard\FinanceDashboardViewModel.cs" />
+    <Compile Include="Domain\Dashboard\ProcurementDashboardViewModel.cs" />
+    <Compile Include="Domain\Dashboard\InventoryDashboardViewModel.cs" />
+    <Compile Include="Domain\Dashboard\HumanResourceDashboardViewModel.cs" />
+    <Compile Include="Domain\Finance\AP\APBusinessType.cs" />
+    <Compile Include="Domain\Finance\AP\APDirectPaymentDistribution.cs" />
+    <Compile Include="Domain\Finance\AP\APMiscellaneousPaymentDistribution.cs" />
+    <Compile Include="Domain\Finance\AP\ApDirectPayment.cs" />
+    <Compile Include="Domain\Finance\AP\APMiscellaneousPayments.cs" />
+    <Compile Include="Domain\Finance\AP\ApDirectPaymentValidation.cs" />
+    <Compile Include="Domain\Finance\AP\APMiscellaneousPaymentValidation.cs" />
+    <Compile Include="Domain\Finance\AP\APPaybleInvoiceDistribution.cs" />
+    <Compile Include="Domain\Finance\AP\APCashSetup.cs" />
+    <Compile Include="Domain\Finance\AP\PaymentRequest\PaymentRequestValidation.cs" />
+    <Compile Include="Domain\Finance\AP\PaymentSettlement\ApPaymentSettlement.cs" />
+    <Compile Include="Domain\Finance\AP\PaymentSettlement\ApPaymentSettlementDistribution.cs" />
+    <Compile Include="Domain\Finance\AP\PaymentSettlement\ApPaymentSettlementValidation.cs" />
+    <Compile Include="Domain\Finance\AP\Travel\APTravelExpenseDistribution.cs" />
+    <Compile Include="Domain\Finance\AP\Travel\APTravelExpenseValidation.cs" />
+    <Compile Include="Domain\Finance\AP\Travel\ApTravelExpenseRefund.cs" />
+    <Compile Include="Domain\Finance\AP\Travel\ApTravelExpensePayment.cs" />
+    <Compile Include="Domain\Finance\AP\Travel\APTravelExpenseClaim.cs" />
+    <Compile Include="Domain\Finance\AP\Travel\ApTravelExpenseExpense.cs" />
+    <Compile Include="Domain\Finance\AP\Travel\APTravelOrderDistribution.cs" />
+    <Compile Include="Domain\Finance\AP\Travel\APTravelOrderValidation.cs" />
+    <Compile Include="Domain\Finance\AP\Travel\APTravelOrderAdvancePayment.cs" />
+    <Compile Include="Domain\Finance\AP\Travel\APTravelOrderDeparture.cs" />
+    <Compile Include="Domain\Finance\AP\Travel\APTravelOrder.cs" />
+    <Compile Include="Domain\Finance\AP\PettyCash\ApPettyCashDistribution.cs" />
+    <Compile Include="Domain\Finance\AP\PettyCash\ApPettyCashValidation.cs" />
+    <Compile Include="Domain\Finance\AP\PettyCash\ApPettyCashUtilization.cs" />
+    <Compile Include="Domain\Finance\AP\PettyCash\ApPettyCashPayment.cs" />
+    <Compile Include="Domain\Finance\AP\PettyCash\APPettyCash.cs" />
+    <Compile Include="Domain\Finance\AP\APPaybleInvoices.cs" />
+    <Compile Include="Domain\Finance\AP\APPaybleInvoicesLines.cs" />
+    <Compile Include="Domain\Finance\AP\APPaybleInvoiceValidation.cs" />
+    <Compile Include="Domain\Finance\AP\APPaymentDistribution.cs" />
+    <Compile Include="Domain\Finance\AP\APPayments.cs" />
+    <Compile Include="Domain\Finance\AP\APPaymentsViewModel.cs" />
+    <Compile Include="Domain\Finance\AP\APPaymentValidation.cs" />
+    <Compile Include="Domain\Finance\AP\APSetupItems.cs" />
+    <Compile Include="Domain\Finance\AP\APsupplierBlacklist.cs" />
+    <Compile Include="Domain\Finance\AP\APSupplierRegistration.cs" />
+    <Compile Include="Domain\Finance\AP\APSupplierType.cs" />
+    <Compile Include="Domain\Finance\AP\ApSetupReceiptBalanceAccount.cs" />
+    <Compile Include="Domain\Finance\AR\ARCustomerProfile.cs" />
+    <Compile Include="Domain\Finance\AR\ARCustomerType.cs" />
+    <Compile Include="Domain\Finance\AR\ARInvoice.cs" />
+    <Compile Include="Domain\Finance\AR\ARSetupTaxRate.cs" />
+    <Compile Include="Domain\Finance\AR\SalesOrder\ARSalesOrderPartialPrintDistribution.cs" />
+    <Compile Include="Domain\Finance\AR\SalesOrder\ARSalesOrderPartial.cs" />
+    <Compile Include="Domain\Finance\AR\SalesOrder\ARSalesPartialPrintValidation.cs" />
+    <Compile Include="Domain\Finance\AR\SalesOrder\Partner.cs" />
+    <Compile Include="Domain\Finance\AR\SalesOrder\PartnerType.cs" />
+    <Compile Include="Domain\Finance\AR\SalesOrder\ARSalesOrderBroadcastTime.cs" />
+    <Compile Include="Domain\Finance\AR\SalesOrder\ARSalesOrderStatus.cs" />
+    <Compile Include="Domain\Finance\AR\SalesOrder\ARSalesOrderDistribution.cs" />
+    <Compile Include="Domain\Finance\AR\ARInvoiceDistribution.cs" />
+    <Compile Include="Domain\Finance\AR\SalesOrder\ARSalesOrderAdvanceLine.cs" />
+    <Compile Include="Domain\Finance\AR\SalesOrder\ARSalesOrderValidation.cs" />
+    <Compile Include="Domain\Finance\AR\SalesOrder\ARSalesOrderLine.cs" />
+    <Compile Include="Domain\Finance\AR\ARInvoiceLines.cs" />
+    <Compile Include="Domain\Finance\AR\ARInvoiceValidation.cs" />
+    <Compile Include="Domain\Finance\AR\ARInvoiceViewModel.cs" />
+    <Compile Include="Domain\Finance\AR\ARMiscelaneousCollection.cs" />
+    <Compile Include="Domain\Finance\AR\ARMiscelaneousCollectionDistribution.cs" />
+    <Compile Include="Domain\Finance\AR\ARMiscelaneousCollectionValidation.cs" />
+    <Compile Include="Domain\Finance\AR\ARRemitAddress.cs" />
+    <Compile Include="Domain\Finance\AR\SalesOrder\ARSalesOrder.cs" />
+    <Compile Include="Domain\Finance\AR\ARSetupProductServiceAccount.cs" />
+    <Compile Include="Domain\Finance\AR\ARSetupReceiptBalanceAccount.cs" />
+    <Compile Include="Domain\Finance\AP\APSetupCommonSupplier.cs" />
+    <Compile Include="Domain\Finance\AR\ARSetupTransactionClass.cs" />
+    <Compile Include="Domain\Finance\AR\ARSetupTransactionType.cs" />
+    <Compile Include="Domain\Finance\AR\ARStandardCollection.cs" />
+    <Compile Include="Domain\Finance\AR\ARStandardCollectionDistribution.cs" />
+    <Compile Include="Domain\Finance\AR\ARStandardCollectionLines.cs" />
+    <Compile Include="Domain\Finance\AR\ARStandardCollectionValidation.cs" />
+    <Compile Include="Domain\Finance\AR\ARStandardCollectionViewModel.cs" />
+    <Compile Include="Domain\Finance\AR\ArTransactionClass.cs" />
+    <Compile Include="Domain\Finance\Bank\BookDrillDownDetailVM.cs" />
+    <Compile Include="Domain\Finance\Budget\BudgetAccountShedule.cs" />
+    <Compile Include="Domain\Finance\Budget\BudgetAccountSheduleCategory.cs" />
+    <Compile Include="Domain\Finance\Budget\BudgetAccountSheduleSubCategory.cs" />
+    <Compile Include="Domain\Finance\Budget\BudgetAccountSheduleLine.cs" />
+    <Compile Include="Domain\Finance\Budget\BudgetLineSheduleAccounts.cs" />
+    <Compile Include="Domain\Finance\FinanceEnums.cs" />
+    <Compile Include="Domain\Finance\GL\Dynamic\GLChartOfAccountSegment.cs" />
+    <Compile Include="Domain\Finance\GL\GLEarningLedger.cs" />
+    <Compile Include="Domain\Finance\GL\GLRecordJournalBeg.cs" />
+    <Compile Include="Domain\Finance\GL\GLRecordJournalBegDistribution.cs" />
+    <Compile Include="Domain\Finance\GL\GLSecondayLedger.cs" />
+    <Compile Include="Domain\Finance\GL\GLPeriod.cs" />
+    <Compile Include="Domain\Finance\GL\GLBeginningPeriod.cs" />
+    <Compile Include="Domain\Finance\GL\GLRuleValue.cs" />
+    <Compile Include="Domain\Finance\GL\Dynamic\GLSegmentCrossValidation.cs" />
+    <Compile Include="Domain\Finance\GL\Dynamic\GLSegmentSetup.cs" />
+    <Compile Include="Domain\Finance\Report\RevenueBySalesType.cs" />
+    <Compile Include="Domain\Finance\StockClearingAccount.cs" />
+    <Compile Include="Domain\Finance\RevenueAccount.cs" />
+    <Compile Include="Domain\Finance\Bank\ReconciliationBankAccount.cs" />
+    <Compile Include="Domain\Finance\Bank\ReconciliationBookAccount.cs" />
+    <Compile Include="Domain\Finance\Bank\ReconciliationSchedule.cs" />
+    <Compile Include="Domain\Finance\Common\AccountsTransaction.cs" />
+    <Compile Include="Domain\Finance\Common\BankAccount.cs" />
+    <Compile Include="Domain\Finance\Common\FinInStatementRecord.cs" />
+    <Compile Include="Domain\Finance\Common\PaymentMethod.cs" />
+    <Compile Include="Domain\Finance\Common\PaymentTerms.cs" />
+    <Compile Include="Domain\Finance\Common\SharedModels.cs" />
+    <Compile Include="Domain\Finance\GL\GLSegmentSequence.cs" />
+    <Compile Include="Domain\Finance\GL\GLSegmentLength.cs" />
+    <Compile Include="Domain\Finance\GL\GLChartOfAccountAccount.cs" />
+    <Compile Include="Domain\Finance\GL\GLChartOfAccountCostCenter.cs" />
+    <Compile Include="Domain\Finance\GL\GLChartOfAccountLocation.cs" />
+    <Compile Include="Domain\Finance\GL\GLChartOfAccountSubAccount.cs" />
+    <Compile Include="Domain\Finance\GL\GLCountryType.cs" />
+    <Compile Include="Domain\Finance\GL\GLFiscalYear.cs" />
+    <Compile Include="Domain\Finance\GL\GLJournalCategoriers.cs" />
+    <Compile Include="Domain\Finance\GL\GLJournalSources.cs" />
+    <Compile Include="Domain\Finance\GL\GLLedgerPosting.cs" />
+    <Compile Include="Domain\Finance\GL\GLLedgerPostingLines.cs" />
+    <Compile Include="Domain\Finance\GL\GLRecordJournal.cs" />
+    <Compile Include="Domain\Finance\GL\GLRecordJournalDetail.cs" />
+    <Compile Include="Domain\Finance\GL\GLRecordJournalValidation.cs" />
+    <Compile Include="Domain\Finance\GL\GLTaxRate.cs" />
+    <Compile Include="Domain\Finance\GL\GLVatWithholding.cs" />
+    <Compile Include="Domain\Finance\FinanceConstants.cs" />
+    <Compile Include="Domain\Finance\Report\GAAP\GaapBalanceSheet.cs" />
+    <Compile Include="Domain\Finance\Report\GAAP\GaapCashFlow.cs" />
+    <Compile Include="Domain\Finance\Report\GAAP\GaapIncomeStatement.cs" />
+    <Compile Include="Domain\Finance\Report\IFRS\IfrsStatementOfCashFlow.cs" />
+    <Compile Include="Domain\Finance\Report\IFRS\IfrsStatementOfChangesInEquity.cs" />
+    <Compile Include="Domain\Finance\Report\IFRS\IfrsStatementOfFinancialPosition.cs" />
+    <Compile Include="Domain\Finance\Report\IFRS\IfrsStatementOfComprehensiveIncome.cs" />
+    <Compile Include="Domain\Finance\Report\ReportFinanceViewModel.cs" />
+    <Compile Include="Domain\Finance\Report\ReportSetupBase.cs" />
+    <Compile Include="Domain\Finance\Setting.cs" />
+    <Compile Include="Domain\Finance\ViewModels\AccountChekerVm.cs" />
+    <Compile Include="Domain\FixedAsset\Counts\FixedAssetCountItem.cs" />
+    <Compile Include="Domain\FixedAsset\Counts\FixedAssetCountValidation.cs" />
+    <Compile Include="Domain\FixedAsset\Counts\FixedAssetCountVm.cs" />
+    <Compile Include="Domain\FixedAsset\Counts\VariationVm.cs" />
+    <Compile Include="Domain\FixedAsset\Depreciation\AnnualDepreciationDistribution.cs" />
+    <Compile Include="Domain\FixedAsset\Depreciation\AnnualDepreciationItem.cs" />
+    <Compile Include="Domain\FixedAsset\Depreciation\AnnualDepreciationValidation.cs" />
+    <Compile Include="Domain\FixedAsset\Depreciation\DepreciationForCostDistribution.cs" />
+    <Compile Include="Domain\FixedAsset\Depreciation\MonthlyDepreciation.cs" />
+    <Compile Include="Domain\FixedAsset\Depreciation\MonthlyDepreciationDistribution.cs" />
+    <Compile Include="Domain\FixedAsset\Depreciation\MonthlyDepreciationItem.cs" />
+    <Compile Include="Domain\FixedAsset\Depreciation\MonthlyDepreciationValidation.cs" />
+    <Compile Include="Domain\FixedAsset\Issues\FixedAssetIssueItem.cs" />
+    <Compile Include="Domain\FixedAsset\Issues\FixedAssetIssueValidation.cs" />
+    <Compile Include="Domain\FixedAsset\Receives\FixedAssetInspection.cs" />
+    <Compile Include="Domain\FixedAsset\Receives\FixedAssetReceiveDistribution.cs" />
+    <Compile Include="Domain\FixedAsset\Receives\FixedAssetReceiveDonation.cs" />
+    <Compile Include="Domain\FixedAsset\Receives\FixedAssetReceiveDonationDistribution.cs" />
+    <Compile Include="Domain\FixedAsset\Receives\FixedAssetReceiveDonationItem.cs" />
+    <Compile Include="Domain\FixedAsset\Receives\FixedAssetReceiveDonationValidation.cs" />
+    <Compile Include="Domain\FixedAsset\Receives\FixedAssetReceiveItem.cs" />
+    <Compile Include="Domain\FixedAsset\Receives\FixedAssetReceiveValidation.cs" />
+    <Compile Include="Domain\FixedAsset\Registrations\GroupAssetBalance.cs" />
+    <Compile Include="Domain\FixedAsset\Requisitions\FixedAssetRequisitionItem.cs" />
+    <Compile Include="Domain\FixedAsset\Requisitions\FixedAssetRequisitionPropertyValidation.cs" />
+    <Compile Include="Domain\FixedAsset\Requisitions\FixedAssetRequisitionSecondValidation.cs" />
+    <Compile Include="Domain\FixedAsset\Requisitions\FixedAssetRequisitionValidation.cs" />
+    <Compile Include="Domain\FixedAsset\Returns\FixedAssetReturnItem.cs" />
+    <Compile Include="Domain\FixedAsset\Returns\FixedAssetReturnValidation.cs" />
+    <Compile Include="Domain\FixedAsset\Setting\FixedAssetConstants.cs" />
+    <Compile Include="Domain\FixedAsset\Setting\FixedAssetEnum.cs" />
+    <Compile Include="Domain\FixedAsset\Setting\FixedAssetPeriod.cs" />
+    <Compile Include="Domain\FixedAsset\Depreciation\AnnualDepreciation.cs" />
+    <Compile Include="Domain\FixedAsset\Depreciation\Appreciation.cs" />
+    <Compile Include="Domain\FixedAsset\Registrations\AssetRegistration.cs" />
+    <Compile Include="Domain\FixedAsset\Depreciation\DepreciationForCost.cs" />
+    <Compile Include="Domain\FixedAsset\Setting\DepreciationRule.cs" />
+    <Compile Include="Domain\FixedAsset\Registrations\DepreciationViewModel.cs" />
+    <Compile Include="Domain\FixedAsset\Registrations\Disposal.cs" />
+    <Compile Include="Domain\FixedAsset\Setting\CategoryDepreciationValue.cs" />
+    <Compile Include="Domain\FixedAsset\Returns\FixedAssetReturn.cs" />
+    <Compile Include="Domain\FixedAsset\Issues\FixedAssetIssue.cs" />
+    <Compile Include="Domain\FixedAsset\Issues\FixedAssetIssueImport.cs" />
+    <Compile Include="Domain\FixedAsset\Receives\FixedAssetReceive.cs" />
+    <Compile Include="Domain\FixedAsset\Requisitions\FixedAssetRequisition.cs" />
+    <Compile Include="Domain\FixedAsset\Registrations\Location.cs" />
+    <Compile Include="Domain\FixedAsset\Registrations\LocationTracking.cs" />
+    <Compile Include="Domain\FixedAsset\Transfers\AssetTransferReceive.cs" />
+    <Compile Include="Domain\FixedAsset\Transfers\AssetTransfer.cs" />
+    <Compile Include="Domain\FixedAsset\Transfers\AssetTransferReceiveItem.cs" />
+    <Compile Include="Domain\FixedAsset\Transfers\AssetTransferItem.cs" />
+    <Compile Include="Domain\FixedAsset\Transfers\AssetTransferReceiveValidation.cs" />
+    <Compile Include="Domain\FixedAsset\Transfers\AssetTransferValidation.cs" />
+    <Compile Include="Domain\FixedAsset\Transfers\MachineryAndVehicleTransferReceive.cs" />
+    <Compile Include="Domain\FixedAsset\Transfers\MachineryAndVehicleTransfer.cs" />
+    <Compile Include="Domain\FixedAsset\Counts\PhysicalCountReport.cs" />
+    <Compile Include="Domain\FixedAsset\Counts\PhysicalCountReportDetails.cs" />
+    <Compile Include="Domain\FixedAsset\Counts\FixedAssetCount.cs" />
+    <Compile Include="Domain\FixedAsset\Registrations\Revaluation.cs" />
+    <Compile Include="Domain\FixedAsset\Registrations\Sales.cs" />
+    <Compile Include="Domain\FixedAsset\Setting\FixedAssetCategory.cs" />
+    <Compile Include="Domain\FixedAsset\Setting\FixedAssetClearingAccountSetup.cs" />
+    <Compile Include="Domain\FixedAsset\Setting\FixedAssetDepreciationSetup.cs" />
+    <Compile Include="Domain\FixedAsset\Setting\FixedAssetCondition.cs" />
+    <Compile Include="Domain\FixedAsset\Setting\FixedAssetGroup.cs" />
+    <Compile Include="Domain\FixedAsset\Setting\FixedAssetSubCategory.cs" />
+    <Compile Include="Domain\FixedAsset\Setting\IndexingCount.cs" />
+    <Compile Include="Domain\FixedAsset\Setting\TagCodeSetting.cs" />
+    <Compile Include="Domain\FixedAsset\Setting\TagSetting.cs" />
+    <Compile Include="Domain\FixedAsset\UserCard\UserCard.cs" />
+    <Compile Include="Domain\FixedAsset\UserCard\UserCardItems.cs" />
+    <Compile Include="Domain\FleetManagement\BatteryManagement\BatteryApproval.cs" />
+    <Compile Include="Domain\FleetManagement\BatteryManagement\BatteryIssue.cs" />
+    <Compile Include="Domain\FleetManagement\BatteryManagement\BatteryReturn.cs" />
+    <Compile Include="Domain\FleetManagement\EquipmentInspection\AnnualEquipmentInventoryInspection.cs" />
+    <Compile Include="Domain\FleetManagement\EquipmentInspection\AnnualInventoryInspectionApproval.cs" />
+    <Compile Include="Domain\FleetManagement\EquipmentInspection\CheckList.cs" />
+    <Compile Include="Domain\FleetManagement\EquipmentInspection\CheckListLog.cs" />
+    <Compile Include="Domain\FleetManagement\EquipmentInspection\DisposalAndReplacementApproval.cs" />
+    <Compile Include="Domain\FleetManagement\EquipmentInspection\DisposalandReplacementRecommendation.cs" />
+    <Compile Include="Domain\FleetManagement\EquipmentInspection\InspectionApproval.cs" />
+    <Compile Include="Domain\FleetManagement\EquipmentInspection\InspectionLog.cs" />
+    <Compile Include="Domain\FleetManagement\EquipmentInspection\LineCheckList.cs" />
+    <Compile Include="Domain\FleetManagement\EquipmentPlanandEvaluation\EquipmentPlanandEvaluations.cs" />
+    <Compile Include="Domain\FleetManagement\EquipmentPlanandEvaluation\EquipmentPlanEvaluationApproval.cs" />
+    <Compile Include="Domain\FleetManagement\EquipmentPlanandEvaluation\PlanAndEvaluationApproval.cs" />
+    <Compile Include="Domain\FleetManagement\FleetEquipmentRent\ExternalRentedEquipment.cs" />
+    <Compile Include="Domain\FleetManagement\FleetEquipmentRent\ExternalRentedEquipmentCheckList.cs" />
+    <Compile Include="Domain\FleetManagement\FleetEquipmentRent\RentCustomerFeedBack.cs" />
+    <Compile Include="Domain\FleetManagement\FleetEquipmentRent\RentForInternalApproval.cs" />
+    <Compile Include="Domain\FleetManagement\FleetEquipmentRent\RentFromExternal.cs" />
+    <Compile Include="Domain\FleetManagement\FleetEquipmentRent\RentFromExternalApproval.cs" />
+    <Compile Include="Domain\FleetManagement\FleetEquipmentRent\RentInternalProject.cs" />
+    <Compile Include="Domain\FleetManagement\FleetEquipmentRent\RentOtherSupplierApproval.cs" />
+    <Compile Include="Domain\FleetManagement\FleetEquipmentRent\RentOtherSuppliers.cs" />
+    <Compile Include="Domain\FleetManagement\FleetEquipmentRent\RentRequest.cs" />
+    <Compile Include="Domain\FleetManagement\FleetEquipmentRent\RentRequestApproval.cs" />
+    <Compile Include="Domain\FleetManagement\FleetMaintenance\AdministrativeJobApproval.cs" />
+    <Compile Include="Domain\FleetManagement\FleetMaintenance\AdvanceMeasure.cs" />
+    <Compile Include="Domain\FleetManagement\FleetMaintenance\DailyCare.cs" />
+    <Compile Include="Domain\FleetManagement\FleetMaintenance\DailyCareCategory.cs" />
+    <Compile Include="Domain\FleetManagement\FleetMaintenance\DailyCareDetailItem.cs" />
+    <Compile Include="Domain\FleetManagement\FleetMaintenance\DailyCareDetailLog.cs" />
+    <Compile Include="Domain\FleetManagement\FleetMaintenance\DailyCareLog.cs" />
+    <Compile Include="Domain\FleetManagement\FleetMaintenance\ExternalComponent.cs" />
+    <Compile Include="Domain\FleetManagement\FleetMaintenance\ExternalComponentDetail.cs" />
+    <Compile Include="Domain\FleetManagement\FleetMaintenance\ExternalCrew.cs" />
+    <Compile Include="Domain\FleetManagement\FleetMaintenance\ExternalMaterial.cs" />
+    <Compile Include="Domain\FleetManagement\FleetMaintenance\FailureReason.cs" />
+    <Compile Include="Domain\FleetManagement\FleetMaintenance\FollowUp.cs" />
+    <Compile Include="Domain\FleetManagement\FleetMaintenance\InventorySparePartMapping.cs" />
+    <Compile Include="Domain\FleetManagement\FleetMaintenance\JobCauses.cs" />
+    <Compile Include="Domain\FleetManagement\FleetMaintenance\JobOrder.cs" />
+    <Compile Include="Domain\FleetManagement\FleetMaintenance\JobOrderDetail.cs" />
+    <Compile Include="Domain\FleetManagement\FleetMaintenance\JobRequest.cs" />
+    <Compile Include="Domain\FleetManagement\FleetMaintenance\JobStoreRequisition.cs" />
+    <Compile Include="Domain\FleetManagement\FleetMaintenance\LogisticPlan.cs" />
+    <Compile Include="Domain\FleetManagement\FleetMaintenance\LogisticPlanDetail.cs" />
+    <Compile Include="Domain\FleetManagement\FleetMaintenance\MaintenaceInspectionLog.cs" />
+    <Compile Include="Domain\FleetManagement\FleetMaintenance\MaintenanceCenter.cs" />
+    <Compile Include="Domain\FleetManagement\FleetMaintenance\MaintenanceTool.cs" />
+    <Compile Include="Domain\FleetManagement\FleetMaintenance\MaintenanceType.cs" />
+    <Compile Include="Domain\FleetManagement\FleetMaintenance\MechanicCrew.cs" />
+    <Compile Include="Domain\FleetManagement\FleetMaintenance\MechanicOnHand.cs" />
+    <Compile Include="Domain\FleetManagement\FleetMaintenance\OtherCompanyMaintenaceApproval.cs" />
+    <Compile Include="Domain\FleetManagement\FleetMaintenance\OtherCompanyMaintenance.cs" />
+    <Compile Include="Domain\FleetManagement\FleetMaintenance\OutsourceMaintenance.cs" />
+    <Compile Include="Domain\FleetManagement\FleetMaintenance\OutsourceMaintenanceApproval.cs" />
+    <Compile Include="Domain\FleetManagement\FleetMaintenance\Planner.cs" />
+    <Compile Include="Domain\FleetManagement\FleetMaintenance\PMSchedule.cs" />
+    <Compile Include="Domain\FleetManagement\FleetMaintenance\PMScheduleDetail.cs" />
+    <Compile Include="Domain\FleetManagement\FleetMaintenance\RepairType.cs" />
+    <Compile Include="Domain\FleetManagement\FleetMaintenance\Service.cs" />
+    <Compile Include="Domain\FleetManagement\FleetMaintenance\ServiceCrew.cs" />
+    <Compile Include="Domain\FleetManagement\FleetMaintenance\ServiceCrewWorkLog.cs" />
+    <Compile Include="Domain\FleetManagement\FleetMaintenance\ServiceLubricant.cs" />
+    <Compile Include="Domain\FleetManagement\FleetMaintenance\ServiceMaterial.cs" />
+    <Compile Include="Domain\FleetManagement\FleetMaintenance\ServiceSpare.cs" />
+    <Compile Include="Domain\FleetManagement\FleetMaintenance\ServiceTool.cs" />
+    <Compile Include="Domain\FleetManagement\FleetMaintenance\ServiceTyre.cs" />
+    <Compile Include="Domain\FleetManagement\FleetMaintenance\SparePart.cs" />
+    <Compile Include="Domain\FleetManagement\FleetMaintenance\TechnicalJobApproval.cs" />
+    <Compile Include="Domain\FleetManagement\FleetMaintenance\WorkUnitSection.cs" />
+    <Compile Include="Domain\FleetManagement\FleetManagementRoles.cs" />
+    <Compile Include="Domain\FleetManagement\FleetRegistration\Accessories.cs" />
+    <Compile Include="Domain\FleetManagement\FleetRegistration\Accident.cs" />
+    <Compile Include="Domain\FleetManagement\FleetRegistration\Educationallevel.cs" />
+    <Compile Include="Domain\FleetManagement\FleetRegistration\EquipmentApproval.cs" />
+    <Compile Include="Domain\FleetManagement\FleetRegistration\EquipmentArrival.cs" />
+    <Compile Include="Domain\FleetManagement\FleetRegistration\EquipmentArrivalApproval.cs" />
+    <Compile Include="Domain\FleetManagement\FleetRegistration\EquipmentAttachment.cs" />
+    <Compile Include="Domain\FleetManagement\FleetRegistration\EquipmentBatteryLog.cs" />
+    <Compile Include="Domain\FleetManagement\FleetRegistration\EquipmentBattrey.cs" />
+    <Compile Include="Domain\FleetManagement\FleetRegistration\EquipmentIdentity.cs" />
+    <Compile Include="Domain\FleetManagement\FleetRegistration\EquipmentLocation.cs" />
+    <Compile Include="Domain\FleetManagement\FleetRegistration\EquipmentName.cs" />
+    <Compile Include="Domain\FleetManagement\FleetRegistration\EquipmentType.cs" />
+    <Compile Include="Domain\FleetManagement\FleetRegistration\EquipmentTyre.cs" />
+    <Compile Include="Domain\FleetManagement\FleetRegistration\EquipmentTyreLog.cs" />
+    <Compile Include="Domain\FleetManagement\FleetRegistration\FleetCondition.cs" />
+    <Compile Include="Domain\FleetManagement\FleetRegistration\FleetHistory.cs" />
+    <Compile Include="Domain\FleetManagement\FleetRegistration\FleetIFuelConsumption.cs" />
+    <Compile Include="Domain\FleetManagement\FleetRegistration\FleetInsuranceType.cs" />
+    <Compile Include="Domain\FleetManagement\FleetRegistration\FleetInsuranceTypeDetail.cs" />
+    <Compile Include="Domain\FleetManagement\FleetRegistration\FleetPettyCash.cs" />
+    <Compile Include="Domain\FleetManagement\FleetRegistration\FleetPettyCashType.cs" />
+    <Compile Include="Domain\FleetManagement\FleetRegistration\FleetReturn.cs" />
+    <Compile Include="Domain\FleetManagement\FleetRegistration\FleetReturnApproval.cs" />
+    <Compile Include="Domain\FleetManagement\FleetRegistration\FleetReturnItem.cs" />
+    <Compile Include="Domain\FleetManagement\FleetRegistration\Fleets.cs" />
+    <Compile Include="Domain\FleetManagement\FleetRegistration\FleetInsurance.cs" />
+    <Compile Include="Domain\FleetManagement\FleetRegistration\FuelConsumptionAlertLevel.cs" />
+    <Compile Include="Domain\FleetManagement\FleetRegistration\HRFleetMapping.cs" />
+    <Compile Include="Domain\FleetManagement\FleetRegistration\LicenseLevel.cs" />
+    <Compile Include="Domain\FleetManagement\FleetRegistration\LicenseType.cs" />
+    <Compile Include="Domain\FleetManagement\FleetRegistration\Location.cs" />
+    <Compile Include="Domain\FleetManagement\FleetRegistration\Manufacturer.cs" />
+    <Compile Include="Domain\FleetManagement\FleetRegistration\Operator.cs" />
+    <Compile Include="Domain\FleetManagement\FleetRegistration\OperatorLicense.cs" />
+    <Compile Include="Domain\FleetManagement\FleetRegistration\OperatorPosition.cs" />
+    <Compile Include="Domain\FleetManagement\FleetRegistration\OwningandOperatingCost.cs" />
+    <Compile Include="Domain\FleetManagement\FleetRegistration\OwningandOperatingCostConstant.cs" />
+    <Compile Include="Domain\FleetManagement\FleetRegistration\TimeSheet.cs" />
+    <Compile Include="Domain\FleetManagement\FleetRegistration\TimeSheetApproval.cs" />
+    <Compile Include="Domain\FleetManagement\FleetResource\AssignedEquipment.cs" />
+    <Compile Include="Domain\FleetManagement\FleetResource\AssignEquipmentApproval.cs" />
+    <Compile Include="Domain\FleetManagement\FleetResource\DriverAssignment.cs" />
+    <Compile Include="Domain\FleetManagement\FleetResource\DriverTransferApproval.cs" />
+    <Compile Include="Domain\FleetManagement\FleetResource\DriverVehicleTransfer.cs" />
+    <Compile Include="Domain\FleetManagement\FleetResource\RequestedEquipment.cs" />
+    <Compile Include="Domain\FleetManagement\FleetResource\SitesVehicleTransfer.cs" />
+    <Compile Include="Domain\FleetManagement\FleetResource\SiteVechicleTransferDetail.cs" />
+    <Compile Include="Domain\FleetManagement\FleetResource\SiteVechicleTransferTyreDetail.cs" />
+    <Compile Include="Domain\FleetManagement\FleetResource\SiteVehicleApproval.cs" />
+    <Compile Include="Domain\FleetManagement\FleetResource\VehicleDemand.cs" />
+    <Compile Include="Domain\FleetManagement\FleetResource\VehicleDemandApproval.cs" />
+    <Compile Include="Domain\FleetManagement\FleetResource\VehicleDistribution.cs" />
+    <Compile Include="Domain\FleetManagement\FleetResource\VehicleDistributionApproval.cs" />
+    <Compile Include="Domain\FleetManagement\FleetResource\VehicleReturn.cs" />
+    <Compile Include="Domain\FleetManagement\FleetResource\VehicleReturnApproval.cs" />
+    <Compile Include="Domain\FleetManagement\FleetSalvageStore\Cannibalization.cs" />
+    <Compile Include="Domain\FleetManagement\FleetSalvageStore\CannibalizationApproval.cs" />
+    <Compile Include="Domain\FleetManagement\FleetSalvageStore\CannibalizationDetail.cs" />
+    <Compile Include="Domain\FleetManagement\FleetSalvageStore\GoodRecivingNoteApproval.cs" />
+    <Compile Include="Domain\FleetManagement\FleetSalvageStore\SalvageStore.cs" />
+    <Compile Include="Domain\FleetManagement\FleetSalvageStore\SalvageStoreApproval.cs" />
+    <Compile Include="Domain\FleetManagement\FleetSalvageStore\SalvageStoreGoodReceiving.cs" />
+    <Compile Include="Domain\FleetManagement\FleetTireManagement\TireIssue.cs" />
+    <Compile Include="Domain\FleetManagement\FleetTireManagement\TireIssueApproval.cs" />
+    <Compile Include="Domain\FleetManagement\FleetTireManagement\TireReturn.cs" />
+    <Compile Include="Domain\FleetManagement\FleetTireManagement\TireReturnApproval.cs" />
+    <Compile Include="Domain\FleetManagement\FleetTireManagement\TyreTransfer.cs" />
+    <Compile Include="Domain\FleetManagement\FleetTireManagement\TyreTransferApproval.cs" />
+    <Compile Include="Domain\FleetManagement\FuelManagement\Fuel.cs" />
+    <Compile Include="Domain\FleetManagement\FuelManagement\FuelInventory.cs" />
+    <Compile Include="Domain\FleetManagement\FuelManagement\FuelIssueApproval.cs" />
+    <Compile Include="Domain\FleetManagement\FuelManagement\FuelType.cs" />
+    <Compile Include="Domain\FleetManagement\GlobalENUM.cs" />
+    <Compile Include="Domain\Global\UserBusinessUnitMap.cs" />
+    <Compile Include="Domain\Global\GlobalOperationLog.cs" />
+    <Compile Include="Domain\Global\GlobalEnum.cs" />
+    <Compile Include="Domain\Global\GlobalStatus.cs" />
+    <Compile Include="Domain\Global\GlobalExportLog.cs" />
+    <Compile Include="Domain\Global\GlobalNotification.cs" />
+    <Compile Include="Domain\Global\GlobalDeleteLog.cs" />
+    <Compile Include="Domain\Global\GlobalUserAccessRecord.cs" />
+    <Compile Include="Domain\GobalEnums.cs" />
+    <Compile Include="Domain\HRM\Allowance\Allowance.cs" />
+    <Compile Include="Domain\HRM\Allowance\AllowanceDefination.cs" />
+    <Compile Include="Domain\HRM\Allowance\AllowanceMapping.cs" />
+    <Compile Include="Domain\HRM\Allowance\AllowancePerEmployee.cs" />
+    <Compile Include="Domain\HRM\Allowance\AllowanceTypeRule.cs" />
+    <Compile Include="Domain\HRM\Allowance\CourtAllowanceMapping.cs" />
+    <Compile Include="Domain\HRM\Allowance\OtherBenefit.cs" />
+    <Compile Include="Domain\HRM\ArchiveManagement\ArchiveManagement.cs" />
+    <Compile Include="Domain\HRM\ArchiveManagement\AttachmentArchive.cs" />
+    <Compile Include="Domain\HRM\ArchiveManagement\EmployeeIncomingLetter.cs" />
+    <Compile Include="Domain\HRM\ArchiveManagement\EmployeeIncommingUploadDbModel.cs" />
+    <Compile Include="Domain\HRM\ArchiveManagement\EmployeeLetterSender.cs" />
+    <Compile Include="Domain\HRM\ArchiveManagement\FolderExplorer.cs" />
+    <Compile Include="Domain\HRM\ArchiveManagement\IncomingLetterRegistration.cs" />
+    <Compile Include="Domain\HRM\ArchiveManagement\InstitutionArchiveNo.cs" />
+    <Compile Include="Domain\HRM\ArchiveManagement\InstitutionType.cs" />
+    <Compile Include="Domain\HRM\ArchiveManagement\LetterSender.cs" />
+    <Compile Include="Domain\HRM\ArchiveManagement\LetterStatus.cs" />
+    <Compile Include="Domain\HRM\ArchiveManagement\OutgoingLetter.cs" />
+    <Compile Include="Domain\HRM\ArchiveManagement\PersonalArchiveNo.cs" />
+    <Compile Include="Domain\HRM\ArchiveManagement\RecivedLetters.cs" />
+    <Compile Include="Domain\HRM\ArchiveManagement\SubjectType.cs" />
+    <Compile Include="Domain\HRM\ArchiveManagement\Zone.cs" />
+    <Compile Include="Domain\HRM\Attendance\Absence.cs" />
+    <Compile Include="Domain\HRM\Attendance\Attendance.cs" />
+    <Compile Include="Domain\HRM\Attendance\EmpPayrollNoDaysWorked.cs" />
+    <Compile Include="Domain\HRM\EmployeeDetail\ComplainCC.cs" />
+    <Compile Include="Domain\HRM\EmployeeDetail\ComplainDetail.cs" />
+    <Compile Include="Domain\HRM\EmployeeDetail\ComplainResponse.cs" />
+    <Compile Include="Domain\HRM\EmployeeDetail\DelegationReason.cs" />
+    <Compile Include="Domain\HRM\EmployeeDetail\DeligationCC.cs" />
+    <Compile Include="Domain\HRM\EmployeeDetail\DuplicateProfile.cs" />
+    <Compile Include="Domain\HRM\EmployeeDetail\EmployeeCodeSequenceSetting.cs" />
+    <Compile Include="Domain\HRM\EmployeeDetail\EmployeeCodeSetting.cs" />
+    <Compile Include="Domain\HRM\EmployeeDetail\EmployeesUnderBoss.cs" />
+    <Compile Include="Domain\HRM\EmployeeDetail\RetirementSetting.cs" />
+    <Compile Include="Domain\HRM\Enum.cs" />
+    <Compile Include="Domain\HRM\HealthAndInsurance\Diagnosis.cs" />
+    <Compile Include="Domain\HRM\HealthAndInsurance\HealthValueListViewModel.cs" />
+    <Compile Include="Domain\HRM\HealthAndInsurance\LaboratoryCatagory.cs" />
+    <Compile Include="Domain\HRM\HealthAndInsurance\LaboratoryCatagoryPatientCard.cs" />
+    <Compile Include="Domain\HRM\HealthAndInsurance\LaboratoryTestPatientCard.cs" />
+    <Compile Include="Domain\HRM\HealthAndInsurance\LaboratoryTests.cs" />
+    <Compile Include="Domain\HRM\HealthAndInsurance\PatientDrugOrder.cs" />
+    <Compile Include="Domain\HRM\HealthAndInsurance\PatientResult.cs" />
+    <Compile Include="Domain\HRM\HealthAndInsurance\PatientResultDetail.cs" />
+    <Compile Include="Domain\HRM\LateComming.cs" />
+    <Compile Include="Domain\HRM\Attendance\WeeklyAttendance.cs" />
+    <Compile Include="Domain\HRM\Company\Announcment.cs" />
+    <Compile Include="Domain\HRM\Company\AnnouncmentDetail.cs" />
+    <Compile Include="Domain\HRM\Company\BranchCostCenter.cs" />
+    <Compile Include="Domain\HRM\Company\ClearanceProvider.cs" />
+    <Compile Include="Domain\HRM\Company\Company.cs" />
+    <Compile Include="Domain\HRM\Company\Holiday.cs" />
+    <Compile Include="Domain\HRM\Company\JobTitleMapping.cs" />
+    <Compile Include="Domain\HRM\Company\JobTitleMappingDetail.cs" />
+    <Compile Include="Domain\HRM\Company\JobTitleMappingDetailTemp.cs" />
+    <Compile Include="Domain\HRM\Company\JobTitleMappingMain.cs" />
+    <Compile Include="Domain\HRM\Company\JobTitleMappingMainTemp.cs" />
+    <Compile Include="Domain\HRM\Company\JobTitleMappingTemp.cs" />
+    <Compile Include="Domain\HRM\Company\RegionNation.cs" />
+    <Compile Include="Domain\HRM\Company\Weekend.cs" />
+    <Compile Include="Domain\HRM\Discipline\Appeal.cs" />
+    <Compile Include="Domain\HRM\Discipline\DisciplinaryCase.cs" />
+    <Compile Include="Domain\HRM\Discipline\Discipline.cs" />
+    <Compile Include="Domain\HRM\Discipline\DisciplineMeasuerByMoney.cs" />
+    <Compile Include="Domain\HRM\Discipline\DisciplineMeasures.cs" />
+    <Compile Include="Domain\HRM\Discipline\DisciplineMeasuresDetail.cs" />
+    <Compile Include="Domain\HRM\Discipline\DisciplineMeasuresType.cs" />
+    <Compile Include="Domain\HRM\Discipline\DisciplineRecord.cs" />
+    <Compile Include="Domain\HRM\Discipline\EmpDisciplinaryHearing.cs" />
+    <Compile Include="Domain\HRM\Discipline\EmpDisciplineMeasure.cs" />
+    <Compile Include="Domain\HRM\EmployeeDetail\Clearance.cs" />
+    <Compile Include="Domain\HRM\EmployeeDetail\Commitment.cs" />
+    <Compile Include="Domain\HRM\EmployeeDetail\Committee.cs" />
+    <Compile Include="Domain\HRM\EmployeeDetail\CommitteeMember.cs" />
+    <Compile Include="Domain\HRM\EmployeeDetail\CommitteMinute.cs" />
+    <Compile Include="Domain\HRM\EmployeeDetail\Competency.cs" />
+    <Compile Include="Domain\HRM\EmployeeDetail\Complain.cs" />
+    <Compile Include="Domain\HRM\EmployeeDetail\Contract.cs" />
+    <Compile Include="Domain\HRM\EmployeeDetail\Cosign.cs" />
+    <Compile Include="Domain\HRM\EmployeeDetail\Delegation.cs" />
+    <Compile Include="Domain\HRM\EmployeeDetail\Disability.cs" />
+    <Compile Include="Domain\HRM\EmployeeDetail\Emergency.cs" />
+    <Compile Include="Domain\HRM\EmployeeDetail\EmployeeAssociation.cs" />
+    <Compile Include="Domain\HRM\EmployeeDetail\EmployeeCourtAssociation.cs" />
+    <Compile Include="Domain\HRM\EmployeeDetail\EmployeeDetail.cs" />
+    <Compile Include="Domain\HRM\EmployeeDetail\ExitInterview.cs" />
+    <Compile Include="Domain\HRM\EmployeeDetail\Experience.cs" />
+    <Compile Include="Domain\HRM\EmployeeDetail\JobTitleCode.cs" />
+    <Compile Include="Domain\HRM\EmployeeDetail\Placement.cs" />
+    <Compile Include="Domain\HRM\EmployeeDetail\PlacementHistory.cs" />
+    <Compile Include="Domain\HRM\EmployeeDetail\Termination.cs" />
+    <Compile Include="Domain\HRM\HealthAndInsurance\AccidentMedicalRecord.cs" />
+    <Compile Include="Domain\HRM\HealthAndInsurance\AccidentRecord.cs" />
+    <Compile Include="Domain\HRM\HealthAndInsurance\CourtInsurance.cs" />
+    <Compile Include="Domain\HRM\HealthAndInsurance\EmployeeAccident.cs" />
+    <Compile Include="Domain\HRM\HealthAndInsurance\FixedAssetAccidentRecord.cs" />
+    <Compile Include="Domain\HRM\HealthAndInsurance\HealthAndInsurance.cs" />
+    <Compile Include="Domain\HRM\HealthAndInsurance\HealthRankAndValue.cs" />
+    <Compile Include="Domain\HRM\HealthAndInsurance\HealthRankAndValueSetting.cs" />
+    <Compile Include="Domain\HRM\HealthAndInsurance\Insurance.cs" />
+    <Compile Include="Domain\HRM\HealthAndInsurance\InsuranceCategory.cs" />
+    <Compile Include="Domain\HRM\HealthAndInsurance\InsuranceGroup.cs" />
+    <Compile Include="Domain\HRM\HealthAndInsurance\InsuranceType.cs" />
+    <Compile Include="Domain\HRM\HealthAndInsurance\OtherInsurance.cs" />
+    <Compile Include="Domain\HRM\HealthAndInsurance\PatientCard.cs" />
+    <Compile Include="Domain\HRM\HealthAndInsurance\PatientCardDetail.cs" />
+    <Compile Include="Domain\HRM\HealthAndInsurance\PatientsLeave.cs" />
+    <Compile Include="Domain\HRM\HealthAndInsurance\Prescription.cs" />
+    <Compile Include="Domain\HRM\HealthAndInsurance\ReferralForm.cs" />
+    <Compile Include="Domain\HRM\HealthAndInsurance\ReferralSheet.cs" />
+    <Compile Include="Domain\HRM\HealthAndInsurance\Restitution.cs" />
+    <Compile Include="Domain\HRM\HealthAndInsurance\Treatment.cs" />
+    <Compile Include="Domain\HRM\HealthAndInsurance\VehicleAccidentDetail.cs" />
+    <Compile Include="Domain\HRM\HrmConstants.cs" />
+    <Compile Include="Domain\HRM\HRMPlan\LeavePlan.cs" />
+    <Compile Include="Domain\HRM\HRMPlan\RecruitmentPlan.cs" />
+    <Compile Include="Domain\HRM\HRMPlan\TrainingPlan.cs" />
+    <Compile Include="Domain\HRM\LeaveManagment\Leave.cs" />
+    <Compile Include="Domain\HRM\LeaveManagment\LeaveEntitle.cs" />
+    <Compile Include="Domain\HRM\LeaveManagment\LeaveManagment.cs" />
+    <Compile Include="Domain\HRM\LeaveManagment\LeavePaid.cs" />
+    <Compile Include="Domain\Finance\AP\LeaveTransfer.cs" />
+    <Compile Include="Domain\Finance\AP\PaymentRequest\PaymentRequest.cs" />
+    <Compile Include="Domain\Finance\AP\PaymentRequest\PaymentRequestLine.cs" />
+    <Compile Include="Domain\HRM\LeaveManagment\LeaveReturn.cs" />
+    <Compile Include="Domain\HRM\LeaveManagment\MonthlyLeavePlan.cs" />
+    <Compile Include="Domain\HRM\LeaveManagment\MonthlyLeavePlanDetail.cs" />
+    <Compile Include="Domain\HRM\LeaveManagment\SickLeaveSetting.cs" />
+    <Compile Include="Domain\HRM\Letters\IncommingStatus.cs" />
+    <Compile Include="Domain\HRM\Letters\Incomming.cs" />
+    <Compile Include="Domain\HRM\Letters\Outgoing.cs" />
+    <Compile Include="Domain\HRM\Letters\OutgoingStatus.cs" />
+    <Compile Include="Domain\HRM\Payroll\EmployeePayroll.cs" />
+    <Compile Include="Domain\HRM\Payroll\PayrollInputs.cs" />
+    <Compile Include="Domain\HRM\Payroll\PayrollPeriod.cs" />
+    <Compile Include="Domain\HRM\Payroll\PayrollProcess.cs" />
+    <Compile Include="Domain\HRM\Payroll\Setting\BonusSetting.cs" />
+    <Compile Include="Domain\HRM\Payroll\Setting\PayrollAccounts.cs" />
+    <Compile Include="Domain\HRM\Payroll\Setting\PayrollContributionTypes.cs" />
+    <Compile Include="Domain\HRM\Payroll\Setting\PayrollCostCenter.cs" />
+    <Compile Include="Domain\HRM\Payroll\Setting\PayrollEmployeeAccount.cs" />
+    <Compile Include="Domain\HRM\Payroll\Setting\PayrollEmployeeCostCenter.cs" />
+    <Compile Include="Domain\HRM\Payroll\Setting\ContributionType.cs" />
+    <Compile Include="Domain\HRM\Payroll\Setting\PayrollCostAllocationSetting.cs" />
+    <Compile Include="Domain\HRM\Payroll\Setting\PerdimeSetting.cs" />
+    <Compile Include="Domain\HRM\Payroll\Vm\EmployeeSelectorVm.cs" />
+    <Compile Include="Domain\HRM\PerformanceManagment\EmployeeMeasurement.cs" />
+    <Compile Include="Domain\HRM\PerformanceManagment\EmployeeMeasurementDefinition.cs" />
+    <Compile Include="Domain\HRM\PerformanceManagment\EmployeePerformance.cs" />
+    <Compile Include="Domain\HRM\PerformanceManagment\EmployeePerformanceAction.cs" />
+    <Compile Include="Domain\HRM\PerformanceManagment\EmployeePerformanceScore.cs" />
+    <Compile Include="Domain\HRM\PerformanceManagment\EmpMeasurmentDefinition.cs" />
+    <Compile Include="Domain\HRM\PerformanceManagment\Measurement.cs" />
+    <Compile Include="Domain\HRM\PerformanceManagment\MeasurementDefinition.cs" />
+    <Compile Include="Domain\HRM\PerformanceManagment\PerformanceAction.cs" />
+    <Compile Include="Domain\HRM\PerformanceManagment\PerformanceBehavior.cs" />
+    <Compile Include="Domain\HRM\PerformanceManagment\PerformanceManagment.cs" />
+    <Compile Include="Domain\HRM\PerformanceManagment\PerformanceRank.cs" />
+    <Compile Include="Domain\HRM\PerformanceManagment\ProbationPerformance.cs" />
+    <Compile Include="Domain\HRM\PerformanceManagment\ProbationPerformanceDetail.cs" />
+    <Compile Include="Domain\HRM\PerformanceManagment\ProbationPerformanceSetting.cs" />
+    <Compile Include="Domain\HRM\PerformanceManagment\QuarterLength.cs" />
+    <Compile Include="Domain\HRM\Prohibition\Prohibition.cs" />
+    <Compile Include="Domain\HRM\RecruitmentManagment\ApplicantEducation.cs" />
+    <Compile Include="Domain\HRM\RecruitmentManagment\ApplicantExamResult.cs" />
+    <Compile Include="Domain\HRM\RecruitmentManagment\ApplicantExperience.cs" />
+    <Compile Include="Domain\HRM\RecruitmentManagment\ApplicantRegistration.cs" />
+    <Compile Include="Domain\HRM\RecruitmentManagment\ApplicantRegistrationViewModel.cs" />
+    <Compile Include="Domain\HRM\RecruitmentManagment\ApplicantScreeningResult.cs" />
+    <Compile Include="Domain\HRM\RecruitmentManagment\ApplicantTotalResult.cs" />
+    <Compile Include="Domain\HRM\RecruitmentManagment\ApplicantTraining.cs" />
+    <Compile Include="Domain\HRM\RecruitmentManagment\GeneratedMediaVacancyCodeViewModel.cs" />
+    <Compile Include="Domain\HRM\RecruitmentManagment\Recruitment.cs" />
+    <Compile Include="Domain\HRM\RecruitmentManagment\RecruitmentManagment.cs" />
+    <Compile Include="Domain\HRM\RecruitmentManagment\RecruitmentVacancy.cs" />
+    <Compile Include="Domain\HRM\RecruitmentManagment\Vacancy.cs" />
+    <Compile Include="Domain\HRM\RecruitmentManagment\VacancyForMediaViewModel.cs" />
+    <Compile Include="Domain\HRM\SalaryStructure\Rank.cs" />
+    <Compile Include="Domain\HRM\SalaryStructure\Salary.cs" />
+    <Compile Include="Domain\HRM\SalaryStructure\SalaryJobTitle.cs" />
+    <Compile Include="Domain\HRM\SalaryStructure\SalaryStructure.cs" />
+    <Compile Include="Domain\HRM\SalaryStructure\Step.cs" />
+    <Compile Include="Domain\HRM\SelfCare\ApplicantionForm.cs" />
+    <Compile Include="Domain\HRM\SelfCare\EducationRequest.cs" />
+    <Compile Include="Domain\HRM\SelfCare\ExperienceRequest.cs" />
+    <Compile Include="Domain\HRM\SelfCare\LeaveRequest.cs" />
+    <Compile Include="Domain\HRM\SelfCare\ManPowerPlanningRequest.cs" />
+    <Compile Include="Domain\HRM\SelfCare\MedicalRequest.cs" />
+    <Compile Include="Domain\HRM\SelfCare\OverTimeJobResult.cs" />
+    <Compile Include="Domain\HRM\SelfCare\OverTimeRequest.cs" />
+    <Compile Include="Domain\HRM\SelfCare\OverTimeRequestEmployee.cs" />
+    <Compile Include="Domain\HRM\SelfCare\PromotionRequest.cs" />
+    <Compile Include="Domain\HRM\SelfCare\RecruitmentRequest.cs" />
+    <Compile Include="Domain\HRM\SelfCare\RequestesStatus.cs" />
+    <Compile Include="Domain\HRM\SelfCare\SelfCare.cs" />
+    <Compile Include="Domain\HRM\SelfCare\TrainingApplicant.cs" />
+    <Compile Include="Domain\HRM\Templates\Template.cs" />
+    <Compile Include="Domain\HRM\TrainingEducation\CourseTracking.cs" />
+    <Compile Include="Domain\HRM\TrainingEducation\Education.cs" />
+    <Compile Include="Domain\HRM\TrainingEducation\NeedAssessment.cs" />
+    <Compile Include="Domain\HRM\TrainingEducation\Trainee.cs" />
+    <Compile Include="Domain\HRM\TrainingEducation\Training.cs" />
+    <Compile Include="Domain\HRM\TrainingEducation\TrainingAssessmentViewModel.cs" />
+    <Compile Include="Domain\HRM\TrainingEducation\TrainingEducation.cs" />
+    <Compile Include="Domain\HRM\TrainingEducation\TrainingStatus.cs" />
+    <Compile Include="Domain\InfoDesk\Enum.cs" />
+    <Compile Include="Domain\InfoDesk\InfoDeskConstants.cs" />
+    <Compile Include="Domain\InfoDesk\Support\AssignTicket.cs" />
+    <Compile Include="Domain\InfoDesk\Support\CustomerTicket.cs" />
+    <Compile Include="Domain\InfoDesk\Support\PriorityType.cs" />
+    <Compile Include="Domain\InfoDesk\Support\StatusType.cs" />
+    <Compile Include="Domain\InfoDesk\Support\SupportGroup.cs" />
+    <Compile Include="Domain\InfoDesk\Support\SupportGroupDetail.cs" />
+    <Compile Include="Domain\InfoDesk\Support\Ticket.cs" />
+    <Compile Include="Domain\InfoDesk\Support\TicketActivityDefinition.cs" />
+    <Compile Include="Domain\InfoDesk\Support\TicketDefinition.cs" />
+    <Compile Include="Domain\InfoDesk\Support\TicketStatusLog.cs" />
+    <Compile Include="Domain\InfoDesk\TicketType.cs" />
+    <Compile Include="Domain\Inventory\ArchiveModel\BinCardLine_Archive.cs" />
+    <Compile Include="Domain\Inventory\ArchiveModel\StoreRequisition_Archive.cs" />
+    <Compile Include="Domain\Inventory\BaseModel\BinCardLineBase.cs" />
+    <Compile Include="Domain\Inventory\BaseModel\StoreRequisitionBase.cs" />
+    <Compile Include="Domain\Inventory\BranchItemAssignment.cs" />
+    <Compile Include="Domain\Inventory\FuelRequisition.cs" />
+    <Compile Include="Domain\Inventory\GoodReceive.cs" />
+    <Compile Include="Domain\Inventory\GoodSellingLending.cs" />
+    <Compile Include="Domain\Inventory\InventoryConstants.cs" />
+    <Compile Include="Domain\Inventory\InventoryEnums.cs" />
+    <Compile Include="Domain\Inventory\InventoryItem.cs" />
+    <Compile Include="Domain\Inventory\InventoryPeriod.cs" />
+    <Compile Include="Domain\Inventory\InventoryStore.cs" />
+    <Compile Include="Domain\Inventory\Issue.cs" />
+    <Compile Include="Domain\Inventory\ItemInspection.cs" />
+    <Compile Include="Domain\Inventory\ItemTransferReceive.cs" />
+    <Compile Include="Domain\Inventory\ItemTransfer.cs" />
+    <Compile Include="Domain\Inventory\ProjectStores.cs" />
+    <Compile Include="Domain\Inventory\PropertyCount.cs" />
+    <Compile Include="Domain\Inventory\ViewModels\InventoryDataArchiveVm.cs" />
+    <Compile Include="Domain\Procurement\Contract\ContractTerminationAttachment.cs" />
+    <Compile Include="Domain\Procurement\Contract\ContractTerminationValidation.cs" />
+    <Compile Include="Domain\Procurement\Contract\ContractTermination.cs" />
+    <Compile Include="Domain\Procurement\Contract\ContractPaymentAttachment.cs" />
+    <Compile Include="Domain\Procurement\Contract\ContractManagementValidation.cs" />
+    <Compile Include="Domain\Procurement\Contract\ContractPaymentSchedule.cs" />
+    <Compile Include="Domain\Procurement\Contract\ContractPayment.cs" />
+    <Compile Include="Domain\Procurement\Contract\ContractPaymentGrn.cs" />
+    <Compile Include="Domain\Procurement\Contract\ContractRenewal.cs" />
+    <Compile Include="Domain\Procurement\Contract\ContractAttachment.cs" />
+    <Compile Include="Domain\Procurement\Contract\ContractPaymentValidation.cs" />
+    <Compile Include="Domain\Procurement\Contract\ContractRenewalValidation.cs" />
+    <Compile Include="Domain\Procurement\ForeignPurchase\ForeignPurchaseAccount.cs" />
+    <Compile Include="Domain\Procurement\ForeignPurchase\ForeignPurchaseCostValidation.cs" />
+    <Compile Include="Domain\Procurement\ForeignPurchase\ForeignPurchaseValidation.cs" />
+    <Compile Include="Domain\Procurement\ForeignPurchase\ForeignCurrencyProcess.cs" />
+    <Compile Include="Domain\Procurement\ForeignPurchase\ForeignPurchaseItemCost.cs" />
+    <Compile Include="Domain\Procurement\ForeignPurchase\ForeignPurchaseCost.cs" />
+    <Compile Include="Domain\Procurement\ForeignPurchase\ForeignPurchaseCostType.cs" />
+    <Compile Include="Domain\Procurement\ForeignPurchase\ForeignPurchaseFollowUpItems.cs" />
+    <Compile Include="Domain\Procurement\ForeignPurchase\ForeignPurchaseFollowUpStatus.cs" />
+    <Compile Include="Domain\Procurement\ForeignPurchase\ForeignPurchaseFollowUpSystemStatus.cs" />
+    <Compile Include="Domain\Procurement\Guarantee\GuaranteeRule.cs" />
+    <Compile Include="Domain\Procurement\Proforma\ProformPassFail.cs" />
+    <Compile Include="Domain\Procurement\Proforma\ProformTechnical.cs" />
+    <Compile Include="Domain\Procurement\PR\PurchaseRequisitionAssignment.cs" />
+    <Compile Include="Domain\Procurement\PR\PurchaseRequisitionAttachment.cs" />
+    <Compile Include="Domain\Procurement\PR\PurchaseRequisitionItem.cs" />
+    <Compile Include="Domain\Procurement\PR\PurchaseRequisitionPurchaseDepartmentValidation.cs" />
+    <Compile Include="Domain\Procurement\PR\PurchaseRequisitionReassignmentItem.cs" />
+    <Compile Include="Domain\Procurement\PR\PurchaseRequisitionReassignmentValidation.cs" />
+    <Compile Include="Domain\Procurement\PR\PurchaseRequisitionSecondValidation.cs" />
+    <Compile Include="Domain\Procurement\PR\PurchaseRequisitionUserDepartmentValidation.cs" />
+    <Compile Include="Domain\Procurement\PurchaseOrder\POPurchaseRequisition.cs" />
+    <Compile Include="Domain\Procurement\ServiceReceive.cs" />
+    <Compile Include="Domain\Procurement\Settings\InventoryItem.cs" />
+    <Compile Include="Domain\Procurement\PR\PurchaseRequisition.cs" />
+    <Compile Include="Domain\Inventory\PurchaseReturn.cs" />
+    <Compile Include="Domain\Inventory\Setting.cs" />
+    <Compile Include="Domain\Inventory\StockAdjustment.cs" />
+    <Compile Include="Domain\Inventory\StoreItemAssignment.cs" />
+    <Compile Include="Domain\Inventory\StoreKeeperAssignment.cs" />
+    <Compile Include="Domain\Inventory\StoreRequisition.cs" />
+    <Compile Include="Domain\Inventory\StoreReturn.cs" />
+    <Compile Include="Domain\Inventory\TemporaryGoodReceive.cs" />
+    <Compile Include="Domain\Procurement\Guarantee\Guarantee.cs" />
+    <Compile Include="Domain\Procurement\Guarantee\Bankguarantee.cs" />
+    <Compile Include="Domain\Procurement\Contract\ContractManagement.cs" />
+    <Compile Include="Domain\Procurement\Contract\ContractManagementItem.cs" />
+    <Compile Include="Domain\Procurement\CPOManagement\CPOManagement.cs" />
+    <Compile Include="Domain\Procurement\ForeignPurchase\ForeignPurchase.cs" />
+    <Compile Include="Domain\Procurement\ItemPriceIndex.cs" />
+    <Compile Include="Domain\Procurement\LC\LCManagement.cs" />
+    <Compile Include="Domain\Procurement\Need\AnnualNeedAssesment.cs" />
+    <Compile Include="Domain\Procurement\Need\AnnualNeedAssesmentItem.cs" />
+    <Compile Include="Domain\Procurement\Need\AnnualNeedAssesmentValidation.cs" />
+    <Compile Include="Domain\Procurement\Plan\ProcurementPlan.cs" />
+    <Compile Include="Domain\Procurement\Plan\ProcurementPlanItem.cs" />
+    <Compile Include="Domain\Procurement\Plan\ProcurementPlanValidation.cs" />
+    <Compile Include="Domain\Procurement\Settings\ProcurementConstants.cs" />
+    <Compile Include="Domain\Procurement\Settings\ProcurementEnums.cs" />
+    <Compile Include="Domain\Procurement\Settings\ProcurementPeriod.cs" />
+    <Compile Include="Domain\Procurement\Proforma\ParticipatingSupplier.cs" />
+    <Compile Include="Domain\Procurement\Proforma\ProformaEvaluationCriteria.cs" />
+    <Compile Include="Domain\Procurement\Proforma\ProformaEvaluationResult.cs" />
+    <Compile Include="Domain\Procurement\Proforma\ProformaItem.cs" />
+    <Compile Include="Domain\Procurement\Proforma\ProformaPurchase.cs" />
+    <Compile Include="Domain\Procurement\Proforma\PurchaseValidation.cs" />
+    <Compile Include="Domain\Procurement\Proforma\RequestedSupplier.cs" />
+    <Compile Include="Domain\Procurement\Proforma\WinningSupplier.cs" />
+    <Compile Include="Domain\Procurement\PurchaseOrder\PurchaseFollowUp.cs" />
+    <Compile Include="Domain\Procurement\PurchaseOrder\PurchaseOrder.cs" />
+    <Compile Include="Domain\Procurement\PurchaseOrder\PurchaseOrderDistribution.cs" />
+    <Compile Include="Domain\Procurement\PurchaseOrder\PurchaseOrderItem.cs" />
+    <Compile Include="Domain\Procurement\PurchaseOrder\PurchaseOrderValidation.cs" />
+    <Compile Include="Domain\Procurement\Settings\ProcurementPOType.cs" />
+    <Compile Include="Domain\Global\GlobalRuleValue.cs" />
+    <Compile Include="Domain\Procurement\Settings\ReportTemplate.cs" />
+    <Compile Include="Domain\Procurement\Settings\Purchaser.cs" />
+    <Compile Include="Domain\Procurement\Settings\SupplierCategory.cs" />
+    <Compile Include="Domain\Procurement\Settings\SupplierRank.cs" />
+    <Compile Include="Domain\Procurement\Supplier\ProcurementSupplier.cs" />
+    <Compile Include="Domain\Procurement\Tender\Lot\BidAwardedSupplier.cs" />
+    <Compile Include="Domain\Procurement\Tender\Lot\BidPParticipatingSuppliers.cs" />
+    <Compile Include="Domain\Procurement\Tender\Lot\BidPurchasingSuppliers.cs" />
+    <Compile Include="Domain\Procurement\Tender\Lot\Lot.cs" />
+    <Compile Include="Domain\Procurement\Tender\Lot\LotFinancialOffer.cs" />
+    <Compile Include="Domain\Procurement\Tender\Lot\LotItems.cs" />
+    <Compile Include="Domain\Procurement\Tender\Lot\LotEvaluationByDocument.cs" />
+    <Compile Include="Domain\Procurement\Proforma\ProformaPurchaseRequisition.cs" />
+    <Compile Include="Domain\Procurement\Tender\Lot\LotPurchaseRequisition.cs" />
+    <Compile Include="Domain\Procurement\Tender\Lot\LotRequiredDocument.cs" />
+    <Compile Include="Domain\Procurement\Tender\Lot\ParticipantsItem.cs" />
+    <Compile Include="Domain\Procurement\Tender\Tender.cs" />
+    <Compile Include="Domain\Procurement\Tender\TenderEvaluationCriteria.cs" />
+    <Compile Include="Domain\Procurement\Tender\TenderEvaluationResult.cs" />
+    <Compile Include="Domain\Procurement\Tender\TenderExtension.cs" />
+    <Compile Include="Domain\Procurement\Tender\TenderMessages.cs" />
+    <Compile Include="Domain\Procurement\Tender\TenderMinuteUploadDBModel.cs" />
+    <Compile Include="Domain\Procurement\Tender\TenderMinuteViewModel.cs" />
+    <Compile Include="Domain\Procurement\Tender\TenderTemplateFiles.cs" />
+    <Compile Include="Domain\Procurement\Tender\TenderCancellation.cs" />
+    <Compile Include="Domain\Procurement\Tender\TenderValidation.cs" />
+    <Compile Include="Domain\Production\ActivityModels.cs" />
+    <Compile Include="Domain\Production\BudgetAndCashFlow.cs" />
+    <Compile Include="Domain\Production\CostTracking.cs" />
+    <Compile Include="Domain\Production\IssueModels.cs" />
+    <Compile Include="Domain\Production\ProcessingModels.cs" />
+    <Compile Include="Domain\Production\ProductionConstants.cs" />
+    <Compile Include="Domain\Production\ProductionEnum.cs" />
+    <Compile Include="Domain\Production\ProductionOrderModels.cs" />
+    <Compile Include="Domain\Production\ProductionPlanModels.cs" />
+    <Compile Include="Domain\Production\ProductionStoreModels.cs" />
+    <Compile Include="Domain\Production\ProjectInputModels.cs" />
+    <Compile Include="Domain\Production\ProjectPeriodModels.cs" />
+    <Compile Include="Domain\Production\ResourceModels.cs" />
+    <Compile Include="Domain\Production\SellingPriceModels.cs" />
+    <Compile Include="Domain\Production\SettingModels.cs" />
+    <Compile Include="Localization\Resources.am.Designer.cs" />
+    <Compile Include="Localization\Resources.Designer.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+    <None Include="Domain\FleetManagement\FleetResource\Web.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Service Include="{508349B6-6B84-4DF5-91F0-309BEEBAD82D}" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="bin\Release\" />
+    <Folder Include="Domain\App_Data\" />
+    <Folder Include="Domain\Client Scripts\" />
+    <Folder Include="Localization\obj\" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Localization\Resources.am.resx" />
+    <EmbeddedResource Include="Localization\Resources.resx" />
+    <EmbeddedResource Include="Localization\Resources.ti.resx" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Domain\Budget\GAAP\105.png" />
+    <Content Include="Domain\Budget\GAAP\20.png" />
+    <Content Include="Domain\Budget\GAAP\26.png" />
+    <Content Include="Domain\Budget\GAAP\3.png" />
+    <Content Include="Domain\Budget\GAAP\34.png" />
+    <Content Include="Domain\Budget\GAAP\36.png" />
+    <Content Include="Domain\Budget\GAAP\38.png" />
+    <Content Include="Domain\Budget\GAAP\3g.png" />
+    <Content Include="Domain\Budget\GAAP\40.png" />
+    <Content Include="Domain\Budget\GAAP\54.png" />
+    <Content Include="Domain\Budget\GAAP\56.png" />
+    <Content Include="Domain\Budget\GAAP\6.png" />
+    <Content Include="Domain\Budget\GAAP\68.png" />
+    <Content Include="Domain\Budget\GAAP\6g.png" />
+    <Content Include="Domain\Budget\GAAP\descriptor.xml" />
+    <Content Include="Domain\Budget\GAAP\leadin.html" />
+    <Content Include="Domain\Budget\GAAP\topic.html" />
+    <Content Include="Domain\Budget\GAAP\topicg.html" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

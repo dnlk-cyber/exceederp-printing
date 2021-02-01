@@ -1,0 +1,16 @@
+﻿
+
+@(Html.Kendo().DropDownListFor(m => m)
+      //.Name("ItemType")
+      .ValuePrimitive(true)
+      .OptionLabel("Select Type")
+      .DataTextField("Name")
+          .DataValueField("Name")
+      .Filter("contains")
+      .DataSource(dataSource =>
+      {
+          dataSource.Read(read => read.Action("GetItemTypes", "DataProvider", new { area = "Inventory" }))
+              .ServerFiltering(false);
+      })
+      )
+@Html.ValidationMessageFor(m => m)

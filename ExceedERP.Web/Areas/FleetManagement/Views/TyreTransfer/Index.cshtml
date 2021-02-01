@@ -1,0 +1,264 @@
+﻿@model ExceedERP.Core.Domain.FleetManagement.FleetTireManagement.TyreTransfer
+@{
+    ViewBag.Title = "Tyre Transfer";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend> Tyre Transfer  </legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetTireManagement.TyreTransfer>()
+    .Name("grid")
+    .Columns(columns =>
+    {
+     
+ 
+        columns.Bound(e => e.FromEquipment).Width(140);
+        columns.Bound(e => e.ToEquipment).Width(140);
+        columns.Bound(e => e.TyreSerialNo).Width(120);
+        columns.Bound(e => e.DateCreated).Format("{0:d}").Width(100);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(200);
+
+
+    })
+                .ToolBar(commands => commands.Create())
+      .Editable(editable =>
+      {
+          editable.Window(w => w.Title("Tyre Transfer"));
+          editable.Mode(GridEditMode.PopUp).TemplateName("TyreTransferEditor");
+          editable.DisplayDeleteConfirmation("Are You Sure To Remove Transfer");
+      })
+     .HtmlAttributes(new { style = "height: 520px;" })
+                          .Pageable(pageable => pageable
+                                            .Input(true)
+                                            .Numeric(false)
+                                            .Refresh(true)
+                                            .PageSizes(true)
+                                            .ButtonCount(5))
+
+                                .Scrollable()
+                                .Sortable()
+                                .Filterable()
+                                .Groupable()
+                                .Scrollable(h => h.Height(500))
+                                       .ClientDetailTemplateId("template")
+                                  .Groupable().Events(ev => { ev.DetailExpand("onDetailExpandUser"); ev.DataBound("onDataBound"); })
+ 
+    .DataSource(dataSource => dataSource
+        .Ajax()
+        .ServerOperation(false)
+        .Model(model =>
+              {
+                  model.Id(p => p.TyreTransferId);
+               
+              })                          .Events(ev => ev
+                                    .Error("error_handler(\"grid\")")
+                                    .RequestStart("onRequestStart(\"grid\")")
+                                    .RequestEnd("onRequestEnd(\"grid\")"))
+                        .Create(update => update.Action("TyreTransfer_Create", "TyreTransfer"))
+                                    .Read(read => read.Action("TyreTransferByFleet_Read", "TyreTransfer"))
+                        .Update(update => update.Action("TyreTransfer_Update", "TyreTransfer"))
+                        .Destroy(update => update.Action("TyreTransfer_Destroy", "TyreTransfer"))
+  )
+)
+
+
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                                            .Name("tabStrip_#=TyreTransferId#")
+            .SelectedIndex(0)
+            .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+            .Items(items =>
+            {
+                items.Add().Text("Detail").Content(
+                    @<text>
+                        <div>
+                            <div class="box">
+
+                                <div class="box-col">
+
+                                    # if (IsSendForApproval == false || IsSendForApproval == "false")
+                                    {#
+
+                                    <a href='@Url.Action("TyreTransfer_SendForOnlineApproval", "TyreTransferApproval")/?EId=#=TyreTransferId#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                                    # }#
+                                </div>
+                            </div>
+                            <div class="demo-section k-header export-app">
+                                <div class="demo-section content-wrapper">
+
+                                    <form>
+
+                                        
+                                        <div class="row">
+                                            <div class="col-md-1">
+                                            </div>
+                                            <div class="col-md-6">
+                                                <div class="form-group">
+                                                    <div class="label">
+                                                        @Html.LabelFor(model => model.Description)
+                                                    </div>
+                                                    <div>
+                                                        #=Description#
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            </div>
+                                            <div class="row">
+                                                <div class="col-md-1">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <div class="form-group">
+                                                        <div class="label">
+                                                            @Html.LabelFor(model => model.CreatedBy)
+                                                        </div>
+                                                        <div>
+                                                            #=CreatedBy#
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <div class="form-group">
+                                                        <div class="label">
+                                                            @Html.LabelFor(model => model.DateCreated)
+                                                        </div>
+                                                        <div>
+                                                            #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-2">
+                                                    <div class="form-group">
+                                                        <div class="label">
+                                                            @Html.LabelFor(model => model.ModifiedBy)
+                                                        </div>
+                                                        <div>
+
+                                                            #=ModifiedBy#
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-2">
+                                                    <div class="form-group">
+                                                        <div class="label">
+                                                            @Html.LabelFor(model => model.LastModified)
+                                                        </div>
+                                                        <div>
+                                                            #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+ 
+</form>
+
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </text>
+
+
+            );
+            
+          
+                items.Add().Text(" Approval").Content(@<text>
+
+                @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetTireManagement.TyreTransferApproval>()
+                                                                                        .Name("TyreTransferApproval#=TyreTransferId#")
+                        .Columns(columns =>
+                        {
+                            columns.Bound(o => o.Status).EditorTemplateName("ApprovalEditor").Width(126);
+
+                            columns.Bound(o => o.Remark).Width(200);
+                            columns.Bound(c => c.CreatedBy).Width(150);
+                            columns.Bound(c => c.DateCreated).Format("{0:yyyy-MM-dd}").Width(150);
+                            columns.Command(command => { command.Edit(); }).Width(250);
+
+                        }).Events(ev =>
+                        {
+                            ev.DataBound("approveonDataBound");
+                        })
+                             .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                       .DataSource(dataSource => dataSource
+                            .Ajax()
+                            .PageSize(5)
+                                                            .Model(model =>
+                                      {
+                                          model.Id(p => p.TyreTransferApprovalId);
+                                          model.Field(p => p.CreatedBy).Editable(false);
+                                          model.Field(p => p.DateCreated).Editable(false);
+                                      })
+                                                           
+                                                                                .Events(ev => ev
+                                                    .Error("error_handler(\"TyreTransferApproval#=TyreTransferId#\")")
+                                                    .RequestStart("onRequestStart(\"TyreTransferApproval#=TyreTransferId#\")")
+                                                    .RequestEnd("onRequestEnd(\"TyreTransferApproval#=TyreTransferId#\")"))
+                                                                                                           .Create(update => update.Action("TyreTransfer_Approve", "TyreTransferApproval", new { EId = "#=TyreTransferId#" }))
+                                                                                             .Read(read => read.Action("TyreTransferApproval_Read", "TyreTransferApproval", new { EId = "#=TyreTransferId#" }))
+                                                                           .Update(update => update.Action("TyreTransfer_Approve", "TyreTransferApproval"))
+
+
+                                                      )
+                                               .ToClientTemplate())
+                </text>
+                );
+            })
+                                                                                                                                                                                                                                                                                .ToClientTemplate())
+</script>
+
+
+
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 700px;
+    }
+</style>
+<script type="text/javascript">
+    
+ 
+    var IsApproved;
+    var IsSendForApproved;
+    function onDetailExpandUser(e) {
+        var masterRow = e.masterRow;
+
+        var masterGrid = $("#grid").data("kendoGrid");
+
+        var masterDataItem = masterGrid.dataItem(masterRow);
+        IsApproved = masterDataItem.IsOnlineApproved;
+        IsSendForApproved = masterDataItem.IsSendForApproval;
+    }
+    function onDataBound(e) {
+        var grid = this;
+
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+            console.log(dataItem.IsOnlineApproved);
+            if (dataItem.IsSendForApproval == true || dataItem.IsSendForApproval == "true") {
+                console.log("Approved");
+                $(this).find(".k-grid-edit").remove();
+                $(this).find(".k-grid-delete").remove();
+            }
+        });
+    }
+
+      function approveonDataBound(e) {
+          var grid = this;
+
+          grid.tbody.find("tr[role='row']").each(function () {
+              var dataItem = grid.dataItem(this);
+              if (dataItem.Status == "Approve" || IsApproved == true) {
+                  console.log("Approved");
+                  $(this).find(".k-grid-edit").remove();
+                  $(this).find(".k-grid-delete").remove();
+              }
+          });
+      }
+      
+  </script>

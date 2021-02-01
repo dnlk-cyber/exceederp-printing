@@ -1,0 +1,362 @@
+﻿@using ExceedERP.Core.Domain.Common.HRM
+@using ExceedERP.Core.Domain.HRM.Letters
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<Legend>@Resources.NavigatorLetter_IncommingLetter</Legend>
+@(Html.Kendo().Grid<Incomming>()
+          .Name("Incomming")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.LettersRefNo).Width(120);//.Filterable(ftb => ftb.Cell(cell => cell.Operator("contains")));
+          columns.Bound(c => c.Owner).EditorTemplateName("LetterOwner").Width(100);
+          columns.Bound(c => c.LetterDateAmmharic).Width(200).EditorTemplateName("Calander");
+          columns.Bound(c => c.RecivedDateAmharic).Width(200).EditorTemplateName("Calander");
+          columns.Bound(c => c.Subject).Width(90);
+          columns.Bound(c => c.Folder).Width(90);
+          columns.Bound(c => c.Cluster).Width(90);
+          //columns.Bound(c => c.NoOfAttachment).Width (120);
+          //columns.Bound(c => c.Remark);
+          columns.Command(command =>
+          {
+              if (HttpContext.Current.User.IsInRole("HR_Letters_User"))
+              {
+
+                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+              }
+              if (HttpContext.Current.User.IsInRole("HR_Admin"))
+              {
+                  command.Destroy().Text(Resources.ActionButton_Cancel);
+              }
+          }).Width(200);
+      })
+      .ToolBar(toolbar =>
+      {
+          
+          toolbar.Template(@<text>
+                               <div class="toolbar">
+                                   <label class="category-label" for="LettersRefNo">Ref No:</label>
+                                   @(Html.Kendo().DropDownList()
+                                         .Name("LettersRefNo")
+                                         .OptionLabel(Resources.Select)
+                                         .DataTextField("Text")
+                                         .DataValueField("LettersRefNo")
+                                         .ValuePrimitive(false)
+                                         .Events(e => e.Change("categoriesChange"))
+                                         .HtmlAttributes(new {style = "width: 150px;"})
+                                         .DataSource(ds =>
+                                         {
+                                             ds.Read("GetLetterReferenceNo", "Incoming", new {Area = "HRM"});
+                                         })
+                                         )
+                               </div>
+ @if (HttpContext.Current.User.IsInRole("HR_Letters_User"))
+ {
+     @item.CreateButton(Resources.ActionButton_AddNewRecord)
+ }
+        </text>);
+      })
+                    .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("Incoming").Window(window => { window.Title(Resources.NavigatorLetter_IncommingLetter); window.Scrollable(false); }))
+      .Selectable(selectable => {
+            selectable.Mode(GridSelectionMode.Single);
+            selectable.Type(GridSelectionType.Row);
+      })
+          .Scrollable(h => h.Height(500))
+             .Groupable()
+                      .Sortable(sortable =>
+                      {
+                          sortable.SortMode(GridSortMode.SingleColumn);
+                      })
+               .Filterable()
+                .Events(e =>
+                {
+                    e.Save("GetDate");
+                    e.Edit("GetDate");
+                })
+
+             .Pageable(pageable => pageable
+                                        .Input(true)
+                                        .Numeric(false)
+                                        .Refresh(true)
+                                        .PageSizes(true)
+                                        .ButtonCount(5))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+                .Events(events =>
+                                      {
+
+                                          events.Error("error_handler(\"Incomming\")");
+                                          events.RequestStart("onRequestStart(\"Incomming\")");
+                                          events.RequestEnd("onRequestEnd(\"Incomming\")");
+                                      })
+                       
+          .Model(model => model.Id(p => p.IncommingId))
+          .Read(read => read.Action("Incomming_Read", "Incoming"))
+          .Create(create => create.Action("Incomming_Create", "Incoming"))
+          .Update(update => update.Action("Incomming_Update", "Incoming"))
+          .Destroy(destroy => destroy.Action("Incomming_Destroy", "Incoming"))
+          ).ClientDetailTemplateId("template")
+)
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                    .Name("tabstrip_#=IncommingId#")
+    .SelectedIndex(0)
+    .Items(items =>
+     {
+         items.Add().Text(Resources.HR_Letters_IncommingStatus_IncommingStatus).Content(
+            @<text>
+                @(Html.Kendo().Grid<IncommingStatus>()
+              .Name("IncommingStatusgrid")
+      .Columns(columns =>
+      {
+          // columns.Bound(c => c.Incomming);
+          columns.Bound(c => c.DateAmharic).EditorTemplateName("Calander").Width(200);
+          columns.Bound(c => c.Decsion);
+          columns.Bound(c => c.Remark);
+          columns.Command(command =>
+          {
+              if (HttpContext.Current.User.IsInRole("HR_Letters_User"))
+              {
+                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+              }
+              if (HttpContext.Current.User.IsInRole("HR_Admin"))
+              {
+                  command.Destroy().Text(Resources.ActionButton_Cancel);
+              }
+          }).Width(200);
+      })
+      .ToolBar(toolbar =>
+      {
+          if (HttpContext.Current.User.IsInRole("HR_Letters_User"))
+          {
+              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+          }
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Scrollable()
+              .Events(x => { x.Save("GetStatusDate"); 
+               x.Edit("GetStatusDate");})
+      .DataSource(dataSource => dataSource
+          .Ajax()
+                   .Events(events =>
+                                              {
+
+                                                  events.Error("error_handler(\"IncommingStatusgrid\")");
+                                                  events.RequestStart("onRequestStart(\"IncommingStatusgrid\")");
+                                                  events.RequestEnd("onRequestEnd(\"IncommingStatusgrid\")");
+                                              })
+                                  
+          .Model(model => model.Id(p => p.IncommingStatusId))
+                  .Read(read => read.Action("IncommingStatus_Read", "IncomingStatus", new { id = "#=IncommingId#" }))
+          .Create(create => create.Action("IncommingStatus_Create", "IncomingStatus", new { id = "#=IncommingId#" }))
+          .Update(update => update.Action("IncommingStatus_Update", "IncomingStatus"))
+          .Destroy(destroy => destroy.Action("IncommingStatus_Destroy", "IncomingStatus"))
+      ).ToClientTemplate()
+                )
+
+            </text>
+             );
+
+         //*********************************Attachment***********************************************************//
+         items.Add().Text(Resources .HR_File ).Content(
+            @<text>
+
+                @(Html.Kendo().Grid<Attachment>()
+              .Name("AttachmentGrid_#=IncommingId#")
+      .Columns(columns =>
+      {
+
+          columns.Bound(c => c.Description);
+          //columns.Bound(c => c.Reference);
+          columns.Bound(c => c.FileType).ClientTemplate(Html.ActionLink("DownLoad", "DownloadFile", new { filename = "#=IncommingId#" }).ToHtmlString()); 
+          // columns.Bound(c => c.Remark);
+          columns.Command(command =>
+          {
+             command.Destroy().Text(Resources.ActionButton_Cancel);
+              //command.Custom("Download").Click("DownloadAttachmnets");
+          }).Width(300);
+
+      })
+                .Events(e => e.Edit("onGridEdit"))
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+              .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("Upload").Window(window =>
+              {
+                  window.Scrollable(false);
+                  window.Title(Resources .HR_Upload_File);
+              }))
+      .Scrollable()
+               .Selectable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+                                          .Events(events =>
+                                                      {
+
+                                                          events.Error("error_handler(\"AttachmentGrid_#=IncommingId#\")");
+                                                          events.RequestStart("onRequestStart(\"AttachmentGrid_#=IncommingId#\")");
+                                                          events.RequestEnd("onRequestEnd(\"AttachmentGrid_#=IncommingId#\")");
+                                                      })
+          .Model(model => model.Id(p => p.AttachmentId))
+                           .Read(read => read.Action("Attachments_Read", "Attachment", new { Area = "Common", attachmentReferenceType = "IncomingLetter", id = "#=IncommingId#", fileOwner = "#=IncommingId#" }))
+                                           .Create(create => create.Action("Attachments_Create", "Attachment", new { Area = "Common", attachmentReferenceType = "IncomingLetter", id = "#=IncommingId#", fileOwner = "#=IncommingId#" }))
+
+                          .Destroy(destroy => destroy.Action("Attachments_Destroy", "Incoming"))
+
+          ).ToClientTemplate()
+                )
+            </text>
+    );
+         //*****************************************************************************************************//
+         
+     }).ToClientTemplate())
+</script>
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 700px;
+    }
+</style>
+
+
+
+<script>
+    function DownloadAttachmnets(e) {
+
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        var dd = dataItem.Description;
+        var id = dataItem.Reference;
+      $.ajax({
+
+            url: '@Url.Action("Download", "Incoming")',
+          contentType: "application/json; charset=utf-8",
+          data: { 'data': dd ,'id':id},
+          type: 'GET',
+          cache: false,
+          success: function (result) {
+              r = result;
+}
+
+        });
+
+    }
+</script>
+<script>
+    //function error_handler(e) {
+    //    if (e.errors) {
+    //        var message = "Errors:\n";
+    //        $.each(e.errors, function (key, value) {
+    //            if ('errors' in value) {
+    //                $.each(value.errors, function () {
+    //                    message += this + "\n";
+    //                });
+    //            }
+    //        });
+    //        alert(message);
+
+    //    }
+
+    //}
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+    function onGridEdit(e) {
+        e.container.find(".k-button.k-grid-update").hide();
+        e.container.find(".k-button.k-grid-cancel").hide();
+
+    }
+</script>
+<script>
+    function GetDate() {
+
+        var x = AssignDate();
+        var y = x;
+        $("#LetterDateAmmharic").trigger("change");
+        $("#RecivedDateAmharic").trigger("change");
+        for (var o in y) {
+            $.ajax({
+                contentType: "application/json; charset=utf-8",
+                url: '@Url.Action("SetDate", "Incoming")',
+                data: { name: y[o].id, value: y[o].date },
+                type: 'GET',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                }
+
+            });
+        }
+    }
+
+</script>
+<script>
+    function AssignDate() {
+        var list = AssignDates();
+        return list;
+    }
+
+</script>
+
+<script>
+    function GetStatusDate() {
+
+        var x = AssignDate();
+        var y = x;
+        $("#DateAmharic").trigger("change");
+       
+        for (var o in y) {
+            $.ajax({
+                contentType: "application/json; charset=utf-8",
+                url: '@Url.Action("SetDate", "IncomingStatus")',
+                data: { name: y[o].id, value: y[o].date },
+                type: 'GET',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                }
+
+            });
+        }
+    }
+
+</script>
+
+<script>
+    function categoriesChange() {
+        var value = this.value(),
+		 	 grid = $("#Incomming").data("kendoGrid");
+
+        if (value) {
+            grid.dataSource.filter({ field: "LettersRefNo", operator: "eq", value: parseInt(value) });
+        } else {
+            grid.dataSource.filter({});
+        }
+    }
+</script>
+
+<style>
+    #grid .k-grid-toolbar {
+        padding: .6em 1.3em;
+    }
+
+    .category-label {
+        vertical-align: middle;
+        padding-right: .5em;
+    }
+
+    #category {
+        vertical-align: middle;
+    }
+
+    .toolbar {
+        float: right;
+    }
+</style>

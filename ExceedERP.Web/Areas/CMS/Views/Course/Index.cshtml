@@ -1,0 +1,44 @@
+﻿<legend>Courses</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.CMS.CMSCourse>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Name);
+          columns.Bound(c => c.Code);
+
+          columns.Bound(c => c.CreditHours);
+          
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+          toolbar.Create();
+          toolbar.Excel();
+          toolbar.Pdf();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Pageable()
+      .Navigatable()
+      .Selectable(selectable => {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable => {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Filterable()
+      .Scrollable(s => s.Height(700))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.CMSCourseId))
+
+          .Events(ev => ev
+                    .Error("error_handler(\"grid\")")
+                    .RequestStart("onRequestStart(\"grid\")")
+                    .RequestEnd("onRequestEnd(\"grid\")"))
+
+          .Read(read => read.Action("CMSCourses_Read", "Course"))
+          .Create(create => create.Action("CMSCourses_Create", "Course"))
+          .Update(update => update.Action("CMSCourses_Update", "Course"))
+          .Destroy(destroy => destroy.Action("CMSCourses_Destroy", "Course"))
+      )
+)

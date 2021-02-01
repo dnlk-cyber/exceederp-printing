@@ -1,0 +1,43 @@
+﻿@using ExceedERP.Core.Domain.Procurement.Settings
+<legend>Supplier Category</legend>
+@(Html.Kendo().Grid<SupplierCategory>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Category).Width(200);
+          columns.Bound(c => c.Description).Width(200);
+
+         
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .HtmlAttributes(new { style = "height: 550px;" })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+                              toolbar.Excel();
+                              // toolbar.Pdf();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Pageable()
+      .Filterable()
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Events(ev => ev
+              .Error("error_handler(\"grid\")")
+              .RequestStart("onRequestStart(\"grid\")")
+              .RequestEnd("onRequestEnd(\"grid\")"))
+          .Model(
+              model =>
+              {
+                  model.Id(p => p.SupplierCategoryID);
+                  model.Field(p => p.OrgBranchName).Editable(false);
+                  model.Field(p => p.CreatedBy).Editable(false);
+                  model.Field(p => p.ModifiedBy).Editable(false);
+                  model.Field(p => p.LastModified).Editable(false);
+                  model.Field(p => p.DateCreated).Editable(false);
+              })
+          .Read(read => read.Action("SupplierCategories_Read", "SupplierCategory"))
+          .Create(create => create.Action("SupplierCategories_Create", "SupplierCategory"))
+          .Update(update => update.Action("SupplierCategories_Update", "SupplierCategory"))
+          .Destroy(destroy => destroy.Action("SupplierCategories_Destroy", "SupplierCategory"))
+      ))

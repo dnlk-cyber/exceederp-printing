@@ -1,0 +1,44 @@
+﻿@using System.Collections
+<legend>Retained Earning Account</legend>
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Finance.GlRetainedEarningAccount>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+           columns.Bound(c => c.AccountCode).EditorTemplateName("AccountCode").Width(150);
+          columns.Bound(c => c.AccountDesc).Width(150);
+          columns.Bound(c => c.Type).Width(150);
+          columns.Command(command => { command.Edit(); }).Width(380);
+      })
+      .ToolBar(toolbar => {
+             toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .HtmlAttributes(new { style = "height: 550px;" })
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(5))
+
+      .Scrollable()
+      .Sortable()
+      .Filterable()
+      .Groupable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(
+              model =>
+              {
+                  model.Id(p => p.GlRetainedEarningAccountId);
+                  model.Field(p => p.AccountDesc).Editable(false);
+                  model.Field(p => p.CreatedBy).Editable(false);
+                  model.Field(p => p.ModifiedBy).Editable(false);
+                  model.Field(p => p.LastModified).Editable(false);
+                  model.Field(p => p.DateCreated).Editable(false);
+              })
+          .Read(read => read.Action("GlRetainedEarningAccounts_Read", "GlRetainedEarningAccount"))
+          .Create(create => create.Action("GlRetainedEarningAccounts_Create", "GlRetainedEarningAccount"))
+          .Update(update => update.Action("GlRetainedEarningAccounts_Update", "GlRetainedEarningAccount"))
+      ))

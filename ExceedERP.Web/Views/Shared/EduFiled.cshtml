@@ -1,0 +1,10 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@(Html.Kendo().DropDownList().BindTo((IEnumerable)ViewData["EduFiledList"])
+.OptionLabel(Resources.Select)
+        .DataTextField("Description")
+        .DataValueField("LookupId")
+ .Name("LookupId"))
+
+
+

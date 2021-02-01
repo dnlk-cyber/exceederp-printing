@@ -1,0 +1,121 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.Finance.Common
+<legend>Payment Method</legend>
+@(Html.Kendo().Grid<PaymentMethod>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Method).Width(150);
+          columns.ForeignKey(p => p.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("AllBranchSelector").Width(150);
+          columns.Bound(c => c.ApplyToAr).Width(112).ClientTemplate(
+              "<input type='checkbox' disabled = 'true' value='#= ApplyToAr#' " +
+              "# if (ApplyToAr) { #" +
+              "checked='checked'" +
+              "# } #" +
+              "/>"
+              );
+          columns.Bound(c => c.ArAccountCode).EditorTemplateName("AccountCode").Width(220);
+          columns.Bound(c => c.ApplyToAp).Width(112).ClientTemplate(
+              "<input type='checkbox' disabled = 'true' value='#= ApplyToAp#' " +
+              "# if (ApplyToAp) { #" +
+              "checked='checked'" +
+              "# } #" +
+              "/>"
+              );
+          columns.Bound(c => c.ApAccountCode).EditorTemplateName("AccountCode").Width(220);
+          columns.Bound(c => c.Enable).Width(90).ClientTemplate(
+              "<input type='checkbox' disabled = 'true' value='#= Enable#' " +
+              "# if (Enable) { #" +
+              "checked='checked'" +
+              "# } #" +
+              "/>"
+              );
+          columns.Bound(c => c.Description).Width(120);
+
+          columns.Bound(c => c.OrgBranchName).Width(100).Hidden(true);
+          columns.Bound(c => c.DateCreated).Width(150).Format("{0:dd/MM/yyyy}").Hidden(true);
+          columns.Bound(c => c.LastModified).Width(150).Format("{0:dd/MM/yyyy}").Hidden(true);
+          columns.Bound(c => c.CreatedBy).Width(100).Hidden(true);
+          columns.Bound(c => c.ModifiedBy).Width(100).Hidden(true);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+                              toolbar.Excel();
+                              //// toolbar.Pdf();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .HtmlAttributes(new { style = "height: 550px;" })
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(5))
+
+      .Scrollable()
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Filterable()
+      .Groupable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.PaymentMethodID))
+          .Events(events => events .Error("error_handler_one"))
+          .Read(read => read.Action("PaymentMethods_Read", "PaymentMethod"))
+          .Create(create => create.Action("PaymentMethods_Create", "PaymentMethod"))
+          .Update(update => update.Action("PaymentMethods_Update", "PaymentMethod"))
+          .Destroy(destroy => destroy.Action("PaymentMethods_Destroy", "PaymentMethod"))
+      ))
+
+
+<script type="text/javascript">
+   
+   
+
+
+    $(function() {
+        //$("#grid table").on("dblclick", "tr", function (e) {
+        //    var grid = $("#grid").data("kendoGrid");
+        //    grid.editRow($(this));
+        //})
+
+        $("#grid table").on("keydown", "tr", function(e) {
+            var grid = $("#grid").data("kendoGrid");
+            var code = (e.keyCode ? e.keyCode : e.which);
+
+            if (code === 13) { //Enter keycode
+                $(e.srcElement).closest("tbody").focus();
+                setTimeout(function() {
+                    grid.saveRow();
+                });
+            }
+        });
+            var grid = $("#grid").data("kendoGrid");
+            grid.addRow();
+            $(".k-grid-edit-row").appendTo("#grid tbody");
+    });
+</script>
+
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 800px;
+        height: auto;
+    }
+
+    div.k-content {
+        overflow: hidden;
+        height: auto;
+    }
+
+    #popupwrapper img {
+        vertical-align: middle;
+    }
+</style>

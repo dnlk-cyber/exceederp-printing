@@ -1,0 +1,17 @@
+﻿<legend>Thing</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.Thing>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.Type);
+        columns.Bound(c => c.Name);
+        columns.Bound(c => c.UOM);
+        columns.Bound(c => c.IsActive);
+        columns.Bound(c => c.Remark);
+      })
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Read(read => read.Action("Things_Read", "Thing"))
+      )
+)

@@ -1,0 +1,29 @@
+﻿@using ExceedERP.Core.Localization
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.ProjectEquipmentHour>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.ProjectEquipmentId);
+        columns.Bound(c => c.PlannedHours);
+        columns.Bound(c => c.AvailableHours);
+        columns.Bound(c => c.UtilizedHours);
+        columns.Bound(c => c.AvailableEfficiency);
+        columns.Bound(c => c.UtilizedEfficiency);
+        columns.Bound(c => c.OverallEfficiency);
+        columns.Bound(c => c.Decription);
+        columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.ProjectEquipmentHourId))
+          .Read(read => read.Action("EquipmentHour_Read", "ProjectEquipmentHour"))
+          .Create(create => create.Action("EquipmentHour_Create", "ProjectEquipmentHour"))
+          .Update(update => update.Action("EquipmentHour_Update", "ProjectEquipmentHour"))
+          .Destroy(destroy => destroy.Action("EquipmentHour_Destroy", "ProjectEquipmentHour"))
+      )
+)

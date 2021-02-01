@@ -1,0 +1,13 @@
+﻿@using Kendo.Mvc.UI
+@(Html.Kendo().DropDownListFor(m => m)
+                      .AutoBind(false)
+                      .OptionLabel("Select Serial Definition...")
+                          .DataTextField("Description")
+                              .DataValueField("SerialDefinitionID")
+                      .DataSource(dataSource =>
+                      {
+                          dataSource.Read(read => read.Action("GetSerialDefinitionList", "CRMDataProvider").Data("GetThingIdValue"))
+                                    .ServerFiltering(true);
+                      })
+)
+@Html.ValidationMessageFor(m => m)

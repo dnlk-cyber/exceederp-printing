@@ -1,0 +1,770 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Data.Entity;
+using System.Linq;
+using System.Web.Mvc;
+using ExceedERP.Core.Domain.Finance;
+using ExceedERP.Core.Domain.Finance.GL;
+using ExceedERP.Core.Domain.Global;
+using ExceedERP.Core.Domain.Inventory;
+using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
+using ExceedERP.Helpers.Inventory;
+using ExceedERP.Web.Helpers;
+using Kendo.Mvc.Extensions;
+using Kendo.Mvc.UI;
+
+namespace ExceedERP.Web.Areas.Inventory.Controllers.Transfer
+{
+
+    public class TransferSendWithoutReqController : Controller
+    {
+        private ExceedDbContext db = new ExceedDbContext();
+        private InventoryTransferHelper transferHelper;
+
+        [AuthorizeRoles(InventoryConstants.PropertyStoreKeeper, InventoryConstants.PropertyApprover)]
+        public ActionResult Index()
+        {
+            PopulateCategories();
+            return View();
+        }
+        private void PopulateCategories()
+        {
+            var categories = db.ItemCategorys;
+            var items = db.InventoryItems;
+            var selecteditems = items.Select(
+                i => new
+                {
+                    Name = i.ItemCode + "_" + i.Name,
+                    ItemCode = i.ItemCode
+                }).ToList();
+            ViewData["Items"] = selecteditems;
+            ViewData["Category"] = categories;
+            ViewData["defaultCategory"] = categories.FirstOrDefault();
+
+            var inventoryPeriods = db.InventoryPeriods;
+            var selectedinventoryPeriods = inventoryPeriods.Select(
+             i => new
+             {
+                 Name = i.Name,
+                 GLPeriodId = i.InventoryPeriodId
+             }).AsQueryable();
+            ViewData["inventoryPeriods"] = selectedinventoryPeriods;
+
+            var stores = db.InventoryStores;
+            var suppliers = db.ProcurementSuppliers;
+            var employee = db.Person_Employee;
+            var selectedEmployee = employee.Select(i => new
+            {
+                Name = i.FirstNameEnglish + " " + i.MiddleNameEnglish + " " + i.LastNameEnglish,
+                Code = i.EmployeeId
+            }).AsQueryable();
+
+            ViewData["suppliers"] = suppliers;
+            ViewData["stores"] = stores;
+            ViewData["defaultstore"] = stores.First();
+            ViewData["personEmployees"] = selectedEmployee;
+        }
+
+        [AuthorizeRoles(InventoryConstants.PropertyStoreKeeper, InventoryConstants.PropertyApprover)]
+        public ActionResult ItemTransfers_Read([DataSourceRequest]DataSourceRequest request)
+        {
+            //List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
+            //IQueryable<ItemTransfer> itemtransfers = db.ItemTransfers.Where(x => x.StoreRequisitionID == 0).Where(x => mybraches.Contains(x.OrgBranchName));
+
+            List<string> userStores = UserInformationHelper.GetUserStores(User.Identity.Name);
+            IQueryable<ItemTransfer> itemtransfers = db.ItemTransfers.Where(x => x.StoreRequisitionID == 0).Where(x => userStores.Contains(x.FromStore));
+
+            DataSourceResult result = itemtransfers.ToDataSourceResult(request, itemTransfer => new
+            {
+                ItemTransferID = itemTransfer.ItemTransferID,
+                EmployeeId = itemTransfer.EmployeeId,
+                StoreRequisitionID = itemTransfer.StoreRequisitionID,
+                DocumentRef = itemTransfer.DocumentRef,
+                TransferDate = itemTransfer.TransferDate,
+                FromStore = itemTransfer.FromStore,
+                ToStore = itemTransfer.ToStore,
+                DeliveredBy = itemTransfer.DeliveredBy,
+                PlateNo = itemTransfer.PlateNo,
+                SupplierName = itemTransfer.SupplierName,
+                DriverType = itemTransfer.DriverType,
+                Status = itemTransfer.Status,
+                Remark = itemTransfer.Remark,
+                GLPeriodId = itemTransfer.GLPeriodId,
+                BranchId = itemTransfer.BranchId,
+                IsVoid = itemTransfer.IsVoid,
+                VoidBy = itemTransfer.VoidBy,
+                VoidTime = itemTransfer.VoidTime,
+                IsOnlineApproved = itemTransfer.IsOnlineApproved,
+                OnlineApprovedBy = itemTransfer.OnlineApprovedBy,
+                OnlineApprovedTime = itemTransfer.OnlineApprovedTime,
+                IsSendForApproval = itemTransfer.IsSendForApproval,
+                SendForApprovalBy = itemTransfer.SendForApprovalBy,
+                SendForApprovalTime = itemTransfer.SendForApprovalTime,
+                IsOnlineTransferred = itemTransfer.IsOnlineTransferred,
+                IsOnlineTransferredBy = itemTransfer.IsOnlineTransferredBy,
+                OnlineTransferredTime = itemTransfer.OnlineTransferredTime,
+            });
+
+            return Json(result);
+        }
+
+        [AuthorizeRoles(InventoryConstants.PropertyStoreKeeper)]
+        [AcceptVerbs(HttpVerbs.Post)]
+        public ActionResult ItemTransfers_Create([DataSourceRequest]DataSourceRequest request, ItemTransfer itemTransfer)
+        {
+            if (itemTransfer.GLPeriodId != 0)
+            {
+                var inventoryPeriod = db.InventoryPeriods.Find(itemTransfer.GLPeriodId);
+                if (inventoryPeriod != null)
+                {
+                    if (
+                        !((itemTransfer.TransferDate.Date >= inventoryPeriod.DateFrom) &&
+                          (itemTransfer.TransferDate.Date <= inventoryPeriod.DateTo)))
+                        ModelState.AddModelError("",
+                            "Transfer Date should be within the period: " + inventoryPeriod.Name + "(From " +
+                            inventoryPeriod.DateFrom.ToShortDateString() + " To " +
+                            inventoryPeriod.DateTo.ToShortDateString() + ")");
+
+                }
+                else
+                {
+                    ModelState.AddModelError("", "The selected Period is not defined.");
+                }
+            }
+            else
+            {
+                ModelState.AddModelError("", "Please select period.");
+            }
+
+            if (itemTransfer.TransferDate > DateTime.Today)
+            {
+                ModelState.AddModelError("future", "You are recording in future period,please correct the date.");
+            }
+
+            if (!String.IsNullOrEmpty(itemTransfer.DocumentRef))
+            {
+                var exists = db.ItemTransfers.Where(x => x.DocumentRef == itemTransfer.DocumentRef && x.IsVoid == false).ToList();
+
+                if (exists.Any())
+                {
+                    ModelState.AddModelError("Reference", itemTransfer.DocumentRef + " already exists in the system.");
+                }
+            }
+
+            if (ModelState.IsValid)
+            {
+                var entity = new ItemTransfer
+                {
+                    StoreRequisitionID = 0,
+                    EmployeeId = itemTransfer.EmployeeId,
+                    TransferDate = itemTransfer.TransferDate.Date,
+                    BranchId = ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreBranch(itemTransfer.FromStore),
+                    FromStore = itemTransfer.FromStore,
+                    ToStore = itemTransfer.ToStore,
+                    DeliveredBy = itemTransfer.DeliveredBy,
+                    PlateNo = itemTransfer.PlateNo,
+                    SupplierName = itemTransfer.SupplierName,
+                    DriverType = itemTransfer.DriverType,
+                    Status = Enum.GetName(typeof(OperationStatuses), 5),
+                    Remark = itemTransfer.Remark,
+                    GLPeriodId=itemTransfer.GLPeriodId,
+                    IsVoid = itemTransfer.IsVoid,
+                    VoidBy = itemTransfer.VoidBy,
+                    VoidTime = itemTransfer.VoidTime,
+                    IsOnlineApproved = itemTransfer.IsOnlineApproved,
+                    OnlineApprovedBy = itemTransfer.OnlineApprovedBy,
+                    OnlineApprovedTime = itemTransfer.OnlineApprovedTime,
+                    IsOnlineTransferred = itemTransfer.IsOnlineTransferred,
+                    IsOnlineTransferredBy = itemTransfer.IsOnlineTransferredBy,
+                    OnlineTransferredTime = itemTransfer.OnlineTransferredTime,
+                    DocumentRef = itemTransfer.DocumentRef,
+                    CreatedBy = User.Identity.Name,
+                    DateCreated = DateTime.Now,
+                    OrgBranchName = ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreBranch(itemTransfer.FromStore).ToString()
+                };
+
+                db.ItemTransfers.Add(entity);
+                db.SaveChanges();
+                itemTransfer.ItemTransferID = entity.ItemTransferID;
+                RequestedItem(entity);
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "transfer send with out requisition", "Success", User.Identity.Name, $"created transfer send {entity.ItemTransferID} ", Modules.Inventory);
+                #endregion
+            }
+
+            return Json(new[] { itemTransfer }.ToDataSourceResult(request, ModelState));
+        }
+
+        [AuthorizeRoles(InventoryConstants.PropertyStoreKeeper)]
+        [AcceptVerbs(HttpVerbs.Post)]
+        public ActionResult ItemTransfers_Update([DataSourceRequest]DataSourceRequest request, ItemTransfer itemTransfer)
+        {
+
+            if (itemTransfer.GLPeriodId != 0)
+            {
+                var inventoryPeriod = db.InventoryPeriods.Find(itemTransfer.GLPeriodId);
+                if (inventoryPeriod != null)
+                {
+                    if (
+                        !((itemTransfer.TransferDate.Date >= inventoryPeriod.DateFrom) &&
+                          (itemTransfer.TransferDate.Date <= inventoryPeriod.DateTo)))
+                        ModelState.AddModelError("",
+                            "Transfer Date should be within the period: " + inventoryPeriod.Name + "(From " +
+                            inventoryPeriod.DateFrom.ToShortDateString() + " To " +
+                            inventoryPeriod.DateTo.ToShortDateString() + ")");
+
+                }
+                else
+                {
+                    ModelState.AddModelError("", "The selected Period is not defined.");
+                }
+            }
+            else
+            {
+                ModelState.AddModelError("", "Please select period.");
+            }
+
+            if (itemTransfer.TransferDate > DateTime.Today)
+            {
+                ModelState.AddModelError("future", "You are recording in future period,please correct the date.");
+            }
+
+            if (!String.IsNullOrEmpty(itemTransfer.DocumentRef))
+            {
+                var exists = db.ItemTransfers.Where(x => x.ItemTransferID != itemTransfer.ItemTransferID).Where(x => x.DocumentRef == itemTransfer.DocumentRef && x.IsVoid == false).ToList();
+
+                if (exists.Any())
+                {
+                    ModelState.AddModelError("Reference", itemTransfer.DocumentRef + " already exists in the system.");
+                }
+            }
+
+            if (ModelState.IsValid)
+            {
+                var entity = new ItemTransfer
+                {
+                    ItemTransferID = itemTransfer.ItemTransferID,
+                    EmployeeId = itemTransfer.EmployeeId,
+                    StoreRequisitionID = itemTransfer.StoreRequisitionID,
+                    BranchId = ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreBranch(itemTransfer.FromStore),
+                    TransferDate = itemTransfer.TransferDate,
+                    FromStore = itemTransfer.FromStore,
+                    ToStore = itemTransfer.ToStore,
+                    DeliveredBy = itemTransfer.DeliveredBy,
+                    PlateNo = itemTransfer.PlateNo,
+                    SupplierName = itemTransfer.SupplierName,
+                    DriverType = itemTransfer.DriverType,
+                    Remark = itemTransfer.Remark,
+                    GLPeriodId=itemTransfer.GLPeriodId,
+                    IsVoid = itemTransfer.IsVoid,
+                    VoidBy = itemTransfer.VoidBy,
+                    VoidTime = itemTransfer.VoidTime,
+                    IsOnlineApproved = itemTransfer.IsOnlineApproved,
+                    OnlineApprovedBy = itemTransfer.OnlineApprovedBy,
+                    OnlineApprovedTime = itemTransfer.OnlineApprovedTime,
+                    IsOnlineTransferred = itemTransfer.IsOnlineTransferred,
+                    IsOnlineTransferredBy = itemTransfer.IsOnlineTransferredBy,
+                    OnlineTransferredTime = itemTransfer.OnlineTransferredTime,
+                    CreatedBy = itemTransfer.CreatedBy,
+                    DateCreated = itemTransfer.DateCreated,
+                    ModifiedBy = User.Identity.Name,
+                    LastModified = DateTime.Now,
+                    DocumentRef = itemTransfer.DocumentRef,
+                    OrgBranchName = ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreBranch(itemTransfer.FromStore).ToString()
+
+                };
+
+                db.ItemTransfers.Attach(entity);
+                db.Entry(entity).State = EntityState.Modified;
+                db.SaveChanges();
+
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "transfer send with out requisition", "Success", User.Identity.Name, $"updated transfer send {entity.ItemTransferID} ", Modules.Inventory);
+                #endregion
+            }
+
+            return Json(new[] { itemTransfer }.ToDataSourceResult(request, ModelState));
+        }
+
+        [AuthorizeRoles(InventoryConstants.PropertyStoreKeeper)]
+        [AcceptVerbs(HttpVerbs.Post)]
+        public ActionResult ItemTransfers_Destroy([DataSourceRequest]DataSourceRequest request, ItemTransfer itemTransfer)
+        {
+            if (ModelState.IsValid)
+            {
+                var entity = new ItemTransfer
+                {
+                    ItemTransferID = itemTransfer.ItemTransferID,
+                    EmployeeId = itemTransfer.EmployeeId,
+                    StoreRequisitionID = itemTransfer.StoreRequisitionID,
+                    TransferDate = itemTransfer.TransferDate,
+                    FromStore = itemTransfer.FromStore,
+                    ToStore = itemTransfer.ToStore,
+                    DeliveredBy = itemTransfer.DeliveredBy,
+                    PlateNo = itemTransfer.PlateNo,
+                    SupplierName = itemTransfer.SupplierName,
+                    DriverType = itemTransfer.DriverType,
+                    Status = itemTransfer.Status,
+                    Remark = itemTransfer.Remark,
+                    IsVoid = itemTransfer.IsVoid,
+                    VoidBy = itemTransfer.VoidBy,
+                    VoidTime = itemTransfer.VoidTime,
+                    IsOnlineApproved = itemTransfer.IsOnlineApproved,
+                    OnlineApprovedBy = itemTransfer.OnlineApprovedBy,
+                    OnlineApprovedTime = itemTransfer.OnlineApprovedTime,
+                    IsOnlineTransferred = itemTransfer.IsOnlineTransferred,
+                    IsOnlineTransferredBy = itemTransfer.IsOnlineTransferredBy,
+                    OnlineTransferredTime = itemTransfer.OnlineTransferredTime,
+                    DocumentRef = itemTransfer.DocumentRef
+                };
+
+                db.ItemTransfers.Attach(entity);
+                db.ItemTransfers.Remove(entity);
+                db.SaveChanges();
+                #region delete log
+                UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted item transfer number " + itemTransfer.ItemTransferID + " " + itemTransfer.DocumentRef);
+                #endregion
+            }
+
+            return Json(new[] { itemTransfer }.ToDataSourceResult(request, ModelState));
+        }
+
+        [AuthorizeRoles(InventoryConstants.PropertyStoreKeeper)]
+        public ActionResult SendForApproval(int id)
+        {
+            var record = db.ItemTransfers.Find(id);
+            if (record != null && !record.IsSendForApproval && !record.IsOnlineApproved && record.ItemTransferItem.Count > 0)
+            {
+                record.Status = Enum.GetName(typeof(OperationStatuses), 4);
+                record.IsSendForApproval = true;
+                record.SendForApprovalBy = User.Identity.Name;
+                record.SendForApprovalTime = DateTime.Now;
+                db.ItemTransfers.Attach(record);
+                db.Entry(record).State = EntityState.Modified;
+                db.SaveChanges();
+
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "transfer send with out requisition", "Success", User.Identity.Name, $"send for approval transfer send {id} ", Modules.Inventory);
+                #endregion
+            }
+            return RedirectToAction("Index");
+        }
+
+        [AuthorizeRoles(FinanceConstants.GeneralSubLedgerTransfer)]
+        public JsonResult TransferDistribution(string id, string description)
+        {
+            int myid = int.Parse(id);
+            var record = db.ItemTransfers.Find(myid);
+
+            if (record != null && record.IsOnlineApproved && !record.IsOnlineTransferred)
+            {
+                transferHelper = new InventoryTransferHelper();
+                string response = transferHelper.TransferSend(myid, description, User?.Identity?.Name ?? "");
+                if (response != "SUCCESS")
+                {
+                    var formattedData = new
+                    {
+                        Message = response,
+                        Status = "NOT_OK"
+                    };
+                    return Json(formattedData, JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                    var formattedData = new
+                    {
+                        Message = "Successfuly Transferred.",
+                        Status = "NOT_OK"
+                    };
+                    return Json(formattedData, JsonRequestBehavior.AllowGet);
+                }
+
+
+            }
+            if (record != null && !record.IsOnlineApproved)
+            {
+                var formattedData = new
+                {
+                    Message = "The record cannot be transfered before validation.",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+
+            if (record != null && record.IsOnlineTransferred)
+            {
+                var formattedData = new
+                {
+                    Message = "You cannot transfer this transaction, it is already transfered.",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+
+            return null;
+        }
+
+        [AuthorizeRoles(InventoryConstants.PropertyApprover)]
+        public JsonResult Void(int id)
+        {
+            var record = db.ItemTransfers.Find(id);
+            if (record != null && record.IsOnlineApproved && !record.IsVoid && !record.IsOnlineTransferred && record.ItemTransferItem.Count > 0)
+            {
+                var receive = db.ItemTransferReceive
+                    .Where(x => x.IsOnlineApproved)
+                    .Where(x => x.IsVoid == false)
+                    .Where(x => x.ItemTransferID == record.ItemTransferID).ToList();
+                if (receive.Any())
+                {
+                    var formattedData3 = new
+                    {
+                        Message = "The transfer is already received,hence can't be void.",
+                        Status = "NOT_OK"
+                    };
+                    return Json(formattedData3, JsonRequestBehavior.AllowGet);
+                }
+                record.Status = Enum.GetName(typeof(OperationStatuses), 11);
+                record.IsVoid = true;
+                record.VoidBy = User.Identity.Name;
+                record.VoidTime = DateTime.Now;
+                db.ItemTransfers.Attach(record);
+                db.Entry(record).State = EntityState.Modified;
+               // db.SaveChanges();
+                #region update stock based on the issue
+
+
+
+                foreach (ItemTransferItem i in record.ItemTransferItem)
+                {
+                    string itemCode = i.ItemCode;
+
+                    InventoryItem stockItem = db.InventoryItems.Find(itemCode);
+                    int storeBranchId = ExceedERP.Helpers.Inventory.InventoryHelper.GetStoreBranch(record.FromStore);
+                    #region stock
+                    BranchItemAssignment branchItem = db.BranchItemAssignments.Where(x => x.BranchId == storeBranchId).FirstOrDefault(x => x.ItemCode == i.ItemCode);
+                    StoreItemAssignment storeItem = db.StoreItemAssignments.FirstOrDefault(x => x.StoreCode == record.FromStore && x.ItemCode == itemCode);
+
+                    if (storeItem != null)
+                    {
+                        storeItem.Balance = storeItem.Balance + i.ShippedQuantity;
+                        db.Entry(storeItem).State = EntityState.Modified;
+                        //db.SaveChanges();
+                        #region update bin card
+
+                        #region bin card line
+                        BinCardLine binCardLine = new BinCardLine
+                        {
+                            StoreItemAssignment = storeItem,
+                            ReferenceDoc = "Void Transfer Send " + record.ItemTransferID,
+                            Date = record.TransferDate,
+                            ReceivedQTY = i.ShippedQuantity,
+                            ReceivedUPrice = i.UPrice,
+                            ReceivedTPrice = i.TPrice,
+                            BalanceQTY = storeItem.Balance,
+                            BalanceUPrice = i.UPrice,
+                            BalanceTPrice = i.UPrice * storeItem.Balance,
+                            //new    
+                            StoreCode = record.ToStore,
+                            GLPeriodId = record.GLPeriodId,
+                            TransactionType = BinCardTransactionTypes.TransferSend,
+                            StatusType = BinCardTransactionStatus.Void,
+                        };
+                        db.BinCardLines.Add(binCardLine);
+                       // db.SaveChanges();
+
+                        #endregion
+
+                        #endregion
+
+                    }
+                    if (branchItem != null)
+                    {
+                        branchItem.Balance = branchItem.Balance + i.ShippedQuantity;
+                        db.Entry(branchItem).State = EntityState.Modified;
+                       // db.SaveChanges();
+
+                    }
+                    if (stockItem != null)
+                    {
+                        stockItem.Balance = stockItem.Balance + i.ShippedQuantity;
+                        db.Entry(stockItem).State = EntityState.Modified;
+                       // db.SaveChanges();
+                    }
+
+
+
+                    #endregion
+                }
+
+                db.SaveChanges();
+                #endregion
+
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "transfer send without requisition ", "Success", User.Identity.Name, $"void transfer send {id} ", Modules.Inventory);
+                #endregion
+
+                var formattedData = new
+                {
+                    Message = "Void Successful.",
+                    Status = "OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+            if (record == null)
+            {
+                var formattedData = new
+                {
+                    Message = "The record is not found.",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+
+            if (record.ItemTransferItem.Count == 0)
+            {
+                var formattedData = new
+                {
+                    Message = "Please add line items first.",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+            if (record.IsVoid)
+            {
+                var formattedData = new
+                {
+                    Message = "The record is already void.You can not void again.",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+            if (record.IsOnlineTransferred)
+            {
+                var formattedData = new
+                {
+                    Message = "The record is transferred to GL.You can not void .",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+            if (!record.IsOnlineApproved)
+            {
+                var formattedData = new
+                {
+                    Message = "The record is not approved hence you can modify by editing.",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+
+
+            return null;
+        }
+
+        private void RequestedItem(ItemTransfer record)
+        {
+            StoreRequisition storeRequisition = db.StoreRequisitions.Find(record.StoreRequisitionID);
+
+            if (storeRequisition != null)
+                foreach (var requestedItem in storeRequisition.StoreRequisitionItem)
+                {
+                    decimal avgPrice = ExceedERP.Helpers.Inventory.InventoryHelper.GetItemAveragePrice(requestedItem.ItemCode, storeRequisition.StoreCode);
+
+                    var transferItem = new ItemTransferItem
+                    {
+                        ItemCategoryCode = requestedItem.ItemCategoryCode,
+                        ItemCode = requestedItem.ItemCode,
+                        RequestedQuantity = requestedItem.ApprovedQuantity,
+                        UPrice = avgPrice,
+                        PartOrCodeNumber = requestedItem.PartNo,
+                        TPrice = requestedItem.ApprovedQuantity * avgPrice,
+                        ShippedQuantity = requestedItem.IssuedQuantity,
+                        DateCreated = DateTime.Now,
+                        CreatedBy = User.Identity.Name
+                    };
+
+                    //should get per store price
+
+                    db.ItemTransferItems.Add(transferItem);
+                    db.SaveChanges();
+                }
+        }
+
+
+        protected override void Dispose(bool disposing)
+        {
+            db.Dispose();
+            base.Dispose(disposing);
+        }
+
+        public JsonResult ItemTransfer_OnlineTransfer(string id)
+        {
+            int myid = int.Parse(id);
+            ItemTransfer record = db.ItemTransfers.Find(myid);
+
+            if (record != null && record.IsOnlineApproved && !record.IsOnlineTransferred)
+            {
+                #region check if debit and credit are equal
+                decimal debit = 0;
+                decimal credit = 0;
+                var distribution = record.ItemTransferDistribution.ToList();
+                if (distribution.Any())
+                {
+                    debit = distribution.Sum(x => x.Debit);
+                    credit = distribution.Sum(x => x.Credit);
+                }
+                if (debit != credit)
+                {
+                    var formattedData = new
+                    {
+                        Message = "Total debit and total credit is not balanced.",
+                        Status = "NOT_OK"
+                    };
+                    return Json(formattedData, JsonRequestBehavior.AllowGet);
+                }
+                if (debit == 0)
+                {
+                    var formattedData = new
+                    {
+                        Message = "Total debit and total credit is zero.",
+                        Status = "NOT_OK"
+                    };
+                    return Json(formattedData, JsonRequestBehavior.AllowGet);
+                }
+                #endregion
+                #region send to GL
+                string glperiod = "";
+                string glyear = "";
+                #region get period
+                var period = db.GLPeriods.Where(x => x.DateFrom <= record.TransferDate).Where(x => x.DateTo >= record.TransferDate).ToList();
+                if (period.Any())
+                {
+                    if (period.Count == 1)
+                    {
+                        var myPeriod = period.FirstOrDefault();
+                        if (myPeriod != null)
+                        {
+                            glperiod = myPeriod.Name;
+                            glyear = myPeriod.GlFiscalYear.Name;
+                            if (myPeriod.Status == FiscalYearStatus.Close)
+                            {
+                                var formattedData = new
+                                {
+                                    Message = "The period " + glperiod + " is closed,the record cannot be transfered to closed period.",
+                                    Status = "NOT_OK"
+                                };
+                                return Json(formattedData, JsonRequestBehavior.AllowGet);
+                            }
+                        }
+                    }
+
+                    else if (period.Count > 1)
+                    {
+                        var formattedData = new
+                        {
+                            Message = "There are multiple periods defined that contain the transaction date.",
+                            Status = "NOT_OK"
+                        };
+                        return Json(formattedData, JsonRequestBehavior.AllowGet);
+                    }
+                    else
+                    {
+                        var formattedData = new
+                        {
+                            Message = "There are no periods defined that contain the transaction date.",
+                            Status = "NOT_OK"
+                        };
+                        return Json(formattedData, JsonRequestBehavior.AllowGet);
+
+                    }
+                }
+
+                #endregion
+                if (record.ItemTransferDistribution.Any())
+                {
+                    GlRecordJournal journal = new GlRecordJournal
+                    {
+                        DateCreated = DateTime.Now,
+                        CreatedBy = User.Identity.Name,
+                        JournalName = "Transfer",
+                        Description = "Transfer",
+                        FiscalYear = glyear,
+                        PeriodName = glperiod,
+                        CategoryName = "Transfer",
+                        SourcesName = "Transfer",
+                        JournalNumber = "Transfer." + record.ItemTransferID.ToString(),
+                        EffectiveDate = record.TransferDate,
+                        Status = "Approved",
+                        IsOnlineApproved = true,
+                        OnlineApprovedBy = User.Identity.Name,
+                        OnlineApprovedTime = DateTime.Now
+                    };
+
+                    db.GLRecordJournals.Add(journal);
+                    db.SaveChanges();
+                    foreach (ItemTransferDistribution i in record.ItemTransferDistribution)
+                    {
+                        #region debit and credit
+
+                        var journalDetail = new GLRecordJournalDetail
+                        {
+                            DateCreated = DateTime.Now,
+                            CreatedBy = User.Identity.Name,
+                            GLRecordJournal = journal,
+                            AccountCode = i.AccountCode,
+                            Debit = i.Debit,
+                            Credit = i.Credit
+                        };
+                        db.GLRecordJournalDetails.Add(journalDetail);
+                        db.SaveChanges();
+                        #endregion
+                    }
+                    record.IsOnlineTransferred = true;
+                    record.IsOnlineTransferredBy = User.Identity.Name;
+                    record.OnlineTransferredTime = DateTime.Now;
+                    db.Entry(record).State = EntityState.Modified;
+                    db.SaveChanges();
+                    var formattedData = new
+                    {
+                        Message = "Successfully transferred.",
+                        Status = "OK"
+                    };
+                    return Json(formattedData, JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                    var formattedData = new
+                    {
+                        Message = "There is no distribution to be transferred.",
+                        Status = "NOT_OK"
+                    };
+                    return Json(formattedData, JsonRequestBehavior.AllowGet);
+                }
+                #endregion
+
+            }
+            if (record != null && !record.IsOnlineApproved)
+            {
+                var formattedData = new
+                {
+                    Message = "The record cannot be transfered before validation.",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+
+            if (record != null && record.IsOnlineTransferred)
+            {
+                var formattedData = new
+                {
+                    Message = "You cannot transfer this transaction, it is already transfered.",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+
+            return null;
+        }
+    }
+}

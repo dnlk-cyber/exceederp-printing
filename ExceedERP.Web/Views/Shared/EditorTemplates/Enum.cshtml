@@ -1,0 +1,10 @@
+﻿@model Enum
+
+@if (EnumHelper.IsValidForEnumHelper(ViewData.ModelMetadata))
+{
+    @Html.EnumDropDownListFor(model => model, htmlAttributes: new { @class = "k-dropdown-wrap k-state-default"})
+}
+else
+{
+    @Html.TextBoxFor(model => model, htmlAttributes: new { @class = "k-dropdown-wrap k-state-default", @style = "width: 155px" })
+}

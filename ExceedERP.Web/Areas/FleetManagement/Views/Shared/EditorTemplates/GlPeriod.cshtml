@@ -1,0 +1,16 @@
+﻿@(Html.Kendo().DropDownListFor(model => model)
+                    .DataTextField("Name")
+                                .DataValueField("Value").OptionLabel("Select ")
+                    .HtmlAttributes(new { style = "width:100%" })
+                    .DataSource(d =>
+                    {
+                        d.Read(r =>
+                        {
+                            r.Action("GetPeriodByYear", "FleetDataProvider").Data("filterPeriod");
+                        })
+                      .ServerFiltering(true);
+                    })
+              .Enable(true)
+              .AutoBind(false)
+               .CascadeFrom("GlFiscalYearId")
+)

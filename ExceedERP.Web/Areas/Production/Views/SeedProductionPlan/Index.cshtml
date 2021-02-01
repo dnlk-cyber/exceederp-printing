@@ -1,0 +1,197 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@using Kendo.Mvc.UI
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>  Production Plan </legend>
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Production.ProductionProject>()
+                          .Name("projectsGrid")
+                          .Columns(columns =>
+                          {
+                              columns.Bound(c => c.Name);
+                              columns.Bound(c => c.Location);
+                              
+                          })
+                          .Selectable(selectable =>
+                          {
+                              selectable.Mode(GridSelectionMode.Single);
+                              selectable.Type(GridSelectionType.Row);
+                          })
+                          .Scrollable(h => h.Height(500))
+                          .Sortable(sortable =>
+                          {
+                              sortable.SortMode(GridSortMode.SingleColumn);
+                          })
+                          .Filterable()
+                          .Pageable(pageable => pageable
+                              .Input(true)
+                              .Numeric(false)
+                              .Refresh(true)
+                              .PageSizes(true)
+                              .ButtonCount(5))
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+
+                              .Events(events =>
+                              {
+                                  events.Error("error_handler(\"projectsGrid\")");
+                                  events.RequestStart("onRequestStart(\"projectsGrid\")");
+                                  events.RequestEnd("onRequestEnd(\"projectsGrid\")");
+                              })
+                              .Model(model =>
+                              {
+                                  model.Id(f => f.ProductionProjectId);
+                              })
+
+                              .Read(read => read.Action("Project_Read", "Project"))
+                              .Create(create => create.Action("Project_Create", "Project"))
+                              .Update(update => update.Action("Project_Update", "Project"))
+                              .Destroy(destroy => destroy.Action("Project_Destroy", "Project"))
+                          ).ClientDetailTemplateId("template_years")
+)
+<script id="template_years" type="text/kendo-tmpl">
+@(Html.Kendo().TabStrip()
+        .Name("tabstr_str_#=ProjectId#")
+        .SelectedIndex(0)
+        .Items(items =>
+        {
+            items.Add().Text("Plan Years").Content(
+                @<text>
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Production.SeedProductionPlanYear>()
+                            .Name("plan_year__#=ProjectId#")
+                            .Columns(columns =>
+                            {
+                                columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["FiscalYears"], "GlFiscalYearId", "Name").EditorTemplateName("Years");
+                                columns.Bound(c => c.Remark);
+                                
+                                columns.Command(command =>
+                                {
+                                    command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                    command.Destroy().Text(Resources.ActionButton_Cancel);
+                                }).Width(200);
+                            })
+                            .ToolBar(toolbar =>
+                            {
+                                toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                            })
+                            .Editable(editable => editable.Mode(GridEditMode.InLine))
+                            .Scrollable(h => h.Height(500))
+                            .Sortable(sortable =>
+                            {
+                                sortable.SortMode(GridSortMode.SingleColumn);
+                            })
+                            .Groupable()
+                            .Selectable(selectable =>
+                            {
+                                selectable.Mode(GridSelectionMode.Single);
+                                selectable.Type(GridSelectionType.Row);
+                            })
+                            .Filterable()
+                            .Pageable(pageable => pageable
+                                .Input(true)
+                                .Numeric(false)
+                                .Refresh(true)
+                                .PageSizes(true)
+                                .ButtonCount(5))
+                            //.Events(e => e.Edit("onEdit"))
+                            .DataSource(dataSource => dataSource
+                                .Ajax()
+                                .Events(events =>
+                                {
+                                    events.Error("error_handler(\"plan_year__#=ProjectId#\")");
+                                    events.RequestStart("onRequestStart(\"plan_year__#=ProjectId#\")");
+                                    events.RequestEnd("onRequestEnd(\"plan_year__#=ProjectId#\")");
+                                })
+                                .Model(model =>
+                                {
+                                    model.Id(p => p.SeedProductionPlanYearId);
+
+                                })
+                                .Read(read => read.Action("Years_Read", "SeedProductionPlanYear", new { id = "#=ProjectId#" }))
+                                .Create(create => create.Action("Year_Create", "SeedProductionPlanYear", new { id = "#=ProjectId#" }))
+                                .Update(update => update.Action("Year_Update", "SeedProductionPlanYear"))
+                                .Destroy(destroy => destroy.Action("Year_Destroy", "SeedProductionPlanYear"))
+                                ).ClientDetailTemplateId("template_planning")
+                                .ToClientTemplate()
+                    )
+                </text>
+            );
+        }).ToClientTemplate())
+</script>
+    <script id="template_planning" type="text/kendo-tmpl">
+        @(Html.Kendo().TabStrip()
+        .Name("tabstrip_str_#=SeedProductionPlanYearId#")
+        .SelectedIndex(0)
+        .Items(items =>
+        {
+            items.Add().Text("Plans").Content(
+                @<text>
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Production.SeedProductionPlan>()
+                            .Name("plans__#=SeedProductionPlanYearId#")
+                            .Columns(columns =>
+                            {
+                                //columns.Bound(c => c.Name);
+                                columns.ForeignKey(c => c.CropId, (IEnumerable)ViewData["Crops"], "CropId", "Name").EditorTemplateName("CropNames");
+                                columns.Bound(c => c.Type).EditorTemplateName("SeedTypes");
+                                columns.Bound(c => c.Generation).EditorTemplateName("SeedGenerations");
+                                columns.Bound(c => c.Area);
+                                columns.Bound(c => c.YieldQuantity);
+                                columns.Bound(c => c.TotalQuantity);
+
+                                columns.Command(command =>
+                                {
+                                    command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                    command.Destroy().Text(Resources.ActionButton_Cancel);
+                                }).Width(200);
+                            })
+                            .ToolBar(toolbar =>
+                            {
+                                toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                            })
+                            .Editable(editable => editable.Mode(GridEditMode.InLine))
+                            .Scrollable(h => h.Height(500))
+                            .Sortable(sortable =>
+                            {
+                                sortable.SortMode(GridSortMode.SingleColumn);
+                            })
+                            .Groupable()
+                            .Selectable(selectable =>
+                            {
+                                selectable.Mode(GridSelectionMode.Single);
+                                selectable.Type(GridSelectionType.Row);
+                            })
+                            .Filterable()
+                            .Pageable(pageable => pageable
+                                .Input(true)
+                                .Numeric(false)
+                                .Refresh(true)
+                                .PageSizes(true)
+                                .ButtonCount(5))
+                            //.Events(e => e.Edit("onEdit"))
+                            .DataSource(dataSource => dataSource
+                                .Ajax()
+                                .Events(events =>
+                                {
+                                    events.Error("error_handler(\"plans__#=SeedProductionPlanYearId#\")");
+                                    events.RequestStart("onRequestStart(\"plans__#=SeedProductionPlanYearId#\")");
+                                    events.RequestEnd("onRequestEnd(\"plans__#=SeedProductionPlanYearId#\")");
+                                })
+                                .Model(model =>
+                                {
+                                    model.Id(p => p.SeedProductionPlanId);
+                                    model.Field(f => f.TotalQuantity).Editable(false);
+
+                                })
+                                .Read(read => read.Action("ProductionPlan_Read", "SeedProductionPlan", new { yearId = "#=SeedProductionPlanYearId#" }))
+                                .Create(create => create.Action("ProductionPlan_Create", "SeedProductionPlan", new { yearId = "#=SeedProductionPlanYearId#" }))
+                                .Update(update => update.Action("ProductionPlan_Update", "SeedProductionPlan"))
+                                .Destroy(destroy => destroy.Action("ProductionPlan_Destroy", "SeedProductionPlan"))
+                                )
+                                .ToClientTemplate()
+                    )
+                </text>
+            );
+        }).ToClientTemplate())
+    </script>

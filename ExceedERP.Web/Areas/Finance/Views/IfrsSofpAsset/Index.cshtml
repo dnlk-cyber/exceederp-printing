@@ -1,0 +1,23 @@
+﻿@using ExceedERP.Core.Domain.Finance.Report.IFRS
+
+@(Html.Kendo().Grid<IfrsSofpAsset>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Category);
+          columns.Bound(c => c.Description);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.IfrsSofpAssetId))
+          .Read(read => read.Action("IfrsSofpAssets_Read", "IfrsSofpAsset"))
+          .Create(create => create.Action("IfrsSofpAssets_Create", "IfrsSofpAsset"))
+          .Update(update => update.Action("IfrsSofpAssets_Update", "IfrsSofpAsset"))
+          .Destroy(destroy => destroy.Action("IfrsSofpAssets_Destroy", "IfrsSofpAsset"))
+      ))

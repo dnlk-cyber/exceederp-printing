@@ -1,0 +1,31 @@
+﻿<legend>Bank Reference</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.BankReference>()
+          .Name("BankReferenceGrid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.BankID);
+        columns.Bound(c => c.ReferenceType);
+        columns.Bound(c => c.Reference);
+        columns.Bound(c => c.Type);
+        columns.Bound(c => c.AccountNumber);
+        columns.Bound(c => c.Remark);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+              .Model(model => model.Id(p => p.BankReferenceID)).Events(ev => ev
+                                                                        .Error("error_handler(\"BankReferenceGrid\")")
+                                                                        .RequestStart("onRequestStart(\"BankReferenceGrid\")")
+                                                                        .RequestEnd("onRequestEnd(\"BankReferenceGrid\")"))
+          .Read(read => read.Action("BankReferences_Read", "BankReference"))
+          .Create(create => create.Action("BankReferences_Create", "BankReference"))
+          .Update(update => update.Action("BankReferences_Update", "BankReference"))
+          .Destroy(destroy => destroy.Action("BankReferences_Destroy", "BankReference"))
+          
+      )
+)

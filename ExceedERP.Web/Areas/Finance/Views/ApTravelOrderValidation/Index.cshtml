@@ -1,0 +1,27 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Finance.AP.Travel.ApTravelOrderValidation>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Status);
+          columns.Bound(c => c.Remark);
+          columns.Bound(c => c.OrgBranchName);
+          columns.Bound(c => c.DateCreated);
+          columns.Bound(c => c.LastModified);
+          columns.Bound(c => c.CreatedBy);
+          columns.Bound(c => c.ModifiedBy);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.ApTravelOrderValidationId))
+          .Read(read => read.Action("ApTravelOrderValidations_Read", "ApTravelOrderValidation"))
+          .Create(create => create.Action("ApTravelOrderValidations_Create", "ApTravelOrderValidation"))
+          .Update(update => update.Action("ApTravelOrderValidations_Update", "ApTravelOrderValidation"))
+          .Destroy(destroy => destroy.Action("ApTravelOrderValidations_Destroy", "ApTravelOrderValidation"))
+      ))

@@ -1,0 +1,165 @@
+﻿@using System.Collections
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>User Card</legend>
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.FixedAsset.UserCard.UserCardItems>()
+          .Name("grid")
+          .Columns(columns =>
+          {
+              columns.ForeignKey(p => p.EmployeeId, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Title("Employee").Width(180);
+              //columns.Bound(c => c.EmployeeFullName).Width(180);
+              columns.Bound(c => c.Name).Width(200);
+              columns.Bound(c => c.Quanity).Width(100);
+              columns.Bound(c => c.UnitPrice).Width(120);
+              columns.Bound(c => c.Tag).Width(130);
+              columns.Bound(c => c.SerialNo).Width(130);
+              columns.Bound(c => c.IssueDate).Width(130);
+              columns.Bound(c => c.SIVNo).Width(130);
+              columns.Bound(c => c.GRNDate).Width(130);
+              columns.Bound(c => c.GRN).Width(90);
+              columns.Bound(c => c.Remark).Width(100);
+
+              columns.Command(command =>
+              {
+                  command.Edit();
+              }).Width(180);
+          })
+          .HtmlAttributes(new { style = "height: 550px;" })
+          //.ToolBar(toolbar =>
+          //{
+          //    toolbar.Create();
+          //})
+          .ToolBar(toolbar =>
+          {
+
+              toolbar.Template(@<text>
+                <div class="toolbar row">
+                    <div class="col-md-1">
+                        <a class="k-button k-button-icontext k-grid-add" href='#'>Add New</a>
+                    </div>
+
+                    <div class="">
+                        <label><i>Search Asset:</i></label>
+                        @(Html.Kendo().DropDownList()
+                                      .ValuePrimitive(true)
+                                      .OptionLabel("Select Category...")
+                                      .Name("CategoryCode")
+                                      .DataTextField("Name")
+                                      .DataValueField("FixedAssetCategoryID")
+                                      .Filter("contains")
+                                      .HtmlAttributes(new { style = "width: 250px;" })
+                                      .DataSource(dataSource =>
+                                      {
+                                                                           dataSource.Read(read => read.Action("GetCategory", "FixedAssetDataProvider", new { area = "FixedAsset" }))
+                                                                               .ServerFiltering(false);
+                                                                       }))
+
+                        @(Html.Kendo().DropDownList()
+                                      .ValuePrimitive(true)
+                                      .OptionLabel("Select Sub Category...")
+                                      .Name("SubCategoryCode")
+                                      .DataTextField("Name")
+                                      .DataValueField("FixedAssetSubCategoryID")
+                                      .Filter("contains")
+                                      .HtmlAttributes(new { style = "width: 250px;" })
+                                      .DataSource(dataSource =>
+                                      {
+                                                                           dataSource.Read(read => read.Action("GetSubCategory", "FixedAssetDataProvider", new { area = "FixedAsset" }).Data("filterSubCategories"))
+                                                                               .ServerFiltering(true);
+                                                                       })
+                                      .CascadeFrom("CategoryCode")
+                                      .Events(e =>
+                                      {
+                                                                           e.Select("onSelectSubCategoryCode");
+                                                                       }))
+
+                        @(Html.Kendo().TextBox()
+                                      .Name("txtSearch")
+                                      .HtmlAttributes(new { placeholder = "tag,serial,employee ID" }))
+                        @(Html.Kendo().Button()
+                                      .Name("btnSearch")
+                                      .HtmlAttributes(new { type = "search", @class = "k-primary" })
+                                      .Events(e => e.Click("searchAsset"))
+                                      .Content("Search"))
+                    </div>
+
+                </div>
+
+            </text>);
+                })
+                .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("UserCardItems").Window(w => w.Title("User Card")))
+                .Pageable(pageable => pageable
+                    .Input(true)
+                    .Numeric(false)
+                    .Refresh(true)
+                    .PageSizes(true)
+                    .ButtonCount(5))
+                .Filterable()
+                .Scrollable()
+                .Selectable(selectable =>
+                {
+                    selectable.Mode(GridSelectionMode.Single);
+                    selectable.Type(GridSelectionType.Row);
+                })
+                .Sortable(sortable =>
+                {
+                    sortable.SortMode(GridSortMode.SingleColumn);
+                })
+
+                .DataSource(dataSource => dataSource
+                    .Ajax()
+                    // .Group(groups => groups.Add(p => p.EmployeeFullName))
+                    .Events(ev => ev
+                        .Error("error_handler(\"grid\")")
+                        .RequestStart("onRequestStart(\"grid\")")
+                        .RequestEnd("onRequestEnd(\"grid\")"))
+                    .Model(
+                        model =>
+                        {
+                            model.Id(p => p.UserCardItemsID);
+                            model.Field(p => p.OrgBranchName).Editable(false);
+                            model.Field(p => p.CreatedBy).Editable(false);
+                            model.Field(p => p.ModifiedBy).Editable(false);
+                            model.Field(p => p.LastModified).Editable(false);
+                            model.Field(p => p.DateCreated).Editable(false);
+                        })
+                    .Read(read => read.Action("UserCardItems_Read", "UserCardItems"))
+                    .Create(create => create.Action("UserCardItems_Create", "UserCardItems"))
+                    .Update(update => update.Action("UserCardItems_Update", "UserCardItems"))
+                    .Destroy(destroy => destroy.Action("UserCardItems_Destroy", "UserCardItems"))
+                ))
+
+
+<script>
+
+    function filterAssetsForCard() {
+        return {
+            text: $("#AssetRegistrationId").data("kendoDropDownList").filterInput.val()
+        }
+    }
+
+    function onSelectSubCategoryCode(e) {
+        //$("#grid").data("kendoGrid").dataSource.read();
+    }
+
+    function searchAsset() {
+        var searchObject = $("#txtSearch");
+        var searchValue = searchObject.val();
+
+        if (searchValue != null) {
+            $("#grid").data("kendoGrid").dataSource.read();
+        } else {
+            alert("Please add search criteria.");
+        }
+    }
+    function passSearchData() {
+        var searchObject = $("#txtSearch");
+        var searchValue = searchObject.val();
+        return {
+            searchkey: searchValue,
+            subcategory: $("#SubCategoryCode").data("kendoDropDownList").value()
+        };
+    }
+</script>

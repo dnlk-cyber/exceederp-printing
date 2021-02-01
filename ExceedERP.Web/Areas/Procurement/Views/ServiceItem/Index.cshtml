@@ -1,0 +1,92 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.Procurement.Settings
+<legend>Services</legend>
+@(Html.Kendo().Grid<ServiceItem>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.ForeignKey(p => p.ServiceCategoryCode, (IEnumerable)ViewData["categories"], "ServiceCategoryCode", "Name").Title("Category").EditorTemplateName("ServiceCategorySelector").Width(120);
+          columns.Bound(c => c.ServiceItemCode).Width(120);
+          columns.Bound(c => c.Name).Width(180);
+          columns.Bound(c => c.UoMName).Width(90).EditorTemplateName("Unit");
+          columns.Bound(c => c.Enable).Width(90).Title("Enable").ClientTemplate(
+              "<input type='checkbox' disabled = 'true' value='#= Enable #' " +
+              "# if (Enable) { #" +
+              "checked='checked'" +
+              "# } #" +
+              "/>"
+              );
+         
+          columns.Command(
+              command => { 
+                             command.Edit();
+                             command.Custom("En").Click("Enable");
+              }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .HtmlAttributes(new { style = "height: 550px;" })
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(20))
+      .Scrollable()
+      .Sortable()
+      .Filterable()
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Groupable()
+      .Events(events => events.Edit("edit"))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model =>
+          {
+              model.Id(p => p.ServiceItemCode);
+              model.Field(p => p.Enable).Editable(false);
+          })
+          .Events(ev => ev
+              .Error("error_handler(\"grid\")")
+              .RequestStart("onRequestStart(\"grid\")")
+              .RequestEnd("onRequestEnd(\"grid\")"))
+          .Read(read => read.Action("ServiceItems_Read", "ServiceItem"))
+          .Create(create => create.Action("ServiceItems_Create", "ServiceItem"))
+          .Update(update => update.Action("ServiceItems_Update", "ServiceItem"))
+          .Destroy(destroy => destroy.Action("ServiceItems_Destroy", "ServiceItem"))
+      ))
+
+<script type="text/javascript">
+
+    function Enable(e) {
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        $.ajax({
+            type: "GET",
+            data: dataItem.Values,
+            url: '@Url.Action("Enable_Disable", "ServiceItem")/' + dataItem.ServiceItemCode
+
+        });
+
+        $('#grid').data('kendoGrid').dataSource.read();
+        $('#grid').data('kendoGrid').refresh();
+        location.reload();
+    };
+
+
+    function edit(e) {
+        if (e.model.isNew() === false) {
+            $("#ServiceItemCode").attr("readonly", true);
+        }
+    }
+
+   
+</script>

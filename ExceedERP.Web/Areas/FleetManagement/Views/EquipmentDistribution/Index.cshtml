@@ -1,0 +1,441 @@
+﻿@model ExceedERP.Core.Domain.FleetManagement.FleetResource.VehicleDistribution
+ 
+<legend> Equipment Distribution </legend>
+
+
+<script type="text/javascript">
+
+    function filterEquipmentIdentity() {
+
+        var dropdownlist = $("#EquipmentName").data("kendoDropDownList");
+        var filterInput = dropdownlist.filterInput;
+
+        return {
+            EquipmentIdentityID: $("#Type").val(),
+            Search: filterInput.val()
+        };
+
+    }
+
+
+    function filterFixedAssetSubCategory() {
+        var dropdownlist = $("#SubEquipmentName").data("kendoDropDownList");
+        var filterInput = dropdownlist.filterInput;
+
+        return {
+            Id: $("#EquipmentName").val(),
+            Search: filterInput.val()
+        };
+
+    }
+</script>
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetResource.VehicleDistribution>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+
+          columns.Bound(e => e.RequestNumber).Title(" Num").Width(50);
+          columns.Bound(e => e.Type).Width(100);
+          columns.Bound(e => e.FromBranchName).Title("Location").Width(100);
+          columns.Bound(e => e.FromStructureName).Width(100);
+          columns.Bound(e => e.Status).Width(100);
+          columns.Bound(o => o.DistrubtionNumber).Title("Referance").Width(80);
+          columns.Command(command => { @* command.Destroy().Text("Finish Assignment");*@ }).Width(10);
+
+
+      })
+           .ToolBar(commands =>
+                  {
+                      commands.Create(); commands.Excel();
+                      commands.Pdf();
+                  }).Editable(editable =>
+          {
+              editable.Mode(GridEditMode.PopUp).TemplateName("VehicleDistributionEditor").Window(x => x.Title("Equipment Distribution"));
+              editable.DisplayDeleteConfirmation("Are You Sure To Remove Equipment Distribution");
+          })
+              .Events(e => e.DataBound("dataBound"))
+           .HtmlAttributes(new { style = "height: 520px;" })
+                      .Pageable(pageable => pageable
+                                        .Input(true)
+                                        .Numeric(false)
+                                        .Refresh(true)
+                                        .PageSizes(true)
+                                        .ButtonCount(5))
+
+                            .Scrollable()
+                            .Sortable()
+                            .Filterable()
+                             .Scrollable(h => h.Height(500))
+      .ClientDetailTemplateId("template")
+        .Events(ev => ev.DetailExpand("onDetailExpand"))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .ServerOperation(false)
+          .Sort(x => x.Add(s => s.RequestNumber).Descending())
+          .Model(model =>
+              {
+                  model.Id(p => p.VehicleDistributionID);
+
+              })
+                        .Events(ev => ev
+                                            .Error("error_handler(\"grid\")")
+                                            .RequestStart("onRequestStart(\"grid\")")
+                                            .RequestEnd("onRequestEnd(\"grid\")"))
+          .Create(update => update.Action("VehicleDistribution_Create", "EquipmentDistribution"))
+          .Read(read => read.Action("VehicleDistribution_Read", "EquipmentDistribution"))
+          .Update(update => update.Action("VehicleDistribution_Update", "EquipmentDistribution"))
+          .Destroy(update => update.Action("VehicleDistribution_Destroy", "EquipmentDistribution"))
+      )
+
+)
+
+
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                                            .Name("tabStrip_#=VehicleDistributionID#")
+            .SelectedIndex(0)
+            .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+            .Items(items =>
+            {
+      items.Add().Text("Detail").Content(
+                        @<text>
+                            <legend>Detail</legend>
+
+                            <div class="box">
+
+                                <div class="box-col">
+                                    <a href='@Url.Action("EquipmentDistribution", "FleetPrint")/?Id=#=VehicleDistributionID#' title="Print"><i class="fa fa-print fa-2x"></i></a>
+
+                                    # if (IsSendForApproval == false || IsSendForApproval == "false")
+                                    {#
+
+                                    <a href='@Url.Action("VehicleDistribution_SendForOnlineApproval", "VehicleDistributionApproval")/?EId=#=VehicleDistributionID#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                                    # }#
+                                </div>
+                            </div> 
+                            <div class="demo-section k-header export-app">
+                                <div class="demo-section content-wrapper">
+
+                                    <form>
+
+                                  <button type="button" class="btn btn-primary">Duration <span class="badge"> #=Remark#</span></button>
+
+                                        <div class="row">
+                                            <div class="col-md-1">
+                                            </div>
+                                            <div class="col-md-2">
+                                                <div class="form-group">
+                                                    <div class="label">
+                                                        @Html.LabelFor(model => model.CreatedBy)
+                                                    </div>
+                                                    <div>
+                                                        #=CreatedBy#
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <div class="form-group">
+                                                    <div class="label">
+                                                        @Html.LabelFor(model => model.DateCreated)
+                                                    </div>
+                                                    <div>
+                                                        #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                       
+                                            <div class="col-md-2">
+                                                <div class="form-group">
+                                                    <div class="label">
+                                                        @Html.LabelFor(model => model.ModifiedBy)
+                                                    </div>
+                                                    <div>
+
+                                                        #=ModifiedBy#
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                       
+                                                    <div class="col-md-2">
+                                                <div class="form-group">
+                                                    <div class="label">
+                                                        @Html.LabelFor(model => model.LastModified)
+                                                    </div>
+                                                    <div>
+                                                        #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                          
+                                        </div>
+
+                                    </form>
+
+                                </div>
+                            </div>
+
+
+
+                        </text>
+
+
+            ); items.Add().Text("Requests ").Content(@<text>
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetResource.RequestedEquipment>()
+                                                        .Name("RequestEquipmentgrid_#=RequestID#")
+                        .Columns(columns =>
+                        {
+
+                            columns.Bound(o => o.Type).EditorTemplateName("EquipmentType").Title(" Category ").Width(100);
+                            columns.Bound(o => o.EquipmentName).Title("Type").EditorTemplateName("EquipmentSubTypeEditor").Width(120);
+
+                            columns.Bound(o => o.SubEquipmentName).Title("Name").EditorTemplateName("RequestEquipmentName").Width(120);
+                            columns.Bound(o => o.ManufacturedYear).EditorTemplateName("ManfacturedYearEditor").Width(80);
+                            columns.Bound(o => o.Quantity).EditorTemplateName("Integer").Width(80);
+                            columns.Bound(o => o.StartDate).Width(80);
+                            columns.Bound(o => o.EndDate).Width(80);
+
+                            columns.Command(command => { command.Edit(); }).Width(150);
+
+                        }) 
+                                            .Editable(editable =>
+                {
+                    editable.Mode(GridEditMode.InLine);
+                    editable.DisplayDeleteConfirmation("Are You Sure To Remove Request Equipment");
+                }).Events(e => e.DataBound("requestonDataBound"))//
+                        .DataSource(dataSource => dataSource
+                            .Ajax()
+                                           .PageSize(5)
+                             .Model(model => model.Id(p => p.RequestedEquipmentId))
+                                          .Events(ev => ev
+                                                    .Error("error_handler(\"RequestEquipmentgrid_#=RequestID#\")")
+                                                    .RequestStart("onRequestStart(\"RequestEquipmentgrid_#=RequestID#\")")
+                                                    .RequestEnd("onRequestEnd(\"RequestEquipmentgrid_#=RequestID#\")"))
+                                                                                                                                    .Create(update => update.Action("RequestEquipment_Create", "AssignedEquipment", new { createRequestNumber = "#=RequestID#", createType = "NORMAL" }))
+                                                                                                                                            .Read(read => read.Action("RequestedViewEquipment", "AssignedEquipment", new { readRequestNumber = "#=RequestID#", readType = "NORMAL" }))
+                                                                                           .Update(update => update.Action("AssignedEquipment_Update", "AssignedEquipment"))
+                                                                            .Destroy(destroy => destroy.Action("AssignedEquipment_Destroy", "AssignedEquipment"))
+                        )
+                        .Sortable()
+                        .ToClientTemplate())
+                </text>
+                );
+
+                
+                items.Add().Text("Assign Equipment").Content(@<text>
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetResource.AssignedEquipment>()
+                                                                .Name("AssignedConfirmedEquipmentgrid_#=RequestID#")
+                        .Columns(columns =>
+                        {
+                            columns.Bound(o => o.CategoryRef).Title(" Request ").EditorTemplateName("AssignmentBind").Width(110);
+
+                            columns.Bound(o => o.EquipmentName).EditorTemplateName("AssignEquipment").Width(100);
+
+                            columns.Command(command => { command.Edit(); command.Destroy(); }).Width(50);
+
+                        })
+                                              .Events(e => e.DataBound("dataBoundAssign"))
+                        .ToolBar(t => t.Create())
+                      .DataSource(dataSource => dataSource
+                            .Ajax()
+
+                            .PageSize(5)
+                                 .Model(model =>
+                      {
+                          model.Id(p => p.AssignedEquipmentID);
+                          model.Field(p => p.EquipmentName).Editable(true);
+                      })
+                                  .Events(ev => ev
+                                                            .Error("error_handler(\"AssignedConfirmedEquipmentgrid_#=RequestID#\")")
+                                                            .RequestStart("onRequestStart(\"AssignedConfirmedEquipmentgrid_#=RequestID#\")")
+                                                            .RequestEnd("onRequestEnd(\"AssignedConfirmedEquipmentgrid_#=RequestID#\")"))
+                                                               .Create(update => update.Action("AssignedEquipment_Create", "AssignedEquipment", new { createRequestNumber = "#=RequestID#", createType = "R", Id = "#=VehicleDistributionID#" }))
+                            .Update(update => update.Action("AssignEquipment", "AssignedEquipment"))
+                                                    .Read(read => read.Action("AllEquipment", "AssignedEquipment", new { readRequestNumber = "#=RequestID#", type = "R" }))
+                                                                                            .Destroy(destroy => destroy.Action("Assignment_Destroy", "AssignedEquipment"))
+                             )
+                        .Sortable()
+                        .ToClientTemplate())
+                </text>
+                );
+
+                items.Add().Text(" Approval").Content(@<text>
+                  
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetResource.VehicleDistributionApproval>()
+                                                                                                                .Name("VehicleDistributionApproval#=VehicleDistributionID#")
+                        .Columns(columns =>
+                        {
+                            columns.Bound(o => o.Status).EditorTemplateName("ApprovalEditor").Width(126);
+
+                            columns.Bound(o => o.Remark).Width(200);
+                            columns.Bound(c => c.CreatedBy).Width(150);
+                            columns.Bound(c => c.DateCreated).Format("{0:yyyy-MM-dd}").Width(150);
+                            columns.Command(command => { command.Edit(); }).Width(250);
+
+                        }).Events(ev =>
+                        {
+                            ev.DataBound("approveonDataBound");
+                        })
+                             .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                       .DataSource(dataSource => dataSource
+                            .Ajax()
+                            .PageSize(5)
+                                                      .Model(model =>
+                              {
+                                  model.Id(p => p.VehicleDistributionApprovalID);
+                                  model.Field(p => p.CreatedBy).Editable(false);
+                                  model.Field(p => p.DateCreated).Editable(false);
+                              })
+                                                                                .Events(ev => ev
+                                                            .Error("error_handler(\"VehicleDistributionApproval#=VehicleDistributionID#\")")
+                                                            .RequestStart("onRequestStart(\"VehicleDistributionApproval#=VehicleDistributionID#\")")
+                                                            .RequestEnd("onRequestEnd(\"VehicleDistributionApproval#=VehicleDistributionID#\")"))
+                                                                                                                                   .Create(update => update.Action("VehicleDistribution_Approve", "VehicleDistributionApproval", new { EId = "#=VehicleDistributionID#" }))
+                                                                                                                                     .Read(read => read.Action("VehicleDistributionApproval_Read", "VehicleDistributionApproval", new { EId = "#=VehicleDistributionID#" }))
+                                                                                                                           .Update(update => update.Action("VehicleDistribution_Approve", "VehicleDistributionApproval"))
+
+
+                                                      )
+                                               .ToClientTemplate())
+                </text>
+                );
+
+
+            })
+                                                                                                                                                                                                                                                            .ToClientTemplate())
+</script>
+
+<script>
+    var masterId;
+    var status;
+    var IsApproved;
+    var IsSendForApproved;
+    function filterRequest() {
+        return {
+            readRequestNumber: masterId
+        };
+    }
+    function filterEquipment() {
+        var dropdownlist = $("#EquipmentName").data("kendoDropDownList");
+        var filterInput = dropdownlist.filterInput;
+
+        return {
+            Id : $("#CategoryRef").data("kendoDropDownList").value(),
+            Search: filterInput.val()
+        };
+        
+    }
+    function onDetailExpand(e) {
+        var masterRow = e.masterRow;
+        //var masterGrid = $("#grid").data("kendoGrid");
+        var masterGrid = $("#grid").data("kendoGrid");
+
+        var masterDataItem = masterGrid.dataItem(masterRow);
+        IsApproved = masterDataItem.IsOnlineApproved;
+        IsSendForApproved = masterDataItem.IsSendForApproval;
+        masterId = masterDataItem.RequestID;
+        status = masterDataItem.EquipmentStatus;
+        var linegridName = "#grid_" + masterId;
+        var firstValidationgridName = "#AssignedEquipmentgrid_" + masterId;
+        var SecondValidationgridName = "#AssignedConfirmedEquipmentgrid_" + masterId;
+        var linegridName = "#RequestEquipmentgrid_" + masterId;
+
+
+        if (  IsSendForApproved == true || IsApproved == true ) {
+            console.log("Finished");
+            $(this).find(".k-grid-delete").remove();
+            $(this).find(".k-grid-edit").remove();
+
+            $(".k-grid-top", firstValidationgridName).hide();
+            $(".k-grid-edit", firstValidationgridName).hide();
+             $(".k-grid-delete", firstValidationgridName).hide();
+            $(".k-grid-top", SecondValidationgridName).hide();
+            $(".k-grid-edit", SecondValidationgridName).hide();
+            $(".k-grid-delete", SecondValidationgridName).hide();
+            $(".k-grid-edit", linegridName).hide();
+            $(linegridName).find(".k-grid-edit").remove();
+        }
+       
+      
+    }
+
+
+
+
+    function dataBoundAssign() {
+        var SecondValidationgridName = "#AssignedConfirmedEquipmentgrid_" + masterId;
+
+        if (IsApproved == true || IsSendForApproved == true) {
+
+            $(SecondValidationgridName).find(".k-grid-edit").remove();
+            $(SecondValidationgridName).find(".k-grid-delete").remove();
+         
+        }
+    }
+    function dataBound() {
+        this.expandRow(this.tbody.find("tr.k-master-row").first());
+
+        var grid = this;
+
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+            var linegridName = "#grid_" + masterId;
+            var firstValidationgridName = "#AssignedEquipmentgrid_" + masterId;
+            var SecondValidationgridName = "#AssignedConfirmedEquipmentgrid_" + masterId;
+            console.log("Is Approved " + IsApproved);
+            if (IsApproved == true || IsSendForApproved == true) {
+
+                if (IsApproved == true) {
+
+                    $(this).find(".k-grid-delete").remove();
+                }
+                $(this).find(".k-grid-edit").remove();
+
+            }
+
+            if (dataItem.IsOnlineApproved == true) {
+                $(this).addClass("k-state-FleetApproved");
+            }
+
+        });
+    }
+
+
+
+
+    function requestonDataBound(e) {
+        var grid = this;
+
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+            if (IsApproved == true || IsSendForApproved == true) {
+                 $(this).find(".k-grid-edit").remove();
+               
+            }
+        });
+    }
+
+    function approveonDataBound(e) {
+        var grid = this;
+
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+            if (dataItem.Status == "Approve" || IsApproved == true) {
+                console.log("Approved");
+                $(this).find(".k-grid-edit").remove();
+                $(this).find(".k-grid-delete").remove();
+            }
+        });
+    }
+
+</script>
+
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 700px;
+    }
+</style>    

@@ -1,0 +1,14 @@
+﻿@(Html.Kendo().DropDownListFor(m => m)
+                  .ValuePrimitive(true)
+                  .OptionLabel("Select Type...")
+                      .DataTextField("Name")
+                              .DataValueField("ReceiveTypeId")
+                              .Filter("contains")
+                               .DataSource(dataSource =>
+                              {
+                                  dataSource.Read(read => read.Action("GetReceiveTypes", "DataProvider", new { area = "Inventory" }))
+                                            .ServerFiltering(true);
+                              })
+                             
+)
+@Html.ValidationMessageFor(m => m)

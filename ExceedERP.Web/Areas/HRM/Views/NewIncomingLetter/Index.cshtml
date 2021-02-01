@@ -1,0 +1,409 @@
+﻿@using System.Collections
+@using Kendo.Mvc.UI
+@model ExceedERP.Core.Domain.HRM.ArchiveManagement.IncomingLetterRegistration
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<legend>New Incoming Letter Registration</legend>
+<form action="@Url.Action("Index", "NewIncomingLetter")" id="form" method="POST" enctype="multipart/form-data">
+
+    <div class="row">
+        <div class="col-md-12">
+
+        </div>
+
+
+        <div class="col-md-6">
+            <div>
+                @Html.Label("-----------Incoming Letter-----------")
+            </div>
+            <div class="form-group">
+
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div>
+                @Html.Label("-----------Outgoing Letter-----------")
+            </div>
+            <div class="form-group">
+
+            </div>
+        </div>
+
+
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-md-12">
+
+        </div>
+        <div class="col-md-6">
+            <div>
+                @Html.LabelFor(model => model.BookNo, htmlAttributes: new { @class = "control-label col-md-3" })
+            </div>
+            <div class="form-group">
+                @Html.Kendo().TextBoxFor(model => model.BookNo)
+                @Html.ValidationMessageFor(model => model.BookNo, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div>
+                @Html.LabelFor(model => model.OutgoingLetterDate, htmlAttributes: new { @class = "control-label col-md-3" })
+            </div>
+            <div class="form-group">
+                @(Html.Kendo().DatePickerFor(model => model.OutgoingLetterDate)
+
+           .Value(DateTime.Now))
+                @Html.ValidationMessageFor(model => model.OutgoingLetterDate, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    </div>
+
+    <br />
+
+
+    <div class="row">
+        <div class="col-md-12">
+
+        </div>
+        <div class="col-md-6">
+            <div>
+                @Html.LabelFor(model => model.LetterDate, htmlAttributes: new { @class = "control-label col-md-3" })
+            </div>
+            <div class="form-group">
+                @(Html.Kendo().DatePickerFor(model => model.LetterDate)
+                  .Value(DateTime.Now))
+                @Html.ValidationMessageFor(model => model.LetterDate, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div>
+                @Html.LabelFor(model => model.OutgoingLetterReferenceNo, htmlAttributes: new { @class = "control-label col-md-3" })
+            </div>
+            <div class="form-group">
+                @Html.Kendo().TextBoxFor(model => model.OutgoingLetterReferenceNo)
+                @Html.ValidationMessageFor(model => model.OutgoingLetterReferenceNo, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        </div>
+    <br />
+    <div class="row">
+        <div class="col-md-12">
+
+        </div>
+        <div class="col-md-6">
+            <div>
+                @Html.LabelFor(model => model.LetterReferenceNo, htmlAttributes: new { @class = "control-label col-md-3" })
+            </div>
+            <div class="form-group">
+                @Html.Kendo().TextBoxFor(model => model.LetterReferenceNo)
+                @Html.ValidationMessageFor(model => model.LetterReferenceNo, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div>
+                @Html.LabelFor(model => model.OutgoingOwnerName, htmlAttributes: new { @class = "control-label col-md-3" })
+            </div>
+            <div class="form-group">
+                @Html.Kendo().TextBoxFor(model => model.OutgoingOwnerName)
+                @Html.ValidationMessageFor(model => model.OutgoingOwnerName, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        </div>
+
+    <br />
+    <div class="row">
+        <div class="col-md-12">
+
+        </div>
+        <div class="col-md-6">
+            <div>
+                @Html.LabelFor(model => model.RecivedDate, htmlAttributes: new { @class = "control-label col-md-3" })
+            </div>
+            <div class="form-group">
+                @(Html.Kendo().DatePickerFor(model => model.RecivedDate)
+                  .Value(DateTime.Now))
+                @Html.ValidationMessageFor(model => model.RecivedDate, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div>
+                @Html.LabelFor(model => model.OutgoingInstitutionTypeId, htmlAttributes: new { @class = "control-label col-md-3" })
+            </div>
+            <div class="form-group">
+                @(Html.Kendo().DropDownListFor(model => model.OutgoingInstitutionTypeId)
+
+                      .OptionLabel(Resources.Select)
+                      .BindTo((IEnumerable)ViewData["InstuType"])
+                              .DataTextField("InstitutionName")
+                              .DataValueField("InstitutionTypeId")
+                      .ValuePrimitive(true)
+                )
+            </div>
+        </div>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-md-12">
+
+        </div>
+        <div class="col-md-6">
+            <div>
+                @Html.LabelFor(model => model.OwnerName, htmlAttributes: new { @class = "control-label col-md-3" })
+            </div>
+            <div class="form-group">
+                @Html.Kendo().TextBoxFor(model => model.OwnerName)
+                @Html.ValidationMessageFor(model => model.OwnerName, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div>
+                @Html.LabelFor(model => model.OutgoingSubject, htmlAttributes: new { @class = "control-label col-md-3" })
+            </div>
+            <div class="form-group">
+                @Html.Kendo().TextBoxFor(model => model.OutgoingSubject)
+                @Html.ValidationMessageFor(model => model.OutgoingSubject, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-md-12">
+
+        </div>
+        <div class="col-md-6">
+            <div>
+                @Html.LabelFor(model => model.InstitutionTypeId, htmlAttributes: new { @class = "control-label col-md-3" })
+            </div>
+            <div class="form-group">
+                @(Html.Kendo().DropDownListFor(model => model.InstitutionTypeId)
+
+                      .OptionLabel(Resources.Select)
+                              .BindTo((IEnumerable)ViewData["InstuType"])
+                              .DataTextField("InstitutionName")
+                              .DataValueField("InstitutionTypeId")
+                      .ValuePrimitive(true)
+                )
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div>
+                @Html.LabelFor(model => model.OutgoingShelve, htmlAttributes: new { @class = "control-label col-md-3" })
+            </div>
+            <div class="form-group">
+                @Html.Kendo().TextBoxFor(model => model.OutgoingShelve)
+                @Html.ValidationMessageFor(model => model.OutgoingShelve, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    </div>
+
+    <br />
+    <div class="row">
+        <div class="col-md-12">
+
+        </div>
+        <div class="col-md-6">
+            <div>
+                @Html.LabelFor(model => model.Subject, htmlAttributes: new { @class = "control-label col-md-3" })
+            </div>
+            <div class="form-group">
+                @Html.Kendo().TextBoxFor(model => model.Subject)
+                @Html.ValidationMessageFor(model => model.Subject, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div>
+                @Html.LabelFor(model => model.OutgoingRow, htmlAttributes: new { @class = "control-label col-md-3" })
+            </div>
+            <div class="form-group">
+                @Html.Kendo().TextBoxFor(model => model.OutgoingRow)
+                @Html.ValidationMessageFor(model => model.OutgoingRow, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-md-12">
+
+        </div>
+        <div class="col-md-6">
+            <div>
+                @Html.LabelFor(model => model.Shelve, htmlAttributes: new { @class = "control-label col-md-3" })
+            </div>
+            <div class="form-group">
+                @Html.Kendo().TextBoxFor(model => model.Shelve)
+                @Html.ValidationMessageFor(model => model.Shelve, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div>
+                @Html.LabelFor(model => model.OutgoingFolderNo, htmlAttributes: new { @class = "control-label col-md-3" })
+            </div>
+            <div class="form-group">
+                @Html.Kendo().TextBoxFor(model => model.OutgoingFolderNo)
+                @Html.ValidationMessageFor(model => model.OutgoingFolderNo, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+
+
+
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-md-12">
+
+        </div>
+        <div class="col-md-6">
+            <div>
+                @Html.LabelFor(model => model.Row, htmlAttributes: new { @class = "control-label col-md-3" })
+            </div>
+            <div class="form-group">
+                @Html.Kendo().TextBoxFor(model => model.Row)
+                @Html.ValidationMessageFor(model => model.Row, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div>
+                @Html.LabelFor(model => model.OutgoingFileNo, htmlAttributes: new { @class = "control-label col-md-3" })
+            </div>
+            <div class="form-group">
+                @Html.Kendo().TextBoxFor(model => model.OutgoingFileNo)
+                @Html.ValidationMessageFor(model => model.OutgoingFileNo, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+
+
+
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-md-12">
+
+        </div>
+        <div class="col-md-6">
+            <div>
+                @Html.LabelFor(model => model.FolderNo, htmlAttributes: new { @class = "control-label col-md-3" })
+            </div>
+            <div class="form-group">
+                @Html.Kendo().TextBoxFor(model => model.FolderNo)
+                @Html.ValidationMessageFor(model => model.FolderNo, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div>
+                @Html.LabelFor(model => model.OutgoingNoOfAttachment, htmlAttributes: new { @class = "control-label col-md-3" })
+            </div>
+            <div class="form-group">
+                @Html.TextBoxFor(model => model.OutgoingNoOfAttachment)
+                @Html.ValidationMessageFor(model => model.OutgoingNoOfAttachment, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+
+
+
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-md-12">
+
+        </div>
+        <div class="col-md-6">
+            <div>
+                @Html.LabelFor(model => model.FileNo, htmlAttributes: new { @class = "control-label col-md-3" })
+            </div>
+            <div class="form-group">
+                @Html.TextBoxFor(model => model.FileNo)
+                @Html.ValidationMessageFor(model => model.FileNo, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div>
+                @Html.LabelFor(model => model.OutgoingSerialNo, htmlAttributes: new { @class = "control-label col-md-3" })
+            </div>
+            <div class="form-group">
+                @Html.Kendo().TextBoxFor(model => model.OutgoingSerialNo)
+                @Html.ValidationMessageFor(model => model.OutgoingSerialNo, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+
+
+
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-md-12">
+
+        </div>
+        <div class="col-md-6">
+            <div>
+                @Html.LabelFor(model => model.NoOfAttachment, htmlAttributes: new { @class = "control-label col-md-3" })
+            </div>
+            <div class="form-group">
+                @Html.TextBoxFor(model => model.NoOfAttachment)
+                @Html.ValidationMessageFor(model => model.NoOfAttachment, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div>
+                @Html.LabelFor(model => model.OutgoingRemark, htmlAttributes: new { @class = "control-label col-md-3" })
+            </div>
+            <div class="form-group">
+                @Html.Kendo().TextBoxFor(model => model.OutgoingRemark)
+                @Html.ValidationMessageFor(model => model.OutgoingRemark, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+
+
+
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-md-12">
+
+        </div>
+        <div class="col-md-6">
+            <div>
+                @Html.LabelFor(model => model.SerialNo, htmlAttributes: new { @class = "control-label col-md-3" })
+            </div>
+            <div class="form-group">
+                @Html.Kendo().TextBoxFor(model => model.SerialNo)
+                @Html.ValidationMessageFor(model => model.SerialNo, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div>
+
+            </div>
+            <div class="form-group">
+              
+                <input type="submit" id="save" value="Save" class="k-primary" />
+            </div>
+        </div>
+
+
+
+
+    </div>
+</form>
+
+<style>
+    .demo-section p {
+        margin: 0 0 30px;
+        line-height: 50px;
+    }
+
+        .demo-section p .k-button {
+            margin: 0 10px 0 0;
+        }
+
+    .k-primary {
+        min-width: 150px;
+    }
+</style>

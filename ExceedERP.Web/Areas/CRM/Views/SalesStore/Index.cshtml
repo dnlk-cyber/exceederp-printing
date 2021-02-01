@@ -1,0 +1,43 @@
+﻿<legend>Sales Store</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.SalesStore>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.SalesStoreId).Width(100);
+          columns.ForeignKey(c => c.StoreCode, (System.Collections.IEnumerable)ViewData["InventoryStore"], "StoreCode", "Name").EditorTemplateName("StoreObject").Title("Inventory Store").Width(150);
+           columns.Bound(c => c.Description);
+        columns.Bound(c => c.Location);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+        .HtmlAttributes(new { style = "height: 520px;" })
+                          .Pageable(pageable => pageable
+                                            .Input(true)
+                                            .Numeric(false)
+                                            .Refresh(true)
+                                            .PageSizes(true)
+                                            .ButtonCount(5))
+
+                                .Scrollable()
+                                .Sortable()
+                                .Filterable()
+                                .Groupable()
+                                .Scrollable(h => h.Height(500))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+              .Model(model => { model.Id(p => p.SalesStoreId);
+                       model.Field(p => p.Location).Editable(false);
+               model.Field(p => p.SalesStoreId).Editable(false);})
+                    .Events(ev => ev
+                                                                .Error("error_handler(\"grid\")")
+                                                                .RequestStart("onRequestStart(\"grid\")")
+                                                                .RequestEnd("onRequestEnd(\"grid\")"))
+          .Read(read => read.Action("SalesStores_Read", "SalesStore"))
+          .Create(create => create.Action("SalesStores_Create", "SalesStore"))
+          .Update(update => update.Action("SalesStores_Update", "SalesStore"))
+          .Destroy(destroy => destroy.Action("SalesStores_Destroy", "SalesStore"))
+      )
+)

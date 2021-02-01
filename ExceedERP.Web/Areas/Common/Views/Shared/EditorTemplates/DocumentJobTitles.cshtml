@@ -1,0 +1,15 @@
+﻿@(Html.Kendo().DropDownListFor(m => m)
+                  .ValuePrimitive(true)
+                  .OptionLabel("Select job title...")
+                      .DataTextField("Name")
+                          .DataValueField("Code")
+                              .Filter("contains")
+                               .DataSource(dataSource =>
+                               {
+                                   dataSource.Read(read => read.Action("GetAllJobTitles", "GlobalDataProvider", new {area = "Common"}))
+                                       .ServerFiltering(false);
+                               })
+                             
+)
+
+@Html.ValidationMessageFor(m => m)

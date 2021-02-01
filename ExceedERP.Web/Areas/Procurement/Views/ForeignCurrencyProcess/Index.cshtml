@@ -1,0 +1,44 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Procurement.ForeignPurchase.ForeignCurrencyProcess>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.Description).Width(200);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(480);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .HtmlAttributes(new { style = "height: 550px;" })
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(20))
+      .Scrollable()
+      .Sortable()
+      .Filterable()
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Events(ev => ev
+              .Error("error_handler(\"grid\")")
+              .RequestStart("onRequestStart(\"grid\")")
+              .RequestEnd("onRequestEnd(\"grid\")"))
+          .Model(model => model.Id(p => p.ForeignCurrencyProcessId))
+          .Read(read => read.Action("ForeignCurrencyProcesses_Read", "ForeignCurrencyProcess"))
+          .Create(create => create.Action("ForeignCurrencyProcesses_Create", "ForeignCurrencyProcess"))
+          .Update(update => update.Action("ForeignCurrencyProcesses_Update", "ForeignCurrencyProcess"))
+          .Destroy(destroy => destroy.Action("ForeignCurrencyProcesses_Destroy", "ForeignCurrencyProcess"))
+      )
+)

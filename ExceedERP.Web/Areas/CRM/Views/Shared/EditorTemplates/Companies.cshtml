@@ -1,0 +1,9 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.CRM
+@(Html.Kendo().DropDownListFor(m => m)
+.OptionLabel( "Select..")
+             .DataTextField("TradeName")
+                    .DataValueField("MainCompanyID")
+                       .BindTo((IEnumerable)ViewData["Companies"])
+                         .ValuePrimitive(true)
+)

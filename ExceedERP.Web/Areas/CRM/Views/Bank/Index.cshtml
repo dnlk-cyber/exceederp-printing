@@ -1,0 +1,251 @@
+﻿<legend>Bank</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.Bank>()
+          .Name("BankGrid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Name);
+          columns.ForeignKey(c => c.Category, (System.Collections.IEnumerable)ViewData["BankType"], "LookupID", "Description");
+          columns.Bound(c => c.IsActive);
+          columns.ForeignKey(c => c.ParentID, (System.Collections.IEnumerable)ViewData["BankList"], "BankID", "Name");
+          columns.Bound(c => c.Remark);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create();
+      })
+           .Scrollable(h => h.Height(500))
+                 .Groupable()
+                          .Sortable(sortable =>
+                          {
+                              sortable.SortMode(GridSortMode.SingleColumn);
+                          })
+              .Filterable()
+                 .Pageable(pageable => pageable
+                                            .Input(true)
+                                            .Numeric(false)
+                                            .Refresh(true)
+                                            .PageSizes(true)
+                                            .ButtonCount(5))
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+           .Navigatable()
+          .Scrollable(s => s.Height(500))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+              .Model(model => model.Id(p => p.BankID)).Events(ev => ev
+                                                                        .Error("error_handler(\"BankGrid\")")
+                                                                        .RequestStart("onRequestStart(\"BankGrid\")")
+                                                                        .RequestEnd("onRequestEnd(\"BankGrid\")"))
+          .Read(read => read.Action("Organizations_Read", "Bank"))
+          .Create(create => create.Action("Organizations_Create", "Bank"))
+          .Update(update => update.Action("Organizations_Update", "Bank"))
+          .Destroy(destroy => destroy.Action("Organizations_Destroy", "Bank"))
+          ).ClientDetailTemplateId("template")
+)
+
+
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+    .Name("tabstrip_#=BankID#")
+    .SelectedIndex(0)
+    .Items(items =>
+     {
+         //**************************************Identification****************************************************//
+         items.Add().Text("Identifications").Content(
+            @<text>
+                <legend>Identifications</legend>
+                @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.Identification>()
+                                                .Name("Identification_#=BankID#")
+                .Columns(columns =>
+                {
+                    columns.Bound(c => c.Type).EditorTemplateName("IdentificationType");
+                    columns.Bound(c => c.Description);
+                    columns.Bound(c => c.IDNumber);
+                    columns.Bound(c => c.IssueDate);
+                    columns.Bound(c => c.ExpiryDate);
+                    columns.Bound(c => c.Issuer);
+                    columns.Bound(c => c.Remark);
+                    columns.Command(command =>
+                    {
+                        command.Edit();
+                        command.Destroy();
+                    }).Width(180);
+                })
+                .ToolBar(toolbar =>
+                {
+                    toolbar.Create();
+                })
+                .Editable(editable => editable.Mode(GridEditMode.InLine))
+                .Scrollable()
+                .DataSource(dataSource => dataSource
+                .Ajax()
+                .Model(model => model.Id(i => i.IdentificationID))
+                                                                .Read(read => read.Action("Identifications_Read", "Identification", new { identificationReferenceType = "Bank", id = "#=BankID#" }))
+                                                                        .Create(create => create.Action("Identifications_Create", "Identification", new { identificationReferenceType = "Bank", id = "#=BankID#" }))
+                .Update(update => update.Action("Identifications_Update", "Identification"))
+                .Destroy(destroy => destroy.Action("Identifications_Destroy", "Identification"))
+    ).ToClientTemplate()
+                )
+
+            </text>
+     );
+         //*************************************************************************************************//
+         //**************************************Beginnings************************************************//
+         items.Add().Text("Beginnings").Content(
+            @<text>
+                <legend>Beginnings</legend>
+                @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.Beginning>()
+                      .Name("BeginningGrid_#=BankID#")
+      .Columns(columns =>
+      {
+          columns.ForeignKey(c => c.Period, (System.Collections.IEnumerable)ViewData["PeriodList"], "PeriodId", "PeriodName").Width(150);
+          columns.Bound(c => c.Value);
+          columns.Bound(c => c.IsProvisional);
+          columns.Bound(c => c.Remark);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.BeginningID))
+                                          .Read(read => read.Action("Beginnings_Read", "Beginning", new { id = "#=BankID#", beginningReferenceType = "Bank" }))
+                                                          .Create(create => create.Action("Beginnings_Create", "Beginning", new { id = "#=BankID#", beginningReferenceType = "Bank" }))
+          .Update(update => update.Action("Beginnings_Update", "Beginning"))
+          .Destroy(destroy => destroy.Action("Beginnings_Destroy", "Beginning"))
+     ).ToClientTemplate()
+                )
+            </text>
+    );
+         //*************************************************************************************************//
+         //**************************************Account Map************************************************//
+         items.Add().Text("Account Map").Content(
+            @<text>
+                <legend>Account Map</legend>
+                @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.AccountMap>()
+                              .Name("AccountMapGrid_#=BankID#")
+                      .Columns(columns =>
+                      {
+
+                          columns.Bound(c => c.ControlAccountID).EditorTemplateName("AccountRequirementDefinition");
+                          columns.ForeignKey(c => c.AccountsID, (System.Collections.IEnumerable)ViewData["AccountList"], "AccountsID", "Description").Width(150);
+                          columns.Bound(c => c.Remark);
+                          columns.Command(command =>
+                          {
+                              command.Edit();
+                              command.Destroy();
+                          }).Width(180);
+                      })
+                      .ToolBar(toolbar =>
+                      {
+                          toolbar.Create();
+                      })
+                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                      .Scrollable()
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+                          .Model(model => model.Id(p => p.AccountMapID))
+                                                                          .Read(read => read.Action("AccountMaps_Read", "AccountMap", new { id = "#=BankID#", accountMapReferenceType = "Bank" }))
+                                                                                  .Create(create => create.Action("AccountMaps_Create", "AccountMap", new { id = "#=BankID#", accountMapReferenceType = "Bank" }))
+                          .Update(update => update.Action("AccountMaps_Update", "AccountMap"))
+                          .Destroy(destroy => destroy.Action("AccountMaps_Destroy", "AccountMap"))
+                      ).ToClientTemplate()
+                )
+            </text>
+             );
+
+         //*****************************************************************************************************//
+         //*********************************Address***********************************************************//
+         items.Add().Text("Address").Content(
+            @<text>
+                <legend>Address</legend>
+                @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.Address>()
+              .Name("AddresseGrid_#=BankID#")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Category).EditorTemplateName("AddressType");
+          columns.Bound(c => c.Value);
+          columns.Bound(c => c.Remark);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.AddressID))
+                                                  .Read(read => read.Action("Addresses_Read", "Addresse", new { id = "#=BankID#", addressReferenceType = "Bank" }))
+                                                          .Create(create => create.Action("Addresses_Create", "Addresse", new { id = "#=BankID#", addressReferenceType = "Bank" }))
+          .Update(update => update.Action("Addresses_Update", "Addresse"))
+          .Destroy(destroy => destroy.Action("Addresses_Destroy", "Addresse"))
+       ).ToClientTemplate()
+                )
+            </text>
+    );
+         //*****************************************************************************************************//
+         //*********************************Industry Involvement*************************************************//
+         items.Add().Text("Industry Involvement").Content(
+            @<text>
+    <legend>Industry Involvement</legend>
+                @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.IndustryInvolved>()
+                      .Name("IndustryInvolvement_#=BankID#")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Index);
+          columns.Bound(c => c.Industry).EditorTemplateName("IndustryType");
+          columns.Bound(c => c.Remark);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.IndustryInvolvedID))
+                                                                  .Read(read => read.Action("IndustryInvolveds_Read", "IndustryInvolved", new { referenceIndustryInvolvment = "#=BankID#", industryInvolvedReferenceType = "Bank" }))
+                                                                  .Create(create => create.Action("IndustryInvolveds_Create", "IndustryInvolved", new { referenceIndustryInvolvment = "#=BankID#", industryInvolvedReferenceType = "Bank" }))
+                  .Update(update => update.Action("IndustryInvolveds_Update", "IndustryInvolved"))
+          .Destroy(destroy => destroy.Action("IndustryInvolveds_Destroy", "IndustryInvolved"))
+     ).ToClientTemplate()
+                )
+
+            </text>
+    );
+         //*****************************************************************************************************//
+
+     }).ToClientTemplate())
+
+</script>
+<script>
+    function error_handler(e) {
+        if (e.errors) {
+            var message = "Errors:\n";
+            $.each(e.errors, function (key, value) {
+                if ('errors' in value) {
+                    $.each(value.errors, function () {
+                        message += this + "\n";
+                    });
+                }
+            });
+            alert(message);
+
+        }
+
+    }
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+</script>

@@ -1,0 +1,263 @@
+﻿@using ExceedERP.Web.Areas.HRM.Controllers
+@using ExceedERP.Web.Areas.HRM.Controllers.Company
+@using Kendo.Mvc.UI
+@model ExceedERP.Core.Domain.HRM.RecruitmentManagment.Recruitment
+<br />
+<form>
+
+    <div class="row">
+        <div class="col-md-1">
+
+        </div>
+        <div class="col-md-3">
+            <div>
+                @Html.LabelFor(model => model.JobTitleCode)
+            </div>
+            <div class="form-group">
+                @{
+                    var getlist = ViewBag.Tree as IEnumerable<NodeViewModel>;
+
+                    <ul id="treeview">
+                        @if (getlist != null)
+                        {
+                            foreach (var item in getlist)
+                            {
+                                if (@item.Children.Any())
+                                {
+                                    <li data-expanded="true">
+
+                                        @item.Title
+                                        @if (@item.Children.Any())
+                                        {
+                                            <ul>
+                                                @foreach (var chiled in @item.Children)
+                                                {
+
+
+                                                    <li data-expanded="true">
+                                                        @chiled.Title
+                                                        @if (@chiled.Children.Any())
+                                                        {
+                                                            <ul>
+                                                                @foreach (var chi in @chiled.Children)
+                                                                {
+
+
+                                                                    <li data-expanded="true">
+                                                                        @if (@chi.Children.Any())
+                                                                        {
+                                                                            <ul>
+                                                                                @foreach (var ch in @chi.Children)
+                                                                                {
+
+
+                                                                                    <li>@ch.Title</li>
+
+                                                                                }
+                                                                            </ul>
+                                                                        }
+                                                                        @chi.Title
+                                                                    </li>
+
+                                                                }
+                                                            </ul>
+                                                        }
+                                                    </li>                             }
+                                            </ul>
+                                        }
+                                    </li>
+                                }
+                                else
+                                {
+                                    <li>@item.Title</li>
+                                }
+                            }
+                        }
+                    </ul>
+
+                }
+                <div>
+                    <input id="dropdown">
+                    <script >
+                        $(document).ready(function () {
+                            $("#dropdown").val("HRM");
+                            
+                        });
+                    </script>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+
+            <div class="form-group">
+                <div class="k-label">
+                 @*   @Html.LabelFor(model => model.IsForContrat, htmlAttributes: new { @class = "control-label col-md-8" })*@
+                </div>
+                <div>
+
+                    @Html.Kendo().CheckBoxFor(model => model.IsForContrat)
+                    @Html.ValidationMessageFor(model => model.IsForContrat, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.NoOfVaccantPostion, htmlAttributes: new { @class = "control-label col-md-8" })
+
+                </div>
+                <div>
+
+                    @Html.Kendo().TextBoxFor(model => model.NoOfVaccantPostion)
+                    @Html.ValidationMessageFor(model => model.NoOfVaccantPostion, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <br />
+
+    <div class="row">
+        <div class="col-md-1">
+
+        </div>
+        <div class="col-md-3">
+
+            <div class="form-group">
+            </div>
+        </div>
+
+
+
+        <div class="col-md-3">
+
+            <div class="form-group">
+
+                <div class="k-label">
+                    @Html.LabelFor(model => model.NoOfCurrentStaff, htmlAttributes: new { @class = "control-label col-md-8" })
+
+                </div>
+                <div>
+                    @Html.Kendo().TextBoxFor(model => model.NoOfCurrentStaff)
+                    @Html.ValidationMessageFor(model => model.NoOfCurrentStaff, "", new { @class = "text-danger" })
+
+                </div>
+            </div>
+        </div>
+
+
+
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.NoOfShouldBeStaff, htmlAttributes: new { @class = "control-label col-md-8" })
+
+                </div>
+                <div>
+
+                    @Html.Kendo().TextBoxFor(model => model.NoOfShouldBeStaff)
+                    @Html.ValidationMessageFor(model => model.NoOfShouldBeStaff, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+    </div>
+    <br />
+
+    <div class="row">
+        <div class="col-md-1">
+
+        </div>
+
+        <div class="col-md-3">
+
+            <div class="form-group">
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.Remark, htmlAttributes: new { @class = "control-label col-md-8" })
+
+                </div>
+                <div>
+
+                    @Html.Kendo().TextBoxFor(model => model.Remark)
+                    @Html.ValidationMessageFor(model => model.Remark, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<style>
+    div.k-edit-form-container {
+        width: 700px;
+    }
+</style>
+<script type="text/javascript">
+    $(document).ready(function() {
+        var dropdown = $("#dropdown").kendoDropDownList({
+            dataSource: [{ text: "", value: "" }],
+            dataTextField: "text",
+            dataValueField: "value",
+            open: function(e) {
+
+                if (!$treeviewRootElem.hasClass("k-custom-visible")) {
+                    $treeviewRootElem.slideToggle('fast', function() {
+                        dropdown.close();
+                        $treeviewRootElem.addClass("k-custom-visible");
+                    });
+                }
+            }
+
+        }).data("kendoDropDownList");
+        var $dropdownRootElem = $(dropdown.element).closest("span.k-dropdown");
+
+        var treeview = $("#treeview").kendoTreeView({
+            select: function(e) {
+
+                $dropdownRootElem.find("span.k-input").text($(e.node).children("div").text());
+                $treeviewRootElem.slideToggle('fast', function() {
+                    $treeviewRootElem.removeClass("k-custom-visible");
+                });
+                var val = $(e.node).children("div").text();
+                $.ajax({
+                    url: '@Url.Action("GetJobCode", "Requisition")',
+                    contentType: "application/json; charset=utf-8",
+                    data: { 'jobName': val },
+                    type: 'GET',
+                    cache: false,
+                    success: function(result) {
+                        r = result;
+                    }
+                });
+
+            }
+        }).data("kendoTreeView");
+        var $treeviewRootElem = $(treeview.element).closest("div.k-treeview");
+
+
+        $treeviewRootElem
+            .width($dropdownRootElem.width())
+            .css({ "border": "1px solid grey", "display": "none", "position": "absolute" });
+
+
+        $treeviewRootElem
+            .css({ "top": $dropdownRootElem.position().top + $dropdownRootElem.height(), "left": $dropdownRootElem.position().left });
+
+        $(document).click(function(e) {
+
+            if ($(e.target).closest("div.k-treeview").length == 0) {
+
+                if ($treeviewRootElem.hasClass("k-custom-visible")) {
+                    $treeviewRootElem.slideToggle('fast', function() {
+                        $treeviewRootElem.removeClass("k-custom-visible");
+                    });
+                }
+            }
+        });
+    });
+
+</script>
+

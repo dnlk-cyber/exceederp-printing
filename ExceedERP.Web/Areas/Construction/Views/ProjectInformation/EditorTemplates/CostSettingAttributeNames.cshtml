@@ -1,0 +1,12 @@
+﻿@using ExceedERP.Core.Domain.Construction
+@using ExceedERP.Helpers.Common
+@(
+ Html.Kendo().DropDownListFor(m => m)
+        .DataTextField("Text")
+        .DataValueField("Value")
+        .BindTo(EnumExtension.EnumToSelectList(typeof(PEVCostRateSettingAttribute)))
+        .ValuePrimitive(true)
+)
+
+
+

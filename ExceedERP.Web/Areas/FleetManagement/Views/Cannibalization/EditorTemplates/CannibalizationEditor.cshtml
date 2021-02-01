@@ -1,0 +1,166 @@
+﻿@model ExceedERP.Core.Domain.FleetManagement.FleetSalvageStore.Cannibalization
+
+<script>
+    function filterFleet() {
+        return {
+            PartNeededFleetsID: $("#PartNeededFleetsID").val()
+        };
+    }
+</script>
+
+
+<div class="demo-section k-content">
+
+
+
+    <div class="row">
+        <div class="col-md-1">
+        </div>
+
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+
+                    @(Html.LabelFor(model => model.PartNeededFleetsID))
+                    @(Html.Kendo().DropDownListFor(model => model.PartNeededFleetsID).Name("PartNeededFleetsID")
+                                          .DataTextField("PlateNumber")
+                                                  .DataValueField("FleetsID").OptionLabel(" Select ").Filter(FilterType.Contains)
+                                          .DataSource(d => d.Read(r => r.Action("FleetsDDBind", "EquipmentRegistration")).ServerFiltering(false)))
+
+                </div>
+            </div>
+        </div>
+
+
+
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @(Html.LabelFor(model => model.PartTakenFleetsID))
+                    @(Html.Kendo().DropDownListFor(model => model.PartTakenFleetsID).Name("PartTakenFleetsID")
+        .DataTextField("PlateNumber")
+                        .DataValueField("FleetsID").OptionLabel(" Select To").Filter(FilterType.Contains)
+      .DataSource(d =>
+                    {
+                        d.Read(r =>
+                        {
+                            r.Action("FleetsTODDBind", "EquipmentRegistration").Data("filterFleet");
+                        })
+                      .ServerFiltering(true);
+                    })
+              .Enable(false)
+              .AutoBind(false)
+                               .CascadeFrom("PartNeededFleetsID"))
+                </div>
+            </div>
+        </div>
+
+
+
+
+
+
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.Description)
+                </div>
+                <div>
+                    @Html.Kendo().TextBoxFor(model => model.Description)
+                    @Html.ValidationMessageFor(model => model.Description)
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-1">
+        </div>
+        <label>Taking Equipment Status</label>
+        </div>
+        <div class="row">
+            <div class="col-md-1">
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                    
+                    </div>
+                    <div>
+                        @Html.Kendo().CheckBoxFor(model => model.IsOperational)
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                     </div>
+                    <div>
+                        @Html.Kendo().CheckBoxFor(model => model.IsBreakDown)
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                     </div>
+                    <div>
+                        @Html.Kendo().CheckBoxFor(model => model.IsPoor)
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    <div class="row">
+        <div class="col-md-1">
+        </div>
+        <label>Giving Equipment Status</label>
+    </div>
+    <div class="row">
+        <div class="col-md-1">
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                </div>
+                <div>
+                    @Html.Kendo().CheckBoxFor(model => model.IsFromOperational)
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                 </div>
+                <div>
+                    @Html.Kendo().CheckBoxFor(model => model.IsFromBreakDown)
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                 </div>
+                <div>
+                    @Html.Kendo().CheckBoxFor(model => model.IsFromPoor)
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+        <div class="row">
+            <br />
+            <div class="col-md-1">
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                     </div>
+                    <div>
+                        @Html.Kendo().CheckBoxFor(model => model.IsPermanent)
+
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>

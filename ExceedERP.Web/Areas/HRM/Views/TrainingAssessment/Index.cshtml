@@ -1,0 +1,184 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.HRM.HRMPlan
+@using ExceedERP.Core.Domain.HRM.RecruitmentManagment
+@using ExceedERP.Core.Localization
+@using ExceedERP.Core.Domain.HRM.TrainingEducation
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>@Resources.NavigatorTraining_TransferAssessment</legend>
+
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.HRM.TrainingEducation.TrainingAssessmentViewModel>()
+                  .Name("TrainingAssessmentgrid")
+          .Columns(columns =>
+          {
+              columns.Bound(c => c.Check).Template(@<text></text>).ClientTemplate("<input type='checkbox' #= Check ? checked='checked':'' # class='chkbx' />")
+                    .HeaderTemplate("<input type='checkbox' id='masterCheckBox' onclick='checkAll(this)'/>").Width(30);
+
+              columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["Depo"], "OrgStructureId", "Name").EditorTemplateName("Department").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
+              columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["PeriodList"], "GlFiscalYearId", "Name").Width(120);
+
+              columns.Bound(c => c.NoOfStaff).Width(100);
+              //columns.Bound(c => c.RequiredTraining).Width(150);
+              columns.ForeignKey(c => c.RequiredTraining, (IEnumerable)ViewData["TargetGroup"], "LookupId", "Description").Width(120);
+
+              columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["CourseList"], "LookupId", "Description").EditorTemplateName("Course").Width(120);
+              columns.ForeignKey(c => c.Type, (IEnumerable)ViewData["TraTypeList"], "LookupId", "Description").EditorTemplateName("TrainingType").Width(120);
+              columns.Bound(c => c.Remark).Width(250);
+          })
+          .ToolBar(toolbar =>
+          {
+
+          toolbar.Template(@<text>
+         
+            @if (HttpContext.Current.User.IsInRole("HR_Training_User"))
+            {
+                @item.SaveButton()
+            }
+        </text>);
+      })
+        // .Events(ev => ev.DataBound("onDataBound"))
+        // .Events(ev => ev.DataBound("MasteronDataBound"))
+
+                             .Editable(editable => editable.Mode(GridEditMode.InCell))
+                                      .Selectable(selectable =>
+                                                   {
+                                                selectable.Mode(GridSelectionMode.Single);
+                                                selectable.Type(GridSelectionType.Row);
+                                                          })
+                                                           .Scrollable(h => h.Height(250))
+                                                              .Groupable()
+        //.Sortable(sortable =>
+        //{
+        //    sortable.SortMode(GridSortMode.SingleColumn);
+        //})
+        //.Filterable()
+
+                                                 .Pageable(pageable => pageable
+                                                              .Input(true)
+                                                              .Numeric(false)
+                                                                .Refresh(true)
+                                                               .PageSizes(true)
+                                                                 .ButtonCount(5))
+                                                                  .DataSource(dataSource => dataSource
+                                                                      .Ajax()
+                                                                      
+
+                                                                          .Batch(true)
+                                                                                .Events(events =>
+                                                                       {
+                                                                           events.Error("error_handler(\"TrainingAssessmentgrid\")");
+                                                                           events.RequestStart("onRequestStart(\"TrainingAssessmentgrid\")");
+                                                                           events.RequestEnd("onRequestEnd(\"TrainingAssessmentgrid\")");
+                                                                       })
+
+                                                                      .Model(model =>
+                                                                      {
+                                                                          model.Id(p => p.TrainingAssessmentViewModelId);
+
+                                                                          model.Field(p => p.OrgStructureId).Editable(false);
+                                                                          model.Field(p => p.RequiredTraining).Editable(false);
+                                                                          model.Field(p => p.NoOfStaff).Editable(false);
+                                                                          model.Field(p => p.LookupId).Editable(false);
+                                                                          model.Field(p => p.Type).Editable(false);
+
+
+                                                                      })
+                                                .Read(read => read.Action("TrainingAssessments_Read", "TrainingAssessment"))
+                                                   .Create(create => create.Action("Transfer_Create", "TrainingAssessment"))
+                                                  .Update(update => update.Action("Transfer_Create", "TrainingAssessment"))
+ 
+                                                                      )
+
+)
+<script>
+    //function error_handler(e) {
+    //    if (e.errors) {
+    //        var message = "Errors:\n";
+    //        $.each(e.errors, function (key, value) {
+    //            if ('errors' in value) {
+    //                $.each(value.errors, function () {
+    //                    message += this + "\n";
+    //                });
+    //            }
+    //        });
+    //        alert(message);
+
+    //    }
+
+    //}
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+    function onDataBound(e) {
+        var rows = e.sender.tbody.children();
+
+        for (var j = 0; j < rows.length; j++) {
+            var row = $(rows[j]);
+            var dataItem = e.sender.dataItem(row);
+            if (dataItem.Status === 0) {
+
+
+                row.css("background-color", "red");
+
+            } else {
+                row.css("background-color", "green");
+            }
+
+        }
+
+    }
+
+    //function MasteronDataBound(e) {
+    //    var rows = e.sender.tbody.children();
+
+    //    for (var j = 0; j < rows.length; j++) {
+    //        var row = $(rows[j]);
+    //        var dataItem = e.sender.dataItem(row);
+    //        if (dataItem.Status === 0) {
+
+
+    //            row.attr('disabled', disabled);;
+
+    //        } else {
+    //            row.attr('enabled', enabled);;
+    //        }
+
+    //    }
+
+    //}
+</script>
+
+<script type="text/javascript">
+    $(function () {
+        $('#TrainingAssessmentgrid').on('click', '.chkbx', function () {
+            var checked = $(this).is(':checked');
+            var grid = $('#TrainingAssessmentgrid').data().kendoGrid;
+            var dataItem = grid.dataItem($(this).closest('tr'));
+            dataItem.set('Check', checked);
+        })
+    })
+
+    function checkAll(ele) {
+        var state = $(ele).is(':checked');
+        var grid = $('#TrainingAssessmentgrid').data().kendoGrid;
+        $.each(grid.dataSource.view(), function () {
+            if (this['Check'] != state)
+                this.dirty = true;
+            this['Check'] = state;
+        });
+        grid.refresh();
+    }
+
+</script>
+@*<script type="text/javascript">
+        $(document).ready(function() {
+            var disabled =ViewData["disablecontrols"].ToString();
+            if (disabled) {
+                $('chkbx').attr('disabled', disabled);
+            }
+        })
+    </script>*@

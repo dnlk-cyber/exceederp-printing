@@ -1,0 +1,129 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Prospect Customer</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.PreCustomer>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.TradeName);
+          columns.Bound(c => c.BrandName);
+          columns.Bound(c => c.BusinessType);
+          columns.Bound(c => c.Category);
+          columns.Bound(c => c.Status);
+          columns.Bound(c => c.IsActive).Width(100).ClientTemplate("<input type='checkbox'  disabled='true' value='#=IsActive #' " + " # if (IsActive) { #" + "checked='checked'" + "# } #" + " />").Title("Is Active");
+
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+          .HtmlAttributes(new { style = "height: 520px;" })
+                                                  .Pageable(pageable => pageable
+                                                                    .Input(true)
+                                                                    .Numeric(false)
+                                                                    .Refresh(true)
+                                                                    .PageSizes(true)
+                                                                    .ButtonCount(5))
+
+                                                        .Scrollable()
+                                                        .Sortable()
+                                                        .Filterable()
+                                                        .Groupable()
+                                                        .Scrollable(h => h.Height(500))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+              .Model(model => model.Id(p => p.PreCustomerID)).Events(ev => ev
+                                                                        .Error("error_handler(\"grid\")")
+                                                                        .RequestStart("onRequestStart(\"grid\")")
+                                                                        .RequestEnd("onRequestEnd(\"grid\")"))
+          .Read(read => read.Action("PreCustomers_Read", "PreCustomer"))
+          .Create(create => create.Action("PreCustomers_Create", "PreCustomer"))
+          .Update(update => update.Action("PreCustomers_Update", "PreCustomer"))
+          .Destroy(destroy => destroy.Action("PreCustomers_Destroy", "PreCustomer"))
+      ).ClientDetailTemplateId("template")
+)
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                    .Name("tabstrip_#=PreCustomerID#")
+    .SelectedIndex(0)
+    .Items(items =>
+    {
+        //*****************************************************************************************************//
+        //*********************************Addressee***********************************************************//
+        items.Add().Text("Addresse").Content(
+            @<text>
+                <legend>Addresse</legend>
+                @(Html.Kendo().Grid<ExceedERP.Core.Domain.Common.HRM.Address>()
+              .Name("AddresseeGrid_#=PreCustomerID#")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Category).EditorTemplateName("AddressType");
+          columns.Bound(c => c.Value);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+                  .Model(model => model.Id(p => p.AddressId)).Events(ev => ev
+                                                                                        .Error("error_handler(\"AddresseeGrid_#=PreCustomerID#\")")
+                                                                                        .RequestStart("onRequestStart(\"AddresseeGrid_#=PreCustomerID#\")")
+                                                                                        .RequestEnd("onRequestEnd(\"AddresseeGrid_#=PreCustomerID#\")"))
+                                                          .Read(read => read.Action("Addresses_Read", "Addresse", new {  referenceID = "#=PreCustomerID#", addressReferenceType = "PreCustomer" }))
+                                                          .Create(create => create.Action("Addresses_Create", "Addresse", new {  referenceID = "#=PreCustomerID#", addressReferenceType = "PreCustomer" }))
+          .Update(update => update.Action("Addresses_Update", "Addresse", new { area = "Common" }))
+          .Destroy(destroy => destroy.Action("Addresses_Destroy", "Addresse", new { area = "Common" }))
+       ).ToClientTemplate()
+                )
+            </text>
+    );
+
+        /***********************************************Pre-Customer Schedule**************************************************/
+        items.Add().Text("PreCustomerSchedule").Content(
+            @<text>
+                <legend>Pre-Customer Schedule</legend>
+                @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.PreCustomerSchedule>()
+              .Name("PreCustomerScheduleGrid_#=PreCustomerID#")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.ScheduledDate).Format("{0:d}");
+          columns.Bound(c => c.ScheduleStatus);
+          columns.Bound(c => c.ScheduleOutcome);
+          columns.Bound(c => c.IsActive);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+                  .Model(model => model.Id(p => p.PreCustomerScheduleID)).Events(ev => ev
+                                                                                                        .Error("error_handler(\"PreCustomerScheduleGrid_#=PreCustomerID#\")")
+                                                                                                        .RequestStart("onRequestStart(\"PreCustomerScheduleGrid_#=PreCustomerID#\")")
+                                                                                                        .RequestEnd("onRequestEnd(\"PreCustomerScheduleGrid_#=PreCustomerID#\")"))
+          .Read(read => read.Action("PreCustomerSchedules_Read", "PreCustomerSchedule", new { preCustomerID = "#=PreCustomerID#" }))
+          .Create(create => create.Action("PreCustomerSchedules_Create", "PreCustomerSchedule", new { preCustomerCreateID = "#=PreCustomerID#" }))
+          .Update(update => update.Action("PreCustomerSchedules_Update", "PreCustomerSchedule", new { area = "CRM" }))
+          .Destroy(destroy => destroy.Action("PreCustomerSchedules_Destroy", "PreCustomerSchedule", new { area = "CRM" }))
+
+                            ).ToClientTemplate()
+
+                )
+            </text>
+
+         );
+
+    }).ToClientTemplate()
+
+    )
+</script>

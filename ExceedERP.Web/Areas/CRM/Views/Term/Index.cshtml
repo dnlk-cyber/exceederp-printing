@@ -1,0 +1,48 @@
+﻿<legend>Term</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.Term>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.TermID);//, 
+          columns.ForeignKey(c => c.VoucherDefinitionID, (System.Collections.IEnumerable)ViewData["VoucherDefinitionList"], "VoucherDefinitionID", "Name").EditorTemplateName("VoucherDefinitionCombo").Width(200);
+          columns.ForeignKey(c => c.LookupId, (System.Collections.IEnumerable)ViewData["LookupList"], "LookupID", "Description").EditorTemplateName("LookupCategory").Width(200);
+          columns.Bound(c => c.DefaultValue);
+          columns.Bound(c => c.IsMandatory).Width(105).ClientTemplate("<input type='checkbox'  disabled='true' value='#=IsMandatory #' " + " # if (IsMandatory) { #" + "checked='checked'" + "# } #" + " />").Title("Is Mandatory");
+          columns.Bound(c => c.Remark);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+        .HtmlAttributes(new { style = "height: 520px;" })
+                                                  .Pageable(pageable => pageable
+                                                                    .Input(true)
+                                                                    .Numeric(false)
+                                                                    .Refresh(true)
+                                                                    .PageSizes(true)
+                                                                    .ButtonCount(5))
+
+                                                        .Scrollable()
+                                                        .Sortable()
+                                                        .Filterable()
+                                                        .Groupable()
+                                                        .Scrollable(h => h.Height(500))
+      .DataSource(dataSource => dataSource
+              .Ajax()
+          .Model(model =>
+          {
+              model.Id(p => p.TermID);
+              model.Field(p => p.TermID).Editable(false);
+          }).Events(ev => ev
+                                                                    .Error("error_handler(\"grid\")")
+                                                                 .RequestStart("onRequestStart(\"grid\")")
+                                                               .RequestEnd("onRequestEnd(\"grid\")"))
+          .Read(read => read.Action("Terms_Read", "Term"))
+          .Create(create => create.Action("Terms_Create", "Term"))
+          .Update(update => update.Action("Terms_Update", "Term"))
+          .Destroy(destroy => destroy.Action("Terms_Destroy", "Term"))
+      )
+)
+

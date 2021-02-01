@@ -1,0 +1,188 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{66D8F8A8-48CA-4577-995D-F272F503351C}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>ExceedERP.ApplicationServices</RootNamespace>
+    <AssemblyName>ExceedERP.ApplicationServices</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer">
+      <HintPath>..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="FleetManagement\EquipmentInspection\AnnualEquipmentInventoryInspectionService.cs" />
+    <Compile Include="FleetManagement\EquipmentInspection\DisposalandReplacementRecommendationService.cs" />
+    <Compile Include="FleetManagement\EquipmentInspection\IAnnualEquipmentInventoryInspectionService.cs" />
+    <Compile Include="FleetManagement\EquipmentInspection\IDisposalandReplacementRecommendationService.cs" />
+    <Compile Include="FleetManagement\EquipmentPlanandEvaluation\EquipmentPlanandEvaluationsService.cs" />
+    <Compile Include="FleetManagement\EquipmentPlanandEvaluation\IEquipmentPlanandEvaluationsService.cs" />
+    <Compile Include="FleetManagement\FleetEquipmentRent\IRentCustomerFeedBackService.cs" />
+    <Compile Include="FleetManagement\FleetEquipmentRent\IRentFromExternalService.cs" />
+    <Compile Include="FleetManagement\FleetEquipmentRent\IRentInternalProjectService.cs" />
+    <Compile Include="FleetManagement\FleetEquipmentRent\IRentOtherSuppliersService.cs" />
+    <Compile Include="FleetManagement\FleetEquipmentRent\IRentRequestService.cs" />
+    <Compile Include="FleetManagement\FleetEquipmentRent\RentCustomerFeedBackService.cs" />
+    <Compile Include="FleetManagement\FleetEquipmentRent\RentFromExternalService.cs" />
+    <Compile Include="FleetManagement\FleetEquipmentRent\RentInternalProjectService.cs" />
+    <Compile Include="FleetManagement\FleetEquipmentRent\RentOtherSuppliersService.cs" />
+    <Compile Include="FleetManagement\FleetEquipmentRent\RentRequestService.cs" />
+    <Compile Include="FleetManagement\FleetMaintenance\AdministrativeApproval.cs" />
+    <Compile Include="FleetManagement\FleetMaintenance\AdministrativeApprovalService.cs" />
+    <Compile Include="FleetManagement\FleetMaintenance\EducationallevelService.cs" />
+    <Compile Include="FleetManagement\FleetMaintenance\IAdministrativeApprovalService.cs" />
+    <Compile Include="FleetManagement\FleetMaintenance\IEducationallevelService.cs" />
+    <Compile Include="FleetManagement\FleetMaintenance\IJobOrderDetailService.cs" />
+    <Compile Include="FleetManagement\FleetMaintenance\IJobOrderService.cs" />
+    <Compile Include="FleetManagement\FleetMaintenance\IJobStoreRequisitionService.cs" />
+    <Compile Include="FleetManagement\FleetMaintenance\IMaintenanceCenterService.cs" />
+    <Compile Include="FleetManagement\FleetMaintenance\IMaintenanceToolService.cs" />
+    <Compile Include="FleetManagement\FleetMaintenance\IMechanicCrewService.cs" />
+    <Compile Include="FleetManagement\FleetMaintenance\IOtherCompanyMaintenanceService.cs" />
+    <Compile Include="FleetManagement\FleetMaintenance\IOutsourceMaintenanceService.cs" />
+    <Compile Include="FleetManagement\FleetMaintenance\IPlannerService.cs" />
+    <Compile Include="FleetManagement\FleetMaintenance\IRepairTypeService.cs" />
+    <Compile Include="FleetManagement\FleetMaintenance\IServiceCrewService.cs" />
+    <Compile Include="FleetManagement\FleetMaintenance\IServiceService.cs" />
+    <Compile Include="FleetManagement\FleetMaintenance\IServiceSpareService.cs" />
+    <Compile Include="FleetManagement\FleetMaintenance\IServiceToolService.cs" />
+    <Compile Include="FleetManagement\FleetMaintenance\ISparePartService.cs" />
+    <Compile Include="FleetManagement\FleetMaintenance\ITechnicalJobApprovalService.cs" />
+    <Compile Include="FleetManagement\FleetMaintenance\JobOrderDetailService.cs" />
+    <Compile Include="FleetManagement\FleetMaintenance\JobOrderService.cs" />
+    <Compile Include="FleetManagement\FleetMaintenance\JobStoreRequisitionService.cs" />
+    <Compile Include="FleetManagement\FleetMaintenance\MaintenanceCenterService.cs" />
+    <Compile Include="FleetManagement\FleetMaintenance\MaintenanceToolService.cs" />
+    <Compile Include="FleetManagement\FleetMaintenance\MechanicCrewService.cs" />
+    <Compile Include="FleetManagement\FleetMaintenance\OtherCompanyMaintenanceService.cs" />
+    <Compile Include="FleetManagement\FleetMaintenance\OutsourceMaintenanceService.cs" />
+    <Compile Include="FleetManagement\FleetMaintenance\PlannerService.cs" />
+    <Compile Include="FleetManagement\FleetMaintenance\RepairTypeService.cs" />
+    <Compile Include="FleetManagement\FleetMaintenance\ServiceCrewService.cs" />
+    <Compile Include="FleetManagement\FleetMaintenance\ServiceService.cs" />
+    <Compile Include="FleetManagement\FleetMaintenance\ServiceSpareService.cs" />
+    <Compile Include="FleetManagement\FleetMaintenance\ServiceToolService.cs" />
+    <Compile Include="FleetManagement\FleetMaintenance\SparePartService.cs" />
+    <Compile Include="FleetManagement\FleetMaintenance\TechnicalJobApprovalService.cs" />
+    <Compile Include="FleetManagement\FleetRegistration\AccessoriesService.cs" />
+    <Compile Include="FleetManagement\FleetRegistration\AccidentService.cs" />
+    <Compile Include="FleetManagement\FleetRegistration\EducationallevelService.cs" />
+    <Compile Include="FleetManagement\FleetRegistration\EquipmentIdentityService.cs" />
+    <Compile Include="FleetManagement\FleetRegistration\EquipmentNameService.cs" />
+    <Compile Include="FleetManagement\FleetRegistration\EquipmentTypeService.cs" />
+    <Compile Include="FleetManagement\FleetRegistration\FleetHistoryService.cs" />
+    <Compile Include="FleetManagement\FleetRegistration\FleetService.cs" />
+    <Compile Include="FleetManagement\FleetRegistration\IAccessoriesService.cs" />
+    <Compile Include="FleetManagement\FleetRegistration\IAccidentService.cs" />
+    <Compile Include="FleetManagement\FleetRegistration\IEducationallevelService.cs" />
+    <Compile Include="FleetManagement\FleetRegistration\IEquipmentIdentityService.cs" />
+    <Compile Include="FleetManagement\FleetRegistration\IEquipmentNameService.cs" />
+    <Compile Include="FleetManagement\FleetRegistration\IEquipmentTypeService.cs" />
+    <Compile Include="FleetManagement\FleetRegistration\IFleetHistoryService.cs" />
+    <Compile Include="FleetManagement\FleetRegistration\IFleetService.cs" />
+    <Compile Include="FleetManagement\FleetRegistration\IInsuranceService.cs" />
+    <Compile Include="FleetManagement\FleetRegistration\IManufacturerService.cs" />
+    <Compile Include="FleetManagement\FleetRegistration\InsuranceService.cs" />
+    <Compile Include="FleetManagement\FleetRegistration\IOperatorPositionService.cs" />
+    <Compile Include="FleetManagement\FleetRegistration\IOperatorService.cs" />
+    <Compile Include="FleetManagement\FleetRegistration\ITimeSheetService.cs" />
+    <Compile Include="FleetManagement\FleetRegistration\ManufacturerService.cs" />
+    <Compile Include="FleetManagement\FleetRegistration\OperatorPositionService.cs" />
+    <Compile Include="FleetManagement\FleetRegistration\OperatorService.cs" />
+    <Compile Include="FleetManagement\FleetRegistration\TimeSheetService.cs" />
+    <Compile Include="FleetManagement\FleetResource\AssignedEquipmentService.cs" />
+    <Compile Include="FleetManagement\FleetResource\BranchService.cs" />
+    <Compile Include="FleetManagement\FleetResource\DriverVehicleTransferService.cs" />
+    <Compile Include="FleetManagement\FleetResource\IAssignedEquipmentService.cs" />
+    <Compile Include="FleetManagement\FleetResource\IBranchService.cs" />
+    <Compile Include="FleetManagement\FleetResource\IDriverVehicleTransferService.cs" />
+    <Compile Include="FleetManagement\FleetResource\ISitesVehicleTransferService.cs" />
+    <Compile Include="FleetManagement\FleetResource\ISiteVechicleTransferDetailService.cs" />
+    <Compile Include="FleetManagement\FleetResource\IStructureService.cs" />
+    <Compile Include="FleetManagement\FleetResource\IVehicleDemandService.cs" />
+    <Compile Include="FleetManagement\FleetResource\IVehicleDistributionService.cs" />
+    <Compile Include="FleetManagement\FleetResource\IVehicleReturnService.cs" />
+    <Compile Include="FleetManagement\FleetResource\SitesVehicleTransferService.cs" />
+    <Compile Include="FleetManagement\FleetResource\SiteVechicleTransferDetailService.cs" />
+    <Compile Include="FleetManagement\FleetResource\StructureService.cs" />
+    <Compile Include="FleetManagement\FleetResource\VehicleDemandService.cs" />
+    <Compile Include="FleetManagement\FleetResource\VehicleDistributionService.cs" />
+    <Compile Include="FleetManagement\FleetResource\VehicleReturnService.cs" />
+    <Compile Include="FleetManagement\FleetSalvageStore\CannibalizationService.cs" />
+    <Compile Include="FleetManagement\FleetSalvageStore\FleetSalvageStoreService.cs" />
+    <Compile Include="FleetManagement\FleetSalvageStore\ICannibalizationService.cs" />
+    <Compile Include="FleetManagement\FleetSalvageStore\IFleetSalvageStoreService.cs" />
+    <Compile Include="FleetManagement\FleetSalvageStore\ISalvageStoreGoodReceivingService.cs" />
+    <Compile Include="FleetManagement\FleetSalvageStore\SalvageStoreGoodReceivingService.cs" />
+    <Compile Include="FleetManagement\FleetTireManagement\ITireIssueService.cs" />
+    <Compile Include="FleetManagement\FleetTireManagement\ITireReturnService.cs" />
+    <Compile Include="FleetManagement\FleetTireManagement\TireIssueService.cs" />
+    <Compile Include="FleetManagement\FleetTireManagement\TireReturnService.cs" />
+    <Compile Include="FleetManagement\FuelManagement\FuelService.cs" />
+    <Compile Include="FleetManagement\FuelManagement\IFuelService.cs" />
+    <Compile Include="Inventory\InventoryItemService.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ExceedERP.Core\ExceedERP.Core.csproj">
+      <Project>{534bb567-a6c4-4750-94be-357d96033bb1}</Project>
+      <Name>ExceedERP.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ExceedERP.DataAccess\ExceedERP.DataAccess.csproj">
+      <Project>{9cb9519b-4a76-4b18-b0ea-f7b057cd46fa}</Project>
+      <Name>ExceedERP.DataAccess</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ExceedERP.Repository\ExceedERP.Repository.csproj">
+      <Project>{8a3c9266-cd0b-4945-86a1-3324c72fd9d7}</Project>
+      <Name>ExceedERP.Repository</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <None Include="packages.config" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

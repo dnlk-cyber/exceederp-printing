@@ -1,0 +1,21 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.Common
+@using ExceedERP.Core.Domain.HRM
+
+@(Html.Kendo().DropDownList( ) 
+      .Name("EmployeeId")
+      .DataValueField("PersonId")
+      .DataTextField("FullName")
+      .OptionLabel("Select Employee")
+      .Filter("contains")
+      .MinLength(2)
+      .HtmlAttributes(new { style = "width:100%" })
+      .DataSource(dataSource =>
+      {
+          dataSource.Read(read => read.Action("GetEmployeeForOverTime", "HRMDataProvider", new { area = "HRM" }))
+              .ServerFiltering(false);
+      })
+     .ValuePrimitive( true)
+                          
+                                               
+      .Height(400)

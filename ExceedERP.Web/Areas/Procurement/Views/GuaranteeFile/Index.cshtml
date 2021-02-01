@@ -1,0 +1,24 @@
+﻿@using ExceedERP.Core.Domain.Procurement.Guarantee
+
+@(Html.Kendo().Grid<GuaranteeFile>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.FileName);
+          columns.Bound(c => c.Description);
+          columns.Bound(c => c.FilePath);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.GuaranteeFileId))
+          .Read(read => read.Action("GuaranteeFiles_Read", "GuaranteeFile"))
+          .Create(create => create.Action("GuaranteeFiles_Create", "GuaranteeFile"))
+          .Update(update => update.Action("GuaranteeFiles_Update", "GuaranteeFile"))
+          .Destroy(destroy => destroy.Action("GuaranteeFiles_Destroy", "GuaranteeFile"))
+      ))

@@ -1,0 +1,4 @@
+﻿@(Html.Kendo().DropDownListFor(model => model) 
+                                          .DataTextField("Text")
+                                                  .DataValueField("Value").Filter(FilterType.Contains).OptionLabel("Select").HtmlAttributes(new { style = "width:100%" })
+                                                      .DataSource(d => d.Read(r => r.Action("JobCauseDDBind", "JobCauses").Data("filterCause")).ServerFiltering(false)))

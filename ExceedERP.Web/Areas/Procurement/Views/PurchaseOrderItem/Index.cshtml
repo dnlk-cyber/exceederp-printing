@@ -1,0 +1,41 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Procurement.PurchaseOrder.PurchaseOrderItem>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.ItemCategory).Width(200);
+          columns.Bound(c => c.InventoryItem).Width(200);
+          
+          columns.Bound(c => c.Quantity).Width(200);
+          columns.Bound(c => c.UnitPrice).Width(200);
+          
+          columns.Bound(c => c.TaxType).Width(200);
+          columns.Bound(c => c.TaxAmount).Width(200);
+        
+          columns.Bound(c => c.SubTotal).Width(200);
+          columns.Bound(c => c.Remark).Width(200);
+          
+          columns.Bound(c => c.OrgBranchName);
+          columns.Bound(c => c.DateCreated);
+          columns.Bound(c => c.LastModified);
+          columns.Bound(c => c.CreatedBy);
+          columns.Bound(c => c.ModifiedBy);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+                              toolbar.Excel();
+                              // toolbar.Pdf();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("Item").Window(w => w.Title("Items")))
+      .Pageable()
+      .Filterable()
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.PurchaseOrderItemID))
+          .Read(read => read.Action("PurchaseOrderItems_Read", "PurchaseOrderItem"))
+          .Create(create => create.Action("PurchaseOrderItems_Create", "PurchaseOrderItem"))
+          .Update(update => update.Action("PurchaseOrderItems_Update", "PurchaseOrderItem"))
+          .Destroy(destroy => destroy.Action("PurchaseOrderItems_Destroy", "PurchaseOrderItem"))
+      ))

@@ -1,0 +1,13 @@
+﻿@(Html.Kendo().DropDownListFor(m => m)
+      .AutoBind(false)
+      .Filter(FilterType.Contains)
+      .OptionLabel("Select Work Item...")
+      .DataTextField("ItemName")
+      .DataValueField("ItemCode")
+      .ValuePrimitive(true)
+      .DataSource(dataSource =>
+      {
+          dataSource.Read(read => read.Action("GetWorkItemCodes", "DataProvider",new { area="Construction"}))
+              .ServerFiltering(false);
+      }))
+@Html.ValidationMessageFor(m => m)

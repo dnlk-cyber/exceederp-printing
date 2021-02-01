@@ -1,0 +1,45 @@
+﻿<legend>Holiday Definition</legend>
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.HolidayDefinition>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Description);
+          columns.Bound(c => c.Type).EditorTemplateName("HolidayDefinitionType");
+          columns.Bound(c => c.IsFixed).ClientTemplate("<input type='checkbox'  disabled='true' value='#=IsFixed #' " + " # if (IsFixed) { #" + "checked='checked'" + "# } #" + " />").Title("Is Fixed").Width(100);
+          columns.Bound(c => c.WillClose).ClientTemplate("<input type='checkbox'  disabled='true' value='#=WillClose #' " + " # if (WillClose) { #" + "checked='checked'" + "# } #" + " />").Title("Will Close").Width(100);
+          columns.Bound(c => c.Remark);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+          toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+       .HtmlAttributes(new { style = "height: 520px;" })
+                                                  .Pageable(pageable => pageable
+                                                                    .Input(true)
+                                                                    .Numeric(false)
+                                                                    .Refresh(true)
+                                                                    .PageSizes(true)
+                                                                    .ButtonCount(5))
+
+                                                        .Scrollable()
+                                                        .Sortable()
+                                                        .Filterable()
+                                                        .Groupable()
+                                                        .Scrollable(h => h.Height(500))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.HolidayDefinitionID))
+                         .Events(ev => ev
+                                                                                        .Error("error_handler(\"grid\")")
+                                                                                        .RequestStart("onRequestStart(\"grid\")")
+                                                                                        .RequestEnd("onRequestEnd(\"grid\")"))
+ 
+
+          .Read(read => read.Action("HolidayDefinitions_Read", "HolidayDefinition"))
+          .Create(create => create.Action("HolidayDefinitions_Create", "HolidayDefinition"))
+          .Update(update => update.Action("HolidayDefinitions_Update", "HolidayDefinition"))
+          .Destroy(destroy => destroy.Action("HolidayDefinitions_Destroy", "HolidayDefinition"))
+      )
+)

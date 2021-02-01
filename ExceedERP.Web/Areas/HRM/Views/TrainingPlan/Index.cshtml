@@ -1,0 +1,141 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.HRM.HRMPlan
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>@Resources.NavigatorTraining_TrainingPlan</legend>
+@(Html.Kendo().Grid<TrainingPlan>()
+                      .Name("TrainingPlangrid")
+                  .Columns(columns =>
+                  {
+                      columns.ForeignKey(c => c.WorkUnit, (IEnumerable)ViewData["organization"], "OrgStructureId", "Name").EditorTemplateName("OrgSelector").Filterable(ftb => ftb.Multi(true).Search(true)).Width(120);
+                      columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["PeriodList"], "GlFiscalYearId", "Name").EditorTemplateName("GLFPeriod").Width(120);
+                      columns.ForeignKey(c => c.Course, (IEnumerable)ViewData["CourseList"], "LookupId", "Description").EditorTemplateName("Course").Width(120);
+                      columns.Bound(c => c.NoofTrainee).Width(120);
+                      columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["TargetGroupList"], "LookupId", "Description").EditorTemplateName("TargetGroup").Width(120);
+                      columns.ForeignKey(c => c.MainCompanyId, (IEnumerable)ViewData["Companies"], "MainCompanyId", "TradeName").EditorTemplateName("Companies").Width(120);
+                      columns.Bound(c => c.CostPerPerson).Width(120);
+                      columns.Bound(c => c.TotalCost).Width(100);
+                      columns.Bound(c => c.Remark).Width(100);
+                      columns.Command(command =>
+                      {
+                          if (HttpContext.Current.User.IsInRole("HR_Training_User"))
+                          {
+
+                              command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                          }
+                          if (HttpContext.Current.User.IsInRole("HR_Admin"))
+                          {
+                              command.Destroy().Text(Resources.ActionButton_Cancel);
+                          }
+                      }).Width(190);
+                  })
+                  .ToolBar(toolbar =>
+                  {
+                      if (HttpContext.Current.User.IsInRole("HR_Training_User"))
+                      {
+
+                          // toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                      }
+                  })
+                         .Editable(editable => editable.Mode(GridEditMode.InLine).TemplateName("TrainingPlan").Window(window => { window.Title(Resources.NavigatorTraining_TrainingPlan); window.Scrollable(false); })
+                         )
+                      .Selectable(selectable =>
+                      {
+                          selectable.Mode(GridSelectionMode.Single);
+                          selectable.Type(GridSelectionType.Row);
+                      })
+                         .Scrollable(h => h.Height(500))
+                             .Groupable()
+                                      .Sortable(sortable =>
+                                      {
+                                          sortable.SortMode(GridSortMode.SingleColumn);
+                                      })
+                          .Filterable()
+                             .Pageable(pageable => pageable
+                                                        .Input(true)
+                                                        .Numeric(false)
+                                                        .Refresh(true)
+                                                        .PageSizes(true)
+                                                        .ButtonCount(5))
+                  .DataSource(dataSource => dataSource
+
+                      .Ajax()
+                              .Sort(sort => sort.Add("DateCreated").Descending())
+
+                          .Events(events =>
+                          {
+                              events.Error("error_handler(\"TrainingPlangrid\")");
+                              events.RequestStart("onRequestStart(\"TrainingPlangrid\")");
+                              events.RequestEnd("onRequestEnd(\"TrainingPlangrid\")");
+                          })
+
+                      .Model(model =>
+                      {
+                          model.Id(p => p.TrainingPlanId);
+                          model.Field(p => p.WorkUnit).Editable(false);
+                          model.Field(p => p.GlFiscalYearId).Editable(false);
+                          model.Field(p => p.Course).Editable(false);
+                          model.Field(p => p.NoofTrainee).Editable(false);
+                          model.Field(p => p.TotalCost).Editable(false);
+                      }
+          )
+          .Read(read => read.Action("TrainingPlans_Read", "TrainingPlan"))
+          .Create(create => create.Action("TrainingPlans_Create", "TrainingPlan"))
+          .Update(update => update.Action("TrainingPlans_Update", "TrainingPlan"))
+          .Destroy(destroy => destroy.Action("TrainingPlans_Destroy", "TrainingPlan"))
+      )
+)
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 700px;
+    }
+</style>
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 700px;
+    }
+
+    .Employee-photo {
+        display: inline-block;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background-size: 32px 35px;
+        background-position: center center;
+        vertical-align: middle;
+        line-height: 32px;
+        box-shadow: inset 0 0 1px #999, inset 0 0 10px rgba(0,0,0,.2);
+        margin-left: 5px;
+    }
+
+    .Employee-name {
+        display: inline-block;
+        vertical-align: middle;
+        line-height: 32px;
+        padding-left: 3px;
+    }
+</style>
+<script>
+    //function error_handler(e) {
+    //    if (e.errors) {
+    //        var message = "Errors:\n";
+    //        $.each(e.errors, function(key, value) {
+    //            if ('errors' in value) {
+    //                $.each(value.errors, function() {
+    //                    message += this + "\n";
+    //                });
+    //            }
+    //        });
+    //        alert(message);
+
+    //    }
+
+    //}
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+</script>

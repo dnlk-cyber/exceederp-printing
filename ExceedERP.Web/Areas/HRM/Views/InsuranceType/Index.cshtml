@@ -1,0 +1,25 @@
+﻿@using ExceedERP.Core.Domain.HRM.HealthAndInsurance
+@using ExceedERP.Core.Localization
+
+@(Html.Kendo().Grid<InsuranceType>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.Name);
+        columns.Bound(c => c.Remark);
+        columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel);  }).Width(200);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.InsuranceTypeId))
+          .Read(read => read.Action("InsuranceType_Read", "InsuranceType"))
+          .Create(create => create.Action("InsuranceType_Create", "InsuranceType"))
+          .Update(update => update.Action("InsuranceType_Update", "InsuranceType"))
+          .Destroy(destroy => destroy.Action("InsuranceType_Destroy", "InsuranceType"))
+      )
+)

@@ -1,0 +1,234 @@
+﻿@if (HttpContext.Current.User.IsInRole("Property_Requisition_User") 
+    || HttpContext.Current.User.IsInRole("Property_User") 
+    || HttpContext.Current.User.IsInRole("Property_Approver") 
+    || HttpContext.Current.User.IsInRole("Property_Authorizer")
+    || HttpContext.Current.User.IsInRole("Property_PhysicalCount_Approver")
+    || HttpContext.Current.User.IsInRole("Property_Admin") 
+    || HttpContext.Current.User.IsInRole("Property_Report")
+    || HttpContext.Current.User.IsInRole("Property_StoreKeeper"))
+{
+    <li class="">
+        <a href="#" class="dropdown-toggle">
+            <i class="menu-icon fa fa-th"></i>
+            <span class="menu-text">
+                Property
+            </span>
+
+            <b class="arrow fa fa-angle-down"></b>
+        </a>
+        <b class="arrow"></b>
+
+        <ul class="submenu">
+            <li class="">
+                <a href="#" class="dropdown-toggle">
+                    <i class="menu-icon fa fa-caret-right"></i>
+                    Stock
+                    <b class="arrow fa fa-angle-down"></b>
+                </a>
+
+                <b class="arrow"></b>
+
+                <ul class="submenu">
+                @if (HttpContext.Current.User.IsInRole("Property_Requisition_User")
+                    || HttpContext.Current.User.IsInRole("Property_User")
+                    || HttpContext.Current.User.IsInRole("Property_Approver") 
+                    || HttpContext.Current.User.IsInRole("Property_Authorizer")
+                     || HttpContext.Current.User.IsInRole("Property_Count_User")
+                    || HttpContext.Current.User.IsInRole("Property_Count_Approver")
+                    || HttpContext.Current.User.IsInRole("Property_StoreKeeper")
+                     || HttpContext.Current.User.IsInRole("Property_Void"))
+                {
+                    <li class="">
+                        <a href="#" class="dropdown-toggle">
+                            <i class="menu-icon fa fa-caret-right"></i>
+
+                            Stock Mgt.
+                            <b class="arrow fa fa-angle-down"></b>
+                        </a>
+
+                        <b class="arrow"></b>
+
+                        <ul class="submenu">
+                            @if (HttpContext.Current.User.IsInRole("Property_StoreKeeper"))
+                            {
+                                <li id="inv16" class="actionlinlk">
+                                    @Html.ActionLink("Store Balance", "Index", "StoreItemBalance", new {area = "Inventory"}, null)<b class="arrow"></b></li>
+                            }
+                           @if (HttpContext.Current.User.IsInRole("Property_Requisition_User")
+                                || HttpContext.Current.User.IsInRole("User_Department"))
+                           {
+                                <li id="inv1" class="actionlinlk">
+                                    @Html.ActionLink("Store Requisition", "Index", "StoreRequisition", new {area = "Inventory"}, null)<b class="arrow"></b></li>
+                                <li id="invf1" class="actionlinlk">
+                                    @Html.ActionLink("Fuel Requisition", "Index", "FuelRequisition", new {area = "Inventory"}, null)<b class="arrow"></b></li>
+                            }
+                            @if (HttpContext.Current.User.IsInRole("Property_User")
+                                 || HttpContext.Current.User.IsInRole("Property_Authorizer"))
+                            {
+                                <li id="invfr1" class="actionlinlk">
+                                    @Html.ActionLink("Review Requisition", "Index", "StoreRequisitionPropertyReview", new {area = "Inventory"}, null)<b class="arrow"></b></li>
+                            }
+                            @if (HttpContext.Current.User.IsInRole("Property_StoreKeeper")
+                                 || HttpContext.Current.User.IsInRole("Property_Approver"))
+                            {
+                                <li id="inv2" class="actionlinlk">@Html.ActionLink("Purchase Requisition", "Index", "PurchaseRequisition", new {area = "Inventory"}, null)<b class="arrow"></b></li>
+                                <li id="inv2333pr" class="actionlinlk">@Html.ActionLink("Manual Purchase Requisition", "Index", "PurchaseRequisitionManual", new {area = "Inventory"}, null)<b class="arrow"></b></li>
+                                <li id="inv3" class="actionlinlk">
+                                    @Html.ActionLink("Issue", "Index", "Issue", new {area = "Inventory"}, null)<b class="arrow"></b></li>
+                                <li id="inv3ma" class="actionlinlk">
+                                    @Html.ActionLink("Issue Manual", "Index", "IssueManual", new {area = "Inventory"}, null)<b class="arrow"></b></li>
+                                <li id="inv4" class="actionlinlk">
+                                    @Html.ActionLink("Issue Fuel", "Index", "IssueFuel", new {area = "Inventory"}, null)<b class="arrow"></b></li>
+                                 @*  <li id="inv5" class="actionlinlk">@Html.ActionLink("Inspection", "Index", "ItemInspection", new { area = "Inventory" }, null)<b class="arrow"></b></li>*@
+                                <li id="inv6" class="actionlinlk">
+                                    @Html.ActionLink("Goods Receive", "Index", "GoodReceive", new {area = "Inventory"}, null)<b class="arrow"></b></li>
+                                <li id="inv6m" class="actionlinlk">
+                                    @Html.ActionLink("Goods Receive Manual", "Index", "GoodReceiveManual", new {area = "Inventory"}, null)<b class="arrow"></b></li>
+                                @*<li id="inv15" class="actionlinlk">@Html.ActionLink("Goods Receive(Donation)", "Index", "GoodReceiveDonation", new { area = "Inventory" }, null)<b class="arrow"></b></li>*@
+                                <li id="inv7" class="actionlinlk">
+                                    @Html.ActionLink("Goods Sales or Donate", "Index", "GoodSellingLending", new {area = "Inventory"}, null)<b class="arrow"></b></li>
+                                @*<li id="inv9" class="actionlinlk">
+                                    @Html.ActionLink("Temporary Goods Receive", "Index", "TempGoodReceive", new {area = "Inventory"}, null)<b class="arrow"></b></li>*@
+                                <li id="inv10" class="actionlinlk">
+                                    @Html.ActionLink("Transfer Send", "Index", "TransferSend", new {area = "Inventory"}, null)<b class="arrow"></b></li>
+                                <li id="inv10withourreq" class="actionlinlk">
+                                    @Html.ActionLink("Transfer With Out Req.", "Index", "TransferSendWithoutReq", new { area = "Inventory" }, null)<b class="arrow"></b></li>
+                                @*<li id="inv8" class="actionlinlk">@Html.ActionLink("Transfer Receive", "Index", "ItemTransferReceive", new {area = "Inventory"}, null)<b class="arrow"></b></li>*@
+                                <li id="inv8new" class="actionlinlk">
+                                    @Html.ActionLink("Transfer Receive", "Index", "TransferReceives", new {area = "Inventory"}, null)<b class="arrow"></b></li>
+                                @*<li id="inv11" class="actionlinlk">@Html.ActionLink("Purchase Return", "Index", "PurchaseReturn", new {area = "Inventory"}, null)<b class="arrow"></b></li>*@
+                                <li id="inv12" class="actionlinlk">@Html.ActionLink("Stock Adjustment", "Index", "StockAdjustment", new {area = "Inventory"}, null)<b class="arrow"></b></li>
+                                <li id="inv13" class="actionlinlk">
+                                    @Html.ActionLink("Store Return", "Index", "StoreReturn", new {area = "Inventory"}, null)<b class="arrow"></b></li>
+                            }
+                            @if (HttpContext.Current.User.IsInRole("Property_Count_User")
+                                 || HttpContext.Current.User.IsInRole("Property_Count_Approver")
+                                 || HttpContext.Current.User.IsInRole("Property_StoreKeeper"))
+                            {
+                                <li id="inv14" class="actionlinlk">@Html.ActionLink("Property Count", "Index", "PropertyCount", new {area = "Inventory"}, null)<b class="arrow"></b></li>
+                                @*<li id="inv14" class="actionlinlk">@Html.ActionLink("Inventory Variation", "Index", "InventoryVariation", new {area = "Inventory"}, null)<b class="arrow"></b></li>*@
+                            }
+                            @if (HttpContext.Current.User.IsInRole("Property_Approver")
+                                || HttpContext.Current.User.IsInRole("Property_StoreKeeper"))
+                            {
+                                @*<li id="inv16" class="actionlinlk">@Html.ActionLink("Revaluation", "Index", "Revaluation", new {area = "Inventory"}, null)<b class="arrow"></b></li>*@
+                            }
+
+                        </ul>
+                    </li>
+                }
+        @if (HttpContext.Current.User.IsInRole("Property_Report"))
+        {
+            <li class="">
+                <a href="#" class="dropdown-toggle">
+                    <i class="menu-icon fa fa-caret-right"></i>
+
+                    Report
+                    <b class="arrow fa fa-angle-down"></b>
+                </a>
+
+                <b class="arrow"></b>
+
+
+                <ul class="submenu">
+                    <li id="invrep1" class="actionlinlk">@Html.ActionLink("Stock Balance", "StockBalanceByCategory", "InventoryReport", new { area = "Inventory" }, null)<b class="arrow"></b></li>
+                    <li id="invrep2" class="actionlinlk">@Html.ActionLink("Goods Receive", "GoodsReceiveByDateInterval", "InventoryReport", new { area = "Inventory" }, null)<b class="arrow"></b></li>
+                    <li id="invrep3" class="actionlinlk">@Html.ActionLink("Issue", "IssueItemByDateInterval", "InventoryReport", new { area = "Inventory" }, null)<b class="arrow"></b></li>
+                    <li id="invrep4" class="actionlinlk">@Html.ActionLink("Item Transfer", "ItemTransferByDateInterval", "InventoryReport", new { area = "Inventory" }, null)<b class="arrow"></b></li>
+                    @*<li id="invrep5" class="actionlinlk">@Html.ActionLink("Purchase Return", "PurchaseReturnItemByDateInterval", "InventoryReport", new { area = "Inventory" }, null)<b class="arrow"></b></li>*@
+                    <li id="invrep6" class="actionlinlk">@Html.ActionLink("Stock Adjustment", "StockAdjustmentItem", "InventoryReport", new { area = "Inventory" }, null)<b class="arrow"></b></li>
+                    <li id="invrep7" class="actionlinlk">@Html.ActionLink("Store Requisition", "StoreRequistionItemByDateInterval", "InventoryReport", new { area = "Inventory" }, null)<b class="arrow"></b></li>
+                    <li id="invrep8" class="actionlinlk">@Html.ActionLink("Store Return", "StoreReturnItemByDateInterval", "InventoryReport", new { area = "Inventory" }, null)<b class="arrow"></b></li>
+                    <li id="invrep7p" class="actionlinlk">@Html.ActionLink("Purchase Requisition", "PurchaseRequistionReport", "InventoryReport", new { area = "Inventory" }, null)<b class="arrow"></b></li>
+                    <li id="invrep9" class="actionlinlk">@Html.ActionLink("Stock Card", "StoreStock", "InventoryReport", new { area = "Inventory" }, null)<b class="arrow"></b></li>
+                    <li id="invrep11" class="actionlinlk">@Html.ActionLink("Bin Card", "BinCard", "InventoryReport", new { area = "Inventory" }, null)<b class="arrow"></b></li>
+                    <li id="invrep10" class="actionlinlk">@Html.ActionLink("Inventory Count", "InventoryCount", "InventoryReport", new { area = "Inventory" }, null)<b class="arrow"></b></li>
+                    <li id="invrep13" class="actionlinlk">@Html.ActionLink("Variation", "Variation", "InventoryReport", new { area = "Inventory" }, null)<b class="arrow"></b></li>
+                    <li id="invrep13s" class="actionlinlk">@Html.ActionLink("Variation Summary", "VariationSummary", "InventoryReport", new { area = "Inventory" }, null)<b class="arrow"></b></li>
+                    <li id="invrep12" class="actionlinlk">@Html.ActionLink("Balance Per Store", "ItemInStore", "InventoryReport", new { area = "Inventory" }, null)<b class="arrow"></b></li>
+                    @*<li id="invrep12" class="actionlinlk">@Html.ActionLink("Consumption", "Consumption", "InventoryReport", new { area = "Inventory" }, null)<b class="arrow"></b></li>*@
+                    <li id="invrep121" class="actionlinlk">@Html.ActionLink("Consumption By Project", "ConsumptionByProject", "InventoryReport", new { area = "Inventory" }, null)<b class="arrow"></b></li>
+                    <li id="invrep121s" class="actionlinlk">@Html.ActionLink("Consumption By Work Unit", "ConsumptionByworkUnit", "InventoryReport", new { area = "Inventory" }, null)<b class="arrow"></b></li>
+                    <li id="invrep121swew" class="actionlinlk">@Html.ActionLink("Dead Stock", "DeadStockReport", "InventoryReport", new { area = "Inventory" }, null)<b class="arrow"></b></li>
+                    <li id="invrep1" class="actionlinlk">@Html.ActionLink("Stock Status", "StockStatusReport", "InventoryReport", new { area = "Inventory" }, null)<b class="arrow"></b></li>
+                </ul>
+            </li>
+        }
+        @if (HttpContext.Current.User.IsInRole("Property_Admin"))
+        {
+            <li class="">
+                <a href="#" class="dropdown-toggle">
+                    <i class="menu-icon fa fa-caret-right"></i>
+
+                    Setting
+                    <b class="arrow fa fa-angle-down"></b>
+                </a>
+
+                <b class="arrow"></b>
+
+                <ul class="submenu">
+                    <li id="invsett1" class="actionlinlk">
+                        @Html.ActionLink("Item Category", "Index", "ItemCategory", new { area = "Inventory" }, null)<b class="arrow"></b>
+                    </li>
+                    <li id="invsett2" class="actionlinlk">
+                        @Html.ActionLink("Items", "Index", "Item", new { area = "Inventory" }, null)<b class="arrow"></b>
+                    </li>
+                    <li id="invsett234334" class="actionlinlk">
+                        @Html.ActionLink("Item Merge", "Index", "ItemMerge", new { area = "Inventory" }, null)<b class="arrow"></b>
+                    </li>
+                    <li id="invsett3" class="actionlinlk">
+                        @Html.ActionLink("UoM", "Index", "Uom", new { area = "Inventory" }, null)<b class="arrow"></b>
+                    </li>
+                    <li id="invsett4" class="actionlinlk">@Html.ActionLink("Stores", "Index", "Store", new { area = "Inventory" }, null)<b class="arrow"></b></li>
+                    <li id="invsett5" class="actionlinlk">
+                        @Html.ActionLink("Store Control", "Index", "StoreKeeperAssignment", new { area = "Inventory" }, null)<b class="arrow"></b>
+                    </li>
+                    <li id="invsettpy6" class="actionlinlk">
+                        @Html.ActionLink("Branch Items", "Index", "BranchItemAssignment", new { area = "Inventory" }, null)<b class="arrow"></b>
+                    </li>
+                    <li id="invsett6e" class="actionlinlk">
+                        @Html.ActionLink("Store Item Adjustment", "Index", "StoreItemAssignment", new { area = "Inventory" }, null)<b class="arrow"></b>
+                    </li>
+                    <li id="invsett6q" class="actionlinlk">
+                        @Html.ActionLink("Fuel Items", "Index", "FuelItemSetting", new { area = "Inventory" }, null)<b class="arrow"></b>
+                    </li>
+                    @*<li id="invsetto7" class="actionlinlk">@Html.ActionLink("Work Unit Cost Center", "Index", "Department", new { area = "Inventory" }, null)<b class="arrow"></b></li>*@
+                    <li id="invsett7ssw" class="actionlinlk">
+                        @Html.ActionLink("Period", "Index", "InventoryPeriod", new { area = "Inventory" }, null)<b class="arrow"></b>
+                    </li>
+                    <li id="invsett7ss" class="actionlinlk">
+                        @Html.ActionLink("Receive Type", "Index", "ReceiveType", new { area = "Inventory" }, null)<b class="arrow"></b>
+                    </li>
+                    <li id="invsettp6ss" class="actionlinlk">
+                        @Html.ActionLink("Average Price", "Index", "AveragePriceSetting", new { area = "Inventory" }, null)<b class="arrow"></b>
+                    </li>
+                    <li id="invsettp6r4" class="actionlinlk">
+                        @Html.ActionLink("Item Balance Dashboard", "Index", "DashboardInventoryItembalance", new { area = "Inventory" }, null)<b class="arrow"></b>
+                    </li>
+                    <li id="invsettp6rin4" class="actionlinlk">
+                        @Html.ActionLink("Inventory Setting", "Index", "InventorySetting", new { area = "Inventory" }, null)<b class="arrow"></b>
+                    </li>
+
+                    <li id="invsettp6rin4" class="actionlinlk">
+                        @Html.ActionLink("Archive Data", "Index", "InventoryDataArchive", new { area = "Inventory" }, null)<b class="arrow"></b>
+                    </li>
+
+                    @if (HttpContext.Current.User.IsInRole("Admin"))
+                    {
+                        <li id="invsettp6r" class="actionlinlk">
+                            @Html.ActionLink("Update Bin Card", "Index", "UpdateBinCard", new { area = "Inventory" }, null)<b class="arrow"></b>
+                        </li>
+                    }
+                </ul>
+            </li>
+        }
+                    
+                </ul>
+            </li>
+
+        </ul>
+    </li>
+}
+
+
+ 

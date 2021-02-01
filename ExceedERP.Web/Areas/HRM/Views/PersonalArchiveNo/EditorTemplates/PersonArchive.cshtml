@@ -1,0 +1,125 @@
+﻿@using System.Collections
+@using Kendo.Mvc.UI
+@using ExceedERP.Core.Localization
+@model ExceedERP.Core.Domain.HRM.ArchiveManagement.PersonalArchiveNo
+
+<div class="form">
+    <div class="row fullrow">
+        <div class="col-md-3 ro1">
+            <div class="form-group">
+
+                @Html.LabelFor(model => model.EmployeeId, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+
+                    @(Html.Kendo().DropDownListFor(model => model.EmployeeId)
+                                                                              //  .Name("EmployeeId")
+                                                                              .DataValueField("PersonId")
+                                                        .DataTextField("FullName")
+                                                           .OptionLabel(Resources.Select)
+                                                            .Filter("contains")
+                                                            .MinLength(2)
+                                                            //.HtmlAttributes(new { style = "width:200px" })
+                                                            .Virtual(v => v.ValueMapper("valueMapper").ItemHeight(26))
+                                                        .DataSource(source =>
+                                                        {
+                                                            source.Custom()
+                                                                  .ServerFiltering(true)
+                                                                  .ServerPaging(true)
+                                                                  .Type("aspnetmvc-ajax")
+                                                                  .Transport(transport => transport.Read(r => r.Action("GetEmployees", "HRMDataProvider")))
+                                                                  .Schema(schema =>
+                                                                  {
+                                                                      schema.Data("Data")
+                                                                            .Total("Total");
+                                                                  });
+                                                        })
+
+                                                                           .ValuePrimitive(true)
+
+
+                                                                                                  .Height(400)
+                                                                                                          .HeaderTemplate("<div class=\"dropdown-header k-widget k-header\">" +
+                                                                                        "<span>Photo</span>" +
+                                                                                        "<span>Full Name</span>" +
+                                                                                    "</div>")
+                                                                                            .Template(@"<div class='Employee-photo' style='background-image: url(" + Url.Content("~/Content/Images/") + "#:data.PersonId#-Photo/" + "#:data.PersonId#." + "#:data.ImageType#" + ");'></div>" +
+                                                                                            "<div class='Employee-name'>#:FullName#</div>")
+                    )
+
+
+
+                </div>
+            </div>
+
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.Row, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(model => model.Row)
+
+                    @Html.ValidationMessageFor(model => model.Row, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.RoomNo, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(model => model.RoomNo)
+                    @Html.ValidationMessageFor(model => model.RoomNo, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+        </div>
+        <div class="col-md-3 ro1">
+            <div class="form-group">
+
+                @Html.LabelFor(model => model.BranchId, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @(Html.Kendo().DropDownListFor(model => model.BranchId)
+                                                         .OptionLabel(Resources.Select)
+                                                         .Filter("contains")
+                                                         .MinLength(2)
+                                                          .DataTextField("Name")
+                                                               .DataValueField("BranchId")
+                                                         .DataSource(dataSource =>
+                                                         {
+                                                             dataSource.Read(read => read.Action("GetBranches", "HRMDataProvider"))
+                                                                 .ServerFiltering(false);
+                                                         })
+                                                         .ValuePrimitive(true)
+
+                    )
+                    @Html.ValidationMessageFor(model => model.BranchId, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.FileNo, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(model => model.FileNo)
+                    @Html.ValidationMessageFor(model => model.FileNo, "", new { @class = "text-danger" })
+                </div>
+            </div>
+          
+        </div>
+        <div class="col-md-4 ro1">
+            <div class="form-group">
+                @Html.LabelFor(model => model.Folder, htmlAttributes: new { @class = "control-label col-md-8" })
+
+                <div class="col-md-10">
+                    @Html.Kendo().TextBoxFor(model => model.Folder)
+                    @Html.ValidationMessageFor(model => model.Folder, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.Shelve, htmlAttributes: new { @class = "control-label col-md-8" })
+
+                <div class="col-md-10">
+                    @Html.Kendo().TextBoxFor(model => model.Shelve)
+                    @Html.ValidationMessageFor(model => model.Shelve, "", new { @class = "text-danger" })
+                </div>
+            </div>
+         
+            
+        </div>
+    </div>
+</div>

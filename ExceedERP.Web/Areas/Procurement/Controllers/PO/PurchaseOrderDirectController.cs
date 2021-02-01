@@ -1,0 +1,1409 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Data.Entity;
+using System.Linq;
+using System.Web.Mvc;
+using ExceedERP.Core.Domain.Common;
+using ExceedERP.Core.Domain.Common.DocumentApproval;
+using ExceedERP.Core.Domain.Finance.AP;
+using ExceedERP.Core.Domain.Global;
+using ExceedERP.Core.Domain.Inventory;
+using ExceedERP.Core.Domain.Procurement.ForeignPurchase;
+using ExceedERP.Core.Domain.Procurement.PurchaseOrder;
+using ExceedERP.Core.Domain.Procurement.Settings;
+using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
+using ExceedERP.Web.Areas.Finance.Models;
+using ExceedERP.Web.Areas.Procurement.Models;
+using ExceedERP.Web.Helpers;
+using Kendo.Mvc.Extensions;
+using Kendo.Mvc.UI;
+
+namespace ExceedERP.Web.Areas.Procurement.Controllers.PO
+{
+    
+    public class PurchaseOrderDirectController : Controller
+    {
+        private readonly ExceedDbContext _db = new ExceedDbContext();
+
+
+        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser, ProcurementConstants.ProcurementTenderApprover)]
+        public ActionResult Index()
+        {
+            PopulateViewData();
+            return View();
+        }
+
+        private void PopulateViewData()
+        {
+            var stores = _db.InventoryStores;
+            var receivetype = _db.ReceiveTypes;
+            var items = _db.PurchaseOrderItems;
+
+            var selecteditems = items.Select(
+                i => new
+                {
+                    Name = i.ItmCode+"-"+i.ItemName,
+                    ItmCode = i.ItmCode
+                }).AsQueryable();
+
+            ViewData["Items"] = selecteditems;
+
+            var selectedcatedories = items.Select(
+                i => new
+                {
+                    Name =i.CategoryName,
+                    CatCode = i.CatCode
+                }).AsQueryable();
+            ViewData["Category"] = selectedcatedories;
+
+            var suppliers = _db.ProcurementSuppliers;
+           
+            var branches = _db.Branch;
+            var costCenters = _db.BranchCostCenter;
+            var tax = _db.GLTaxRates;
+            var purchaseRequisition = _db.PurchaseRequisitions;
+            var proformaPurchases = _db.ProformaPurchases;
+
+            var selectedproformaPurchases = proformaPurchases.Select(
+              i => new
+              {
+                  ProformaPurchaseID = i.ProformaPurchaseID,
+                  Remark = i.ProformaPurchaseID + "-" + i.ProformaReference,
+              })
+              .AsQueryable();
+
+            ViewData["proformaPurchases"] = selectedproformaPurchases;
+            ViewData["purchaseRequisition"] = purchaseRequisition;
+            ViewData["tax"] = tax;
+            ViewData["suppliers"] = suppliers.Select(c => new
+            {
+                SupplierId = c.SupplierId,
+                Name = c.Name
+            }).AsQueryable();
+            ViewData["costCenters"] = costCenters;
+            ViewData["Branches"] = branches;
+
+            var employee = _db.Person_Employee;
+            var selectedEmployee = employee.Select(
+                i => new
+                {
+                    Name = i.FirstNameEnglish + " " + i.MiddleNameEnglish + " " + i.LastNameEnglish,
+                    Code = i.EmployeeId
+                }).AsQueryable();
+            ViewData["personEmployees"] = selectedEmployee;
+
+            ViewData["stores"] = stores;
+            ViewData["ReeceiveType"] = receivetype;
+
+            var inventoryPeriods = _db.InventoryPeriods;
+            var selectedinventoryPeriods = inventoryPeriods.Select(
+                i => new
+                {
+                    Name = i.Name,
+                    GLPeriodId = i.InventoryPeriodId
+                }).AsQueryable();
+            ViewData["inventoryPeriods"] = selectedinventoryPeriods;
+
+        }
+    
+        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser, ProcurementConstants.ProcurementTenderApprover)]
+        public ActionResult PurchaseOrderDirects_Read([DataSourceRequest]DataSourceRequest request)
+        {
+
+            IQueryable<PurchaseOrder> purchaseorders = _db.PurchaseOrders.Where(x=>x.IsManual);
+
+            if (System.Web.HttpContext.Current.User.IsInRole(ProcurementConstants.ProcurementTenderApprover))
+            {
+            }
+            else if (System.Web.HttpContext.Current.User.IsInRole(ProcurementConstants.ProcurementTenderUser))
+            {
+                int empid = UserInformationHelper.GetUserEmployeeId(User.Identity.Name);
+                purchaseorders = purchaseorders.Where(x => x.ProcurementOfficer == empid && empid != 0 ||x.ForwardedTo== User.Identity.Name);
+            }
+
+               DataSourceResult result = purchaseorders.ToDataSourceResult(request, purchaseOrder => new {
+                IsManual = purchaseOrder.IsManual,
+                SroreRequisition = purchaseOrder.SroreRequisition,
+                PurchaseRequisitionID = purchaseOrder.PurchaseRequisitionID==0? purchaseOrder.PoPurchaseRequisitions.FirstOrDefault()?.PurchaseRequisitionID: purchaseOrder.PurchaseRequisitionID,
+                PurchaseOrderID = purchaseOrder.PurchaseOrderID,
+                ProcurementOfficer = purchaseOrder.ProcurementOfficer,
+                BranchId = purchaseOrder.BranchId,
+                SupplierId = purchaseOrder.SupplierId,
+                IsNewSupplier = purchaseOrder.IsNewSupplier,
+                SupplierName = purchaseOrder.SupplierName,
+                POType = purchaseOrder.POType,
+                ProcurementMethod = purchaseOrder.ProcurementMethod,
+                ProformaPurchaseID = purchaseOrder.ProformaPurchaseID,
+                OrgStructureId = purchaseOrder.OrgStructureId,
+                OrderDate = purchaseOrder.OrderDate,
+                DeliveryDate = purchaseOrder.DeliveryDate,
+                DeliveryPlace = purchaseOrder.DeliveryPlace,
+                Status = purchaseOrder.Status,
+                IsTransferredToPayment = purchaseOrder.IsTransferredToPayment,
+                IsTransferredToFollowUp = purchaseOrder.IsTransferredToFollowUp,
+                Remark = purchaseOrder.Remark,
+                PurchaseStatus = purchaseOrder.PurchaseStatus,
+
+                ForwardedFrom = purchaseOrder.ForwardedFrom,
+                ForwardedTo = purchaseOrder.ForwardedTo,
+                IsFinalApproval = purchaseOrder.IsFinalApproval,
+
+                   IsFullfilled = purchaseOrder.IsFullfilled,
+                   IsPaid = purchaseOrder.IsPaid,
+
+                   IsSendForApproval = purchaseOrder.IsSendForApproval,
+                SendForApprovalBy = purchaseOrder.SendForApprovalBy,
+                SendForApprovalTime = purchaseOrder.SendForApprovalTime,
+
+                IsOnlineApproved = purchaseOrder.IsOnlineApproved,
+                OnlineApprovedBy = purchaseOrder.OnlineApprovedBy,
+                OnlineApprovedTime = purchaseOrder.OnlineApprovedTime,
+
+                IsVoid = purchaseOrder.IsVoid,
+                VoidBy = purchaseOrder.VoidBy,
+                VoidTime = purchaseOrder.VoidTime,
+                 
+                DateCreated = purchaseOrder.DateCreated,
+                LastModified = purchaseOrder.LastModified,
+                CreatedBy = purchaseOrder.CreatedBy,
+                ModifiedBy = purchaseOrder.ModifiedBy
+            });
+
+            return Json(result);
+        }
+
+        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AcceptVerbs(HttpVerbs.Post)]
+        public ActionResult PurchaseOrderDirects_Create([DataSourceRequest] DataSourceRequest request,PurchaseOrder purchaseOrder)
+        {
+
+
+            #region  validation
+            if(purchaseOrder.OrderDate>purchaseOrder.DeliveryDate)
+                ModelState.AddModelError("orderdate","Order Date shoul be before delivery date.");
+
+            //if (purchaseOrder.PurchaseRequisitionID == 0 || purchaseOrder.PurchaseRequisitionID == null)
+            //{
+            //    ModelState.AddModelError("choose", "Please select purchase requisition number.");
+            //}
+            if (!purchaseOrder.IsNewSupplier)
+            {
+                if (String.IsNullOrEmpty(purchaseOrder.SupplierId))
+                {
+                    ModelState.AddModelError("supplierid", "Please select supplier.");
+                }
+                else
+                {
+                    var supplier = _db.ProcurementSuppliers.FirstOrDefault(x => x.SupplierId == purchaseOrder.SupplierId);
+                    if (supplier != null) purchaseOrder.SupplierName = supplier.Name;
+                }
+            }
+
+            else
+            {
+                purchaseOrder.SupplierId = "";
+                if (String.IsNullOrEmpty(purchaseOrder.SupplierName))
+                {
+                    ModelState.AddModelError("suppliername", "Please enter supplier name.");
+                }
+            }
+
+            #endregion
+
+            var purchaseRequisition = _db.PurchaseRequisitions.Find(purchaseOrder.PurchaseRequisitionID);
+            if (purchaseRequisition != null)
+            {
+                purchaseOrder.SroreRequisition = purchaseRequisition.StoreRequisitionID.ToString();
+                purchaseOrder.OrgStructureId = purchaseRequisition.OrgStructureId;
+            }
+
+            if (ModelState.IsValid)
+            {
+                int empid = UserInformationHelper.GetUserEmployeeId(User.Identity.Name);
+                    var entity = new PurchaseOrder
+                    {
+                        IsManual=true,
+                        PurchaseRequisitionID = 0,
+                        SroreRequisition =purchaseOrder.SroreRequisition,
+                        ProcurementOfficer = empid,
+                        BranchId = EmployeeHelper.GetEmployeePlacementBranch(empid),
+                        SupplierId = purchaseOrder.SupplierId,
+                        IsNewSupplier = purchaseOrder.IsNewSupplier,
+                        SupplierName = purchaseOrder.SupplierName,
+                        POType = purchaseOrder.POType,
+                        ProcurementMethod = purchaseOrder.ProcurementMethod,
+                        ProformaPurchaseID = purchaseOrder.ProformaPurchaseID,
+                        OrderDate = purchaseOrder.OrderDate.Date,
+                        DeliveryDate = purchaseOrder.DeliveryDate.Date,
+                        DeliveryPlace = purchaseOrder.DeliveryPlace,
+                        OrgStructureId = purchaseOrder.OrgStructureId,
+                        IsTransferredToPayment = purchaseOrder.IsTransferredToPayment,
+                        IsTransferredToFollowUp = purchaseOrder.IsTransferredToFollowUp,
+
+                        IsFullfilled = purchaseOrder.IsFullfilled,
+                        IsPaid = purchaseOrder.IsPaid,
+
+                        Status = "Editing",
+                        Remark = purchaseOrder.Remark,
+                        PurchaseStatus = purchaseOrder.PurchaseStatus,
+
+                        ForwardedFrom = User.Identity.Name,
+                        ForwardedTo = User.Identity.Name,
+                        IsFinalApproval = purchaseOrder.IsFinalApproval,
+
+                        IsOnlineApproved = purchaseOrder.IsOnlineApproved,
+                        OnlineApprovedBy = purchaseOrder.OnlineApprovedBy,
+                        OnlineApprovedTime = purchaseOrder.OnlineApprovedTime,
+
+                        IsVoid = purchaseOrder.IsVoid,
+                        VoidBy = purchaseOrder.VoidBy,
+                        VoidTime = purchaseOrder.VoidTime,
+
+                        DateCreated = DateTime.Now,
+                        LastModified = purchaseOrder.LastModified,
+                        CreatedBy = User.Identity.Name,
+                        ModifiedBy = purchaseOrder.ModifiedBy
+                    };
+
+                    _db.PurchaseOrders.Add(entity);
+                    _db.SaveChanges();
+                    purchaseOrder.PurchaseOrderID = entity.PurchaseOrderID;
+                // GetPoItems(entity);
+
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "purchase order direct", "Success", User.Identity.Name, $"created po {entity.PurchaseOrderID} ", Modules.Procurement);
+                #endregion
+
+            }
+
+            return Json(new[] {purchaseOrder}.ToDataSourceResult(request, ModelState));
+        }
+
+        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AcceptVerbs(HttpVerbs.Post)]
+        public ActionResult PurchaseOrderDirects_Update([DataSourceRequest]DataSourceRequest request, PurchaseOrder purchaseOrder)
+        {
+            #region  validation
+            if (purchaseOrder.OrderDate > purchaseOrder.DeliveryDate)
+                ModelState.AddModelError("orderdate", "Order Date shoul be before delivery date.");
+
+            //if (purchaseOrder.PurchaseRequisitionID == 0 || purchaseOrder.PurchaseRequisitionID == null)
+            //{
+            //    ModelState.AddModelError("choose", "Please select purchase requisition number.");
+            //}
+
+            if (!purchaseOrder.IsNewSupplier)
+            {
+                if (String.IsNullOrEmpty(purchaseOrder.SupplierId))
+                {
+                    ModelState.AddModelError("supplierid", "Please select supplier.");
+                }
+                else
+                {
+                    var supplier = _db.ProcurementSuppliers.FirstOrDefault(x => x.SupplierId == purchaseOrder.SupplierId);
+                    if (supplier != null) purchaseOrder.SupplierName = supplier.Name;
+                }
+            }
+
+            else
+            {
+                purchaseOrder.SupplierId = "";
+                if (String.IsNullOrEmpty(purchaseOrder.SupplierName))
+                {
+                    ModelState.AddModelError("suppliername", "Please enter supplier name.");
+                }
+            }
+
+            #endregion
+
+            var purchaseRequisition = _db.PurchaseRequisitions.Find(purchaseOrder.PurchaseRequisitionID);
+            if (purchaseRequisition != null)
+            {
+                purchaseOrder.SroreRequisition = purchaseRequisition.StoreRequisitionID.ToString();
+                purchaseOrder.OrgStructureId = purchaseRequisition.OrgStructureId;
+            }
+
+            if (ModelState.IsValid)
+            {
+                int empid = UserInformationHelper.GetUserEmployeeId(User.Identity.Name);
+
+                var entity = new PurchaseOrder
+                    {
+                        IsManual = purchaseOrder.IsManual,
+                        PurchaseRequisitionID = purchaseOrder.PurchaseRequisitionID,
+                        SroreRequisition = purchaseOrder.SroreRequisition,
+                        ProcurementOfficer = empid,
+                        BranchId = EmployeeHelper.GetEmployeePlacementBranch(empid),
+                    PurchaseOrderID = purchaseOrder.PurchaseOrderID,
+                        SupplierId = purchaseOrder.SupplierId,
+                        IsNewSupplier = purchaseOrder.IsNewSupplier,
+                        SupplierName = purchaseOrder.SupplierName,
+                        POType = purchaseOrder.POType,
+                        ProcurementMethod = purchaseOrder.ProcurementMethod,
+                        ProformaPurchaseID = purchaseOrder.ProformaPurchaseID,
+                        OrderDate = purchaseOrder.OrderDate,
+                        DeliveryDate = purchaseOrder.DeliveryDate,
+                        DeliveryPlace = purchaseOrder.DeliveryPlace,
+                        OrgStructureId = purchaseOrder.OrgStructureId,
+                        Status = purchaseOrder.Status,
+                        IsTransferredToPayment = purchaseOrder.IsTransferredToPayment,
+                        IsTransferredToFollowUp = purchaseOrder.IsTransferredToFollowUp,
+                        Remark = purchaseOrder.Remark,
+                        PurchaseStatus = purchaseOrder.PurchaseStatus,
+
+                        IsFullfilled = purchaseOrder.IsFullfilled,
+                        IsPaid = purchaseOrder.IsPaid,
+
+                    ForwardedFrom = purchaseOrder.ForwardedFrom,
+                        ForwardedTo = purchaseOrder.ForwardedTo,
+                        IsFinalApproval = purchaseOrder.IsFinalApproval,
+
+                        IsOnlineApproved = purchaseOrder.IsOnlineApproved,
+                        OnlineApprovedBy = purchaseOrder.OnlineApprovedBy,
+                        OnlineApprovedTime = purchaseOrder.OnlineApprovedTime,
+
+                        IsVoid = purchaseOrder.IsVoid,
+                        VoidBy = purchaseOrder.VoidBy,
+                        VoidTime = purchaseOrder.VoidTime,
+
+                        DateCreated = purchaseOrder.DateCreated,
+                        LastModified = DateTime.Now,
+                        CreatedBy = purchaseOrder.CreatedBy,
+                        ModifiedBy = User.Identity.Name
+
+                };
+
+                    _db.PurchaseOrders.Attach(entity);
+                    _db.Entry(entity).State = EntityState.Modified;
+                    _db.SaveChanges();
+                //GetPoItems(entity);
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "purchase order direct", "Success", User.Identity.Name, $"updated po {entity.PurchaseOrderID} ", Modules.Procurement);
+                #endregion
+            }
+
+            return Json(new[] { purchaseOrder }.ToDataSourceResult(request, ModelState));
+        }
+
+        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        [AcceptVerbs(HttpVerbs.Post)]
+        public ActionResult PurchaseOrderDirects_Destroy([DataSourceRequest]DataSourceRequest request, PurchaseOrder purchaseOrder)
+        {
+            if (ModelState.IsValid)
+            {
+                var entity = new PurchaseOrder
+                {
+                    SroreRequisition = purchaseOrder.SroreRequisition,
+                    ProcurementOfficer = purchaseOrder.ProcurementOfficer,
+                    BranchId = purchaseOrder.BranchId,
+                    PurchaseOrderID = purchaseOrder.PurchaseOrderID,
+                    SupplierId = purchaseOrder.SupplierId,
+                    IsNewSupplier = purchaseOrder.IsNewSupplier,
+                    SupplierName = purchaseOrder.SupplierName,
+                    POType = purchaseOrder.POType,
+                    ProcurementMethod = purchaseOrder.ProcurementMethod,
+                    PurchaseRequisitionID = purchaseOrder.PurchaseRequisitionID,
+                    ProformaPurchaseID = purchaseOrder.ProformaPurchaseID,
+                    OrderDate = purchaseOrder.OrderDate,
+                    DeliveryDate = purchaseOrder.DeliveryDate,
+                    DeliveryPlace = purchaseOrder.DeliveryPlace,
+                    OrgStructureId=purchaseOrder.OrgStructureId,
+                    Status = purchaseOrder.Status,
+                    Remark = purchaseOrder.Remark,
+                    IsOnlineApproved = purchaseOrder.IsOnlineApproved,
+                    OnlineApprovedBy = purchaseOrder.OnlineApprovedBy,
+                    OnlineApprovedTime = purchaseOrder.OnlineApprovedTime,
+                    IsVoid = purchaseOrder.IsVoid,
+                    VoidBy = purchaseOrder.VoidBy,
+                    VoidTime = purchaseOrder.VoidTime,
+                   
+                    DateCreated = purchaseOrder.DateCreated,
+                    LastModified = purchaseOrder.LastModified,
+                    CreatedBy = purchaseOrder.CreatedBy,
+                    ModifiedBy = purchaseOrder.ModifiedBy
+                };
+
+                _db.PurchaseOrders.Attach(entity);
+                _db.PurchaseOrders.Remove(entity);
+                _db.SaveChanges();
+            }
+
+            return Json(new[] { purchaseOrder }.ToDataSourceResult(request, ModelState));
+        }
+
+        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        public JsonResult SendForApproval(int id)
+        {
+            var record = _db.PurchaseOrders.Find(id);
+            if (record != null && !record.IsSendForApproval && !record.IsOnlineApproved && record.PurchaseOrderItem.Count > 0)
+            {
+                #region validate supplier
+
+                if (String.IsNullOrEmpty(record.SupplierName))
+                {
+                    var formattedData3 = new
+                    {
+                        Message = "Please fill supplier.",
+                        Status = "NOT_OK"
+                    };
+                    return Json(formattedData3, JsonRequestBehavior.AllowGet);
+                }
+                #endregion
+                #region validate price and tax
+
+                foreach (var item in record.PurchaseOrderItem)
+                {
+                    if (item.UnitPrice <= 0 || item.GLTaxRateID == 0)
+                    {
+                        var formattedData3 = new
+                        {
+                            Message = "Please fill unit price and tax information for all items.",
+                            Status = "NOT_OK"
+                        };
+                        return Json(formattedData3, JsonRequestBehavior.AllowGet);
+                    }
+                }
+                #endregion
+                record.Status = Enum.GetName(typeof(OperationStatuses), 4);
+                record.IsSendForApproval = true;
+                record.SendForApprovalBy = User.Identity.Name;
+                record.SendForApprovalTime = DateTime.Now;
+                _db.PurchaseOrders.Attach(record);
+                _db.Entry(record).State = EntityState.Modified;
+                _db.SaveChanges();
+                #region approval workflow
+
+                bool isNewRecord = true;
+                var validations = record.PurchaseOrderValidation.Where(x=>x.Status==ApprovalStatuses.Approve).AsQueryable();
+                if (validations.Any())
+                    isNewRecord = false;
+                decimal docamount = record.PurchaseOrderItem.Sum(x => x.Total);
+                int docid = record.PurchaseOrderID;
+
+                DocApprovalWorkflowHelper.ForwardToApprover(docid, docamount, "",record.ForwardedTo, ApprovalDocumentType.PurchaseOrder, isNewRecord);
+                #endregion
+              
+                var formattedData = new
+                {
+                    Message = "Successfully Sent.",
+                    Status = "OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+
+            if (record == null)
+            {
+                var formattedData = new
+                {
+                    Message = "The record is not found.",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+
+            if (record.PurchaseOrderItem.Count == 0)
+            {
+                var formattedData = new
+                {
+                    Message = "Please add line items first.",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+
+            if (record.IsSendForApproval)
+            {
+                var formattedData = new
+                {
+                    Message = "The record is already sent for approval you cannot send again.",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+
+            if (record.IsOnlineApproved)
+            {
+                var formattedData = new
+                {
+                    Message = "The record is already approved.",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+            return null;
+        }
+
+        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        public JsonResult TransferToPayment(int id)
+        {
+            var record = _db.PurchaseOrders.Find(id);
+            if (record != null && !record.IsTransferredToPayment && record.IsOnlineApproved && !record.IsVoid)
+            {
+                #region create payment
+                var entity = new ApPayment
+                {
+                    IsPrepayment = true,
+                    SupplierName = record.SupplierName,
+                    SupplierId = record.SupplierId,
+                    InvoiceNumber = "",
+                    InvoiceAmount = 0,
+                    PaymentAmount = 0,
+                    RemainingBalance = 0,
+                    HasPrepayment = false,
+                    PrepaymentAmount = 0,
+                    NetAmount = 0,
+                    PaymentMethod = "Na",
+                    PaymentReference = "NA",
+                    PaymentDate = DateTime.Today,
+                    PoTypeEnum = PurchaseType.PurchaseOrder,
+                    PoType = "Purchase Order",
+                    PurchaseReference = record.PurchaseOrderID.ToString(),
+                    CollectedByPurchaser = true,
+                    EmployeeId=record.ProcurementOfficer,
+                    Remark = record.Remark,
+                    OrgBranchName = record.OrgBranchName,
+                    DateCreated = DateTime.Now,
+                    LastModified = record.LastModified,
+                    CreatedBy = User.Identity.Name,
+                    ModifiedBy = record.ModifiedBy
+                };
+                _db.APPayments.Add(entity);
+                _db.SaveChanges();
+
+                #endregion
+                record.Status = Enum.GetName(typeof(OperationStatuses), 14);
+                record.IsTransferredToPayment = true;
+                _db.PurchaseOrders.Attach(record);
+                _db.Entry(record).State = EntityState.Modified;
+                _db.SaveChanges();
+                var formattedData = new
+                {
+                    Message = "Successfully Sent for Payment.",
+                    Status = "OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+
+            if (record == null)
+            {
+                var formattedData = new
+                {
+                    Message = "The record is not found.",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+
+            if (record.IsVoid)
+            {
+                var formattedData = new
+                {
+                    Message = "The record is void.",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+
+            if (record.IsTransferredToPayment)
+            {
+                var formattedData = new
+                {
+                    Message = "The record is already sent for payment you cannot send again.",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+
+
+            return null;
+        }
+        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        public JsonResult TransferToForeignFollowup(int id)
+        {
+            var record = _db.PurchaseOrders.Find(id);
+            var items = _db.PurchaseOrderItems.Where(x => x.PurchaseOrderItemID == id).ToList();
+
+            if (record != null)
+            {
+
+
+                if (!items.Any())
+                {
+                    var formattedData = new
+                    {
+                        Message = "There is no purchase order items defined.",
+                        Status = "NOT_OK"
+                    };
+                    return Json(formattedData, JsonRequestBehavior.AllowGet);
+                }
+
+                //if (record.PurchaseCategory != PurchaseCategory.ForeignPurchase)
+                //{
+                //    var formattedData = new
+                //    {
+                //        Message = "There tender is not foreign purchase.",
+                //        Status = "NOT_OK"
+                //    };
+                //    return Json(formattedData, JsonRequestBehavior.AllowGet);
+                //}
+
+
+                if (!record.IsTransferredToFollowUp && record.IsOnlineApproved && !record.IsVoid)
+                {
+                    #region create foreign followup header
+                    var foreignPurchase = new ForeignPurchase
+                    {
+                        TenderRef = record.PurchaseOrderID.ToString(),
+                        PurchaseRef = record.PurchaseOrderID,
+                        Supplier = record.SupplierName,
+                        ItemDesc = "",
+                        OrgStructureId = 0,
+                        Quantity = 0,
+                        ProcurementMethod = "Purchase Order",
+                        FOBMethod = FOBMethod.NationalBank,
+                        ApprovalDate = null,
+                        OpenigDate = record.OrderDate,
+                        TechnicalDocSendDate = null,
+                        FinancialOpenigDate = record.OrderDate,
+                        MinuteApprovedDate = null,
+                        AwardDate = record.OrderDate,
+                        ContractDate = record.OrderDate,
+                        PaymentMethod = ForeignPaymentMethod.LC,
+                        PaymentOpenDate = null,
+                        PaymentExtensionDate = null,
+                        DocReceivedFromBankDate = null,
+                        ClearanceStartDate = null,
+                        TransitProcessDate = null,
+                        DeliveryDate = record.DeliveryDate,
+                        DeliveryNo = "",
+                        UnitPrice = 0,
+                        ForeignCurrencyProcessId = 0,
+                        Remark = record.Remark,
+                        OrgBranchName = record.OrgBranchName,
+                        DateCreated = record.DateCreated,
+                        LastModified = record.LastModified,
+                        CreatedBy = record.CreatedBy,
+                        ModifiedBy = record.ModifiedBy
+                    };
+                    _db.ForeignPurchases.Add(foreignPurchase);
+                    _db.SaveChanges();
+                    #endregion
+
+                    foreach (var item in items)
+                    {
+                        #region create foreign followup items
+                        var followupitem = new ForeignPurchaseFollowUpItems
+                        {
+                            ForeignPurchase = foreignPurchase,
+                            CatCode = item.CatCode,
+                            CategoryName = item.CategoryName,
+                            ItmCode = item.ItmCode,
+                            ItemName = item.ItemName,
+                            ItemType = item.ItemType,
+                            PartNo = item.PartNo,
+                            Quantity = item.Quantity,
+                            UnitPrice = item.UnitPrice,
+                            GLTaxRateID = item.GLTaxRateID,
+                            TaxAmount = item.TaxAmount,
+                            SubTotal = item.UnitPrice * item.Quantity,
+                            AdditionalUnitCost = 0,
+                            FinalUnitPrice = item.UnitPrice,
+                            Total = item.Total,
+                            ItemSpecification = item.ItemSpecification,
+                            UoM = item.UoM
+                        };
+
+                        _db.ForeignPurchaseFollowUpItems.Add(followupitem);
+                        _db.SaveChanges();
+                        #endregion
+                    }
+
+                    record.Status = Enum.GetName(typeof(OperationStatuses), 14);
+                    record.IsTransferredToFollowUp = true;
+                    _db.PurchaseOrders.Attach(record);
+                    _db.Entry(record).State = EntityState.Modified;
+                    _db.SaveChanges();
+                    var formattedData = new
+                    {
+                        Message = "Successfully Sent for Followup.",
+                        Status = "OK"
+                    };
+                    return Json(formattedData, JsonRequestBehavior.AllowGet);
+                }
+
+            }
+
+            if (record == null)
+            {
+                var formattedData = new
+                {
+                    Message = "The record is not found.",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+
+            if (record.IsVoid)
+            {
+                var formattedData = new
+                {
+                    Message = "The record is void.",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+
+            if (record.IsTransferredToPayment)
+            {
+                var formattedData = new
+                {
+                    Message = "The record is already sent for payment you cannot send again.",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+
+
+            return null;
+        }
+
+        [AuthorizeRoles(ProcurementConstants.ProcurementVoid)]
+        public JsonResult Void(int id)
+        {
+            var record = _db.PurchaseOrders.Find(id);
+            if (record != null && record.IsOnlineApproved && !record.IsVoid)
+            {
+                var poreceivetypes = _db.ReceiveTypes.Where(x => x.Type == GoodReceiveType.PurchaseOrder)
+                    .Select(x => x.ReceiveTypeId).ToList();
+
+                #region validate payment
+
+                var payment = _db.APPayments
+                    .Where(x => x.IsVoid == false)
+                    .Where( x=>x.PoTypeEnum==PurchaseType.PurchaseOrder)
+                    .FirstOrDefault(x => x.PurchaseReference == record.PurchaseOrderID.ToString());
+
+                if (payment != null)
+                {
+                    var formattedData2 = new
+                    {
+                        Message = $"This purchase order can not be void since it is referred in payment {payment.ApPaymentId}.",
+                        Status = "NOT_OK"
+                    };
+                    return Json(formattedData2, JsonRequestBehavior.AllowGet);
+                }
+                #endregion
+                #region validate grn
+
+                var goodReceive = _db.GoodReceives
+                    .Where(x => x.IsVoid == false)
+                    .Where(x => poreceivetypes.Contains(x.ReceiveTypeId))
+                    .FirstOrDefault(x => x.ReceiveRef == record.PurchaseOrderID.ToString());
+
+                if (goodReceive != null)
+                {
+                    var formattedData2 = new
+                    {
+                        Message = $"This purchase order can not be void since it is referred in good receive {goodReceive.GoodReceiveId}.",
+                        Status = "NOT_OK"
+                    };
+                    return Json(formattedData2, JsonRequestBehavior.AllowGet);
+                }
+                #endregion
+                #region validate service grn
+
+                var serviceReceive = _db.ServiceReceives
+                    .Where(x => x.IsVoid == false)
+                    .Where(x => poreceivetypes.Contains(x.ReceiveTypeId))
+                    .FirstOrDefault(x => x.ReceiveRef == record.PurchaseOrderID.ToString());
+
+                if (serviceReceive != null)
+                {
+                    var formattedData2 = new
+                    {
+                        Message = $"This purchase order can not be void since it is referred in service receive {serviceReceive.ServiceReceiveId}.",
+                        Status = "NOT_OK"
+                    };
+                    return Json(formattedData2, JsonRequestBehavior.AllowGet);
+                }
+                #endregion
+                #region validate fixed grn
+
+                var fixedAssetReceive = _db.FixedAssetReceives
+                    .Where(x => x.IsVoid == false)
+                    .Where(x => poreceivetypes.Contains(x.ReceiveTypeId))
+                    .FirstOrDefault(x => x.ReceiveRef == record.PurchaseOrderID.ToString());
+
+                if (fixedAssetReceive != null)
+                {
+                    var formattedData2 = new
+                    {
+                        Message = $"This purchase order can not be void since it is referred in fixed asset receive {fixedAssetReceive.FixedAssetReceiveId}.",
+                        Status = "NOT_OK"
+                    };
+                    return Json(formattedData2, JsonRequestBehavior.AllowGet);
+                }
+                #endregion
+                #region remove related validations
+
+                _db.PurchaseOrderValidations.RemoveRange(record.PurchaseOrderValidation);
+                _db.SaveChanges();
+
+                #endregion
+                record.Status = Enum.GetName(typeof(OperationStatuses), 10);
+                record.IsOnlineApproved = false;
+                record.IsSendForApproval = false;
+                record.IsVoid = true;
+                record.VoidBy = User.Identity.Name;
+                record.VoidTime = DateTime.Now;
+                record.ForwardedFrom = UserInformationHelper.GetEmployeeUserId(record.ProcurementOfficer);
+                record.ForwardedTo = UserInformationHelper.GetEmployeeUserId(record.ProcurementOfficer);
+                _db.PurchaseOrders.Attach(record);
+                _db.Entry(record).State = EntityState.Modified;
+                _db.SaveChanges();
+
+                var formattedData = new
+                {
+                    Message = "Void Successful.",
+                    Status = "OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+            if (record == null)
+            {
+                var formattedData = new
+                {
+                    Message = "The record is not found.",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+
+
+            if (!record.IsOnlineApproved)
+            {
+                var formattedData = new
+                {
+                    Message = "The record is not approved hence you can modify by editing.",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+
+
+            return null;
+        }
+
+        [AuthorizeRoles(ProcurementConstants.ProcurementTenderUser)]
+        public JsonResult SendToChecker(int id, string user)
+        {
+            var record = _db.PurchaseOrders.Find(id);
+            if (record != null && !record.IsSendForApproval && !record.IsOnlineApproved && record.PurchaseOrderItem.Count > 0)
+            {
+                record.Status = Enum.GetName(typeof(OperationStatuses), 13);
+                record.ForwardedTo = user;
+                record.ForwardedFrom = User.Identity.Name;
+                _db.PurchaseOrders.Attach(record);
+                _db.Entry(record).State = EntityState.Modified;
+                _db.SaveChanges();
+                var formattedData = new
+                {
+                    Message = "Successfully Sent.",
+                    Status = "OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+
+            if (record == null)
+            {
+                var formattedData = new
+                {
+                    Message = "The record is not found.",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+
+            if (record.PurchaseOrderItem.Count == 0)
+            {
+                var formattedData = new
+                {
+                    Message = "Please add line items first.",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+
+            if (record.IsSendForApproval)
+            {
+                var formattedData = new
+                {
+                    Message = "The record is already sent for approval you cannot send again.",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+
+            if (record.IsOnlineApproved)
+            {
+                var formattedData = new
+                {
+                    Message = "The record is already approved.",
+                    Status = "NOT_OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+            return null;
+        }
+
+        //not necessary since item come from reassignment
+        //private void GetPoItems(PurchaseOrder purchaseOrder)
+        //{
+        //    if (purchaseOrder.PurchaseRequisitionID != 0 && purchaseOrder.PurchaseRequisitionID != null)
+        //    {
+        //        //remove existing
+        //        var items = _db.PurchaseOrderItems.Where(x => x.PurchaseOrderID == purchaseOrder.PurchaseOrderID)
+        //            .ToList();
+        //        _db.PurchaseOrderItems.RemoveRange(items);
+        //        _db.SaveChanges();
+
+        //        var purchaseRequisitionItems = _db.PurchaseRequisitionItems
+        //            .Where(x => x.PurchaseRequisitionID == purchaseOrder.PurchaseRequisitionID)
+        //            .ToList();
+
+        //        foreach (var item in purchaseRequisitionItems)
+        //        {
+
+        //            PurchaseOrderItem poItem = new PurchaseOrderItem
+        //            {
+        //                CatCode = item.CatCode,
+        //                CategoryName = item.CategoryName,
+        //                ItmCode = item.ItmCode,
+        //                ItemName = item.ItemName,
+        //                PartNo = item.PartNo,
+        //                IsApproved = item.IsApproved,
+        //                ItemSpecification = item.ItemSpecification,
+        //                UoM = item.UoM,
+        //                Quantity = item.Quantity,
+        //                PurchaseOrderID = purchaseOrder.PurchaseOrderID,
+        //                DateCreated = DateTime.Today,
+        //                CreatedBy = User.Identity.Name
+        //            };
+
+        //            _db.PurchaseOrderItems.Add(poItem);
+        //            _db.SaveChanges();
+        //        }
+        //    }
+           
+        //}
+
+
+        public ActionResult GrnHeader_Read([DataSourceRequest]DataSourceRequest request, int id)
+        {
+            List<GrnViewModel> purchases = new List<GrnViewModel>();
+
+            var receiveType = _db.ReceiveTypes.FirstOrDefault(x => x.Type == GoodReceiveType.PurchaseOrder);
+            #region grn stock header
+            var stockReceives = _db.GoodReceives.Where(x => x.ReceiveTypeId == receiveType.ReceiveTypeId).Where(x => x.ReceiveRef == id.ToString());
+
+            foreach (var goodReceive in stockReceives)
+            {
+                #region grn header
+                GrnViewModel record = new GrnViewModel
+                {
+                    GrnId = goodReceive.GoodReceiveId,
+                    GrnType = GrnType.Stock,
+                    IsManual = false,
+                    ReceiveRef = goodReceive.ReceiveRef,
+                    ReceiveTypeId = goodReceive.ReceiveTypeId,
+                    StoreCode = goodReceive.StoreCode,
+                    SupplierName = goodReceive.SupplierName,
+                    SupplierId = goodReceive.SupplierId,
+                    SupplierInvoiceNo = goodReceive.SupplierInvoiceNo,
+                    TenderLot = goodReceive.TenderLot,
+                    Reference = goodReceive.Reference,
+                    ReceiveDate = goodReceive.ReceiveDate,
+                    Status = goodReceive.Status,
+                    Remark = goodReceive.Remark,
+                    GLPeriodId = goodReceive.GLPeriodId,
+
+                    IsSendForApproval = goodReceive.IsSendForApproval,
+                    SendForApprovalBy = goodReceive.SendForApprovalBy,
+                    SendForApprovalTime = goodReceive.SendForApprovalTime,
+
+                    IsOnlineApproved = goodReceive.IsOnlineApproved,
+                    OnlineApprovedBy = goodReceive.OnlineApprovedBy,
+                    OnlineApprovedTime = goodReceive.OnlineApprovedTime,
+
+                    IsVoid = goodReceive.IsVoid,
+                    VoidBy = goodReceive.VoidBy,
+                    VoidTime = goodReceive.VoidTime,
+
+                    DateCreated = goodReceive.DateCreated,
+                    LastModified = goodReceive.LastModified,
+                    CreatedBy = goodReceive.CreatedBy,
+                    ModifiedBy = goodReceive.ModifiedBy
+                };
+                purchases.Add(record);
+                #endregion
+            }
+            #endregion
+            #region grn service header
+            var serviceReceives = _db.ServiceReceives.Where(x => x.ReceiveTypeId == receiveType.ReceiveTypeId).Where(x => x.ReceiveRef == id.ToString());
+
+            foreach (var serviceReceive in serviceReceives)
+            {
+                #region grn service header
+                GrnViewModel record = new GrnViewModel
+                {
+                    GrnId = serviceReceive.ServiceReceiveId,
+                    GrnType = GrnType.Stock,
+                    IsManual = false,
+                    ReceiveRef = serviceReceive.ReceiveRef,
+                    ReceiveTypeId = serviceReceive.ReceiveTypeId,
+                    StoreCode = "NA",
+                    SupplierName = serviceReceive.SupplierName,
+                    SupplierId = serviceReceive.SupplierId,
+                    SupplierInvoiceNo = serviceReceive.SupplierInvoiceNo,
+                    TenderLot = serviceReceive.TenderLot,
+                    Reference = serviceReceive.Reference,
+                    ReceiveDate = serviceReceive.ReceiveDate,
+                    Status = serviceReceive.Status,
+                    Remark = serviceReceive.Remark,
+                    GLPeriodId = serviceReceive.GLPeriodId,
+
+                    IsSendForApproval = serviceReceive.IsSendForApproval,
+                    SendForApprovalBy = serviceReceive.SendForApprovalBy,
+                    SendForApprovalTime = serviceReceive.SendForApprovalTime,
+
+                    IsOnlineApproved = serviceReceive.IsOnlineApproved,
+                    OnlineApprovedBy = serviceReceive.OnlineApprovedBy,
+                    OnlineApprovedTime = serviceReceive.OnlineApprovedTime,
+
+                    IsVoid = serviceReceive.IsVoid,
+                    VoidBy = serviceReceive.VoidBy,
+                    VoidTime = serviceReceive.VoidTime,
+
+                    DateCreated = serviceReceive.DateCreated,
+                    LastModified = serviceReceive.LastModified,
+                    CreatedBy = serviceReceive.CreatedBy,
+                    ModifiedBy = serviceReceive.ModifiedBy
+                };
+                purchases.Add(record);
+                #endregion
+            }
+            #endregion
+            #region grn fixed asset header
+
+            var fixedAssetReceives = _db.FixedAssetReceives.Where(x => x.ReceiveTypeId == receiveType.ReceiveTypeId).Where(x => x.ReceiveRef == id.ToString());
+
+            foreach (var fixedAssetReceive in fixedAssetReceives)
+            {
+                #region grn fixed asset header
+                GrnViewModel record = new GrnViewModel
+                {
+                    GrnId = fixedAssetReceive.FixedAssetReceiveId,
+                    GrnType = GrnType.Stock,
+                    IsManual = false,
+                    ReceiveRef = fixedAssetReceive.ReceiveRef,
+                    ReceiveTypeId = fixedAssetReceive.ReceiveTypeId,
+                    StoreCode = fixedAssetReceive.StoreCode,
+                    SupplierName = fixedAssetReceive.SupplierName,
+                    SupplierId = fixedAssetReceive.SupplierId,
+                    SupplierInvoiceNo = fixedAssetReceive.SupplierInvoiceNo,
+                    TenderLot = fixedAssetReceive.TenderLot,
+                    Reference = fixedAssetReceive.Reference,
+                    ReceiveDate = fixedAssetReceive.ReceiveDate,
+                    Status = fixedAssetReceive.Status,
+                    Remark = fixedAssetReceive.Remark,
+                    GLPeriodId = fixedAssetReceive.GLPeriodId,
+
+                    IsSendForApproval = fixedAssetReceive.IsSendForApproval,
+                    SendForApprovalBy = fixedAssetReceive.SendForApprovalBy,
+                    SendForApprovalTime = fixedAssetReceive.SendForApprovalTime,
+
+                    IsOnlineApproved = fixedAssetReceive.IsOnlineApproved,
+                    OnlineApprovedBy = fixedAssetReceive.OnlineApprovedBy,
+                    OnlineApprovedTime = fixedAssetReceive.OnlineApprovedTime,
+
+                    IsVoid = fixedAssetReceive.IsVoid,
+                    VoidBy = fixedAssetReceive.VoidBy,
+                    VoidTime = fixedAssetReceive.VoidTime,
+
+                    DateCreated = fixedAssetReceive.DateCreated,
+                    LastModified = fixedAssetReceive.LastModified,
+                    CreatedBy = fixedAssetReceive.CreatedBy,
+                    ModifiedBy = fixedAssetReceive.ModifiedBy
+                };
+                purchases.Add(record);
+                #endregion
+            }
+            #endregion
+
+            IQueryable<GrnViewModel> grnViewModels = purchases.AsQueryable();
+            DataSourceResult result = grnViewModels.ToDataSourceResult(request, grnViewModel => new
+            {
+                ReceiveRef = grnViewModel.ReceiveRef,
+                GrnType = grnViewModel.GrnType,
+                IsManual = grnViewModel.IsManual,
+                BranchId = grnViewModel.BranchId,
+                ReceiveTypeId = grnViewModel.ReceiveTypeId,
+                GrnId = grnViewModel.GrnId,
+                TenderLot = grnViewModel.TenderLot,
+                StoreCode = grnViewModel.StoreCode,
+                SupplierName = grnViewModel.SupplierName,
+                SupplierInvoiceNo = grnViewModel.SupplierInvoiceNo,
+                Reference = grnViewModel.Reference,
+                ReceiveDate = grnViewModel.ReceiveDate,
+                Status = grnViewModel.Status,
+                Remark = grnViewModel.Remark,
+
+                IsSendForApproval = grnViewModel.IsSendForApproval,
+                SendForApprovalBy = grnViewModel.SendForApprovalBy,
+                SendForApprovalTime = grnViewModel.SendForApprovalTime,
+
+                IsOnlineApproved = grnViewModel.IsOnlineApproved,
+                OnlineApprovedBy = grnViewModel.OnlineApprovedBy,
+                OnlineApprovedTime = grnViewModel.OnlineApprovedTime,
+
+                IsVoid = grnViewModel.IsVoid,
+                VoidBy = grnViewModel.VoidBy,
+                VoidTime = grnViewModel.VoidTime,
+
+                DateCreated = grnViewModel.DateCreated,
+                LastModified = grnViewModel.LastModified,
+                CreatedBy = grnViewModel.CreatedBy,
+                ModifiedBy = grnViewModel.ModifiedBy
+            });
+
+            return Json(result);
+        }
+        public ActionResult GrnItem_Read([DataSourceRequest]DataSourceRequest request, int id, GrnType type)
+        {
+            List<GrnViewModelItem> viewModelItems = new List<GrnViewModelItem>();
+
+            if (type == GrnType.Stock)
+            {
+                #region stock
+
+                var goodReceiveItems = _db.GoodReceiveItems.Where(x => x.GoodReceiveId == id).ToList();
+                foreach (var goodReceiveItem in goodReceiveItems)
+                {
+
+                    GrnViewModelItem itemvm = new GrnViewModelItem
+                    {
+                        GrnViewModelItemID = goodReceiveItem.GoodReceiveItemID,
+                        Category = goodReceiveItem.ItemCategory.Name,
+                        SubCategory = "",
+                        Item = goodReceiveItem.InventoryItem.Name,
+                        Quantity = goodReceiveItem.Quantity,
+                        UnitPrice = goodReceiveItem.UnitPrice,
+                        SubTotal = goodReceiveItem.SubTotal,
+                        Total = goodReceiveItem.Total,
+                        GLTaxRateID = goodReceiveItem.GLTaxRateID,
+                        TaxAmount = goodReceiveItem.TaxAmount,
+                        IsExtra = goodReceiveItem.IsExtra,
+                        ExtraQuantity = goodReceiveItem.ExtraQuantity,
+                        ExtraAmount = goodReceiveItem.ExtraAmount,
+                        WarrantyInformation = goodReceiveItem.WarrantyInformation,
+                        Specification = goodReceiveItem.Specification,
+                        Expire = goodReceiveItem.Expire,
+                        ExpireDate = goodReceiveItem.ExpireDate,
+                        Balance = goodReceiveItem.Balance,
+                        OrgBranchName = goodReceiveItem.OrgBranchName,
+                    };
+                    viewModelItems.Add(itemvm);
+                }
+
+                #endregion
+
+            }
+            else if (type == GrnType.Service)
+            {
+                #region service
+
+                var serviceReceiveItems = _db.ServiceReceiveItems.Where(x => x.ServiceReceiveId == id).ToList();
+                foreach (var item in serviceReceiveItems)
+                {
+                    var serviceCategory = _db.ServiceCategories.FirstOrDefault(x => x.ServiceCategoryCode == item.ServiceCategoryCode);
+
+                    GrnViewModelItem itemvm = new GrnViewModelItem
+                    {
+                        GrnViewModelItemID = item.ServiceReceiveItemId,
+                        Category = serviceCategory?.Name,
+                        SubCategory = "",
+                        Item = item.ServiceItemName,
+                        Quantity = item.Quantity,
+                        UnitPrice = item.UnitPrice,
+                        SubTotal = item.SubTotal,
+                        Total = item.Total,
+                        GLTaxRateID = item.GLTaxRateID,
+                        TaxAmount = item.TaxAmount,
+
+                    };
+                    viewModelItems.Add(itemvm);
+                }
+
+                #endregion
+
+            }
+
+            else if (type == GrnType.FixedAsset)
+            {
+                #region stock
+
+                var fixedAssetReceiveItems = _db.FixedAssetReceiveItems.Where(x => x.FixedAssetReceiveId == id).ToList();
+                foreach (var fixedAssetReceiveItem in fixedAssetReceiveItems)
+                {
+
+                    GrnViewModelItem itemvm = new GrnViewModelItem
+                    {
+                        GrnViewModelItemID = fixedAssetReceiveItem.FixedAssetReceiveItemID,
+                        Category = fixedAssetReceiveItem.FixedAssetCategory.CategoryName,
+                        SubCategory = fixedAssetReceiveItem.FixedAssetSubCategory.SubCategoryName,
+                        Item = fixedAssetReceiveItem.Name,
+                        Quantity = fixedAssetReceiveItem.Quantity,
+                        UnitPrice = fixedAssetReceiveItem.UnitPrice,
+                        SubTotal = fixedAssetReceiveItem.SubTotal,
+                        Total = fixedAssetReceiveItem.Total,
+                        GLTaxRateID = fixedAssetReceiveItem.GLTaxRateID,
+                        TaxAmount = fixedAssetReceiveItem.TaxAmount,
+                        IsExtra = fixedAssetReceiveItem.IsExtra,
+                        ExtraQuantity = fixedAssetReceiveItem.ExtraQuantity,
+                        ExtraAmount = fixedAssetReceiveItem.ExtraAmount,
+                        WarrantyInformation = fixedAssetReceiveItem.WarrantyInformation,
+                        Specification = fixedAssetReceiveItem.Specification,
+                        Expire = fixedAssetReceiveItem.Expire,
+                        ExpireDate = fixedAssetReceiveItem.ExpireDate,
+                        Balance = fixedAssetReceiveItem.Balance,
+                        OrgBranchName = fixedAssetReceiveItem.OrgBranchName,
+                    };
+                    viewModelItems.Add(itemvm);
+                }
+
+                #endregion
+
+            }
+
+            IQueryable<GrnViewModelItem> grnViewModelItems = viewModelItems.AsQueryable();
+            DataSourceResult result = grnViewModelItems.ToDataSourceResult(request, fixedAssetReceiveItem => new
+            {
+                GrnViewModelItemID = fixedAssetReceiveItem.GrnViewModelItemID,
+                Category = fixedAssetReceiveItem.Category,
+                SubCategory = fixedAssetReceiveItem.SubCategory,
+                Item = fixedAssetReceiveItem.Item,
+                Quantity = fixedAssetReceiveItem.Quantity,
+                UnitPrice = fixedAssetReceiveItem.UnitPrice,
+                SubTotal = fixedAssetReceiveItem.SubTotal,
+                Total = fixedAssetReceiveItem.Total,
+                GLTaxRateID = fixedAssetReceiveItem.GLTaxRateID,
+                TaxAmount = fixedAssetReceiveItem.TaxAmount,
+                IsExtra = fixedAssetReceiveItem.IsExtra,
+                ExtraQuantity = fixedAssetReceiveItem.ExtraQuantity,
+                ExtraAmount = fixedAssetReceiveItem.ExtraAmount,
+                WarrantyInformation = fixedAssetReceiveItem.WarrantyInformation,
+                Specification = fixedAssetReceiveItem.Specification,
+                Expire = fixedAssetReceiveItem.Expire,
+                ExpireDate = fixedAssetReceiveItem.ExpireDate,
+                Balance = fixedAssetReceiveItem.Balance,
+                OrgBranchName = fixedAssetReceiveItem.OrgBranchName,
+            });
+
+            return Json(result);
+        }
+        public ActionResult GrnValidation_Read([DataSourceRequest]DataSourceRequest request, int id, GrnType type)
+        {
+            List<GrnViewModelValidation> grnViewModelValidations = new List<GrnViewModelValidation>();
+
+            if (type == GrnType.Stock)
+            {
+                #region stock
+
+                var goodReceiveValidations = _db.GoodReceiveValidations.Where(x => x.GoodReceiveId == id).ToList();
+                foreach (var validation in goodReceiveValidations)
+                {
+
+                    GrnViewModelValidation record = new GrnViewModelValidation
+                    {
+                        Status = validation.Status,
+                        Remark = validation.Remark,
+                        OrgBranchName = validation.OrgBranchName,
+                        DateCreated = validation.DateCreated,
+                        LastModified = validation.LastModified,
+                        CreatedBy = validation.CreatedBy,
+                        ModifiedBy = validation.ModifiedBy
+                    };
+                    grnViewModelValidations.Add(record);
+                }
+
+                #endregion
+            }
+            else if (type == GrnType.Service)
+            {
+                #region service
+
+                var serviceReceiveValidations = _db.ServiceReceiveValidations.Where(x => x.ServiceReceiveId == id).ToList();
+                foreach (var validation in serviceReceiveValidations)
+                {
+
+                    GrnViewModelValidation record = new GrnViewModelValidation
+                    {
+                        Status = validation.Status,
+                        Remark = validation.Remark,
+                        DateCreated = validation.DateCreated,
+                        LastModified = validation.LastModified,
+                        CreatedBy = validation.CreatedBy,
+                        ModifiedBy = validation.ModifiedBy
+                    };
+                    grnViewModelValidations.Add(record);
+                }
+
+                #endregion
+            }
+
+            else if (type == GrnType.FixedAsset)
+            {
+                #region service
+
+                var fixedAssetReceiveValidations = _db.FixedAssetReceiveValidations.Where(x => x.FixedAssetReceiveValidationID == id).ToList();
+                foreach (var validation in fixedAssetReceiveValidations)
+                {
+
+                    GrnViewModelValidation record = new GrnViewModelValidation
+                    {
+                        Status = validation.Status,
+                        Remark = validation.Remark,
+                        DateCreated = validation.DateCreated,
+                        LastModified = validation.LastModified,
+                        CreatedBy = validation.CreatedBy,
+                        ModifiedBy = validation.ModifiedBy
+                    };
+                    grnViewModelValidations.Add(record);
+                }
+
+                #endregion
+            }
+
+            IQueryable<GrnViewModelValidation> paymentScheduleViewModels = grnViewModelValidations.AsQueryable();
+            DataSourceResult result = paymentScheduleViewModels.ToDataSourceResult(request, paymentScheduleViewModel => new
+            {
+                Status = paymentScheduleViewModel.Status,
+                Remark = paymentScheduleViewModel.Remark,
+                OrgBranchName = paymentScheduleViewModel.OrgBranchName,
+                DateCreated = paymentScheduleViewModel.DateCreated,
+                LastModified = paymentScheduleViewModel.LastModified,
+                CreatedBy = paymentScheduleViewModel.CreatedBy,
+                ModifiedBy = paymentScheduleViewModel.ModifiedBy
+            });
+
+            return Json(result);
+        }
+
+        protected override void Dispose(bool disposing)
+        {
+            _db.Dispose();
+            base.Dispose(disposing);
+        }
+    }
+}

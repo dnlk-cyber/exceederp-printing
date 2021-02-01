@@ -1,0 +1,447 @@
+﻿@using System.Collections
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<legend>Property Count</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Inventory.PropertyCount>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.PropertyCountId).Title("Count No.").Width(120).ClientTemplate("#=appendZeros(PropertyCountId)#");
+          columns.ForeignKey(p => p.BranchId, (IEnumerable)ViewData["branches"], "BranchId", "Name").EditorTemplateName("BranchSelector").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
+          columns.ForeignKey(p => p.StoreCode, (IEnumerable)ViewData["Stores"], "StoreCode", "Name").EditorTemplateName("Stores").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
+          columns.ForeignKey(p => p.GlFiscalYearId, (IEnumerable)ViewData["Years"], "GlFiscalYearId", "Name").EditorTemplateName("GlFiscalYearSelector").Width(120);
+          columns.ForeignKey(p => p.GLPeriodId, (IEnumerable)ViewData["periods"], "GLPeriodId", "Name").EditorTemplateName("GlPeriodSelector").Width(120);
+          columns.Bound(p => p.CountDate).Width(110);
+          columns.Bound(p => p.StoreKeeperId).Title("Store Keeper").Width(110);
+          columns.Bound(c => c.IsMidOfPeriod).Width(110).ClientTemplate("<input type='checkbox' disabled = 'true' #= IsMidOfPeriod ? checked='checked' :'' # />");
+          columns.Command(command =>
+          {
+              command.Edit();
+          }).Width(280);
+      })
+      .ToolBar(toolbar => {
+          toolbar.Create();
+      })
+             .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("Count").Window(w => w.Title("Inventory Count")))
+                    .HtmlAttributes(new { style = "height: 600px;" })
+                .Pageable(pageable => pageable
+                            .Input(true)
+                            .Numeric(false)
+                            .Refresh(true)
+                            .PageSizes(true)
+                            .ButtonCount(20))
+                .Scrollable()
+                .Sortable()
+                .Filterable()
+                     .Selectable(selectable =>
+                     {
+                         selectable.Mode(GridSelectionMode.Single);
+                         selectable.Type(GridSelectionType.Row);
+                     })
+                .Sortable(sortable =>
+                {
+                    sortable.SortMode(GridSortMode.SingleColumn);
+                })
+                .Groupable().Events(ev => ev.DetailExpand("detailExpand"))
+                .Scrollable(h => h.Height(500))
+                .Events(x => x.DataBound("onDataBoundCountMaster").Edit("onMasterEdit"))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+                  .Sort(sort => sort.Add("PropertyCountId").Descending())
+              .Events(ev => ev
+                            .Error("error_handler(\"grid\")")
+                            .RequestStart("onRequestStart(\"grid\")")
+                            .RequestEnd("onRequestEnd(\"grid\")"))
+                    //.Sync("sync_handler"))
+                    .Model(model =>
+                    {
+                        model.Id(p => p.PropertyCountId);
+                        model.Field(p => p.PropertyCountId).Editable(false);
+                        model.Field(p => p.StoreKeeperId).Editable(false);
+
+                        model.Field(p => p.CreatedBy).Editable(false);
+                        model.Field(p => p.DateCreated).Editable(false);
+                        model.Field(p => p.ModifiedBy).Editable(false);
+                        model.Field(p => p.LastModified).Editable(false);
+
+                    })
+          .Read(read => read.Action("PropertyCounts_Read", "PropertyCount"))
+          .Create(create => create.Action("PropertyCounts_Create", "PropertyCount"))
+          .Update(update => update.Action("PropertyCounts_Update", "PropertyCount"))
+          .Destroy(destroy => destroy.Action("PropertyCounts_Destroy", "PropertyCount"))
+          ).ClientDetailTemplateId("propCounttemplate")
+)
+<script type="text/kendo" id="propCounttemplate">
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Inventory.PropertyCountItem>()
+              .Name("Item_#=PropertyCountId#")
+      .Columns(columns =>
+      {
+          columns.ForeignKey(p => p.ItemCategoryCode, (IEnumerable)ViewData["Category"], "ItemCategoryCode", "Name").Title("Category").EditorTemplateName("ItemCategorySelector").Width(180).Editable("isEditable");
+          columns.Bound(c => c.ItemCode).Width(150).Title("Items").EditorTemplateName("ItemSelector").Width(180).Editable("isEditable");
+          columns.Bound(c => c.ItemCodeReadOnly).Width(150);
+          columns.Bound(c => c.ItemName).Width(150);
+          columns.Bound(c => c.Count).Width(130);
+          columns.Bound(c => c.Location).Width(130);
+          columns.Bound(c => c.Price).Width(130);
+          columns.Bound(c => c.Status).Width(90).ClientTemplate("<input type='checkbox' disabled = 'true' \\#= Status ? checked='checked' :'' \\# />");
+
+          columns.Command(command =>
+          {
+              command.Edit();
+              //command.Destroy();
+              command.Custom("✅").Click("ChangeStatus");
+          }).Width(180);
+      })
+      .ToolBar(toolbar =>
+      {
+      toolbar.Template(@<text>   
+                # if (!IsClosed)
+                {#
+    <a class="k-button k-button-icontext k-grid-add" href='\#'> <span class="k-icon k-i-add"></span> Add new record </a>
+                    @Html.Kendo().Button().Name("refresh").Content("Refresh").Events(events => events.Click("refresh")).ToClientTemplate()  
+      @if (HttpContext.Current.User.IsInRole("Property_Count_Approver")) { 
+          @Html.Kendo().Button().Name("variation").Content("Update").Events(events => events.Click("variationClicked")).ToClientTemplate()
+          @Html.Kendo().Button().Name("reverse").Content("Reverse").Events(events => events.Click("reverse")).ToClientTemplate()
+          @Html.Kendo().Button().Name("close").Content("Close").Events(events => events.Click("close")).ToClientTemplate()
+      }
+
+                # } #
+                    <a target="new" href='@Url.Action("PropertyCountPrint", "PropertyCount")/#=PropertyCountId#'><i class="fa fa-print fa-2x"></i></a>
+                    
+                    </text>);
+      })
+        .HtmlAttributes(new { style = "height: 550px;" })
+            .Pageable(pageable => pageable
+                        .Input(true)
+                        .Numeric(false)
+                        .Refresh(true)
+                        .PageSizes(true)
+                        .ButtonCount(20))
+            .Scrollable()
+            .Sortable()
+            .Filterable()
+
+            .Scrollable(h => h.Height(500))
+            .Events(x => x.DataBound("onDataBoundCountLines"))
+       .Events(events => events.Edit("edit"))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+           .Events(ev => ev
+                    .Error("error_handler(\"Item_#=PropertyCountId#\")")
+                    .RequestStart("onRequestStart(\"Item_#=PropertyCountId#\")")
+                    .RequestEnd("onRequestEnd(\"Item_#=PropertyCountId#\")"))
+          .Model(model =>
+          {
+              model.Id(p => p.PropertyCountItemId);
+              //model.Field(p => p.ItemCategoryCode).Editable(false);
+              //model.Field(p => p.ItemName).Editable(false);
+              // model.Field(p => p.ItemCode).Editable(false);
+              model.Field(p => p.ItemCodeReadOnly).Editable(false);
+              model.Field(p => p.Status).Editable(false);
+              //model.Field(p => p.Uom).Editable(false);
+          })
+            .Read(read => read.Action("PropertyCountItems_Read", "PropertyCountItem", new { id = "#= PropertyCountId #" }))
+             .Create(create => create.Action("PropertyCountItems_Create", "PropertyCountItem", new { id = "#= PropertyCountId #" }))
+          .Update(update => update.Action("PropertyCountItems_Update", "PropertyCountItem"))
+          .Destroy(destroy => destroy.Action("PropertyCountItems_Destroy", "PropertyCountItem"))
+      ).ToClientTemplate()
+    )
+
+
+</script>
+<script>
+
+    function filterStoresByBranchForCount() {
+        return {
+            id: $("#BranchId").data("kendoDropDownList").value(),
+            text: $("#BranchId").data("kendoDropDownList").filterInput.val()
+        }
+    }
+
+    function filterPeriodsByYear() {
+        return {
+            year: $("#GlFiscalYearId").data("kendoDropDownList").value(),
+            text: $("#GlFiscalYearId").data("kendoDropDownList").filterInput.val()
+        }
+    }
+
+    function onSelectedPeriod() {
+        var periodId = $("#GLPeriodId").data("kendoDropDownList").value();
+        var min = "";
+        var max = "";
+        if (periodId) {
+
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("GetPeriodDateRangeById", "DataProvider", new {area = "Inventory"})',
+            data: { id: periodId },
+            success: function (result) {
+                min = result.Min;
+                max = result.Max;
+                //update
+                var datepicker = $("#CountDate").data("kendoDatePicker");
+                datepicker.setOptions({
+                    format: "yyyy-MM-dd",
+                    min:min,
+                    max:max,
+                    value: new Date(),
+                    change: onDOBChange
+                });
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+
+            });
+         }
+
+
+    }
+
+    function isEditable(dataItem) {
+        
+        return dataItem.PropertyCountItemId === 0;
+    }
+
+    function edit(e) {
+        //var row = e.masterRow;
+        //var detailGrid = "#" + e.sender.element[0].id;
+        //var grid = $(detailGrid).data("kendoGrid");
+        //var dataitem = grid.dataItem();
+        //dataitem.dirty = true;
+        //dataSource.sync();
+
+        // $("#Status").trigger('change');
+
+
+        //alert('edit');
+        if (e.model.isNew() === false) {
+            $("#ItemCategoryCode").kendoDropDownList({
+                enable: false
+            });
+            $("#ItemCode").kendoDropDownList({
+                enable: false
+            });
+
+
+            $("#ItemName").attr("readonly", true);
+            $("#Status").attr("readonly", true);
+    
+
+
+        } else {
+            $("#ItemName").attr("readonly", true);
+        }
+    }
+
+    function filterStores() {
+        return {
+            id: $("#BranchId").data("kendoDropDownList").value()
+
+        }
+    }
+
+    var masterDataItem;
+    var masterRow;
+    var masterGrid;
+    var codeid;
+    var isclosed;
+
+    function detailExpand(e) {
+
+        masterRow = e.masterRow;
+
+        masterGrid = $("#grid").data("kendoGrid");
+
+        masterDataItem = masterGrid.dataItem(masterRow);
+
+        //  var masterDataItem = masterGrid.dataItem();
+        codeid = masterDataItem.PropertyCountId;
+        isclosed = masterDataItem.IsClosed;
+
+
+    }
+
+    function onDataBoundCountMaster() {
+        //this.expandRow(this.tbody.find("tr.k-master-row").first());
+
+        //approved
+        var grid = $("#grid").data("kendoGrid");
+        var gridData = grid.dataSource.view();
+
+        for (var i = 0; i < gridData.length; i++) {
+            var currentUid = gridData[i].uid;
+            if (gridData[i].IsClosed) {
+                var currenRow = grid.table.find("tr[data-uid='" + currentUid + "']");
+                var editButton = $(currenRow).find(".k-grid-edit");
+                var deleteButton = $(currenRow).find(".k-grid-delete");
+                editButton.hide();
+                deleteButton.hide();
+            }
+        }
+    }
+
+    function onDataBoundCountLines(e) {
+
+        var detailGrid = "#" + e.sender.element[0].id;
+        if (isclosed) {
+
+            $(".k-grid-add", detailGrid).hide();
+            $(".k-grid-delete", detailGrid).hide();
+            $(".k-grid-edit", detailGrid).hide();
+            $(".k-grid-✅", detailGrid).hide();
+        }
+    }
+
+
+
+    function ChangeStatus(e) {
+
+        //var detailGrid = "#" + e.sender.element[0].id;
+
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+
+        $.ajax({
+            type: "GET",
+            id: dataItem.PropertyCountItemId, //I obtained the id properly
+            url: '@Url.Action("Change", "PropertyCountItem")/' + dataItem.PropertyCountItemId,
+            success: function (result) {
+                // toastr.warnning(result.Message);
+                var resultgritn = "#Item_" + codeid;
+                $(resultgritn).data('kendoGrid').dataSource.read();
+                $(resultgritn).data('kendoGrid').refresh();
+
+                alert(result.Message);
+
+            }, //end s
+            error: function (result) {
+                alert(result);
+            }
+
+        });
+      
+    }
+
+
+    function variationClicked(e) {
+      
+        var conf = confirm("Are you sure you want to Update ?");
+        if (conf === true) {
+
+            $('#loading-image').show();
+                $.ajax({
+                    type: "GET",
+                    url: '@Url.Action("UpdateBalance", "PropertyCount")',
+                    contentType: "application/json; charset=utf-8",
+                    data: { id: codeid },
+                    dataType: "json",
+                    success: function (result) {
+                        // toastr.warnning(result.Message);
+                        alert(result.Message);
+                        //location.reload(true);
+                    }, //end succ
+                    error: function (result) {
+                        alert(result);
+                    },
+                    complete: function () {
+                        $('#loading-image').hide();
+                    }
+                });
+        }
+       
+    }
+
+    function reverse(e) {
+               $('#loading-image').show();
+                    $.ajax({
+                    type: "GET",
+                    url: '@Url.Action("ReverseUpdate", "PropertyCount")',
+                    contentType: "application/json; charset=utf-8",
+                    data: { id: codeid },
+                    dataType: "json",
+                    success: function (result) {
+                        // toastr.warnning(result.Message);
+                        alert(result.Message);
+                        //location.reload(true);
+                    }, //end succ
+                    error: function (result) {
+                        alert(result);
+                    },
+                    complete: function () {
+                        $('#loading-image').hide();
+                    }
+                });
+            
+    }
+    function close(e) {
+       
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("CloseCount", "PropertyCount")',
+            contentType: "application/json; charset=utf-8",
+            data: { id: codeid },
+            dataType: "json",
+            success: function (result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                //location.reload(true);
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            },
+            complete: function () {
+              
+            }
+        });
+
+    }
+
+    function refresh(e) {
+        $('#loading-image').show();
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("RefreshStoreItems", "PropertyCount")',
+            contentType: "application/json; charset=utf-8",
+            data: { id: codeid },
+            dataType: "json",
+            success: function (result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                //location.reload(true);
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            },
+            complete: function () {
+                $('#loading-image').hide();
+            }
+        });
+
+    }
+
+    
+ 
+    
+    function printClicked(e) {
+        $.ajax({
+            type: "GET",
+            data: codeid,
+            url: '@Url.Action("PropertyCountPrint", "PropertyCount")/' + codeid
+        });
+    };
+
+
+    function onDataBinding(e){
+        //Implement the event handler for DataBinding
+    }
+
+    function onMasterEdit(e){
+        //Implement the event handler for Edit
+    }
+
+</script>
+
+
+ 

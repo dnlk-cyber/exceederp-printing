@@ -1,0 +1,28 @@
+﻿<legend>Stock Balance</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.StockBalance>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.StockBalanceType);
+        columns.Bound(c => c.Thing);
+        columns.Bound(c => c.Variety);
+        columns.Bound(c => c.StoreID);
+        columns.Bound(c => c.Quantity);
+        columns.Bound(c => c.Period);
+        columns.Bound(c => c.Remark);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.StockBalanceID))
+          .Read(read => read.Action("StockBalances_Read", "StockBalance"))
+          .Create(create => create.Action("StockBalances_Create", "StockBalance"))
+          .Update(update => update.Action("StockBalances_Update", "StockBalance"))
+          .Destroy(destroy => destroy.Action("StockBalances_Destroy", "StockBalance"))
+      )
+)

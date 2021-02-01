@@ -1,0 +1,10 @@
+﻿
+@(Html.Kendo().DropDownListFor(m => m)
+              .DataTextField("Name")
+              .DataValueField("Name") 
+                     .DataSource(dataSource =>
+                      {
+                          dataSource.Read(read => read.Action("ArrivalTypeDDBind", "FleetDataProvider"))
+                                    .ServerFiltering(true);
+                      }).OptionLabel("Select").ValuePrimitive(true))
+                

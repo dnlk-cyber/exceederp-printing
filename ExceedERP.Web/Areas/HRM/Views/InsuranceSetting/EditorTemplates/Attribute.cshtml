@@ -1,0 +1,27 @@
+﻿@using ExceedERP.Core.Domain.Common
+@(Html.Kendo().DropDownListFor(m => m)
+.Name( "Attribute")
+.OptionLabel( "Select Attribute..")
+    .ValuePrimitive(true)
+        .DataTextField("Text")
+            .DataValueField("Text")
+                .DataSource(source =>
+                {
+                    source.Read(read =>
+                    {
+                        read.Action("GetCascadeAttributes", "InsuranceSetting")
+                            .Data("filterCategories");
+                    })
+                    .ServerFiltering(true);
+                })
+            .AutoBind( false)
+            .Enable( false)
+                        .CascadeFrom("Reference")
+)
+<script>
+    function filterCategories() {
+        return {
+            Reference: $("#Reference").val()
+        };
+    }
+</script>

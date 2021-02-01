@@ -1,0 +1,44 @@
+﻿<legend>Additional Cost</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.AdditionalCost>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.AdditionalCostId).Width(100);
+          columns.Bound(c => c.Type).EditorTemplateName("AdditionalCostType").Width(120);
+          columns.Bound(c => c.Name).Width(120);
+          columns.Bound(c => c.SalesAccountCode).EditorTemplateName("AccountCode").Width(220);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+           .HtmlAttributes(new { style = "height: 520px;" })
+                              .Pageable(pageable => pageable
+                                                .Input(true)
+                                                .Numeric(false)
+                                                .Refresh(true)
+                                                .PageSizes(true)
+                                                .ButtonCount(5))
+
+                                    .Scrollable()
+                                    .Sortable()
+                                    .Filterable()
+                                    .Groupable()
+                                    .Scrollable(h => h.Height(500))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => 
+              {
+                  model.Id(p => p.AdditionalCostId);
+                  model.Field(p=> p.AdditionalCostId).Editable(false);})
+                    .Events(ev => ev
+                                                                .Error("error_handler(\"grid\")")
+                                                                .RequestStart("onRequestStart(\"grid\")")
+                                                                .RequestEnd("onRequestEnd(\"grid\")"))
+          .Read(read => read.Action("AdditionalCosts_Read", "AdditionalCost"))
+          .Create(create => create.Action("AdditionalCosts_Create", "AdditionalCost"))
+          .Update(update => update.Action("AdditionalCosts_Update", "AdditionalCost"))
+          .Destroy(destroy => destroy.Action("AdditionalCosts_Destroy", "AdditionalCost"))
+      )
+)

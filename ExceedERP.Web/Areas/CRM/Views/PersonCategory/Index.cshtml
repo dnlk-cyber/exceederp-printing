@@ -1,0 +1,30 @@
+﻿<legend>Person Category</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.PersonCategory>()
+          .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Description);
+          columns.Bound(c => c.Index);
+          columns.Bound(c => c.IsActive);
+          columns.Bound(c => c.Parent).EditorTemplateName("PersonCategoryParent");
+          columns.Bound(c => c.Remark);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable(s=>s.Height(500))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+              .Model(model => model.Id(p => p.PersonCategoryID)).Events(ev => ev
+                                                                        .Error("error_handler(\"grid\")")
+                                                                        .RequestStart("onRequestStart(\"grid\")")
+                                                                        .RequestEnd("onRequestEnd(\"grid\")"))
+          .Read(read => read.Action("PersonCategories_Read", "PersonCategory"))
+          .Create(create => create.Action("PersonCategories_Create", "PersonCategory"))
+          .Update(update => update.Action("PersonCategories_Update", "PersonCategory"))
+          .Destroy(destroy => destroy.Action("PersonCategories_Destroy", "PersonCategory"))
+      )
+)

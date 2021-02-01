@@ -1,0 +1,11 @@
+﻿@using ExceedERP.Core.Domain.Procurement
+@using ExceedERP.Core.Domain.Procurement.Settings
+
+@(Html.Kendo().DropDownListFor(m => m)
+    .OptionLabel("Select ...")
+        .DataTextField("Text")
+            .DataValueField("Value")
+            .ValuePrimitive(true)
+            .BindTo(EnumExtension.EnumToSelectList(typeof(ProcurementCategory)))
+ 
+)

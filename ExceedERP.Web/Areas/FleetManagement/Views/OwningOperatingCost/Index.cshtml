@@ -1,0 +1,151 @@
+﻿<legend>Owning and Operating Cost</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetRegistration.OwningandOperatingCost>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Model);
+          columns.Bound(c => c.OwnerShipPeriod);
+          columns.Bound(c => c.EstimatedUsage);
+          columns.Bound(c => c.OwnerShipUsage);
+          columns.Bound(c => c.DeliveryPrice);
+          columns.Bound(c => c.RentalRateWithFuel).Title("Hourly/Rental cost");
+          columns.Bound(c => c.MaintenanceRepairCost).Title("Maintenance cost ");
+          columns.Bound(c => c.TyreReplacementCost);
+          columns.Bound(c => c.TotalOperatingWeight);
+          columns.Bound(c => c.Remark).Title("Condtion");
+
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+          toolbar.Create();
+      })
+          .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("OwningOperatingCostEditor"))
+         .HtmlAttributes(new { style = "height: 520px;" })
+                          .Pageable(pageable => pageable
+                                            .Input(true)
+                                            .Numeric(false)
+                                            .Refresh(true)
+                                            .PageSizes(true)
+                                            .ButtonCount(5))
+
+                                .Scrollable()
+                                .Sortable()
+                                .Filterable()
+                                    .Scrollable(h => h.Height(500))
+                                    .ClientDetailTemplateId("template")
+                                    .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.OwningandOperatingCostId))
+          .Read(read => read.Action("OwningandOperatingCosts_Read", "OwningOperatingCost"))
+          .Create(create => create.Action("OwningandOperatingCosts_Create", "OwningOperatingCost"))
+          .Update(update => update.Action("OwningandOperatingCosts_Update", "OwningOperatingCost"))
+          .Destroy(destroy => destroy.Action("OwningandOperatingCosts_Destroy", "OwningOperatingCost"))
+      )
+)
+
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                                                    .Name("tabStrip_#=OwningandOperatingCostId#")
+            .SelectedIndex(0).HtmlAttributes(new { style = "height: 40px;" })
+            .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+            .Items(items =>
+            {
+                items.Add().Text("Detail").Content(
+                    @<text>
+                        <div>
+                            <div class="box">
+
+                                <div class="box-col">
+                                  
+
+                                </div>
+                            </div>
+                            <div class="demo-section k-header export-app">
+                                <div class="demo-section content-wrapper">
+
+                                    <table class="table table-striped   table-bordered">
+                                        <th>Resdual ScrapValue</th>
+                                        <th>Yerly Premiuem</th>
+                                        <th>NetValue</th>
+                                        <th>FuelConsumption</th>
+                                        <th>Operator Monthly Salary</th>
+                                        <th>Depreciation</th>
+                                        <th>Insurance</th>
+                                        <th>Property Tax</th>
+                                        <tr>
+                                            <td class="text-capitalize text-nowrap">#=ResdualScrapValue#</td>
+                                            <td>#=YerlyPremiuem#</td>
+                                            <td>#=NetValue#</td>
+                                            <td>#=FuelConsumption#</td>
+                                            <td>#=OperatorDriverMonthlySalary#</td>
+                                            <td>#=Depreciation#</td>
+                                            <td>#=Insurance#</td>
+                                            <td>#=PropertyTax#</td>
+                                        </tr>
+                                       
+</table>
+                        
+                                    <table>
+                                    
+                                        <th>NetTotal</th>
+                                        <th>Fuel</th>
+                                        <th>LubOil</th>
+                                        <th>Service Parts</th>
+                                        <th>Tire</th>
+                                        <tr>
+                                            <td>#=NetTotal#</td>
+                                            <td>#=Fuel#</td>
+                                            <td>#=LubOil#</td>
+                                            <td>#=ServiceParts#</td>
+                                            <td>#=Tire#</td>
+                                        </tr>
+                                    </table>
+
+                                                <table>
+                                     
+                                                    <th>Maintenance Repair Cost</th>
+                                                    <th>Special Wear Items Cost</th>
+                                                    <th>Under Carrage Cost</th>
+                                                    <th>Operator Cost</th>
+                                                    <th>Total Net Cost</th>
+                                                    <tr>
+                                                        <td>#=MaintenanceRepairCost#</td>
+                                                        <td>#=SpecialWearItemsCost#</td>
+                                                        <td>#=UnderCarrageCost#</td>
+                                                        <td>#=OperatorCost#</td>
+                                                        <td>#=TotalNetCost#</td>
+                                                    </tr>
+                                    </table>
+
+                                    <table>
+
+                                        <th>Profit</th>
+                                        <th>Over Head</th>
+                                        <th>RentalRate With Fuel</th>
+                                        <th>Rental Rate With Out Fuel</th>
+                                        <tr>
+                                            <td>#=Profit#</td>
+                                            <td>#=OverHead#</td>
+                                            <td>#=RentalRateWithFuel#</td>
+                                            <td>#=RentalRateWithOutFuel#</td>
+                                        </tr>
+                                    </table>
+
+                                </div>
+                            </div>
+
+                        </div>
+
+                    </text>
+
+
+            );
+            })
+                                                                                                                                                                                                                                                                                                                                                                                    .ToClientTemplate())
+</script>
+
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 700px;
+    }
+</style>

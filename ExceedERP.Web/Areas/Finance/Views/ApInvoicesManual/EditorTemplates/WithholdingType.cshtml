@@ -1,0 +1,9 @@
+﻿@using System.Collections
+@(Html.Kendo().DropDownListFor(m => m)
+                  .ValuePrimitive(true)
+                  .OptionLabel("Select withholding...")
+                      .DataTextField("TaxName")
+                      .DataValueField("TaxName")
+                      .BindTo((IEnumerable)ViewData["WitholdingType"])
+)
+@Html.ValidationMessageFor(m => m)

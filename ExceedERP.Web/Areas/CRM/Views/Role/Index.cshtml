@@ -1,0 +1,28 @@
+﻿<legend>Role</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.Role>()
+          .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.Description);
+        columns.ForeignKey(c => c.ParentID, (System.Collections.IEnumerable)ViewData["RoleList"], "RoleID", "Description").EditorTemplateName("RoleParent").Width(150);
+    
+        columns.Bound(c => c.Remark);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable(s => s.Height(500))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+              .Model(model => model.Id(p => p.RoleID)).Events(ev => ev
+                                                                                .Error("error_handler(\"grid\")")
+                                                                                .RequestStart("onRequestStart(\"grid\")")
+                                                                                .RequestEnd("onRequestEnd(\"grid\")"))
+          .Read(read => read.Action("Roles_Read", "Role"))
+          .Create(create => create.Action("Roles_Create", "Role"))
+          .Update(update => update.Action("Roles_Update", "Role"))
+          .Destroy(destroy => destroy.Action("Roles_Destroy", "Role"))
+      )
+)

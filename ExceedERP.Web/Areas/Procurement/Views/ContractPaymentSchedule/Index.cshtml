@@ -1,0 +1,28 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Procurement.Contract.ContractPaymentSchedule>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.PaymentType);
+          columns.Bound(c => c.Percentage);
+          columns.Bound(c => c.Remark);
+          columns.Bound(c => c.OrgBranchName);
+          columns.Bound(c => c.DateCreated);
+          columns.Bound(c => c.LastModified);
+          columns.Bound(c => c.CreatedBy);
+          columns.Bound(c => c.ModifiedBy);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.ContractPaymentScheduleId))
+          .Read(read => read.Action("ContractPaymentSchedules_Read", "ContractPaymentSchedule"))
+          .Create(create => create.Action("ContractPaymentSchedules_Create", "ContractPaymentSchedule"))
+          .Update(update => update.Action("ContractPaymentSchedules_Update", "ContractPaymentSchedule"))
+          .Destroy(destroy => destroy.Action("ContractPaymentSchedules_Destroy", "ContractPaymentSchedule"))
+      ))

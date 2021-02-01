@@ -1,0 +1,92 @@
+﻿@using System.Collections
+@using System.Security.AccessControl
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>የበጀት ዓመት</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Finance.GL.GlFiscalYear>()
+      .Name("GLPeriod")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.Name);
+       
+        columns.Bound(c => c.DateFromAmharic).EditorTemplateName("Calander").Width( 200);
+        columns.Bound(c => c.DateToAmharic).EditorTemplateName("Calander").Width( 200);
+        //columns.Bound(c => c.Status);
+        //columns.Bound(c => c.IsPermanentlyClosed);
+        //columns.Bound(c => c.OrgBranchName);
+        //columns.Bound(c => c.DateCreated);
+        //columns.Bound(c => c.LastModified);
+        //columns.Bound(c => c.CreatedBy);
+        //columns.Bound(c => c.ModifiedBy);
+        columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+              })
+              .ToolBar(toolbar =>
+              {
+                  toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+              })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                       .Scrollable(h => h.Height(500))
+                       .Groupable()
+                            .Events(x =>
+                               {
+                                   x.Edit("GetDate");
+                                   x.Save("GetDate");
+                               })
+                       .Sortable(sortable =>
+                       {
+                       sortable.SortMode(GridSortMode.SingleColumn);
+                       })
+                       .Filterable()
+                       .Pageable(pageable => pageable
+                       .Input(true)
+                       .Numeric(false)
+                       .Refresh(true)
+                       .PageSizes(true)
+                       .ButtonCount(5))
+                       .DataSource(dataSource => dataSource
+                       .Ajax()
+                             .Events(events =>
+                                                            {
+                                                                events.Error("error_handler(\"GLPeriod\")");
+                                                                events.RequestEnd("onRequestEnd(\"GLPeriod\")");
+                                                            })
+                          
+          .Model(model => model.Id(p => p.GlFiscalYearId))
+              .Read(read => read.Action("GLPeriods_Read", "PeriodFiscalYearCourt"))
+                  .Create(create => create.Action("GLPeriods_Create", "PeriodFiscalYearCourt"))
+                  .Update(update => update.Action("GLPeriods_Update", "PeriodFiscalYearCourt"))
+                  .Destroy(destroy => destroy.Action("GLPeriods_Destroy", "PeriodFiscalYearCourt"))
+      )
+)
+<script>
+    function GetDate() {
+
+        var x = AssignDate();
+        var y = x;
+        $("#DateFromAmharic").trigger("change");
+        $("#DateToAmharic").trigger("change");
+        for (var o in y) {
+            $.ajax({
+                contentType: "application/json; charset=utf-8",
+                url: '@Url.Action("SetDate", "Period")',
+                data: { name: y[o].id, value: y[o].date },
+                type: 'GET',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                }
+
+            });
+        }
+    }
+
+</script>
+<script>
+    function AssignDate() {
+        var list = AssignDates();
+        return list;
+    }
+
+</script>

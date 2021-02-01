@@ -1,0 +1,559 @@
+﻿@model ExceedERP.Core.Domain.FleetManagement.FleetEquipmentRent.RentFromExternal
+
+<script>
+    function filterByEquipmentTypeDD() {
+
+       // var dropdownlist = $("#EquipmentTypeID").data("kendoDropDownList");
+     //   var filterInput = dropdownlist.filterInput;
+
+        return {
+            EquipmentIdentityID: $("#EquipmentIdentityID").val()//,
+        //    Search: filterInput.val()
+        };
+
+    }
+    function filterFixedAssetSubCategory() {
+        var dropdownlist = $("#SubType").data("kendoDropDownList");
+        var filterInput = dropdownlist.filterInput;
+
+        return {
+            Id: $("#EquipmentTypeID").val(),
+            Search: filterInput.val()
+        };
+        return {
+
+        };
+    }
+    function filterFixedAssetCategory() {
+
+        var dropdownlist = $("#UnitNum").data("kendoDropDownList");
+        var filterInput = dropdownlist.filterInput;
+
+        return {
+            Id: $("#SubType").val(),
+            Search : filterInput.val()
+        };
+    }
+    function filterNameByTypePopUp() {
+
+        var dropdownlist = $("#EquipmentName").data("kendoDropDownList");
+        var filterInput = dropdownlist.filterInput;
+
+        return {
+            EquipmentTypeId: "",
+            Search: filterInput.val()
+        };
+
+    }
+    function filterPlateNo() {
+
+        var dropdownlist = $("#PlateNumber").data("kendoDropDownList");
+        var filterInput = dropdownlist.filterInput;
+
+        return {
+            Id: $("#SubType").val(),
+            Search: filterInput.val()
+        };
+    }
+
+    function filterChasisNo() {
+
+        var dropdownlist = $("#ChasisNumber").data("kendoDropDownList");
+        var filterInput = dropdownlist.filterInput;
+
+        return {
+            Id: $("#SubType").val(),
+            Search: filterInput.val()
+        };
+    }
+
+    function filterSerialNo() {
+
+        var dropdownlist = $("#SerialNo").data("kendoDropDownList");
+        var filterInput = dropdownlist.filterInput;
+
+        return {
+            Id: $("#SubType").val(),
+            Search: filterInput.val()
+        };
+    }
+    function onUploadSuccess(e) {
+
+    }</script>
+<legend>Rent From External</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetEquipmentRent.RentFromExternal>()
+        .Name("grid")
+        .Columns(columns =>
+        {
+            columns.Bound(o => o.Num).Width(80);
+            columns.Bound(o => o.ProjectLocation).Width(120);
+            columns.Bound(o => o.Quantity).Width(100);
+            columns.Bound(o => o.CompanyName).Width(120);
+            columns.Bound(o => o.TotalCost).Width(120);
+            columns.Bound(e => e.Status).Width(100);
+
+            columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
+
+        }).Events(ev =>
+                            {
+                                ev.DataBound("onDataBound");
+                            })
+               .ToolBar(t => t.Create())
+
+
+            .Editable(editable =>
+            {
+                editable.Window(w => w.Title("Rent From External"));
+                editable.Mode(GridEditMode.PopUp).TemplateName("RentFromExternalEditor");
+                editable.DisplayDeleteConfirmation("Are You Sure To Remove Rent Information");
+            })
+             .HtmlAttributes(new { style = "height: 520px;" })
+                              .Pageable(pageable => pageable
+                                                .Input(true)
+                                                .Numeric(false)
+                                                .Refresh(true)
+                                                .PageSizes(true)
+                                                .ButtonCount(5))
+
+                                    .Scrollable()
+                                    .Sortable()
+                                    .Filterable()
+                                    .Groupable()
+                                    .Scrollable(h => h.Height(500))
+                                              .Groupable().ClientDetailTemplateId("template").Groupable().Events(ev => ev.DetailExpand("onDetailExpand"))
+                                    .DataSource(dataSource => dataSource
+            .Ajax()
+            .ServerOperation(false)
+                         .Model(model =>
+                  {
+                      model.Id(p => p.RentFromExternalID);
+                      model.Field(p => p.RentFromExternalID).Editable(false);
+                      model.Field(p => p.Num).Editable(false);
+                  }).Events(ev => ev
+                                                        .Error("error_handler(\"grid\")")
+                                                        .RequestStart("onRequestStart(\"grid\")")
+                                                        .RequestEnd("onRequestEnd(\"grid\")"))
+                        .Create(create => create.Action("RentFromExternal_Create", "RentFromExternal"))
+                        .Read(read => read.Action("RentFromExternal_Read", "RentFromExternal"))
+                        .Update(read => read.Action("RentFromExternal_Update", "RentFromExternal"))
+                        .Destroy(read => read.Action("RentFromExternal_Destroy", "RentFromExternal"))
+      )
+)
+
+
+
+
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                                                    .Name("tabStrip_#=RentFromExternalID#")
+                    .SelectedIndex(0)
+                    .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+                    .Items(items =>
+                    {
+                        items.Add().Text("Detail").Content(
+                            @<text>
+                                <legend>Detail</legend>
+
+                                <div class="box">
+
+                                    <div class="box-col">
+
+                                        # if (IsSendForApproval == false || IsSendForApproval == "false")
+                                        {#
+
+                                        <a href='@Url.Action("Rent_SendForOnlineApproval", "RentFromExternalApproval")/?EId=#=RentFromExternalID#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                                        # }#
+                                    </div>
+                                </div>
+                                <div class="demo-section k-header export-app">
+                                    <div class="demo-section content-wrapper">
+
+                                        <form>
+
+
+
+                                            <div class="row">
+                                                <div class="col-md-1">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <div class="form-group">
+                                                        <div class="label">
+                                                            @Html.LabelFor(model => model.CreatedBy)
+                                                        </div>
+                                                        <div>
+                                                            #=CreatedBy#
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <div class="form-group">
+                                                        <div class="label">
+                                                            @Html.LabelFor(model => model.DateCreated)
+                                                        </div>
+                                                        <div>
+                                                            #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-2">
+                                                    <div class="form-group">
+                                                        <div class="label">
+                                                            @Html.LabelFor(model => model.ModifiedBy)
+                                                        </div>
+                                                        <div>
+
+                                                            #=ModifiedBy#
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                <div class="col-md-2">
+                                                    <div class="form-group">
+                                                        <div class="label">
+                                                            @Html.LabelFor(model => model.LastModified)
+                                                        </div>
+                                                        <div>
+                                                            #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                            </div>
+
+                                            <div class="row">
+                                                <div class="col-md-1">
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <div class="form-group">
+                                                        <div class="label">
+                                                            @Html.LabelFor(model => model.StartDate)
+                                                        </div>
+                                                        <div>
+                                                            #=kendo.toString(kendo.parseDate(StartDate), 'dd/MM/yyyy') #
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                                <div class="col-md-2">
+                                                    <div class="form-group">
+                                                        <div class="label">
+                                                            @Html.LabelFor(model => model.EndDate)
+                                                        </div>
+                                                        <div>
+                                                            #=kendo.toString(kendo.parseDate(EndDate), 'dd/MM/yyyy') #
+
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </form>
+
+                                    </div>
+                                </div>
+
+
+
+                            </text>
+
+
+                            );
+
+
+                                items.Add().Text(" Equipments ").Content(@<text>
+                                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetRegistration.Fleets>()
+                                          .Name("Equipment#=RentFromExternalID#")
+                                  .Columns(columns =>
+                                      {
+                                              columns.Bound(e => e.EquipmentName).Width(120);
+                                              columns.Bound(e => e.PlateNumber).Width(100);
+                                              columns.Bound(e => e.Manufacturer).Width(100);
+                                              columns.Bound(e => e.RentType).Width(100);
+                                              columns.Bound(e => e.RentalRate).Width(100);
+                                              columns.Bound(e => e.IdealRentalRate).Width(100);
+
+                                              columns.Command(command =>
+                                              {
+                                                  command.Edit(); command.Destroy();
+
+                                              }).Width(150);
+
+                                          })
+                                              .Events(ev =>
+                                                            {
+                                                                    ev.DataBound("approveonDataBound");
+                                                                })
+                                  .ToolBar(commands => commands.Create())
+                                  .Editable(editable =>
+                                      {
+                                              editable.Mode(GridEditMode.PopUp).TemplateName("EquipmentEditor");
+                                              editable.DisplayDeleteConfirmation("Are You Sure To Remove Equipment");
+                                          })
+                                                 .HtmlAttributes(new { style = "height: 420px;" }).ClientDetailTemplateId("Checklisttemplate")
+                                                               .Pageable(pageable => pageable
+                                                                                .Input(true)
+                                                                                .Numeric(false)
+                                                                                .Refresh(true)
+                                                                                .PageSizes(true)
+                                                                                .ButtonCount(5))
+
+                             .DataSource(dataSource => dataSource
+                                      .Ajax()
+                                      .ServerOperation(false)
+                                           .PageSize(6)
+                                      .Model(model =>
+                                          {
+                                                  model.Id(p => p.FleetsID);
+                                                  model.Field(p => p.FleetsID).Editable(false);
+                                              }
+                                          ).Events(ev => ev
+                                                                        .Error("error_handler(\"Equipment#=RentFromExternalID#\")")
+                                                                        .RequestStart("onRequestStart(\"Equipment#=RentFromExternalID#\")")
+                                                                        .RequestEnd("onRequestEnd(\"Equipment#=RentFromExternalID#\")"))
+                                              .Create(update => update.Action("ExternalFleets_Create", "EquipmentRegistration", new { Id = "#=RentFromExternalID#" }))
+                                              .Read(read => read.Action("ExternalFleets_Read", "EquipmentRegistration", new { Id = "#=RentFromExternalID#" }))
+                                      .Update(update => update.Action("Fleets_Update", "EquipmentRegistration"))
+                                      .Destroy(update => update.Action("Fleets_Destroy", "EquipmentRegistration"))
+
+                                  )
+
+                                .ToClientTemplate())
+
+                                </text>
+                                        );
+                                        items.Add().Text(" Approval").Content(@<text>
+
+                                            @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetEquipmentRent.RentFromExternalApproval>()
+                                                                                                                            .Name("RentFromExternalApproval#=RentFromExternalID#")
+                                                            .Columns(columns =>
+                                                            {
+                                                                    columns.Bound(o => o.Status).EditorTemplateName("ApprovalEditor").Width(126);
+
+                                                                    columns.Bound(o => o.Remark).Width(200);
+                                                                    columns.Bound(c => c.CreatedBy).Width(150);
+                                                                    columns.Bound(c => c.DateCreated).Format("{0:yyyy-MM-dd}").Width(150);
+                                                                    columns.Command(command => { command.Edit(); }).Width(250);
+
+                                                                }).Events(ev =>
+                                                                {
+                                                                    ev.DataBound("approveonDataBound");
+                                                                })
+                                                                 .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                           .DataSource(dataSource => dataSource
+                                                                .Ajax()
+                                                                .PageSize(5)
+                                                                                         .Model(model =>
+                                                                          {
+                                                                                  model.Id(p => p.RentFromExternalApprovalID);
+                                                                                  model.Field(p => p.CreatedBy).Editable(false);
+                                                                                  model.Field(p => p.DateCreated).Editable(false);
+                                                                              })
+                                                                                                                    .Events(ev => ev
+                                                                                        .Error("error_handler(\"RentFromExternalApproval#=RentFromExternalID#\")")
+                                                                                        .RequestStart("onRequestStart(\"RentFromExternalApproval#=RentFromExternalID#\")")
+                                                                                        .RequestEnd("onRequestEnd(\"RentFromExternalApproval#=RentFromExternalID#\")"))
+                                                                                                                                                                       .Create(update => update.Action("Rent_Approve", "RentFromExternalApproval", new { EId = "#=RentFromExternalID#" }))
+                                                                                                                                         .Read(read => read.Action("RentFromExternalApproval_Read", "RentFromExternalApproval", new { EId = "#=RentFromExternalID#" }))
+                                                                                                                       .Update(update => update.Action("Rent_Approve", "RentFromExternalApproval"))
+
+
+                                                                                          )
+                                                                                   .ToClientTemplate())
+                                        </text>
+                                                );
+
+
+
+
+
+
+                                            })
+                                                                                                                                                                                                                                                                                                                                                                                                                    .ToClientTemplate())
+</script>
+
+
+
+
+
+
+
+
+
+
+
+
+<script id="Checklisttemplate" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                                                                    .Name("tabStrip_#=FleetsID#")
+                    .SelectedIndex(0)
+                    .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+                    .Items(items =>
+                    {
+
+
+
+                        items.Add().Text(" CheckList ").Content(@<text>
+                            @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetEquipmentRent.ExternalRentedEquipmentCheckList>()
+                                              .Name("checklist#=FleetsID#")
+                      .Columns(columns =>
+                          {
+                                      columns.Bound(e => e.HorsePower).Width(120);
+                                      columns.Bound(e => e.EquipmentType).Width(100);
+                                      columns.Bound(e => e.Manufacturer).Width(100);
+
+
+                                      columns.Command(command =>
+                                      {
+                                          command.Edit(); command.Destroy();
+
+                                      }).Width(150);
+
+                                  })
+                                  .Events(ev =>
+                                                {
+                                                            ev.DataBound("approveonDataBound");
+                                                        })
+                      .ToolBar(commands => commands.Create())
+                      .Editable(editable =>
+                          {
+                                      editable.Mode(GridEditMode.PopUp).TemplateName("EquipmentCheckEditor");
+                                      editable.DisplayDeleteConfirmation("Are You Sure To Remove CheckList");
+                                  })
+                             .HtmlAttributes(new { style = "height: 420px;" })
+                                                   .Pageable(pageable => pageable
+                                                                    .Input(true)
+                                                                    .Numeric(false)
+                                                                    .Refresh(true)
+                                                                    .PageSizes(true)
+                                                                    .ButtonCount(5))
+
+                 .DataSource(dataSource => dataSource
+                          .Ajax()
+                          .ServerOperation(false)
+                               .PageSize(6)
+                          .Model(model =>
+                              {
+                                          model.Id(p => p.ExternalRentedEquipmentCheckListId);
+                                          model.Field(p => p.ExternalRentedEquipmentCheckListId).Editable(false);
+                                      }
+                              ).Events(ev => ev
+                                                                                    .Error("error_handler(\"checklist#=FleetsID#\")")
+                                                                                    .RequestStart("onRequestStart(\"checklist#=FleetsID#\")")
+                                                                                    .RequestEnd("onRequestEnd(\"checklist#=FleetsID#\")"))
+                                                                                  .Create(update => update.Action("ExternalRentedEquipmentCheckList_Create", "ExternalRentedCheckList", new { Id = "#=FleetsID#" }))
+                                                                                  .Read(read => read.Action("ExternalRentedEquipmentCheckList_Read", "ExternalRentedCheckList", new { Id = "#=FleetsID#" }))
+                                                          .Update(update => update.Action("ExternalRentedEquipmentCheckList_Update", "ExternalRentedCheckList"))
+                                                          .Destroy(update => update.Action("ExternalRentedEquipmentCheckList_Destroy", "ExternalRentedCheckList"))
+
+                      )
+
+                    .ToClientTemplate())
+
+                        </text>
+                                );
+
+
+
+
+
+
+                            })
+                                                                                                                                                                                                                                                                                                                                                                                                                                                    .ToClientTemplate())
+</script>
+
+
+
+
+
+
+
+
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 700px;
+    }
+</style>
+
+<script>
+
+
+
+
+    function filterFixedAssetSubCategory() {
+
+        var dropdownlist = $("#SubType").data("kendoDropDownList");
+        var filterInput = dropdownlist.filterInput;
+
+        return {
+            Id: $("#EquipmentTypeID").val(),
+            Search: filterInput.val()
+        };
+    }
+
+    function filterFixedAssetSubCategory() {
+
+        var dropdownlist = $("#SubType").data("kendoDropDownList");
+        var filterInput = dropdownlist.filterInput;
+
+        return {
+            Id: $("#EquipmentTypeID").val(),
+            Search: filterInput.val()
+        };
+    }
+
+</script>
+
+<script type="text/javascript">
+
+    var IsApproved;
+    var IsSendForApproved;
+    var masterId;
+    function onDetailExpand(e) {
+        var masterRow = e.masterRow;
+
+        var masterGrid = $("#grid").data("kendoGrid");
+
+        var masterDataItem = masterGrid.dataItem(masterRow);
+        masterId = masterDataItem.RentFromExternalID;
+        IsApproved = masterDataItem.IsOnlineApproved;
+        IsSendForApproved = masterDataItem.IsSendForApproval;
+
+        var Equipmentgrid = "#Equipment" + masterId;
+        if (IsSendForApproved == true) {
+            $(Equipmentgrid).find(".k-toolbar").hide(); //hide toolbar
+            $(".k-grid-top", Equipmentgrid).hide();
+        }
+    }
+    function onDataBound(e) {
+        var grid = this;
+
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+            console.log(dataItem.IsOnlineApproved);
+            if (dataItem.IsSendForApproval == true || dataItem.IsSendForApproval == "true") {
+                console.log("Approved");
+                $(this).find(".k-grid-edit").remove();
+                $(this).find(".k-grid-delete").remove();
+                $("Equipment" + masterId).find("k-header k-grid-toolbar k-grid-top").remove();
+            }
+        });
+    }
+
+    function approveonDataBound(e) {
+        var grid = this;
+
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+            if (dataItem.Status == "Approve" || IsApproved == true) {
+                console.log("Approved");
+                $(this).find(".k-grid-edit").remove();
+                $(this).find(".k-grid-delete").remove();
+            }
+        });
+    }
+
+</script>

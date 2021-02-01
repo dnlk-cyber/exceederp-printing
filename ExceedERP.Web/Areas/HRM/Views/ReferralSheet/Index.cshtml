@@ -1,0 +1,202 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization 
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>@Resources.NavigatorHealthAndInsurance_ReferralSheet</legend>
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.HRM.HealthAndInsurance.PatientCard>()
+          .Name("PatientCardgrid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.PatientCardId).Width(120);
+          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "PersonId", "FullNameWithOutCode").EditorTemplateName("ListOfEmployee").Width(200);
+          columns.Bound(c => c.Age).Width(100);
+          columns.Bound(c => c.Sex).Width(100);
+          //columns.Bound(c => c.WorkSpace).Width(150);
+          columns.Bound(c => c.DateAmharic).Width(120);
+
+          columns.Command(command => { 
+              //command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+              //command.Destroy();
+          }).Width(180);
+      })
+      .ToolBar(toolbar =>
+      {
+         // toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+                 .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("PatientCard").Window(window => { window.Title("Patient Card"); window.Scrollable(false); }))
+        .Scrollable(h => h.Height(500))
+                     .Groupable()
+                              .Sortable(sortable =>
+                              {
+                                  sortable.SortMode(GridSortMode.SingleColumn);
+                              })
+                  .Filterable()
+                     .Pageable(pageable => pageable
+                                                .Input(true)
+                                                .Numeric(false)
+                                                .Refresh(true)
+                                                .PageSizes(true)
+                                                .ButtonCount(5))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+                   .Events(events =>
+                                               {
+                                                   events.Error("error_handler(\"PatientCardgrid\")");
+                                                   events.RequestStart("onRequestStart(\"PatientCardgrid\")");
+                                                   events.RequestEnd("onRequestEnd(\"PatientCardgrid\")");
+                                               })
+
+              .Model(model => model.Id(p => p.PatientId))
+          .Read(read => read.Action("PatientCard_Read", "PatientCard"))
+         // .Create(create => create.Action("PatientCard_Create", "PatientCard"))
+         // .Update(update => update.Action("PatientCard_Update", "PatientCard"))
+         // .Destroy(destroy => destroy.Action("PatientCard_Destroy", "PatientCard"))
+          ).ClientDetailTemplateId("template")
+)
+
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                                  .Name("tabstrip_#=PatientId#")
+                  .SelectedIndex(0)
+                  .Items(items =>
+                  {
+                      items.Add().Text(Resources.NavigatorHealthAndInsurance_ReferralSheet).Content(
+                        @<text>
+                            @*<legend>Referral Sheet</legend>*@
+                            @(Html.Kendo().Grid<ExceedERP.Core.Domain.HRM.HealthAndInsurance.ReferralSheet>()
+                                           .Name("ReferralSheetGrid_#=PatientId#")
+                       .Columns(columns =>
+                       {
+                      // columns.Bound(c => c.PatientCardId);
+                      columns.Bound(c => c.DateAmharic);
+                                  columns.Bound(c => c.ReferredFrom);
+                                  columns.ForeignKey(c => c.MainCompanyId, (IEnumerable)ViewData["Hospitals"], "MainCompanyId", "TradeName");
+                      //columns.Bound(c => c.BriefHistory);
+                      // columns.Bound(c => c.PhiscalFindings);
+                      // columns.Bound(c => c.LabXrayFindings);
+                      columns.Bound(c => c.Diagnosis);
+                                  columns.Bound(c => c.TreatmentGiven);
+                      // columns.Bound(c => c.Recommendation);
+                      columns.Bound(c => c.RecommendedBy);
+                                  columns.Bound(c => c.Remark);
+                                  columns.Command(command =>
+                                  {
+                                      if (HttpContext.Current.User.IsInRole("Health_User"))
+                                      {
+                                          command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                      }
+                                      if (HttpContext.Current.User.IsInRole("Health_Admin"))
+                                      {
+                                          command.Destroy().Text(Resources.ActionButton_Cancel);
+                                      }
+                                  }).Width(200);
+                              })
+                       .ToolBar(toolbar =>
+                       {
+                                  if (HttpContext.Current.User.IsInRole("Health_User"))
+                                  {
+
+                                      toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                                  }
+                       })
+                                                      .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("ReferralSheet").Window(window => { window.Title(Resources.NavigatorHealthAndInsurance_ReferralSheet); window.Scrollable(false); }))
+                        .Scrollable(h => h.Height(300))
+                                                   //   .Groupable()
+                                                   //            .Sortable(sortable =>
+                                                   //            {
+                                                   //                sortable.SortMode(GridSortMode.SingleColumn);
+                                                   //            })
+                                                   //.Filterable()
+                                                   //   .Pageable(pageable => pageable
+                                                   //                              .Input(true)
+                                                   //                              .Numeric(false)
+                                                   //                              .Refresh(true)
+                                                   //                              .PageSizes(true)
+                                                   //                              .ButtonCount(5))
+                                                   .Events(x =>
+                                                          {
+                                                              x.Save("GetDate");
+                                                              x.Edit("GetDate");
+                                                          })
+                       .DataSource(dataSource => dataSource
+                           .Ajax()
+                                       .Events(events =>
+                                                                        {
+                                                                                   events.Error("error_handler(\"ReferralSheetGrid_#=PatientId#\")");
+                                                                                   events.RequestStart("onRequestStart(\"ReferralSheetGrid_#=PatientId#\")");
+                                                                                   events.RequestEnd("onRequestEnd(\"ReferralSheetGrid_#=PatientId#\")");
+                                                                               })
+
+                           .Model(model => model.Id(p => p.ReferralSheetId))
+                                           .Read(read => read.Action("ReferralSheet_Read", "ReferralSheet", new { id = "#=PatientId#" }))
+                                           .Create(create => create.Action("ReferralSheet_Create", "ReferralSheet", new { id = "#=PatientId#" }))
+                           .Update(update => update.Action("ReferralSheet_Update", "ReferralSheet"))
+                           .Destroy(destroy => destroy.Action("ReferralSheet_Destroy", "ReferralSheet"))
+                       ).ToClientTemplate()
+                            )
+
+                            <a href='@Url.Action("ReferalSheet", "PrintableLetter")/?id=#=PatientId#' title="Print"><i class="fa fa-print fa-2x"></i></a>
+                        </text>
+
+
+                                  );
+                          }).ToClientTemplate())
+</script>
+<script>
+    //function error_handler(e) {
+    //    if (e.errors) {
+    //        var message = "Errors:\n";
+    //        $.each(e.errors, function(key, value) {
+    //            if ('errors' in value) {
+    //                $.each(value.errors, function() {
+    //                    message += this + "\n";
+    //                });
+    //            }
+    //        });
+    //        alert(message);
+
+    //    }
+
+    //}
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+
+</script>
+<script>
+    function GetDate() {
+
+        var x = AssignDate();
+        var y = x;
+        for (var o in y) {
+            $.ajax({
+                contentType: "application/json; charset=utf-8",
+                url: '@Url.Action("SetDate", "ReferralSheet")',
+                data: { name: y[o].id, value: y[o].date },
+                type: 'GET',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                }
+
+            });
+        }
+    }
+
+</script>
+<script>
+    function AssignDate() {
+        var list = AssignDates();
+        return list;
+    }
+
+</script>
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 850px;
+    }
+</style>

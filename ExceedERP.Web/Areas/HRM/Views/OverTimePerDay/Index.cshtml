@@ -1,0 +1,238 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@using ExceedERP.Core.Domain.HRM.Payroll
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>@Resources.NavigatorPayroll_OverTimePerDay</legend>
+
+@(Html.Kendo().Grid<OverTimePerDay>()
+          .Name("OverTimePerDaygrid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.TicketNumber).Width( 140);
+          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "PersonId", "FullNameWithOutCode").EditorTemplateName("PayrollListOfEmployee").Width(150);
+          columns.ForeignKey(c => c.GLPeriodId, (IEnumerable)ViewData["PeriodList"], "GLPeriodId", "Name").EditorTemplateName("GLPeriod").Width(120);
+          columns.Bound(c => c.Date).Width(120);//.Format("{0:yyyy-MM-dd}");
+          columns.Bound(c => c.NormalHours).Width(105).ClientTemplate("<input type='checkbox' disabled='true' value='#=NormalHours #' " + " # if (NormalHours) { #" + "checked='checked'" + "# } #" + " />");
+          columns.Bound(c => c.NightHours).Width(105).ClientTemplate("<input type='checkbox'  disabled='true' value='#=NightHours #' " + " # if (NightHours) { #" + "checked='checked'" + "# } #" + " />");
+          columns.Bound(c => c.HolidayHours).Width(105).ClientTemplate("<input type='checkbox'  disabled='true' value='#=HolidayHours #' " + " # if (HolidayHours) { #" + "checked='checked'" + "# } #" + " />");
+          columns.Bound(c => c.RestdayHours).Width(105).ClientTemplate("<input type='checkbox'  disabled='true' value='#=RestdayHours #' " + " # if (RestdayHours) { #" + "checked='checked'" + "# } #" + " />");
+          // columns.Bound(c => c.Form).Width(120).Format("{0:hh:mm:ss}");
+          // columns.Bound(c => c.To).Width(120).Format("{0:hh:mm:ss}");
+          columns.Bound(c => c.TotalHr).Width(100);
+          //columns.Bound(c => c.Remark);
+          columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+      })
+      .ToolBar(toolbar =>
+      {
+         
+          toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+                                          .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("OverTimePerDay").Window(window => { window.Title(Resources.NavigatorPayroll_OverTimePerDay); window.Scrollable(false); }))
+                              .Scrollable(h => h.Height(500))
+                                     .Groupable()
+                                              .Sortable(sortable =>
+                                              {
+                                                  sortable.SortMode(GridSortMode.SingleColumn);
+                                              })
+                                  .Filterable()
+                                     .Pageable(pageable => pageable
+                                                                .Input(true)
+                                                                .Numeric(false)
+                                                                .Refresh(true)
+                                                                .PageSizes(true)
+                                                                .ButtonCount(5))
+
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+                                    .Events(events =>
+                                                            {
+                                                                events.Error("error_handler(\"OverTimePerDaygrid\")");
+                                                                events.RequestStart("onRequestStart(\"OverTimePerDaygrid\")");
+                                                                events.RequestEnd("onRequestEnd(\"OverTimePerDaygrid\")");
+                                                            }) 
+                                          
+                              .Model(model => model.Id(p => p.TicketNumber))
+                                                                      .Read(read => read.Action("OverTimePerDays_Read", "OverTimePerDay", new { ticketNo = "#=TicketNumber#" }))
+                              .Create(create => create.Action("OverTimePerDays_Create", "OverTimePerDay"))
+                              .Update(update => update.Action("OverTimePerDays_Update", "OverTimePerDay"))
+                              .Destroy(destroy => destroy.Action("OverTimePerDays_Destroy", "OverTimePerDay"))
+                                  )//.ClientDetailTemplateId("template")
+)
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                          .Name("tabstrip_#=TicketNumber#")
+          .SelectedIndex(0)
+          .Items(items =>
+          {
+              items.Add().Text(Resources.Details).Content(
+                  @<text>
+                 
+                    @(Html.Kendo().PanelBar()
+                          .Name("panelbar")
+                          .ExpandMode(PanelBarExpandMode.Single)
+                          .Items(panelbar =>
+                          {
+                              panelbar.Add().Text(Resources.Details)
+                                  .Expanded(true)
+                                  .Content(
+                                      "<div class='employee-details'>" +
+                                      "<ul>" +
+                                      "<li><label>Employee:</label>#=EmployeeId#</li>" +
+                                      "<li><label>Period:</label>#=Period#</li>" +
+                                      "<li><label>Date:</label>#=Date#</li>" +
+                                      "<li><label>NormalHours:</label>#=NormalHours#</li>" +
+                                      "<li><label>NightHours:</label>#=NightHours#</li>" +
+                                      "<li><label>HolidayHours:</label>#=HolidayHours#</li>" +
+                                      "<li><label>RestdayHours:</label>#=RestdayHours#</li>" +
+                                      "<li><label>From:</label>#=From#</li>" +
+                                      "<li><label>To:</label>#=To#</li>" +
+                                      "<li><label>Total Hour:</label>#=TotalHr#</li>" +
+                                     "</ul>" +
+                                      "</div>"
+                                      );
+                          }).ToClientTemplate()
+
+                          )
+
+
+                </text>
+
+
+                  );
+          }).ToClientTemplate() 
+          )
+</script>
+    <script>
+        //function error_handler(e) {
+        //    if (e.errors) {
+        //        var message = "Errors:\n";
+        //        $.each(e.errors, function (key, value) {
+        //            if ('errors' in value) {
+        //                $.each(value.errors, function () {
+        //                    message += this + "\n";
+        //                });
+        //            }
+        //        });
+        //        alert(message);
+
+        //    }
+
+        //}
+
+        function sync_handler(e) {
+            this.read();
+
+        }
+    </script>
+<style>
+    .Employee-photo {
+        display: inline-block;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background-size: 32px 35px;
+        background-position: center center;
+        vertical-align: middle;
+        line-height: 32px;
+        box-shadow: inset 0 0 1px #999, inset 0 0 10px rgba(0, 0, 0, .2);
+        margin-left: 5px;
+    }
+
+    .Employee-name {
+        display: inline-block;
+        vertical-align: middle;
+        line-height: 32px;
+        padding-left: 3px;
+    }
+
+    .k-detail-cell .k-tabstrip .k-content {
+        padding: 0.2em;
+    }
+
+    .employee-details ul {
+        list-style: none;
+        font-style: italic;
+        margin: 15px;
+        padding: 0;
+    }
+
+    .employee-details ul li {
+        margin: 0;
+        line-height: 1.7em;
+    }
+
+    .employee-details label {
+        display: inline-block;
+        width: 90px;
+        padding-right: 10px;
+        text-align: right;
+        font-style: normal;
+        font-weight: bold;
+    }
+</style>
+<style>
+    div.k-edit-form-container {
+        width: 700px;
+    }
+</style>
+<script>
+    function GetTotalOT() {
+        //var From = $("#From").data("kendoTimePicker");
+
+        var endPicker = $("#From").data("kendoTimePicker");
+        var toPicker = $("#To").data("kendoTimePicker");
+        var from = endPicker;
+        var to = toPicker;
+
+        $.ajax({
+            url: '@Url.Action("GetTotalOt", "OverTimePerDay")',
+
+            data: { from: from, to: to },
+            type: 'POST',
+            cache: false,
+            success: function(result) {
+                r = result;
+
+                $("#TotalHr").val(r);
+            }
+
+        });
+    }
+
+</script>
+
+<script>
+    function Process() {
+
+
+        var value = this.value(),
+            grid = $("#OverTimePerDaygrid").data("kendoGrid");
+
+        if (value) {
+            grid.dataSource.filter({ field: "TicketNumber", operator: "eq", value: parse(value) });
+        } else {
+            grid.dataSource.filter({});
+        }
+    }
+</script>
+
+<style>
+    #grid .k-grid-toolbar {
+        padding: .6em 1.3em;
+    }
+
+    .category-label {
+        vertical-align: middle;
+        padding-right: .5em;
+    }
+
+    #category {
+        vertical-align: middle;
+    }
+
+    .toolbar {
+        float: right;
+    }
+</style>

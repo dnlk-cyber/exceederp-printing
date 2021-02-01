@@ -1,0 +1,24 @@
+﻿<legend>Voucher Extension Transaction</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.VoucherExtensionTransaction>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.VoucherExtension);
+        columns.Bound(c => c.Number);
+        columns.Bound(c => c.Remark);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.VoucherExtensionTransactionID))
+          .Read(read => read.Action("VoucherExtensionTransactions_Read", "VoucherExtensionTransaction"))
+          .Create(create => create.Action("VoucherExtensionTransactions_Create", "VoucherExtensionTransaction"))
+          .Update(update => update.Action("VoucherExtensionTransactions_Update", "VoucherExtensionTransaction"))
+          .Destroy(destroy => destroy.Action("VoucherExtensionTransactions_Destroy", "VoucherExtensionTransaction"))
+      )
+)

@@ -1,0 +1,19 @@
+﻿
+@model ExceedERP.Core.Domain.FleetManagement.FleetRegistration.EquipmentIdentity
+
+
+<div>
+    @Html.LabelFor(model => model.EquipmentCategory)
+</div>
+<div>
+    @Html.Kendo().TextBoxFor(model => model.EquipmentCategory)
+    @Html.ValidationMessageFor(model => model.EquipmentCategory)
+</div>
+
+<div>
+    @Html.LabelFor(model => model.EquipmentType)
+</div>
+<div>
+    @Html.Kendo().TextBoxFor(model => model.EquipmentType)
+    @Html.ValidationMessageFor(model => model.EquipmentType)
+</div>

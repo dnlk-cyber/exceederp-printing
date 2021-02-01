@@ -1,0 +1,51 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Inventory.GoodReceiveDonationItem>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.ItemCode);
+        columns.Bound(c => c.Quantity);
+        columns.Bound(c => c.UnitPrice);
+        columns.Bound(c => c.SubTotal);
+        columns.Bound(c => c.TaxType);
+        columns.Bound(c => c.TaxAmount);
+        columns.Bound(c => c.TotalAmount);
+        columns.Bound(c => c.IsExtra);
+        columns.Bound(c => c.ExtraQuantity);
+        columns.Bound(c => c.ExtraAmount);
+        columns.Bound(c => c.WarrantyInformation);
+        columns.Bound(c => c.Specification);
+        columns.Bound(c => c.Expire);
+        columns.Bound(c => c.ExpireDate);
+        columns.Bound(c => c.Balance);
+        columns.Bound(c => c.IsMachinery);
+        columns.Bound(c => c.BatchNo);
+        columns.Bound(c => c.Model);
+        columns.Bound(c => c.SerialNo);
+        columns.Bound(c => c.Condition);
+        columns.Bound(c => c.PlateNo);
+        columns.Bound(c => c.ChassisNo);
+        columns.Bound(c => c.EngineNo);
+        columns.Bound(c => c.EngineModelNo);
+        columns.Bound(c => c.EngineElectricalNo);
+        columns.Bound(c => c.EngineElectricalModelNo);
+        columns.Bound(c => c.OrgBranchName);
+        columns.Bound(c => c.DateCreated);
+        columns.Bound(c => c.LastModified);
+        columns.Bound(c => c.CreatedBy);
+        columns.Bound(c => c.ModifiedBy);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Excel();
+           // toolbar.Pdf();
+      })
+      .Selectable(selectable => {
+            selectable.Mode(GridSelectionMode.Single);
+            selectable.Type(GridSelectionType.Row);
+      })
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Read(read => read.Action("GoodReceiveDonationItems_Read", "GoodReceiveDonationItem"))
+      )
+)

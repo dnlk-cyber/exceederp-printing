@@ -1,0 +1,10 @@
+﻿@(Html.Kendo().Window()
+        .Name("Upload")
+    .Title("About Josef Hoffmann")
+    .Actions(actions => actions
+        .Custom("custom")
+        .Minimize()
+        .Maximize()
+        .Close()
+    )
+    .Content(@<text></text>))

@@ -1,0 +1,17 @@
+﻿@using Kendo.Mvc.UI
+
+@(Html.Kendo().DropDownListFor(m => m)
+                  .AutoBind(false)
+                       .Filter("contains")
+                  .OptionLabel("Select PR...")
+                          .DataTextField("Remark")
+                              .DataValueField("PurchaseRequisitionID")
+                  .DataSource(dataSource =>
+                  {
+                      dataSource.Read(read => read.Action("GetPurchaseRequisitionId", "ProcurementDataProvider", new { area = "Procurement" }))
+                                .ServerFiltering(false);
+                       
+                  })
+                       
+)
+@Html.ValidationMessageFor(m => m)

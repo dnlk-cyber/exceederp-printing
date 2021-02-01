@@ -1,0 +1,16 @@
+﻿
+
+@(Html.Kendo().DropDownListFor(m => m)
+                  .ValuePrimitive(true)
+                  .OptionLabel("Select Item")
+                      .DataTextField("Name")
+                          .DataValueField("ItmCode")
+                          .Filter("contains")
+                                .DataSource(dataSource =>
+                                {
+                                    dataSource.Read(read => read.Action("GetGenericItem", "DataProvider", new { area = "Inventory" }).Data("filterGenericItems"))
+                                    .ServerFiltering(true);
+                                })
+                             .CascadeFrom("CatCode")
+)
+@Html.ValidationMessageFor(m => m)

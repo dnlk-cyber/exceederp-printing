@@ -1,0 +1,17 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@(Html.Kendo().DropDownListFor(m => m)
+    .Name("InvoiceNumber")
+      .OptionLabel(Resources.Select)
+      .DataTextField("InvoiceNumber")
+      .DataValueField("InvoiceNumber")
+      .DataSource(dataSource =>
+      {
+          dataSource.Read(read => read.Action("GetInvoiceNumbersForCollection", "DataProvider", new { collectionId = "#=ConsARStandardCollectionId#" }));
+
+      })
+      .Events(e => e.Change("GetApplyAmountFromInvoice"))
+      .Filter("contains")
+      .MinLength(2)
+      .ValuePrimitive(true)
+      )

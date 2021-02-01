@@ -1,0 +1,85 @@
+﻿         
+<div class="form">
+    <div class="row fullrow">
+
+        <div class="col-md-3 ro1">
+            <div class="form-group">
+                @Html.Label("Account", htmlAttributes: new {@class = "control-label col-md-6"})
+                <div class="col-md-6">
+                    @(Html.Kendo().DropDownList()
+                          .ValuePrimitive(true)
+                          .OptionLabel("...Account...")
+                          .DataTextField("desc")
+                          .DataValueField("value")
+                          .DataSource(dataSource =>
+                          {
+                              dataSource.Read(read => read.Action("GetAccounts", "AccountCode"))
+                                  .ServerFiltering(true);
+                          })
+                          )
+                </div>
+            </div>
+            <div class="row"></div>
+
+            <div class="form-group">
+                @Html.Label("Company or Branch", htmlAttributes: new {@class = "control-label col-md-6"})
+                <div class="col-md-6">
+                    @(Html.Kendo().DropDownList()
+                          .ValuePrimitive(true)
+                          .OptionLabel("...Account...")
+                          .DataTextField("desc")
+                          .DataValueField("value")
+                          .DataSource(dataSource =>
+                          {
+                              dataSource.Read(read => read.Action("GetLocations", "AccountCode"))
+                                  .ServerFiltering(true);
+                          })
+                          )
+                </div>
+            </div>
+            <div class="row"></div>
+
+            <div class="form-group">
+                @Html.Label("Cost Center", htmlAttributes: new {@class = "control-label col-md-6"})
+                <div class="col-md-6">
+                    @(Html.Kendo().DropDownList()
+                          .ValuePrimitive(true)
+                          .OptionLabel("...Account...")
+                          .DataTextField("desc")
+                          .DataValueField("value")
+                          .DataSource(dataSource =>
+                          {
+                              dataSource.Read(read => read.Action("GetCostCenter", "AccountCode"))
+                                  .ServerFiltering(true);
+                          })
+                          )
+                </div>
+            </div>
+            <div class="row"></div>
+
+            <div class="form-group">
+                @Html.Label("Sub Account", htmlAttributes: new {@class = "control-label col-md-6"})
+                <div class="col-md-6">
+                    @(Html.Kendo().DropDownList()
+                          .ValuePrimitive(true)
+                          .OptionLabel("...Account...")
+                          .DataTextField("desc")
+                          .DataValueField("value")
+                          .DataSource(dataSource =>
+                          {
+                              dataSource.Read(read => read.Action("GetSubAccounts", "AccountCode"))
+                                  .ServerFiltering(true);
+                          })
+                          )
+                </div>
+            </div>
+            <div class="row"></div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    
+</script>
+
+

@@ -1,0 +1,7 @@
+﻿@model object
+@*SelectDynamicAccCode*@
+<div class="popupwrapper">
+    @Html.Kendo().TextBoxFor(model => model).HtmlAttributes(new { disabled = "disabled" }) <img src="~/Content/Images/search.png" onclick="SelectAccCode(this)" />
+</div>
+
+

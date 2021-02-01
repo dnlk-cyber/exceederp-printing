@@ -1,0 +1,64 @@
+﻿@model PagedList.IPagedList<ExceedERP.Core.Domain.Global.OrgBranchUserMapping>
+@using PagedList.Mvc;
+
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+
+<p>
+    <button onclick="location.href='@Url.Action("Create")'" class="btn btn-primary">Add New <i class="fa fa-plus"></i></button>
+</p>
+@using (Html.BeginForm())
+{
+    <p class="pull-right">
+        @Html.TextBox("SearchString", null, new { @placeholder = "Search with user name or branch name", @size = "50" })
+        <button type="submit" class="saveBtn btn btn-primary"><i class="fa fa-search"></i> Search</button>
+    </p>
+}
+<table class="table table-striped table-bordered table-condensed table-hover">
+    <tr>
+        <th>
+            Branch
+        </th>
+        <th>
+            User
+        </th>
+        <th></th>
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            @Html.DisplayFor(modelItem => item.Branch)
+        </td>
+        <td>
+            @Html.DisplayFor(modelItem => item.User)
+        </td>
+        <td>
+
+            <div class="hidden-sm hidden-xs btn-group">
+
+                <a href='@Url.Action("Edit", new { id = item.OrgBranchUserMappingID })' class=" btn btn-xs btn-info" title="Edit">
+                    <i class="ace-icon fa fa-pencil bigger-120"></i>
+                </a>
+
+                <a href='@Url.Action("Details", new { id = item.OrgBranchUserMappingID })' class=" btn btn-xs btn-success" title="Details">
+                    <i class="ace-icon fa fa-flag bigger-120"></i>
+                </a>
+
+                <a href='@Url.Action("Delete", new { id = item.OrgBranchUserMappingID })' class=" btn btn-xs btn-danger" title="Delete">
+                    <i class="ace-icon fa fa-trash-o bigger-120"></i>
+                </a>
+
+            </div>
+        </td>
+    </tr>
+}
+
+</table>
+Page @(Model.PageCount < Model.PageNumber ? 0 : Model.PageNumber) of @Model.PageCount
+
+@Html.PagedListPager(Model, page => Url.Action("Index", new { page }))

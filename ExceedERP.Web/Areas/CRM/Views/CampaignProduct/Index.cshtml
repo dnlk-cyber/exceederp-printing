@@ -1,0 +1,26 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.CampaignProduct>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.CampaignID);
+        columns.Bound(c => c.ProductID);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+              .Model(model => model.Id(p => p.CampaignProductID)).Events(ev => ev
+                                                                    .Error("error_handler(\"grid\")")
+                                                                    .RequestStart("onRequestStart(\"grid\")")
+                                                                    .RequestEnd("onRequestEnd(\"grid\")"))
+          .Read(read => read.Action("CampaignProducts_Read", "CampaignProduct"))
+          .Create(create => create.Action("CampaignProducts_Create", "CampaignProduct"))
+          .Update(update => update.Action("CampaignProducts_Update", "CampaignProduct"))
+          .Destroy(destroy => destroy.Action("CampaignProducts_Destroy", "CampaignProduct"))
+      )
+)

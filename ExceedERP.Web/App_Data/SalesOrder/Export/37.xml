@@ -1,0 +1,48 @@
+<?xml version="1.0"?>
+<Invoice>
+  <Plant_Code>
+  </Plant_Code>
+  <Plant_Name>
+  </Plant_Name>
+  <Invoice_Type>Invoice</Invoice_Type>
+  <Reference_Number>37</Reference_Number>
+  <Reference_Number_1>CSI17098</Reference_Number_1>
+  <Reference_Number_2>
+  </Reference_Number_2>
+  <Reference_Number_3>
+  </Reference_Number_3>
+  <Invoice_Date>2018-03-01 14:59:15</Invoice_Date>
+  <Customer_Code>0K021</Customer_Code>
+  <Customer_Name>KETEMA DEV'T INDS.  ZALAMBESA</Customer_Name>
+  <Customer_TIN>
+  </Customer_TIN>
+  <Payment_Type>Cash</Payment_Type>
+  <Invoice_DiscOrAdd_Amount>0.00</Invoice_DiscOrAdd_Amount>
+  <Line_Items>
+    <Item_ID>223</Item_ID>
+    <Item_Description>MEKELE FM ADVERTISING</Item_Description>
+    <Item_Quantity>3.00</Item_Quantity>
+    <Item_UOM>minute</Item_UOM>
+    <Item_Unit_Price>200.00</Item_Unit_Price>
+    <Item_Tax_Percent>15.00</Item_Tax_Percent>
+    <Item_DiscOrAdd_Amount>0.0000</Item_DiscOrAdd_Amount>
+  </Line_Items>
+  <Line_Items>
+    <Item_ID>105</Item_ID>
+    <Item_Description>FOR PRODUCTION 1-60 MINUTE</Item_Description>
+    <Item_Quantity>1.00</Item_Quantity>
+    <Item_UOM>minute</Item_UOM>
+    <Item_Unit_Price>172.00</Item_Unit_Price>
+    <Item_Tax_Percent>15.00</Item_Tax_Percent>
+    <Item_DiscOrAdd_Amount>0.0000</Item_DiscOrAdd_Amount>
+  </Line_Items>
+  <Line_Items>
+    <Item_ID>109</Item_ID>
+    <Item_Description>FOR READING 1-60 MINUTE</Item_Description>
+    <Item_Quantity>1.00</Item_Quantity>
+    <Item_UOM>minute</Item_UOM>
+    <Item_Unit_Price>103.00</Item_Unit_Price>
+    <Item_Tax_Percent>15.00</Item_Tax_Percent>
+    <Item_DiscOrAdd_Amount>0.0000</Item_DiscOrAdd_Amount>
+  </Line_Items>
+</Invoice>

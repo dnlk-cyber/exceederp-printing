@@ -1,0 +1,46 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.HRM.Payroll
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@(Html.Kendo().Grid<BonusSetting>()
+              .Name("grid")
+              .Columns(columns =>
+              {
+                  columns.Bound(c => c.BunusType).Width(150);
+                  columns.Bound(c => c.Multiplier).Width(80);
+                  columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["PeriodList"], "GlFiscalYearId", "Name").EditorTemplateName("GLYearSelector").Width(150);
+                  columns.Bound(c => c.CurrentValue).Width(80);
+                  columns.Bound(c => c.Remark).Width(100);
+                  columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+              })
+              .ToolBar(toolbar =>
+              {
+                  toolbar.Create();
+                 // toolbar.Excel();
+                 // toolbar.Pdf();
+              })
+              .ColumnMenu()
+              .Editable(editable => editable.Mode(GridEditMode.InLine))
+              .Pageable()
+              .Navigatable()
+              .Selectable(selectable =>
+              {
+                  selectable.Mode(GridSelectionMode.Single);
+                  selectable.Type(GridSelectionType.Row);
+              })
+              .Sortable(sortable =>
+              {
+                  sortable.SortMode(GridSortMode.SingleColumn);
+              })
+              .Filterable()
+               .Scrollable(h => h.Height(500))
+              .DataSource(dataSource => dataSource
+                  .Ajax()
+                  .Model(model => model.Id(p => p.BonusSettingId))
+                  .Read(read => read.Action("BonusSettings_Read", "BonusSetting"))
+                  .Create(create => create.Action("BonusSettings_Create", "BonusSetting"))
+                  .Update(update => update.Action("BonusSettings_Update", "BonusSetting"))
+                  .Destroy(destroy => destroy.Action("BonusSettings_Destroy", "BonusSetting"))
+              )
+)

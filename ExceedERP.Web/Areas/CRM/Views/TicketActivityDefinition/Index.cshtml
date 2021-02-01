@@ -1,0 +1,42 @@
+﻿<legend>Ticket Activity Definition</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.TicketActivityDefinition>()
+          .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Description).Width(120);
+          columns.Bound(c => c.Index).EditorTemplateName("Integer").Width(80);
+          columns.Bound(c => c.CanFinalize).ClientTemplate("<input type='checkbox'  disabled='true' value='#=CanFinalize #' " + " # if (CanFinalize) { #" + "checked='checked'" + "# } #" + " />").Title("Can Finalize").Width(80); 
+          columns.Bound(c => c.Remark).Width(150);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+          toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+           .HtmlAttributes(new { style = "height: 520px;" })
+                                  .Pageable(pageable => pageable
+                                                    .Input(true)
+                                                    .Numeric(false)
+                                                    .Refresh(true)
+                                                    .PageSizes(true)
+                                                    .ButtonCount(5))
+
+                                        .Scrollable()
+                                        .Sortable()
+                                        .Filterable()
+                                        .Groupable()
+                                        .Scrollable(h => h.Height(500))
+      .DataSource(dataSource => dataSource
+          .Ajax() 
+          .Model(model => model.Id(p => p.TicketActivityDefinitionID))
+              .Events(ev => ev
+                                                                    .Error("error_handler(\"grid\")")
+                                                                 .RequestStart("onRequestStart(\"grid\")")
+                                                               .RequestEnd("onRequestEnd(\"grid\")"))
+          .Read(read => read.Action("TicketActivityDefinitions_Read", "TicketActivityDefinition"))
+          .Create(create => create.Action("TicketActivityDefinitions_Create", "TicketActivityDefinition"))
+          .Update(update => update.Action("TicketActivityDefinitions_Update", "TicketActivityDefinition"))
+          .Destroy(destroy => destroy.Action("TicketActivityDefinitions_Destroy", "TicketActivityDefinition"))
+      )
+)
+ 

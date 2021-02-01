@@ -1,0 +1,35 @@
+﻿@using ExceedERP.Core.Domain.FixedAsset.Registrations
+
+@(Html.Kendo().Grid<Sales>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Amount);
+          columns.Bound(c => c.TaxAmount);
+          columns.Bound(c => c.TotalAmount);
+          columns.Bound(c => c.Description);
+          
+          columns.Bound(c => c.OrgBranchName);
+          columns.Bound(c => c.DateCreated);
+          columns.Bound(c => c.LastModified);
+          columns.Bound(c => c.CreatedBy);
+          columns.Bound(c => c.ModifiedBy);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+                              toolbar.Excel();
+                              // toolbar.Pdf();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Pageable()
+      .Filterable()
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.SalesID))
+          .Read(read => read.Action("Sales_Read", "Sales"))
+          .Create(create => create.Action("Sales_Create", "Sales"))
+          .Update(update => update.Action("Sales_Update", "Sales"))
+          .Destroy(destroy => destroy.Action("Sales_Destroy", "Sales"))
+      ))

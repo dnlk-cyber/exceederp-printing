@@ -1,0 +1,292 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@using Kendo.Mvc.UI
+@model ExceedERP.Core.Domain.HRM.Company.JobTitleMapping 
+@using ExceedERP.Web.Areas.HRM.Controllers.Company
+
+<form style="overflow:scroll;height :auto ;">
+
+
+    <br />
+
+    <div class="row">
+        <div class="col-md-3">
+            <div>
+                @Html.LabelFor(model => model.OrgStructureId)
+            </div>
+            <div class="form-group">
+                @{
+                    var getlist = ViewBag.Tree as IEnumerable<NodeViewModel>;
+
+                    <ul id="treeview">
+                        @if (getlist != null)
+                        {
+                            foreach (var item in getlist)
+                            {
+                                if (@item.Children.Count > 0)
+                                {
+                                    <li data-expanded="false">
+
+                                        @item.Title
+                                        @if (@item.Children.Count > 0)
+                                        {
+                                            <ul>
+                                                @foreach (var chiled in @item.Children)
+                                                {
+
+
+                                                    <li data-expanded="false">
+                                                        @chiled.Title
+                                                        @if (@chiled.Children.Count > 0)
+                                                        {
+                                                            <ul>
+                                                                @foreach (var chi in @chiled.Children)
+                                                                {
+
+
+                                                                    <li data-expanded="false">
+                                                                        @chi.Title
+                                                                        @if (@chi.Children.Count > 0)
+                                                                        {
+                                                                            <ul>
+                                                                                @foreach (var ch in @chi.Children)
+                                                                                {
+
+                                                                                    <li data-expanded="false">
+                                                                                        @ch.Title
+                                                                                        @if (@ch.Children.Count > 0)
+                                                                                        {
+                                                                                            <ul>
+                                                                                                @foreach (var c in @ch.Children)
+                                                                                                {
+
+                                                                                                    <li data-expanded="false">
+                                                                                                        @c.Title
+
+                                                                                                        @if (@c.Children.Count > 0)
+                                                                                                        {
+                                                                                                            <ul>
+                                                                                                                @foreach (var cc in @c.Children)
+                                                                                                                {
+                                                                                                                    <li>@cc.Title</li>
+                                                                                                                }
+                                                                                                            </ul>
+                                                                                                        }
+                                                                                                    </li>
+                                                                                                }
+                                                                                            </ul>
+                                                                                        }
+                                                                                    </li>
+
+                                                                                }
+
+                                                                            </ul>
+                                                                        }
+
+                                                                    </li>
+
+                                                                }
+                                                            </ul>
+                                                        }
+                                                    </li>
+                                                }
+                                            </ul>
+                                        }
+                                    </li>
+                                }
+                                else
+                                {
+                                    <li>@item.Title</li>
+                                }
+                            }
+                        }
+                    </ul>
+
+                }
+                <div>
+                    <input id="dropdown" style=" width :350px">
+
+                </div>
+            </div>
+        </div>
+
+       
+
+
+
+    </div>
+    <div class="row">
+        <div class="col-md-1">
+        </div>
+
+        <div class="col-md-3">
+
+            <div class="form-group">
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div>@Html.LabelFor(model => model.BranchId, htmlAttributes: new { @class = "control-label col-md-8" })</div>
+            <div class="form-group">
+                @(Html.Kendo().DropDownListFor(model => model.BranchId)
+                           .OptionLabel(Resources.Select)
+                                   .Filter("contains")
+                                            .MinLength(2)
+                                                 .DataTextField("Name")
+                                                                .DataValueField("BranchId")
+                                                   .DataSource(source =>
+                                                                {
+                                                                    source.Read(read => read.Action("GetBranches", "HRMDataProvider"));
+
+
+                                                                })
+                            .ValuePrimitive(true)
+
+                )
+                @Html.ValidationMessageFor(model => model.BranchId, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div>@Html.LabelFor(model => model.LookupId, htmlAttributes: new { @class = "control-label col-md-8" })</div>
+            <div class="form-group">
+                @(Html.Kendo().DropDownListFor(m => m.LookupId)
+                      .OptionLabel(Resources.Select)
+                      .Filter("contains")
+                      .MinLength(2)
+                      .DataTextField("Description")
+                      .DataValueField("LookupId")
+                      .BindTo((IEnumerable)ViewData["jobTitles"])
+                      .ValuePrimitive(true)
+                )
+                @Html.ValidationMessageFor(model => model.LookupId, "", new { @class = "text-danger" })
+            </div>
+
+        </div>
+        
+
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-md-1">
+        </div>
+
+        <div class="col-md-3">
+
+            <div class="form-group">
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div>
+                @Html.LabelFor(model => model.PlanType, htmlAttributes: new { @class = "control-label col-md-8" })
+            </div>
+            <div class="form-group">
+
+                @(Html.EnumDropDownListFor(model => model.PlanType, htmlAttributes: new { @class = "k-dropdown-wrap k-state-default", @style = "width: 140px" })
+
+                )
+
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div>@Html.LabelFor(model => model.Quntity, htmlAttributes: new { @class = "control-label col-md-8" })</div>
+            <div class="form-group">
+
+                @Html.Kendo().TextBoxFor(model => model.Quntity)
+                @Html.ValidationMessageFor(model => model.Quntity, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+       
+    </div>
+    <br />
+
+    <div class="row">
+        <div class="col-md-1">
+        </div>
+
+        <div class="col-md-3">
+
+            <div class="form-group">
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div>@Html.LabelFor(model => model.Remark, htmlAttributes: new { @class = "control-label col-md-8" })</div>
+            <div class="form-group">
+
+                @Html.TextAreaFor(model => model.Remark)
+                @Html.ValidationMessageFor(model => model.Remark, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+      
+    </div>
+    <br />
+</form>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        var dropdown = $("#dropdown").kendoDropDownList({
+            dataSource: [{ text: "", value: "" }],
+            dataTextField: "text",
+            dataValueField: "value",
+            open: function (e) {
+
+                if (!$treeviewRootElem.hasClass("k-custom-visible")) {
+                    $treeviewRootElem.slideToggle('fast', function () {
+                        dropdown.close();
+                        $treeviewRootElem.addClass("k-custom-visible");
+                    });
+                }
+            }
+
+        }).data("kendoDropDownList");
+        var $dropdownRootElem = $(dropdown.element).closest("span.k-dropdown");
+
+        var treeview = $("#treeview").kendoTreeView({
+            select: function (e) {
+
+                $dropdownRootElem.find("span.k-input").text($(e.node).children("div").text());
+                $treeviewRootElem.slideToggle('fast', function () {
+                    $treeviewRootElem.removeClass("k-custom-visible");
+                });
+                var val = $(e.node).children("div").text();
+                $.ajax({
+                    url: '@Url.Action("GetJobCode", "JobTitleMappingCourt")',
+                    contentType: "application/json; charset=utf-8",
+                    data: { 'jobName': val },
+                    type: 'GET',
+                    cache: false,
+                    success: function (result) {
+                        r = result;
+                        $("#OrgStructureId").trigger("change");
+                    }
+                });
+
+            }
+        }).data("kendoTreeView");
+        var $treeviewRootElem = $(treeview.element).closest("div.k-treeview");
+
+
+        $treeviewRootElem
+            .width($dropdownRootElem.width())
+            .css({ "border": "1px solid grey", "display": "none", "position": "absolute" });
+
+
+        $treeviewRootElem
+            .css({ "top": $dropdownRootElem.position().top + $dropdownRootElem.height(), "left": $dropdownRootElem.position().left });
+
+        $(document).click(function (e) {
+
+            if ($(e.target).closest("div.k-treeview").length == 0) {
+
+                if ($treeviewRootElem.hasClass("k-custom-visible")) {
+                    $treeviewRootElem.slideToggle('fast', function () {
+                        $treeviewRootElem.removeClass("k-custom-visible");
+                    });
+                }
+            }
+        });
+        $("#OrgStructureId").trigger("update");
+    });
+
+</script>

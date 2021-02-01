@@ -1,0 +1,355 @@
+﻿@model  ExceedERP.Core.Domain.FleetManagement.FleetEquipmentRent.ExternalRentedEquipmentCheckList
+
+
+
+<div class="demo-section k-content">
+    <form>
+ 
+        <div class="row">
+            <div class="col-md-1">
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.CheckingRequestingWorkUnit)
+                    </div>
+                    <div>
+                        @Html.Kendo().TextBoxFor(model => model.CheckingRequestingWorkUnit)
+                        @Html.ValidationMessageFor(model => model.CheckingRequestingWorkUnit)
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.CheckingLocation)
+                    </div>
+                    <div>
+                        @( Html.Kendo().DropDownListFor(m => m.CheckingLocation)
+        .DataTextField("Text")
+                        .DataValueField("Text").OptionLabel(" Select  ")
+.BindTo(EnumHelper.GetSelectList(typeof(ExceedERP.Core.Domain.FleetManagement.FleetEquipmentRent.CheckingType))))
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+
+                        @Html.LabelFor(model => model.CheckedRentingCompany)
+                    </div>
+                    <div>
+                        @( Html.Kendo().DropDownListFor(m => m.CheckedRentingCompany)
+        .DataTextField("Text")
+                        .DataValueField("Text").OptionLabel(" Select  ")
+        .BindTo(EnumHelper.GetSelectList(typeof(ExceedERP.Core.Domain.FleetManagement.FleetEquipmentRent.YesNo))))
+                    </div>
+                </div>
+            </div>
+         </div>
+
+            <div class="row">
+                <div class="col-md-1">
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <div class="k-label">
+                            @Html.LabelFor(model => model.ChainType)
+                        </div>
+                        <div>
+                            @( Html.Kendo().DropDownListFor(m => m.ChainType)
+        .DataTextField("Text")
+                        .DataValueField("Text").OptionLabel(" Select  ")
+.BindTo(EnumHelper.GetSelectList(typeof(ExceedERP.Core.Domain.FleetManagement.FleetEquipmentRent.ChainType))))
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <div class="k-label">
+                            @Html.LabelFor(model => model.AirConditioner)
+                        </div>
+                        <div>
+                            @( Html.Kendo().DropDownListFor(m => m.AirConditioner)
+        .DataTextField("Text")
+                        .DataValueField("Text").OptionLabel(" Select  ")
+.BindTo(EnumHelper.GetSelectList(typeof(ExceedERP.Core.Domain.FleetManagement.FleetEquipmentRent.YesNo))))
+                        </div>
+                    </div>
+                </div>
+
+
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <div class="k-label">
+                            @Html.LabelFor(model => model.ElectricalSystem)
+                        </div>
+                        <div>
+                            @( Html.Kendo().DropDownListFor(m => m.ElectricalSystem)
+        .DataTextField("Text")
+                        .DataValueField("Text").OptionLabel(" Select  ")
+        .BindTo(EnumHelper.GetSelectList(typeof(ExceedERP.Core.Domain.FleetManagement.FleetEquipmentRent.YesNo))))
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="row">
+                <div class="col-md-1">
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <div class="k-label">
+                            @Html.LabelFor(model => model.HydrolicLeak)
+                        </div>
+                        <div>
+                            @( Html.Kendo().DropDownListFor(m => m.HydrolicLeak)
+        .DataTextField("Text")
+                        .DataValueField("Text").OptionLabel(" Select  ")
+                .BindTo(EnumHelper.GetSelectList(typeof(ExceedERP.Core.Domain.FleetManagement.FleetEquipmentRent.YesNo))))
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <div class="k-label">
+                            @Html.LabelFor(model => model.EngineStarting)
+                        </div>
+                        <div>
+                            @( Html.Kendo().DropDownListFor(m => m.EngineStarting)
+        .DataTextField("Text")
+                        .DataValueField("Text").OptionLabel(" Select  ")
+                        .BindTo(EnumHelper.GetSelectList(typeof(ExceedERP.Core.Domain.FleetManagement.FleetEquipmentRent.EngineStarting))))
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <div class="k-label">
+                            @Html.LabelFor(model => model.EngineLeak)
+                        </div>
+                        <div>
+                            @( Html.Kendo().DropDownListFor(m => m.EngineLeak)
+        .DataTextField("Text")
+                        .DataValueField("Text").OptionLabel(" Select  ")
+                .BindTo(EnumHelper.GetSelectList(typeof(ExceedERP.Core.Domain.FleetManagement.FleetEquipmentRent.YesNo))))
+                        </div>
+                    </div>
+                </div>
+              
+                </div>
+            <div class="row">
+                <div class="col-md-1">
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <div class="k-label">
+                            @Html.LabelFor(model => model.ExcavatorTeeth)
+                        </div>
+                        <div>
+                            @( Html.Kendo().DropDownListFor(m => m.ExcavatorTeeth)
+        .DataTextField("Text")
+                        .DataValueField("Text").OptionLabel(" Select  ")
+        .BindTo(EnumHelper.GetSelectList(typeof(ExceedERP.Core.Domain.FleetManagement.FleetEquipmentRent.Excavator_Teeth))))
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <div class="k-label">
+                            @Html.LabelFor(model => model.EngineSmoke)
+                        </div>
+                        <div>
+                            @( Html.Kendo().DropDownListFor(m => m.EngineSmoke)
+        .DataTextField("Text")
+                        .DataValueField("Text").OptionLabel(" Select  ")
+                .BindTo(EnumHelper.GetSelectList(typeof(ExceedERP.Core.Domain.FleetManagement.FleetEquipmentRent.YesNo))))
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <div class="k-label">
+                            @Html.LabelFor(model => model.CheckingType)
+                        </div>
+                        <div>
+                            @( Html.Kendo().DropDownListFor(m => m.CheckingType)
+        .DataTextField("Text")
+                        .DataValueField("Text").OptionLabel(" Select  ")
+                        .BindTo(EnumHelper.GetSelectList(typeof(ExceedERP.Core.Domain.FleetManagement.FleetEquipmentRent.CheckingType))))
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+                    <div class="row">
+                        <div class="col-md-1">
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <div class="k-label">
+
+                                    @Html.LabelFor(model => model.EquipmentType)
+                                </div>
+                                @(Html.Kendo().TextBoxFor(model => model.EquipmentType))
+                                           
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <div class="k-label">
+
+
+                                    @Html.LabelFor(model => model.HorsePower)
+                                </div>
+                                @(Html.Kendo().TextBoxFor(model => model.HorsePower))
+
+ 
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <div class="k-label">
+
+                                    @Html.LabelFor(model => model.MeterCube)
+
+                                </div>
+                                @(Html.Kendo().TextBoxFor(model => model.MeterCube))
+
+
+
+
+
+                            </div>
+                        </div>
+
+                      
+                   
+                    </div>
+                    <div class="row">
+                        <div class="col-md-1">
+                        </div>
+
+          
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <div class="k-label">
+                                    @Html.LabelFor(model => model.Location)
+                                </div>
+                                <div>
+                                    @Html.Kendo().TextBoxFor(model => model.Location).HtmlAttributes(new { @class = "form-control", required = "required" })
+                                    @Html.ValidationMessageFor(model => model.Location)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <div class="k-label">
+                                    @Html.LabelFor(model => model.Manufacturer)
+                                </div>
+                                <div>
+                                    @Html.Kendo().TextBoxFor(model => model.Manufacturer).HtmlAttributes(new { @class = "form-control", required = "required" })
+                                    @Html.ValidationMessageFor(model => model.Manufacturer)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <div class="k-label">
+                                    @Html.LabelFor(model => model.Model)
+                                </div>
+                                <div>
+                                    @Html.Kendo().TextBoxFor(model => model.Model).HtmlAttributes(new { @class = "form-control", required = "required" })
+                                    @Html.ValidationMessageFor(model => model.Model)
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+
+
+                    <div class="row">
+                        <div class="col-md-1">
+                        </div>
+                 
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <div class="k-label">
+
+                                    @Html.LabelFor(model => model.EngineManufacturer) 
+                                </div>
+                                <div>
+                                    @Html.Kendo().TextBoxFor(model => model.EngineManufacturer).HtmlAttributes(new { @class = "form-control", required = "required" })
+                                    @Html.ValidationMessageFor(model => model.EngineManufacturer)
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <div class="k-label">
+
+                                    @Html.LabelFor(model => model.ManufacturerDate)
+                                </div>
+                                <div> 
+                                    @Html.Kendo().TextBoxFor(model => model.ManufacturerDate).HtmlAttributes(new { @class = "form-control", required = "required" })
+                                   
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <div class="k-label">
+                                    @Html.LabelFor(model => model.RentingCompany)
+                                </div>
+                                <div>
+                                    @Html.Kendo().TextBoxFor(model => model.RentingCompany).HtmlAttributes(new { @class = "form-control", required = "required" })
+                                    @Html.ValidationMessageFor(model => model.RentingCompany)
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+
+                
+                    <div class="row">
+                        <div class="col-md-1">
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <div class="k-label">
+                                    @(Html.LabelFor(m => m.Manufacturer))
+                                </div>
+                                <div>
+                                    @Html.Kendo().TextBoxFor(model => model.Manufacturer)
+                                    @Html.ValidationMessageFor(model => model.Manufacturer)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <div class="k-label">
+                                    @Html.LabelFor(model => model.LibreNo)
+                                </div>
+                                <div>
+                                    @Html.Kendo().TextBoxFor(model => model.LibreNo)
+
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+
+         
+
+   
+</form>
+
+
+
+</div>

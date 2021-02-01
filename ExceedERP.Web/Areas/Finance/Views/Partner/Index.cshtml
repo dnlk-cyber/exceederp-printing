@@ -1,0 +1,65 @@
+﻿@using System.Collections
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Finance.AR.SalesOrder.Partner>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.PartnerCode);
+          columns.Bound(c => c.Name);
+          columns.ForeignKey(p => p.PartnerTypeId, (IEnumerable)ViewData["PartnerTypes"], "Code", "Name").EditorTemplateName("PartnerTypes").Width(150);
+          columns.Bound(c => c.ContactName);
+          columns.Bound(c => c.PhoneNumber);
+          columns.Bound(c => c.Address);
+          columns.Bound(c => c.Country).EditorTemplateName("CountrySelector").Width(150);
+          columns.Bound(c => c.IsActive).Width(100).ClientTemplate(
+              "<input type='checkbox' disabled = 'true' value='#= IsActive #' " +
+              "# if (IsActive) { #" +
+              "checked='checked'" +
+              "# } #" +
+              "/>"
+              );
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .HtmlAttributes(new { style = "height: 550px;" })
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(5))
+      .Scrollable()
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Filterable()
+      .Groupable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model =>
+          {
+              model.Id(p => p.PartnerId);
+              model.Field(p => p.PartnerId).Editable(false);
+              model.Field(p => p.CreatedBy).Editable(false);
+              model.Field(p => p.DateCreated).Editable(false);
+              model.Field(p => p.ModifiedBy).Editable(false);
+              model.Field(p => p.LastModified).Editable(false);
+          })
+          .Events(ev => ev
+              .Error("error_handler(\"grid\")")
+              .RequestStart("onRequestStart(\"grid\")")
+              .RequestEnd("onRequestEnd(\"grid\")"))
+          .Read(read => read.Action("Partners_Read", "Partner"))
+          .Create(create => create.Action("Partners_Create", "Partner"))
+          .Update(update => update.Action("Partners_Update", "Partner"))
+          .Destroy(destroy => destroy.Action("Partners_Destroy", "Partner"))
+      ))

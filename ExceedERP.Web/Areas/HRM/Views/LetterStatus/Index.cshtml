@@ -1,0 +1,69 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.HRM.LetterStatus>()
+          .Name("LetterStatusGrid")
+      .Columns(columns =>
+      {
+       // columns.Bound(c => c.LetterSenderId);
+        columns.Bound(c => c.Decision);
+        columns.Bound(c => c.Location);
+        columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+          .Scrollable(h => h.Height(500))
+                 .Groupable()
+                          .Sortable(sortable =>
+                          {
+                              sortable.SortMode(GridSortMode.SingleColumn);
+                          })
+              .Filterable()
+                 .Pageable(pageable => pageable
+                                            .Input(true)
+                                            .Numeric(false)
+                                            .Refresh(true)
+                                            .PageSizes(true)
+                                            .ButtonCount(5))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+               .Events(events =>
+                                                                     {
+                                                                         events.Error("error_handler(\"LetterSendergrid\")");
+                                                                         events.RequestStart("onRequestStart(\"LetterSendergrid\")");
+                                                                         events.RequestEnd("onRequestEnd(\"LetterSendergrid\")");
+                                                                     })
+                    
+          .Model(model => model.Id(p => p.LetterStatusId))
+          .Read(read => read.Action("LetterStatus_Read", "LetterStatus"))
+          .Create(create => create.Action("LetterStatus_Create", "LetterStatus"))
+          .Update(update => update.Action("LetterStatus_Update", "LetterStatus"))
+          .Destroy(destroy => destroy.Action("LetterStatus_Destroy", "LetterStatus"))
+      )
+)
+<script>
+    //function error_handler(e) {
+    //    if (e.errors) {
+    //        var message = "Errors:\n";
+    //        $.each(e.errors, function(key, value) {
+    //            if ('errors' in value) {
+    //                $.each(value.errors, function() {
+    //                    message += this + "\n";
+    //                });
+    //            }
+    //        });
+    //        alert(message);
+
+    //    }
+
+    //}
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+</script>

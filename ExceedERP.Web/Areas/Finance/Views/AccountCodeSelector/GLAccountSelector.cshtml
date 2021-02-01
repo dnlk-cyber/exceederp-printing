@@ -1,0 +1,129 @@
+﻿@{
+    Layout = "~/Views/Shared/_Popup.cshtml";
+}
+
+<div class="form">
+    <div class="row fullrow">
+        <div class="text-danger">
+            @ViewBag.ErrorMsg
+        </div>
+
+      
+        <div class="col-md-8 ro1">
+            @for (var i = 1; i <= ViewBag.SegNum; i++)
+            {
+                var i1 = i;
+                var label = "";
+                if (i1 == 1)
+                {
+                    label= ViewBag.segment1;
+                }
+               else if (i1 == 2)
+                {
+                    label = ViewBag.segment2;
+                }
+               else if (i1 == 3)
+               {
+                   label = ViewBag.segment3;
+               }
+               else if (i1 == 4)
+               {
+                   label = ViewBag.segment4;
+               }
+               else if (i1 == 5)
+               {
+                   label = ViewBag.segment5;
+               }
+            <div class="form-group">
+                <label class="control-label col-md-4">@label</label>
+                <div class="col-md-9">
+                    @(Html.Kendo().DropDownList()
+                              .Name("Segment" + i)
+                              .SelectedIndex(0)
+                              .HtmlAttributes(new { style = "width:800px" })
+                              .ValuePrimitive(true)
+                              .DataTextField("desc")
+                              .DataValueField("value")
+                              .Filter("contains")
+                              .DataSource(dataSource =>
+                              {
+                                  dataSource.Read(read => read.Action("GetSegment", "AccountCodeSelector", new { index = i1,setup=ViewBag.Setup }))//Data("filterAccounts(Segment" + i+") ")
+                                          .ServerFiltering(false);
+                              })
+                    )
+                </div>
+            </div>
+            <div class="row"></div>
+    }
+            @if (ViewBag.SegNum != null)
+        {
+            <br />
+            <div class="col-md-offset-3 col-md-9">
+                <button type="submit" class="saveBtn btn btn-primary btn-sm" onclick="javascript:changeparent();"><i class="fa fa-suitcase"></i> Submit</button>
+            </div>
+    }
+        </div>
+    </div>
+</div>
+
+
+
+<script language="javascript">
+
+    var accCode = "";
+    var errors = "";
+
+    function changeparent() {
+
+        
+        for (var sg = 1; sg <= @ViewBag.SegNum; sg++)
+        {
+            if ((document.getElementById('Segment' + sg).value.length === 0)) {
+                errors = errors + "\n" + "Please select segment " + sg;
+            } 
+            else {
+                accCode = accCode + "-" + document.getElementById('Segment' + sg).value;
+            }
+        }
+
+        if (errors.length !==0) {
+            alert(errors+"\nPlease select all segments.");
+        }
+        else {
+            var newaccCode = accCode.substr(1);//trim first-
+            opener.setLang(newaccCode);
+            window.close();
+        }
+    }
+    function closeWin() {
+        document.close();
+    }
+
+
+    function filterAccounts(control) {
+
+        var controlId = control.getAttribute('id');
+        console.log(controlId);
+        console.log(typeof(controlId));
+
+
+        return {
+            text: $(controlId).data("kendoDropDownList").filterInput.val()
+        };
+    }
+
+    
+</script>
+
+<style>
+    .k-list-container ul li.k-item{
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .k-list-container ul {
+        overflow: hidden!important;
+        }
+</style>
+

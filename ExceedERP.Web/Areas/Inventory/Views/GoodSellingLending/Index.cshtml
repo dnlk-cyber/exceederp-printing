@@ -1,0 +1,353 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.Inventory
+@using Kendo.Mvc.UI
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+@(Html.Kendo().Grid<GoodSellingAndLending>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.GoodSellingAndLendingID).Title("No.").Width(120).ClientTemplate("#=appendZeros(GoodSellingAndLendingID)#");
+          columns.Bound(c => c.SellOrLend).EditorTemplateName("SalesOrLend").Width(100);
+          columns.Bound(c => c.StoreCode).EditorTemplateName("Stores").Width(120);
+          columns.Bound(c => c.Buyer).Width(120);
+          columns.Bound(c => c.BuyerAddress).Width(120);
+          columns.Bound(c => c.Date).Width(120);
+          columns.Bound(c => c.Remark).Width(90);
+          columns.Bound(c => c.Status).Width(90);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create();
+      })
+      .Events(ev => ev.DetailExpand("detailExpand"))
+      .Filterable()
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Groupable()
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(5))
+      .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("SaleDonateOrLend").Window(w => w.Title("Good Sales or Donate")))
+      .Scrollable(h => h.Height(500))
+      .Groupable().Events(ev => ev.DetailExpand("detailExpand"))
+      .Events(x => x.DataBound("onDataBoundMaster"))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Sort(sort => sort.Add("GoodSellingAndLendingID").Descending())
+          .Events(ev => ev
+              .Error("error_handler(\"grid\")")
+              .RequestStart("onRequestStart(\"grid\")")
+              .RequestEnd("onRequestEnd(\"grid\")"))
+          .Model(model =>
+          {
+              model.Id(p => p.GoodSellingAndLendingID);
+              model.Field(p => p.Status).Editable(false);
+              model.Field(p => p.CreatedBy).Editable(false);
+              model.Field(p => p.DateCreated).Editable(false);
+              model.Field(p => p.ModifiedBy).Editable(false);
+              model.Field(p => p.LastModified).Editable(false);
+
+          })
+          .PageSize(20)
+         
+          .Read(read => read.Action("GoodSellingAndLendings_Read", "GoodSellingLending"))
+          .Create(create => create.Action("GoodSellingAndLendings_Create", "GoodSellingLending"))
+          .Update(update => update.Action("GoodSellingAndLendings_Update", "GoodSellingLending"))
+          .Destroy(destroy => destroy.Action("GoodSellingAndLendings_Destroy", "GoodSellingLending"))
+      ).ClientDetailTemplateId("goodsellinglending"))
+
+<script id="goodsellinglending" type="text/Kendo">
+    @(Html.Kendo().TabStrip().SelectedIndex(0).Name("tabStrip_#=GoodSellingAndLendingID#").Items(items =>
+      {
+          items.Add().Text("Detail").Content(
+              @<text>
+   
+            # if (!IsOnlineApproved&&!IsSendForApproval)
+                {#
+                <a onclick='return sendForApproval("#=GoodSellingAndLendingID#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                <br />
+                # } #
+
+            # if (IsOnlineApproved)
+            {#
+            <a href='@Url.Action("GoodSelling", "InventoryPrint")/#=GoodSellingAndLendingID#' title="Print"><i class="fa fa-print fa-2x"></i></a>
+            <br />
+            # } # 
+             
+         <div>
+        <hr>
+        <dl class="dl-horizontal">
+            <dt>
+                Sell or Lend
+            </dt>
+            <dd>
+                #= SellOrLend #
+            </dd>
+            <dt>
+                Store
+            </dt>
+            <dd>
+             #= StoreCode #
+            </dd>
+            <dt>
+                Buyer's Name
+            </dt>
+            <dd>
+                #= Buyer #
+
+            </dd>
+            <dt>
+                Buyer's Address
+            </dt>
+            <dd>
+                #= BuyerAddress #
+
+            </dd>
+            <dt>
+                DateCreated
+            </dt>
+            <dd>
+                #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+
+            </dd>
+            <dt>
+                Status
+            </dt>
+            <dd>
+              #= Status #
+            </dd>
+            <dt>
+                Remark
+            </dt>
+            <dd>
+              #= Remark #
+            </dd>
+        </dl>
+        
+    </div>
+
+            
+               </text>
+              );
+
+          items.Add().Text("Item").Content(
+              @<text>
+                @(Html.Kendo().Grid<GoodSellingAndLendingItem>()
+                      .Name("GoodSellingAndLendingItem_#=GoodSellingAndLendingID#")
+                      .Columns(columns =>
+                      {
+                          columns.ForeignKey(p => p.ItemCategoryCode, (IEnumerable)ViewData["Category"], "ItemCategoryCode", "Name").Title("Category").EditorTemplateName("ItemCategorySelector").Width(150);
+                          columns.ForeignKey(p => p.ItemCode, (IEnumerable)ViewData["Items"], "ItemCode", "Name").Title("Items").EditorTemplateName("ItemSelector").Width(150);
+                          //columns.Bound(c => c.UOM).EditorTemplateName("UoMDisplay").Width(70); 
+                          columns.Bound(c => c.QuantitySold).Width(70);
+                          columns.Bound(c => c.UnitPurchasingPrice).EditorTemplateName("Currency").Width(70);
+                          columns.Bound(c => c.UnitSellingPrice).EditorTemplateName("Currency").Width(70);
+                          columns.Bound(c => c.TotalSellingPrice).EditorTemplateName("Currency").Width(70);
+
+                          columns.Command(command =>
+                          {
+                              command.Edit();
+                              command.Destroy();
+                          }).Width(180);
+                      })
+                      .ToolBar(toolbar =>
+                      {
+                          toolbar.Create();
+                      })
+                      
+                      .Events(x => x.DataBound("onDataBoundLines"))
+                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                      .Scrollable()
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+                          .Events(ev => ev
+                              .Error("error_handler(\"GoodSellingAndLendingItem_#=GoodSellingAndLendingID#\")")
+                              .RequestStart("onRequestStart(\"GoodSellingAndLendingItem_#=GoodSellingAndLendingID#\")")
+                              .RequestEnd("onRequestEnd(\"GoodSellingAndLendingItem_#=GoodSellingAndLendingID#\")"))
+                          .Model(model =>
+                          {
+                              model.Id(p => p.GoodSellingAndLendingItemID);
+                              model.Field(p => p.TotalSellingPrice).Editable(false);
+                              model.Field(p => p.UnitPurchasingPrice).Editable(false);
+                          })
+                          .Read(read => read.Action("GoodSellingAndLendingItems_Read", "GoodSellingAndLendingItem", new {id = "#=GoodSellingAndLendingID#"}))
+                          .Create(create => create.Action("GoodSellingAndLendingItems_Create", "GoodSellingAndLendingItem", new {id = "#=GoodSellingAndLendingID#"}))
+                          .Update(update => update.Action("GoodSellingAndLendingItems_Update", "GoodSellingAndLendingItem" ,new {id = "#=GoodSellingAndLendingID#"}))
+                          .Destroy(destroy => destroy.Action("GoodSellingAndLendingItems_Destroy", "GoodSellingAndLendingItem" , new {id = "#=GoodSellingAndLendingID#"}))
+                      ).ToClientTemplate())
+
+            </text>
+              );
+
+        
+          items.Add().Text("Validation").Content(
+              @<text>
+                @(Html.Kendo().Grid<GoodSellingAndLendingValidation>()
+                      .Name("GoodSellingAndLendingValidations_#=GoodSellingAndLendingID#")
+                      .Columns(columns =>
+                      {
+                          columns.Bound(c => c.Status).Width(170).EditorTemplateName("ValidationStatus");
+                          columns.Bound(c => c.Remark).Width(170);
+                          columns.Bound(c => c.DateCreated).Width(200).Title("Time").Format("{0:dd/MM/yyyy}");
+                          columns.Bound(c => c.LastModified).Hidden(true);
+                          columns.Bound(c => c.CreatedBy).Width(200).Title("User");
+                          columns.Bound(c => c.ModifiedBy).Hidden(true);
+                         
+                          columns.Command(command =>
+                          {
+                              command.Edit();
+                              command.Destroy();
+                          }).Width(180);
+                      })
+                      .ToolBar(toolbar =>
+                      {
+                          toolbar.Create();
+
+                      })
+                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                      .Pageable()
+                      .Scrollable()
+                      .Events(x => x.DataBound("onDataBoundFisrtValidation"))
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+                          .Events(ev => ev
+                              .Error("error_handler(\"GoodSellingAndLendingValidations_#=GoodSellingAndLendingID#\")")
+                              .RequestStart("onRequestStart(\"GoodSellingAndLendingValidations_#=GoodSellingAndLendingID#\")")
+                              .RequestEnd("onRequestEnd(\"GoodSellingAndLendingValidations_#=GoodSellingAndLendingID#\")"))
+                          .Model(model =>
+                          {
+                              model.Id(p => p.GoodSellingAndLendingValidationID);
+                              model.Field(p => p.CreatedBy).Editable(false);
+                              model.Field(p => p.DateCreated).Editable(false);
+                              model.Field(p => p.ModifiedBy).Editable(false);
+                              model.Field(p => p.LastModified).Editable(false);
+                          }
+                          )
+                          .Read(read => read.Action("GoodSellingAndLendingValidations_Read", "GoodSellingAndLendingValidation", new {id = "#=GoodSellingAndLendingID#"}))
+                          .Create(create => create.Action("GoodSellingAndLendingValidations_Create", "GoodSellingAndLendingValidation", new {id = "#=GoodSellingAndLendingID#"}))
+                          .Update(update => update.Action("GoodSellingAndLendingValidations_Update", "GoodSellingAndLendingValidation"))
+                          .Destroy(destroy => destroy.Action("GoodSellingAndLendingValidations_Destroy", "GoodSellingAndLendingValidation"))
+                      ).ToClientTemplate())
+
+            </text>
+              );
+      }).ToClientTemplate())
+    @*<h6>Distribution</h6>  
+    # if (IsOnlineApproved && !IsOnlineTransferred )
+    {#
+    <a href='@Url.Action("GoodSellingLending_OnlineTransfer", "GoodSellingLending")/#=GoodSellingAndLendingID#'>Transfer</a>
+    <br />
+    # } #
+    @(Html.Kendo().Grid<GoodSellingAndLendingDistribution>()
+                      .Name("gsdistribution_#=GoodSellingAndLendingID#")
+                      .Columns(columns =>
+                      {
+                          
+                          columns.Bound(c => c.Description);
+                          columns.Bound(c => c.AccountDesc);
+                          columns.Bound(c => c.Debit);
+                          columns.Bound(c => c.Credit);
+                          columns.Command(command =>
+                          {
+                              command.Edit();
+                              command.Destroy();
+                          }).Width(180);
+                      })
+                      .ToolBar(toolbar =>
+                      {
+                          
+
+                      })
+                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                      .Pageable()
+                      .Sortable(sortable =>
+                      {
+                          sortable.SortMode(GridSortMode.SingleColumn);
+                      })
+                      .Scrollable()
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+                          .Events(ev => ev .Error("error_handler_one").Sync("sync_handler"))
+                          .Model(model => model.Id(p => p.GoodSellingAndLendingDistributionID))
+                          .Read(read => read.Action("GoodSellingAndLendingDistributions_Read", "GoodSellingAndLendingDistribution", new { id = "#=GoodSellingAndLendingID#" }))
+                          .Create(create => create.Action("GoodSellingAndLendingDistributions_Create", "GoodSellingAndLendingDistribution", new { id = "#=GoodSellingAndLendingID#" }))
+                          .Update(update => update.Action("GoodSellingAndLendingDistributions_Update", "GoodSellingAndLendingDistribution"))
+                          .Destroy(destroy => destroy.Action("GoodSellingAndLendingDistributions_Destroy", "GoodSellingAndLendingDistribution"))
+                      ).ToClientTemplate()
+    )*@
+
+
+
+</script>
+
+<script>
+    function sendForApproval(id) {
+        var recordStatus = "";
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("SendForApproval", "GoodSellingLending", new { area = "Inventory" })',
+            data: { id: id },
+            success: function (result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                recordStatus = result.Status;
+                location.reload(true);
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+
+    function onSelectedPeriod() {
+        var periodName = $("#GLPeriodId").data("kendoDropDownList").value();
+        var min = "";
+        var max = "";
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("GetPeriodDateRangeById", "DataProvider", new { area = "Inventory" })',
+            data: { id: periodName },
+            success: function (result) {
+                min = result.Min;
+                max = result.Max;
+                //update
+                var datepicker = $("#Date").data("kendoDatePicker");
+                datepicker.setOptions({
+                    format: "yyyy-MM-dd",
+                    min:min,
+                    max:max,
+                    value: new Date(),
+                    change: onDOBChange
+                });
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+
+        });
+
+
+    }
+
+    
+
+
+ 
+</script>

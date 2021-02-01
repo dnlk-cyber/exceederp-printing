@@ -1,0 +1,56 @@
+﻿@model ExceedERP.Core.Domain.Budget.BudgetCategory
+
+
+<legend>   Budget Category </legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Budget.BudgetCategory>()
+              .Name("gridCategory")
+      .Columns(columns =>
+      {
+        
+          columns.Bound(c => c.Name).Width(100);
+          columns.Bound(c => c.Description).Title("Type").EditorTemplateName("BudgetTypeEditor").Width(140);
+          columns.ForeignKey(c => c.BudgetControlId, (System.Collections.IEnumerable)ViewData["BudgetControl"], "BudgetControlId", "Name").EditorTemplateName("BudgetControlEditor").Width(160);
+          columns.Bound(c => c.FromAccountCode).EditorTemplateName("AccountCode").Width(200);
+          columns.Bound(c => c.ToAccountCode).EditorTemplateName("AccountCode").Width(200);
+       
+
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create();
+      })
+
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+         .HtmlAttributes(new { style = "height: 520px;" })
+                      .Pageable(pageable => pageable
+                                        .Input(true)
+                                        .Numeric(false)
+                                        .Refresh(true)
+                                        .PageSizes(true)
+                                        .ButtonCount(5))
+
+                            .Scrollable()
+                            .Sortable()
+                            .Filterable()
+                            .Scrollable(h => h.Height(500))
+
+           .DataSource(dataSource => dataSource
+          .Ajax()
+                  .Model(model =>
+                      {
+                          model.Id(p => p.BudgetCategoryID);
+                         
+                      })
+                      .Events(ev => ev
+                                            .Error("error_handler(\"gridCategory\")")
+                                            .RequestStart("onRequestStart(\"gridCategory\")")
+                                            .RequestEnd("onRequestEnd(\"gridCategory\")"))
+              .Read(read => read.Action("BudgetCategory_Read", "BudgetCategory"))
+              .Create(create => create.Action("BudgetCategory_Create", "BudgetCategory"))
+              .Update(update => update.Action("BudgetCategory_Update", "BudgetCategory"))
+              .Destroy(destroy => destroy.Action("BudgetCategory_Destroy", "BudgetCategory"))
+          )
+
+)
+

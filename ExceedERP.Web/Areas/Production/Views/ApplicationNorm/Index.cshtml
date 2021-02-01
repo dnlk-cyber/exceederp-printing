@@ -1,0 +1,225 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@using Kendo.Mvc.UI
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>  Setting | Materials and Chemicals Application Rate Standard </legend>
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Production.InputMaterialApplicationRate>()
+                              .Name("rateStandardGrid")
+                              .Columns(columns =>
+                              {
+                                  columns.ForeignKey(c => c.ItemCategoryCode, (IEnumerable)ViewData["ItemCategorys"], "ItemCategoryCode", "Name").EditorTemplateName("ItemCategory");
+                                  columns.ForeignKey(c => c.ItemCode, (IEnumerable)ViewData["Items"], "ItemCode", "Name").EditorTemplateName("Item");
+                                  columns.Bound(c => c.ApplicationPlace);
+
+                                  columns.Command(command =>
+                                  {
+                                      command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                      command.Destroy().Text(Resources.ActionButton_Cancel);
+                                  }).Width(200);
+
+                              })
+                              .ToolBar(toolbar =>
+                              {
+                                  toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                              })
+                              .Editable(editable => editable.Mode(GridEditMode.InLine))
+                              .Selectable(selectable =>
+                              {
+                                  selectable.Mode(GridSelectionMode.Single);
+                                  selectable.Type(GridSelectionType.Row);
+                              })
+                              .Scrollable(h => h.Height(500))
+                              .Sortable(sortable =>
+                              {
+                                  sortable.SortMode(GridSortMode.SingleColumn);
+                              })
+                              .Filterable()
+                              .Pageable(pageable => pageable
+                                  .Input(true)
+                                  .Numeric(false)
+                                  .Refresh(true)
+                                  .PageSizes(true)
+                                  .ButtonCount(5))
+                              .DataSource(dataSource => dataSource
+                                  .Ajax()
+
+                                  .Events(events =>
+                                  {
+                                      events.Error("error_handler(\"rateStandardGrid\")");
+                                      events.RequestStart("onRequestStart(\"rateStandardGrid\")");
+                                      events.RequestEnd("onRequestEnd(\"rateStandardGrid\")");
+                                  })
+                                  .Model(model =>
+                                  {
+                                      model.Id(f => f.InputMaterialApplicationRateId);
+                                      
+                                  })
+
+                                  .Read(read => read.Action("RateHeaders_Read", "InputMaterialApplicationRate"))
+                                  .Create(create => create.Action("RateHeader_Create", "InputMaterialApplicationRate"))
+                                  .Update(update => update.Action("RateHeader_Update", "InputMaterialApplicationRate"))
+                                  .Destroy(destroy => destroy.Action("RateHeader_Destroy", "InputMaterialApplicationRate"))
+                              ).ClientDetailTemplateId("standard_content")
+)
+
+<script id="standard_content" type="text/kendo-tmpl">
+    #if(ApplicationPlace == 0) { #
+    @(Html.Kendo().TabStrip()
+        .Name("appStandartTab")
+        .SelectedIndex(0)
+        .Items(items => {
+            items.Add().Text("on Farm/Field standards ").Content(
+                @<text>
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Production.InputMaterialApplicationRateItemViewModel>()
+                            .Name("standards_#=InputMaterialApplicationRateId#")
+                            .Columns(columns =>
+                            {
+                                columns.ForeignKey(c => c.ItemCategoryCode, (IEnumerable)ViewData["ItemCategorys"], "ItemCategoryCode", "Name").EditorTemplateName("ItemCategory");
+                                columns.ForeignKey(c => c.ItemCode, (IEnumerable)ViewData["Items"], "ItemCode", "Name").EditorTemplateName("Item");
+                                columns.Bound(c => c.StandardRate).ClientTemplate("\\#=StandardRate\\# \\#=UoM\\# per ha").Title("Norm or Standard (per ha)");
+                                columns.Bound(c => c.Remark);
+
+                                columns.Command(command =>
+                                {
+                                    command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                    command.Destroy().Text(Resources.ActionButton_Cancel);
+                                }).Width(200);
+
+                            })
+                              .ToolBar(toolbar =>
+                              {
+                                  toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                              })
+                              .Editable(editable => editable.Mode(GridEditMode.InLine))
+                              .Selectable(selectable =>
+                              {
+                                  selectable.Mode(GridSelectionMode.Single);
+                                  selectable.Type(GridSelectionType.Row);
+                              })
+                              .Scrollable(h => h.Height(500))
+                              .Sortable(sortable =>
+                              {
+                                  sortable.SortMode(GridSortMode.SingleColumn);
+                              })
+                              .Filterable()
+                              .Pageable(pageable => pageable
+                                  .Input(true)
+                                  .Numeric(false)
+                                  .Refresh(true)
+                                  .PageSizes(true)
+                                  .ButtonCount(5))
+                              .DataSource(dataSource => dataSource
+                                  .Ajax()
+
+                                  .Events(events =>
+                                  {
+                                      events.Error("error_handler(\"standards_#=InputMaterialApplicationRateId#\")");
+                                      events.RequestStart("onRequestStart(\"standards_#=InputMaterialApplicationRateId#\")");
+                                      events.RequestEnd("onRequestEnd(\"standards_#=InputMaterialApplicationRateId#\")");
+                                  })
+                                  .Model(model =>
+                                  {
+                                      model.Id(f => f.InputMaterialApplicationRateId);
+
+                                  })
+
+                                  .Read(read => read.Action("RateItems_Read", "InputMaterialApplicationRateItem", new { id = "#=InputMaterialApplicationRateId#" }))
+                                  .Create(create => create.Action("RateItem_Create", "InputMaterialApplicationRateItem", new { id = "#=InputMaterialApplicationRateId#" }))
+                                  .Update(update => update.Action("RateItem_Update", "InputMaterialApplicationRateItem"))
+                                  .Destroy(destroy => destroy.Action("RateItem_Destroy", "InputMaterialApplicationRateItem"))
+                              )
+                            .ToClientTemplate()
+                    )
+                </text>
+                );
+        }).ToClientTemplate()
+    )
+    #} else if(ApplicationPlace == 1) {#
+     @(Html.Kendo().TabStrip()
+        .Name("appStandartTab")
+        .SelectedIndex(0)
+        .Items(items => {
+            items.Add().Text("in store standards (per unit)").Content(
+                @<text>
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Production.InputMaterialApplicationRateItemViewModel>()
+                            .Name("standards_#=InputMaterialApplicationRateId#")
+                            .Columns(columns =>
+                            {
+                                columns.ForeignKey(c => c.ItemCategoryCode, (IEnumerable)ViewData["ItemCategorys"], "ItemCategoryCode", "Name").EditorTemplateName("ItemCategory");
+                                columns.ForeignKey(c => c.ItemCode, (IEnumerable)ViewData["Items"], "ItemCode", "Name").EditorTemplateName("Item");
+                                columns.Bound(c => c.StandardRate).ClientTemplate("\\#=StandardRate\\# \\#=UoM\\# per \\#=HeaderUoM\\#");
+                                columns.Bound(c => c.Remark);
+
+                                columns.Command(command =>
+                                {
+                                    command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                    command.Destroy().Text(Resources.ActionButton_Cancel);
+                                }).Width(200);
+
+                            })
+                              .ToolBar(toolbar =>
+                              {
+                                  toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                              })
+                              .Editable(editable => editable.Mode(GridEditMode.InLine))
+                              .Selectable(selectable =>
+                              {
+                                  selectable.Mode(GridSelectionMode.Single);
+                                  selectable.Type(GridSelectionType.Row);
+                              })
+                              .Scrollable(h => h.Height(500))
+                              .Sortable(sortable =>
+                              {
+                                  sortable.SortMode(GridSortMode.SingleColumn);
+                              })
+                              .Filterable()
+                              .Pageable(pageable => pageable
+                                  .Input(true)
+                                  .Numeric(false)
+                                  .Refresh(true)
+                                  .PageSizes(true)
+                                  .ButtonCount(5))
+                              .DataSource(dataSource => dataSource
+                                  .Ajax()
+
+                                  .Events(events =>
+                                  {
+                                      events.Error("error_handler(\"standards_#=InputMaterialApplicationRateId#\")");
+                                      events.RequestStart("onRequestStart(\"standards_#=InputMaterialApplicationRateId#\")");
+                                      events.RequestEnd("onRequestEnd(\"standards_#=InputMaterialApplicationRateId#\")");
+                                  })
+                                  .Model(model =>
+                                  {
+                                      model.Id(f => f.InputMaterialApplicationRateId);
+
+                                  })
+                                  .Read(read => read.Action("RateItems_Read", "InputMaterialApplicationRateItem", new { id = "#=InputMaterialApplicationRateId#" }))
+                                  .Create(create => create.Action("RateItem_Create", "InputMaterialApplicationRateItem", new { id = "#=InputMaterialApplicationRateId#" }))
+                                  .Update(update => update.Action("RateItem_Update", "InputMaterialApplicationRateItem"))
+                                  .Destroy(destroy => destroy.Action("RateItem_Destroy", "InputMaterialApplicationRateItem"))
+                              )
+                            .ToClientTemplate()
+                    )
+                </text>
+                );
+        }).ToClientTemplate()
+    )
+    #} else {#
+    Empty
+    #}#
+</script>
+<script>
+    function filterCategories() {
+        //
+        // summary:
+        //      send the filtering text along with the parent widget's value
+        var dropdownlist = $("#ItemCode").data("kendoDropDownList");
+        var filterInput = dropdownlist.filterInput;
+        return {
+            ItemCategoryCode: $("#ItemCategoryCode").val(), filterString: filterInput.val()
+        };
+    }
+</script>

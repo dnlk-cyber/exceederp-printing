@@ -1,0 +1,4 @@
+﻿@(Html.Kendo().DropDownListFor(model => model).HtmlAttributes(new {  @class = "k-dropdown-clientValidation form-control", required = "required" })
+                                    .DataTextField("Text").Filter(FilterType.Contains)
+                                            .DataValueField("Value").OptionLabel("Select ")
+                                            .DataSource(d => d.Read(r => r.Action("CurrencyDDBind", "BudgetDataProvider")).ServerFiltering(false)).ValuePrimitive(true))

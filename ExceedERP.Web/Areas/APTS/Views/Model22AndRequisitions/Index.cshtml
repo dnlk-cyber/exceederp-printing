@@ -1,0 +1,188 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.APTS
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Approved Drug Requestes and Drug Receival Form From Store</legend>
+@(Html.Kendo().Grid<Model22>()
+          .Name("Model22grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Model22Id).Visible(false);
+          columns.ForeignKey(c => c.RequisitionModel20Id, (IEnumerable)ViewData["druglists"], "RequisitionModel20Id", "InternalCode").Width(200).Title("Internal Code");
+          columns.ForeignKey(c => c.RequisitionModel20Id, (IEnumerable)ViewData["druglists"], "RequisitionModel20Id", "Description").Width(200).Title("Description");
+
+
+          columns.Bound(c => c.Unit).Width(120);
+          columns.Bound(c => c.QuantityIssued).Width(120);
+          columns.Bound(c => c.UnitCost).Width(100);
+          columns.Bound(c => c.TotalCost).Width(100);
+          columns.Bound(c => c.UnitPrice).Width(100);
+          columns.Bound(c => c.RetailPrice).Width(150);
+
+
+          columns.Command(command =>
+          {
+              command.Custom("l").Text("&nbsp;").Click("out").IconClass("fa fa-check fa-2x");
+              command.Custom("ll").Text("&nbsp;").Click("completed").IconClass("fa fa-close fa-2x");
+              command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+              //command.Destroy().Text(Resources.ActionButton_Cancel);
+          }).Width(300);
+      })
+      .ToolBar(toolbar =>
+      {
+          //toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))//.TemplateName("Model22"))
+        .Scrollable(h => h.Height(500))
+
+
+                         .Groupable()
+                                  .Sortable(sortable =>
+                                  {
+                                      sortable.SortMode(GridSortMode.SingleColumn);
+                                  })
+                      .Filterable()
+                       .Events(e =>
+                       {
+                           e.DataBound("onDataBound");
+                       })
+                         .Pageable(pageable => pageable
+                                                    .Input(true)
+                                                    .Numeric(false)
+                                                    .Refresh(true)
+                                                    .PageSizes(true)
+                                                    .ButtonCount(5))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+            .Sort(sort => sort.Add("DateCreated").Descending())
+                 .Events(events =>
+                 {
+                     events.Error("error_handler(\"Model22grid\")");
+                     events.RequestStart("onRequestStart(\"Model22grid\")");
+                     events.RequestEnd("onRequestEnd(\"Model22grid\")");
+                 }
+              )
+
+              .Model(model =>
+              {
+                  model.Id(p => p.Model22Id);
+                  model.Field(p => p.RequisitionModel20Id).Editable(false);
+                  model.Field(p => p.TotalCost).Editable(false);
+
+              })
+          .Read(read => read.Action("Model22AndRequisitions_Read", "Model22AndRequisitions"))
+      //.Create(create => create.Action("Model22AndRequisitions_Create", "Model22AndRequisitions"))
+      .Update(update => update.Action("Model22AndRequisitions_Update", "Model22AndRequisitions"))
+      //.Destroy(destroy => destroy.Action("Model22AndRequisitions_Destroy", "Model22AndRequisitions"))
+      )
+)
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 800px;
+    }
+</style>
+<script>
+
+    function sync_handler(e) {
+        this.read();
+</script>
+
+<script>
+        function out(e) {
+
+
+        var row = $(e.target).closest("tr");
+        var grid = $("#Model22grid").data("kendoGrid");
+        var dataItem = grid.dataItem(row);
+            var id = dataItem.Model22Id;
+
+
+        if (id.length !== 0 )
+        {
+
+
+            $.ajax({
+                url: '@Url.Action("Out", "Model22AndRequisitions")',
+
+                data: { id: id},
+                type: 'POST',
+                cache: false,
+                success: function (result) {
+                    r = result;
+
+                }
+
+
+
+            });
+
+        }
+    }
+</script>
+
+<script>
+        function completed(e) {
+
+
+        var row = $(e.target).closest("tr");
+        var grid = $("#Model22grid").data("kendoGrid");
+        var dataItem = grid.dataItem(row);
+            var id = dataItem.Model22Id;
+
+
+        if (id.length !== 0 )
+        {
+
+
+            $.ajax({
+                url: '@Url.Action("Completed", "Model22AndRequisitions")',
+
+                data: { id: id},
+                type: 'POST',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                    
+                }
+
+
+
+            });
+
+        }
+    }
+</script>
+<script>
+
+        function onDataBound(e) {
+            var rows = e.sender.tbody.children();
+
+            for (var j = 0; j < rows.length; j++) {
+                var row = $(rows[j]);
+                var dataItem = e.sender.dataItem(row);
+                if (dataItem.IsOut === true && dataItem.IsCompleted === false)
+                {
+
+                    row.css("background-color", "lightgreen");
+
+                }
+                else if (dataItem.IsCompleted === true)
+                {
+
+                    row.css("background-color", "grey");
+
+                }
+                //else if (dataItem.ProhabitionState === 2) {
+
+                //    row.css("background-color", "yellow");
+
+                //}
+
+
+            }
+
+        }
+
+</script>

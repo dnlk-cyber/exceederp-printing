@@ -1,0 +1,24 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@using ExceedERP.Core.Domain.HRM
+@(Html.Kendo().DropDownListFor(m => m)
+                            .Name("ConstructionPeriodId")
+                            .OptionLabel(Resources.Select)
+                            .DataTextField("Name")
+                            .DataValueField("ConstructionPeriodId")
+                            .DataSource(dataSource =>
+                            {
+                                dataSource.Read(read => read.Action("GetConstructionPeriodsWithinProjectContractTime", "DataProvider", new { projectId = "#=ProjectInformationId#" }));
+                            })
+                            .Events(events => events.Change(
+                            @<text>
+                                function(e) {
+                                ConstructionPeriodChanged(e, "#=ProjectInformationId#", "#=BAC#")
+                                }
+                            </text>
+                            ))
+                            .HtmlAttributes(new { pId = "#=ProjectInformationId#" })
+                            .Filter("contains")
+                            .MinLength(2)
+                            .ValuePrimitive(true)
+)

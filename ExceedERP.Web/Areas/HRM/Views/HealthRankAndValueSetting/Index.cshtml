@@ -1,0 +1,64 @@
+﻿@using System.Collections
+@using System.Security.AccessControl
+@using ExceedERP.Core.Domain.HRM.HealthAndInsurance
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Health Setting</legend>
+@(Html.Kendo().Grid<HealthRankAndValueSetting>()
+              .Name("HealthSettinggrid")
+          .Columns(columns =>
+          {
+              columns.ForeignKey(c => c.RankId, (IEnumerable)ViewData["Rank"], "RankId", "RankName").Width(200);
+              columns.Bound(c => c.CurrentValue).Width(100);
+              columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit); command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+          })
+          .ToolBar(toolbar =>
+          {
+              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+          })
+                    .Editable(editable => editable.Mode(GridEditMode.InLine))
+         .Selectable(selectable =>
+         {
+             selectable.Mode(GridSelectionMode.Single);
+             selectable.Type(GridSelectionType.Row);
+         })
+            
+             .Scrollable(h => h.Height(500))
+                 .Groupable()
+                          .Sortable(sortable =>
+                          {
+                              sortable.SortMode(GridSortMode.SingleColumn);
+                          })
+              .Filterable()
+                 .Pageable(pageable => pageable
+                                            .Input(true)
+                                            .Numeric(false)
+                                            .Refresh(true)
+                                            .PageSizes(true)
+                                            .ButtonCount(5))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+               .Events(events =>
+               {
+                   events.Error("error_handler(\"HealthSettinggrid\")");
+                   events.RequestStart("onRequestStart(\"HealthSettinggrid\")");
+                   events.RequestEnd("onRequestEnd(\"HealthSettinggrid\")");
+               })
+
+          .Model(model => model.Id(p => p.HealthRankAndValueSettingId))
+          .Read(read => read.Action("HealthRankAndValueSetting_Read", "HealthRankAndValueSetting"))
+          .Create(create => create.Action("HealthRankAndValueSetting_Create", "HealthRankAndValueSetting"))
+          .Update(update => update.Action("HealthRankAndValueSetting_Update", "HealthRankAndValueSetting"))
+          .Destroy(destroy => destroy.Action("HealthRankAndValueSetting_Destroy", "HealthRankAndValueSetting"))
+          )
+)
+)
+
+
+<style>
+    div.k-edit-form-container {
+        width: 700px;
+    }
+</style>

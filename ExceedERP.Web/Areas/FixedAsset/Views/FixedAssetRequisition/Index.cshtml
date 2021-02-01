@@ -1,0 +1,751 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.FixedAsset.Requisitions
+@using Kendo.Mvc.UI
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Asset Requisition</legend>
+
+@(Html.Kendo().Grid<FixedAssetRequisition>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.FixedAssetRequisitionId).Title("Request No.").Width(120).ClientTemplate("#=appendZeros(FixedAssetRequisitionId)#");
+          columns.Bound(c => c.Reference).Title("Reference").Width(120);
+          columns.ForeignKey(p => p.GLPeriodId, (IEnumerable)ViewData["fixedassetPeriods"], "GLPeriodId", "Name").Width(120).Title("Period").EditorTemplateName("FixedAssetPeriodSelector");
+          columns.Bound(c => c.RequestDate).Width(150);
+          columns.ForeignKey(p => p.StoreCode, (IEnumerable)ViewData["storesInCompany"], "StoreCode", "Name").Title("Store").Width(160).EditorTemplateName("StoresSelector");
+          columns.Bound(c => c.IsTransfer).EditorTemplateName("IsTransferRequest").ClientTemplate("<input type='checkbox' disabled = 'true'  value='#=IsTransfer #' " + " # if (IsTransfer) { #" + "checked='checked'" + "# } #" + " />").Width(110);
+          columns.ForeignKey(p => p.ToStoreCode, (IEnumerable)ViewData["storesInCompany"], "StoreCode", "Name").Title("To Store").Width(160).EditorTemplateName("StoresSelector");
+          columns.ForeignKey(p => p.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("BranchSelector").Width(150);
+          columns.ForeignKey(p => p.OrgStructureId, (IEnumerable)ViewData["costCenters"], "Code", "Name").Title("Work Unit").Width(150).EditorTemplateName("WorkUnitCostCenterSelector");
+          columns.ForeignKey(p => p.EmployeeId, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Title("Requester").Width(150).EditorTemplateName("EmployeeSelector");
+          columns.Bound(c => c.PlateNo).Width(120);
+          columns.Bound(c => c.Remark).Width(120);
+          columns.Bound(c => c.Status).Width(100);
+          columns.Command(command =>
+          {
+              command.Edit();
+              command.Destroy();
+          }).Width(180);
+
+      }).Filterable()
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(5))
+
+      .ToolBar(toolbar =>
+      {
+
+          toolbar.Template(@<text>
+                               <div class="toolbar row">
+                                   <div class="col-md-1">
+                                       <a class="k-button k-button-icontext k-grid-add" href='#'>Add New</a>
+                                   </div>
+                                   @*<div class="col-md-2 pull-right">
+                                @(Html.Kendo().Upload()
+                                            .Name("file")
+                                            .Async(a => a.Save("StoreRequistion_Import", "FixedAssetRequisition"))
+                                            .Events(e => e.Complete("onUploadSuccess").Upload("checkFileType"))
+                                            .ShowFileList(false)
+                                )
+                            </div>*@
+
+                               </div>
+
+                            </text>);
+      })
+      .Events(ev => ev.Edit("onMasterEdit"))
+            
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .HtmlAttributes(new { style = "height: 550px;" })
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(20))
+      .Scrollable()
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Filterable()
+      .Groupable()
+      .Groupable().Events(ev => ev.DetailExpand("detailExpandFixedAssetRequisition"))
+      .Scrollable(h => h.Height(500))
+      .Events(x => x.DataBound("onDataBoundMasterFixedAssetRequisition"))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Sort(sort => sort.Add("FixedAssetRequisitionId").Descending())
+          .Events(ev => ev
+              .Error("error_handler(\"grid\")")
+              .RequestStart("onRequestStart(\"grid\")")
+              .RequestEnd("onRequestEnd(\"grid\")"))
+          .PageSize(20)
+          .Model(model =>
+          {
+              model.Id(p => p.FixedAssetRequisitionId);
+              model.Field(p => p.FixedAssetRequisitionId).Editable(false);
+              model.Field(p => p.BranchId).Editable(false);
+              model.Field(p => p.OrgStructureId).Editable(false);
+              //model.Field(p => p.EmployeeId).Editable(false);
+              model.Field(p => p.Status).Editable(false);
+              model.Field(p => p.NextApprover).Editable(false);
+              // model.Field(p => p.RequestDate).Editable(false);
+          })
+          .Read(read => read.Action("FixedAssetRequisitions_Read", "FixedAssetRequisition"))
+          .Create(create => create.Action("FixedAssetRequisitions_Create", "FixedAssetRequisition"))
+          .Update(update => update.Action("FixedAssetRequisitions_Update", "FixedAssetRequisition"))
+          .Destroy(destroy => destroy.Action("FixedAssetRequisitions_Destroy", "FixedAssetRequisition"))
+
+      ).Resizable(resize => resize.Columns(true))
+      .ClientDetailTemplateId("FixedAssetRequisitions"))
+
+                               <script id="FixedAssetRequisitions" type="text/Kendo-tmpl">
+
+
+
+
+                                   @(Html.Kendo().TabStrip().Name("tabStrip_#=FixedAssetRequisitionId#").SelectedIndex(0).Items(items =>
+                                           {
+                                               items.Add().Text("Detail").Content(
+
+
+                                               @<text>
+                                                   # if (!IsOnlineApproved&&!IsSendForApproval)
+                                                   {#
+
+                                                   <a onclick='return sendForApproval("#=FixedAssetRequisitionId#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                                                   <br />
+                                                   # } #
+
+                                                   # if (IsOnlineApproved&&!IsMiddleSendForApproval)
+                                                   {#
+                                                   <div class="popupwrapper">
+                                                       <input type="text" disabled="disabled" id="NextApprover" />
+                                                       <img src="~/Content/Images/search.png" onclick="SelectApprover(this)" />
+                                                   </div>
+                                                   <a onclick='return sendForSecondApproval("#=FixedAssetRequisitionId#")' href=' \#' title="Send for Second Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                                                   <br />
+                                                   # } #
+
+
+
+                                                   # if (IsMiddleOnlineApproved)
+                                                   {#
+
+
+                                                   <a href='@Url.Action("FixedAssetRequistionPrint", "FixedAssetPrint")/#=FixedAssetRequisitionId#' title="Print"><i class="fa fa-print fa-2x"></i></a>
+                                                   <br />
+                                                   # } #
+                                                   <div>
+                                                       <hr>
+                                                       <dl class="dl-horizontal">
+
+                                                           <dt>
+                                                               Request Date
+                                                           </dt>
+                                                           <dd>
+                                                               #=kendo.toString(kendo.parseDate(RequestDate), 'dd/MM/yyyy') #
+                                                           </dd>
+                                                           <dt>
+                                                               Status
+                                                           </dt>
+                                                           <dd>
+                                                               #= Status #
+                                                           </dd>
+                                                           <dt>
+                                                               Is Transfer
+                                                           </dt>
+                                                           <dd>
+                                                               #= IsTransfer #
+                                                           </dd>
+                                                           <dt>
+                                                               Receiver Store
+                                                           </dt>
+                                                           <dd>
+                                                               #= ToStoreCode #
+                                                           </dd>
+                                                           <dt>
+                                                               CreatedOn
+                                                           </dt>
+                                                           <dd>
+                                                               #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+
+                                                           </dd>
+                                                           <dt>
+                                                               CreatedBy
+                                                           </dt>
+                                                           <dd>
+                                                               #= CreatedBy #
+                                                           </dd>
+                                                           <dt>
+                                                               Modified By
+                                                           </dt>
+                                                           <dd>
+                                                               #= ModifiedBy #s
+                                                           </dd>
+                                                           <dt>
+                                                               Modified Date
+                                                           </dt>
+                                                           <dd>
+                                                               #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+                                                           </dd>
+                                                           <dt>
+                                                               Approved By
+                                                           </dt>
+                                                           <dd>
+                                                               #= OnlineApprovedBy #s
+                                                           </dd>
+                                                           <dt>
+                                                               Approval Time
+                                                           </dt>
+                                                           <dd>
+                                                               #=kendo.toString(kendo.parseDate(OnlineApprovedTime), 'dd/MM/yyyy') #
+                                                           </dd>
+                                                           <dt>
+                                                               Second Approved By
+                                                           </dt>
+                                                           <dd>
+                                                               #= MiddleOnlineApprovedBy #s
+                                                           </dd>
+                                                           <dt>
+                                                               Approval Time
+                                                           </dt>
+                                                           <dd>
+                                                               #=kendo.toString(kendo.parseDate(MiddleOnlineApprovedTime), 'dd/MM/yyyy') #
+                                                           </dd>
+                                                           <dt>
+                                                               Approved By -Procurement
+                                                           </dt>
+                                                           <dd>
+                                                               #= SecondOnlineApprovedBy #s
+                                                           </dd>
+                                                           <dt>
+                                                               Approval Time
+                                                           </dt>
+                                                           <dd>
+                                                               #=kendo.toString(kendo.parseDate(SecondOnlineApprovedTime), 'dd/MM/yyyy') #
+                                                           </dd>
+                                                       </dl>
+                                                   </div>
+
+                                                   <hr>
+
+                                                   # if (IsOnlineApproved&&!IsVoid)
+                                                   {#
+                                                   @if (HttpContext.Current.User.IsInRole("FixedAsset_Void"))
+                                                   {
+                                                   <a onclick='return voidRecord("#=FixedAssetRequisitionId#")' href='\#' title='Void Record'><i class='fa  fa-bolt fa-2x' style='color:red'></i></a>
+                                                    }
+                                                  
+                                                   # } #
+                                               </text>
+                                            );
+
+                               items.Add().Text("Items").Content(
+                               @<text>
+                                   @(Html.Kendo().Grid<FixedAssetRequisitionItem>()
+                                                 .Name("FixedAssetRequisitionItem_#=FixedAssetRequisitionId#")
+                                                 .Columns(columns =>
+                                                 {
+                                     columns.ForeignKey(p => p.FixedAssetCategoryID, (IEnumerable)ViewData["Category"], "FixedAssetCategoryID", "CategoryName").Title("Category").EditorTemplateName("FixedAssetCategorySelector").Width(180);
+                                     columns.ForeignKey(p => p.FixedAssetSubCategoryID, (IEnumerable)ViewData["SubCategory"], "FixedAssetSubCategoryID", "SubCategoryName").Title("Sub Category").EditorTemplateName("FixedAssetSubCategorySelector").Width(180);
+                                     columns.Bound(c => c.Name).Width(110).EditorTemplateName("FixedAssetSubCategoryNameSelector");
+                                     columns.Bound(c => c.ModelNo).Width(100);
+                                     columns.Bound(c => c.SerialNo).Width(100);
+                                     columns.Bound(c => c.ChasisNo).Width(100);
+                                     columns.Bound(c => c.UoM).Width(100).EditorTemplateName("UoMSelector");
+                                     columns.Bound(c => c.RequestedQuantity).Width(110);
+                                     columns.Bound(c => c.ApprovedQuantity).Width(110);
+                                     columns.Command(command =>
+                                     {
+                                         command.Edit();
+                                         command.Destroy();
+                                     });
+
+                                 })
+                                                 .ToolBar(toolbar =>
+                                                 {
+                                     toolbar.Create();
+                                 }).Events(ev => ev.Edit("onItemEdit"))
+                                                 .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                 .Scrollable()
+                                                 .Events(x => x.DataBound("onDataBoundLinesFixedAssetRequisition"))
+                                                 .DataSource(dataSource => dataSource
+                                                     .Ajax()
+                                                     .Events(ev => ev
+                                                         .Error("error_handler(\"FixedAssetRequisitionItem_#=FixedAssetRequisitionId#\")")
+                                                         .RequestStart("onRequestStart(\"FixedAssetRequisitionItem_#=FixedAssetRequisitionId#\")")
+                                                         .RequestEnd("onRequestEnd(\"FixedAssetRequisitionItem_#=FixedAssetRequisitionId#\")"))
+                                                     .Model(model =>
+                                                     {
+                                         model.Id(p => p.FixedAssetRequisitionItemId);
+                                         model.Field(p => p.IssuedQuantity).Editable(false);
+                                         model.Field(p => p.PurchaseQuantity).Editable(false);
+
+                                         model.Field(p => p.CreatedBy).Editable(false);
+                                         model.Field(p => p.DateCreated).Editable(false);
+                                         model.Field(p => p.ModifiedBy).Editable(false);
+                                         model.Field(p => p.LastModified).Editable(false);
+
+                                     })
+                                                     .Read(read => read.Action("FixedAssetRequisitionItems_Read", "FixedAssetRequisitionItem", new { id = "#=FixedAssetRequisitionId#" }))
+                                                     .Create(create => create.Action("FixedAssetRequisitionItems_Create", "FixedAssetRequisitionItem", new { id = "#=FixedAssetRequisitionId#" }))
+                                                     .Update(update => update.Action("FixedAssetRequisitionItems_Update", "FixedAssetRequisitionItem"))
+                                                     .Destroy(destroy => destroy.Action("FixedAssetRequisitionItems_Destroy", "FixedAssetRequisitionItem"))
+                                                 ).ToClientTemplate())
+                               </text>
+                                   );
+
+                       items.Add().Text("Validation").Content(
+                               @<text>
+
+                                   @(Html.Kendo().Grid<FixedAssetRequisitionValidation>()
+                                                 .Name("FixedAssetRequisitionValidation_#=FixedAssetRequisitionId#")
+                                                 .Columns(columns =>
+                                                 {
+                                     columns.Bound(c => c.Status).Width(170).EditorTemplateName("ValidationStatus");
+                                     columns.Bound(c => c.Remark).Width(170);
+                                     columns.Command(command =>
+                                     {
+                                         command.Edit();
+                                                     //command.Destroy();
+                                                 });
+                                 })
+                                                 .ToolBar(toolbar =>
+                                                 {
+                                     toolbar.Create();
+                                 })
+                                                 .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                 .Scrollable()
+                                                 .Events(x => x.DataBound("onDataBoundFisrtValidationFixedAssetRequisition"))
+                                                 .DataSource(dataSource => dataSource
+                                                     .Ajax()
+                                                     .Events(ev => ev
+                                                         .Error("error_handler(\"FixedAssetRequisitionValidation_#=FixedAssetRequisitionId#\")")
+                                                         .RequestStart("onRequestStart(\"FixedAssetRequisitionValidation_#=FixedAssetRequisitionId#\")")
+                                                         .RequestEnd("onRequestEnd(\"FixedAssetRequisitionValidation_#=FixedAssetRequisitionId#\")"))
+                                                     .Model(model =>
+                                                     {
+                                         model.Id(p => p.FixedAssetRequisitionValidationId);
+                                     })
+                                                     .Read(read => read.Action("FixedAssetRequisitionValidations_Read", "FixedAssetRequisitionValidation", new { id = "#=FixedAssetRequisitionId#" }))
+                                                     .Create(create => create.Action("FixedAssetRequisitionValidations_Create", "FixedAssetRequisitionValidation", new { id = "#=FixedAssetRequisitionId#" }))
+                                                     .Update(update => update.Action("FixedAssetRequisitionValidations_Update", "FixedAssetRequisitionValidation"))
+                                                     .Destroy(destroy => destroy.Action("FixedAssetRequisitionValidations_Destroy", "FixedAssetRequisitionValidation"))
+
+                                                 ).ToClientTemplate())
+
+                               </text>
+                                   );
+
+                       items.Add().Text("Second Validation").Content(
+                               @<text>
+
+                                   @(Html.Kendo().Grid<FixedAssetRequisitionSecondValidation>()
+                                                 .Name("FixedAssetRequisitionSecondValidation_#=FixedAssetRequisitionId#")
+                                                 .Columns(columns =>
+                                                 {
+                                     columns.Bound(c => c.Status).Width(170).EditorTemplateName("ValidationStatus");
+                                     columns.Bound(c => c.Remark).Width(170);
+                                     columns.Command(command =>
+                                     {
+                                         command.Edit();
+                                                     //command.Destroy();
+                                                 });
+                                 })
+                                                 .ToolBar(toolbar =>
+                                                 {
+
+                                     toolbar.Create();
+                                 })
+                                                 .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                 .Scrollable()
+                                                 .Events(x => x.DataBound("onDataBoundSecondValidationFixedAssetRequisition"))
+                                                 .DataSource(dataSource => dataSource
+                                                     .Ajax()
+                                                     .Events(ev => ev
+                                                         .Error("error_handler(\"FixedAssetRequisitionSecondValidation_#=FixedAssetRequisitionId#\")")
+                                                         .RequestStart("onRequestStart(\"FixedAssetRequisitionSecondValidation_#=FixedAssetRequisitionId#\")")
+                                                         .RequestEnd("onRequestEnd(\"FixedAssetRequisitionSecondValidation_#=FixedAssetRequisitionId#\")"))
+                                                     .Model(model =>
+                                                     {
+                                         model.Id(p => p.FixedAssetRequisitionSecondValidationId);
+                                     })
+                                                     .Read(read => read.Action("FixedAssetRequisitionSecondValidations_Read", "FixedAssetRequisitionSecondValidation", new { id = "#=FixedAssetRequisitionId#" }))
+                                                     .Create(create => create.Action("FixedAssetRequisitionSecondValidations_Create", "FixedAssetRequisitionSecondValidation", new { id = "#=FixedAssetRequisitionId#" }))
+                                                     .Update(update => update.Action("FixedAssetRequisitionSecondValidations_Create", "FixedAssetRequisitionSecondValidation", new { id = "#=FixedAssetRequisitionId#" }))
+
+                                                 ).ToClientTemplate())
+
+                               </text>
+                                   );
+
+
+
+
+                   }).ToClientTemplate())
+
+
+
+
+
+                               </script>
+
+
+
+
+
+
+
+
+<script>
+
+    var supplierTextBox;
+    var popup;
+    var slectedUser;
+    function SelectApprover(e) {
+
+        supplierTextBox = $(e).prev('input').attr('id');
+        popup = window.open('/Common/GlobalDataProvider/GetFixedAssetSecondApproverSelector', 'WindowPopup', 'top=100, left=400, width=300, height=220,resizable=no,');
+        popup.focus();
+        return false;
+    }
+
+    function setChoice(user) {
+        slectedUser = user;
+        $("#" + supplierTextBox).val(slectedUser).trigger("change");
+    }
+
+
+  
+
+    function test() {
+        var recordStatus = "";
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("GetStatus", "FixedAssetRequisition")',
+            data: { id: codeid },
+            success: function(result) {
+                toastr.error(result.Message);
+                recordStatus = result.Status;
+
+            }, //end succ
+            error: function(result) {
+                alert(result);
+            }
+        });
+
+        @*if (recordStatus !== "False") {
+            toastr.success("Updating.");
+            $.ajax({
+                type: "GET",
+                url: '@Url.Action("Variation", "PropertyCount")',
+                contentType: "application/json; charset=utf-8",
+                data: { id: codeid },
+                dataType: "json"
+            });
+        }*@
+        
+
+    }
+
+    function sendForApproval(id) {
+        var recordStatus = "";
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("SendForApproval", "FixedAssetRequisition", new { area = "FixedAsset" })',
+            data: { id: id },
+            success: function (result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                recordStatus = result.Status;
+                location.reload(true);
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+
+    function sendForSecondApproval(id) {
+        var recordStatus = "";
+        var user = $("#NextApprover").val();
+        if (user.length === 0)
+            alert("Please select approver");
+        else {
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("SendForSecondApproval", "FixedAssetRequisition", new { area = "FixedAsset" })',
+            data: {
+                id: id,
+                user: user
+            },
+            success: function (result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                recordStatus = result.Status;
+                location.reload(true);
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+            });
+        }
+    }
+
+    function voidRecord(id) {
+        var recordStatus = "";
+        var conf = confirm("Are you sure you want to void this record number: " + id + " ?");
+        if (conf === true) {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("Void", "FixedAssetRequisition", new { area = "FixedAsset" })',
+                data: { id: id },
+                success: function (result) {
+                    // toastr.warnning(result.Message);
+                    alert(result.Message);
+                    recordStatus = result.Status;
+                    location.reload(true);
+                }, //end succ
+                error: function (result) {
+                    alert(result);
+                }
+            });
+        }
+    }
+
+
+    var masterDataItem;
+    var masterRow;
+    var masterGrid;
+
+    var codeid;
+    var isapproved;
+    var issecondapproved;
+    var isSendForApproval;
+    var ismiddleapproved;
+    var ismiddleSendForApproval;
+    var isOnlineTransferred;
+    var nextApprover;
+
+    function detailExpandFixedAssetRequisition(e) {
+
+        masterRow = e.masterRow;
+        masterGrid = $("#grid").data("kendoGrid");
+        masterDataItem = masterGrid.dataItem(masterRow);
+        //codeid = masterDataItem.StoreRequisitionID;
+        isapproved = masterDataItem.IsOnlineApproved;
+        isSendForApproval = masterDataItem.IsSendForApproval;
+        isOnlineTransferred = masterDataItem.IsOnlineTransferred;
+        ismiddleapproved = masterDataItem.IsMiddleOnlineApproved;
+        ismiddleSendForApproval = masterDataItem.IsMiddleSendForApproval;
+        issecondapproved = masterDataItem.IsSecondOnlineApproved;
+        nextApprover = masterDataItem.NextApprover;
+       
+
+    }
+    function onDataBoundMasterFixedAssetRequisition(e) {
+        //this.expandRow(this.tbody.find("tr.k-master-row").first());
+
+        //approved
+        var grid = $("#grid").data("kendoGrid");
+        var gridData = grid.dataSource.view();
+
+        for (var i = 0; i < gridData.length; i++) {
+            var currentUid = gridData[i].uid;
+            if (gridData[i].IsOnlineApproved || gridData[i].IsSendForApproval) {
+                var currenRow = grid.table.find("tr[data-uid='" + currentUid + "']");
+                var editButton = $(currenRow).find(".k-grid-edit");
+                var deleteButton = $(currenRow).find(".k-grid-delete");
+                editButton.hide();
+                deleteButton.hide();
+            }
+        }
+        
+        //changing colors
+        var rows = e.sender.tbody.children();
+        for (var j = 0; j < rows.length; j++) {
+            var row = $(rows[j]); 
+            var dataItem = e.sender.dataItem(row);
+
+            if (dataItem.IsSendForApproval && !dataItem.IsOnlineApproved) {
+                row.css("background-color", "lightpink");
+            }
+
+            if (dataItem.IsOnlineApproved && !dataItem.IsMiddleSendForApproval) {
+                row.css("background-color", "orange");
+            }
+
+            if (dataItem.IsMiddleSendForApproval && !dataItem.IsMiddleOnlineApproved) {
+                row.css("background-color", "lightgreen");
+            }
+            if (dataItem.IsMiddleOnlineApproved && !dataItem.IsSecondSendForApproval) {
+                row.css("background-color", "lightskyblue");
+            }
+        }
+
+
+    }
+    function onDataBoundLinesFixedAssetRequisition(e) {
+
+        var detailGrid = "#" + e.sender.element[0].id;// "#StoreRequisitionItem_" + codeid;
+        if (isapproved || isSendForApproval) {
+
+            $(".k-grid-add", detailGrid).hide();
+            $(".k-grid-delete", detailGrid).hide();
+            $(".k-grid-edit", detailGrid).hide();
+        }
+    }
+    function onDataBoundFisrtValidationFixedAssetRequisition(e) {
+
+        var detailGrid = "#" + e.sender.element[0].id;// "#StoreRequisitionValidation_" + codeid;
+
+        if (isapproved || !isSendForApproval) {
+
+            $(".k-grid-add", detailGrid).hide();
+            $(".k-grid-delete", detailGrid).hide();
+            $(".k-grid-edit", detailGrid).hide();
+        }
+
+        this.table.find(".k-grid-edit").hide();
+    }
+    function onDataBoundSecondValidationFixedAssetRequisition(e) {
+        var detailGrid = "#" + e.sender.element[0].id;
+
+        if (ismiddleapproved || !ismiddleSendForApproval) {
+
+            $(".k-grid-add", detailGrid).hide();
+            $(".k-grid-delete", detailGrid).hide();
+            $(".k-grid-edit", detailGrid).hide();
+        }
+
+        var currentuser =@Html.Raw(Json.Encode(ViewBag.User));
+       
+        if (currentuser !== nextApprover)
+        {
+            $(".k-grid-add", detailGrid).hide();
+        }
+
+        this.table.find(".k-grid-edit").hide();
+    }
+
+    var storeCode;
+    var icodeid;
+   
+
+    function onItemEdit(e) {
+        var masterRow = this.wrapper.closest("tr.k-detail-row").prev(".k-master-row");
+        var masterGrid = $("#grid").data("kendoGrid");
+
+        var masterDataItem = masterGrid.dataItem(masterRow);
+        storeCode = masterDataItem.StoreCode;
+        icodeid = masterDataItem.FixedAssetRequisitionId;
+
+        if (e.model.isNew() === true) {
+            $("#ApprovedQuantity").attr("readonly", true);
+        }
+        //edit
+        //if (e.model.isNew() !== true) {
+
+        //    $("#RequestedQuantity").attr("readonly", true);
+        //    $("#ItemCategoryCode").attr("readonly", true);
+        //}
+
+
+
+    }
+
+
+
+    function getItems() {
+
+        return {
+            StoreCode: storeCode
+        }
+
+    }
+   
+    function OnIndexCall(elem) {
+
+        var a = codeid;
+        $(elem).attr('href', $(elem).attr('href') + '?id=' + a);
+
+
+    }
+
+
+
+
+    function onClick(e) {
+
+        var masterRow = this.wrapper.closest("tr.k-detail-row").prev(".k-master-row");
+        var masterGrid = $("#grid").data("kendoGrid");
+        var masterDataItem = masterGrid.dataItem(masterRow);
+        var code = masterDataItem.FixedAssetRequisitionId;
+        var tabstrip = $("#tabStrip_4").data("kendoTabstrip");
+        $.ajax({
+            url: "StoreRequisition/StoreRequisitions_Approval",
+
+            data: { id: code }
+        });
+    }
+    function onUploadSuccess(e) {
+
+    }
+
+    function checkFileType(e) {
+        var files = e.files;
+
+        $.each(files, function () {
+
+            if (this.extension.toLowerCase() === ".xls" || this.extension.toLowerCase() === ".xlsx" || this.extension.toLowerCase() === ".xlsm") {
+
+            } else {
+                alert("Only .xls, .xlsx, .xlsm files can be uploaded!");
+                e.preventDefault();
+            }
+
+        });
+    }
+
+    
+    function checkboxClicked(e) {
+
+        var isChecked = e.checked;
+        var grid = $("#grid").data("kendoGrid");
+        if (isChecked) {
+
+            grid.showColumn("ToStoreCode");
+        } else {
+            grid.hideColumn("ToStoreCode");
+        }
+
+    };
+
+    function onMasterEdit(e) {
+
+        var grid = $("#grid").data("kendoGrid");
+        grid.hideColumn("ToStoreCode");
+
+
+        if (e.model.isNew() === false) {
+            // e.grid.hideColumn("ToStore");
+        }
+    }
+
+
+</script>
+
+

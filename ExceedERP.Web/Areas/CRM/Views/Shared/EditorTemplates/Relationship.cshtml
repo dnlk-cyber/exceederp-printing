@@ -1,0 +1,9 @@
+﻿@using System.Collections
+@(Html.Kendo().DropDownList().BindTo((IEnumerable)ViewData["Relationship"])
+.OptionLabel("Select..")
+        .DataTextField("Description")
+        .DataValueField("LookupID")
+ .Name("LookupID"))
+
+
+

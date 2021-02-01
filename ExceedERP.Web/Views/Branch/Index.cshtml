@@ -1,0 +1,22 @@
+﻿@using ExceedERP.Core.Domain.Common.HRM
+
+@(Html.Kendo().Grid<Branch>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.Name);
+        columns.Bound(c => c.Remark);
+        columns.Command(command => {   command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+             
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.BranchId))
+          .Read(read => read.Action("Branches_Read", "Branch"))
+          
+      )
+)

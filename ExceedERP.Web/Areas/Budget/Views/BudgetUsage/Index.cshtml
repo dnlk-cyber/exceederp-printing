@@ -1,0 +1,87 @@
+﻿@model ExceedERP.Core.Domain.Budget.BudgetUsage
+
+<script>
+    var masterId;
+    function filterPeriod() {
+        return {
+            Year: $("#BudgetYear").val()
+        };
+    }
+    function filterCategory() {
+        return {
+            Group: $("#BudgetGroup").val()
+        };
+    }
+    function filterAccCode() {
+        return {
+            PlanCategoryID: masterId,
+        };
+    }
+    function filterWorkUnit() {
+        return {
+            PlanCategoryID: masterId,
+
+            AccCode: $("#AccountCode").val()
+        };
+    }
+    function onDetailExpand(e) {
+        var masterRow = e.masterRow;
+        //var masterGrid = $("#grid").data("kendoGrid");
+        var masterGrid = $("#grid").data("kendoGrid");
+
+        var masterDataItem = masterGrid.dataItem(masterRow);
+        masterId = masterDataItem.PlanCategoryID;
+       
+
+    }
+</script> 
+<legend>   Budget Usage  </legend>
+@(Html.Kendo().Grid<ExceedERP.Web.Areas.Budget.Models.BudgetUsageViewModel>()
+                                            .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.AccountCode).Title("Account").Width(120);
+
+          columns.Bound(c => c.BudgetCategory).Title("Fiscal Year").Hidden();
+          columns.ForeignKey(c => c.WorkUnit, (System.Collections.IEnumerable)ViewData["MainCompanyStructures"], "Values", "Description").Hidden();
+          columns.Bound(c => c.Jan);
+          columns.Bound(c => c.Feb);
+          columns.Bound(c => c.Mar);
+          columns.Bound(c => c.Apr);
+          columns.Bound(c => c.May);
+          columns.Bound(c => c.Jun);
+          columns.Bound(c => c.Jul);
+          columns.Bound(c => c.Aug);
+          columns.Bound(c => c.Sep);
+          columns.Bound(c => c.Oct);
+          columns.Bound(c => c.Nov);
+          columns.Bound(c => c.Dec);
+
+//          columns.Bound(c => c.Remark);
+
+
+      })
+
+      .HtmlAttributes(new { style = "height: 520px;" })
+                          .Pageable(pageable => pageable
+                                            .Input(true)
+                                            .Numeric(false)
+                                            .Refresh(true)
+                                            .PageSizes(true)
+                                            .ButtonCount(5))
+
+                                .Scrollable()
+                                .Sortable()
+                                .Filterable()
+                                                              .Scrollable(h => h.Height(500))
+                 .DataSource(dataSource => dataSource
+                  .Ajax().Group(x => { x.Add(y => y.BudgetCategory); x.Add(y => y.WorkUnit); })
+                                                            .Model(model => model.Id(p => p.BudgetUsageId))//.Events(ev => ev
+
+                                      .Read(read => read.Action("BudgetUsage_Read", "BudgetUsage"))
+                                    ))
+
+ 
+
+
+ 

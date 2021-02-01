@@ -1,0 +1,24 @@
+﻿@using ExceedERP.Core.Domain.Inventory
+
+@(Html.Kendo().Grid<IssueFuelValidation>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.IssueFuelID);
+          columns.Bound(c => c.Status);
+          columns.Bound(c => c.Remark);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.IssueFuelValidationID))
+          .Read(read => read.Action("IssueFuelValidations_Read", "IssueFuelValidation"))
+          .Create(create => create.Action("IssueFuelValidations_Create", "IssueFuelValidation"))
+          .Update(update => update.Action("IssueFuelValidations_Update", "IssueFuelValidation"))
+          .Destroy(destroy => destroy.Action("IssueFuelValidations_Destroy", "IssueFuelValidation"))
+      ))

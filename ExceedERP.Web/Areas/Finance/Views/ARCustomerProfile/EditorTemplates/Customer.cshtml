@@ -1,0 +1,132 @@
+﻿@model ExceedERP.Core.Domain.Finance.AR.ArCustomerProfile
+
+@Html.HiddenFor(c => c.ArCustomerProfileId)
+<div class="form">
+    <div class="row fullrow">
+
+        <div class="col-md-3 ro1">
+            
+           
+                <div class="form-group">
+                    @Html.LabelFor(model => model.CustomerId, htmlAttributes: new { @class = "control-label col-md-8" })
+                    <div class="col-md-6">
+                        @Html.Kendo().TextBoxFor(model => model.CustomerId)
+                        @Html.ValidationMessageFor(model => model.CustomerId, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="row"></div>
+                
+                <div class="form-group">
+                    @Html.LabelFor(model => model.CompanyName, htmlAttributes: new { @class = "control-label col-md-8" })
+                    <div class="col-md-6">
+                        @Html.Kendo().TextBoxFor(model => model.CompanyName)
+                        @Html.ValidationMessageFor(model => model.CompanyName, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="row"></div>
+                
+                <div class="form-group">
+                    @Html.LabelFor(model => model.AccountCode, htmlAttributes: new { @class = "control-label col-md-8" })
+                    <div class="col-md-6">
+                        @Html.Kendo().TextBoxFor(model => model.AccountCode).HtmlAttributes(new { disabled = "disabled" })
+                        <img src="~/Content/Images/search.png" onclick="SelectDynamicAccCode(this)" />
+                        @Html.ValidationMessageFor(model => model.AccountCode, "", new { @class = "text-danger" })
+                    </div>
+                </div>
+                <div class="row"></div>
+        </div>
+
+        <div class="col-md-3 ro1">
+            <div class="form-group">
+                @Html.LabelFor(model => model.TinNo, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(model => model.TinNo)
+                    @Html.ValidationMessageFor(model => model.TinNo, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.CustomerType, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @(Html.Kendo().DropDownListFor(model => model.CustomerType)
+                                .ValuePrimitive(true)
+                                .OptionLabel("Select type...")
+                                        .DataTextField("CustomerTypeName")
+                                                        .DataValueField("CustomerTypeName")
+                                         .Filter("contains")
+                                .DataSource(dataSource =>
+                                    {
+                                        dataSource.Read(read => read.Action("GetCustomerTypes", "FinanceDataProvider", new { area = "Finance" }))
+                                        .ServerFiltering(false);
+                                    })
+                    )
+                    @Html.ValidationMessageFor(model => model.CustomerType, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+            
+            <div class="form-group">
+                @Html.LabelFor(model => model.Country, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @(Html.Kendo().DropDownListFor(model => model.Country)
+                                .ValuePrimitive(true)
+                                .OptionLabel("Select Country...")
+                                 .DataTextField("CountryName")
+                                 .DataValueField("CountryName")
+                                         .Filter("contains")
+                                .DataSource(dataSource =>
+                                    {
+                                        dataSource.Read(read => read.Action("GetCountry", "GlobalDataProvider", new { area = "Common" }))
+                                        .ServerFiltering(false);
+                                    })
+                    )
+                    @Html.ValidationMessageFor(model => model.Country, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+            
+            <div class="form-group">
+                @Html.LabelFor(model => model.Address, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(model => model.Address)
+                    @Html.ValidationMessageFor(model => model.Address, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+        </div>
+
+        <div class="col-md-3 ro1">
+            <div class="form-group">
+                @Html.LabelFor(model => model.ContactName, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(model => model.ContactName)
+                    @Html.ValidationMessageFor(model => model.ContactName, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+            
+            <div class="form-group">
+                @Html.LabelFor(model => model.PhoneNumber, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(model => model.PhoneNumber)
+                    @Html.ValidationMessageFor(model => model.PhoneNumber, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+            
+            <div class="form-group">
+                @Html.LabelFor(model => model.IsActive, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @Html.Kendo().CheckBoxFor(model => model.IsActive)
+                    @Html.ValidationMessageFor(model => model.IsActive, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+            
+
+        </div>
+    </div>
+</div>
+
+

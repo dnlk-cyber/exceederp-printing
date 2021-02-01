@@ -1,0 +1,599 @@
+﻿@using ExceedERP.Core.Domain.Finance.GL
+@using ExceedERP.Core.Domain.Procurement
+@using ExceedERP.Core.Domain.Procurement.Guarantee
+<legend>Advance Guarantee</legend>
+@(Html.Kendo().Grid<Guarantee>()
+                  .Name("grid")
+                  .Columns(columns =>
+                  {
+                      columns.Bound(c => c.GuaranteeId).Title("#").Width(70).ClientTemplate("#=appendZeros(GuaranteeId)#");
+                      columns.Bound(c => c.SupplierName).Width(150);
+                      columns.Bound(c => c.Purpose).Width(120);
+          //columns.Bound(c => c.SupplierId).Width(120);
+          columns.Bound(c => c.ProcurementCategory).EditorTemplateName("ProcurementCategorys").Width(130);
+                      columns.Bound(c => c.GuaranteeType).EditorTemplateName("GuaranteeTypes").Width(150);
+                      columns.Bound(c => c.GuaranteeMode).EditorTemplateName("GuaranteeModesForGurantee").Width(150);
+                      columns.Bound(c => c.GuaranteeRefNo).Width(160);
+                      columns.Bound(c => c.ProcurementRefNo).Width(170);
+                      columns.Bound(c => c.ContractRefNo).Width(150);
+                      columns.Bound(c => c.Amount).Width(120);
+                      columns.Bound(c => c.Currency).Width(120);
+                      columns.Bound(c => c.Bank).Width(120);
+                      columns.Bound(c => c.BankBranch).Width(120);
+                      columns.Bound(c => c.IssueDate).Width(120);
+                      columns.Bound(c => c.ValidityPeriod).Width(170);
+                      columns.Bound(c => c.ExpireDate).Width(120);
+                      columns.Bound(c => c.ValidityStatus).Width(130);
+
+                      columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+                  })
+                  .ToolBar(toolbar =>
+                  {
+          // toolbar.Create();
+          toolbar.Template(
+            @<text>
+<div class="row">
+    <div class="col-md-2">
+        <a class="k-button k-button-icontext k-grid-add" href='\#'><span class="k-icon k-i-add"></span> Add new record</a>
+    </div>
+    <div class="col-md-6 pull-right">
+        @(Html.Kendo().CheckBox()
+                                      .Name("checkExpired")
+                                      .Label("Show Expired Only")
+                                      .HtmlAttributes(new { onchange = "isExpireCheck(this)" })
+        )
+
+        @(Html.Kendo().CheckBox()
+                                      .Name("checkExpiredLetterSent")
+                                      .Label("Show Expired and Letter Sent Only")
+                                      .HtmlAttributes(new { onchange = "isSentCheck(this)" })
+        )
+    </div>
+    </div>
+
+            </text>);
+
+              })
+                        .Editable(editable => editable.Mode(GridEditMode.InLine))
+                        .HtmlAttributes(new { style = "height: 550px;" })
+                        .Pageable(pageable => pageable
+                            .Input(true)
+                            .Numeric(false)
+                            .Refresh(true)
+                            .PageSizes(true)
+                            .ButtonCount(20))
+                        .Scrollable()
+                        .Selectable(selectable =>
+                        {
+                            selectable.Mode(GridSelectionMode.Single);
+                            selectable.Type(GridSelectionType.Row);
+                        })
+                        .Sortable(sortable =>
+                        {
+                            sortable.SortMode(GridSortMode.SingleColumn);
+                        })
+                        .Filterable()
+                        .Groupable()
+                        .Groupable().Events(ev => ev.DetailExpand("detailExpand"))
+                        .Scrollable(h => h.Height(500))
+                        .Events(x => x.DataBound("onDataBoundMasterGuarantee"))
+                        .ClientDetailTemplateId("templates")
+                        .DataSource(dataSource => dataSource
+                            .Ajax()
+                            .Sort(sort => sort.Add("GuaranteeId").Descending())
+                            .PageSize(20)
+                            .Model(
+                                model =>
+                                {
+                                    model.Id(p => p.GuaranteeId);
+                                    model.Field(p => p.SupplierId).Editable(false);
+                                    model.Field(p => p.ExpireDate).Editable(false);
+                                    model.Field(p => p.VoidTime).Editable(false);
+                                    model.Field(p => p.VoidBy).Editable(false);
+                                    model.Field(p => p.isVoid).Editable(false);
+                                    model.Field(p => p.OnlineApprovedTime).Editable(false);
+                                    model.Field(p => p.OnlineApprovedBy).Editable(false);
+                                    model.Field(p => p.IsOnlineApproved).Editable(false);
+                                    model.Field(p => p.Status).Editable(false);
+                                    model.Field(p => p.IsSendForApproval).Editable(false);
+
+                                    model.Field(p => p.OrgBranchName).Editable(false);
+                                    model.Field(p => p.CreatedBy).Editable(false);
+                                    model.Field(p => p.ModifiedBy).Editable(false);
+                                    model.Field(p => p.LastModified).Editable(false);
+                                    model.Field(p => p.DateCreated).Editable(false);
+
+
+                                })
+                            .Events(ev => ev
+                                .Error("error_handler(\"grid\")")
+                                .RequestStart("onRequestStart(\"grid\")")
+                                .RequestEnd("onRequestEnd(\"grid\")"))
+                            .Read(read => read.Action("Guarantees_Read", "GuaranteeAdvance").Data("passReadData"))
+                            .Create(create => create.Action("Guarantees_Create", "GuaranteeAdvance"))
+                            .Update(update => update.Action("Guarantees_Update", "GuaranteeAdvance"))
+                            .Destroy(destroy => destroy.Action("Guarantees_Destroy", "GuaranteeAdvance"))
+                        ))
+
+
+<script id="templates" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                                                  .Name("tabStrip#=GuaranteeId#")
+                                                  .SelectedIndex(0)
+                                                  .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+                                                  .Items(items =>
+                                                  {
+                                                      items.Add().Text("Guarantee Detail").Content(@<text>
+
+                                                        # if (!IsOnlineApproved&&!IsSendForApproval)
+                                                        {#
+                                                        <a onclick='return sendForApproval("#=GuaranteeId#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                                                        <br />
+                                                        # } #
+                                                        <br />
+                                                        <br />
+                                                        <a onclick='return release("#=GuaranteeId#")' href=' \#' title="Mark Release">Mark Release</a> |
+                                                        <a onclick='return forfeit("#=GuaranteeId#")' href=' \#' title="Mark Forfeit">Mark Forfeit</a>
+
+                                                        @*<div>
+                                                                <p><b>Record Status :#= Status #</b></p>
+                                                                # if (!IsSendForApproval&&!IsOnlineApproved)
+                                                                {#
+                                                                <a class="send" title="Send for Approval" href='@Url.Action("SendForApproval", "GLRecordJournal")/#=GuaranteeId#'><i class="fa fa-location-arrow fa-2x"></i>Send for Approval</a> <br />
+                                                                # } #
+
+                                                                # if (IsOnlineApproved)
+                                                                {#
+                                                                <a target="new" title="Print" href='@Url.Action("GlJournalVoucher", "FinancePrint")/#=GuaranteeId#'> <i class="fa fa-print fa-2x"></i>Print</a>
+                                                                <br />
+                                                                # } #
+
+                                                                # if (IsOnlineApproved && !isPosted )
+                                                                {#
+
+                                                                <p align="right"><a title="Reverse" href='@Url.Action("Reverse", "GLRecordJournal")/#=GuaranteeId#'><i class="fa fa-backward fa-2x"></i>Reverse</a> <br /></p>
+
+                                                                # } #
+
+                                                                # if (IsOnlineApproved && !isPosted )
+                                                                {#
+                                                                <a title="Post" href='@Url.Action("PostLedger", "GLRecordJournal")/#=GuaranteeId#'> <i class="fa fa-caret-square-o-down fa-2x"></i>Post</a>
+                                                                # } #
+
+
+                                                            </div>*@
+                                                        <div>
+                                                            <hr>
+                                                            <dl class="dl-horizontal">
+
+
+                                                                <dt>
+                                                                    Created On
+                                                                </dt>
+                                                                <dd>
+                                                                    #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+
+                                                                </dd>
+                                                                <dt>
+                                                                    Created By
+                                                                </dt>
+                                                                <dd>
+                                                                    #= CreatedBy #
+                                                                </dd>
+                                                                <dt>
+                                                                    Modified By
+                                                                </dt>
+                                                                <dd>
+                                                                    #= ModifiedBy #
+                                                                </dd>
+                                                                <dt>
+                                                                    Modified Date
+                                                                </dt>
+                                                                <dd>
+                                                                    #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+                                                                </dd>
+                                                            </dl>
+                                                        </div>
+
+                                                        <a target="_new" href='@Url.Action("GuaranteeExtension", "ProcurementPrint")/#=GuaranteeId#'>Extenstion Letter </a> |
+
+                                                        <a target="_new" href='@Url.Action("GuaranteeRelease", "ProcurementPrint")/#=GuaranteeId#'>Release Letter </a> |
+
+                                                        <a target="_new" href='@Url.Action("GuaranteeForfeited", "ProcurementPrint")/#=GuaranteeId#'>Forfeited Letter</a> |
+
+                                                    </text>
+                                                                                        );
+                                                            items.Add().Text("Renewal Request").Content(@<text>
+                                                                @(Html.Kendo().Grid<GuaranteeRenewalRequest>()
+                                                                                                      .Name("GuaranteeRenewalRequest#=GuaranteeId#")
+                                                                                                      .Columns(columns =>
+                                                                                                      {
+                                                                                                                        columns.Bound(c => c.Date).Width(150);
+                                                                                                                        columns.Bound(c => c.Remark).Width(150);
+                                                                                                                        columns.Command(command =>
+                                                                                    {
+
+                                                                                                                  command.Edit();
+                                                                                                                  command.Destroy();
+
+                                                                                                              });
+                                                                                                                    })
+                                                                                                      .ToolBar(toolbar =>
+                                                                                                      {
+                                                                                                                        toolbar.Create();
+                                                                                                                    })
+                                                                                                      //.Events(x => x.DataBound("onDataBoundLines"))
+                                                                                                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                                                      .Pageable(pageable => pageable
+                                                                                                          .Input(true)
+                                                                                                          .Numeric(false)
+                                                                                                          .Refresh(true)
+                                                                                                          .PageSizes(true)
+                                                                                                          .ButtonCount(10))
+                                                                                                      .Scrollable()
+                                                                                                      .Sortable()
+                                                                                                      .Filterable()
+                                                                                                      .DataSource(dataSource => dataSource
+                                                                                                          .Ajax()
+
+                                                                                                          .Model(
+                                                                                                              model =>
+                                                                                                              {
+                                                                                                                                model.Id(p => p.GuaranteeId);
+                                                                                                                                model.Field(p => p.OrgBranchName).Editable(false);
+                                                                                                                                model.Field(p => p.CreatedBy).Editable(false);
+                                                                                                                                model.Field(p => p.ModifiedBy).Editable(false);
+                                                                                                                                model.Field(p => p.LastModified).Editable(false);
+                                                                                                                                model.Field(p => p.DateCreated).Editable(false);
+                                                                                                                            })
+                                                                                                          .Events(ev => ev
+                                                                                                              .Error("error_handler(\"GuaranteeRenewalRequest#=GuaranteeId#\")")
+                                                                                                              .RequestStart("onRequestStart(\"GuaranteeRenewalRequest#=GuaranteeId#\")")
+                                                                                                              .RequestEnd("onRequestEnd(\"GuaranteeRenewalRequest#=GuaranteeId#\")"))
+                                                                                                          .Read(read => read.Action("GuaranteeRenewalRequests_Read", "GuaranteeRenewalRequest", new { id = "#=GuaranteeId#" }))
+                                                                                                          .Create(create => create.Action("GuaranteeRenewalRequests_Create", "GuaranteeRenewalRequest", new { id = "#=GuaranteeId#" }))
+                                                                                                          .Update(update => update.Action("GuaranteeRenewalRequests_Update", "GuaranteeRenewalRequest", new { id = "#=GuaranteeId#" }))
+                                                                                                          .Destroy(destroy => destroy.Action("GuaranteeRenewalRequests_Destroy", "GuaranteeRenewalRequest"))
+                                                                                                      )
+                                                                                                      .ToClientTemplate())
+                                                            </text>);
+                                                                    items.Add().Text("Renewals").Content(@<text>
+                                                                        @(Html.Kendo().Grid<GuaranteeRenewal>()
+                                                                                                              .Name("GuaranteeRenewal#=GuaranteeId#")
+                                                                                                              .Columns(columns =>
+                                                                                                              {
+                                                                                                                                        columns.Bound(c => c.Date).Width(150);
+                                                                                                                                        columns.Bound(c => c.GuaranteeRefNo).Width(200);
+                                                                                                                                        columns.Bound(c => c.ValidityPeriod).Width(200);
+                                                                                                                                        columns.Bound(c => c.Remark).Width(150);
+                                                                                                                                        columns.Command(command =>
+                                                                                                    {
+
+                                                                                                                                          command.Edit();
+                                                                                                                                          command.Destroy();
+
+                                                                                                                                      });
+                                                                                                                                    })
+                                                                                                              .ToolBar(toolbar =>
+                                                                                                              {
+                                                                                                                                        toolbar.Create();
+                                                                                                                                    })
+                                                                                                              .Events(x => x.DataBound("onDataBoundLines"))
+                                                                                                              .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                                                              .Pageable(pageable => pageable
+                                                                                                                  .Input(true)
+                                                                                                                  .Numeric(false)
+                                                                                                                  .Refresh(true)
+                                                                                                                  .PageSizes(true)
+                                                                                                                  .ButtonCount(10))
+                                                                                                              .Scrollable()
+                                                                                                              .Sortable()
+                                                                                                              .Filterable()
+                                                                                                              .DataSource(dataSource => dataSource
+                                                                                                                  .Ajax()
+
+                                                                                                                  .Model(
+                                                                                                                      model =>
+                                                                                                                      {
+                                                                                                                                                model.Id(p => p.GuaranteeRenewalId);
+                                                                                                                                                model.Field(p => p.OrgBranchName).Editable(false);
+                                                                                                                                                model.Field(p => p.CreatedBy).Editable(false);
+                                                                                                                                                model.Field(p => p.ModifiedBy).Editable(false);
+                                                                                                                                                model.Field(p => p.LastModified).Editable(false);
+                                                                                                                                                model.Field(p => p.DateCreated).Editable(false);
+                                                                                                                                            })
+                                                                                                                  .Events(ev => ev
+                                                                                                                      .Error("error_handler(\"GuaranteeRenewal#=GuaranteeId#\")")
+                                                                                                                      .RequestStart("onRequestStart(\"GuaranteeRenewal#=GuaranteeId#\")")
+                                                                                                                      .RequestEnd("onRequestEnd(\"GuaranteeRenewal#=GuaranteeId#\")"))
+                                                                                                                  .Read(read => read.Action("GuaranteeRenewals_Read", "GuaranteeRenewal", new { id = "#=GuaranteeId#" }))
+                                                                                                                  .Create(create => create.Action("GuaranteeRenewals_Create", "GuaranteeRenewal", new { id = "#=GuaranteeId#" }))
+                                                                                                                  .Update(update => update.Action("GuaranteeRenewals_Update", "GuaranteeRenewal", new { id = "#=GuaranteeId#" }))
+                                                                                                                  .Destroy(destroy => destroy.Action("GuaranteeRenewals_Destroy", "GuaranteeRenewal"))
+                                                                                                              )
+                                                                                                              .ToClientTemplate())
+                                                                    </text>);
+
+                                                                            items.Add().Text("Documents").Content(@<text>
+                                                                                @UploadDocuments()
+                                                                            </text>);
+
+                                                                                    items.Add().Text("Validation").Content(
+                                        @<text>
+                                            @(Html.Kendo().Grid<GuaranteeValidation>()
+                                                                                  .Name("GuaranteeValidation#=GuaranteeId#")
+                                                                                  .Columns(columns =>
+                                                                                  {
+                                                                                              columns.Bound(c => c.GuaranteeValidationId).Hidden(true);
+                                                                                              columns.Bound(c => c.Status).EditorTemplateName("ApprovalStatus").Width(150);
+                                                                                              columns.Bound(c => c.Remark).Width(200);
+                                                                                              columns.Bound(c => c.DateCreated).Width(200).Title("Time").Format("{0:dd/MM/yyyy}");
+                                                                                              columns.Bound(c => c.LastModified).Hidden(true);
+                                                                                              columns.Bound(c => c.CreatedBy).Width(200).Title("User");
+                                                                                              columns.Bound(c => c.ModifiedBy).Hidden(true);
+                                                                                              columns.Command(command =>
+                                                          {
+                                                                                  command.Edit();
+
+                                                                              });
+
+                                                                                          })
+                                                                                  .ToolBar(toolbar =>
+                                                                                  {
+                                                                                              toolbar.Create();
+                                                                                          })
+                                                                                  .Events(x => x.DataBound("onDataBoundFisrtValidation"))
+                                                                                  .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                                  .Pageable(pageable => pageable
+                                                                                      .Input(true)
+                                                                                      .Numeric(false)
+                                                                                      .Refresh(true)
+                                                                                      .PageSizes(true)
+                                                                                      .ButtonCount(5))
+                                                                                  .Sortable(sortable =>
+                                                                                  {
+                                                                                              sortable.SortMode(GridSortMode.SingleColumn);
+                                                                                          })
+                                                                                  .Filterable()
+                                                                                  .Scrollable()
+                                                                                  .DataSource(dataSource => dataSource
+                                                                                      .Ajax()
+                                                                                      .Model(
+                                                                                          model =>
+                                                                                          {
+                                                                                                      model.Id(p => p.GuaranteeValidationId);
+                                                                                                      model.Field(p => p.OrgBranchName).Editable(false);
+                                                                                                      model.Field(p => p.CreatedBy).Editable(false);
+                                                                                                      model.Field(p => p.ModifiedBy).Editable(false);
+                                                                                                      model.Field(p => p.LastModified).Editable(false);
+                                                                                                      model.Field(p => p.DateCreated).Editable(false);
+                                                                                                  })
+                                                                                      .Events(ev => ev
+                                                                                          .Error("error_handler(\"GuaranteeValidation#=GuaranteeId#\")")
+                                                                                          .RequestStart("onRequestStart(\"GuaranteeValidation#=GuaranteeId#\")")
+                                                                                          .RequestEnd("onRequestEnd(\"GuaranteeValidation#=GuaranteeId#\")"))
+                                                                                      .Read(read => read.Action("GuaranteeValidations_Read", "GuaranteeValidation", new { id = "#=GuaranteeId#" }))
+                                                                                      .Create(create => create.Action("GuaranteeValidations_Create", "GuaranteeValidation", new { id = "#=GuaranteeId#" }))
+                                                                                      .Update(update => update.Action("GuaranteeValidations_Update", "GuaranteeValidation", new { id = "#=GuaranteeId#" }))
+                                                                                      .Destroy(destroy => destroy.Action("GuaranteeValidations_Destroy", "GuaranteeValidation"))
+                                                                                  )
+                                                                                  .ToClientTemplate())
+
+                                        </text>);
+                                              })
+
+                                                                        .ToClientTemplate())
+
+    @helper UploadDocuments()
+    {
+        @(Html.Kendo().Grid<GuaranteeFile>()
+                                              .Name("GuaranteeFile#=GuaranteeId#")
+                                              .Columns(columns =>
+                                              {
+                                                  columns.Bound(c => c.FileName).Width(200).ClientTemplate("<a href='GuaranteeFile/FileDwonload?id=#=GuaranteeId#'>\\#=FileName\\#</a>");
+                                                  columns.Bound(c => c.Description).Width(200);
+                                                  columns.Command(command =>
+                                                  {
+                                                      command.Edit();
+                                                      command.Destroy();
+
+                                                  });
+                                              })
+                                              .ToolBar(toolbar =>
+                                              {
+                                                  toolbar.Template(@<text>
+                                                    @Html.Kendo().Upload().Name("file").Async(a => a.Save("GuaranteeFiles_Create", "GuaranteeFile", new { id = "#=GuaranteeId#" })).Events(e => e.Complete("onUploadSuccess")).ShowFileList(false).ToClientTemplate()
+
+                                                </text>);
+                                                    })
+
+                                                                      .Events(x => x.DataBound("onDataBoundLines"))
+                                                                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+
+                                                                      .Pageable(pageable => pageable
+                                                                          .Input(true)
+                                                                          .Numeric(false)
+                                                                          .Refresh(true)
+                                                                          .PageSizes(true)
+                                                                          .ButtonCount(10))
+                                                                      .Scrollable()
+                                                                      .Sortable()
+                                                                      .Filterable()
+                                                                      .DataSource(dataSource => dataSource
+                                                                          .Ajax()
+
+                                                                          .Model(
+                                                                              model =>
+                                                                              {
+                                                                                  model.Id(p => p.GuaranteeFileId);
+                                                                                  model.Field(p => p.FileName).Editable(false);
+                                                                              })
+                                                                          .Events(ev => ev
+                                                                              .Error("error_handler(\"GuaranteeFile#=GuaranteeId#\")")
+                                                                              .RequestStart("onRequestStart(\"GuaranteeFile#=GuaranteeId#\")")
+                                                                              .RequestEnd("onRequestEnd(\"GuaranteeFile#=GuaranteeId#\")"))
+                                                                          .Read(read => read.Action("GuaranteeFiles_Read", "GuaranteeFile", new { id = "#=GuaranteeId#" }))
+                                                                          .Create(create => create.Action("GuaranteeFiles_Create", "GuaranteeFile", new { id = "#=GuaranteeId#" }))
+                                                                          .Update(update => update.Action("GuaranteeFiles_Update", "GuaranteeFile", new { id = "#=GuaranteeId#" }))
+                                                                          .Destroy(destroy => destroy.Action("GuaranteeFiles_Destroy", "GuaranteeFile"))
+                                                                      )
+                                                                      .ToClientTemplate())
+    }
+
+</script>
+
+
+
+<script>
+
+    function sendForApproval(id) {
+        var recordStatus = "";
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("SendForApproval", "Guarantee", new { area = "Procurement" })',
+            data: { id: id },
+            success: function (result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                recordStatus = result.Status;
+                location.reload(true);
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+
+    function release(id) {
+        var recordStatus = "";
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("Release", "Guarantee", new { area = "Procurement" })',
+            data: { id: id },
+            success: function (result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                recordStatus = result.Status;
+                location.reload(true);
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+
+    function forfeit(id) {
+        var recordStatus = "";
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("Forfeit", "Guarantee", new { area = "Procurement" })',
+            data: { id: id },
+            success: function (result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                recordStatus = result.Status;
+                location.reload(true);
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+
+
+    function filterGuaranteeModes() {
+
+        return {
+            category: $("#ProcurementCategory").data("kendoDropDownList").value(),
+            type: $("#GuaranteeType").data("kendoDropDownList").value()
+        };
+    }
+
+    function onUploadSuccess(e) {
+        // Force the rebinding of the Grid on successful upload
+        $("#grid").data("kendoGrid").dataSource.read();
+    }
+
+
+    function onDataBoundMasterGuarantee(e) {
+        //this.expandRow(this.tbody.find("tr.k-master-row").first());
+
+        //approved
+        var grid = $("#grid").data("kendoGrid");
+        var gridData = grid.dataSource.view();
+
+        for (var i = 0; i < gridData.length; i++) {
+            var currentUid = gridData[i].uid;
+            if (gridData[i].IsOnlineApproved || gridData[i].IsSendForApproval) {
+                var currenRow = grid.table.find("tr[data-uid='" + currentUid + "']");
+                var editButton = $(currenRow).find(".k-grid-edit");
+                var deleteButton = $(currenRow).find(".k-grid-delete");
+                editButton.hide();
+                deleteButton.hide();
+            }
+        }
+
+        //changing colors
+        var rows = e.sender.tbody.children();
+        for (var j = 0; j < rows.length; j++) {
+            var row = $(rows[j]);
+            var dataItem = e.sender.dataItem(row);
+            if (dataItem.IsSendForApproval && !dataItem.IsOnlineApproved) {
+                row.css("background-color", "lightgreen");
+            }
+            if (!dataItem.IsSendForApproval && !dataItem.IsOnlineApproved) {
+                row.css("background-color", "lightskyblue");
+            }
+
+            if (dataItem.IsExpired) {
+                row.css("background-color", "lightcoral");
+            }
+
+            if (dataItem.IsExpired && dataItem.RenewalStatus===1) {
+                row.css("background-color", "coral");
+                row.css("color", "whitesmoke");
+            }
+
+        }
+    }
+
+    var isExpired = false;
+    var isSent = false;
+
+    function isExpireCheck(obj) {
+        if ($(obj).is(":checked")) {
+            isExpired = true;
+            $("#grid").data("kendoGrid").dataSource.read();
+
+        } else {
+            isExpired = false;
+            $("#grid").data("kendoGrid").dataSource.read();
+
+        }
+
+    }
+
+    function isSentCheck(obj) {
+        if ($(obj).is(":checked")) {
+            isSent = true;
+            $("#grid").data("kendoGrid").dataSource.read();
+
+        } else {
+            isSent = false;
+            $("#grid").data("kendoGrid").dataSource.read();
+
+        }
+
+    }
+
+    function passReadData() {
+        return {
+            isExpired: isExpired,
+            isSent: isSent
+        };
+    }
+
+</script>

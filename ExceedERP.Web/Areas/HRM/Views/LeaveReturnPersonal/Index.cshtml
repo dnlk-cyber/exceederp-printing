@@ -1,0 +1,574 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.HRM.LeaveManagment
+@using ExceedERP.Core.Domain.HRM.SelfCare
+@using ExceedERP.Core.Localization
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Leave Void</legend>
+@(Html.Kendo().Grid<LeaveReturn>()
+                                      .Name("LeaveReturngrid")
+                                  .Columns(columns =>
+                                  {
+                                      columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeName"], "EmployeeId", "FullNameAmharic").EditorTemplateName("ListOfEmployee").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
+
+                                      columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["PeriodList"], "GlFiscalYearId", "Name").EditorTemplateName("GLFPeriod").Width(80);
+                                      columns.Bound(c => c.FromAm).EditorTemplateName("Calander").Width(100);
+                                      columns.Bound(c => c.ToAm).EditorTemplateName("Calander").Width(100);
+                                      columns.Bound(c => c.Amount).Width(100);
+                                      //columns.Bound(c => c.LeaveRequestId);
+                                      columns.Command(command =>
+                                      {
+                                          command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                          command.Destroy().Text(Resources.ActionButton_Cancel);
+                                          //  command.Custom("Print").Text("Print");
+                                      }).Width(250);
+
+                                  })
+                                  .ToolBar(toolbar =>
+                                  {
+
+                                      toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                                  })
+
+                              .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("LeaveReturn").Window(window => { window.Title("Leave Void"); window.Scrollable(false); }))
+                                              .Events(events => events.DetailExpand("onDetailExpandUser"))
+                                .Scrollable(h => h.Height(500))
+                                         .Groupable()
+                                                  .Sortable(sortable =>
+                                                  {
+                                                      sortable.SortMode(GridSortMode.SingleColumn);
+                                                  })
+                                      .Filterable()
+                                           .Events(e =>
+                                           {
+                                               e.Save("GetDate");
+                                               e.Edit("GetDate");
+                                           })
+                                           .Events(e =>
+                                           {
+                                               e.DataBound("onDataBound");
+                                           })
+                                         .Pageable(pageable => pageable
+                                                                    .Input(true)
+                                                                    .Numeric(false)
+                                                                    .Refresh(true)
+                                                                    .PageSizes(true)
+                                                                    .ButtonCount(5))
+                              .DataSource(dataSource => dataSource
+                                  .Ajax()
+                                        .Sort(sort => sort.Add("LeaveReturnId").Descending())
+                                        .Events(events =>
+                                        {
+                                            events.Error("error_handler(\"LeaveReturngrid\")");
+                                            events.RequestStart("onRequestStart(\"LeaveReturngrid\")");
+                                            events.RequestEnd("onRequestEnd(\"LeaveReturngrid\")");
+                                        })
+
+                                   .Model(model =>
+                                   {
+                                       model.Id(p => p.LeaveReturnId);
+                                       model.Field(p => p.Amount).Editable(false);
+                                   })
+                                  .Read(read => read.Action("LeaveReturnPersonal_Read", "LeaveReturnPersonal"))
+                                  .Create(create => create.Action("LeaveReturnPersonal_Create", "LeaveReturnPersonal"))
+                                  .Update(update => update.Action("LeaveReturnPersonal_Update", "LeaveReturnPersonal"))
+                                  .Destroy(destroy => destroy.Action("LeaveReturnPersonal_Destroy", "LeaveReturnPersonal"))
+                                  ).ClientDetailTemplateId("template")
+)
+
+
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                                                                                          .Name("tabstrip_#=LeaveReturnId#")
+                                                                          .SelectedIndex(0)
+                                                                          .Items(items =>
+                                                                          {
+                                                                              items.Add().Text(Resources.HR_RequestStatus).Content(
+                                                                                @<text>
+                                                                                    @* <legend>Status</legend>*@
+
+                                                                                    @(Html.Kendo().Grid<RequestesStatus>()
+                                                                                                                                                                  .Name("RequestesStatusgrid_#=LeaveReturnId#")
+                                                                                                                                                          .Columns(columns =>
+                                                                                                                                                          {
+                                                                                                                                                              //columns.Bound(c => c.RequestId);
+                                                                                                                                                              columns.Bound(c => c.DateReqStatAm).Width(120);
+                                                                                                                                                              columns.Bound(c => c.Status).EditorTemplateName("Enum").Width(200);
+                                                                                                                                                              //columns.ForeignKey(c => c.ApproverId, (IEnumerable)ViewData["UserName"], "EmployeeId", "UserName").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
+                                                                                                                                                              columns.ForeignKey(c => c.ApproverId, (IEnumerable)ViewData["EmployeeName"], "EmployeeId", "FullNameAmharic").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
+                                                                                                                                                              columns.ForeignKey(c => c.ApproverDepartment, (IEnumerable)ViewData["Department"], "OrgStructureId", "Name").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
+                                                                                                                                                              columns.Bound(c => c.Remark).Width(100);
+                                                                                                                                                              columns.Command(command =>
+                                                                                                                                                              {
+                                                                                                                                                                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                                                                                                                                                  command.Destroy().Text(Resources.ActionButton_Cancel);
+                                                                                                                                                              }).Width(400);
+                                                                                                                                                          })
+                                                                                                                                                          .ToolBar(toolbar =>
+                                                                                                                                                          {
+                                                                                                                                                              //toolbar.Custom().Action("SendForApproval", "LeaveReturnPersonal").Text(Resources.HR_Send_For_Approval);
+                                                                                                                                                              //toolbar.Custom().Action("LeaveRequestLetter", "PrintableLetter", new { id = "#=LeaveRequestId#"}).Text("Print");
+                                                                                                                                                          })
+
+
+                                                                                                                                                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                                                                                                          .Scrollable()
+                                                                                                                                                          .DataSource(dataSource => dataSource
+                                                                                                                                                              .Ajax()
+                                                                                                                                                                         .Events(events =>
+                                                                                                                                                                         {
+                                                                                                                                                                             events.Error("error_handler(\"RequestesStatusgrid_#=LeaveReturnId#\")");
+                                                                                                                                                                             events.RequestStart("onRequestStart(\"RequestesStatusgrid_#=LeaveReturnId#\")");
+                                                                                                                                                                             events.RequestEnd("onRequestEnd(\"RequestesStatusgrid_#=LeaveReturnId#\")");
+                                                                                                                                                                         })
+
+                                                                                                                                           .Model(model =>
+                                                                                                                                           {
+                                                                                                                                               model.Id(p => p.RequestStatusId);
+                                                                                                                                               model.Field(p => p.Date).Editable(false).DefaultValue(DateTime.Today);
+                                                                                                                                               model.Field(p => p.ApproverId).Editable(false);
+                                                                                                                                               model.Field(p => p.ApproverDepartment).Editable(false);
+                                                                                                                                           })
+                                                                                                                                                                                    .Read(read => read.Action("RequestesStatus_Read", "RequestesStatus", new { id = "#=LeaveReturnId#", referenceType = "LeaveReturn" }))
+                                                                                                                                                                                .Create(create => create.Action("RequestesStatus_Create", "RequestesStatus", new { id = "#=LeaveReturnId#", referenceType2 = "LeaveReturn" }))
+                                                                                                                                                                                  .Update(update => update.Action("RequestesStatus_Update", "RequestesStatus"))
+                                                                                                                                                                                  .Destroy(destroy => destroy.Action("RequestesStatus_Destroy", "RequestesStatus"))
+                                                                                                                                                          ).ToClientTemplate()
+                                                                                    )
+                                                                                    <a onclick='return sendForApproval("#=LeaveReturnId#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>&nbsp;&nbsp;&nbsp;
+                                                                                    @*<a href='@Url.Action("LeaveRequestLetter", "PrintableLetter")/?id=#=LeaveRequestId#' title="Print"><i class="fa fa-print fa-2x"></i></a>*@
+                                                                                </text>
+                                                                                                );
+
+
+                                                                          //*****************************************************************************************************//
+
+                                                                      }).ToClientTemplate())
+</script>
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 700px;
+    }
+
+    .Employee-photo {
+        display: inline-block;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background-size: 32px 35px;
+        background-position: center center;
+        vertical-align: middle;
+        line-height: 32px;
+        box-shadow: inset 0 0 1px #999, inset 0 0 10px rgba(0,0,0,.2);
+        margin-left: 5px;
+    }
+
+    .Employee-name {
+        display: inline-block;
+        vertical-align: middle;
+        line-height: 32px;
+        padding-left: 3px;
+    }
+</style>
+
+<script>
+    //function error_handler(e) {
+    //    if (e.errors) {
+    //        var message = "Errors:\n";
+    //        $.each(e.errors, function(key, value) {
+    //            if ('errors' in value) {
+    //                $.each(value.errors, function() {
+    //                    message += this + "\n";
+    //                });
+    //            }
+    //        });
+    //        alert(message);
+
+    //    }
+
+    //}
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+</script>
+<script>
+    function GetDate() {
+
+        var x = AssignDate();
+        var y = x;
+        $("#FromAm").trigger("change");
+        $("#ToAm").trigger("change");
+        for (var o in y) {
+            $.ajax({
+                contentType: "application/json; charset=utf-8",
+                url: '@Url.Action("SetDate", "LeaveRequestPersonal")',
+                data: { name: y[o].id, value: y[o].date },
+                type: 'GET',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                }
+
+            });
+        }
+
+        /////////////////////////////////////////////////////////
+
+             $("#LeaveBalance").val(0);
+        var employee = $("#EmployeeId").data("kendoDropDownList");
+        var empId = employee.value();
+        if (empId == "0" )
+        {
+            $.ajax({
+                url: '@Url.Action("GetBalance", "LeaveReturnPersonal")',
+
+                data: { empId: empId },
+                type: 'POST',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                    var s = r.split(/-/);
+
+                    $("#LeaveBalance").val(s[0]);
+                    $("#LeaveBalance").trigger("change");
+                }
+
+            });
+        }
+
+    }
+
+</script>
+<script>
+    function AssignDate() {
+        var list = AssignDates();
+        return list;
+    }
+
+</script>
+
+<script>
+    @*function GetBalance() {
+
+        $("#LeaveBalance").val(0);
+        var employee = $("#EmployeeId").data("kendoDropDownList");
+        var empId = employee.value();
+        //var periods = $("#GlFiscalYearId").data("kendoDropDownList");
+        //var period = periods.value();
+        $.ajax({
+            url: '@Url.Action("GetBalance", "LeaveRequestPersonal")',
+
+            data: { /*period: period,*/ empId: empId },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                r = result;
+                var s = r.split(/-/);
+
+                $("#LeaveBalance").val(s[0]);
+                $("#LeaveBalance").trigger("change");
+            }
+
+        });
+    }*@
+    function onDetailExpandUser(e) {
+        var masterRow = e.masterRow;
+
+        var masterGrid = $("#LeaveReturngrid").data("kendoGrid");
+
+        var masterDataItem = masterGrid.dataItem(masterRow);
+
+        masterId = masterDataItem.LeaveReturnId;
+        var gridName = "#RequestesStatusgrid_" + masterId;
+        $.ajax({
+            url: '@Url.Action("CheckStatus", "LeaveReturnPersonal")',
+
+            data: { masterId: masterId },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                r = result;
+                if (r == "true") {
+                    $(gridName).find(".k-toolbar").hide(); //hide toolbar
+                    $(".k-grid-top", gridName).hide();
+                    $(".k-grid-edit", gridName).hide();
+                    $(".k-grid-delete", gridName).hide();
+                }
+                else if (r == "approved") {
+                    $(gridName).find(".k-toolbar").hide(); //hide toolbar
+                    $(".k-grid-top", gridName).hide();
+                    $(".k-grid-edit", gridName).hide();
+                    $(".k-grid-delete", gridName).hide();
+                }
+                else if (r == "Dapproved") {
+                    $(gridName).find(".k-toolbar").hide(); //hide toolbar
+                    $(".k-grid-top", gridName).hide();
+                    $(".k-grid-edit", gridName).hide();
+                    $(".k-grid-delete", gridName).hide();
+                }
+                else {
+                    $(gridName).find(".k-toolbar").show(); //hide toolbar
+                    $(".k-grid-top", gridName).show();
+                }
+
+            }
+
+        });
+
+    }
+    function SetEmployee(e) {
+        var x = e.checked;
+        var dropDown = $("#EmployeeId").data("kendoDropDownList");
+        if (x == true) {
+            $("#LeaveBalance").val(0);
+            $("#LeaveBalance").trigger("change");
+            dropDown.enable(true);
+
+
+        }
+        else {
+            $("#LeaveBalance").val(0);
+            $("#LeaveBalance").trigger("change");
+            dropDown.value(0);
+            dropDown.enable(false);
+
+             /////////////////////////////////////////////////////////
+
+        var employee = $("#EmployeeId").data("kendoDropDownList");
+        var empId = employee.value();
+        if (empId == "0" )
+        {
+            $.ajax({
+                url: '@Url.Action("GetBalance", "LeaveReturnPersonal")',
+
+                data: { empId: empId },
+                type: 'POST',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                    var s = r.split(/-/);
+
+                    $("#LeaveBalance").val(s[0]);
+                    $("#LeaveBalance").trigger("change");
+                }
+
+            });
+            }
+
+        }
+        $.ajax({
+            contentType: "application/json; charset=utf-8",
+            url: '@Url.Action("SetEmployee", "LeaveReturnPersonal")',
+            data: { x: x },
+            type: 'GET',
+            cache: false,
+            success: function (result) {
+                r = result;
+                if (x==true && r == "0")
+                {
+                    e.checked = false;
+                    dropDown.value(0);
+                    dropDown.enable(false);
+                    alert("You can not request for other employee!!.\nThere is no employee under your postion.");
+                }
+              //  $("#EmployeeId").data('kendoComboBox').dataSource.read();
+                //$("#EmployeeId").data('kendoComboBox').refresh();
+            }
+
+        });
+
+
+    }
+    function valueMapper(options) {
+        $.ajax({
+            url: "/HRM/HRMDataProvider/Employee_ValueMapper/",
+            data: {
+                value: options.value || 0,
+                status: 1,
+                excludeId: -1
+            },
+            success: function (data) {
+                options.success(data);
+            }
+        });
+    }
+
+    function convertValues(value) {
+        var data = {};
+
+        value = $.isArray(value) ? value : [value];
+
+        for (var idx = 0; idx < value.length; idx++) {
+            data["values[" + idx + "]"] = value[idx];
+        }
+
+        return data;
+    }
+    function IsforOthers() {
+        return {
+            IsForOther: $("#IsForOther").val()
+        };
+    }
+
+</script>
+
+
+<script>
+    function GetBalance() {
+
+        $("#LeaveBalance").val(0);
+        var employee = $("#EmployeeId").data("kendoDropDownList");
+        var empId = employee.value();
+        //var periods = $("#GlFiscalYearId").data("kendoDropDownList");
+        //var period = periods.value();
+        //var leaveType = $("#Type").data("kendoDropDownList");
+        //var lt = leaveType.value();
+        if (empId.length !== 0 /*&& period.length !== 0*/)
+        {
+
+            $.ajax({
+                url: '@Url.Action("GetAmount", "LeaveReturnPersonal")',
+
+                data: { /*period: period, */empId: empId },
+                type: 'POST',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                    var s = r.split(/-/);
+
+                    $("#LeaveBalance").val(s[0]);
+                    $("#LeaveBalance").trigger("change");
+                }
+
+            });
+        }
+        @*else
+        {
+
+            $.ajax({
+                url: '@Url.Action("GetCurrentEmpBalance", "LeaveRequestPersonal")',
+
+                data: { period: period },
+                type: 'POST',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                    var s = r.split(/-/);
+
+                    $("#LeaveBalance").val(s[0]);
+                    $("#LeaveBalance").trigger("change");
+                }
+
+            });
+        }*@
+    }
+
+</script>
+
+<script>
+
+    function onDataBound(e) {
+        var rows = e.sender.tbody.children();
+
+        for (var j = 0; j < rows.length; j++) {
+            var row = $(rows[j]);
+            var dataItem = e.sender.dataItem(row);
+            if (dataItem.IsApproved === true) {
+
+                row.css("background-color", "darkgrey");
+            }
+            else {
+
+                row.css("background-color", "lightgreen");
+            }
+
+
+        }
+
+    }
+
+</script>
+
+<script>
+    function Print() {
+
+
+        var id = $("#LeaveReturnId").val;
+
+            $.ajax({
+                url: '@Url.Action("LeaveRequestLetter", "PrintableLetter")',
+
+                data: { id: id },
+                type: 'POST',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                }
+
+            });
+        }
+
+
+</script>
+
+
+<script>
+    function GetRequestedAmount() {
+
+        $("#LeaveDays").val(0);
+       // var fromDate = $("#FromAmharic").data('kendoTextBox').value();
+        var from = $('#FromAmharic').val();
+        //var toDate = $("#ToAmharic").data('kendoTextBox').value();
+        var to = $('#ToAmharic').val();
+        var dayT = $("#Day").data("kendoDropDownList");
+        var half = dayT.value();
+        var hour = $('#Hours').val();
+
+
+            $.ajax({
+                url: '@Url.Action("GetLeaveDays", "LeaveReturnPersonal")',
+
+                data: { from: from, to: to, half: half, hour: hour },
+                type: 'POST',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                    var s = r.split(/-/);
+
+                    $("#LeaveDays").val(s[0]);
+                    $("#LeaveDays").trigger("change");
+                }
+
+            });
+
+    }
+
+</script>
+
+<script>
+        function sendForApproval(id) {
+        var recordStatus = "";
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("SendForApproval", "LeaveReturnPersonal", new { area = "HRM" })',
+            data: { id: id },
+            success: function(result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                recordStatus = result.Status;
+                if (recordStatus == "Success") {
+                    location.reload(true);
+                }
+
+            }, //end succ
+            error: function(result) {
+                alert(result);
+            }
+        });
+    }
+</script>

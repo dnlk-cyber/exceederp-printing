@@ -1,0 +1,30 @@
+﻿@using ExceedERP.Core.Domain.Finance.AP.PettyCash
+
+@(Html.Kendo().Grid<ApPettyCashPayment>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Description);
+          columns.Bound(c => c.PaymentMethod);
+          columns.Bound(c => c.Amount);
+          columns.Bound(c => c.Reference);
+          columns.Bound(c => c.OrgBranchName);
+          columns.Bound(c => c.DateCreated);
+          columns.Bound(c => c.LastModified);
+          columns.Bound(c => c.CreatedBy);
+          columns.Bound(c => c.ModifiedBy);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.ApPettyCashPaymentId))
+          .Read(read => read.Action("ApPettyCashPayments_Read", "ApPettyCashPayment"))
+          .Create(create => create.Action("ApPettyCashPayments_Create", "ApPettyCashPayment"))
+          .Update(update => update.Action("ApPettyCashPayments_Update", "ApPettyCashPayment"))
+          .Destroy(destroy => destroy.Action("ApPettyCashPayments_Destroy", "ApPettyCashPayment"))
+      ))

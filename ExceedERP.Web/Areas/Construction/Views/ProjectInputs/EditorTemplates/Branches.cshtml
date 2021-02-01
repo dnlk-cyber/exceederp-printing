@@ -1,0 +1,16 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@using ExceedERP.Core.Domain.HRM
+@(Html.Kendo().DropDownListFor(m => m)
+        .OptionLabel( Resources.Select)
+        .DataTextField("Name")
+        .DataValueField("BranchId")
+         //.BindTo((IEnumerable)ViewData["Branches"])
+         .DataSource(dataSource =>
+         {
+             dataSource.Read(read => read.Action("GetBranches", "DataProvider"));
+         })
+        .Filter("contains")
+        .MinLength(2)
+        .ValuePrimitive(true)
+)

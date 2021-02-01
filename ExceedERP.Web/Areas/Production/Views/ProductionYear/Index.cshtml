@@ -1,0 +1,107 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@using Kendo.Mvc.UI
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>  Setting | Production Years </legend>
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Production.ProductionYear>()
+                          .Name("settingssGrid")
+                          .Columns(columns =>
+                          {
+                              columns.Bound(c => c.Name);
+                              columns.Bound(c => c.DateFrom);
+                              columns.Bound(c => c.DateTo);
+                              columns.Bound(c => c.Status).EditorTemplateName("ProductionYearStatusSelector");
+                              //columns.Template(e => { }).Width(40).ClientTemplate("<button class='btnOpenCalendar' title='Open'><span class ='fa fa fa-calendar'></span></button>").Title(" ");
+                              //columns.Template(e => { }).Width(40).ClientTemplate("<button class='btnCloseCalendar' title='Close'><span class ='fa fa-arrow-down'></span></button>").Title(" ");
+
+                              columns.Command(command =>
+                              {
+                                  //command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                  command.Destroy().Text(Resources.ActionButton_Cancel);
+                              }).Width(100);
+
+                          })
+                          .ToolBar(toolbar =>
+                          {
+                              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                              toolbar.Save();
+                          })
+                          .Editable(editable => editable.Mode(GridEditMode.InCell))
+                          .Selectable(selectable =>
+                          {
+                              selectable.Mode(GridSelectionMode.Single);
+                              selectable.Type(GridSelectionType.Row);
+                          })
+                          .Scrollable(h => h.Height(700))
+                          .Sortable(sortable =>
+                          {
+                              sortable.SortMode(GridSortMode.SingleColumn);
+                          })
+                          //.Events(ev => {
+                          //    ev.DataBound("gridDataBound");
+                          //})
+                          .Filterable()
+                          .Pageable(pageable => pageable
+                              .Input(true)
+                              .Numeric(false)
+                              .Refresh(true)
+                              .PageSizes(true)
+                              .ButtonCount(5))
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+                              .PageSize(20)
+                              .Batch(true)
+                              .Events(events =>
+                              {
+                                  events.Error("error_handler(\"settingssGrid\")");
+                                  events.RequestStart("onRequestStart(\"settingssGrid\")");
+                                  events.RequestEnd("onRequestEnd(\"settingssGrid\")");
+                              })
+                              .Model(model =>
+                              {
+                                  model.Id(f => f.ProductionYearId);
+                                  //model.Field(f => f.Status).Editable(false);
+                              })
+
+                              .Read(read => read.Action("ProductionYears_Read", "ProductionYear"))
+                              .Create(create => create.Action("ProductionYear_Create", "ProductionYear"))
+                              .Update(update => update.Action("ProductionYear_Update", "ProductionYear"))
+                              .Destroy(destroy => destroy.Action("ProductionYear_Destroy", "ProductionYear"))
+                          )
+)
+
+<script>
+    function gridDataBound(e) {
+        $(".btnOpenCalendar").on("click", function (e) {
+            var selectedItem = $(this).closest("tr");
+            //var selectedUid = selectedItem.attr("data-uid");
+            //var itemIndex = selectedItem.index();
+            var dataItem = grid.dataItem(selectedItem);
+            var id = dataItem.ProductionYearId;
+            //var id = dataItem.SubProjectTypeId;
+            //alert("existing order: " + itemIndex);
+            //var newIndex = itemIndex + 1;
+            //alert("new order: " + newIndex);
+            
+            //if (newIndex > grid.dataSource.view().length) {
+            //    newIndex = grid.dataSource.view().length;
+            //}
+            @*if (dataItem.Status != 1) {
+                $.ajax({
+                type: "POST",
+                    url: '@Url.Action("UpdateSubProjectTypeOrder", "SubProjectType", new { area = "Construction" })',
+                    data: { id: id, oldOrderIndex: itemIndex, newOrderIndex: newIndex },
+                cache: false,
+                success: function (result) {
+                    grid.dataSource.read();
+                }, 
+                error: function (result) {
+                }
+            });
+            }*@
+        });
+    }
+</script>

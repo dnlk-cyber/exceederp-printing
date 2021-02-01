@@ -1,0 +1,29 @@
+﻿@using ExceedERP.Core.Localization
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.ProjectEquipmentFuelconsumption>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+       
+        columns.Bound(c => c.PreviousDelivered);
+        columns.Bound(c => c.ToDateDelivered);
+        columns.Bound(c => c.CurrentPeriodDelivered);
+        columns.Bound(c => c.TotalPreviousConsumed);
+        columns.Bound(c => c.TotalCurrentConsumed);
+        columns.Bound(c => c.TotalToDateConsumed);
+        columns.Bound(c => c.ToDateBalance);
+        columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.ProjectEquipmentFuelconsumptionId))
+          .Read(read => read.Action("EquipmentFuelconsumption_Read", "ProjectEquipmentFuelconsumption"))
+          .Create(create => create.Action("EquipmentFuelconsumption_Create", "ProjectEquipmentFuelconsumption"))
+          .Update(update => update.Action("EquipmentFuelconsumption_Update", "ProjectEquipmentFuelconsumption"))
+          .Destroy(destroy => destroy.Action("EquipmentFuelconsumption_Destroy", "ProjectEquipmentFuelconsumption"))
+      )
+)

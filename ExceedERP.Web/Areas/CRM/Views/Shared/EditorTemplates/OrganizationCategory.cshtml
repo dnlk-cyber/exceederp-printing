@@ -1,0 +1,13 @@
+﻿@(Html.Kendo().DropDownListFor(m => m)
+                  .AutoBind(false)
+                  .OptionLabel("--Select Organization Category--")
+                  .DataTextField("Description")
+                  .DataValueField("OrganizationCategoryID")
+                  .DataSource(dataSource =>
+                  {
+                      dataSource.Read(read => read.Action("GetOrganizationCategory", "CRMDataProvider"))
+                                .ServerFiltering(true);
+                  })
+
+)
+@Html.ValidationMessageFor(m => m)

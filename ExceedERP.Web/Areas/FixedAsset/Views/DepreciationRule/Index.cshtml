@@ -1,0 +1,86 @@
+﻿@using ExceedERP.Core.Domain.FixedAsset.Setting
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+ <legend>Annual Depreciation Rule</legend>
+@(Html.Kendo().Grid<DepreciationRule>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.ForeignKey(p => p.FixedAssetGroupID, (System.Collections.IEnumerable)ViewData["fixedAssetGroupsa"], "FixedAssetGroupID", "Name").Title("Asset Group").Width(170).EditorTemplateName("FixedAssetGroupSelector");
+          columns.ForeignKey(p => p.CategoryCode, (System.Collections.IEnumerable)ViewData["fixedAssetCategories"], "CategoryCode", "CategoryName").Width(170).EditorTemplateName("FixedAssetRuleCategorySelector");
+          columns.Bound(c => c.AccountCode).EditorTemplateName("AccountCode").Width(220);
+          columns.Bound(c => c.DepreciationCode).EditorTemplateName("AccountCode").Width(220);
+          columns.Bound(c => c.ClearingAccount).EditorTemplateName("AccountCode").Width(220);
+          columns.Bound(c => c.AccumulatedAccount).EditorTemplateName("AccountCode").Width(220);
+          columns.Command(command =>
+          {
+              command.Edit(); 
+              command.Destroy();
+          }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+                              //toolbar.Excel();
+                              //// toolbar.Pdf();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .HtmlAttributes(new { style = "height: 550px;" })
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(20))
+      .Scrollable()
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Filterable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model =>
+          {
+              model.Id(p => p.DepreciationRuleId);
+                 
+          })
+          .Read(read => read.Action("DepretiationRules_Read", "DepreciationRule"))
+          .Create(create => create.Action("DepretiationRules_Create", "DepreciationRule"))
+          .Update(update => update.Action("DepretiationRules_Update", "DepreciationRule"))
+          .Destroy(destroy => destroy.Action("DepretiationRules_Destroy", "DepreciationRule"))
+      ))
+
+<script>
+    function filterCategories() {
+   
+        return { groupid: $("#FixedAssetGroupID").data("kendoDropDownList").value() }
+    }
+  
+    
+
+    $(function () {
+
+
+        $("#grid table").on("keydown", "tr", function (e) {
+            var grid = $("#grid").data("kendoGrid");
+            var code = (e.keyCode ? e.keyCode : e.which);
+
+            if (code === 13) {
+                $(e.srcElement).closest("tbody").focus();
+                setTimeout(function () {
+                    grid.saveRow();
+                });
+            }
+        });
+        var grid = $("#grid").data("kendoGrid");
+        grid.addRow();
+        $(".k-grid-edit-row").appendTo("#grid tbody");
+    });
+</script>

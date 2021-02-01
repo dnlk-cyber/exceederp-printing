@@ -1,0 +1,221 @@
+﻿@using System.Collections
+@using ExceedERP.Helpers.Common
+@using ExceedERP.Core.Localization
+@using Kendo.Mvc.UI
+@model ExceedERP.Core.Domain.Construction.MonthlyProjectProgress
+<form>
+    <div class="row">
+        <div class="col-sm-1">
+
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.PlannedAmount, htmlAttributes: new { @class = "control-label col-sm-12" })
+
+                </div>
+                <div>
+                    @Html.Kendo().TextBoxFor(model => model.PlannedAmount).Format("{0:N2}")
+                    @*@Html.TextBoxFor(model => model.PlannedAmount, new { @class = "k-textbox", onblur = "changePlannedAmountTodate()" })*@
+                    @Html.ValidationMessageFor(model => model.PlannedAmount, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.PlannedAmountTillPreviousMonth, htmlAttributes: new { @class = "control-label col-sm-12" })
+
+                </div>
+                <div>
+
+                    @Html.Kendo().TextBoxFor(model => model.PlannedAmountTillPreviousMonth)
+                    @Html.ValidationMessageFor(model => model.PlannedAmountTillPreviousMonth, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @*@Html.LabelFor(model => model.ScheduleBrokenDownToWeeklyBase, htmlAttributes: new { @class = "control-label col-sm-12" })*@
+
+                </div>
+                <div>
+                    @Html.Kendo().CheckBoxFor(model => model.ScheduleBrokenDownToWeeklyBase).Label("Is the schedule broken down in weekly bases and up to foremen level?")
+                    @Html.ValidationMessageFor(model => model.ScheduleBrokenDownToWeeklyBase, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-sm-1">
+        </div>
+
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.PlannedToDate, htmlAttributes: new { @class = "control-label col-sm-12" })
+
+                </div>
+                <div>
+                    @Html.Kendo().TextBoxFor(model => model.PlannedToDate).Enable(false)
+                    @Html.ValidationMessageFor(model => model.PlannedToDate, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.ExecutedAmount, htmlAttributes: new { @class = "control-label col-sm-12" })
+
+                </div>
+                <div>
+                    @Html.Kendo().TextBoxFor(model => model.ExecutedAmount)
+                    @Html.ValidationMessageFor(model => model.ExecutedAmount, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @*@Html.LabelFor(model => model.AreFormenAwareOfIt, htmlAttributes: new { @class = "control-label col-sm-12" })*@
+
+                </div>
+                <div>
+                    @Html.Kendo().CheckBoxFor(model => model.ActionPlanIsPreparedWithAmountAndProblemsAreAddressed).Label("Is the action plan prepared with amount, responsible body and are problems addressed?")
+                    @Html.ValidationMessageFor(model => model.AreFormenAwareOfIt, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-sm-1">
+
+        </div>
+        <div class=" col-sm-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.ExecutedAmountTillPreviousMonth, htmlAttributes: new { @class = "control-label col-sm-12" })
+
+                </div>
+                <div>
+                    @Html.Kendo().TextBoxFor(model => model.ExecutedAmountTillPreviousMonth)
+                    @Html.ValidationMessageFor(model => model.ExecutedAmountTillPreviousMonth, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.ExecutedAmountToDate, htmlAttributes: new { @class = "control-label col-sm-12" })
+
+                </div>
+                <div>
+                    @Html.Kendo().TextBoxFor(model => model.ExecutedAmountToDate).Enable(false)
+                    @Html.ValidationMessageFor(model => model.ExecutedAmountToDate, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                @*<div class="k-label">
+                        @Html.LabelFor(model => model.WellDefinedTeamStructureExists, htmlAttributes: new { @class = "control-label col-sm-12" })
+
+                    </div>*@
+                <div>
+                    @Html.Kendo().CheckBoxFor(model => model.WellDefinedTeamStructureExists).Label("Is there weldefined team structure with required and limited resources?")
+                    @Html.ValidationMessageFor(model => model.WellDefinedTeamStructureExists, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <br />
+    <div class="row">
+        <div class="col-sm-1">
+
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.PriceAdjustmentThisMonth, htmlAttributes: new { @class = "control-label col-sm-12" })
+
+                </div>
+                <div>
+                    @Html.Kendo().TextBoxFor(model => model.PriceAdjustmentThisMonth)
+                    @Html.ValidationMessageFor(model => model.PriceAdjustmentThisMonth, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.PriceAdjustmentTillPrevMonth, htmlAttributes: new { @class = "control-label col-sm-12" })
+
+                </div>
+                <div>
+                    @Html.Kendo().TextBoxFor(model => model.PriceAdjustmentTillPrevMonth)
+                    @Html.ValidationMessageFor(model => model.PriceAdjustmentTillPrevMonth, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.NumberOfEvaluationMeething, htmlAttributes: new { @class = "control-label col-sm-12" })
+
+                </div>
+                <div>
+                    @Html.Kendo().NumericTextBoxFor(model => model.NumberOfEvaluationMeething)
+                    @Html.ValidationMessageFor(model => model.NumberOfEvaluationMeething, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-sm-1">
+
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.PriceAdjustmentToDate, htmlAttributes: new { @class = "control-label col-sm-12" })
+
+                </div>
+                <div>
+                    @Html.Kendo().TextBoxFor(model => model.PriceAdjustmentToDate).Enable(false)
+                    @Html.ValidationMessageFor(model => model.PriceAdjustmentToDate, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.ExecutedAmountToDateIncludingPriceAdjustment, htmlAttributes: new { @class = "control-label col-sm-12" })
+
+                </div>
+                <div>
+                    @Html.Kendo().TextBoxFor(model => model.ExecutedAmountToDateIncludingPriceAdjustment).Enable(false)
+                    @Html.ValidationMessageFor(model => model.ExecutedAmountToDateIncludingPriceAdjustment, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+
+            </div>
+        </div>
+
+    </div>
+
+</form>
+
+

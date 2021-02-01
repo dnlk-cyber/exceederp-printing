@@ -1,0 +1,118 @@
+﻿@model ExceedERP.Core.Domain.Budget.GAAP.InvestmentPlan
+
+
+
+<form>
+
+    <div class="row col-md-12">
+        <div class="col-md-1">
+        </div>
+        <div class="col-md-2">
+            <div class="form-group">
+                <div class="k-label">
+                    @(Html.LabelFor(model => model.Name))
+                </div>
+                <div>
+
+                    @(Html.Kendo().TextBoxFor(model => model.Name))
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-2">
+            <div class="form-group">
+                <div class="k-label">
+                    @(Html.LabelFor(model => model.GlFiscalYearId))
+
+                </div>
+                <div>
+                    @(Html.Kendo().DropDownListFor(model => model.GlFiscalYearId)
+                                    .DataTextField("Text").Filter(FilterType.Contains)
+                                                       .DataValueField("Value").OptionLabel("Select")
+                                                        .DataSource(d => d.Read(r => r.Action("FiscalYearDDBind", "BudgetGAAPDataProvider")).ServerFiltering(false)).ValuePrimitive(true))
+                </div>
+            </div>
+        </div>
+
+     </div>
+
+    <div class="row col-md-12">
+        <div class="col-md-1">
+        </div>
+        <div class="col-md-2">
+            <div class="form-group">
+                <div class="k-label">
+                    @(Html.LabelFor(model => model.First))
+                </div>
+                <div>
+
+                    @(Html.Kendo().NumericTextBoxFor(model => model.First).Min(0))
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-2">
+            <div class="form-group">
+                <div class="k-label">
+                    @(Html.LabelFor(model => model.Second))
+                </div>
+                <div>
+
+                    @(Html.Kendo().NumericTextBoxFor(model => model.Second).Min(0))
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-2">
+            <div class="form-group">
+                <div class="k-label">
+                    @(Html.LabelFor(model => model.Third))
+                </div>
+                <div>
+                    @(Html.Kendo().NumericTextBoxFor(model => model.Third).Min(0))
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="form-group">
+                <div class="k-label">
+                    @(Html.LabelFor(model => model.Fourth))
+                </div>
+                <div>
+                    @(Html.Kendo().NumericTextBoxFor(model => model.Fourth).Min(0))
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+
+    <div class="row col-md-12">
+        <div class="col-md-1">
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @(Html.LabelFor(model => model.FromAccCode))
+                </div>
+                <div>
+                    @Html.Kendo().TextBoxFor(model => model.FromAccCode).HtmlAttributes(new { disabled = "disabled" })  <img src="~/Content/Images/search.png" onclick="SelectAccCode(this)" />
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @(Html.LabelFor(model => model.ToAccCode))
+                </div>
+                <div>
+                    @Html.Kendo().TextBoxFor(model => model.ToAccCode).HtmlAttributes(new { disabled = "disabled" })  <img src="~/Content/Images/search.png" onclick="SelectAccCode(this)" />
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+</form>
+ 

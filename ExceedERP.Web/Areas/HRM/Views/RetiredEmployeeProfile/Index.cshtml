@@ -1,0 +1,3270 @@
+﻿@using System.Collections
+@using System.Security.AccessControl
+@using ExceedERP.Core.Domain.Common.HRM
+@using ExceedERP.Core.Domain.HRM.EmployeeDetail
+@using ExceedERP.Core.Domain.HRM.TrainingEducation
+@using ExceedERP.Core.Localization
+
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+   // var culture = System.Threading.Thread.CurrentThread.CurrentCulture.ToString();
+}
+
+<script id="fileTemplate" type="text/x-kendo-template">
+    <span class='k-progress'></span>
+    <div class='file-wrapper'>
+        <span class='file-icon #=addExtensionClass(files[0].extension)#'></span>
+        <h4 class='file-heading file-name-heading'>Name: #=name#</h4>
+        <h4 class='file-heading file-size-heading'>Size: #=size# bytes</h4>
+        <button type='button' class='k-upload-action'></button>
+    </div>
+</script>
+@*<script type="text/javascript">
+    //set the Kendo UI culture
+    kendo.culture("@culture");
+</script>*@
+
+
+<Legend>@Resources.Navigator_Employee_RetiredEmployeeProfile</Legend>
+
+@(Html.Kendo().Grid<Person_Employee>()
+          .Name("Person_Employeegrid")
+         .Columns(columns =>
+        {
+            columns.Bound(c => c.EmployeeCode).ClientTemplate(
+                          @"<div class='Employee-photo'
+                        style='background-image: url(" + Url.Content("~/Content/Images/") + "#:data.EmployeeId#-Photo/" + "#:data.EmployeeId#.jpg" + ");'></div>" +
+                      "<div class='Employee-name'>#:EmployeeCode#</div>").Width(120);
+            columns.Bound(c => c.Title).EditorTemplateName("Enum").Width(100).Visible(false);
+            columns.Bound(c => c.FirstName).Width(180);//Filterable(ftb => ftb.Multi(true).Search(true))
+                //.Filterable(filterable => filterable.UI("cityFilter"));
+            columns.Bound(c => c.MiddleName).Width(180);
+            
+            columns.Bound(c => c.LastName).Width(150);
+            //columns.Bound(c => c.MothersFullName).Width(100);
+            columns.Bound(c => c.Gender).EditorTemplateName("Enum").Width(90);
+            columns.Bound(c => c.DateOfBirthAm).Width(120);//.Format("{0:yyyy-MM-dd}");
+            //  columns.Bound(c => c.BirthPlace).Width(120);
+            columns.Bound(c => c.Region).EditorTemplateName("Enum").Width(60).Visible(false);
+            columns.Bound(c => c.Religion).EditorTemplateName("Enum").Width(60).Visible(false);
+            columns.ForeignKey(c => c.Nation, (IEnumerable)ViewData["NationList"], "LookupId", "Description").EditorTemplateName("Nation").Width(100).Visible(false);
+            // columns.ForeignKey(c => c.Nationality, (IEnumerable)ViewData["Nationalites"], "CountryId", "Nationality").EditorTemplateName("NationalityList").Width(100);
+            columns.Bound(c => c.MartialStatus).EditorTemplateName("Enum").Width(110);
+            //columns.Bound(c => c.IsActive).ClientTemplate("<input type='checkbox' disabled = 'true' \\#= Status ? checked='checked' :'' \\# />").Width(100);
+            columns.Command(command =>
+            {
+                if (HttpContext.Current.User.IsInRole("HR_Profile_User"))
+                {
+                    command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                }
+                if (HttpContext.Current.User.IsInRole("HR_Profile_Admin") || HttpContext.Current.User.IsInRole("HR_Admin"))
+                {
+                     command.Destroy().Text(Resources.ActionButton_Cancel);//
+                }
+            }).Width(200);
+        })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Template(@<text>
+            <div class="toolbar" style="">
+                @*@if (HttpContext.Current.User.IsInRole("HR_Profile_User"))
+                {
+                    @item.CreateButton(Resources.ActionButton_AddNewRecord);
+                }*@
+                @if (HttpContext.Current.User.IsInRole("HR_Profile_Admin") || HttpContext.Current.User.IsInRole("HR_Admin"))
+                {
+                    @item.CustomCommandToolBarButton("Excel", "<span class='k-icon k-i-excel'></span>" + Resources.ActionButton_ExportExcel, "Excel_Export_Save", "EmployeeProfile", "", new { @class = "k-button k-button-icontext k-grid-excel btn btn-primary btn-xs pull-right" });
+                    @item.CustomCommandToolBarButton("PDF", "<span class='k-icon k-i-pdf'></span>" + Resources.ActionButton_ExportPDF, "Pdf_Export_Save", "EmployeeProfile", "", new { @class = "k-button k-button-icontext k-grid-pdf  btn btn-primary btn-xs pull-right" });
+                    @*@(Html.Kendo().Button()
+          .Name("btnDownLoad")
+              .HtmlAttributes(new { type = "button", @class = "k-primary btn btn-primary btn-xs pull-right" })
+          .Events(e => e.Click("DownLoadTemplate"))
+                          .Content(Resources.DownloadTemplate))
+                    <br/>
+                    @(Html.Kendo().Upload()
+                    
+          .Name("file")
+                  .Async(a => a.Save("Employee_Import", "EmployeeProfile"))
+          .Events(e => e.Complete("onUploadSuccess").Upload("checkFileType"))
+                        //.ShowFileList(false).
+                        // .HtmlAttributes(new { type = "button", @class = "k-primary" })
+                    )*@
+
+                    
+                }
+            </div>
+        </text>);
+
+
+         
+      })
+          .Excel(excel => excel
+                    .FileName(Resources.Navigator_Employee_EmployeeProfile+".xlsx")
+                .Filterable(true)
+                    //.DataURI()
+                    .AllPages(true)
+                   // .ProxyURL(Url.Action("Excel_Export_Save", "EmployeeProfile"))
+            )
+                 .Pdf(pdf => pdf
+                .AllPages()
+               
+                .Landscape() 
+                
+             
+                    .FileName(Resources.Navigator_Employee_EmployeeProfile+".pdf")
+                  //  .ProxyURL(Url.Action("Pdf_Export_Save", "EmployeeProfile"))
+            )
+                                      .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("PersonEmployee").Window(window => { window.Title(Resources.Navigator_Employee_EmployeeProfile); window.Scrollable(false); }))
+      .Scrollable(h => h.Height(500))
+         .Groupable()
+                  .Sortable(sortable =>
+                  {
+                      sortable.SortMode(GridSortMode.SingleColumn);
+                  })
+                  
+         .Filterable()
+        
+
+
+          .Events(e => {
+              e.Save("GetDate");
+          e.DataBound("onDataBound");
+          e.Edit("GetDate");
+          })
+         .Pageable(pageable => pageable
+                                    .Input(true)
+                                    .Numeric(false)
+                                    .Refresh(true)
+                                    .PageSizes(true)
+                                    .ButtonCount(5)
+                                    .Enabled(true)
+                                    )
+                                   
+
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .ServerOperation( true)
+                           .Events(events =>
+                                                                                        {
+                                                                                            events.Error("error_handler(\"Person_Employeegrid\")");
+                                                                                            events.RequestStart("onRequestStart(\"Person_Employeegrid\")");
+                                                                                            events.RequestEnd("onRequestEnd(\"Person_Employeegrid\")");
+                                                                                        })
+               
+          .Model(model => model.Id(p => p.EmployeeId))
+                              .Read(read => read.Action("Person_Employee_Read", "RetiredEmployeeProfile"))
+                              .Create(create => create.Action("Person_Employee_Create", "RetiredEmployeeProfile"))
+                              .Update(update => update.Action("Person_Employee_Update", "RetiredEmployeeProfile"))
+                              .Destroy(destroy => destroy.Action("Person_Employee_Destroy", "RetiredEmployeeProfile"))
+
+          ).ClientDetailTemplateId("template")
+
+)
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                  .Name("tabstrip_#=EmployeeId#")
+          .SelectedIndex(0)
+          .Items(items =>
+          {
+              items.Add().Text(Resources.Details).Content(
+                @<text>
+                        
+    @(Html.Kendo().PanelBar()
+                       .Name("panelbar_#=EmployeeId#")
+                      .ExpandMode(PanelBarExpandMode.Single)
+                      .Items(panelbar =>
+                      {
+                          panelbar.Add().Text(Resources.Details)
+                              .Expanded(true)
+                              .Content(
+                                 
+                                   "<div>" +
+                        "<table class='table'>" +
+                        "<tr>"   +
+                            "<th>"+Resources.Details+"<th>"+                                                            
+                            "<th>"+Resources.Navigator_Employee_Chart+ "<th>" +                         
+                         "<tr>"+
+                         "<tr>" +
+                            "<td>" + "<div class='employee-details'>" +
+                                  "<ul>" +
+                                  "<li><label>" + Resources.HR_Photo + ": </label><div class='EmployeeDetail-photo'style='background-image: url(" + Url.Content("~/Content/Images/") + "#:data.EmployeeId#-Photo/" + "#:data.EmployeeId#.jpg" + ");'>" +
+                              
+                                  "</li>" +
+                                  "<li><label>" + Resources.Common_PersonEmployee_EmployeeCode + ": </label>#=EmployeeCode #</li>" +
+                              // "<li><label>Title:  </label>#=Title #</li>" +
+                                  "<li><label>" + Resources.Common_PersonEmployee_FirstName + ":</label>#=FirstName #</li>" +
+                                  "<li><label>" + Resources.Common_PersonEmployee_MiddleName + ":    </label>#=MiddleName #</li>" +
+                                  "<li><label>" + Resources.Common_PersonEmployee_LastName + ":</label>#=LastName #</li>" +
+                              // "<li><label>FirstName:</label>#=FirstName #</li>" +
+                              //"<li><label>"+Resources .Common_PersonEmployee_Nation+":</label>#=Nation #</li>" +
+                                  "<li><label>" + Resources.Common_PersonEmployee_DateOfBirth + ":</label>#=DateOfBirthAm#</li>" +
+                                  "<li><label>" + Resources.Common_PersonEmployee_MothersFullName + ":                </label>#=MothersFullName #</li>" +
+                                  "<li><label>" + Resources.Common_PersonEmployee_BirthPlace + ":</label>#=BirthPlace #</li>" +
+                                  "<li><label>" + Resources.Common_PersonEmployee_HiredDate + ":</label>#=HiredDateAmharic#</li>" +
+
+                                  "</ul>" +
+                                  "</div>" + "<th>" +
+                             "<td>" + EmployeeChartsResult() + "<th>" +                          
+                        
+                            "</table>" +                        
+                    "</div>"
+                              );
+
+
+
+                      }).ToClientTemplate()
+
+    )
+    </text>
+                  );
+             
+
+              items.Add().Text(Resources.Navigator_Employee_Education).Content(
+                @<text>
+   
+                    @(Html.Kendo().Grid<Education>()
+                  .Name("Educationgrid_#=EmployeeId#")
+      .Columns(columns =>
+      {
+          //columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "PersonId", "FullNameWithOutCode").EditorTemplateName("ListOfEmployee").Width(150);
+          columns.Bound(c => c.OrganizationName).Width(180);
+          columns.Bound(c => c.OrgAddress).Width(180);
+          columns.Bound(c => c.FromEAmharic).EditorTemplateName("Calander").Width(200);
+          columns.Bound(c => c.ToEAmharic).EditorTemplateName("Calander").Width(200);
+          columns.Bound(c => c.Score).Width(120);
+          columns.ForeignKey(c => c.EduField, (IEnumerable)ViewData["EduFiledList"], "LookupId", "Description").EditorTemplateName("LookUpList").Width(135);
+          columns.ForeignKey(c => c.EduLevel, (IEnumerable)ViewData["EduLevelList"], "LookupId", "Description").EditorTemplateName("EduLevelList").Width(140);
+          columns.Bound(c => c.TotalCost);
+          columns.Bound(c => c.PercentCoverdByOrg);
+          //  columns.Bound(c => c.Remark);
+          columns.Command(command =>
+          {
+              if (HttpContext.Current.User.IsInRole("HR_Profile_User"))
+              {
+
+                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+              }
+              if (HttpContext.Current.User.IsInRole("HR_Profile_Admin") || HttpContext.Current.User.IsInRole("HR_Admin"))
+              {
+                  command.Destroy().Text(Resources.ActionButton_Cancel);//
+              }
+          }).Width(200);
+      })
+      .ToolBar(toolbar =>
+      {
+          if (HttpContext.Current.User.IsInRole("HR_Profile_User"))
+          {
+
+              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+          }
+      })
+                          .Editable(editable => editable.Mode(GridEditMode.InLine))//.TemplateName("Education").Window(window => { window.Title(Resources.Navigator_Employee_Education); window.Scrollable(false); }))
+         .Scrollable(h => h.Height(500))
+                         .Events(x => { x.Save("GetEducationDate");
+                         x.Edit("GetEducationDate");})
+      .DataSource(dataSource => dataSource
+          .Ajax()
+                   .Events(events =>
+                                                                                                {
+                                                                                                    events.Error("error_handler(\"Educationgrid_#=EmployeeId#\")");
+                                                                                                    events.RequestStart("onRequestStart(\"Educationgrid_#=EmployeeId#\")");
+                                                                                                    events.RequestEnd("onRequestEnd(\"Educationgrid_#=EmployeeId#\")");
+                                                                                                })
+                         
+          .Model(model => model.Id(p => p.EmpEduId))
+                          .Read(read => read.Action("Education_Read", "Education", new { idEd = "#=EmployeeId#" }))
+                          .Create(create => create.Action("Education_Create", "Education", new { idEdTwo = "#=EmployeeId#" }))
+          .Update(update => update.Action("Education_Update", "Education"))
+          .Destroy(destroy => destroy.Action("Education_Destroy", "Education"))
+          ).ToClientTemplate()
+                    )
+                </text>
+                  );
+
+              //*******************************************Expriance*******************************************************
+              items.Add().Text(Resources.Navigator_Employee_Experience).Content(
+                @<text>
+                    @(Html.Kendo().Grid<Experience>()
+                              .Name("Expriancegrid_#=EmployeeId#")
+
+      .Columns(columns =>
+      {
+          //          columns.Bound(c => c.EmployeeCode).ClientTemplate(
+          //                        @"<div class='Employee-photo'
+          //                        style='background-image: url(" + Url.Content("~/Content/Images/") + "#:data.EmployeeId#-Photo/" + "#:data.EmployeeId#.jpg" + ");'></div>" +
+          //                    "<div class='Employee-name'>#:EmployeeCode#</div>").Width(120);
+          //          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "PersonId", "FullNameWithOutCode").EditorTemplateName("ListOfEmployee").Width(200);
+          columns.Bound(c => c.Organozation).Width(150);
+          columns.Bound(c => c.OrgFullAddress).Width(160);
+          columns.Bound(c => c.EmploymentType).EditorTemplateName("Enum").Width(150);
+          columns.Bound(c => c.FromExAmharic).Width(200).EditorTemplateName("Calander");
+          columns.Bound(c => c.ToExAmharic).Width(200).EditorTemplateName("Calander");
+          columns.Bound(c => c.TotalDuration).Width(120);
+          columns.Bound(c => c.Responsibility).Width(120);
+          columns.Bound(c => c.ClearanceDateTimeAm).EditorTemplateName("Calander").Width(200);
+          columns.Bound(c => c.CleranceReason).Width(120);
+          columns.Bound(c => c.IncomeTaxPaymentRefNo).Width(150);
+          columns.Bound(c => c.IsPrivate).Width (120);
+          columns.Command(command =>
+          {
+              if (HttpContext.Current.User.IsInRole("HR_Profile_User"))
+              {
+
+                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+              }
+              if (HttpContext.Current.User.IsInRole("HR_Profile_Admin") || HttpContext.Current.User.IsInRole("HR_Admin"))
+              {
+                  command.Destroy().Text(Resources.ActionButton_Cancel);//
+              }
+          }).Width(200);
+      })
+      .ToolBar(toolbar =>
+      {
+          if (HttpContext.Current.User.IsInRole("HR_Profile_User"))
+          {
+
+              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+          }
+      })
+                              .Editable(editable => editable.Mode(GridEditMode.InLine))//.TemplateName("EmployeeExperience").Window(window => { window.Title("Employee Experience "); window.Scrollable(false); }))
+          .Scrollable(h => h.Height(500))
+                  .Events(e => e.Save("GetExprianceDate"))
+                           .Events(e => e.Edit("GetExprianceDate"))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+                  .Events(events =>
+                      {
+
+  events.Error("error_handler(\"Expriancegrid_#=EmployeeId#\")");
+  events.RequestStart("onRequestStart(\"Expriancegrid_#=EmployeeId#\")");
+events.RequestEnd("onRequestEnd(\"Expriancegrid_#=EmployeeId#\")");
+})
+              
+                  .Model(model =>
+                  {
+                      model.Id(p => p.ExperienceId);
+                      model.Field(p => p.TotalDuration).Editable(false);
+                  })
+                                  .Read(read => read.Action("Experiences_Read", "EmployeeExperience", new { Area = "HRM", idEx = "#=EmployeeId#" }))
+                                          .Create(create => create.Action("Experiences_Create", "EmployeeExperience", new { Area = "HRM", idExTwo = "#=EmployeeId#" }))
+                  .Update(update => update.Action("Experiences_Update", "EmployeeExperience"))
+                  .Destroy(destroy => destroy.Action("Experiences_Destroy", "EmployeeExperience"))
+          ).ToClientTemplate()
+                    )
+
+                </text>
+                  );
+
+
+              //*******************************************Training*******************************************************
+              items.Add().Text(Resources.Navigator_Employee_Tranining).Content(
+                @<text>
+                    @(Html.Kendo().Grid<Training>()
+             .Name("EmpTrainingEducation_#=EmployeeId#")
+             .Columns(columns =>
+              {
+                  columns.Bound(c => c.TrainingName).Width(150);
+                  columns.Bound(c => c.OrganizationName).Width(170);
+                  columns.Bound(c => c.OrgAddress).Width(175); ;
+                  columns.Bound(c => c.FromTrAm).EditorTemplateName("Calander").Width(200);
+                  columns.Bound(c => c.ToTraAm).EditorTemplateName("Calander").Width(200);
+                  columns.Bound(c => c.Score).Width(75);
+                  columns.Bound(c => c.TotalCost).Width(100);
+                  //columns.Bound(c => c.PercentCoverdByOrg).Width(150); ;
+                  //columns.Bound(c => c.Remark).Width(150); ;
+                  columns.Command(command =>
+                  {
+                      if (HttpContext.Current.User.IsInRole("HR_Profile_User"))
+                      {
+
+                          command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                      }
+                      if (HttpContext.Current.User.IsInRole("HR_Profile_Admin") || HttpContext.Current.User.IsInRole("HR_Admin"))
+                      {
+                          command.Destroy().Text(Resources.ActionButton_Cancel);//
+                      }
+                  }).Width(200);
+              })
+              .ToolBar(toolbar =>
+              {
+                  if (HttpContext.Current.User.IsInRole("HR_Profile_User"))
+                  {
+
+                      toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                  }
+              })
+                                      .Editable(editable => editable.Mode(GridEditMode.InLine))//.TemplateName("EmployeeTraining").Window(window => { window.Title("Employee Training "); window.Scrollable(false); }))
+                 .Scrollable(h => h.Height(500))
+                                   .Events(e => e.Save("GetTrainingDate"))
+                                           .Events(e => e.Edit("GetTrainingDate"))
+              .DataSource(dataSource => dataSource
+                  .Ajax()
+                           .Events(events =>
+                              {
+
+                                  events.Error("error_handler(\"EmpTrainingEducation_#=EmployeeId#\")");
+                                  events.RequestStart("onRequestStart(\"EmpTrainingEducation_#=EmployeeId#\")");
+                                  events.RequestEnd("onRequestEnd(\"EmpTrainingEducation_#=EmployeeId#\")");
+                              })
+                                      
+                  .Model(model => model.Id(p => p.EmpEduTrainId))
+                                              .Read(read => read.Action("EmpTrainingEducations_Read", "EmployeeTraining", new { idTr = "#=EmployeeId#" }))
+                                                      .Create(create => create.Action("EmpTrainingEducations_Create", "EmployeeTraining", new { idTrTwo = "#=EmployeeId#" }))
+                          .Update(update => update.Action("EmpTrainingEducations_Update", "EmployeeTraining"))
+                          .Destroy(destroy => destroy.Action("EmpTrainingEducations_Destroy", "EmployeeTraining"))
+                  ).ToClientTemplate()
+                    )
+
+                </text>
+                  );
+
+              //*********************************LanguageOfInterest*************************************************//
+              items.Add().Text(Resources.HR_LanguageProficiency).Content(
+                @<text>
+
+
+                    @(Html.Kendo().Grid<LanguageProficiency>()
+                    .Name("LangugeOfInterestGrid_#=EmployeeId#")
+                    .Columns(columns =>
+                    {
+                        columns.ForeignKey(c => c.LanguageId, (System.Collections.IEnumerable)ViewData["LanguageList"], "LanguageId", "Description").Width(150); //EditorTemplateName("LanguagesLists")
+                        columns.Bound(c => c.Reading).EditorTemplateName("Enum");
+                        columns.Bound(c => c.Writing).EditorTemplateName("Enum");
+                        columns.Bound(c => c.Listening).EditorTemplateName("Enum");
+                        columns.Bound(c => c.Speaking).EditorTemplateName("Enum");
+                        columns.Bound(c => c.Remark);
+                        columns.Command(command =>
+                        {
+                            if (HttpContext.Current.User.IsInRole("HR_Profile_User"))
+                            {
+
+                                command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                            }
+                            if (HttpContext.Current.User.IsInRole("HR_Profile_Admin") || HttpContext.Current.User.IsInRole("HR_Admin"))
+                            {
+                                command.Destroy().Text(Resources.ActionButton_Cancel);//
+                            }
+                        }).Width(180);
+                    })
+                    .ToolBar(toolbar =>
+                    {
+                        if (HttpContext.Current.User.IsInRole("HR_Profile_User"))
+                        {
+
+                            toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                        }
+                    })
+                    .Editable(editable => editable.Mode(GridEditMode.InLine))
+                    .Selectable(selectable =>
+                    {
+                        selectable.Mode(GridSelectionMode.Single);
+                        selectable.Type(GridSelectionType.Row);
+                    })
+                    .Scrollable(h => h.Height(500))
+                    .DataSource(dataSource => dataSource
+                        .Ajax()
+                                .Events(events =>
+                                      {
+
+                                          events.Error("error_handler(\"LangugeOfInterestGrid_#=EmployeeId#\")");
+                                          events.RequestStart("onRequestStart(\"LangugeOfInterestGrid_#=EmployeeId#\")");
+                                          events.RequestEnd("onRequestEnd(\"LangugeOfInterestGrid_#=EmployeeId#\")");
+                                      })
+                                                       
+                        .Model(model => model.Id(p => p.LanguageProficiencyId))
+                                                .Read(read => read.Action("LanguageOfProficiencies_Read", "LanguageProficiency", new { Area = "Common", id = "#=EmployeeId#" }))
+                                                .Create(create => create.Action("LanguageOfProficiencies_Create", "LanguageProficiency", new { Area = "Common", id = "#=EmployeeId#" }))
+                                                                                .Update(update => update.Action("LanguageOfProficiencies_Update", "LanguageProficiency", new { Area = "Common" }))
+                                                                .Destroy(destroy => destroy.Action("LanguageOfProficiencies_Destroy", "LanguageProficiency", new { Area = "Common" }))
+                    ).ToClientTemplate()
+                    )
+
+
+
+                </text>
+                  );
+
+              //*********************************Comptency*************************************************//
+              items.Add().Text(Resources.HR_Competency).Content(
+                @<text>
+                    @*<legend>Competency</legend>*@
+                    @(Html.Kendo().Grid<Competency>()
+                      .Name("Competency_#=EmployeeId#")
+
+                      .Columns(columns =>
+                      {
+                          columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["SkillTypes"], "LookupId", "Description").EditorTemplateName("SkillType").Width(150);
+                          columns.Bound(c => c.Level).Width(150);
+                          columns.Bound(c => c.Status).Width(150);
+                          columns.Bound(c => c.FromComAm).EditorTemplateName("Calander").Width(200);
+                          columns.Bound(c => c.ToCompAm).EditorTemplateName("Calander").Width(200);
+                          //  columns.Bound(c => c.Remark);
+                          columns.Command(command =>
+                          {
+                              if (HttpContext.Current.User.IsInRole("HR_Profile_User"))
+                              {
+
+                                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                              }
+                              if (HttpContext.Current.User.IsInRole("HR_Profile_Admin") || HttpContext.Current.User.IsInRole("HR_Admin"))
+                              {
+                                  command.Destroy().Text(Resources.ActionButton_Cancel);//
+                              }
+                          }).Width(180);
+                      })
+                      .ToolBar(toolbar =>
+                      {
+                          if (HttpContext.Current.User.IsInRole("HR_Profile_User"))
+                          {
+
+                              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                          }
+                      })
+                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                      .Scrollable()
+                                       .Events(e => e.Save("GetComptencyDate"))
+                                                           .Events(e => e.Edit("GetComptencyDate"))
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+                                   .Events(events =>
+                                              {
+
+                                                  events.Error("error_handler(\"Competency_#=EmployeeId#\")");
+                                                  events.RequestStart("onRequestStart(\"Competency_#=EmployeeId#\")");
+                                                  events.RequestEnd("onRequestEnd(\"Competency_#=EmployeeId#\")");
+                                              })
+                                                   
+                          .Model(model => model.Id(p => p.CompetencyId))
+                          .Read(read => read.Action("Competencies_Read", "Comptency", new { Area = "HRM", id = "#=EmployeeId#" }))
+                          .Create(create => create.Action("Competencies_Create", "Comptency", new { Area = "HRM", id = "#=EmployeeId#" }))
+                          .Update(update => update.Action("Competencies_Update", "Comptency", new { Area = "HRM" }))
+                          .Destroy(destroy => destroy.Action("Competencies_Destroy", "Comptency", new { Area = "HRM" }))
+                      ).ToClientTemplate()
+                    )
+
+
+                </text>
+                  );
+              items.Add().Text(Resources.HR_Association).Content(
+                @<text>
+
+                    @(Html.Kendo().Grid<EmployeeAssociation>()
+                                      .Name("EmployeeAssociation_#=EmployeeId#")
+                      .Columns(columns =>
+                      {
+                          columns.Bound(c => c.Name);
+                          columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["Relationship"], "LookupId", "Description").EditorTemplateName("Relationship");
+                          columns.Bound(c => c.Remark);
+                          columns.Command(command =>
+                          {
+                              if (HttpContext.Current.User.IsInRole("HR_Profile_User"))
+                              {
+
+                                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                              }
+                              if (HttpContext.Current.User.IsInRole("HR_Profile_Admin") || HttpContext.Current.User.IsInRole("HR_Admin"))
+                              {
+                                  command.Destroy().Text(Resources.ActionButton_Cancel);//
+                              }
+                          }).Width(180);
+                      })
+                      .ToolBar(toolbar =>
+                      {
+                          if (HttpContext.Current.User.IsInRole("HR_Profile_User"))
+                          {
+
+                              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                          }
+                      })
+                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                      .Scrollable()
+                      .Selectable()
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+                                   .Events(events =>
+                                                      {
+
+                                                          events.Error("error_handler(\"EmployeeAssociation_#=EmployeeId#\")");
+                                                          events.RequestStart("onRequestStart(\"EmployeeAssociation_#=EmployeeId#\")");
+                                                          events.RequestEnd("onRequestEnd(\"EmployeeAssociation_#=EmployeeId#\")");
+                                                      })
+                                                 
+                          .Model(model => model.Id(p => p.AssociationId))
+                                                          .Read(read => read.Action("EmployeeAssociation_Read", "EmployeeAssociation", new { Area = "HRM", id = "#=EmployeeId#" }))
+                                                                  .Create(create => create.Action("EmployeeAssociation_Create", "EmployeeAssociation", new { Area = "HRM", id = "#=EmployeeId#" }))
+                                                                  .Update(update => update.Action("EmployeeAssociation_Update", "EmployeeAssociation", new { Area = "HRM" }))
+                                                          .Destroy(destroy => destroy.Action("EmployeeAssociation_Destroy", "EmployeeAssociation", new { Area = "HRM" }))
+                      ).ToClientTemplate()
+                    )
+                </text>
+                  );
+              items.Add().Text(Resources.HR_Emergency).Content(
+                @<text>
+                    @*<legend>Emergency</legend>*@
+                    @(Html.Kendo().Grid<Emergency>()
+                              .Name("EmergencyGrid_#=EmployeeId#")
+                      .Columns(columns =>
+                      {
+                          columns.Bound(c => c.Name);
+                          columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["Relationship"], "LookupId", "Description").EditorTemplateName("Relationship");
+                          columns.Bound(c => c.HomePhoneNo);
+                          columns.Bound(c => c.MobilePhoneNo);
+                          columns.Bound(c => c.WorkPhoneno);
+                          columns.Bound(c => c.Remark);
+                          columns.Command(command =>
+                          {
+                              if (HttpContext.Current.User.IsInRole("HR_Profile_User"))
+                              {
+
+                                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                              }
+                              if (HttpContext.Current.User.IsInRole("HR_Profile_Admin") || HttpContext.Current.User.IsInRole("HR_Admin"))
+                              {
+                                  command.Destroy().Text(Resources.ActionButton_Cancel);//
+                              }
+                          }).Width(180);
+                      })
+                      .ToolBar(toolbar =>
+                      {
+                          if (HttpContext.Current.User.IsInRole("HR_Profile_User"))
+                          {
+
+                              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                          }
+                      })
+                                     .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("Emergency").Window(window => { window.Title(Resources.HR_Emergency); window.Scrollable(false); }))
+                      .Scrollable()
+                      .Selectable()
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+                                   .Events(events =>
+                                                              {
+
+                                                                  events.Error("error_handler(\"EmergencyGrid_#=EmployeeId#\")");
+                                                                  events.RequestStart("onRequestStart(\"EmergencyGrid_#=EmployeeId#\")");
+                                                                  events.RequestEnd("onRequestEnd(\"EmergencyGrid_#=EmployeeId#\")");
+                                                              })
+                                                  
+                          .Model(model => model.Id(p => p.EmergencyId))
+                                          .Read(read => read.Action("Emergency_Read", "EmployeeEmergency", new { Area = "HRM", id = "#=EmployeeId#" }))
+                                                  .Create(create => create.Action("Emergency_Create", "EmployeeEmergency", new { Area = "HRM", id = "#=EmployeeId#" }))
+                                                  .Update(update => update.Action("Emergency_Update", "EmployeeEmergency", new { Area = "HRM" }))
+                                          .Destroy(destroy => destroy.Action("Emergency_Destroy", "EmployeeEmergency", new { Area = "HRM" }))
+                      ).ToClientTemplate()
+                    )
+                </text>
+                  );
+
+              //*********************************Disablity*************************************************//
+              items.Add().Text(Resources.HR_Disability).Content(
+                @<text>
+
+                    @(Html.Kendo().Grid<Disability>()
+                      .Name("Disability_#=EmployeeId#")
+
+                      .Columns(columns =>
+                      {
+                          columns.Bound(c => c.Type).Width (200);
+                          columns.Bound(c => c.Remark).Width(200);
+                          columns.Command(command =>
+                          {
+                              if (HttpContext.Current.User.IsInRole("HR_Profile_User"))
+                              {
+
+                                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                              }
+                              if (HttpContext.Current.User.IsInRole("HR_Profile_Admin") || HttpContext.Current.User.IsInRole("HR_Admin"))
+                              {
+                                  command.Destroy().Text(Resources.ActionButton_Cancel);//
+                              }
+                          }).Width(200);
+                      })
+                      .ToolBar(toolbar =>
+                      {
+                          if (HttpContext.Current.User.IsInRole("HR_Profile_User"))
+                          {
+
+                              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                          }
+                      })
+                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                      .Scrollable()
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+                                   .Events(events =>
+                                                                      {
+
+                                                                          events.Error("error_handler(\"Disability_#=EmployeeId#\")");
+                                                                          events.RequestStart("onRequestStart(\"EmergencyGrid_#=EmployeeId#\")");
+                                                                          events.RequestEnd("onRequestEnd(\"Disability_#=EmployeeId#\")");
+                                                                      })
+                                                
+                          .Model(model => model.Id(p => p.DisabilityId))
+                          .Read(read => read.Action("Disabilities_Read", "Disablity", new { Area = "HRM", id = "#=EmployeeId#" }))
+                          .Create(create => create.Action("Disabilities_Create", "Disablity", new { Area = "HRM", id = "#=EmployeeId#" }))
+                          .Update(update => update.Action("Disabilities_Update", "Disablity", new { Area = "HRM", id = "#=EmployeeId#" }))
+                          .Destroy(destroy => destroy.Action("Disabilities_Destroy", "Disablity", new { Area = "HRM", id = "#=EmployeeId#" }))
+                      ).ToClientTemplate()
+                    )
+
+
+                </text>
+                  );
+
+              items.Add().Text(Resources.HR_Addresse).Content(
+                @<text>
+                    @* <legend>Addresse</legend>*@
+                    @(Html.Kendo().Grid<Address>()
+                      .Name("AddresseGrid_#=EmployeeId#")
+                      .Columns(columns =>
+                      {
+                          columns.Bound(c => c.Category).EditorTemplateName("Enum");
+                          columns.Bound(c => c.Value);
+                          columns.Bound(c => c.Remark);
+                          columns.Command(command =>
+                          {
+                              if (HttpContext.Current.User.IsInRole("HR_Profile_User"))
+                              {
+
+                                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                              }
+                              if (HttpContext.Current.User.IsInRole("HR_Profile_Admin") || HttpContext.Current.User.IsInRole("HR_Admin"))
+                              {
+                                  command.Destroy().Text(Resources.ActionButton_Cancel);//
+                              }
+                          }).Width(180);
+                      })
+                      .ToolBar(toolbar =>
+                      {
+                          if (HttpContext.Current.User.IsInRole("HR_Profile_User"))
+                          {
+
+                              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                          }
+                      })
+                                            .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("Address").Window(window => { window.Title(Resources.HR_Addresse); window.Scrollable(false); }))
+                      .Scrollable()
+                     // .Events(x => x.Edit("OnChangeAdd"))
+                      .Selectable()
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+                          .Events(events =>
+                                                                      {
+
+                                                                          events.Error("error_handler(\"AddresseGrid_#=EmployeeId#\")");
+                                                                          events.RequestStart("onRequestStart(\"AddresseGrid_#=EmployeeId#\")");
+                                                                          events.RequestEnd("onRequestEnd(\"AddresseGrid_#=EmployeeId#\")");
+                                                                      })
+                                                  
+                          .Model(model => model.Id(p => p.AddressId))
+                          .Read(read => read.Action("Addresses_Read", "Addresse", new { Area = "Common", id = "#=EmployeeId#", addressReferenceType = "Employee" }))
+                                  .Create(create => create.Action("Addresses_Create", "Addresse", new { Area = "Common", id = "#=EmployeeId#", addressReferenceType = "Employee" }))
+                                  .Update(update => update.Action("Addresses_Update", "Addresse", new { Area = "Common" }))
+                                  .Destroy(destroy => destroy.Action("Addresses_Destroy", "Addresse", new { Area = "Common" }))
+                      ).ToClientTemplate()
+                    )
+                </text>
+                  );
+
+
+
+
+              //*************************************************************************************************
+              //*********************************Identifications*************************************************//
+
+              items.Add().Text(Resources.HR_Identifications).Content(
+                @<text>
+                    @*<legend>Identifications</legend>*@
+                    @(Html.Kendo().Grid<Identification>()
+                      .Name("Identification_#=EmployeeId#")
+                      .Columns(columns =>
+                      {
+                          columns.Bound(c => c.Type).EditorTemplateName("Enum").Width(200);
+                          columns.Bound(c => c.IdNumber).Width(150);
+                          columns.Bound(c => c.Description).Width(150);
+                          columns.Bound(c => c.IssueDateIdAm).EditorTemplateName ("Calander").Width(200);
+                          columns.Bound(c => c.ExpiryDateAm).EditorTemplateName("Calander").Width(200);
+                          columns.Bound(c => c.Issuer).Width(150);
+                          columns.Bound(c => c.Remark).Width(150);
+                          columns.Command(command =>
+                          {
+                              if (HttpContext.Current.User.IsInRole("HR_Profile_User"))
+                              {
+
+                                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                              }
+                              if (HttpContext.Current.User.IsInRole("HR_Profile_Admin") || HttpContext.Current.User.IsInRole("HR_Admin"))
+                              {
+                                  command.Destroy().Text(Resources.ActionButton_Cancel);//
+                              }
+                          }).Width(180);
+                      })
+                      .ToolBar(toolbar =>
+                      {
+                          if (HttpContext.Current.User.IsInRole("HR_Profile_User"))
+                          {
+
+                              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                          }
+                      })
+                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                      .Scrollable(h=>h.Height (500))
+                      .Selectable()
+                                                .Events(e => { e.Save("GetIdentificationDate");
+                                                e.Edit("GetIdentificationDate");})
+
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+                           .Events(events =>
+                                                                      {
+
+                                                                          events.Error("error_handler(\"Identification_#=EmployeeId#\")");
+                                                                          events.RequestStart("onRequestStart(\"Identification_#=EmployeeId#\")");
+                                                                          events.RequestEnd("onRequestEnd(\"Identification_#=EmployeeId#\")");
+                                                                      })
+                                       
+                          .Model(model => model.Id(i => i.IdentificationId))
+                          .Read(read => read.Action("Identifications_Read", "Identification", new {Area = "Common", identificationReferenceType = "Employee", id = "#=EmployeeId#"}))
+                          .Create(create => create.Action("Identifications_Create", "Identification", new {Area = "Common", identificationReferenceType = "Employee", id = "#=EmployeeId#"}))
+                          .Update(update => update.Action("Identifications_Update", "Identification" ,new {Area = "Common"}))
+                          .Destroy(destroy => destroy.Action("Identifications_Destroy", "Identification", new {Area = "Common"}))
+
+                      ).ToClientTemplate()
+                    )
+
+
+                </text>
+
+
+                  );
+
+
+
+
+
+
+              items.Add().Text(Resources.HR_Photo).Content(
+                @<text>
+                    @* <Legend>Photo</Legend>*@
+
+                    @(Html.Kendo().Grid<Attachment>()
+          .Name("AttachmentGrid_#=EmployeeId#")
+          .Columns(columns =>
+          {
+              columns.Bound(c => c.Description); //.Title("File Name").ClientTemplate((@Html.ActionLink("#=Description#", "DownloadFile", "DownloadDocument", new { filename = "#=Description#" }, null).ToHtmlString()));
+              columns.Bound(c => c.FileType).ClientTemplate(Html.ActionLink("DownLoad", "DownloadFile", new { filename = "#=EmployeeId#" }).ToHtmlString());
+              columns.Command(command =>
+              {
+                  if (HttpContext.Current.User.IsInRole("HR_Profile_Admin") || HttpContext.Current.User.IsInRole("HR_Admin"))
+                  {
+                      command.Destroy().Text(Resources.ActionButton_Cancel);//
+                  }
+                  //    command.Custom("Download").Click("DownloadAttachmnets");
+
+              }).Width(300);
+
+          })
+          .Events(e =>
+          {
+              e.Change("onChange");
+              e.Edit("onGridEdit");
+          })
+                       .ToolBar(toolbar =>
+              {
+                  toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+              })
+                      .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("Upload").Window(window =>
+                      {
+                          window.Scrollable(false);
+                          window.Title(Resources.HR_Upload_EmployeePhoto);
+                      }))
+
+              .Scrollable()
+              .Selectable()
+              .DataSource(dataSource => dataSource
+                  .Ajax()
+                          .Events(events =>
+{
+
+    events.Error("error_handler(\"AttachmentGrid_#=EmployeeId#\")");
+    events.RequestStart("onRequestStart(\"AttachmentGrid_#=EmployeeId#\")");
+events.RequestEnd("onRequestEnd(\"AttachmentGrid_#=EmployeeId#\")");
+ })
+                                         
+
+                  .Model(model => model.Id(p => p.AttachmentId))
+                                  .Read(read => read.Action("Attachments_Read", "Attachment", new { Area = "Common", attachmentReferenceType = "PHOTO", id = "#=EmployeeId#", fileOwner = "#=EmployeeId#" }))
+                                         .Create(create => create.Action("Attachments_Create", "Attachment", new { Area = "Common", attachmentReferenceType = "PHOTO", id = "#=EmployeeId#", fileOwner = "#=EmployeeId#" }))
+                                  .Destroy(destroy => destroy.Action("Attachments_Destroy", "EmployeeProfile"))
+
+              ).ToClientTemplate()
+                    )
+                </text>
+                  );
+              //*********************************Attachment***********************************************************//
+              items.Add().Text(Resources.Navigator_Company_UploadDocument).Content(
+                @<text>
+                    @* <Legend>Photo</Legend>*@
+
+                    @(Html.Kendo().Grid<Attachment>()
+          .Name("Documents_#=EmployeeId#")
+          .Columns(columns =>
+          {
+              columns.Bound(c => c.FileName);
+              columns.Bound(c => c.Description); //.Title("File Name").ClientTemplate((@Html.ActionLink("#=Description#", "DownloadFile", "DownloadDocument", new { filename = "#=Description#" }, null).ToHtmlString()));
+              columns.Bound(c => c.FileType).ClientTemplate(Html.ActionLink("DownLoad", "DownloadDoument", new { filename = "#=EmployeeId#" }).ToHtmlString());
+              columns.Command(command =>
+              {
+                  if (HttpContext.Current.User.IsInRole("HR_Profile_Admin") || HttpContext.Current.User.IsInRole("HR_Admin"))
+                  {
+                      command.Destroy().Text(Resources.ActionButton_Cancel);//
+                  }
+                  //    command.Custom("Download").Click("DownloadAttachmnets");
+
+              }).Width(300);
+
+          })
+          .Events(e => {
+              e.Change("onChange");
+                           e.Edit("onGridEdit");
+          })
+                       .ToolBar(toolbar =>
+              {
+                  toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+              })
+                              .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("UploadDocument").Window(window =>
+                      {
+                          window.Scrollable(false);
+                          window.Title(Resources.Navigator_Company_UploadDocument);
+                      }))
+
+              .Scrollable()
+              .Selectable()
+              .DataSource(dataSource => dataSource
+                  .Ajax()
+                           .Events(events =>
+        {
+
+            events.Error("error_handler(\"Documents_#=EmployeeId#\")");
+            events.RequestStart("onRequestStart(\"Documents_#=EmployeeId#\")");
+            events.RequestEnd("onRequestEnd(\"Documents_#=EmployeeId#\")");
+        })
+                                     
+
+                  .Model(model => model.Id(p => p.AttachmentId))
+                                          .Read(read => read.Action("Attachments_Read", "Attachment", new { Area = "Common", attachmentReferenceType = "DOCUMENT", id = "#=EmployeeId#", fileOwner = "#=EmployeeId#" }))
+                                                 .Create(create => create.Action("Attachments_Create", "Attachment", new { Area = "Common", attachmentReferenceType = "DOCUMENT", id = "#=EmployeeId#", fileOwner = "#=EmployeeId#" }))
+                                  .Destroy(destroy => destroy.Action("Attachments_Destroy", "EmployeeProfile"))
+
+              ).ToClientTemplate()
+                    )
+                </text>
+                  );
+              //*****************************************************************************************************//
+              items.Add().Text(Resources.HR_Contract).Content(
+                @<text>
+
+                    @(Html.Kendo().Grid<Contract>()
+                              .Name("ContractGrid_#=EmployeeId#")
+                      .Columns(columns =>
+                      {
+                          columns.Bound(c => c.FromContAm).EditorTemplateName ("Calander").Width (200);
+                          columns.Bound(c => c.ToContAm).EditorTemplateName("Calander").Width(200);
+                          columns.Bound(c => c.MonthlySalary);
+                          columns.Bound(c => c.Remark);
+                          columns.Command(command =>
+                          {
+                              if (HttpContext.Current.User.IsInRole("HR_Profile_User"))
+                              {
+
+                                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                              }
+                              if (HttpContext.Current.User.IsInRole("HR_Profile_Admin") || HttpContext.Current.User.IsInRole("HR_Admin"))
+                              {
+                                  command.Destroy().Text(Resources.ActionButton_Cancel);//
+                              }
+                          }).Width(180);
+                      })
+                      .ToolBar(toolbar =>
+                      {
+                          if (HttpContext.Current.User.IsInRole("HR_Profile_User"))
+                          {
+
+                              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                          }
+                      })
+                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                      .Scrollable()
+                      .Selectable()
+                                       .Events(e => e.Save("GetContractDate"))
+                                                                                           .Events(e => e.Edit("GetContractDate"))
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+                                  .Events(events =>
+                {
+
+                    events.Error("error_handler(\"ContractGrid_#=EmployeeId#\")");
+                    events.RequestStart("onRequestStart(\"ContractGrid_#=EmployeeId#\")");
+                    events.RequestEnd("onRequestEnd(\"ContractGrid_#=EmployeeId#\")");
+                })
+                                
+                          .Model(model => model.Id(p => p.ContractId))
+                                          .Read(read => read.Action("Contract_Read", "EmployeeContract", new { id = "#=EmployeeId#" }))
+                                                  .Create(create => create.Action("Contract_Create", "EmployeeContract", new { id = "#=EmployeeId#" }))
+                                          .Update(update => update.Action("Contract_Update", "EmployeeContract"))
+                                          .Destroy(destroy => destroy.Action("Contract_Destroy", "EmployeeContract"))
+                      ).ToClientTemplate()
+                    )
+                </text>
+                  );
+          }).ToClientTemplate())
+  @helper EmployeeChartsResult()
+{
+    @model IEnumerable<ExceedERP.Web.Areas.HRM.Controllers.Profile.EmployeeChartModel>
+
+    @(Html.Kendo().Chart<ExceedERP.Web.Areas.HRM.Controllers.Profile.EmployeeChartModel>()
+                          .Name("chart#=EmployeeId#")
+            //.Title(Resources.Navigator_Employee_Chart)
+            //.HtmlAttributes(new { @class = "small-chart" })
+                                          .Legend(legend => legend
+                                                  .Visible(true)
+
+                                              )
+                          .DataSource(ds =>
+                          {
+                              ds.Read(read => read.Action("EmployeeChart", "EmployeeProfile", new { id = "#=EmployeeId#" }));
+
+                              //ds.Sort(sort => sort.Add(model => model.Category).Ascending());
+                          }
+                          )
+                                  .Series(series =>
+                                  {
+                                      series.Column(
+                model => model.Value,
+                model => model.Color,
+                 model => model.Category
+            )
+            .Labels(labels => labels.Background("transparent").Visible(true));
+                                  })
+            // .CategoryAxis(axis => axis
+            // .Categories(model => model.Category)
+            //.MajorGridLines(lines => lines.Visible(false))
+            //.Line(line => line.Visible(false))
+            //)
+        .ValueAxis(axis => axis.Numeric()
+                                  .Labels(labels => labels.Format("{0:N0}"))
+            // .MajorUnit(50)
+                              )
+                              .Tooltip(tooltip => tooltip
+                                  .Visible(true)
+                                  .Shared(true)
+                                  .Format("{0:N0}")
+                                      ).ToClientTemplate()
+    )
+
+
+
+}
+</script>
+
+<style type="text/css">
+    div.k-edit-form-container {
+       
+        width: 700px;
+    }
+     #AttachmentGrid .k-grid-edit
+    {
+        display: none;
+    }
+  
+</style>
+ 
+
+
+
+
+<style>
+    .Employee-photo {
+        display: inline-block;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background-size: 32px 35px;
+        background-position: center center;
+        vertical-align: middle;
+        line-height: 32px;
+        box-shadow: inset 0 0 1px #4b0082 , inset 0 0 10px rgba(0, 0, 0, .2);
+        margin-left: 5px;
+    }
+     .EmployeeDetail-photo {
+        display: inline-block;
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        background-size: 100px 100px;
+        background-position: center center;
+        vertical-align: middle;
+        line-height: 32px;
+        box-shadow: inset 0 0 1px #4b0082 , inset 0 0 10px rgba(0, 0, 0, .2);
+        margin-left: 5px;
+    }
+    .Employee-name {
+        display: inline-block;
+        vertical-align: middle;
+        line-height: 32px;
+        padding-left: 3px;
+    }
+    .k-detail-cell .k-tabstrip .k-content {
+        padding: 0.2em;
+    }
+    .employee-details ul
+    {
+        list-style:none;
+        font-style:italic;
+        margin: 15px;
+        padding: 0;
+    }
+    .employee-details ul li
+    {
+        margin: 0;
+        line-height: 1.7em;
+    }
+
+    .employee-details label
+    {
+        display:inline-block;
+        width:120px;
+        padding-right: 10px;
+        text-align: right;
+        font-style:normal;
+        font-weight:bold;
+    }
+   
+</style>
+<script>
+    //function error_handler(e) {
+    //    if (e.errors) {
+    //        var message = "Errors:\n";
+    //        $.each(e.errors, function (key, value) {
+    //            if ('errors' in value) {
+    //                $.each(value.errors, function () {
+    //                    message += this + "\n";
+    //                });
+    //            }
+    //        });
+    //        alert(message);
+
+    //    }
+
+    //}
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+    function onGridEdit(e) {
+        e.container.find(".k-button.k-grid-update").hide();
+        e.container.find(".k-button.k-grid-cancel").hide();
+
+    }
+    function onChange(e) {
+        var grid = e.sender;
+        var selectedRows = this.select();
+        var rowData = this.dataItem(selectedRows[0]);
+        var id = rowData.AttachmentID;
+        $.ajax({
+            contentType: "application/json; charset=utf-8",
+            url: '@Url.Action("Download", "EmployeeProfile")',
+            data: { 'id': id },
+            type: 'GET',
+            cache: false,
+            success: function (result) {
+                r = result;
+            }
+
+        });
+
+    }
+    
+    function OnChangeAdd(e) {
+        var grid = e.sender;
+        var selectedRows = this.select();
+        var rowData = this.dataItem(selectedRows[0]);
+        var id = rowData.Category;
+        @*$.ajax({
+            contentType: "application/json; charset=utf-8",
+            url: '@Url.Action("Download", "EmployeeProfile")',
+            data: { 'id': id },
+            type: 'GET',
+            cache: false,
+            success: function (result) {
+                r = result;
+            }
+
+        });*@
+
+    }
+</Script>
+
+
+
+
+<script>
+    var car;
+    function transcrireFirstName() {
+        var name = document.getElementById("FirstName").value;//$("#AmharicName");//.data("TextBox");
+        car = name;//.value();//document.conversion.AmharicName.value;
+        car = car.replace(/ä/g, "e");
+        car = car.replace(/â/g, "e");
+        car = car.replace(/ê/g, "é");
+        car = car.replace(/ë/g, "é");
+
+        car = car.replace(/w/g, "ው");
+        car = car.replace(/ውe/g, "ወ");
+        car = car.replace(/ውu/g, "ዉ");
+        car = car.replace(/ውi/g, "ዊ");
+        car = car.replace(/ውa/g, "ዋ");
+        car = car.replace(/ውe/g, "ዌ");
+        car = car.replace(/ውé/g, "ዌ");
+        car = car.replace(/ውo/g, "ዎ");
+
+        car = car.replace(/h/g, "ህ");
+        car = car.replace(/ህe/g, "ሀ");
+        car = car.replace(/ህu/g, "ሁ");
+        car = car.replace(/ህi/g, "ሂ");
+        car = car.replace(/ህa/g, "ሃ");
+        car = car.replace(/ሀe/g, "ሄ");
+        car = car.replace(/ህé/g, "ሄ");
+        car = car.replace(/ህo/g, "ሆ");
+        car = car.replace(/ሃa/g, "ዏ");
+
+        // moodif hh par x
+        car = car.replace(/[ẖxX]/g, "ኅ");
+        car = car.replace(/ኅe/g, "ኀ");
+        car = car.replace(/ኅu/g, "ኁ");
+        car = car.replace(/ኅi/g, "ኂ");
+        car = car.replace(/ኅa/g, "ኃ");
+        car = car.replace(/ኀe/g, "ኄ");
+        car = car.replace(/ኅé/g, "ኄ");
+        car = car.replace(/ኅo/g, "ኆ");
+        car = car.replace(/ኃa/g, "ኋ");
+
+        car = car.replace(/[lL]/g, "ል");
+        car = car.replace(/ልe/g, "ለ");
+        car = car.replace(/ልu/g, "ሉ");
+        car = car.replace(/ልi/g, "ሊ");
+        car = car.replace(/ልa/g, "ላ");
+        car = car.replace(/ለe/g, "ሌ");
+        car = car.replace(/ልé/g, "ሌ");
+        car = car.replace(/ልo/g, "ሎ");
+        car = car.replace(/ላa/g, "ሏ");
+
+        car = car.replace(/ህህ/g, "ሕ");
+        car = car.replace(/[ḥH]/g, "ሕ");
+        car = car.replace(/ሕe/g, "ሐ");
+        car = car.replace(/ሕu/g, "ሑ");
+        car = car.replace(/ሕi/g, "ሒ");
+        car = car.replace(/ሕa/g, "ሓ");
+        car = car.replace(/ሐe/g, "ሔ");
+        car = car.replace(/ሕé/g, "ሔ");
+        car = car.replace(/ሕo/g, "ሖ");
+        car = car.replace(/ሓa/g, "ሗ");
+
+        car = car.replace(/[mM]/g, "ም");
+        car = car.replace(/ምe/g, "መ");
+        car = car.replace(/ምu/g, "ሙ");
+        car = car.replace(/ምi/g, "ሚ");
+        car = car.replace(/ምa/g, "ማ");
+        car = car.replace(/መe/g, "ሜ");
+        car = car.replace(/ምé/g, "ሜ");
+        car = car.replace(/ምo/g, "ሞ");
+        car = car.replace(/ማa/g, "ሟ");
+        car = car.replace(/ምY/g, "ፙ");
+        car = car.replace(/ፙa/g, "ፙ");
+
+        car = car.replace(/[rR]/g, "ር");
+        car = car.replace(/ርe/g, "ረ");
+        car = car.replace(/ርu/g, "ሩ");
+        car = car.replace(/ርi/g, "ሪ");
+        car = car.replace(/ርa/g, "ራ");
+        car = car.replace(/ረe/g, "ሬ");
+        car = car.replace(/ርé/g, "ሬ");
+        car = car.replace(/ርo/g, "ሮ");
+        car = car.replace(/ራa/g, "ሯ");
+        car = car.replace(/ርY/g, "ፘ");
+        car = car.replace(/ፘa/g, "ፘ");
+
+        car = car.replace(/s/g, "ስ");
+        car = car.replace(/ስe/g, "ሰ");
+        car = car.replace(/ስu/g, "ሱ");
+        car = car.replace(/ስi/g, "ሲ");
+        car = car.replace(/ስa/g, "ሳ");
+        car = car.replace(/ሰe/g, "ሴ");
+        car = car.replace(/ስé/g, "ሴ");
+        car = car.replace(/ስo/g, "ሶ");
+        car = car.replace(/ሳa/g, "ሷ");
+
+        car = car.replace(/z/g, "ዝ");
+        car = car.replace(/ዝe/g, "ዘ");
+        car = car.replace(/ዝu/g, "ዙ");
+        car = car.replace(/ዝi/g, "ዚ");
+        car = car.replace(/ዝa/g, "ዛ");
+        car = car.replace(/ዘe/g, "ዜ");
+        car = car.replace(/ዝé/g, "ዜ");
+        car = car.replace(/ዝo/g, "ዞ");
+        car = car.replace(/ዛa/g, "ዟ");
+
+        // modif ss remplacé par sz
+        car = car.replace(/ś/g, "ሥ");
+        car = car.replace(/ስዝ/g, "ሥ");
+        car = car.replace(/ሥe/g, "ሠ");
+        car = car.replace(/ሥu/g, "ሡ");
+        car = car.replace(/ሥi/g, "ሢ");
+        car = car.replace(/ሥa/g, "ሣ");
+        car = car.replace(/ሠe/g, "ሤ");
+        car = car.replace(/ሥé/g, "ሤ");
+        car = car.replace(/ሥo/g, "ሦ");
+        car = car.replace(/ሣa/g, "ሧ");
+
+        car = car.replace(/š/g, "ሽ");
+        car = car.replace(/ስስ/g, "ሽ");
+        car = car.replace(/ስህ/g, "ሽ");
+        car = car.replace(/ሽe/g, "ሸ");
+        car = car.replace(/ሽu/g, "ሹ");
+        car = car.replace(/ሽi/g, "ሺ");
+        car = car.replace(/ሽa/g, "ሻ");
+        car = car.replace(/ሸe/g, "ሼ");
+        car = car.replace(/ሽé/g, "ሼ");
+        car = car.replace(/ሽo/g, "ሾ");
+        car = car.replace(/ሻa/g, "ሿ");
+
+
+        car = car.replace(/q/g, "ቅ");
+        car = car.replace(/ቅe/g, "ቀ");
+        car = car.replace(/ቅu/g, "ቁ");
+        car = car.replace(/ቅi/g, "ቂ");
+        car = car.replace(/ቅa/g, "ቃ");
+        car = car.replace(/ቀe/g, "ቄ");
+        car = car.replace(/ቅé/g, "ቄ");
+        car = car.replace(/ቅo/g, "ቆ");
+        car = car.replace(/ቃa/g, "ቋ");
+
+
+        car = car.replace(/ቅው/g, "ቍ");
+        car = car.replace(/ቍe/g, "ቈ");
+        car = car.replace(/ቍi/g, "ቊ");
+        car = car.replace(/ቍa/g, "ቋ");
+        car = car.replace(/ቈe/g, "ቌ");
+        car = car.replace(/ቍé/g, "ቌ");
+
+        //qh
+        car = car.replace(/ቅህ/g, "ቕ");
+        car = car.replace(/ቕe/g, "ቐ");
+        car = car.replace(/ቕu/g, "ቑ");
+        car = car.replace(/ቕi/g, "ቒ");
+        car = car.replace(/ቕa/g, "ቓ");
+        car = car.replace(/ቐe/g, "ቔ");
+        car = car.replace(/ቕé/g, "ቔ");
+        car = car.replace(/ቕo/g, "ቖ");
+
+
+        car = car.replace(/ቕው/g, "ቝ");
+        car = car.replace(/ቍe/g, "ቘ");
+        car = car.replace(/ቍi/g, "ቚ");
+        car = car.replace(/ቍa/g, "ቛ");
+        car = car.replace(/ቘe/g, "ቜ");
+        car = car.replace(/ቍé/g, "ቜ");
+        // xw
+        car = car.replace(/ኅው/g, "ኍ");
+        car = car.replace(/ኍe/g, "ቘ");
+        car = car.replace(/ኍi/g, "ቚ");
+        car = car.replace(/ኍa/g, "ቛ");
+        car = car.replace(/ቘe/g, "ቜ");
+        car = car.replace(/ኍé/g, "ቜ");
+
+
+        car = car.replace(/[bB]/g, "ብ");
+        car = car.replace(/ብe/g, "በ");
+        car = car.replace(/ብu/g, "ቡ");
+        car = car.replace(/ብi/g, "ቢ");
+        car = car.replace(/ብa/g, "ባ");
+        car = car.replace(/በe/g, "ቤ");
+        car = car.replace(/ብé/g, "ቤ");
+        car = car.replace(/ብo/g, "ቦ");
+        car = car.replace(/ባa/g, "ቧ");
+
+        car = car.replace(/[vV]/g, "ቭ");
+        car = car.replace(/ቭe/g, "ቨ");
+        car = car.replace(/ቭu/g, "ቩ");
+        car = car.replace(/ቭi/g, "ቪ");
+        car = car.replace(/ቭa/g, "ቫ");
+        car = car.replace(/ቨe/g, "ቬ");
+        car = car.replace(/ቭé/g, "ቬ");
+        car = car.replace(/ቭo/g, "ቮ");
+        car = car.replace(/ቫa/g, "ቯ");
+
+        car = car.replace(/t/g, "ት");
+        car = car.replace(/ትe/g, "ተ");
+        car = car.replace(/ትu/g, "ቱ");
+        car = car.replace(/ትi/g, "ቲ");
+        car = car.replace(/ትa/g, "ታ");
+        car = car.replace(/ተe/g, "ቴ");
+        car = car.replace(/ትé/g, "ቴ");
+        car = car.replace(/ትo/g, "ቶ");
+        car = car.replace(/ታa/g, "ቷ");
+
+        car = car.replace(/[cč]/g, "ች");
+        car = car.replace(/ችe/g, "ቸ");
+        car = car.replace(/ችu/g, "ቹ");
+        car = car.replace(/ችi/g, "ቺ");
+        car = car.replace(/ችa/g, "ቻ");
+        car = car.replace(/ቸe/g, "ቼ");
+        car = car.replace(/ችé/g, "ቼ");
+        car = car.replace(/ችo/g, "ቾ");
+        car = car.replace(/ቻa/g, "ቿ");
+
+        car = car.replace(/n/g, "ን");
+        car = car.replace(/ንe/g, "ነ");
+        car = car.replace(/ንu/g, "ኑ");
+        car = car.replace(/ንi/g, "ኒ");
+        car = car.replace(/ንa/g, "ና");
+        car = car.replace(/ነe/g, "ኔ");
+        car = car.replace(/ንé/g, "ኔ");
+        car = car.replace(/ንo/g, "ኖ");
+        car = car.replace(/ናa/g, "ኗ");
+
+        car = car.replace(/N/g, "ኝ");
+        car = car.replace(/ñ/g, "ኝ");
+        car = car.replace(/ንy/g, "ኝ");
+        car = car.replace(/ኝe/g, "ኘ");
+        car = car.replace(/ኝu/g, "ኙ");
+        car = car.replace(/ኝi/g, "ኚ");
+        car = car.replace(/ኝa/g, "ኛ");
+        car = car.replace(/ኝe/g, "ኜ");
+        car = car.replace(/ኝé/g, "ኜ");
+        car = car.replace(/ኝo/g, "ኞ");
+        car = car.replace(/ኛa/g, "ኟ");
+
+
+        car = car.replace(/k/g, "ክ");
+        car = car.replace(/ክe/g, "ከ");
+        car = car.replace(/ክu/g, "ኩ");
+        car = car.replace(/ክi/g, "ኪ");
+        car = car.replace(/ክa/g, "ካ");
+        car = car.replace(/ከe/g, "ኬ");
+        car = car.replace(/ክé/g, "ኬ");
+        car = car.replace(/ክo/g, "ኮ");
+        car = car.replace(/ካa/g, "ኳ");
+
+
+        car = car.replace(/ክኅ/g, "ኽ");
+        car = car.replace(/ኽe/g, "ኸ");
+        car = car.replace(/ኽu/g, "ኹ");
+        car = car.replace(/ኽi/g, "ኺ");
+        car = car.replace(/ኽa/g, "ኻ");
+        car = car.replace(/ኸe/g, "ኼ");
+        car = car.replace(/ኽé/g, "ኼ");
+        car = car.replace(/ኽo/g, "ኾ");
+
+        car = car.replace(/ኽው/g, "ዅ");
+        car = car.replace(/ዅe/g, "ዀ");
+        car = car.replace(/ዅu/g, "ዂ");
+        car = car.replace(/ዅi/g, "ዂ");
+        car = car.replace(/ዅa/g, "ዃ");
+        car = car.replace(/ዀe/g, "ዄ");
+        car = car.replace(/ዅé/g, "ዄ");
+
+
+        // kw
+        car = car.replace(/ክው/g, "ኵ");
+        car = car.replace(/ኵe/g, "ኰ");
+        car = car.replace(/ኵi/g, "ኲ");
+        car = car.replace(/ኵa/g, "ኳ");
+        car = car.replace(/ኰe/g, "ኴ");
+        car = car.replace(/ኵé/g, "ኴ");
+
+        car = car.replace(/K/g, "ኽ");
+        car = car.replace(/ክኅ/g, "ኽ");
+        car = car.replace(/ኽe/g, "ኸ");
+        car = car.replace(/ኽu/g, "ኹ");
+        car = car.replace(/ኽi/g, "ኺ");
+        car = car.replace(/ኽa/g, "ኻ");
+        car = car.replace(/ኽe/g, "ኼ");
+        car = car.replace(/ኽé/g, "ኼ");
+        car = car.replace(/ኽo/g, "ኾ");
+        car = car.replace(/ኽW/g, "ዃ");
+        car = car.replace(/ዃe/g, "ዀ");
+        car = car.replace(/ዃu/g, "ዅ");
+        car = car.replace(/ዃi/g, "ዂ");
+        car = car.replace(/ዃa/g, "ዃ");
+        car = car.replace(/ዀe/g, "ዄ");
+        car = car.replace(/ዃé/g, "ዄ");
+        car = car.replace(/ዃ'/g, "ዅ");
+
+        car = car.replace(/[Zž]/g, "ዥ");
+        car = car.replace(/ዝህ/g, "ዥ");
+        car = car.replace(/ዥe/g, "ዠ");
+        car = car.replace(/ዥu/g, "ዡ");
+        car = car.replace(/ዥi/g, "ዢ");
+        car = car.replace(/ዥa/g, "ዣ");
+        car = car.replace(/ዠe/g, "ዤ");
+        car = car.replace(/ዥé/g, "ዤ");
+        car = car.replace(/ዥo/g, "ዦ");
+        car = car.replace(/ዣa/g, "ዧ");
+
+        car = car.replace(/[yY]/g, "ይ");
+        car = car.replace(/ይe/g, "የ");
+        car = car.replace(/ይu/g, "ዩ");
+        car = car.replace(/ይi/g, "ዪ");
+        car = car.replace(/ይa/g, "ያ");
+        car = car.replace(/የe/g, "ዬ");
+        car = car.replace(/ይé/g, "ዬ");
+        car = car.replace(/ይo/g, "ዮ");
+        car = car.replace(/ያa/g, "ዯ");
+
+        car = car.replace(/d/g, "ድ");
+        car = car.replace(/ድe/g, "ደ");
+        car = car.replace(/ድu/g, "ዱ");
+        car = car.replace(/ድi/g, "ዲ");
+        car = car.replace(/ድa/g, "ዳ");
+        car = car.replace(/ደe/g, "ዴ");
+        car = car.replace(/ድé/g, "ዴ");
+        car = car.replace(/ድo/g, "ዶ");
+        car = car.replace(/ዳa/g, "ዷ");
+
+        car = car.replace(/ድድ/g, "ዽ");
+        car = car.replace(/[Dḍ]/g, "ዽ");
+        car = car.replace(/ዽe/g, "ዸ");
+        car = car.replace(/ዽu/g, "ዹ");
+        car = car.replace(/ዽi/g, "ዺ");
+        car = car.replace(/ዽa/g, "ዻ");
+        car = car.replace(/ዸe/g, "ዼ");
+        car = car.replace(/ዽé/g, "ዼ");
+        car = car.replace(/ዽo/g, "ዾ");
+        car = car.replace(/ዻa/g, "ዿ");
+
+        car = car.replace(/[jJǧ]/g, "ጅ");
+        car = car.replace(/ጅe/g, "ጀ");
+        car = car.replace(/ጅu/g, "ጁ");
+        car = car.replace(/ጅi/g, "ጂ");
+        car = car.replace(/ጅa/g, "ጃ");
+        car = car.replace(/ጀe/g, "ጄ");
+        car = car.replace(/ጅé/g, "ጄ");
+        car = car.replace(/ጅo/g, "ጆ");
+        car = car.replace(/ጃa/g, "ጇ");
+
+        car = car.replace(/g/g, "ግ");
+        car = car.replace(/ግe/g, "ገ");
+        car = car.replace(/ግu/g, "ጉ");
+        car = car.replace(/ግi/g, "ጊ");
+        car = car.replace(/ግa/g, "ጋ");
+        car = car.replace(/ገe/g, "ጌ");
+        car = car.replace(/ግé/g, "ጌ");
+        car = car.replace(/ግo/g, "ጎ");
+        car = car.replace(/ጋa/g, "ጓ");
+
+        // gw
+        car = car.replace(/ግው/g, "ጕ");
+        car = car.replace(/ጕe/g, "ጐ");
+        car = car.replace(/ጕi/g, "ጒ");
+        car = car.replace(/ጕa/g, "ጓ");
+        car = car.replace(/ጐe/g, "ጔ");
+        car = car.replace(/ጕé/g, "ጔ");
+
+
+        car = car.replace(/ግግ/g, "ጝ");
+        car = car.replace(/G/g, "ጝ");
+        car = car.replace(/ጝe/g, "ጘ");
+        car = car.replace(/ጝu/g, "ጙ");
+        car = car.replace(/ጝi/g, "ጚ");
+        car = car.replace(/ጝa/g, "ጛ");
+        car = car.replace(/ጘe/g, "ጜ");
+        car = car.replace(/ጝé/g, "ጜ");
+        car = car.replace(/ጝo/g, "ጞ");
+        car = car.replace(/ጛa/g, "ጟ");
+
+        car = car.replace(/[Tṭ]/g, "ጥ");
+        car = car.replace(/ትህ/g, "ጥ");
+        car = car.replace(/ጥe/g, "ጠ");
+        car = car.replace(/ጥu/g, "ጡ");
+        car = car.replace(/ጥi/g, "ጢ");
+        car = car.replace(/ጥa/g, "ጣ");
+        car = car.replace(/ጠe/g, "ጤ");
+        car = car.replace(/ጥé/g, "ጤ");
+        car = car.replace(/ጥo/g, "ጦ");
+        car = car.replace(/ጣa/g, "ጧ");
+
+        car = car.replace(/[Cċ]/g, "ጭ");
+        car = car.replace(/ችህ/g, "ጭ");
+        car = car.replace(/ጭe/g, "ጨ");
+        car = car.replace(/ጭu/g, "ጩ");
+        car = car.replace(/ጭi/g, "ጪ");
+        car = car.replace(/ጭa/g, "ጫ");
+        car = car.replace(/ጨe/g, "ጬ");
+        car = car.replace(/ጭé/g, "ጬ");
+        car = car.replace(/ጭo/g, "ጮ");
+        car = car.replace(/ጫa/g, "ጯ");
+
+        car = car.replace(/p̣/g, "ጵ");
+        car = car.replace(/P/g, "ጵ");
+        car = car.replace(/ፕህ/g, "ጵ");
+        car = car.replace(/ጵe/g, "ጰ");
+        car = car.replace(/ጵu/g, "ጱ");
+        car = car.replace(/ጵi/g, "ጲ");
+        car = car.replace(/ጵa/g, "ጳ");
+        car = car.replace(/ጰe/g, "ጴ");
+        car = car.replace(/ጵé/g, "ጴ");
+        car = car.replace(/ጵo/g, "ጶ");
+        car = car.replace(/ጳa/g, "ጷ");
+
+        car = car.replace(/[Sṣ]/g, "ጽ");
+        car = car.replace(/ትስ/g, "ጽ");
+        car = car.replace(/ጽe/g, "ጸ");
+        car = car.replace(/ጽu/g, "ጹ");
+        car = car.replace(/ጽi/g, "ጺ");
+        car = car.replace(/ጽa/g, "ጻ");
+        car = car.replace(/ጸe/g, "ጼ");
+        car = car.replace(/ጽé/g, "ጼ");
+        car = car.replace(/ጽo/g, "ጾ");
+        car = car.replace(/ጻa/g, "ጿ");
+
+        car = car.replace(/ṡ/g, "ፅ");
+        car = car.replace(/ṡ/g, "ፅ");
+        car = car.replace(/ṡ/g, "ፅ");
+        car = car.replace(/ትዝ/g, "ፅ");
+        car = car.replace(/ፅe/g, "ፀ");
+        car = car.replace(/ፅu/g, "ፁ");
+        car = car.replace(/ፅi/g, "ፂ");
+        car = car.replace(/ፅa/g, "ፃ");
+        car = car.replace(/ፀe/g, "ፄ");
+        car = car.replace(/ፅé/g, "ፄ");
+        car = car.replace(/ፅo/g, "ፆ");
+        car = car.replace(/ፃa/g, "ፇ");
+
+        car = car.replace(/[fF]/g, "ፍ");
+        car = car.replace(/ፍe/g, "ፈ");
+        car = car.replace(/ፍu/g, "ፉ");
+        car = car.replace(/ፍi/g, "ፊ");
+        car = car.replace(/ፍa/g, "ፋ");
+        car = car.replace(/ፈe/g, "ፌ");
+        car = car.replace(/ፍé/g, "ፌ");
+        car = car.replace(/ፍo/g, "ፎ");
+        car = car.replace(/ፋa/g, "ፏ");
+
+        // non identif
+        //car = car.replace(/ፍY/g, "ፚ");
+        //car = car.replace(/ፚa/g, "ፚ");
+
+        car = car.replace(/p/g, "ፕ");
+        car = car.replace(/ፕe/g, "ፐ");
+        car = car.replace(/ፕu/g, "ፑ");
+        car = car.replace(/ፕi/g, "ፒ");
+        car = car.replace(/ፕa/g, "ፓ");
+        car = car.replace(/ፐe/g, "ፔ");
+        car = car.replace(/ፕé/g, "ፔ");
+        car = car.replace(/ፕo/g, "ፖ");
+        car = car.replace(/ፓa/g, "ፗ");
+
+        // pharyngale
+        car = car.replace(/ʿ/g, "ዕ");
+        car = car.replace(/\"/g, "ዕ");
+        car = car.replace(/ዕe/g, "ዐ");
+        car = car.replace(/ዕu/g, "ዑ");
+        car = car.replace(/ዕi/g, "ዒ");
+        car = car.replace(/ዕa/g, "ዓ");
+        car = car.replace(/ዐe/g, "ዔ");
+        car = car.replace(/ዕé/g, "ዔ");
+        car = car.replace(/ዕo/g, "ዖ");
+
+        car = car.replace(/E/g, "ዐ");
+        car = car.replace(/U/g, "ዑ");
+        car = car.replace(/I/g, "ዒ");
+        car = car.replace(/A/g, "ዓ");
+        car = car.replace(/ዐዐ/g, "ዔ");
+        car = car.replace(/É/g, "ዔ");
+        car = car.replace(/O/g, "ዖ");
+
+        // glottales
+        car = car.replace(/ʾ/g, "እ");
+        car = car.replace(/\'/g, "እ");
+        car = car.replace(/እe/g, "አ");
+        car = car.replace(/እu/g, "ኡ");
+        car = car.replace(/እi/g, "ኢ");
+        car = car.replace(/እa/g, "ኣ");
+        car = car.replace(/አe/g, "ኤ");
+        car = car.replace(/እé/g, "ኤ");
+        car = car.replace(/እo/g, "ኦ");
+        car = car.replace(/ኣa/g, "ኧ");
+
+        car = car.replace(/e/g, "አ");
+        car = car.replace(/u/g, "ኡ");
+        car = car.replace(/i/g, "ኢ");
+        car = car.replace(/a/g, "ኣ");
+        car = car.replace(/አአ/g, "ኤ");
+        car = car.replace(/é/g, "ኤ");
+        car = car.replace(/o/g, "ኦ");
+        car = car.replace(/ኣኣ/g, "ኧ");
+
+        //ponctuation
+        car = car.replace(/-/g, "፡");
+        car = car.replace(/\./g, "።");
+        car = car.replace(/\,/g, "፣");
+        car = car.replace(/\;/g, "፤");
+        car = car.replace(/\:/g, "፥");
+        car = car.replace(/\!/g, "፦");
+        car = car.replace(/\?/g, "፧");
+        car = car.replace(/\//g, "፨");
+
+        car = car.replace(/1/g, "፩");
+        car = car.replace(/2/g, "፪");
+        car = car.replace(/3/g, "፫");
+        car = car.replace(/4/g, "፬");
+        car = car.replace(/5/g, "፭");
+        car = car.replace(/6/g, "፮");
+        car = car.replace(/7/g, "፯");
+        car = car.replace(/8/g, "፰");
+        car = car.replace(/9/g, "፱");
+        car = car.replace(/፩0/g, "፲");
+        car = car.replace(/፪0/g, "፳");
+        car = car.replace(/፫0/g, "፴");
+        car = car.replace(/፬0/g, "፵");
+        car = car.replace(/፭0/g, "፶");
+        car = car.replace(/፮0/g, "፷");
+        car = car.replace(/፯0/g, "፸");
+        car = car.replace(/፰0/g, "፹");
+        car = car.replace(/፱0/g, "፺");
+        car = car.replace(/፲0/g, "፻");
+        car = car.replace(/፳0/g, "፪፻");
+        car = car.replace(/፺0/g, "፱፻");
+        car = car.replace(/፻0/g, "፲፻");
+        car = car.replace(/፲፻0/g, "፼");
+
+        $("#FirstName").val(car);
+        var obj = $("#FirstName");
+        obj.focus();
+        obj.scrollTop = obj.scrollHeight;
+
+        $.ajax({
+            contentType: "application/json; charset=utf-8",
+            url: '@Url.Action("GetFirstName", "EmployeeProfile")',
+            data: { 'car': car },
+            type: 'GET',
+            cache: false,
+            success: function (result) {
+                r = result;
+            }
+
+        });
+    }
+</script>
+
+
+<script>
+    var car;
+    function transcrireMiddleName() {
+        var name = document.getElementById("MiddleName").value;//$("#AmharicName");//.data("TextBox");
+        car = name;//.value();//document.conversion.AmharicName.value;
+        car = car.replace(/ä/g, "e");
+        car = car.replace(/â/g, "e");
+        car = car.replace(/ê/g, "é");
+        car = car.replace(/ë/g, "é");
+
+        car = car.replace(/w/g, "ው");
+        car = car.replace(/ውe/g, "ወ");
+        car = car.replace(/ውu/g, "ዉ");
+        car = car.replace(/ውi/g, "ዊ");
+        car = car.replace(/ውa/g, "ዋ");
+        car = car.replace(/ውe/g, "ዌ");
+        car = car.replace(/ውé/g, "ዌ");
+        car = car.replace(/ውo/g, "ዎ");
+
+        car = car.replace(/h/g, "ህ");
+        car = car.replace(/ህe/g, "ሀ");
+        car = car.replace(/ህu/g, "ሁ");
+        car = car.replace(/ህi/g, "ሂ");
+        car = car.replace(/ህa/g, "ሃ");
+        car = car.replace(/ሀe/g, "ሄ");
+        car = car.replace(/ህé/g, "ሄ");
+        car = car.replace(/ህo/g, "ሆ");
+        car = car.replace(/ሃa/g, "ዏ");
+
+        // moodif hh par x
+        car = car.replace(/[ẖxX]/g, "ኅ");
+        car = car.replace(/ኅe/g, "ኀ");
+        car = car.replace(/ኅu/g, "ኁ");
+        car = car.replace(/ኅi/g, "ኂ");
+        car = car.replace(/ኅa/g, "ኃ");
+        car = car.replace(/ኀe/g, "ኄ");
+        car = car.replace(/ኅé/g, "ኄ");
+        car = car.replace(/ኅo/g, "ኆ");
+        car = car.replace(/ኃa/g, "ኋ");
+
+        car = car.replace(/[lL]/g, "ል");
+        car = car.replace(/ልe/g, "ለ");
+        car = car.replace(/ልu/g, "ሉ");
+        car = car.replace(/ልi/g, "ሊ");
+        car = car.replace(/ልa/g, "ላ");
+        car = car.replace(/ለe/g, "ሌ");
+        car = car.replace(/ልé/g, "ሌ");
+        car = car.replace(/ልo/g, "ሎ");
+        car = car.replace(/ላa/g, "ሏ");
+
+        car = car.replace(/ህህ/g, "ሕ");
+        car = car.replace(/[ḥH]/g, "ሕ");
+        car = car.replace(/ሕe/g, "ሐ");
+        car = car.replace(/ሕu/g, "ሑ");
+        car = car.replace(/ሕi/g, "ሒ");
+        car = car.replace(/ሕa/g, "ሓ");
+        car = car.replace(/ሐe/g, "ሔ");
+        car = car.replace(/ሕé/g, "ሔ");
+        car = car.replace(/ሕo/g, "ሖ");
+        car = car.replace(/ሓa/g, "ሗ");
+
+        car = car.replace(/[mM]/g, "ም");
+        car = car.replace(/ምe/g, "መ");
+        car = car.replace(/ምu/g, "ሙ");
+        car = car.replace(/ምi/g, "ሚ");
+        car = car.replace(/ምa/g, "ማ");
+        car = car.replace(/መe/g, "ሜ");
+        car = car.replace(/ምé/g, "ሜ");
+        car = car.replace(/ምo/g, "ሞ");
+        car = car.replace(/ማa/g, "ሟ");
+        car = car.replace(/ምY/g, "ፙ");
+        car = car.replace(/ፙa/g, "ፙ");
+
+        car = car.replace(/[rR]/g, "ር");
+        car = car.replace(/ርe/g, "ረ");
+        car = car.replace(/ርu/g, "ሩ");
+        car = car.replace(/ርi/g, "ሪ");
+        car = car.replace(/ርa/g, "ራ");
+        car = car.replace(/ረe/g, "ሬ");
+        car = car.replace(/ርé/g, "ሬ");
+        car = car.replace(/ርo/g, "ሮ");
+        car = car.replace(/ራa/g, "ሯ");
+        car = car.replace(/ርY/g, "ፘ");
+        car = car.replace(/ፘa/g, "ፘ");
+
+        car = car.replace(/s/g, "ስ");
+        car = car.replace(/ስe/g, "ሰ");
+        car = car.replace(/ስu/g, "ሱ");
+        car = car.replace(/ስi/g, "ሲ");
+        car = car.replace(/ስa/g, "ሳ");
+        car = car.replace(/ሰe/g, "ሴ");
+        car = car.replace(/ስé/g, "ሴ");
+        car = car.replace(/ስo/g, "ሶ");
+        car = car.replace(/ሳa/g, "ሷ");
+
+        car = car.replace(/z/g, "ዝ");
+        car = car.replace(/ዝe/g, "ዘ");
+        car = car.replace(/ዝu/g, "ዙ");
+        car = car.replace(/ዝi/g, "ዚ");
+        car = car.replace(/ዝa/g, "ዛ");
+        car = car.replace(/ዘe/g, "ዜ");
+        car = car.replace(/ዝé/g, "ዜ");
+        car = car.replace(/ዝo/g, "ዞ");
+        car = car.replace(/ዛa/g, "ዟ");
+
+        // modif ss remplacé par sz
+        car = car.replace(/ś/g, "ሥ");
+        car = car.replace(/ስዝ/g, "ሥ");
+        car = car.replace(/ሥe/g, "ሠ");
+        car = car.replace(/ሥu/g, "ሡ");
+        car = car.replace(/ሥi/g, "ሢ");
+        car = car.replace(/ሥa/g, "ሣ");
+        car = car.replace(/ሠe/g, "ሤ");
+        car = car.replace(/ሥé/g, "ሤ");
+        car = car.replace(/ሥo/g, "ሦ");
+        car = car.replace(/ሣa/g, "ሧ");
+
+        car = car.replace(/š/g, "ሽ");
+        car = car.replace(/ስስ/g, "ሽ");
+        car = car.replace(/ስህ/g, "ሽ");
+        car = car.replace(/ሽe/g, "ሸ");
+        car = car.replace(/ሽu/g, "ሹ");
+        car = car.replace(/ሽi/g, "ሺ");
+        car = car.replace(/ሽa/g, "ሻ");
+        car = car.replace(/ሸe/g, "ሼ");
+        car = car.replace(/ሽé/g, "ሼ");
+        car = car.replace(/ሽo/g, "ሾ");
+        car = car.replace(/ሻa/g, "ሿ");
+
+
+        car = car.replace(/q/g, "ቅ");
+        car = car.replace(/ቅe/g, "ቀ");
+        car = car.replace(/ቅu/g, "ቁ");
+        car = car.replace(/ቅi/g, "ቂ");
+        car = car.replace(/ቅa/g, "ቃ");
+        car = car.replace(/ቀe/g, "ቄ");
+        car = car.replace(/ቅé/g, "ቄ");
+        car = car.replace(/ቅo/g, "ቆ");
+        car = car.replace(/ቃa/g, "ቋ");
+
+
+        car = car.replace(/ቅው/g, "ቍ");
+        car = car.replace(/ቍe/g, "ቈ");
+        car = car.replace(/ቍi/g, "ቊ");
+        car = car.replace(/ቍa/g, "ቋ");
+        car = car.replace(/ቈe/g, "ቌ");
+        car = car.replace(/ቍé/g, "ቌ");
+
+        //qh
+        car = car.replace(/ቅህ/g, "ቕ");
+        car = car.replace(/ቕe/g, "ቐ");
+        car = car.replace(/ቕu/g, "ቑ");
+        car = car.replace(/ቕi/g, "ቒ");
+        car = car.replace(/ቕa/g, "ቓ");
+        car = car.replace(/ቐe/g, "ቔ");
+        car = car.replace(/ቕé/g, "ቔ");
+        car = car.replace(/ቕo/g, "ቖ");
+
+
+        car = car.replace(/ቕው/g, "ቝ");
+        car = car.replace(/ቍe/g, "ቘ");
+        car = car.replace(/ቍi/g, "ቚ");
+        car = car.replace(/ቍa/g, "ቛ");
+        car = car.replace(/ቘe/g, "ቜ");
+        car = car.replace(/ቍé/g, "ቜ");
+        // xw
+        car = car.replace(/ኅው/g, "ኍ");
+        car = car.replace(/ኍe/g, "ቘ");
+        car = car.replace(/ኍi/g, "ቚ");
+        car = car.replace(/ኍa/g, "ቛ");
+        car = car.replace(/ቘe/g, "ቜ");
+        car = car.replace(/ኍé/g, "ቜ");
+
+
+        car = car.replace(/[bB]/g, "ብ");
+        car = car.replace(/ብe/g, "በ");
+        car = car.replace(/ብu/g, "ቡ");
+        car = car.replace(/ብi/g, "ቢ");
+        car = car.replace(/ብa/g, "ባ");
+        car = car.replace(/በe/g, "ቤ");
+        car = car.replace(/ብé/g, "ቤ");
+        car = car.replace(/ብo/g, "ቦ");
+        car = car.replace(/ባa/g, "ቧ");
+
+        car = car.replace(/[vV]/g, "ቭ");
+        car = car.replace(/ቭe/g, "ቨ");
+        car = car.replace(/ቭu/g, "ቩ");
+        car = car.replace(/ቭi/g, "ቪ");
+        car = car.replace(/ቭa/g, "ቫ");
+        car = car.replace(/ቨe/g, "ቬ");
+        car = car.replace(/ቭé/g, "ቬ");
+        car = car.replace(/ቭo/g, "ቮ");
+        car = car.replace(/ቫa/g, "ቯ");
+
+        car = car.replace(/t/g, "ት");
+        car = car.replace(/ትe/g, "ተ");
+        car = car.replace(/ትu/g, "ቱ");
+        car = car.replace(/ትi/g, "ቲ");
+        car = car.replace(/ትa/g, "ታ");
+        car = car.replace(/ተe/g, "ቴ");
+        car = car.replace(/ትé/g, "ቴ");
+        car = car.replace(/ትo/g, "ቶ");
+        car = car.replace(/ታa/g, "ቷ");
+
+        car = car.replace(/[cč]/g, "ች");
+        car = car.replace(/ችe/g, "ቸ");
+        car = car.replace(/ችu/g, "ቹ");
+        car = car.replace(/ችi/g, "ቺ");
+        car = car.replace(/ችa/g, "ቻ");
+        car = car.replace(/ቸe/g, "ቼ");
+        car = car.replace(/ችé/g, "ቼ");
+        car = car.replace(/ችo/g, "ቾ");
+        car = car.replace(/ቻa/g, "ቿ");
+
+        car = car.replace(/n/g, "ን");
+        car = car.replace(/ንe/g, "ነ");
+        car = car.replace(/ንu/g, "ኑ");
+        car = car.replace(/ንi/g, "ኒ");
+        car = car.replace(/ንa/g, "ና");
+        car = car.replace(/ነe/g, "ኔ");
+        car = car.replace(/ንé/g, "ኔ");
+        car = car.replace(/ንo/g, "ኖ");
+        car = car.replace(/ናa/g, "ኗ");
+
+        car = car.replace(/N/g, "ኝ");
+        car = car.replace(/ñ/g, "ኝ");
+        car = car.replace(/ንy/g, "ኝ");
+        car = car.replace(/ኝe/g, "ኘ");
+        car = car.replace(/ኝu/g, "ኙ");
+        car = car.replace(/ኝi/g, "ኚ");
+        car = car.replace(/ኝa/g, "ኛ");
+        car = car.replace(/ኝe/g, "ኜ");
+        car = car.replace(/ኝé/g, "ኜ");
+        car = car.replace(/ኝo/g, "ኞ");
+        car = car.replace(/ኛa/g, "ኟ");
+
+
+        car = car.replace(/k/g, "ክ");
+        car = car.replace(/ክe/g, "ከ");
+        car = car.replace(/ክu/g, "ኩ");
+        car = car.replace(/ክi/g, "ኪ");
+        car = car.replace(/ክa/g, "ካ");
+        car = car.replace(/ከe/g, "ኬ");
+        car = car.replace(/ክé/g, "ኬ");
+        car = car.replace(/ክo/g, "ኮ");
+        car = car.replace(/ካa/g, "ኳ");
+
+
+        car = car.replace(/ክኅ/g, "ኽ");
+        car = car.replace(/ኽe/g, "ኸ");
+        car = car.replace(/ኽu/g, "ኹ");
+        car = car.replace(/ኽi/g, "ኺ");
+        car = car.replace(/ኽa/g, "ኻ");
+        car = car.replace(/ኸe/g, "ኼ");
+        car = car.replace(/ኽé/g, "ኼ");
+        car = car.replace(/ኽo/g, "ኾ");
+
+        car = car.replace(/ኽው/g, "ዅ");
+        car = car.replace(/ዅe/g, "ዀ");
+        car = car.replace(/ዅu/g, "ዂ");
+        car = car.replace(/ዅi/g, "ዂ");
+        car = car.replace(/ዅa/g, "ዃ");
+        car = car.replace(/ዀe/g, "ዄ");
+        car = car.replace(/ዅé/g, "ዄ");
+
+
+        // kw
+        car = car.replace(/ክው/g, "ኵ");
+        car = car.replace(/ኵe/g, "ኰ");
+        car = car.replace(/ኵi/g, "ኲ");
+        car = car.replace(/ኵa/g, "ኳ");
+        car = car.replace(/ኰe/g, "ኴ");
+        car = car.replace(/ኵé/g, "ኴ");
+
+        car = car.replace(/K/g, "ኽ");
+        car = car.replace(/ክኅ/g, "ኽ");
+        car = car.replace(/ኽe/g, "ኸ");
+        car = car.replace(/ኽu/g, "ኹ");
+        car = car.replace(/ኽi/g, "ኺ");
+        car = car.replace(/ኽa/g, "ኻ");
+        car = car.replace(/ኽe/g, "ኼ");
+        car = car.replace(/ኽé/g, "ኼ");
+        car = car.replace(/ኽo/g, "ኾ");
+        car = car.replace(/ኽW/g, "ዃ");
+        car = car.replace(/ዃe/g, "ዀ");
+        car = car.replace(/ዃu/g, "ዅ");
+        car = car.replace(/ዃi/g, "ዂ");
+        car = car.replace(/ዃa/g, "ዃ");
+        car = car.replace(/ዀe/g, "ዄ");
+        car = car.replace(/ዃé/g, "ዄ");
+        car = car.replace(/ዃ'/g, "ዅ");
+
+        car = car.replace(/[Zž]/g, "ዥ");
+        car = car.replace(/ዝህ/g, "ዥ");
+        car = car.replace(/ዥe/g, "ዠ");
+        car = car.replace(/ዥu/g, "ዡ");
+        car = car.replace(/ዥi/g, "ዢ");
+        car = car.replace(/ዥa/g, "ዣ");
+        car = car.replace(/ዠe/g, "ዤ");
+        car = car.replace(/ዥé/g, "ዤ");
+        car = car.replace(/ዥo/g, "ዦ");
+        car = car.replace(/ዣa/g, "ዧ");
+
+        car = car.replace(/[yY]/g, "ይ");
+        car = car.replace(/ይe/g, "የ");
+        car = car.replace(/ይu/g, "ዩ");
+        car = car.replace(/ይi/g, "ዪ");
+        car = car.replace(/ይa/g, "ያ");
+        car = car.replace(/የe/g, "ዬ");
+        car = car.replace(/ይé/g, "ዬ");
+        car = car.replace(/ይo/g, "ዮ");
+        car = car.replace(/ያa/g, "ዯ");
+
+        car = car.replace(/d/g, "ድ");
+        car = car.replace(/ድe/g, "ደ");
+        car = car.replace(/ድu/g, "ዱ");
+        car = car.replace(/ድi/g, "ዲ");
+        car = car.replace(/ድa/g, "ዳ");
+        car = car.replace(/ደe/g, "ዴ");
+        car = car.replace(/ድé/g, "ዴ");
+        car = car.replace(/ድo/g, "ዶ");
+        car = car.replace(/ዳa/g, "ዷ");
+
+        car = car.replace(/ድድ/g, "ዽ");
+        car = car.replace(/[Dḍ]/g, "ዽ");
+        car = car.replace(/ዽe/g, "ዸ");
+        car = car.replace(/ዽu/g, "ዹ");
+        car = car.replace(/ዽi/g, "ዺ");
+        car = car.replace(/ዽa/g, "ዻ");
+        car = car.replace(/ዸe/g, "ዼ");
+        car = car.replace(/ዽé/g, "ዼ");
+        car = car.replace(/ዽo/g, "ዾ");
+        car = car.replace(/ዻa/g, "ዿ");
+
+        car = car.replace(/[jJǧ]/g, "ጅ");
+        car = car.replace(/ጅe/g, "ጀ");
+        car = car.replace(/ጅu/g, "ጁ");
+        car = car.replace(/ጅi/g, "ጂ");
+        car = car.replace(/ጅa/g, "ጃ");
+        car = car.replace(/ጀe/g, "ጄ");
+        car = car.replace(/ጅé/g, "ጄ");
+        car = car.replace(/ጅo/g, "ጆ");
+        car = car.replace(/ጃa/g, "ጇ");
+
+        car = car.replace(/g/g, "ግ");
+        car = car.replace(/ግe/g, "ገ");
+        car = car.replace(/ግu/g, "ጉ");
+        car = car.replace(/ግi/g, "ጊ");
+        car = car.replace(/ግa/g, "ጋ");
+        car = car.replace(/ገe/g, "ጌ");
+        car = car.replace(/ግé/g, "ጌ");
+        car = car.replace(/ግo/g, "ጎ");
+        car = car.replace(/ጋa/g, "ጓ");
+
+        // gw
+        car = car.replace(/ግው/g, "ጕ");
+        car = car.replace(/ጕe/g, "ጐ");
+        car = car.replace(/ጕi/g, "ጒ");
+        car = car.replace(/ጕa/g, "ጓ");
+        car = car.replace(/ጐe/g, "ጔ");
+        car = car.replace(/ጕé/g, "ጔ");
+
+
+        car = car.replace(/ግግ/g, "ጝ");
+        car = car.replace(/G/g, "ጝ");
+        car = car.replace(/ጝe/g, "ጘ");
+        car = car.replace(/ጝu/g, "ጙ");
+        car = car.replace(/ጝi/g, "ጚ");
+        car = car.replace(/ጝa/g, "ጛ");
+        car = car.replace(/ጘe/g, "ጜ");
+        car = car.replace(/ጝé/g, "ጜ");
+        car = car.replace(/ጝo/g, "ጞ");
+        car = car.replace(/ጛa/g, "ጟ");
+
+        car = car.replace(/[Tṭ]/g, "ጥ");
+        car = car.replace(/ትህ/g, "ጥ");
+        car = car.replace(/ጥe/g, "ጠ");
+        car = car.replace(/ጥu/g, "ጡ");
+        car = car.replace(/ጥi/g, "ጢ");
+        car = car.replace(/ጥa/g, "ጣ");
+        car = car.replace(/ጠe/g, "ጤ");
+        car = car.replace(/ጥé/g, "ጤ");
+        car = car.replace(/ጥo/g, "ጦ");
+        car = car.replace(/ጣa/g, "ጧ");
+
+        car = car.replace(/[Cċ]/g, "ጭ");
+        car = car.replace(/ችህ/g, "ጭ");
+        car = car.replace(/ጭe/g, "ጨ");
+        car = car.replace(/ጭu/g, "ጩ");
+        car = car.replace(/ጭi/g, "ጪ");
+        car = car.replace(/ጭa/g, "ጫ");
+        car = car.replace(/ጨe/g, "ጬ");
+        car = car.replace(/ጭé/g, "ጬ");
+        car = car.replace(/ጭo/g, "ጮ");
+        car = car.replace(/ጫa/g, "ጯ");
+
+        car = car.replace(/p̣/g, "ጵ");
+        car = car.replace(/P/g, "ጵ");
+        car = car.replace(/ፕህ/g, "ጵ");
+        car = car.replace(/ጵe/g, "ጰ");
+        car = car.replace(/ጵu/g, "ጱ");
+        car = car.replace(/ጵi/g, "ጲ");
+        car = car.replace(/ጵa/g, "ጳ");
+        car = car.replace(/ጰe/g, "ጴ");
+        car = car.replace(/ጵé/g, "ጴ");
+        car = car.replace(/ጵo/g, "ጶ");
+        car = car.replace(/ጳa/g, "ጷ");
+
+        car = car.replace(/[Sṣ]/g, "ጽ");
+        car = car.replace(/ትስ/g, "ጽ");
+        car = car.replace(/ጽe/g, "ጸ");
+        car = car.replace(/ጽu/g, "ጹ");
+        car = car.replace(/ጽi/g, "ጺ");
+        car = car.replace(/ጽa/g, "ጻ");
+        car = car.replace(/ጸe/g, "ጼ");
+        car = car.replace(/ጽé/g, "ጼ");
+        car = car.replace(/ጽo/g, "ጾ");
+        car = car.replace(/ጻa/g, "ጿ");
+
+        car = car.replace(/ṡ/g, "ፅ");
+        car = car.replace(/ṡ/g, "ፅ");
+        car = car.replace(/ṡ/g, "ፅ");
+        car = car.replace(/ትዝ/g, "ፅ");
+        car = car.replace(/ፅe/g, "ፀ");
+        car = car.replace(/ፅu/g, "ፁ");
+        car = car.replace(/ፅi/g, "ፂ");
+        car = car.replace(/ፅa/g, "ፃ");
+        car = car.replace(/ፀe/g, "ፄ");
+        car = car.replace(/ፅé/g, "ፄ");
+        car = car.replace(/ፅo/g, "ፆ");
+        car = car.replace(/ፃa/g, "ፇ");
+
+        car = car.replace(/[fF]/g, "ፍ");
+        car = car.replace(/ፍe/g, "ፈ");
+        car = car.replace(/ፍu/g, "ፉ");
+        car = car.replace(/ፍi/g, "ፊ");
+        car = car.replace(/ፍa/g, "ፋ");
+        car = car.replace(/ፈe/g, "ፌ");
+        car = car.replace(/ፍé/g, "ፌ");
+        car = car.replace(/ፍo/g, "ፎ");
+        car = car.replace(/ፋa/g, "ፏ");
+
+        // non identif
+        //car = car.replace(/ፍY/g, "ፚ");
+        //car = car.replace(/ፚa/g, "ፚ");
+
+        car = car.replace(/p/g, "ፕ");
+        car = car.replace(/ፕe/g, "ፐ");
+        car = car.replace(/ፕu/g, "ፑ");
+        car = car.replace(/ፕi/g, "ፒ");
+        car = car.replace(/ፕa/g, "ፓ");
+        car = car.replace(/ፐe/g, "ፔ");
+        car = car.replace(/ፕé/g, "ፔ");
+        car = car.replace(/ፕo/g, "ፖ");
+        car = car.replace(/ፓa/g, "ፗ");
+
+        // pharyngale
+        car = car.replace(/ʿ/g, "ዕ");
+        car = car.replace(/\"/g, "ዕ");
+        car = car.replace(/ዕe/g, "ዐ");
+        car = car.replace(/ዕu/g, "ዑ");
+        car = car.replace(/ዕi/g, "ዒ");
+        car = car.replace(/ዕa/g, "ዓ");
+        car = car.replace(/ዐe/g, "ዔ");
+        car = car.replace(/ዕé/g, "ዔ");
+        car = car.replace(/ዕo/g, "ዖ");
+
+        car = car.replace(/E/g, "ዐ");
+        car = car.replace(/U/g, "ዑ");
+        car = car.replace(/I/g, "ዒ");
+        car = car.replace(/A/g, "ዓ");
+        car = car.replace(/ዐዐ/g, "ዔ");
+        car = car.replace(/É/g, "ዔ");
+        car = car.replace(/O/g, "ዖ");
+
+        // glottales
+        car = car.replace(/ʾ/g, "እ");
+        car = car.replace(/\'/g, "እ");
+        car = car.replace(/እe/g, "አ");
+        car = car.replace(/እu/g, "ኡ");
+        car = car.replace(/እi/g, "ኢ");
+        car = car.replace(/እa/g, "ኣ");
+        car = car.replace(/አe/g, "ኤ");
+        car = car.replace(/እé/g, "ኤ");
+        car = car.replace(/እo/g, "ኦ");
+        car = car.replace(/ኣa/g, "ኧ");
+
+        car = car.replace(/e/g, "አ");
+        car = car.replace(/u/g, "ኡ");
+        car = car.replace(/i/g, "ኢ");
+        car = car.replace(/a/g, "ኣ");
+        car = car.replace(/አአ/g, "ኤ");
+        car = car.replace(/é/g, "ኤ");
+        car = car.replace(/o/g, "ኦ");
+        car = car.replace(/ኣኣ/g, "ኧ");
+
+        //ponctuation
+        car = car.replace(/-/g, "፡");
+        car = car.replace(/\./g, "።");
+        car = car.replace(/\,/g, "፣");
+        car = car.replace(/\;/g, "፤");
+        car = car.replace(/\:/g, "፥");
+        car = car.replace(/\!/g, "፦");
+        car = car.replace(/\?/g, "፧");
+        car = car.replace(/\//g, "፨");
+
+        car = car.replace(/1/g, "፩");
+        car = car.replace(/2/g, "፪");
+        car = car.replace(/3/g, "፫");
+        car = car.replace(/4/g, "፬");
+        car = car.replace(/5/g, "፭");
+        car = car.replace(/6/g, "፮");
+        car = car.replace(/7/g, "፯");
+        car = car.replace(/8/g, "፰");
+        car = car.replace(/9/g, "፱");
+        car = car.replace(/፩0/g, "፲");
+        car = car.replace(/፪0/g, "፳");
+        car = car.replace(/፫0/g, "፴");
+        car = car.replace(/፬0/g, "፵");
+        car = car.replace(/፭0/g, "፶");
+        car = car.replace(/፮0/g, "፷");
+        car = car.replace(/፯0/g, "፸");
+        car = car.replace(/፰0/g, "፹");
+        car = car.replace(/፱0/g, "፺");
+        car = car.replace(/፲0/g, "፻");
+        car = car.replace(/፳0/g, "፪፻");
+        car = car.replace(/፺0/g, "፱፻");
+        car = car.replace(/፻0/g, "፲፻");
+        car = car.replace(/፲፻0/g, "፼");
+
+        $("#MiddleName").val(car);
+        var obj = $("#MiddleName");
+        obj.focus();
+        obj.scrollTop = obj.scrollHeight;
+
+        $.ajax({
+            contentType: "application/json; charset=utf-8",
+            url: '@Url.Action("GetMiddleName", "EmployeeProfile")',
+            data: { 'car': car },
+            type: 'GET',
+            cache: false,
+            success: function (result) {
+                r = result;
+            }
+
+        });
+    }
+</script>
+
+<script>
+    var car;
+    function transcrireLastName() {
+        var name = document.getElementById("LastName").value;//$("#AmharicName");//.data("TextBox");
+        car = name;//.value();//document.conversion.AmharicName.value;
+        car = car.replace(/ä/g, "e");
+        car = car.replace(/â/g, "e");
+        car = car.replace(/ê/g, "é");
+        car = car.replace(/ë/g, "é");
+
+        car = car.replace(/w/g, "ው");
+        car = car.replace(/ውe/g, "ወ");
+        car = car.replace(/ውu/g, "ዉ");
+        car = car.replace(/ውi/g, "ዊ");
+        car = car.replace(/ውa/g, "ዋ");
+        car = car.replace(/ውe/g, "ዌ");
+        car = car.replace(/ውé/g, "ዌ");
+        car = car.replace(/ውo/g, "ዎ");
+
+        car = car.replace(/h/g, "ህ");
+        car = car.replace(/ህe/g, "ሀ");
+        car = car.replace(/ህu/g, "ሁ");
+        car = car.replace(/ህi/g, "ሂ");
+        car = car.replace(/ህa/g, "ሃ");
+        car = car.replace(/ሀe/g, "ሄ");
+        car = car.replace(/ህé/g, "ሄ");
+        car = car.replace(/ህo/g, "ሆ");
+        car = car.replace(/ሃa/g, "ዏ");
+
+        // moodif hh par x
+        car = car.replace(/[ẖxX]/g, "ኅ");
+        car = car.replace(/ኅe/g, "ኀ");
+        car = car.replace(/ኅu/g, "ኁ");
+        car = car.replace(/ኅi/g, "ኂ");
+        car = car.replace(/ኅa/g, "ኃ");
+        car = car.replace(/ኀe/g, "ኄ");
+        car = car.replace(/ኅé/g, "ኄ");
+        car = car.replace(/ኅo/g, "ኆ");
+        car = car.replace(/ኃa/g, "ኋ");
+
+        car = car.replace(/[lL]/g, "ል");
+        car = car.replace(/ልe/g, "ለ");
+        car = car.replace(/ልu/g, "ሉ");
+        car = car.replace(/ልi/g, "ሊ");
+        car = car.replace(/ልa/g, "ላ");
+        car = car.replace(/ለe/g, "ሌ");
+        car = car.replace(/ልé/g, "ሌ");
+        car = car.replace(/ልo/g, "ሎ");
+        car = car.replace(/ላa/g, "ሏ");
+
+        car = car.replace(/ህህ/g, "ሕ");
+        car = car.replace(/[ḥH]/g, "ሕ");
+        car = car.replace(/ሕe/g, "ሐ");
+        car = car.replace(/ሕu/g, "ሑ");
+        car = car.replace(/ሕi/g, "ሒ");
+        car = car.replace(/ሕa/g, "ሓ");
+        car = car.replace(/ሐe/g, "ሔ");
+        car = car.replace(/ሕé/g, "ሔ");
+        car = car.replace(/ሕo/g, "ሖ");
+        car = car.replace(/ሓa/g, "ሗ");
+
+        car = car.replace(/[mM]/g, "ም");
+        car = car.replace(/ምe/g, "መ");
+        car = car.replace(/ምu/g, "ሙ");
+        car = car.replace(/ምi/g, "ሚ");
+        car = car.replace(/ምa/g, "ማ");
+        car = car.replace(/መe/g, "ሜ");
+        car = car.replace(/ምé/g, "ሜ");
+        car = car.replace(/ምo/g, "ሞ");
+        car = car.replace(/ማa/g, "ሟ");
+        car = car.replace(/ምY/g, "ፙ");
+        car = car.replace(/ፙa/g, "ፙ");
+
+        car = car.replace(/[rR]/g, "ር");
+        car = car.replace(/ርe/g, "ረ");
+        car = car.replace(/ርu/g, "ሩ");
+        car = car.replace(/ርi/g, "ሪ");
+        car = car.replace(/ርa/g, "ራ");
+        car = car.replace(/ረe/g, "ሬ");
+        car = car.replace(/ርé/g, "ሬ");
+        car = car.replace(/ርo/g, "ሮ");
+        car = car.replace(/ራa/g, "ሯ");
+        car = car.replace(/ርY/g, "ፘ");
+        car = car.replace(/ፘa/g, "ፘ");
+
+        car = car.replace(/s/g, "ስ");
+        car = car.replace(/ስe/g, "ሰ");
+        car = car.replace(/ስu/g, "ሱ");
+        car = car.replace(/ስi/g, "ሲ");
+        car = car.replace(/ስa/g, "ሳ");
+        car = car.replace(/ሰe/g, "ሴ");
+        car = car.replace(/ስé/g, "ሴ");
+        car = car.replace(/ስo/g, "ሶ");
+        car = car.replace(/ሳa/g, "ሷ");
+
+        car = car.replace(/z/g, "ዝ");
+        car = car.replace(/ዝe/g, "ዘ");
+        car = car.replace(/ዝu/g, "ዙ");
+        car = car.replace(/ዝi/g, "ዚ");
+        car = car.replace(/ዝa/g, "ዛ");
+        car = car.replace(/ዘe/g, "ዜ");
+        car = car.replace(/ዝé/g, "ዜ");
+        car = car.replace(/ዝo/g, "ዞ");
+        car = car.replace(/ዛa/g, "ዟ");
+
+        // modif ss remplacé par sz
+        car = car.replace(/ś/g, "ሥ");
+        car = car.replace(/ስዝ/g, "ሥ");
+        car = car.replace(/ሥe/g, "ሠ");
+        car = car.replace(/ሥu/g, "ሡ");
+        car = car.replace(/ሥi/g, "ሢ");
+        car = car.replace(/ሥa/g, "ሣ");
+        car = car.replace(/ሠe/g, "ሤ");
+        car = car.replace(/ሥé/g, "ሤ");
+        car = car.replace(/ሥo/g, "ሦ");
+        car = car.replace(/ሣa/g, "ሧ");
+
+        car = car.replace(/š/g, "ሽ");
+        car = car.replace(/ስስ/g, "ሽ");
+        car = car.replace(/ስህ/g, "ሽ");
+        car = car.replace(/ሽe/g, "ሸ");
+        car = car.replace(/ሽu/g, "ሹ");
+        car = car.replace(/ሽi/g, "ሺ");
+        car = car.replace(/ሽa/g, "ሻ");
+        car = car.replace(/ሸe/g, "ሼ");
+        car = car.replace(/ሽé/g, "ሼ");
+        car = car.replace(/ሽo/g, "ሾ");
+        car = car.replace(/ሻa/g, "ሿ");
+
+
+        car = car.replace(/q/g, "ቅ");
+        car = car.replace(/ቅe/g, "ቀ");
+        car = car.replace(/ቅu/g, "ቁ");
+        car = car.replace(/ቅi/g, "ቂ");
+        car = car.replace(/ቅa/g, "ቃ");
+        car = car.replace(/ቀe/g, "ቄ");
+        car = car.replace(/ቅé/g, "ቄ");
+        car = car.replace(/ቅo/g, "ቆ");
+        car = car.replace(/ቃa/g, "ቋ");
+
+
+        car = car.replace(/ቅው/g, "ቍ");
+        car = car.replace(/ቍe/g, "ቈ");
+        car = car.replace(/ቍi/g, "ቊ");
+        car = car.replace(/ቍa/g, "ቋ");
+        car = car.replace(/ቈe/g, "ቌ");
+        car = car.replace(/ቍé/g, "ቌ");
+
+        //qh
+        car = car.replace(/ቅህ/g, "ቕ");
+        car = car.replace(/ቕe/g, "ቐ");
+        car = car.replace(/ቕu/g, "ቑ");
+        car = car.replace(/ቕi/g, "ቒ");
+        car = car.replace(/ቕa/g, "ቓ");
+        car = car.replace(/ቐe/g, "ቔ");
+        car = car.replace(/ቕé/g, "ቔ");
+        car = car.replace(/ቕo/g, "ቖ");
+
+
+        car = car.replace(/ቕው/g, "ቝ");
+        car = car.replace(/ቍe/g, "ቘ");
+        car = car.replace(/ቍi/g, "ቚ");
+        car = car.replace(/ቍa/g, "ቛ");
+        car = car.replace(/ቘe/g, "ቜ");
+        car = car.replace(/ቍé/g, "ቜ");
+        // xw
+        car = car.replace(/ኅው/g, "ኍ");
+        car = car.replace(/ኍe/g, "ቘ");
+        car = car.replace(/ኍi/g, "ቚ");
+        car = car.replace(/ኍa/g, "ቛ");
+        car = car.replace(/ቘe/g, "ቜ");
+        car = car.replace(/ኍé/g, "ቜ");
+
+
+        car = car.replace(/[bB]/g, "ብ");
+        car = car.replace(/ብe/g, "በ");
+        car = car.replace(/ብu/g, "ቡ");
+        car = car.replace(/ብi/g, "ቢ");
+        car = car.replace(/ብa/g, "ባ");
+        car = car.replace(/በe/g, "ቤ");
+        car = car.replace(/ብé/g, "ቤ");
+        car = car.replace(/ብo/g, "ቦ");
+        car = car.replace(/ባa/g, "ቧ");
+
+        car = car.replace(/[vV]/g, "ቭ");
+        car = car.replace(/ቭe/g, "ቨ");
+        car = car.replace(/ቭu/g, "ቩ");
+        car = car.replace(/ቭi/g, "ቪ");
+        car = car.replace(/ቭa/g, "ቫ");
+        car = car.replace(/ቨe/g, "ቬ");
+        car = car.replace(/ቭé/g, "ቬ");
+        car = car.replace(/ቭo/g, "ቮ");
+        car = car.replace(/ቫa/g, "ቯ");
+
+        car = car.replace(/t/g, "ት");
+        car = car.replace(/ትe/g, "ተ");
+        car = car.replace(/ትu/g, "ቱ");
+        car = car.replace(/ትi/g, "ቲ");
+        car = car.replace(/ትa/g, "ታ");
+        car = car.replace(/ተe/g, "ቴ");
+        car = car.replace(/ትé/g, "ቴ");
+        car = car.replace(/ትo/g, "ቶ");
+        car = car.replace(/ታa/g, "ቷ");
+
+        car = car.replace(/[cč]/g, "ች");
+        car = car.replace(/ችe/g, "ቸ");
+        car = car.replace(/ችu/g, "ቹ");
+        car = car.replace(/ችi/g, "ቺ");
+        car = car.replace(/ችa/g, "ቻ");
+        car = car.replace(/ቸe/g, "ቼ");
+        car = car.replace(/ችé/g, "ቼ");
+        car = car.replace(/ችo/g, "ቾ");
+        car = car.replace(/ቻa/g, "ቿ");
+
+        car = car.replace(/n/g, "ን");
+        car = car.replace(/ንe/g, "ነ");
+        car = car.replace(/ንu/g, "ኑ");
+        car = car.replace(/ንi/g, "ኒ");
+        car = car.replace(/ንa/g, "ና");
+        car = car.replace(/ነe/g, "ኔ");
+        car = car.replace(/ንé/g, "ኔ");
+        car = car.replace(/ንo/g, "ኖ");
+        car = car.replace(/ናa/g, "ኗ");
+
+        car = car.replace(/N/g, "ኝ");
+        car = car.replace(/ñ/g, "ኝ");
+        car = car.replace(/ንy/g, "ኝ");
+        car = car.replace(/ኝe/g, "ኘ");
+        car = car.replace(/ኝu/g, "ኙ");
+        car = car.replace(/ኝi/g, "ኚ");
+        car = car.replace(/ኝa/g, "ኛ");
+        car = car.replace(/ኝe/g, "ኜ");
+        car = car.replace(/ኝé/g, "ኜ");
+        car = car.replace(/ኝo/g, "ኞ");
+        car = car.replace(/ኛa/g, "ኟ");
+
+
+        car = car.replace(/k/g, "ክ");
+        car = car.replace(/ክe/g, "ከ");
+        car = car.replace(/ክu/g, "ኩ");
+        car = car.replace(/ክi/g, "ኪ");
+        car = car.replace(/ክa/g, "ካ");
+        car = car.replace(/ከe/g, "ኬ");
+        car = car.replace(/ክé/g, "ኬ");
+        car = car.replace(/ክo/g, "ኮ");
+        car = car.replace(/ካa/g, "ኳ");
+
+
+        car = car.replace(/ክኅ/g, "ኽ");
+        car = car.replace(/ኽe/g, "ኸ");
+        car = car.replace(/ኽu/g, "ኹ");
+        car = car.replace(/ኽi/g, "ኺ");
+        car = car.replace(/ኽa/g, "ኻ");
+        car = car.replace(/ኸe/g, "ኼ");
+        car = car.replace(/ኽé/g, "ኼ");
+        car = car.replace(/ኽo/g, "ኾ");
+
+        car = car.replace(/ኽው/g, "ዅ");
+        car = car.replace(/ዅe/g, "ዀ");
+        car = car.replace(/ዅu/g, "ዂ");
+        car = car.replace(/ዅi/g, "ዂ");
+        car = car.replace(/ዅa/g, "ዃ");
+        car = car.replace(/ዀe/g, "ዄ");
+        car = car.replace(/ዅé/g, "ዄ");
+
+
+        // kw
+        car = car.replace(/ክው/g, "ኵ");
+        car = car.replace(/ኵe/g, "ኰ");
+        car = car.replace(/ኵi/g, "ኲ");
+        car = car.replace(/ኵa/g, "ኳ");
+        car = car.replace(/ኰe/g, "ኴ");
+        car = car.replace(/ኵé/g, "ኴ");
+
+        car = car.replace(/K/g, "ኽ");
+        car = car.replace(/ክኅ/g, "ኽ");
+        car = car.replace(/ኽe/g, "ኸ");
+        car = car.replace(/ኽu/g, "ኹ");
+        car = car.replace(/ኽi/g, "ኺ");
+        car = car.replace(/ኽa/g, "ኻ");
+        car = car.replace(/ኽe/g, "ኼ");
+        car = car.replace(/ኽé/g, "ኼ");
+        car = car.replace(/ኽo/g, "ኾ");
+        car = car.replace(/ኽW/g, "ዃ");
+        car = car.replace(/ዃe/g, "ዀ");
+        car = car.replace(/ዃu/g, "ዅ");
+        car = car.replace(/ዃi/g, "ዂ");
+        car = car.replace(/ዃa/g, "ዃ");
+        car = car.replace(/ዀe/g, "ዄ");
+        car = car.replace(/ዃé/g, "ዄ");
+        car = car.replace(/ዃ'/g, "ዅ");
+
+        car = car.replace(/[Zž]/g, "ዥ");
+        car = car.replace(/ዝህ/g, "ዥ");
+        car = car.replace(/ዥe/g, "ዠ");
+        car = car.replace(/ዥu/g, "ዡ");
+        car = car.replace(/ዥi/g, "ዢ");
+        car = car.replace(/ዥa/g, "ዣ");
+        car = car.replace(/ዠe/g, "ዤ");
+        car = car.replace(/ዥé/g, "ዤ");
+        car = car.replace(/ዥo/g, "ዦ");
+        car = car.replace(/ዣa/g, "ዧ");
+
+        car = car.replace(/[yY]/g, "ይ");
+        car = car.replace(/ይe/g, "የ");
+        car = car.replace(/ይu/g, "ዩ");
+        car = car.replace(/ይi/g, "ዪ");
+        car = car.replace(/ይa/g, "ያ");
+        car = car.replace(/የe/g, "ዬ");
+        car = car.replace(/ይé/g, "ዬ");
+        car = car.replace(/ይo/g, "ዮ");
+        car = car.replace(/ያa/g, "ዯ");
+
+        car = car.replace(/d/g, "ድ");
+        car = car.replace(/ድe/g, "ደ");
+        car = car.replace(/ድu/g, "ዱ");
+        car = car.replace(/ድi/g, "ዲ");
+        car = car.replace(/ድa/g, "ዳ");
+        car = car.replace(/ደe/g, "ዴ");
+        car = car.replace(/ድé/g, "ዴ");
+        car = car.replace(/ድo/g, "ዶ");
+        car = car.replace(/ዳa/g, "ዷ");
+
+        car = car.replace(/ድድ/g, "ዽ");
+        car = car.replace(/[Dḍ]/g, "ዽ");
+        car = car.replace(/ዽe/g, "ዸ");
+        car = car.replace(/ዽu/g, "ዹ");
+        car = car.replace(/ዽi/g, "ዺ");
+        car = car.replace(/ዽa/g, "ዻ");
+        car = car.replace(/ዸe/g, "ዼ");
+        car = car.replace(/ዽé/g, "ዼ");
+        car = car.replace(/ዽo/g, "ዾ");
+        car = car.replace(/ዻa/g, "ዿ");
+
+        car = car.replace(/[jJǧ]/g, "ጅ");
+        car = car.replace(/ጅe/g, "ጀ");
+        car = car.replace(/ጅu/g, "ጁ");
+        car = car.replace(/ጅi/g, "ጂ");
+        car = car.replace(/ጅa/g, "ጃ");
+        car = car.replace(/ጀe/g, "ጄ");
+        car = car.replace(/ጅé/g, "ጄ");
+        car = car.replace(/ጅo/g, "ጆ");
+        car = car.replace(/ጃa/g, "ጇ");
+
+        car = car.replace(/g/g, "ግ");
+        car = car.replace(/ግe/g, "ገ");
+        car = car.replace(/ግu/g, "ጉ");
+        car = car.replace(/ግi/g, "ጊ");
+        car = car.replace(/ግa/g, "ጋ");
+        car = car.replace(/ገe/g, "ጌ");
+        car = car.replace(/ግé/g, "ጌ");
+        car = car.replace(/ግo/g, "ጎ");
+        car = car.replace(/ጋa/g, "ጓ");
+
+        // gw
+        car = car.replace(/ግው/g, "ጕ");
+        car = car.replace(/ጕe/g, "ጐ");
+        car = car.replace(/ጕi/g, "ጒ");
+        car = car.replace(/ጕa/g, "ጓ");
+        car = car.replace(/ጐe/g, "ጔ");
+        car = car.replace(/ጕé/g, "ጔ");
+
+
+        car = car.replace(/ግግ/g, "ጝ");
+        car = car.replace(/G/g, "ጝ");
+        car = car.replace(/ጝe/g, "ጘ");
+        car = car.replace(/ጝu/g, "ጙ");
+        car = car.replace(/ጝi/g, "ጚ");
+        car = car.replace(/ጝa/g, "ጛ");
+        car = car.replace(/ጘe/g, "ጜ");
+        car = car.replace(/ጝé/g, "ጜ");
+        car = car.replace(/ጝo/g, "ጞ");
+        car = car.replace(/ጛa/g, "ጟ");
+
+        car = car.replace(/[Tṭ]/g, "ጥ");
+        car = car.replace(/ትህ/g, "ጥ");
+        car = car.replace(/ጥe/g, "ጠ");
+        car = car.replace(/ጥu/g, "ጡ");
+        car = car.replace(/ጥi/g, "ጢ");
+        car = car.replace(/ጥa/g, "ጣ");
+        car = car.replace(/ጠe/g, "ጤ");
+        car = car.replace(/ጥé/g, "ጤ");
+        car = car.replace(/ጥo/g, "ጦ");
+        car = car.replace(/ጣa/g, "ጧ");
+
+        car = car.replace(/[Cċ]/g, "ጭ");
+        car = car.replace(/ችህ/g, "ጭ");
+        car = car.replace(/ጭe/g, "ጨ");
+        car = car.replace(/ጭu/g, "ጩ");
+        car = car.replace(/ጭi/g, "ጪ");
+        car = car.replace(/ጭa/g, "ጫ");
+        car = car.replace(/ጨe/g, "ጬ");
+        car = car.replace(/ጭé/g, "ጬ");
+        car = car.replace(/ጭo/g, "ጮ");
+        car = car.replace(/ጫa/g, "ጯ");
+
+        car = car.replace(/p̣/g, "ጵ");
+        car = car.replace(/P/g, "ጵ");
+        car = car.replace(/ፕህ/g, "ጵ");
+        car = car.replace(/ጵe/g, "ጰ");
+        car = car.replace(/ጵu/g, "ጱ");
+        car = car.replace(/ጵi/g, "ጲ");
+        car = car.replace(/ጵa/g, "ጳ");
+        car = car.replace(/ጰe/g, "ጴ");
+        car = car.replace(/ጵé/g, "ጴ");
+        car = car.replace(/ጵo/g, "ጶ");
+        car = car.replace(/ጳa/g, "ጷ");
+
+        car = car.replace(/[Sṣ]/g, "ጽ");
+        car = car.replace(/ትስ/g, "ጽ");
+        car = car.replace(/ጽe/g, "ጸ");
+        car = car.replace(/ጽu/g, "ጹ");
+        car = car.replace(/ጽi/g, "ጺ");
+        car = car.replace(/ጽa/g, "ጻ");
+        car = car.replace(/ጸe/g, "ጼ");
+        car = car.replace(/ጽé/g, "ጼ");
+        car = car.replace(/ጽo/g, "ጾ");
+        car = car.replace(/ጻa/g, "ጿ");
+
+        car = car.replace(/ṡ/g, "ፅ");
+        car = car.replace(/ṡ/g, "ፅ");
+        car = car.replace(/ṡ/g, "ፅ");
+        car = car.replace(/ትዝ/g, "ፅ");
+        car = car.replace(/ፅe/g, "ፀ");
+        car = car.replace(/ፅu/g, "ፁ");
+        car = car.replace(/ፅi/g, "ፂ");
+        car = car.replace(/ፅa/g, "ፃ");
+        car = car.replace(/ፀe/g, "ፄ");
+        car = car.replace(/ፅé/g, "ፄ");
+        car = car.replace(/ፅo/g, "ፆ");
+        car = car.replace(/ፃa/g, "ፇ");
+
+        car = car.replace(/[fF]/g, "ፍ");
+        car = car.replace(/ፍe/g, "ፈ");
+        car = car.replace(/ፍu/g, "ፉ");
+        car = car.replace(/ፍi/g, "ፊ");
+        car = car.replace(/ፍa/g, "ፋ");
+        car = car.replace(/ፈe/g, "ፌ");
+        car = car.replace(/ፍé/g, "ፌ");
+        car = car.replace(/ፍo/g, "ፎ");
+        car = car.replace(/ፋa/g, "ፏ");
+
+        // non identif
+        //car = car.replace(/ፍY/g, "ፚ");
+        //car = car.replace(/ፚa/g, "ፚ");
+
+        car = car.replace(/p/g, "ፕ");
+        car = car.replace(/ፕe/g, "ፐ");
+        car = car.replace(/ፕu/g, "ፑ");
+        car = car.replace(/ፕi/g, "ፒ");
+        car = car.replace(/ፕa/g, "ፓ");
+        car = car.replace(/ፐe/g, "ፔ");
+        car = car.replace(/ፕé/g, "ፔ");
+        car = car.replace(/ፕo/g, "ፖ");
+        car = car.replace(/ፓa/g, "ፗ");
+
+        // pharyngale
+        car = car.replace(/ʿ/g, "ዕ");
+        car = car.replace(/\"/g, "ዕ");
+        car = car.replace(/ዕe/g, "ዐ");
+        car = car.replace(/ዕu/g, "ዑ");
+        car = car.replace(/ዕi/g, "ዒ");
+        car = car.replace(/ዕa/g, "ዓ");
+        car = car.replace(/ዐe/g, "ዔ");
+        car = car.replace(/ዕé/g, "ዔ");
+        car = car.replace(/ዕo/g, "ዖ");
+
+        car = car.replace(/E/g, "ዐ");
+        car = car.replace(/U/g, "ዑ");
+        car = car.replace(/I/g, "ዒ");
+        car = car.replace(/A/g, "ዓ");
+        car = car.replace(/ዐዐ/g, "ዔ");
+        car = car.replace(/É/g, "ዔ");
+        car = car.replace(/O/g, "ዖ");
+
+        // glottales
+        car = car.replace(/ʾ/g, "እ");
+        car = car.replace(/\'/g, "እ");
+        car = car.replace(/እe/g, "አ");
+        car = car.replace(/እu/g, "ኡ");
+        car = car.replace(/እi/g, "ኢ");
+        car = car.replace(/እa/g, "ኣ");
+        car = car.replace(/አe/g, "ኤ");
+        car = car.replace(/እé/g, "ኤ");
+        car = car.replace(/እo/g, "ኦ");
+        car = car.replace(/ኣa/g, "ኧ");
+
+        car = car.replace(/e/g, "አ");
+        car = car.replace(/u/g, "ኡ");
+        car = car.replace(/i/g, "ኢ");
+        car = car.replace(/a/g, "ኣ");
+        car = car.replace(/አአ/g, "ኤ");
+        car = car.replace(/é/g, "ኤ");
+        car = car.replace(/o/g, "ኦ");
+        car = car.replace(/ኣኣ/g, "ኧ");
+
+        //ponctuation
+        car = car.replace(/-/g, "፡");
+        car = car.replace(/\./g, "።");
+        car = car.replace(/\,/g, "፣");
+        car = car.replace(/\;/g, "፤");
+        car = car.replace(/\:/g, "፥");
+        car = car.replace(/\!/g, "፦");
+        car = car.replace(/\?/g, "፧");
+        car = car.replace(/\//g, "፨");
+
+        car = car.replace(/1/g, "፩");
+        car = car.replace(/2/g, "፪");
+        car = car.replace(/3/g, "፫");
+        car = car.replace(/4/g, "፬");
+        car = car.replace(/5/g, "፭");
+        car = car.replace(/6/g, "፮");
+        car = car.replace(/7/g, "፯");
+        car = car.replace(/8/g, "፰");
+        car = car.replace(/9/g, "፱");
+        car = car.replace(/፩0/g, "፲");
+        car = car.replace(/፪0/g, "፳");
+        car = car.replace(/፫0/g, "፴");
+        car = car.replace(/፬0/g, "፵");
+        car = car.replace(/፭0/g, "፶");
+        car = car.replace(/፮0/g, "፷");
+        car = car.replace(/፯0/g, "፸");
+        car = car.replace(/፰0/g, "፹");
+        car = car.replace(/፱0/g, "፺");
+        car = car.replace(/፲0/g, "፻");
+        car = car.replace(/፳0/g, "፪፻");
+        car = car.replace(/፺0/g, "፱፻");
+        car = car.replace(/፻0/g, "፲፻");
+        car = car.replace(/፲፻0/g, "፼");
+
+        $("#LastName").val(car);
+        var obj = $("#LastName");
+        obj.focus();
+        obj.scrollTop = obj.scrollHeight;
+
+        $.ajax({
+            contentType: "application/json; charset=utf-8",
+            url: '@Url.Action("GetLastName", "EmployeeProfile")',
+            data: { 'car': car },
+            type: 'GET',
+            cache: false,
+            success: function (result) {
+                r = result;
+            }
+
+        });
+    }
+</script>
+<script>
+    function GetDate() {
+
+        var x = AssignDate();
+        var y = x;
+        $("#DateOfBirthAm").trigger("change");
+        $("#HiredDateAmharic").trigger("change");
+        for (var o in y) {
+            $.ajax({
+                contentType: "application/json; charset=utf-8",
+                url: '@Url.Action("SetDate", "EmployeeProfile")',
+                data: { name: y[o].id, value: y[o].date },
+                type: 'GET',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                }
+
+            });
+        }
+    }
+
+</script>
+<script>
+    function AssignDate() {
+        var list = AssignDates();
+        return list;
+    }
+
+</script>
+<script>
+    function GetEducationDate() {
+
+        var x = AssignDate();
+        var y = x;
+        $("#FromEAmharic").trigger("change");
+        $("#ToEAmharic").trigger("change");
+        for (var o in y) {
+            $.ajax({
+                contentType: "application/json; charset=utf-8",
+                url: '@Url.Action("SetDate", "Education")',
+                data: { name: y[o].id, value: y[o].date },
+                type: 'GET',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                }
+
+            });
+        }
+    }
+    function GetExprianceDate() {
+
+        var x = AssignDate();
+        var y = x;
+        $("#FromExAmharic").trigger("change");
+        $("#ToExAmharic").trigger("change");
+        for (var o in y) {
+            $.ajax({
+                contentType: "application/json; charset=utf-8",
+                url: '@Url.Action("SetDate", "EmployeeExperience")',
+                data: { name: y[o].id, value: y[o].date },
+                type: 'GET',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                }
+
+            });
+        }
+    }
+    function GetTrainingDate() {
+
+        var x = AssignDate();
+        var y = x;
+        $("#FromTrAm").trigger("change");
+        $("#ToTraAm").trigger("change");
+        for (var o in y) {
+            $.ajax({
+                contentType: "application/json; charset=utf-8",
+                url: '@Url.Action("SetDate", "EmployeeTraining")',
+                data: { name: y[o].id, value: y[o].date },
+                type: 'GET',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                }
+
+            });
+        }
+    }
+    function GetComptencyDate() {
+
+        var x = AssignDate();
+        var y = x;
+        $("#FromComAm").trigger("change");
+        $("#ToComAm").trigger("change");
+        for (var o in y) {
+            $.ajax({
+                contentType: "application/json; charset=utf-8",
+                url: '@Url.Action("SetDate", "Comptency")',
+                data: { name: y[o].id, value: y[o].date },
+                type: 'GET',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                }
+
+            });
+        }
+    }
+    function GetIdentificationDate() {
+
+        var x = AssignDate();
+        var y = x;
+        $("#IssueDateIdAm").trigger("change");
+        $("#ExpiryDateAm").trigger("change");
+        for (var o in y) {
+            $.ajax({
+                contentType: "application/json; charset=utf-8",
+                url: '@Url.Action("SetDate", "Identification", new {Area="Common" })',
+                data: { name: y[o].id, value: y[o].date },
+                type: 'GET',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                }
+
+            });
+        }
+    }
+    function GetContractDate() {
+
+        var x = AssignDate();
+        var y = x;
+        $("#FromContAm").trigger("change");
+        $("#ToContAm").trigger("change");
+        for (var o in y) {
+            $.ajax({
+                contentType: "application/json; charset=utf-8",
+                url: '@Url.Action("SetDate", "EmployeeContract")',
+                data: { name: y[o].id, value: y[o].date },
+                type: 'GET',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                }
+
+            });
+        }
+    }
+   
+    function onDataBound(e) {
+        var rows = e.sender.tbody.children();
+
+        for (var j = 0; j < rows.length; j++) {
+            var row = $(rows[j]);
+            var dataItem = e.sender.dataItem(row);
+            if (dataItem.ProhabitionState === 0) {
+
+                row.css("background-color", "red");
+
+            }
+            else if (dataItem.IsActive === false) {
+
+                row.css("background-color", "grey");
+
+            }
+            else if (dataItem.ProhabitionState === 2) {
+
+                row.css("background-color", "yellow");
+
+            }
+
+
+        }
+
+    }
+    function Change(e) {
+
+        var dropDown = $("#Value").data("kendoTextBox");
+        var x = e.value;
+        if (x == "0" || x == "1" || x == "2" || x == "3") {
+            // $("#VaccancyCode").prop("disabled", false).addClass("k-state-disabled");
+            $("#Value").kendoMaskedTextBox({
+                mask: "(999) 000-0000",
+                placeholder: "",
+                data_email_msg:""
+            });
+
+        }
+        else if (x == "4" || x == "5" || x == "6" || x == "7" || x == "14" || x == "15") {
+            //$("#Value").kendoMaskedTextBox({
+            //    mask: "~",
+            //    placeholder: ""
+            //});
+            $("#Value").prop("placeholder", "email@email.com");
+            $("#Value").prop("type", "email");
+            $("#Value").prop("required", "required");
+            $("#Value").prop("data_email_msg", "Email format is not valid");
+         
+
+        }
+        else
+
+        {
+            $("#Value").prop("placeholder", "");
+            $("#Value").prop("type", "");
+            //$("#Value").kendoMaskedTextBox({
+            //    mask: "*[!((a-z) or (0-9))]*",
+            //    //placeholder: "",
+            //    //data_email_msg: ""
+            //});
+        }
+    }
+</script>
+<script type="text/javascript">
+    function cityFilter(element) {
+        element.kendoDropDownList({
+            dataTextField: "Name",
+            dataValueField: "Name",
+            dataSource: {
+                transport: {
+                    read: "@Url.Action("FilterMenuCustomization_Cities")",
+
+                    contentType: "application/json; charset=utf-8"
+
+                }
+
+            },
+            optionLabel: "--Select Value--",
+            change:"xx"
+             
+    });
+        
+    }
+
+    @*function titleFilter(element) {
+        element.kendoAutoComplete({
+            dataSource: {
+                transport: {
+                    read: "@Url.Action("FilterMenuCustomization_Titles")"
+                }
+            }
+        });
+    }*@
+    function onUploadSuccess(e) {
+        $("#Person_Employeegrid").data("kendoGrid").dataSource.read();
+        $("#Person_Employeegrid").data("kendoGrid").refresh();
+
+       
+    }
+
+    function checkFileType(e) {
+        var files = e.files;
+
+        $.each(files, function () {
+
+            if (this.extension.toLowerCase() === ".xls" || this.extension.toLowerCase() === ".xlsx" || this.extension.toLowerCase() === ".xlsm") {
+
+            } else {
+                alert("Only .xls, .xlsx, .xlsm files can be uploaded!");
+                e.preventDefault();
+            }
+
+        });
+    }
+    //function onRequestEnd(e) {
+    //    var grid = $("#Person_Employeegrid").data("kendoGrid");
+    //    var data = grid.dataSource;
+    //    if (e.type == "create" || e.type == "update") {
+    //        if (!e.response.Errors)
+    //            data.read();
+    //        else console.log("I had some issues");
+    //    }
+    //}
+    //$(document).ready(function () {
+    //    var $grdProjects = $('#Person_Employeegrid-grid').data('kendoGrid'),
+    //        $btnFilterProjects = $('#btn-filter-projects');
+
+    //    $btnFilterProjects.on('click', function (e) {
+    //        e.preventDefault();
+
+    //        // Creates JSON object with form values (keys are field names)
+    //        var params = getFilterParams();
+
+    //        var filters = [];
+    //        if (params.lastName) {
+    //            filters.push({ field: 'LastName', operator: 'contains', value: params.lastName });
+    //        }
+    //        // Additional properties redacted
+
+    //        // Sets the grid's datasource to the filters defined above 
+    //        $grdProjects.dataSource.filter(filters);
+
+    //        var filterQueryString = '?' + collab.helpers.objectToString(params);
+    //        window.history.pushState(params, null, filterQueryString);
+    //    });
+    //});
+</script>
+<script type="text/kendo-template" id="message">
+    <div class="k-widget k-tooltip k-tooltip-validation k-invalid-msg field-validation-error" style="margin: 0.5em; display: block; " data-for="#=field#" data-valmsg-for="#=field#" id="#=field#_validationMessage">
+        <span class="k-icon k-warning"> </span>#=message#<div class="k-callout k-callout-n"></div>
+    </div>
+</script>
+
+<script type="text/javascript">
+    var validationMessageTmpl = kendo.template($("#message").html());
+
+    function error(args) {
+        if (args.errors) {
+            var grid = $("#Person_Employeegrid").data("kendoGrid");
+            grid.one("dataBinding", function(e) {
+                e.preventDefault(); // cancel grid rebind if error occurs
+
+                for (var error in args.errors) {
+                    alert(args.errors[error].errors[0]);
+                    //showMessage(grid.editable.element, error, args.errors[error].errors);
+                }
+            });
+        }
+    }
+
+    function showMessage(container, name, errors) {
+        //add the validation message to the form
+        container.find("[data-valmsg-for=" + name + "],[data-val-msg-for=" + name + "]")
+            .replaceWith(validationMessageTmpl({ field: name, message: errors[0] }))
+    }
+    function DownLoadTemplate(e) {
+        try {
+
+
+            var wnd = $("#AttachmentWindow").data("kendoWindow");
+            wnd.center().open();
+
+        } catch (ex) {
+            // alert("Please select the row!!");
+        }
+
+    }
+    $(document.body).keypress(function (e) {
+        if (e.keyCode === 13) {
+            var grid = $("#Person_Employeegrid").data("kendoGrid");
+            grid.addRow();
+        }
+    });
+</script>
+@(Html.Kendo().Window().Name("AttachmentWindow")
+        .Title(Resources.Templates)
+    .Visible(false)
+    .Modal(true)
+      .Content(@<text>
+
+        @(Html.Kendo().Grid<Attachment>()
+                  .Name("AttachmentGrid")
+          .Columns(columns =>
+          {
+              columns.Bound(c => c.Description).Width(200); //.Title("File Name").ClientTemplate((@Html.ActionLink("#=Description#", "DownloadFile", "DownloadDocument", new { filename = "#=Description#" }, null).ToHtmlString()));
+              columns.Bound(c => c.FileType).ClientTemplate(Html.ActionLink("DownLoad", "DownloadTemplate", new { area = "HRM", filename = "#=Description#" }).ToHtmlString()).Width(200);
+
+          })
+
+              .Scrollable()
+              .Selectable()
+              .DataSource(dataSource => dataSource
+                  .Ajax()
+                                           .Events(events => events.Error("error_handler(\"AttachmentGrid\")"))
+
+                  .Model(model => model.Id(p => p.AttachmentId))
+                                  .Read(read => read.Action("Attachments_Read", "Attachment", new { Area = "Common", attachmentReferenceType = "TEMPLATE", id = 0 }))
+
+
+              )
+        )
+
+    </text>).Width( 500)
+               
+      )
+<script>
+    function chng()
+    {
+        var typ=document.getElementById("file").value;
+        var res = typ.match(".jpg");
+
+        if(res)
+        {
+           // alert("sucess");
+        }
+
+        else
+        {
+            alert("Sorry only jpeg images are accepted");
+            document.getElementById("file").value=""; //clear the uploaded file
+        }
+    }
+    $(document).ready(function () {
+        $("#file").on('input', function () {
+            var typ = $('#file').text;
+            var res = typ.match(".jpg");
+
+            if (res) {
+                // alert("sucess");
+            }
+
+            else {
+                alert("Sorry only jpeg images are accepted");
+                document.getElementById("file").value = ""; //clear the uploaded file
+            }
+        });
+        });
+</script>

@@ -1,0 +1,33 @@
+﻿@using ExceedERP.Core.Domain.Inventory
+
+@(Html.Kendo().Grid<BinCardLine>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.DateCreated);
+        columns.Bound(c => c.ReferenceDoc);
+        columns.Bound(c => c.ReceivedQTY);
+        columns.Bound(c => c.ReceivedUPrice);
+        columns.Bound(c => c.ReceivedTPrice);
+        columns.Bound(c => c.IssuedQTY);
+        columns.Bound(c => c.IssuedUPrice);
+        columns.Bound(c => c.IssuedTPrice);
+        columns.Bound(c => c.BalanceQTY);
+        columns.Bound(c => c.BalanceUPrice);
+        columns.Bound(c => c.BalanceTPrice);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.BinCardLineID))
+          .Read(read => read.Action("BinCardLines_Read", "BinCardLine"))
+          .Create(create => create.Action("BinCardLines_Create", "BinCardLine"))
+          .Update(update => update.Action("BinCardLines_Update", "BinCardLine"))
+          .Destroy(destroy => destroy.Action("BinCardLines_Destroy", "BinCardLine"))
+      )
+)

@@ -1,0 +1,193 @@
+﻿@{
+    Layout = "~/Views/Shared/_Popup.cshtml";
+}
+
+<script>
+    var category=  '@ViewBag.BudgetCategory';
+ function filterCategory() {
+        return {
+            Category: category,
+        };
+    }
+    </script>
+<div class="form">
+    <div class="row fullrow">
+        
+        <div class="col-md-8 ro1">
+            <div class="form-group">
+                @Html.Label("Account", htmlAttributes: new {@class = "control-label col-md-4"})
+                <div class="col-md-9">
+                    @(Html.Kendo().DropDownList()
+                          .Name("Accounts")
+                          .SelectedIndex(0)
+                          .HtmlAttributes(new {style = "width:600px"})
+                          .ValuePrimitive(true)
+                          .DataTextField("desc")
+                          .DataValueField("value")
+                          .Filter("contains")
+                          .DataSource(dataSource =>
+                          {
+                              dataSource.Read(read => read.Action("GetAccountBudgets", "BudgetPlanRegistration").Data("filterCategory")
+)
+                                  .ServerFiltering(false);
+                          })
+                          )
+                </div>
+            </div>
+            <div class="row"></div>
+
+            <div class="form-group">
+                @Html.Label("Company or Branch", htmlAttributes: new {@class = "control-label col-md-4"})
+                <div class="col-md-8">
+                    @(Html.Kendo().DropDownList()
+                          .Name("Location")
+                          .SelectedIndex(0)
+                          .ValuePrimitive(true)
+                          .HtmlAttributes(new {style = "width:600px"})
+                          .DataTextField("desc")
+                          .DataValueField("value")
+                          .Filter("contains")
+                          .DataSource(dataSource =>
+                          {
+                              dataSource.Read(read => read.Action("GetLocationBudgets", "BudgetPlanRegistration").Data("filterCategory"))
+                                  .ServerFiltering(false);
+                          })
+                          )
+                </div>
+            </div>
+            <div class="row"></div>
+
+            <div class="form-group">
+                @Html.Label("Cost Center", htmlAttributes: new {@class = "control-label col-md-4"})
+                <div class="col-md-8">
+                    @(Html.Kendo().DropDownList()
+                          .Name("CostCenter")
+                          .SelectedIndex(0)
+                          .ValuePrimitive(true)
+                          .HtmlAttributes(new {style = "width:600px"})
+                          .DataTextField("desc")
+                          .DataValueField("value")
+                          .Filter("contains")
+                          .DataSource(dataSource =>
+                          {
+                              dataSource.Read(read => read.Action("GetCostCenterBudget", "BudgetPlanRegistration").Data("filterCategory"))
+                                  .ServerFiltering(false);
+                          })
+                          )
+                </div>
+            </div>
+            <div class="row"></div>
+
+            <div class="form-group">
+                @Html.Label("Sub Account", htmlAttributes: new {@class = "control-label col-md-4"})
+                <div class="col-md-8">
+                    @(Html.Kendo().DropDownList()
+                          .Name("SubAccount")
+                          .SelectedIndex(0)
+                          .ValuePrimitive(true)
+                          .HtmlAttributes(new {style = "width:600px"})
+                          .DataTextField("desc")
+                          .DataValueField("value")
+                          .Filter("contains")
+                          .DataSource(dataSource =>
+                          {
+                              dataSource.Read(read => read.Action("GetSubAccountBudgets", "BudgetPlanRegistration").Data("filterCategory"))
+                                  .ServerFiltering(false);
+                          })
+                         )
+                </div>
+            </div>
+            <div class="row"></div>
+            <div class="col-md-offset-3 col-md-9">
+                <button type="submit" class="saveBtn btn btn-primary" onclick="javascript:changeparent();"><i class="fa fa-suitcase"></i> Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script language="javascript">
+
+    //new sequence
+    var firstSegment ="";
+    var secondSegment ="";
+    var thirdSegment ="";
+    var fourthSegment ="";
+
+    var company ="";
+    var account ="";
+    var costcenter="";
+    var subaccount ="";
+
+    var accCode = "";
+
+    function changeparent() {
+
+        var first =@Html.Raw(Json.Encode(ViewBag.Segment1));
+        var second =@Html.Raw(Json.Encode(ViewBag.Segment2));
+        var third =@Html.Raw(Json.Encode(ViewBag.Segment3));
+        var fourth =@Html.Raw(Json.Encode(ViewBag.Segment4));
+
+        
+
+        if ((document.getElementById('Location').value.length === 0) || (document.getElementById('Accounts').value.length === 0) || (document.getElementById('CostCenter').value.length === 0) || (document.getElementById('SubAccount').value.length === 0)) {
+            alert("Please select.");
+        }
+        else {
+             company = document.getElementById('Location').value;
+             account = document.getElementById('Accounts').value;
+             costcenter = document.getElementById('CostCenter').value;
+             subaccount = document.getElementById('SubAccount').value;
+
+            //get the sequence
+            firstSegment =GetSequence(first);
+            secondSegment =GetSequence(second);
+            thirdSegment =GetSequence(third);
+            fourthSegment=GetSequence(fourth);
+
+            var accCode = firstSegment + "-" + secondSegment + "-" + thirdSegment + "-" + fourthSegment;
+            //var accCode = account + "-" + company + "-" + costcenter + "-" + subaccount;
+            opener.setLang(accCode);
+            window.close();
+        }
+    }
+    function closeWin() {
+        document.close();
+    }
+
+    function GetSequence(segment) {
+        var segmentValue = "";
+        switch(segment) {
+            case 0:
+                segmentValue = account;
+                break;
+            case 1:
+                segmentValue = company;
+                break;
+            case 2:
+                segmentValue = costcenter;
+                break;
+            case 3:
+                segmentValue = subaccount;
+                break;
+            default:
+                segmentValue = ""; 
+        }
+
+        return segmentValue;
+    }
+</script>
+
+<style>
+    .k-list-container ul li.k-item{
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .k-list-container ul {
+        overflow: hidden!important;
+        }
+</style>
+

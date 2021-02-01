@@ -1,0 +1,105 @@
+﻿@model ExceedERP.Core.Domain.FleetManagement.FleetResource.VehicleReturn
+
+
+<div class="demo-section k-content">
+    @(Html.Kendo().TabStrip()
+          .Name("tabstrip")
+          .Animation(animation =>
+              animation.Open(effect =>
+                  effect.Fade(FadeDirection.In)))
+          .Items(tabstrip =>
+          {
+              tabstrip.Add().Text(" Return Vehicle ")
+                 .Selected(true)
+                 .Content(@<text>
+    <div class = "row">
+        <div class = "col-md-1">
+        </div>
+        <div class = "col-md-3">
+            <div class = "form-group">
+                <div class = "k-label">
+                    @Html.LabelFor(model => model.ReturnDate)
+                </div>
+                <div>
+                    @Html.Kendo().DatePickerFor(model => model.ReturnDate)
+                    @Html.ValidationMessageFor(model => model.ReturnDate)
+                </div>
+            </div>
+        </div>
+
+        <div class = "col-md-3">
+            <div class = "form-group">
+                <div class = "k-label">
+                    @Html.LabelFor(model => model.ReturnedBy)
+                </div>
+                <div>
+                    @Html.Kendo().TextBoxFor(model => model.ReturnedBy)
+                    @Html.ValidationMessageFor(model => model.ReturnedBy)
+                </div>
+            </div>
+        </div>
+
+        <div class = "col-md-3">
+            <div class = "form-group">
+                <div class = "k-label">
+                    @Html.LabelFor(model => model.TotalTimeElapsed)
+                </div>
+                <div>
+                    @Html.Kendo().TextBoxFor(model => model.TotalTimeElapsed)
+                    @Html.ValidationMessageFor(model => model.TotalTimeElapsed)
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-1">
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.Description)
+                </div>
+                <div>
+                    @Html.Kendo().TextBoxFor(model => model.Description)
+                    @Html.ValidationMessageFor(model => model.Description)
+                </div>
+            </div>
+        </div>
+
+      
+
+                <div class="col-md-3">
+                    <div class="form-group">
+                        <div class="k-label">
+                            <h6> Reason :</h6>
+                            @(Html.Kendo().DropDownListFor(m => m.ReasonforReturn).Name("ReasonforReturn")
+        .DataTextField("Text")
+.DataValueField("Text").OptionLabel(" Select Reason ")
+.BindTo(EnumHelper.GetSelectList(typeof(ExceedERP.Core.Domain.FleetManagement.FleetResource.VehicleReturn.ReasonforReturnenum))))
+                        </div>
+
+                    </div>
+                </div>
+       
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+
+                    <h6> Fleet :</h6>
+                    @(Html.Kendo().DropDownListFor(model => model.FleetsID).Name("FleetsID")
+                          .DataTextField("PlateNumber")
+                          .DataValueField("FleetsID").OptionLabel(" Select Fleet")
+                          .DataSource(d => d.Read(r => r.Action("FleetsDDBind", "EquipmentRegistration"))))
+
+                </div>
+            </div>
+        </div>
+
+
+    </div>
+                </text>);
+
+
+          })
+    )
+</div>

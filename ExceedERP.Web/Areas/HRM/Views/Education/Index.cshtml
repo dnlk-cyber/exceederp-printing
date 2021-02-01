@@ -1,0 +1,212 @@
+﻿@using System.Collections
+@using System.Security.AccessControl
+@using ExceedERP.Core.Domain.Common.HRM
+@using ExceedERP.Core.Domain.HRM.TrainingEducation
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>@Resources.Navigator_Employee_Education</legend>
+@(Html.Kendo().Grid<Education>()
+          .Name("Educationgrid")
+      .Columns(columns =>
+      {
+          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "PersonId", "FullNameWithOutCode").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).HeaderHtmlAttributes(new { style = "overflow: visible; white-space: normal" }).Width(150);
+          columns.Bound(c => c.OrganizationName).Width(180);
+          columns.Bound(c => c.OrgAddress).Width(180);
+          columns.Bound(c => c.From).Format("{0:yyyy-MM-dd}").Width(110);
+          columns.Bound(c => c.To).Format("{0:yyyy-MM-dd}").Width(110);
+          // columns.Bound(c => c.Score).Width( 120);
+          columns.ForeignKey(c => c.EduField, (IEnumerable)ViewData["EduFiledList"], "LookupId", "Description").EditorTemplateName("LookUpList").Width(135);
+          columns.ForeignKey(c => c.EduLevel, (IEnumerable)ViewData["EduLevelList"], "LookupId", "Description").EditorTemplateName("LookUpList").Width(140);
+          // columns.Bound(c => c.TotalCost);
+          // columns.Bound(c => c.PercentCoverdByOrg);
+          //  columns.Bound(c => c.Remark);
+          columns.Command(command =>
+          {
+              command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+              command.Destroy().Text(Resources.ActionButton_Cancel);
+          }).Width(200);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+                  .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("Education").Window(window => { window.Title("Employee Education "); window.Scrollable(false); }))
+         .Scrollable(h => h.Height(500))
+                 .Groupable()
+                          .Sortable(sortable =>
+                          {
+                              sortable.SortMode(GridSortMode.SingleColumn);
+                          })
+              .Filterable()
+                 .Pageable(pageable => pageable
+                                            .Input(true)
+                                            .Numeric(false)
+                                            .Refresh(true)
+                                            .PageSizes(true)
+                                            .ButtonCount(5))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+              .Events(events =>
+                     {
+                         events.Error("error_handler(\"Educationgrid\")");
+                         events.RequestStart("onRequestStart(\"Educationgrid\")");
+                         events.RequestEnd("onRequestEnd(\"Educationgrid\")");
+                     })
+
+
+          .Model(model => model.Id(p => p.EmpEduId))
+                  .Read(read => read.Action("Education_Read", "Education"))
+                  .Create(create => create.Action("Education_Create", "Education"))
+          .Update(update => update.Action("Education_Update", "Education"))
+          .Destroy(destroy => destroy.Action("Education_Destroy", "Education"))
+          ).ClientDetailTemplateId("template")
+)
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                    .Name("tabstrip_#=EmpEduId#")
+    .SelectedIndex(0)
+    .Items(items =>
+     {
+
+         //*****************************************************************************************************//
+
+         //*********************************Attachment***********************************************************//
+         items.Add().Text(Resources.HR_File).Content(
+            @<text>
+
+                @(Html.Kendo().Grid<Attachment>()
+              .Name("AttachmentGrid_#=EmpEduId#")
+      .Columns(columns =>
+      {
+
+          columns.Bound(c => c.Description).Width(200);
+          //columns.Bound(c => c.Reference);
+          columns.Bound(c => c.FileType).ClientTemplate(Html.ActionLink("DownLoad", "DownloadFile", new { filename = "#=EmployeeId#" }).ToHtmlString());
+          // columns.Bound(c => c.Remark);
+          columns.Command(command =>
+          {
+              command.Destroy().Text(Resources.ActionButton_Cancel);
+              //command.Custom("Download").Click("DownloadAttachmnets");
+          }).Width(300);
+
+      })
+               .Events(e =>
+               {
+                   e.Edit("onGridEdit");
+                   e.Change("onChange");
+               })
+
+                   .ToolBar(toolbar =>
+      {
+          toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+              .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("Upload").Window(window =>
+              {
+                  window.Scrollable(false);
+                  window.Title(Resources.HR_Upload_File);
+              }))
+      .Scrollable(h => h.Height(500))
+               .Selectable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+                  .Events(events =>
+                             {
+                                 events.Error("error_handler(\"AttachmentGrid_#=EmpEduId#\")");
+                                 events.RequestEnd("onRequestEnd(\"AttachmentGrid_#=EmpEduId#\")");
+                             })
+
+
+          .Model(model => model.Id(p => p.AttachmentId))
+                                                      .Read(read => read.Action("Attachments_Read", "Attachment", new { Area = "Common", attachmentReferenceType = "Education", id = "#=EmployeeId#", fileOwner = "#=EmpEduId#" }))
+                                                                                 .Create(create => create.Action("Attachments_Create", "Attachment", new { Area = "Common", attachmentReferenceType = "Education", id = "#=EmployeeId#", fileOwner = "#=EmpEduId#" }))
+
+                          .Destroy(destroy => destroy.Action("Attachments_Destroy", "Education"))
+
+          ).ToClientTemplate()
+                )
+            </text>
+    );
+         //*****************************************************************************************************//
+
+     }).ToClientTemplate())
+</script>
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 700px;
+    }
+</style>
+<script>
+    function uploadFile(e) {
+
+
+    };
+</script>
+
+<script>
+    function DownloadAttachmnets(e) {
+
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        var dd = dataItem.Description;
+        var id = dataItem.Reference;
+        $.ajax({
+            url: '@Url.Action("Download", "Education")',
+            contentType: "application/json; charset=utf-8",
+            data: { 'data': dd, 'id': id },
+            type: 'GET',
+            cache: false,
+            success: function (result) {
+                r = result;
+            }
+
+        });
+
+    }
+</script>
+
+<script>
+    function error_handler(e) {
+        if (e.errors) {
+            var message = "Errors:\n";
+            $.each(e.errors, function (key, value) {
+                if ('errors' in value) {
+                    $.each(value.errors, function () {
+                        message += this + "\n";
+                    });
+                }
+            });
+            alert(message);
+
+        }
+
+    }
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+    function onGridEdit(e) {
+        e.container.find(".k-button.k-grid-update").hide();
+        e.container.find(".k-button.k-grid-cancel").hide();
+
+    }
+    function onChange(e) {
+        var grid = e.sender;
+        var selectedRows = this.select();
+        var rowData = this.dataItem(selectedRows[0]);
+        var id = rowData.AttachmentID;
+        $.ajax({
+            url: '@Url.Action("Download", "Education")',
+            contentType: "application/json; charset=utf-8",
+            data: { 'id': id },
+            type: 'GET',
+            cache: false,
+            success: function (result) {
+                r = result;
+            }
+
+        });
+
+    }
+</script>

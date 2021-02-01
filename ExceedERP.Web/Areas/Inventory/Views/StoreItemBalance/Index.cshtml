@@ -1,0 +1,68 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.Inventory
+@using Kendo.Mvc.UI
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Store Item Balance </legend>
+
+@(Html.Kendo().Grid<StoreItemAssignment>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.ForeignKey(p => p.StoreCode, (IEnumerable)ViewData["Stores"], "StoreCode", "Name").Title("Store").EditorTemplateName("StoresSelector").Width(200);
+          columns.ForeignKey(p => p.ItemCategoryCode, (IEnumerable)ViewData["Category"], "ItemCategoryCode", "Name").Title("Category").EditorTemplateName("ItemCategorySelector").Width(200);
+          columns.ForeignKey(p => p.ItemCode, (IEnumerable)ViewData["Items"], "ItemCode", "Name").Title("Items").EditorTemplateName("ItemSelector").Width(200);
+          //columns.Bound(c => c.ReOrderPoint).Width(130);
+          //columns.Bound(c => c.MinPoint).Width(150);
+          //columns.Bound(c => c.MaxPoint).Width(150);
+          columns.Bound(c => c.Balance).Width(130);
+          columns.Command(command =>
+          {
+              //command.Edit();
+              //command.Destroy();
+          }).Width(180);
+      }).Filterable()
+      .ToolBar(toolbar => {
+                              // toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .HtmlAttributes(new { style = "height: 550px;" })
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(20))
+      .Scrollable()
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Filterable()
+      .Groupable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.StoreItemAssignmentID))
+          .Events(ev => ev
+              .Error("error_handler(\"grid\")")
+              .RequestStart("onRequestStart(\"grid\")")
+              .RequestEnd("onRequestEnd(\"grid\")"))
+          .Read(read => read.Action("StoreItemBalances_Read", "StoreItemBalance"))
+          .Create(create => create.Action("StoreItemBalances_Create", "StoreItemBalance"))
+          .Update(update => update.Action("StoreItemBalances_Update", "StoreItemBalance"))
+          .Destroy(destroy => destroy.Action("StoreItemBalances_Destroy", "StoreItemBalance"))
+      ))
+
+<script>
+    function filterItems() {
+        return {
+            ItemCategoryCode: $("#ItemCategoryCode").data("kendoDropDownList").value()
+        };
+    }
+</script>

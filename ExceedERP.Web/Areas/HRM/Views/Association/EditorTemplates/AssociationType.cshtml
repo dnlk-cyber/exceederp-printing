@@ -1,0 +1,10 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.HRM
+@using ExceedERP.Helpers.Common
+@(Html.Kendo().DropDownListFor(m => m)
+         
+                     .DataTextField("Text")
+                            .DataValueField("Value")
+                                         .BindTo(EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.Common.LettersStatus)))
+                         .ValuePrimitive(true)
+)

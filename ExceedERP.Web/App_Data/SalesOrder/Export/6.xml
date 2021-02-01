@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<Invoice>
+  <Plant_Code>
+  </Plant_Code>
+  <Plant_Name>
+  </Plant_Name>
+  <Invoice_Type>Invoice</Invoice_Type>
+  <Reference_Number>2630</Reference_Number>
+  <Reference_Number_1>casco12720</Reference_Number_1>
+  <Reference_Number_2>
+  </Reference_Number_2>
+  <Reference_Number_3>
+  </Reference_Number_3>
+  <Invoice_Date>2018-07-18 09:42:13</Invoice_Date>
+  <Customer_Code>0E016</Customer_Code>
+  <Customer_Name>ETHIO TELECOM</Customer_Name>
+  <Customer_TIN>
+  </Customer_TIN>
+  <Payment_Type>Credit</Payment_Type>
+  <Invoice_DiscOrAdd_Amount>0.00</Invoice_DiscOrAdd_Amount>
+  <Line_Items>
+    <Item_ID>101</Item_ID>
+    <Item_Description>NATIONAL AMHARIC ADVERTISING</Item_Description>
+    <Item_Quantity>12.00</Item_Quantity>
+    <Item_UOM>minute</Item_UOM>
+    <Item_Unit_Price>20.00</Item_Unit_Price>
+    <Item_Tax_Percent>15.00</Item_Tax_Percent>
+    <Item_DiscOrAdd_Amount>0.0000</Item_DiscOrAdd_Amount>
+  </Line_Items>
+</Invoice>

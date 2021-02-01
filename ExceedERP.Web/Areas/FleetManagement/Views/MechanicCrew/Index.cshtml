@@ -1,0 +1,100 @@
+﻿
+@{
+    ViewBag.Title = "Mechanic Crew";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend> Mechanic Crew </legend>
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetMaintenance.MechanicCrew>()
+    .Name("grid")
+    .Columns(columns =>
+    {
+        columns.Bound(e => e.FullName).Width(140);
+        columns.Bound(e => e.Postion).Width(140);
+        columns.ForeignKey(c => c.SectionId, (System.Collections.IEnumerable)ViewData["Sections"], "WorkUnitSectionId", "Name").Width(120);
+          
+        columns.Bound(e => e.SupervisorName).Width(200);
+        columns.Bound(e => e.DateHired).Format("{0:d}").Width(200);
+       
+   
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
+
+
+    })
+                        .ToolBar(commands => commands.Create())
+
+     .Editable(editable =>
+      {
+          editable.Mode(GridEditMode.PopUp).TemplateName("MechanicCrewEditor");
+          editable.DisplayDeleteConfirmation("Are You Sure To Remove Mechanic Crew");
+      })
+        .HtmlAttributes(new { style = "height: 520px;" })
+                          .Pageable(pageable => pageable
+                                            .Input(true)
+                                            .Numeric(false)
+                                            .Refresh(true)
+                                            .PageSizes(true)
+                                            .ButtonCount(5))
+
+                                .Scrollable()
+                                .Sortable()
+                                .Filterable()
+                                .Groupable()
+                                .Scrollable(h => h.Height(500))
+    .DataSource(dataSource => dataSource
+        .Ajax()
+        .ServerOperation(false)
+               .Model(model =>
+              {
+                  model.Id(p => p.MechanicCrewID);
+               
+              }).Events(ev => ev
+                                            .Error("error_handler(\"grid\")")
+                                            .RequestStart("onRequestStart(\"grid\")")
+                                            .RequestEnd("onRequestEnd(\"grid\")"))
+                .Create(update => update.Action("MechanicCrew_Create", "MechanicCrew"))
+                .Read(read => read.Action("MechanicCrew_Read", "MechanicCrew"))
+                .Update(update => update.Action("MechanicCrew_Update", "MechanicCrew"))
+                .Destroy(update => update.Action("MechanicCrew_Destroy", "MechanicCrew"))
+  )
+)
+
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 700px;
+    }
+</style>
+
+<script>
+    function GetJobTitle() {
+        var Operator = $("#EmployeeId").data("kendoDropDownList").value();
+        $.ajax({
+            type: "GET",
+            data: { Emp: Operator },
+            url: '@Url.Action("GetPlacmentCategory", "FleetDataProvider")',
+            success: function (result) {
+
+                $("#JobTitle").val(result);
+            }
+        });
+
+
+        $.ajax({
+            type: "GET",
+            data: { Emp: Operator },
+            url: '@Url.Action("GetSuperVisor", "FleetDataProvider")',
+            success: function (result) {
+                if (result != "") {
+                    $("#SupervisorName").val(result);
+                    $("#SupervisorName").text(result);
+                    $("#SupervisorName").focus();
+                }
+                else {
+                    $("#SupervisorName").val("Not Assigned");
+                    $("#SupervisorName").focus();
+                }
+               
+            }
+        });
+    }
+</script>

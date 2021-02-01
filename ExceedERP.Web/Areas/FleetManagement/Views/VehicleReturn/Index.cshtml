@@ -1,0 +1,74 @@
+﻿
+@{
+    ViewBag.Title = "Vehicle Return";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend> Equipment Return </legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetResource.VehicleReturn>()
+    .Name("grid")
+    .Columns(columns =>
+    {
+        columns.Bound(e => e.ReturnedBy).Width(140);
+        columns.Bound(e => e.ReturnDate).Format("{0:d}").Width(140);
+    
+        columns.Bound(e => e.TotalTimeElapsed).Width(200);
+       
+   
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
+
+
+    })
+           .ToolBar(toolbar => toolbar.Create())
+      .Editable(editable =>
+      {
+          editable.Mode(GridEditMode.PopUp).TemplateName("VehicleReturnEditor");
+          editable.DisplayDeleteConfirmation("Are You Sure To Remove Vehicle Return");
+      })
+    .Pageable()
+    .Sortable()
+    .Filterable()
+    .Scrollable()
+    .Groupable()
+    .DataSource(dataSource => dataSource
+        .Ajax()
+        .ServerOperation(false)
+                  .Events(events => events.Error("error_handler").Sync("sync_handler"))
+        .Model(model =>
+              {
+                  model.Id(p => p.VehicleReturnID);
+               
+              })
+                .Create(update => update.Action("VehicleReturn_Create", "VehicleReturn"))
+                .Read(read => read.Action("VehicleReturn_Read", "VehicleReturn"))
+                .Update(update => update.Action("VehicleReturn_Update", "VehicleReturn"))
+                .Destroy(update => update.Action("VehicleReturn_Destroy", "VehicleReturn"))
+  )
+)
+
+<script type="text/javascript">
+    function error_handler(e) {    
+        if (e.errors) {
+            var message = "Errors:\n";
+            $.each(e.errors, function (key, value) {
+                if ('errors' in value) {
+                    $.each(value.errors, function() {
+                        message += this + "\n";
+                    });
+                }
+            });        
+            alert(message);
+        }
+    }
+    function sync_handler(e) {
+        this.read();
+
+    }
+    function onClick() {
+        $("#grid").data("kendoGrid").addRow();
+    }
+</script>
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 700px;
+    }
+</style>

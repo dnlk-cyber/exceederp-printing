@@ -1,0 +1,38 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Finance.AP.ApMiscellaneousPaymentLine>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.Purpose);
+        columns.Bound(c => c.Amount);
+        columns.Bound(c => c.AccountCode);
+        columns.Bound(c => c.GLTaxRateID);
+        columns.Bound(c => c.TaxAmount);
+        columns.Bound(c => c.WithholdingType);
+        columns.Bound(c => c.WithholdingAmount);
+        columns.Bound(c => c.WithholdTax);
+        columns.Bound(c => c.WithholdTaxAmount);
+        columns.Bound(c => c.TotalAmount);
+        columns.Bound(c => c.NetPayable);
+        columns.Bound(c => c.Remark);
+        columns.Bound(c => c.OrgBranchName);
+        columns.Bound(c => c.DateCreated);
+        columns.Bound(c => c.LastModified);
+        columns.Bound(c => c.CreatedBy);
+        columns.Bound(c => c.ModifiedBy);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.ApMiscellaneousPaymentLineId))
+          .Read(read => read.Action("ApMiscellaneousPaymentLines_Read", "ApMiscellaneousPaymentLine"))
+          .Create(create => create.Action("ApMiscellaneousPaymentLines_Create", "ApMiscellaneousPaymentLine"))
+          .Update(update => update.Action("ApMiscellaneousPaymentLines_Update", "ApMiscellaneousPaymentLine"))
+          .Destroy(destroy => destroy.Action("ApMiscellaneousPaymentLines_Destroy", "ApMiscellaneousPaymentLine"))
+      )
+)

@@ -1,0 +1,14 @@
+﻿ 
+@(Html.Kendo().DropDownListFor(m => m)
+                      .AutoBind(false)
+                      .OptionLabel("...Select Transfer...")
+                              .DataTextField("ItemTransferID")
+                              .DataValueField("ItemTransferID")
+                      .DataSource(dataSource =>
+                      {
+                          dataSource.Read(read => read.Action("GetItemTransferSent", "DataProvider"))
+                                    .ServerFiltering(true);
+                      })
+
+)
+@Html.ValidationMessageFor(m => m)

@@ -1,0 +1,26 @@
+﻿<legend>Voucher Extension</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.VoucherExtension>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.VoucherDefinition);
+        columns.Bound(c => c.Description);
+        columns.Bound(c => c.Index);
+        columns.Bound(c => c.IsMandatory);
+        columns.Bound(c => c.Remark);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.VoucherExtensionID))
+          .Read(read => read.Action("VoucherExtensions_Read", "VoucherExtension"))
+          .Create(create => create.Action("VoucherExtensions_Create", "VoucherExtension"))
+          .Update(update => update.Action("VoucherExtensions_Update", "VoucherExtension"))
+          .Destroy(destroy => destroy.Action("VoucherExtensions_Destroy", "VoucherExtension"))
+      )
+)

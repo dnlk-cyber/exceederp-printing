@@ -1,0 +1,14 @@
+﻿@using Kendo.Mvc.UI
+
+@(Html.Kendo().DropDownListFor(m => m)
+                  .AutoBind(false)
+                  .OptionLabel("...Select Supplier...")
+                          .DataTextField("Supplier")
+                              .DataValueField("Supplier").ValuePrimitive(true)
+                  .DataSource(dataSource =>
+                  {
+                      dataSource.Read(read => read.Action("GetRegisteredSuppliers", "ProformaParticipatingSupplier").Data("suppliersInItem"))
+                                .ServerFiltering(true);
+                  })   .CascadeFrom("ParticipantsItem")
+)
+@Html.ValidationMessageFor(m => m)

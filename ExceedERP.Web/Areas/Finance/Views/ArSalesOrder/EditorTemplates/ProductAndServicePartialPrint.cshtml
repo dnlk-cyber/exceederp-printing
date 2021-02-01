@@ -1,0 +1,13 @@
+﻿@(Html.Kendo().DropDownListFor(m => m)
+                  .ValuePrimitive(true)
+                  .OptionLabel("Select Product...")
+                          .DataTextField("Name")
+                            .DataValueField("Code")
+                          .Filter("contains")
+                                .DataSource(dataSource =>
+                                {
+                                    dataSource.Read(read => read.Action("GetProductsAndServiceForSalesOrderPrint", "FinanceDataProvider", new { area = "Finance" }).Data("filterProductItemsPrint"))
+                                    .ServerFiltering(false);
+                                })
+)
+@Html.ValidationMessageFor(m => m)

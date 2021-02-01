@@ -1,0 +1,16 @@
+﻿
+@using Kendo.Mvc.UI
+
+@(Html.Kendo().DropDownListFor(m => m)
+                  .AutoBind(false)
+                  .OptionLabel("...Select Criteria...")
+                  .DataTextField("Name")
+                  .DataValueField("Name")
+                  .ValuePrimitive(true)
+                  .DataSource(dataSource =>
+                  {
+                      dataSource.Read(read => read.Action("GetEvaluationCriteria", "ProformaEvaluationCriteria").Data("getProformaId"))
+                                .ServerFiltering(true);
+                  })
+)
+@Html.ValidationMessageFor(m => m)

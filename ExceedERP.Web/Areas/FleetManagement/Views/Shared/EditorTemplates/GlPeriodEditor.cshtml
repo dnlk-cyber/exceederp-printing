@@ -1,0 +1,9 @@
+﻿
+ 
+    @(Html.Kendo().DropDownListFor(model => model).HtmlAttributes(new { @class = "form-control" })
+                                .DataTextField("Name")
+                                            .DataValueField("Value").OptionLabel("Select").Filter(FilterType.Contains)
+                                                                                    .DataSource(d => d.Read(r => r.Action("GetPeriodByYear", "FleetDataProvider").Data("filterPeriod")).ServerFiltering(false)))
+
+
+ 

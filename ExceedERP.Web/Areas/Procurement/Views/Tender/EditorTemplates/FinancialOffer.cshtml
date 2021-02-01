@@ -1,0 +1,16 @@
+﻿@using Kendo.Mvc.UI
+
+@(Html.Kendo().DropDownListFor(m => m)
+                  .AutoBind(false)
+                  .ValuePrimitive(true)
+                  .Filter(FilterType.Contains)
+                  .OptionLabel("...Select Participant...")
+                          .DataTextField("Supplier")
+                              .DataValueField("SupplierCode")
+                  .DataSource(dataSource =>
+                  {
+                      dataSource.Read(read => read.Action("GetFinancialOfferedSupplier", "FinancialOffer").Data("getLotId"))
+                                .ServerFiltering(true);
+                  })
+)
+@Html.ValidationMessageFor(m => m)

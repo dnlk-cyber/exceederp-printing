@@ -1,0 +1,204 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@using ExceedERP.Web.Areas.HRM.Controllers
+@using ExceedERP.Web.Areas.HRM.Controllers.Company
+@using Kendo.Mvc.UI
+@model ExceedERP.Core.Domain.HRM.SelfCare.MedicalRequest
+
+<div class="form">
+<div class="row fullrow">
+    <div class="col-md-4 ro1">
+        <div class="form-group">
+            <div class="col-md-8">
+
+                @Html.LabelFor(model => model.IsForOther, htmlAttributes: new { @class = "control-label col-md-8" })
+
+                @(Html.CheckBoxFor(m => m.IsForOther, htmlAttributes: new { @onchange = "SetEmployee(this)" })
+
+                      )
+                @Html.ValidationMessageFor(model => model.IsForOther, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="form-group">
+            @Html.LabelFor(model => model.EmployeeId, htmlAttributes: new { @class = "control-label col-md-8" })
+
+            <div class="col-md-6">
+
+                @(Html.Kendo().DropDownListFor(model => model.EmployeeId)
+                      //  .Name("EmployeeId")
+                      .DataValueField("PersonId")
+                      .DataTextField("FullName")
+                      .OptionLabel("Select Employee..")
+                      .Filter("contains")
+                      .MinLength(2)
+                      .HtmlAttributes(new { style = "width:200px" })
+                      .Virtual(v => v.ValueMapper("valueMapper").ItemHeight(26))
+                         
+                      .DataSource(source =>
+                      {
+                          source.Read(read =>
+                          {
+                              read.Action("GetEmployeesAskForOther", "HRMDataProvider");
+                              //.Data("IsforOthers");
+                          })
+                              .ServerFiltering(false);
+                      })
+                      .Enable(false)
+
+                      .ValuePrimitive(true)
+
+
+                      .Height(400)
+                      .HeaderTemplate("<div class=\"dropdown-header k-widget k-header\">" +
+                                      "<span>Photo</span>" +
+                                      "<span>Full Name</span>" +
+                                      "</div>")
+                      .Template(@"<div class='Employee-photo' style='background-image: url(" + Url.Content("~/Content/Images/") + "#:data.PersonId#-Photo/" + "#:data.PersonId#.jpg" + ");'></div>" +
+                                "<div class='Employee-name'>#:FullName#</div>")
+                      )
+
+
+
+            </div>
+        </div>
+        <div class="form-group">
+          
+            <div>@Html.LabelFor(model => model.OrgStructureId, htmlAttributes: new { @class = "control-label col-md-8" })</div>
+            <div class="col-md-6">
+                @(Html.Kendo().DropDownListFor(model => model.OrgStructureId)
+                      .OptionLabel(Resources.Select)
+                      .DataTextField("Name")
+                      .DataValueField("OrgStructureId")
+                      .HtmlAttributes(new { style = "width:200px" })
+                      .DataSource(dataSource =>
+                      {
+                          dataSource.Read(read => read.Action("GetSelectedDepartments", "HRMDataProvider", new { area = "HRM" }))
+                              .ServerFiltering(false);
+                      })
+                      .ValuePrimitive(true)
+
+                      )
+                @Html.ValidationMessageFor(model => model.OrgStructureId, "", new { @class = "text-danger" })
+            </div>
+        </div>
+     
+    </div>
+    <div class="col-md-4 ro1">
+        <div class="row"></div><br /><br />
+        <div class="form-group">
+            @Html.LabelFor(model => model.DateAmharic, htmlAttributes: new {@class = "control-label col-md-8"})
+            <div class="col-md-10">
+                @Html.TextBoxFor(model => model.DateAmharic, htmlAttributes: new {disabled = "disabled", @class = "et-popup-picker"}) <img src="~/Scripts/etp/images/calendar-blue.gif" onclick="SelectDate(this)"/>
+
+                @Html.ValidationMessageFor(model => model.DateAmharic, "", new {@class = "text-danger"})
+            </div>
+        </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.Remark, htmlAttributes: new {@class = "control-label col-md-8"})
+
+            <div class="col-md-6">
+
+                @(Html.Kendo().TextBoxFor(model=>model.Remark)
+                      .HtmlAttributes(new { style = "width:200px" })
+                      )
+                @Html.ValidationMessageFor(model => model.Remark, "", new {@class = "text-danger"})
+            </div>
+        </div>
+    </div>
+    </div></div>
+   
+
+
+
+
+<style>
+    .Employee-photo {
+        display: inline-block;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background-size: 32px 35px;
+        background-position: center center;
+        vertical-align: middle;
+        line-height: 32px;
+        box-shadow: inset 0 0 1px #999, inset 0 0 10px rgba(0,0,0,.2);
+        margin-left: 5px;
+    }
+
+    .Employee-name {
+        display: inline-block;
+        vertical-align: middle;
+        line-height: 32px;
+        padding-left: 3px;
+    }
+</style>
+
+
+
+
+
+<style>
+    .dropdown-header {
+        border-width: 0 0 1px 0;
+        text-transform: uppercase;
+    }
+
+        .dropdown-header > span {
+            display: inline-block;
+            padding: 10px;
+        }
+
+            .dropdown-header > span:first-child {
+                width: 50px;
+            }
+
+    #customers-list .k-item {
+        line-height: 1em;
+        min-width: 300px;
+    }
+
+    /* Material Theme padding adjustment*/
+
+    .k-material #customers-list .k-item,
+    .k-material #customers-list .k-item.k-state-hover,
+    .k-materialblack #customers-list .k-item,
+    .k-materialblack #customers-list .k-item.k-state-hover {
+        padding-left: 5px;
+        border-left: 0;
+    }
+
+    #customers-list .k-item > span {
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+        display: inline-block;
+        vertical-align: top;
+        margin: 20px 10px 10px 5px;
+    }
+
+        #customers-list .k-item > span:first-child {
+            -moz-box-shadow: inset 0 0 30px rgba(0, 0, 0, .3);
+            -webkit-box-shadow: inset 0 0 30px rgba(0, 0, 0, .3);
+            box-shadow: inset 0 0 30px rgba(0, 0, 0, .3);
+            margin: 10px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-size: 100%;
+            background-repeat: no-repeat;
+        }
+
+    #customers-list h3 {
+        font-size: 1.2em;
+        font-weight: normal;
+        margin: 0 0 1px 0;
+        padding: 0;
+    }
+
+    #customers-list p {
+        margin: 0;
+        padding: 0;
+        font-size: .8em;
+    }
+</style>

@@ -1,0 +1,12 @@
+﻿@using ExceedERP.Core.Domain.Finance
+@using ExceedERP.Helpers.Common
+@model BalanceSheetCategory
+
+@(
+ Html.Kendo().DropDownListFor(m => m)
+        .DataTextField("Text")
+        .DataValueField("Value")
+                    .BindTo(EnumExtension.EnumToSelectList(typeof(BalanceSheetCategory)))
+)
+
+

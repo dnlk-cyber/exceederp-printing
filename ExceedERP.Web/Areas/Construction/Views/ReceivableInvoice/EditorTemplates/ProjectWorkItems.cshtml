@@ -1,0 +1,22 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@(Html.Kendo().DropDownListFor(m => m)
+        .OptionLabel(Resources.Select)
+        .Name("WorkItemPerProjectId")
+        .DataTextField("ItemName")
+        .DataValueField("WorkItemPerProjectId")
+        //    .BindTo((IEnumerable)ViewData["Items"])
+        .DataSource(dataSource =>
+        {
+            dataSource.Read(read => read.Action("GetProjectWorkItems", "DataProvider", new {projectId = "#=ProjectInformationId#"}));
+            //.ServerFiltering(true);
+        })
+        .Events(ev =>
+        {
+            ev.Change("workItemDropDownChanged");
+
+        })
+        .Filter("contains")
+        .MinLength(2)
+        .ValuePrimitive(true)
+)

@@ -1,0 +1,1427 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.Construction
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>AR Standard Collections </legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.ProjectInformation>()
+      .Name("ProjectInformationgrid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Name).Width(400);
+          columns.Bound(c => c.Code);
+          columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["Branchs"], "BranchId", "Name");
+          columns.Bound(c => c.ContractAmount).ClientTemplate(
+              "# if (ContractAmount === 0) { #" +
+              " -----" +
+              "# } else {#" +
+              "#: kendo.toString( ContractAmount, 'N2') #" +
+              "# } #"
+              );
+          columns.Bound(c => c.Client);
+      })
+
+      .Scrollable(h => h.Height(700))
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Filterable()
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(10))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .PageSize(20)
+          .Events(events => events.Error("error_handler(\"ProjectInformationgrid\")"))
+          .Model(model => model.Id(p => p.ProjectInformationId))
+          .Read(read => read.Action("ProjectInformation_Read", "WorkInProgress"))
+      ).ClientDetailTemplateId("template_collection")
+)
+
+<script id="template_collection" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+          .Name("tab__#=ProjectInformationId#")
+          .SelectedIndex(0)
+          .Items(items =>
+          {
+              items.Add().Text("AR Standard Collections").Content(
+                @<text>
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.ConsARStandardCollection>()
+                          .Name("collection_#=ProjectInformationId#")
+                          .Columns(columns =>
+                          {
+                              columns.Bound(c => c.ConsARStandardCollectionId).Title("Receipt ID");
+                              columns.Bound(c => c.ReceiptType).EditorTemplateName("ReceiptTypes");
+                              columns.Bound(c => c.ClientName);
+                              columns.Bound(c => c.ReceiptNumber);
+                              columns.Bound(c => c.ReceiptDate);
+
+                              columns.ForeignKey(c => c.PaymentMethodID, (IEnumerable)ViewData["PaymentMethods"], "PaymentMethodID", "Method").Title("Receipt Method").EditorTemplateName("PaymentMethods");
+                              columns.Bound(c => c.Reference);
+                              columns.Bound(c => c.PrepaymentBalance).Format("{0:N2}").ClientTemplate(
+                                  "\\# if(PrepaymentBalance === 0) {\\# " +
+                                  " -- "+
+                                  "\\#} else {\\#" +
+                                  "\\#=kendo.toString(PrepaymentBalance, 'N2')\\#" +
+                                  "\\#}\\#"
+                                  );
+                              columns.Bound(c => c.OutstandingBalance).ClientTemplate(
+                                  "\\# if(OutstandingBalance === 0) {\\# " +
+                                  " -- "+
+                                  "\\#} else {\\#" +
+                                  "\\#=kendo.toString(OutstandingBalance, 'N2')\\#" +
+                                  "\\#}\\#"
+                                  );
+
+                              columns.Command(command =>
+                              {
+                                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                  command.Destroy().Text(Resources.ActionButton_Cancel);
+                              }).Width(200);
+                          })
+
+                          .ToolBar(toolbar =>
+                          {
+                              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                          })
+                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                          .Selectable(selectable =>
+                          {
+                              selectable.Mode(GridSelectionMode.Single);
+                              selectable.Type(GridSelectionType.Row);
+                          })
+                          .Scrollable(h => h.Height(500))
+                          .Groupable()
+                          .Sortable(sortable =>
+                          {
+                              sortable.SortMode(GridSortMode.SingleColumn);
+                          })
+                          .Events(ev =>
+                          {
+                              ev.DataBound("onDataBound");
+                          })
+                          //.Filterable()
+                          .Pageable(pageable => pageable
+                              .Input(true)
+                              .Numeric(false)
+                              .Refresh(true)
+                              .PageSizes(true)
+                              .ButtonCount(5))
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+
+                              .Events(events =>
+                              {
+                                  events.Error("error_handler(\"collection_#=ProjectInformationId#\")");
+                                  events.RequestStart("onRequestStart(\"collection_#=ProjectInformationId#\")");
+                                  events.RequestEnd("onRequestEnd(\"collection_#=ProjectInformationId#\")");
+                              })
+                              .Model(model =>
+                              {
+                                  model.Id(f => f.ConsARStandardCollectionId);
+                                  model.Field(f => f.ClientName).Editable(false);
+                                  model.Field(f => f.OutstandingBalance).Editable(false);
+                                  model.Field(f => f.PrepaymentBalance).Editable(false);
+                                  model.Field(f => f.ConsARStandardCollectionId).Editable(false);
+                                  //model.Field(f => f.DueDate).Editable(false);
+                              })
+                              .Read(read => read.Action("StandardCollections_Read", "StandardCollection", new { projectId = "#=ProjectInformationId#" }))
+                              .Create(create => create.Action("StandardCollection_Create", "StandardCollection", new { projectIdCreate = "#=ProjectInformationId#" }))
+                              .Update(update => update.Action("StandardCollection_Update", "StandardCollection"))
+                              .Destroy(destroy => destroy.Action("StandardCollection_Destroy", "StandardCollection"))
+                          ).ClientDetailTemplateId("template_collection_detail")
+                          .ToClientTemplate()
+                    )
+                </text>
+                  );
+              items.Add().Text("Customer Accounts").Content(
+                @<text>
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.ConstructionCustomerAccount>()
+                          .Name("accounts_#=ProjectInformationId#")
+                          .Columns(columns =>
+                          {
+                              columns.Bound(c => c.AccountCode).EditorTemplateName("AccountCode");
+                              columns.Bound(c => c.Description);
+                              columns.Bound(c => c.AccountType).EditorTemplateName("ConstructionAccountTypes");
+                              columns.Command(command =>
+                              {
+                                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                  command.Destroy().Text(Resources.ActionButton_Cancel);
+                              }).Width(200);
+                          })
+
+                          .ToolBar(toolbar =>
+                          {
+                              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                          })
+                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                          .Selectable(selectable =>
+                          {
+                              selectable.Mode(GridSelectionMode.Single);
+                              selectable.Type(GridSelectionType.Row);
+                          })
+                          //.Events(ev =>
+                          //{
+                          //    ev.DataBound("onDataBoundOfWIPGrid");
+                          //})
+                          .Scrollable(h => h.Height(500))
+                          ////.Groupable()
+                          .Sortable(sortable =>
+                          {
+                              sortable.SortMode(GridSortMode.SingleColumn);
+                          })
+                          //.Filterable()
+                          .Pageable(pageable => pageable
+                              .Input(true)
+                              .Numeric(false)
+                              .Refresh(true)
+                              .PageSizes(true)
+                              .ButtonCount(5))
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+
+                              .Events(events =>
+                              {
+                                  events.Error("error_handler(\"accounts_#=ProjectInformationId#\")");
+                                  events.RequestStart("onRequestStart(\"accounts_#=ProjectInformationId#\")");
+                                  events.RequestEnd("onRequestEnd(\"accounts_#=ProjectInformationId#\")");
+                              })
+                              .Model(model =>
+                              {
+                                  model.Id(f => f.ConstructionCustomerAccountId);
+
+                              })
+
+                              .Read(read => read.Action("Accounts_Read", "ConstructionCustomerAccount", new { projectId = "#=ProjectInformationId#" }))
+                              .Create(create => create.Action("Account_Create", "ConstructionCustomerAccount", new { projectId = "#=ProjectInformationId#" }))
+                              .Update(update => update.Action("Account_Update", "ConstructionCustomerAccount"))
+                              .Destroy(destroy => destroy.Action("Account_Destroy", "ConstructionCustomerAccount"))
+                          )
+                          .ToClientTemplate()
+                    )
+                </text>
+                  );
+          }).ToClientTemplate())
+</script>
+<script id="template_collection_detail" type="text/kendo-tmpl">
+    #if(ReceiptType == 0 && !IsOnlineApproved){#
+    @(Html.Kendo().TabStrip()
+          .Name("tabstr_#=ConsARStandardCollectionId#")
+          .SelectedIndex(0)
+          .Items(items =>
+          {
+              items.Add().Text("Detail").Content(
+                  @<text>
+                       <br />
+                    # if (!IsOnlineApproved&&!IsSendForApproval)
+                    {#
+                    <a onclick='return sendForApproval("#=ConsARStandardCollectionId#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                    <br />
+                    # } #
+                    @(Html.Kendo().PanelBar()
+                          .Name("panelbar_#=ConsARStandardCollectionId#")
+                          .ExpandMode(PanelBarExpandMode.Single)
+                          .Items(panelbar =>
+                          {
+                              panelbar.Add()
+                                  .Expanded(true)
+                                  .Content(
+                                      "<div class='Invoice-details'>" +
+                                      "<ul>" +
+                                      "<li> <label> Status: </label> <strong> #=Status# </strong> </li>" +
+                                      "<li> <label> Created by: </label> <strong> #=CreatedBy# </strong> </li>" +
+                                      "<li> <label> Created on: </label> #= kendo.toString(DateCreated, 'dd/MM/yyyy H:mm:ss')# </li>" +
+                                      "<li> <label> Modified by :</label> #= ModifiedBy# </li>" +
+                                      "<li> <label> Last Modified :</label> #= kendo.toString(LastModified, 'dd/MM/yyyy H:mm:ss')# </li>" +
+                                      "</ul>" +
+                                      "</div>"
+                                  );
+                          }).ToClientTemplate()
+                          )
+                   </text>
+                  );
+              items.Add().Text("Collection Lines").Content(
+                  @<text>
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.ConsARStandardCollectionDetail>()
+                          .Name("detail_#=ConsARStandardCollectionId#")
+                          .Columns(columns =>
+                          {
+                              columns.Bound(c => c.InvoiceNumber).EditorTemplateName("InvoiceNumbers");
+                              columns.Bound(c => c.ApplyAmount);
+                              columns.Bound(c => c.BalanceDue).Format("{0:N2}");
+                              //columns.Bound(c => c.AdvanceAmount).Format("{0:N2}");
+                              //columns.Bound(c => c.Retention).Format("{0:N2}");
+                              columns.ForeignKey(c => c.GLTaxRateID, (IEnumerable)ViewData["TaxTypes"], "GLTaxRateID", "TaxName").EditorTemplateName("TaxTypes");
+                              columns.Bound(c => c.TaxAmount).Format("{0:N2}");
+                              columns.Bound(c => c.VatWithholding).ClientTemplate(
+                                  "<input type='checkbox' value='\\#= ConsARStandardCollectionDetailId \\#' " +
+                                  "\\# if (VatWithholding) { \\#" +
+                                  "checked='checked'" +
+                                  "\\# } \\#" +
+                                  "/>"
+                                  );
+                              columns.ForeignKey(c => c.WithholdingTaxRateId, (IEnumerable)ViewData["TaxTypes"], "GLTaxRateID", "TaxName").EditorTemplateName("WithholdingTaxes");
+                              columns.Bound(c => c.WithholdingTaxAmount).Format("{0:N2}");
+                              columns.Bound(c => c.Remark);
+
+                              columns.Command(command =>
+                              {
+                                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                  command.Destroy().Text(Resources.ActionButton_Cancel);
+                              }).Width(200);
+                          })
+                          .ToolBar(toolbar =>
+                          {
+                              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                          })
+                          .Selectable(selectable =>
+                          {
+                              selectable.Mode(GridSelectionMode.Single);
+                              selectable.Type(GridSelectionType.Row);
+                          })
+                          .Scrollable(h => h.Height(500))
+                          .Groupable()
+                          .Sortable(sortable =>
+                          {
+                              sortable.SortMode(GridSortMode.SingleColumn);
+                          })
+                          .Events(ev => ev.Edit("calculateDependetValues"))
+                          //.Filterable()
+                          .Pageable(pageable => pageable
+                              .Input(true)
+                              .Numeric(false)
+                              .Refresh(true)
+                              .PageSizes(true)
+                              .ButtonCount(5))
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+
+                              .Events(events =>
+                              {
+                                  events.Error("error_handler(\"detail_#=ConsARStandardCollectionId#\")");
+                                  events.RequestStart("onRequestStart(\"detail_#=ConsARStandardCollectionId#\")");
+                                  events.RequestEnd("onRequestEnd(\"detail_#=ConsARStandardCollectionId#\")");
+                              })
+                              .Model(model =>
+                              {
+                                  model.Id(f => f.ConsARStandardCollectionDetailId);
+                                  model.Field(f => f.BalanceDue).Editable(false);
+                                  model.Field(f => f.WithholdingTaxAmount).Editable(false);
+                                  //model.Field(f => f.TaxAmount).Editable(false);
+                                  //model.Field(f => f.TotalAmount).Editable(false);
+                                  //model.Field(f => f.NetAmount).Editable(false);
+                              })
+
+                              .Read(read => read.Action("CollectionLines_Read", "StandardCollectionDetail", new { id = "#=ConsARStandardCollectionId#" }))
+                              .Create(create => create.Action("CollectionLine_Create", "StandardCollectionDetail", new { id = "#=ConsARStandardCollectionId#" }))
+                              .Update(update => update.Action("CollectionLine_Update", "StandardCollectionDetail"))
+                              .Destroy(destroy => destroy.Action("CollectionLine_Destroy", "StandardCollectionDetail"))
+                          )//.ClientDetailTemplateId("template_wip_detail")
+                          .ToClientTemplate()
+                          )
+                </text>
+                  );
+              items.Add().Text("Validation").Content(
+                  @<text>
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.ConsARStandardCollectionValidation>()
+                          .Name("validation_#=ConsARStandardCollectionId#")
+                          .Columns(columns =>
+                          {
+                              columns.Bound(c => c.Status);
+                              columns.Bound(c => c.Remark);
+         
+                              columns.Command(command =>
+                              {
+                                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                  command.Destroy().Text(Resources.ActionButton_Cancel);
+                              }).Width(200);
+                          })
+                          .ToolBar(toolbar =>
+                          {
+                              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                          })
+                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                          .Selectable(selectable =>
+                          {
+                              selectable.Mode(GridSelectionMode.Single);
+                              selectable.Type(GridSelectionType.Row);
+                          })
+                          .Scrollable(h => h.Height(500))
+                          .Groupable()
+                          .Sortable(sortable =>
+                          {
+                              sortable.SortMode(GridSortMode.SingleColumn);
+                          })
+                          //.Filterable()
+                          .Pageable(pageable => pageable
+                              .Input(true)
+                              .Numeric(false)
+                              .Refresh(true)
+                              .PageSizes(true)
+                              .ButtonCount(5))
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+
+                              .Events(events =>
+                              {
+                                  events.Error("error_handler(\"validation_#=ConsARStandardCollectionId#\")");
+                                  events.RequestStart("onRequestStart(\"validation_#=ConsARStandardCollectionId#\")");
+                                  events.RequestEnd("onRequestEnd(\"validation_#=ConsARStandardCollectionId#\")");
+                              })
+                              .Model(model =>
+                              {
+                                  model.Id(f => f.ConsARStandardCollectionValidationId);
+                                      
+                              })
+
+                              .Read(read => read.Action("CollectionValidations_Read", "StandardCollectionValidation", new { id = "#=ConsARStandardCollectionId#" }))
+                              .Create(create => create.Action("CollectionValidation_Create", "StandardCollectionValidation", new { id = "#=ConsARStandardCollectionId#" }))
+                              .Update(update => update.Action("CollectionValidation_Update", "StandardCollectionValidation"))
+                              .Destroy(destroy => destroy.Action("CollectionValidation_Destroy", "StandardCollectionValidation"))
+                          ).ToClientTemplate()
+                          )
+                </text>
+                  );
+              items.Add().Text("Distribution").Content(
+                  @<text>
+                    # if (IsOnlineApproved && !IsOnlineTransferred && !IsVoid )
+                    {#
+                    <a onclick='return transfer("#=ConsARStandardCollectionId#")' href=' \#' title="Transfer to GL"><i class="fa fa-paper-plane fa-2x"></i></a>
+                    <br />
+                    # } #
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.ConsStandardCollectionDistribution>()
+                          .Name("distribtion_#=ConsARStandardCollectionId#")
+                          .Columns(columns =>
+                          {
+                              columns.Bound(c => c.AccountCode)
+                                  .ClientGroupHeaderTemplate("\\#=value\\#");
+                              columns.Bound(c => c.AccountDesc);
+                              columns.Bound(c => c.Debit)
+                                  .ClientTemplate(
+                                      "\\# if (Debit === 0) { \\#" +
+                                      "_" +
+                                      "\\# } else {\\#" +
+                                      "\\#: kendo.toString( Debit, 'N2') \\#" +
+                                      "\\# } \\#"
+                                  )
+                                  .ClientFooterTemplate("Total: \\#=kendo.toString(sum, 'N2')\\#")
+                                  .ClientGroupFooterTemplate("Sub Total: \\#=kendo.toString(sum, 'N2')\\#");
+
+                              columns.Bound(c => c.Credit)
+                                  .ClientTemplate(
+                                      "\\# if (Credit === 0) { \\#" +
+                                      "_" +
+                                      "\\# } else {\\#" +
+                                      "\\#: kendo.toString( Credit, 'N2') \\#" +
+                                      "\\# } \\#"
+                                  )
+                                  .ClientFooterTemplate("Total: \\#=kendo.toString(sum, 'N2')\\#")
+                                  .ClientGroupFooterTemplate("Sub Total: \\#=kendo.toString(sum, 'N2')\\#");
+
+                              columns.Command(command =>
+                              {
+                                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                  command.Destroy().Text(Resources.ActionButton_Cancel);
+                              }).Width(200);
+                          })
+                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                          .Selectable(selectable =>
+                          {
+                              selectable.Mode(GridSelectionMode.Single);
+                              selectable.Type(GridSelectionType.Row);
+                          })
+                          .Scrollable(h => h.Height(500))
+                          //.Groupable()
+                          .Sortable(sortable =>
+                          {
+                              sortable.SortMode(GridSortMode.SingleColumn);
+                          })
+                          //.Filterable()
+                          .Pageable(pageable => pageable
+                              .Input(true)
+                              .Numeric(false)
+                              .Refresh(true)
+                              .PageSizes(true)
+                              .ButtonCount(5))
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+                              .Aggregates(ag =>
+                              {
+                                  ag.Add(d => d.Credit).Sum();
+                                  ag.Add(d => d.Debit).Sum();
+                              })
+                              //.Group(gr =>
+                              //{
+                              //    gr.Add(d => d.AccountCode);
+                              //})
+                              .Sort(srt =>
+                              {
+                                  srt.Add(f => f.Debit).Descending();
+                              })
+                              .Events(events =>
+                              {
+                                  events.Error("error_handler(\"distribtion_#=ConsARStandardCollectionId#\")");
+                                  events.RequestStart("onRequestStart(\"distribtion_#=ConsARStandardCollectionId#\")");
+                                  events.RequestEnd("onRequestEnd(\"distribtion_#=ConsARStandardCollectionId#\")");
+                              })
+                              .Model(model =>
+                              {
+                                  model.Id(f => f.ConsStandardCollectionDistributionId);
+                              })
+                              .Read(read => read.Action("CollectionDistribution_Read", "ConsStandardCollectionDistribution", new { id = "#=ConsARStandardCollectionId#" }))
+                              .Create(create => create.Action("CollectionDistribution_Create", "ConsStandardCollectionDistribution", new { id = "#=ConsARStandardCollectionId#" }))
+                              .Update(update => update.Action("CollectionDistribution_Update", "ConsStandardCollectionDistribution"))
+                              .Destroy(destroy => destroy.Action("CollectionDistribution_Destroy", "ConsStandardCollectionDistribution"))
+                          )
+                          .ToClientTemplate()
+                          )
+                </text>
+                  );
+          }).ToClientTemplate())
+    #}else if(ReceiptType == 0 && IsOnlineApproved){#
+        @(Html.Kendo().TabStrip()
+              .Name("tabstr_#=ConsARStandardCollectionId#")
+              .SelectedIndex(0)
+              .Items(items =>
+              {
+                  items.Add().Text("Detail").Content(
+                      @<text>
+                       <br />
+                    # if (!IsOnlineApproved&&!IsSendForApproval)
+                    {#
+                    <a onclick='return sendForApproval("#=ConsARStandardCollectionId#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                    <br />
+                    # } #
+                    @(Html.Kendo().PanelBar()
+                          .Name("panelbar_#=ConsARStandardCollectionId#")
+                          .ExpandMode(PanelBarExpandMode.Single)
+                          .Items(panelbar =>
+                          {
+                              panelbar.Add()
+                                  .Expanded(true)
+                                  .Content(
+                                      "<div class='Invoice-details'>" +
+                                      "<ul>" +
+                                      "<li> <label> Status: </label> <strong> #=Status# </strong> </li>" +
+                                      "<li> <label> Created by: </label> <strong> #=CreatedBy# </strong> </li>" +
+                                      "<li> <label> Created on: </label> #= kendo.toString(DateCreated, 'dd/MM/yyyy H:mm:ss')# </li>" +
+                                      "<li> <label> Modified by :</label> #= ModifiedBy# </li>" +
+                                      "<li> <label> Last Modified :</label> #= kendo.toString(LastModified, 'dd/MM/yyyy H:mm:ss')# </li>" +
+                                      "</ul>" +
+                                      "</div>"
+
+                                  );
+                          }).ToClientTemplate()
+                          )
+                   </text>
+                      );
+
+                  items.Add().Text("Collection Lines").Content(
+                      @<text>
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.ConsARStandardCollectionDetail>()
+                          .Name("detail_#=ConsARStandardCollectionId#")
+                          .Columns(columns =>
+                          {
+
+                              columns.Bound(c => c.InvoiceNumber).EditorTemplateName("InvoiceNumbers");
+                              columns.Bound(c => c.ApplyAmount);
+                              columns.Bound(c => c.BalanceDue).Format("{0:N2}");
+                              //columns.Bound(c => c.AdvanceAmount).Format("{0:N2}");
+                              //columns.Bound(c => c.Retention).Format("{0:N2}");
+                              columns.ForeignKey(c => c.GLTaxRateID, (IEnumerable)ViewData["TaxTypes"], "GLTaxRateID", "TaxName").EditorTemplateName("TaxTypes");
+                              columns.Bound(c => c.TaxAmount).Format("{0:N2}");
+                              columns.Bound(c => c.VatWithholding).ClientTemplate(
+                                  "<input type='checkbox' value='\\#= ConsARStandardCollectionDetailId \\#' " +
+                                  "\\# if (VatWithholding) { \\#" +
+                                    "checked='checked'" +
+                                  "\\# } \\#" +
+                                  "/>"
+                                  );
+                              columns.ForeignKey(c => c.WithholdingTaxRateId, (IEnumerable)ViewData["TaxTypes"], "GLTaxRateID", "TaxName").EditorTemplateName("WithholdingTaxes");
+                              columns.Bound(c => c.WithholdingTaxAmount).Format("{0:N2}");
+                              columns.Bound(c => c.Remark);
+                          })
+                          .Selectable(selectable =>
+                          {
+                              selectable.Mode(GridSelectionMode.Single);
+                              selectable.Type(GridSelectionType.Row);
+                          })
+                          .Scrollable(h => h.Height(500))
+                          .Groupable()
+                          .Sortable(sortable =>
+                          {
+                              sortable.SortMode(GridSortMode.SingleColumn);
+                          })
+                          .Events(ev => ev.Edit("calculateDependetValues"))
+                          //.Filterable()
+                          .Pageable(pageable => pageable
+                              .Input(true)
+                              .Numeric(false)
+                              .Refresh(true)
+                              .PageSizes(true)
+                              .ButtonCount(5))
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+
+                              .Events(events =>
+                              {
+                                  events.Error("error_handler(\"detail_#=ConsARStandardCollectionId#\")");
+                                  events.RequestStart("onRequestStart(\"detail_#=ConsARStandardCollectionId#\")");
+                                  events.RequestEnd("onRequestEnd(\"detail_#=ConsARStandardCollectionId#\")");
+                              })
+                              .Model(model =>
+                              {
+                                  model.Id(f => f.ConsARStandardCollectionDetailId);
+                                  model.Field(f => f.BalanceDue).Editable(false);
+                                  model.Field(f => f.WithholdingTaxAmount).Editable(false);
+                                  model.Field(f => f.TaxAmount).Editable(false);
+                                  //model.Field(f => f.TotalAmount).Editable(false);
+                                  //model.Field(f => f.NetAmount).Editable(false);
+                              })
+
+                              .Read(read => read.Action("CollectionLines_Read", "StandardCollectionDetail", new { id = "#=ConsARStandardCollectionId#" }))
+                          ).ToClientTemplate()
+                          )
+                </text>
+                      );
+                  items.Add().Text("Validation").Content(
+                      @<text>
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.ConsARStandardCollectionValidation>()
+                          .Name("validation_#=ConsARStandardCollectionId#")
+                          .Columns(columns =>
+                          {
+
+                              columns.Bound(c => c.Status);
+                              columns.Bound(c => c.Remark);
+                          })
+                          .Selectable(selectable =>
+                          {
+                              selectable.Mode(GridSelectionMode.Single);
+                              selectable.Type(GridSelectionType.Row);
+                          })
+                          .Scrollable(h => h.Height(500))
+                          .Groupable()
+                          .Sortable(sortable =>
+                          {
+                              sortable.SortMode(GridSortMode.SingleColumn);
+                          })
+                          //.Filterable()
+                          .Pageable(pageable => pageable
+                              .Input(true)
+                              .Numeric(false)
+                              .Refresh(true)
+                              .PageSizes(true)
+                              .ButtonCount(5))
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+
+                              .Events(events =>
+                              {
+                                  events.Error("error_handler(\"validation_#=ConsARStandardCollectionId#\")");
+                                  events.RequestStart("onRequestStart(\"validation_#=ConsARStandardCollectionId#\")");
+                                  events.RequestEnd("onRequestEnd(\"validation_#=ConsARStandardCollectionId#\")");
+                              })
+                              .Model(model =>
+                              {
+                                  model.Id(f => f.ConsARStandardCollectionValidationId);
+                              })
+
+                              .Read(read => read.Action("CollectionValidations_Read", "StandardCollectionValidation", new { id = "#=ConsARStandardCollectionId#" }))
+                          ).ToClientTemplate()
+                          )
+                </text>
+                      );
+                  items.Add().Text("Distribution").Content(
+                      @<text>
+                        # if (IsOnlineApproved && !IsOnlineTransferred && !IsVoid )
+                        {#
+                        <a onclick='return transfer("#=ConsARStandardCollectionId#")' href=' \#' title="Transfer to GL"><i class="fa fa-paper-plane fa-2x"></i></a>
+                        <br />
+                        # } #
+                        @(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.ConsStandardCollectionDistribution>()
+                              .Name("distribtion_#=ConsARStandardCollectionId#")
+                              .Columns(columns =>
+                              {
+                                  columns.Bound(c => c.AccountCode)
+                                      .ClientGroupHeaderTemplate("\\#=value\\#");
+                                  columns.Bound(c => c.AccountDesc);
+                                  columns.Bound(c => c.Debit)
+                                      .ClientTemplate(
+                                          "\\# if (Debit === 0) { \\#" +
+                                          "_" +
+                                          "\\# } else {\\#" +
+                                          "\\#: kendo.toString( Debit, 'N2') \\#" +
+                                          "\\# } \\#"
+                                      )
+                                      .ClientFooterTemplate("Total: \\#=kendo.toString(sum, 'N2')\\#")
+                                      .ClientGroupFooterTemplate("Sub Total: \\#=kendo.toString(sum, 'N2')\\#");
+
+                                  columns.Bound(c => c.Credit)
+                                      .ClientTemplate(
+                                          "\\# if (Credit === 0) { \\#" +
+                                          "_" +
+                                          "\\# } else {\\#" +
+                                          "\\#: kendo.toString( Credit, 'N2') \\#" +
+                                          "\\# } \\#"
+                                      )
+                                      .ClientFooterTemplate("Total: \\#=kendo.toString(sum, 'N2')\\#")
+                                      .ClientGroupFooterTemplate("Sub Total: \\#=kendo.toString(sum, 'N2')\\#");
+
+                                  //columns.Command(command =>
+                                  //{
+                                  //    command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                  //    command.Destroy().Text(Resources.ActionButton_Cancel);
+                                  //}).Width(200);
+                              })
+                              .Editable(editable => editable.Mode(GridEditMode.InLine))
+                              .Selectable(selectable =>
+                              {
+                                  selectable.Mode(GridSelectionMode.Single);
+                                  selectable.Type(GridSelectionType.Row);
+                              })
+                              .Scrollable(h => h.Height(500))
+                              //.Groupable()
+                              //.Sortable(sortable =>
+                              //{
+                              //    sortable.SortMode(GridSortMode.SingleColumn);
+                              //})
+                              //.Filterable()
+                              .Pageable(pageable => pageable
+                                  .Input(true)
+                                  .Numeric(false)
+                                  .Refresh(true)
+                                  .PageSizes(true)
+                                  .ButtonCount(5))
+                              .DataSource(dataSource => dataSource
+                                  .Ajax()
+                                  .Aggregates(ag =>
+                                  {
+                                      ag.Add(d => d.Credit).Sum();
+                                      ag.Add(d => d.Debit).Sum();
+                                  })
+                                  //.Group(gr =>
+                                  //{
+                                  //    gr.Add(d => d.AccountCode);
+                                  //})
+                                  .Sort(srt =>
+                                  {
+                                      srt.Add(f => f.Debit).Descending();
+                                  })
+                                  .Events(events =>
+                                  {
+                                      events.Error("error_handler(\"distribtion_#=ConsARStandardCollectionId#\")");
+                                      events.RequestStart("onRequestStart(\"distribtion_#=ConsARStandardCollectionId#\")");
+                                      events.RequestEnd("onRequestEnd(\"distribtion_#=ConsARStandardCollectionId#\")");
+                                  })
+                                  .Model(model =>
+                                  {
+                                      model.Id(f => f.ConsStandardCollectionDistributionId);
+                                  })
+                                  .Read(read => read.Action("CollectionDistribution_Read", "ConsStandardCollectionDistribution", new { id = "#=ConsARStandardCollectionId#" }))
+                              //.Create(create => create.Action("CollectionDistribution_Create", "ConsStandardCollectionDistribution", new { id = "#=ConsARStandardCollectionId#" }))
+                              //.Update(update => update.Action("CollectionDistribution_Update", "ConsStandardCollectionDistribution"))
+                              //.Destroy(destroy => destroy.Action("CollectionDistribution_Destroy", "ConsStandardCollectionDistribution"))
+                              )
+                              .ToClientTemplate()
+                              )
+                    </text>
+                      );
+              }).ToClientTemplate())
+    #} else if(ReceiptType == 1 && !IsOnlineApproved){#
+    @(Html.Kendo().TabStrip()
+          .Name("tabstr_#=ConsARStandardCollectionId#")
+          .SelectedIndex(0)
+          .Items(items =>
+          {
+              items.Add().Text("Detail").Content(
+                  @<text>
+                      <br />
+                    # if (!IsOnlineApproved&&!IsSendForApproval)
+                    {#
+                    <a onclick='return sendForApproval("#=ConsARStandardCollectionId#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                    <br />
+                    # } #
+                    @(Html.Kendo().PanelBar()
+                          .Name("panelbar_#=ConsARStandardCollectionId#")
+                          .ExpandMode(PanelBarExpandMode.Single)
+                          .Items(panelbar =>
+                          {
+                              panelbar.Add()
+                                  .Expanded(true)
+                                  .Content(
+                                      "<div class='Invoice-details'>" +
+                                      "<ul>" +
+                                      "<li> <label> Status: </label> <strong> #=Status# </strong> </li>" +
+                                      "<li> <label> Created by: </label> <strong> #=CreatedBy# </strong> </li>" +
+                                      "<li> <label> Created on: </label> #= kendo.toString(DateCreated, 'dd/MM/yyyy H:mm:ss')# </li>" +
+                                      "<li> <label> Modified by :</label> #= ModifiedBy# </li>" +
+                                      "<li> <label> Last Modified :</label> #= kendo.toString(LastModified, 'dd/MM/yyyy H:mm:ss')# </li>" +
+                                      "</ul>" +
+                                      "</div>"
+                                  );
+                          }).ToClientTemplate()
+                          )
+                   </text>
+                  );
+              items.Add().Text("Collection Lines").Content(
+                  @<text>
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.ConsARStandardCollectionDetail>()
+                          .Name("detail_#=ConsARStandardCollectionId#")
+                          .Columns(columns =>
+                          {
+                              //columns.Bound(c => c.ApplyAmount);
+                              //columns.Bound(c => c.BalanceDue).Format("{0:N2}");
+                              columns.Bound(c => c.AdvanceAmount).Format("{0:N2}").Title("Advance/Prepayemnt amnt.");
+                              columns.Bound(c => c.Retention).Format("{0:N2}");
+                              columns.ForeignKey(c => c.GLTaxRateID, (IEnumerable)ViewData["TaxTypes"], "GLTaxRateID", "TaxName").EditorTemplateName("TaxTypes");
+                              columns.Bound(c => c.TaxAmount).Format("{0:N2}");
+                              columns.Bound(c => c.VatWithholding).ClientTemplate(
+                                  "<input type='checkbox' value='\\#= ConsARStandardCollectionDetailId \\#' " +
+                                  "\\# if (VatWithholding) { \\#" +
+                                  "checked='checked'" +
+                                  "\\# } \\#" +
+                                  "/>"
+                                  );
+                              columns.ForeignKey(c => c.WithholdingTaxRateId, (IEnumerable)ViewData["TaxTypes"], "GLTaxRateID", "TaxName").EditorTemplateName("WithholdingTaxes");
+                              columns.Bound(c => c.WithholdingTaxAmount).Format("{0:N2}");
+                              columns.Bound(c => c.Remark);
+
+                              columns.Command(command =>
+                              {
+                                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                  command.Destroy().Text(Resources.ActionButton_Cancel);
+                              }).Width(200);
+                          })
+
+                          .ToolBar(toolbar =>
+                          {
+                              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                          })
+                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                          .Selectable(selectable =>
+                          {
+                              selectable.Mode(GridSelectionMode.Single);
+                              selectable.Type(GridSelectionType.Row);
+                          })
+                          .Scrollable(h => h.Height(500))
+                          //.Groupable()
+                          .Sortable(sortable =>
+                          {
+                              sortable.SortMode(GridSortMode.SingleColumn);
+                          })
+                          //.Events(ev => ev.Edit("calculateDependetValues"))
+                          //.Filterable()
+                          .Pageable(pageable => pageable
+                              .Input(true)
+                              .Numeric(false)
+                              .Refresh(true)
+                              .PageSizes(true)
+                              .ButtonCount(5))
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+
+                              .Events(events =>
+                              {
+                                  events.Error("error_handler(\"detail_#=ConsARStandardCollectionId#\")");
+                                  events.RequestStart("onRequestStart(\"detail_#=ConsARStandardCollectionId#\")");
+                                  events.RequestEnd("onRequestEnd(\"detail_#=ConsARStandardCollectionId#\")");
+                              })
+                              .Model(model =>
+                              {
+                                  model.Id(f => f.ConsARStandardCollectionDetailId);
+                                  //model.Field(f => f.BalanceDue).Editable(false);
+                                  model.Field(f => f.WithholdingTaxAmount).Editable(false);
+                                  //model.Field(f => f.ApplyAmount).Editable(false);
+                                  model.Field(f => f.TaxAmount).Editable(false);
+                                  //model.Field(f => f.NetAmount).Editable(false);
+                              })
+
+                              .Read(read => read.Action("CollectionLines_Read", "StandardCollectionDetail", new { id = "#=ConsARStandardCollectionId#" }))
+                              .Create(create => create.Action("CollectionLine_Create", "StandardCollectionDetail", new { id = "#=ConsARStandardCollectionId#" }))
+                              .Update(update => update.Action("CollectionLine_Update", "StandardCollectionDetail"))
+                              .Destroy(destroy => destroy.Action("CollectionLine_Destroy", "StandardCollectionDetail"))
+                          )//.ClientDetailTemplateId("template_wip_detail")
+                          .ToClientTemplate()
+                          )
+                </text>
+                  );
+              items.Add().Text("Validation").Content(
+                  @<text>
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.ConsARStandardCollectionValidation>()
+                          .Name("validation_#=ConsARStandardCollectionId#")
+                          .Columns(columns =>
+                          {
+
+                              columns.Bound(c => c.Status);
+                              columns.Bound(c => c.Remark);
+
+                              columns.Command(command =>
+                              {
+                                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                  command.Destroy().Text(Resources.ActionButton_Cancel);
+                                  //command.Custom("CustomCommand").Text("Detail");
+                              }).Width(200);
+                          })
+
+                          .ToolBar(toolbar =>
+                          {
+                              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                          })
+                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                          .Selectable(selectable =>
+                          {
+                              selectable.Mode(GridSelectionMode.Single);
+                              selectable.Type(GridSelectionType.Row);
+                          })
+                          .Scrollable(h => h.Height(500))
+                          //.Groupable()
+                          .Sortable(sortable =>
+                          {
+                              sortable.SortMode(GridSortMode.SingleColumn);
+                          })
+                          //.Filterable()
+                          .Pageable(pageable => pageable
+                              .Input(true)
+                              .Numeric(false)
+                              .Refresh(true)
+                              .PageSizes(true)
+                              .ButtonCount(5))
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+
+                              .Events(events =>
+                              {
+                                  events.Error("error_handler(\"validation_#=ConsARStandardCollectionId#\")");
+                                  events.RequestStart("onRequestStart(\"validation_#=ConsARStandardCollectionId#\")");
+                                  events.RequestEnd("onRequestEnd(\"validation_#=ConsARStandardCollectionId#\")");
+                              })
+                              .Model(model =>
+                              {
+                                  model.Id(f => f.ConsARStandardCollectionValidationId);
+
+                              })
+
+                              .Read(read => read.Action("CollectionValidations_Read", "StandardCollectionValidation", new { id = "#=ConsARStandardCollectionId#" }))
+                              .Create(create => create.Action("CollectionValidation_Create", "StandardCollectionValidation", new { id = "#=ConsARStandardCollectionId#" }))
+                              .Update(update => update.Action("CollectionValidation_Update", "StandardCollectionValidation"))
+                              .Destroy(destroy => destroy.Action("CollectionValidation_Destroy", "StandardCollectionValidation"))
+                          )//.ClientDetailTemplateId("template_wip_detail")
+                          .ToClientTemplate()
+                    )
+                </text>
+                  );
+              items.Add().Text("Distribution").Content(
+                  @<text>
+                        # if (IsOnlineApproved && !IsOnlineTransferred && !IsVoid )
+                        {#
+                        <a onclick='return transfer("#=ConsARStandardCollectionId#")' href=' \#' title="Transfer to GL"><i class="fa fa-paper-plane fa-2x"></i></a>
+                        <br />
+                        # } #
+                        @(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.ConsStandardCollectionDistribution>()
+                              .Name("distribtion_#=ConsARStandardCollectionId#")
+                              .Columns(columns =>
+                              {
+                                  columns.Bound(c => c.AccountCode)
+                                      .ClientGroupHeaderTemplate("\\#=value\\#");
+                                  columns.Bound(c => c.AccountDesc);
+                                  columns.Bound(c => c.Debit)
+                                      .ClientTemplate(
+                                          "\\# if (Debit === 0) { \\#" +
+                                          "_" +
+                                          "\\# } else {\\#" +
+                                          "\\#: kendo.toString( Debit, 'N2') \\#" +
+                                          "\\# } \\#"
+                                      )
+                                      .ClientFooterTemplate("Total: \\#=kendo.toString(sum, 'N2')\\#")
+                                      .ClientGroupFooterTemplate("Sub Total: \\#=kendo.toString(sum, 'N2')\\#");
+
+                                  columns.Bound(c => c.Credit)
+                                      .ClientTemplate(
+                                          "\\# if (Credit === 0) { \\#" +
+                                          "_" +
+                                          "\\# } else {\\#" +
+                                          "\\#: kendo.toString( Credit, 'N2') \\#" +
+                                          "\\# } \\#"
+                                      )
+                                      .ClientFooterTemplate("Total: \\#=kendo.toString(sum, 'N2')\\#")
+                                      .ClientGroupFooterTemplate("Sub Total: \\#=kendo.toString(sum, 'N2')\\#");
+
+                                  columns.Command(command =>
+                                  {
+                                      command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                      command.Destroy().Text(Resources.ActionButton_Cancel);
+                                  }).Width(200);
+                              })
+                              .Editable(editable => editable.Mode(GridEditMode.InLine))
+                              .Selectable(selectable =>
+                              {
+                                  selectable.Mode(GridSelectionMode.Single);
+                                  selectable.Type(GridSelectionType.Row);
+                              })
+                              .Scrollable(h => h.Height(500))
+                              //.Groupable()
+                              .Sortable(sortable =>
+                              {
+                                  sortable.SortMode(GridSortMode.SingleColumn);
+                              })
+                              //.Filterable()
+                              .Pageable(pageable => pageable
+                                  .Input(true)
+                                  .Numeric(false)
+                                  .Refresh(true)
+                                  .PageSizes(true)
+                                  .ButtonCount(5))
+                              .DataSource(dataSource => dataSource
+                                  .Ajax()
+                                  .Aggregates(ag =>
+                                  {
+                                      ag.Add(d => d.Credit).Sum();
+                                      ag.Add(d => d.Debit).Sum();
+                                  })
+                                  //.Group(gr =>
+                                  //{
+                                  //    gr.Add(d => d.AccountCode);
+                                  //})
+                                  .Sort(srt =>
+                                  {
+                                      srt.Add(f => f.Debit).Descending();
+                                  })
+                                  .Events(events =>
+                                  {
+                                      events.Error("error_handler(\"distribtion_#=ConsARStandardCollectionId#\")");
+                                      events.RequestStart("onRequestStart(\"distribtion_#=ConsARStandardCollectionId#\")");
+                                      events.RequestEnd("onRequestEnd(\"distribtion_#=ConsARStandardCollectionId#\")");
+                                  })
+                                  .Model(model =>
+                                  {
+                                      model.Id(f => f.ConsStandardCollectionDistributionId);
+                                  })
+                                  .Read(read => read.Action("CollectionDistribution_Read", "ConsStandardCollectionDistribution", new { id = "#=ConsARStandardCollectionId#" }))
+                                  .Create(create => create.Action("CollectionDistribution_Create", "ConsStandardCollectionDistribution", new { id = "#=ConsARStandardCollectionId#" }))
+                                  .Update(update => update.Action("CollectionDistribution_Update", "ConsStandardCollectionDistribution"))
+                                  .Destroy(destroy => destroy.Action("CollectionDistribution_Destroy", "ConsStandardCollectionDistribution"))
+                              )
+                              .ToClientTemplate()
+                              )
+                    </text>
+                  );
+          }).ToClientTemplate())
+    #} else {#
+        @(Html.Kendo().TabStrip()
+              .Name("tabstr_#=ConsARStandardCollectionId#")
+              .SelectedIndex(0)
+              .Items(items =>
+              {
+                  items.Add().Text("Detail").Content(
+                      @<text>
+                      <br />
+                    @(Html.Kendo().PanelBar()
+                          .Name("panelbar_#=ConsARStandardCollectionId#")
+                          .ExpandMode(PanelBarExpandMode.Single)
+                          .Items(panelbar =>
+                          {
+                              panelbar.Add()
+                                  .Expanded(true)
+                                  .Content(
+                                      "<div class='Invoice-details'>" +
+                                      "<ul>" +
+                                      "<li> <label> Status: </label> <strong> #=Status# </strong> </li>" +
+                                      "<li> <label> Created by: </label> <strong> #=CreatedBy# </strong> </li>" +
+                                      "<li> <label> Created on: </label> #= kendo.toString(DateCreated, 'dd/MM/yyyy H:mm:ss')# </li>" +
+                                      "<li> <label> Modified by :</label> #= ModifiedBy# </li>" +
+                                      "<li> <label> Last Modified :</label> #= kendo.toString(LastModified, 'dd/MM/yyyy H:mm:ss')# </li>" +
+                                      "</ul>" +
+                                      "</div>"
+                                  );
+                          }).ToClientTemplate()
+                          )
+                   </text>
+                      );
+
+                  items.Add().Text("Collection Lines").Content(
+                      @<text>
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.ConsARStandardCollectionDetail>()
+                          .Name("detail_#=ConsARStandardCollectionId#")
+                          .Columns(columns =>
+                          {
+
+                              //columns.Bound(c => c.InvoiceNumber).EditorTemplateName("InvoiceNumbers");
+                              //columns.Bound(c => c.ApplyAmount);
+                              //columns.Bound(c => c.BalanceDue).Format("{0:N2}");
+                              columns.Bound(c => c.AdvanceAmount).Format("{0:N2}").Title("Advance/Prepayemnt amnt.");
+                              columns.Bound(c => c.Retention).Format("{0:N2}");
+                              columns.ForeignKey(c => c.GLTaxRateID, (IEnumerable)ViewData["TaxTypes"], "GLTaxRateID", "TaxName").EditorTemplateName("TaxTypes");
+                              columns.Bound(c => c.TaxAmount).Format("{0:N2}");
+                              columns.Bound(c => c.VatWithholding).ClientTemplate(
+                                  "<input type='checkbox' value='\\#= ConsARStandardCollectionDetailId \\#' " +
+                                  "\\# if (VatWithholding) { \\#" +
+                                  "checked='checked'" +
+                                  "\\# } \\#" +
+                                  "/>"
+                                  );
+                              columns.ForeignKey(c => c.WithholdingTaxRateId, (IEnumerable)ViewData["TaxTypes"], "GLTaxRateID", "TaxName").EditorTemplateName("WithholdingTaxes");
+                              columns.Bound(c => c.WithholdingTaxAmount).Format("{0:N2}");
+                              columns.Bound(c => c.Remark);
+                          })
+
+                          .Selectable(selectable =>
+                          {
+                              selectable.Mode(GridSelectionMode.Single);
+                              selectable.Type(GridSelectionType.Row);
+                          })
+                          .Scrollable(h => h.Height(500))
+                          //.Groupable()
+                          .Sortable(sortable =>
+                          {
+                              sortable.SortMode(GridSortMode.SingleColumn);
+                          })
+                          //.Filterable()
+                          .Pageable(pageable => pageable
+                              .Input(true)
+                              .Numeric(false)
+                              .Refresh(true)
+                              .PageSizes(true)
+                              .ButtonCount(5))
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+
+                              .Events(events =>
+                              {
+                                  events.Error("error_handler(\"detail_#=ConsARStandardCollectionId#\")");
+                                  events.RequestStart("onRequestStart(\"detail_#=ConsARStandardCollectionId#\")");
+                                  events.RequestEnd("onRequestEnd(\"detail_#=ConsARStandardCollectionId#\")");
+                              })
+                              .Model(model =>
+                              {
+                                  model.Id(f => f.ConsARStandardCollectionDetailId);
+                                  //model.Field(f => f.BalanceDue).Editable(false);
+                                  model.Field(f => f.WithholdingTaxAmount).Editable(false);
+                                  //model.Field(f => f.ApplyAmount).Editable(false);
+                                  //model.Field(f => f.TaxAmount).Editable(false);
+                                  //model.Field(f => f.NetAmount).Editable(false);
+                              })
+
+                              .Read(read => read.Action("CollectionLines_Read", "StandardCollectionDetail", new { id = "#=ConsARStandardCollectionId#" }))
+                          ).ToClientTemplate()
+                          )
+                </text>
+                      );
+                  items.Add().Text("Validation").Content(
+                      @<text>
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.ConsARStandardCollectionValidation>()
+                          .Name("validation_#=ConsARStandardCollectionId#")
+                          .Columns(columns =>
+                          {
+                              columns.Bound(c => c.Status);
+                              columns.Bound(c => c.Remark);
+                          })
+                          .Selectable(selectable =>
+                          {
+                              selectable.Mode(GridSelectionMode.Single);
+                              selectable.Type(GridSelectionType.Row);
+                          })
+                          .Scrollable(h => h.Height(500))
+                          //.Groupable()
+                          .Sortable(sortable =>
+                          {
+                              sortable.SortMode(GridSortMode.SingleColumn);
+                          })
+                          //.Filterable()
+                          .Pageable(pageable => pageable
+                              .Input(true)
+                              .Numeric(false)
+                              .Refresh(true)
+                              .PageSizes(true)
+                              .ButtonCount(5))
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+                              .Events(events =>
+                              {
+                                  events.Error("error_handler(\"validation_#=ConsARStandardCollectionId#\")");
+                                  events.RequestStart("onRequestStart(\"validation_#=ConsARStandardCollectionId#\")");
+                                  events.RequestEnd("onRequestEnd(\"validation_#=ConsARStandardCollectionId#\")");
+                              })
+                              .Model(model =>
+                              {
+                                  model.Id(f => f.ConsARStandardCollectionValidationId);
+                              })
+                              .Read(read => read.Action("CollectionValidations_Read", "StandardCollectionValidation", new { id = "#=ConsARStandardCollectionId#" }))
+                          ).ToClientTemplate()
+                          )
+                </text>
+                      );
+                  items.Add().Text("Distribution").Content(
+                      @<text>
+                        # if (IsOnlineApproved && !IsOnlineTransferred && !IsVoid )
+                        {#
+                        <a onclick='return transfer("#=ConsARStandardCollectionId#")' href=' \#' title="Transfer to GL"><i class="fa fa-paper-plane fa-2x"></i></a>
+                        <br />
+                        # } #
+                        @(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.ConsStandardCollectionDistribution>()
+                              .Name("distribtion_#=ConsARStandardCollectionId#")
+                              .Columns(columns =>
+                              {
+                                  columns.Bound(c => c.AccountCode)
+                                      .ClientGroupHeaderTemplate("\\#=value\\#");
+                                  columns.Bound(c => c.AccountDesc);
+                                  columns.Bound(c => c.Debit)
+                                      .ClientTemplate(
+                                          "\\# if (Debit === 0) { \\#" +
+                                          "_" +
+                                          "\\# } else {\\#" +
+                                          "\\#: kendo.toString( Debit, 'N2') \\#" +
+                                          "\\# } \\#"
+                                      )
+                                      .ClientFooterTemplate("Total: \\#=kendo.toString(sum, 'N2')\\#")
+                                      .ClientGroupFooterTemplate("Sub Total: \\#=kendo.toString(sum, 'N2')\\#");
+
+                                  columns.Bound(c => c.Credit)
+                                      .ClientTemplate(
+                                          "\\# if (Credit === 0) { \\#" +
+                                          "_" +
+                                          "\\# } else {\\#" +
+                                          "\\#: kendo.toString( Credit, 'N2') \\#" +
+                                          "\\# } \\#"
+                                      )
+                                      .ClientFooterTemplate("Total: \\#=kendo.toString(sum, 'N2')\\#")
+                                      .ClientGroupFooterTemplate("Sub Total: \\#=kendo.toString(sum, 'N2')\\#");
+
+                                  //columns.Command(command =>
+                                  //{
+                                  //    command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                  //    command.Destroy().Text(Resources.ActionButton_Cancel);
+                                  //}).Width(200);
+                              })
+                              .Editable(editable => editable.Mode(GridEditMode.InLine))
+                              .Selectable(selectable =>
+                              {
+                                  selectable.Mode(GridSelectionMode.Single);
+                                  selectable.Type(GridSelectionType.Row);
+                              })
+                              .Scrollable(h => h.Height(500))
+                              //.Groupable()
+                              .Sortable(sortable =>
+                              {
+                                  sortable.SortMode(GridSortMode.SingleColumn);
+                              })
+                              //.Filterable()
+                              .Pageable(pageable => pageable
+                                  .Input(true)
+                                  .Numeric(false)
+                                  .Refresh(true)
+                                  .PageSizes(true)
+                                  .ButtonCount(5))
+                              .DataSource(dataSource => dataSource
+                                  .Ajax()
+                                  .Aggregates(ag =>
+                                  {
+                                      ag.Add(d => d.Credit).Sum();
+                                      ag.Add(d => d.Debit).Sum();
+                                  })
+                                  //.Group(gr =>
+                                  //{
+                                  //    gr.Add(d => d.AccountCode);
+                                  //})
+                                  .Sort(srt => {
+                                      srt.Add(f => f.Debit).Descending();
+                                  })
+                                  .Events(events =>
+                                  {
+                                      events.Error("error_handler(\"distribtion_#=ConsARStandardCollectionId#\")");
+                                      events.RequestStart("onRequestStart(\"distribtion_#=ConsARStandardCollectionId#\")");
+                                      events.RequestEnd("onRequestEnd(\"distribtion_#=ConsARStandardCollectionId#\")");
+                                  })
+                                  .Model(model =>
+                                  {
+                                      model.Id(f => f.ConsStandardCollectionDistributionId);
+                                  })
+                                  .Read(read => read.Action("CollectionDistribution_Read", "ConsStandardCollectionDistribution", new { id = "#=ConsARStandardCollectionId#" }))
+                              //.Create(create => create.Action("CollectionDistribution_Create", "ConsStandardCollectionDistribution", new { id = "#=ConsARStandardCollectionId#" }))
+                              //.Update(update => update.Action("CollectionDistribution_Update", "ConsStandardCollectionDistribution"))
+                              //.Destroy(destroy => destroy.Action("CollectionDistribution_Destroy", "ConsStandardCollectionDistribution"))
+                              )
+                              .ToClientTemplate()
+                              )
+                    </text>
+                      );
+              }).ToClientTemplate())
+    #}#
+</script>
+<script>
+    function sendForApproval(id) {
+        var recordStatus = "";
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("SendForApproval", "StandardCollection", new { area = "Construction" })',
+            data: { id: id },
+            success: function (result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                recordStatus = result.Status;
+                location.reload(true);
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+</script>
+<script>
+    var totalAmountFromInvoice = 0;
+    function GetApplyAmountFromInvoice() {
+        var invNumber = $("#InvoiceNumber").val();
+
+        $.ajax({
+            url: '@Url.Action("GetApplyAmountFromInvoice", "DataProvider", new {area = "Construction"})',
+            data: { invoiceNumber: invNumber },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                totalAmountFromInvoice = result;
+
+                $("#ApplyAmount").val(totalAmountFromInvoice);
+                $("#ApplyAmount").trigger("change");
+                $("#BalanceDue").val(0);
+                //var applyAmnt =
+                //$("#BalanceDue").val();
+            }
+
+        });
+    }
+    function getTaxAmountFromInvoice(e) {
+        var invoiceNumber = $('#InvoiceNumber').val();
+        var taxTypeId = $('#GLTaxRateID').val();
+        $.ajax({
+            url: '@Url.Action("GetTaxAmountFromInvoice", "StandardCollectionDetail", new {area = "Construction"})',
+            data: { invoiceNumber: invoiceNumber, taxId: taxTypeId },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                $("#TaxAmount").val(result);
+                $("#TaxAmount").trigger("change");
+            }
+
+        });
+    }
+
+    function calculateDependetValues() {
+
+        //
+        // change balance due according to apply amount
+        var applyTextBox = $('#ApplyAmount');
+        var invNumber = $('#InvoiceNumber').val();
+        applyTextBox.bind('blur',
+            function () {
+                var applyAmount = $('#ApplyAmount').val();
+                //var plnTillPrevMonth = $('#PlannedAmountTillPreviousMonth').val();
+                //if (totalAmountFromInvoice > 0 && invNumber !) {
+                $('#BalanceDue').val(Number(totalAmountFromInvoice - Number(applyAmount)));
+                $("#BalanceDue").trigger("change");
+                //}
+            });
+    }
+    function onDataBound(e) {
+        var grid = this;
+        var gridRows = grid.tbody.find("tr");
+        //Selects all edit buttons
+
+
+        for (var i = 0; i < gridRows.length; i++) {
+            var row = $(gridRows[i]);
+            var dataItem = grid.dataItem(row);
+            //perform your custom check
+            if (dataItem.IsOnlineApproved === true) {
+                //hide buttons using jQuery
+                row.find(".k-grid-edit").hide();
+                row.find(".k-grid-delete").hide();
+                row.addClass("highlighted-row");
+                //row.find(".k-grid-customAction").text('ይከፈት');
+            } else {
+
+                row.find(".k-grid-edit").show();
+                row.find(".k-grid-delete").show();
+            }
+
+
+            //if (dataItem.Status === 0) {
+            //    //answer.hide(true);
+            //    //transfer.hide(true);
+            //    row.css("background-color", "green");
+
+            //} else {
+            //    //answer.show(true);
+            //    //transfer.show(true);
+            //    row.css("background-color", "grey");
+
+            //}
+
+
+        }
+
+        //$("#" + gridName + " tbody tr .k-grid-edit").each(function () {
+        //    var currentDataItem = $("#" + gridName).data("kendoGrid").dataItem($(this).closest("tr"));
+
+        //    //Check in the current dataItem if the row is editable
+        //    if (currentDataItem.IsOnlineApproved == true) {
+        //        $(this).remove();
+        //    }
+
+
+        //});
+        ////Selects all delete buttons
+        //$("#" + gridName + " tbody tr .k-grid-delete").each(function() {
+        //    var currentDataItem = $("#" + gridName).data("kendoGrid").dataItem($(this).closest("tr"));
+
+        //    //Check in the current dataItem if the row is deletable
+        //    if (currentDataItem.IsOnlineApproved) {
+        //        $(this).remove();
+        //    }
+        //});
+    }
+
+    function transfer(id) {
+        var desc = prompt("Please enter transaction description:");
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("TransferDistribution", "StandardCollection", new { area = "Construction" })',
+            data: {
+                id: id,
+                description: desc
+            },
+            success: function (result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                location.reload(true);
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+</script>
+
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 700px;
+    }
+    .highlighted-row {
+        background-color: #aafeaa;
+    }
+
+    .highlighted-row.k-alt {
+        background-color: #bff1b4;
+    }
+</style>
+

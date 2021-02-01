@@ -1,0 +1,490 @@
+﻿@using ExceedERP.Web.Controllers
+
+@{
+    ViewBag.Title = "HrDashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<style>
+    .row {
+        margin-top: 1px;
+        padding: 0 1px;
+    }
+
+    .clickable {
+        cursor: pointer;
+    }
+
+    .panel-heading span {
+        margin-top: -5px;
+        font-size: 12px;
+    }
+</style>
+
+
+@if (HttpContext.Current.User.IsInRole("HR_Report"))
+{
+    <div class="panel panel-info">
+        <div class="panel-heading">
+            <h3 class="panel-title">Human Resource</h3>
+            <span class="pull-right clickable"><i class="glyphicon glyphicon-chevron-up"></i></span>
+        </div>
+        <div class="panel-body">
+            <div class="row">
+                <div class="col-sm-8 col-lg-4">
+
+                    <div class="demo-section k-content wide">
+                        @(Html.Kendo().Chart<HrDashboardViewModel>()
+                              .Name("chart3")
+              .Title("By Gender and Employment Type")
+                              .Legend(legend => legend
+                                  .Position(ChartLegendPosition.Top)
+                              )
+
+                              .Series(series =>
+                              {
+                                  foreach (var def in Model.HrSeries)
+                                  {
+                                      series.Bar(def.Data).Name(def.Name);
+                                  }
+                              })
+                              .CategoryAxis(axis => axis
+                                  .Categories(Model.HrCategories)
+                              )
+
+                              .ValueAxis(axis => axis.Numeric()
+                                  .Labels(labels => labels.Format("{0:N0}"))
+        //.MajorUnit(50)
+                              )
+                              .Tooltip(tooltip => tooltip
+                                  .Visible(true)
+                                  .Shared(true)
+                                  .Format("{0:N0}")
+                              )
+                        )
+                    </div>
+
+
+                </div>
+                <div class="col-sm-8 col-lg-4">
+
+
+                    <div class="demo-section k-content wide">
+                        @(Html.Kendo().Chart<HrDashboardViewModel>()
+                              .Name("chart2")
+            .Title("By Employment Type")
+                              .Legend(legend => legend
+                                  .Position(ChartLegendPosition.Top)
+                              )
+
+                              .Series(series =>
+                                  {
+
+                                      series.Pie(Model.PieSeries);
+                                      //   .Lables(labels => labels
+                                      //.Visible(true)
+                                      //.Template("#=category #: \n #=value#%") ) ;
+
+
+
+
+
+                                  })
+
+              .CategoryAxis(axis => axis
+                  .Categories(Model.PieHrCategories)
+              )
+
+
+.ValueAxis(axis => axis.Numeric()
+    //.Labels(labels => labels.Template("#=category #: \n #=value#%"))
+                                .Visible(true)
+
+                                .Background("transparent")
+              )
+
+             .Tooltip(tooltip => tooltip.
+Template("#=category #: \n #=value#").Visible(true)
+)
+                        )
+                    </div>
+
+
+
+                </div>
+                <div class="col-sm-8 col-lg-4">
+
+
+                    <div class="demo-section k-content wide">
+                        @(Html.Kendo().Chart<HrDashboardViewModel>()
+                              .Name("chart1")
+.Title("By Assignment Type")
+                              .Legend(legend => legend
+                                  .Position(ChartLegendPosition.Top)
+                              )
+
+                              .Series(series =>
+                              {
+                                  foreach (var def in Model.HrAssignmentSeriesData)
+                                  {
+                                      series.Column(def.Data).Name(def.Name);
+                                  }
+                              })
+                              .CategoryAxis(axis => axis
+                                  .Categories(Model.HrAssignmentCategories)
+                              )
+
+                              .ValueAxis(axis => axis.Numeric()
+                                  .Labels(labels => labels.Format("{0:N0}"))
+        //  .MajorUnit(5)
+                              )
+                              .Tooltip(tooltip => tooltip
+                                  .Visible(true)
+                                  .Shared(true)
+                                  .Format("{0:N0}")
+                              )
+                        )
+                    </div>
+
+
+
+                </div>
+            </div>
+            <br />
+            <div class="row">
+                <div class="col-sm-8 col-lg-4">
+                    <div class="demo-section k-content wide">
+                        @(Html.Kendo().Chart<HrDashboardViewModel>()
+                              .Name("chart4")
+.Title("By Responsibility Level")
+                              .Legend(legend => legend
+                                  .Position(ChartLegendPosition.Top)
+                              )
+
+                              .Series(series =>
+                              {
+                                  foreach (var def in Model.HrResponsiblitySeriesData)
+                                  {
+                                      series.Column(def.Data).Name(def.Name);
+                                  }
+                              })
+                              .CategoryAxis(axis => axis
+                                  .Categories(Model.HrResponsiblityCategories)
+                              )
+
+                              .ValueAxis(axis => axis.Numeric()
+                                  .Labels(labels => labels.Format("{0:N0}"))
+        // .MajorUnit(50)
+                              )
+                              .Tooltip(tooltip => tooltip
+                                  .Visible(true)
+                                  .Shared(true)
+                                  .Format("{0:N0}")
+                              )
+                        )
+                    </div>
+                </div>
+                <div class="col-sm-8 col-lg-4">
+                    <div class="demo-section k-content wide">
+                        @(Html.Kendo().Chart<HrDashboardViewModel>()
+                              .Name("chart5")
+.Title("Leave By Type")
+                              .Legend(legend => legend
+                                  .Position(ChartLegendPosition.Top)
+                              )
+              .SeriesDefaults(seriesDefaults =>
+seriesDefaults.Line().Style(ChartLineStyle.Smooth)
+)
+                              .Series(series =>
+                              {
+                                  foreach (var def in Model.Series)
+                                  {
+                                      series.Line(def.Data).Name(def.Name);
+                                  }
+                              })
+                              .CategoryAxis(axis => axis
+                                  .Categories(Model.Categories)
+                              )
+
+                              .ValueAxis(axis => axis.Numeric()
+                                  .Labels(labels => labels.Format("{0:N0}"))
+        // .MajorUnit(50)
+                              )
+                              .Tooltip(tooltip => tooltip
+                                  .Visible(true)
+                                  .Shared(true)
+                                  .Format("{0:N0}")
+                              )
+                        )
+                    </div>
+                </div>
+
+                <div class="col-sm-8 col-lg-4">
+                    <div class="demo-section k-content wide">
+                        @(Html.Kendo().Chart<HrDashboardViewModel>()
+                              .Name("chart6")
+.Title("Training")
+                              .Legend(legend => legend
+                                  .Position(ChartLegendPosition.Top)
+                              )
+              .SeriesDefaults(seriesDefaults =>
+seriesDefaults.Line().Style(ChartLineStyle.Smooth)
+)
+                              .Series(series =>
+                              {
+                                  foreach (var def in Model.HrTrainingData)
+                                  {
+                                      series.Line(def.Data).Name(def.Name);
+                                  }
+                              })
+                              .CategoryAxis(axis => axis
+                                  .Categories(Model.TrainingCategories)
+                              )
+
+                              .ValueAxis(axis => axis.Numeric()
+                                  .Labels(labels => labels.Format("{0:N0}"))
+        // .MajorUnit(50)
+                              )
+                              .Tooltip(tooltip => tooltip
+                                  .Visible(true)
+                                  .Shared(true)
+                                  .Format("{0:N0}")
+                              )
+                        )
+                    </div>
+                </div>
+
+            </div>
+
+            <br />
+            <div class="row">
+                <div class="col-sm-8 col-lg-4">
+                    <div class="demo-section k-content wide">
+                        @(Html.Kendo().Chart<HrDashboardViewModel>()
+                              .Name("chart7")
+.Title("Vacant Position")
+                              .Legend(legend => legend
+                                  .Position(ChartLegendPosition.Top)
+                              )
+
+                              .Series(series =>
+                              {
+                                  foreach (var def in Model.HrVacantPostionData)
+                                  {
+                                      series.Column(def.Data).Name(def.Name);
+                                  }
+                              })
+                              .CategoryAxis(axis => axis
+                                  .Categories(Model.VacantPostionCategories)
+                              )
+
+                              .ValueAxis(axis => axis.Numeric()
+                                  .Labels(labels => labels.Format("{0:N0}"))
+        // .MajorUnit(50)
+                              )
+                              .Tooltip(tooltip => tooltip
+                                  .Visible(true)
+                                  .Shared(true)
+                                  .Format("{0:N0}")
+                              )
+                        )
+                    </div>
+                </div>
+                <div class="col-sm-8 col-lg-4">
+                    <div class="demo-section k-content wide">
+                        @(Html.Kendo().Chart<HrDashboardViewModel>()
+                              .Name("chart8")
+.Title("In and Out Letters")
+                              .Legend(legend => legend
+                                  .Position(ChartLegendPosition.Top)
+                              )
+              .SeriesDefaults(seriesDefaults =>
+seriesDefaults.Line().Style(ChartLineStyle.Smooth)
+)
+                              .Series(series =>
+                              {
+                                  foreach (var def in Model.HrLetterData)
+                                  {
+                                      series.Line(def.Data).Name(def.Name);
+                                  }
+                              })
+                              .CategoryAxis(axis => axis
+                                  .Categories(Model.LetterCategories)
+                              )
+
+                              .ValueAxis(axis => axis.Numeric()
+                                  .Labels(labels => labels.Format("{0:N0}"))
+        // .MajorUnit(50)
+                              )
+                              .Tooltip(tooltip => tooltip
+                                  .Visible(true)
+                                  .Shared(true)
+                                  .Format("{0:N0}")
+                              )
+                        )
+                    </div>
+                </div>
+
+                <div class="col-sm-8 col-lg-4">
+                    <div class="demo-section k-content wide">
+                        @(Html.Kendo().Chart<HrDashboardViewModel>()
+                              .Name("chart9")
+.Title("Absent and Late Coming")
+                              .Legend(legend => legend
+                                  .Position(ChartLegendPosition.Top)
+                              )
+              .SeriesDefaults(seriesDefaults =>
+seriesDefaults.Line().Style(ChartLineStyle.Smooth)
+)
+                              .Series(series =>
+                              {
+                                  foreach (var def in Model.HrAbsentData)
+                                  {
+                                      series.Line(def.Data).Name(def.Name);
+                                  }
+                              })
+                              .CategoryAxis(axis => axis
+                                  .Categories(Model.AbsentCategories)
+                              )
+
+                              .ValueAxis(axis => axis.Numeric()
+                                  .Labels(labels => labels.Format("{0:N0}"))
+        // .MajorUnit(50)
+                              )
+                              .Tooltip(tooltip => tooltip
+                                  .Visible(true)
+                                  .Shared(true)
+                                  .Format("{0:N0}")
+                              )
+                        )
+                    </div>
+                </div>
+
+            </div>
+            <br />
+            <div class="row">
+                <div class="col-sm-8 col-lg-4">
+                    <div class="demo-section k-content wide">
+                        @(Html.Kendo().Chart<HrDashboardViewModel>()
+                              .Name("chart10")
+.Title("Termination")
+                              .Legend(legend => legend
+                                  .Position(ChartLegendPosition.Top)
+                              )
+
+                              .Series(series =>
+                              {
+                                  foreach (var def in Model.HrTerminationData)
+                                  {
+                                      series.Column(def.Data).Name(def.Name);
+                                  }
+                              })
+                              .CategoryAxis(axis => axis
+                                  .Categories(Model.TerminationCategories)
+                              )
+
+                              .ValueAxis(axis => axis.Numeric()
+                                  .Labels(labels => labels.Format("{0:N0}"))
+        // .MajorUnit(50)
+                              )
+                              .Tooltip(tooltip => tooltip
+                                  .Visible(true)
+                                  .Shared(true)
+                                  .Format("{0:N0}")
+                              )
+                        )
+                    </div>
+                </div>
+                <div class="col-sm-8 col-lg-4">
+                    <div class="demo-section k-content wide">
+                        @(Html.Kendo().Chart<HrDashboardViewModel>()
+                              .Name("chart11")
+.Title("Accident Record")
+                              .Legend(legend => legend
+                                  .Position(ChartLegendPosition.Top)
+                              )
+              .SeriesDefaults(seriesDefaults =>
+seriesDefaults.Line().Style(ChartLineStyle.Smooth)
+)
+                              .Series(series =>
+                              {
+                                  foreach (var def in Model.HrAccidentRecordData)
+                                  {
+                                      series.Column(def.Data).Name(def.Name);
+                                  }
+                              })
+                              .CategoryAxis(axis => axis
+                                  .Categories(Model.AccidentRecordCategories)
+                              )
+
+                              .ValueAxis(axis => axis.Numeric()
+                                  .Labels(labels => labels.Format("{0:N0}"))
+        // .MajorUnit(50)
+                              )
+                              .Tooltip(tooltip => tooltip
+                                  .Visible(true)
+                                  .Shared(true)
+                                  .Format("{0:N0}")
+                              )
+                        )
+                    </div>
+                </div>
+
+                <div class="col-sm-8 col-lg-4">
+                    <div class="demo-section k-content wide">
+                        @(Html.Kendo().Chart<HrDashboardViewModel>()
+                              .Name("chart12")
+.Title("Vacancy")
+                              .Legend(legend => legend
+                                  .Position(ChartLegendPosition.Top)
+                              )
+              .SeriesDefaults(seriesDefaults =>
+seriesDefaults.Line().Style(ChartLineStyle.Smooth)
+)
+                              .Series(series =>
+                              {
+                                  foreach (var def in Model.HrVacancyData)
+                                  {
+                                      series.Column(def.Data).Name(def.Name);
+                                  }
+                              })
+                              .CategoryAxis(axis => axis
+                                  .Categories(Model.VacancyCategories)
+                              )
+
+                              .ValueAxis(axis => axis.Numeric()
+                                  .Labels(labels => labels.Format("{0:N0}"))
+        // .MajorUnit(50)
+                              )
+                              .Tooltip(tooltip => tooltip
+                                  .Visible(true)
+                                  .Shared(true)
+                                  .Format("{0:N0}")
+                              )
+                        )
+                    </div>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+
+}
+
+
+
+<script>
+    $(document).on('click', '.panel-heading span.clickable', function (e) {
+        var $this = $(this);
+        if (!$this.hasClass('panel-collapsed')) {
+            $this.parents('.panel').find('.panel-body').slideUp();
+            $this.addClass('panel-collapsed');
+            $this.find('i').removeClass('glyphicon-chevron-up').addClass('glyphicon-chevron-down');
+        } else {
+            $this.parents('.panel').find('.panel-body').slideDown();
+            $this.removeClass('panel-collapsed');
+            $this.find('i').removeClass('glyphicon-chevron-down').addClass('glyphicon-chevron-up');
+        }
+    })
+</script>
+

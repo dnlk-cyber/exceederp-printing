@@ -1,0 +1,12 @@
+﻿@(Html.Kendo().DropDownListFor(m => m)
+                          .AutoBind(false)
+                          .OptionLabel("Select SR No...")
+                              .DataTextField("Remark")
+                                   .Filter("contains")
+                          .DataValueField("StoreRequisitionID")
+                          .DataSource(dataSource =>
+                          {
+                              dataSource.Read(read => read.Action("GetStoreRequisitionIdTransfer", "DataProvider"))
+                                  .ServerFiltering(false);
+                          }))
+@Html.ValidationMessageFor(m =>m)

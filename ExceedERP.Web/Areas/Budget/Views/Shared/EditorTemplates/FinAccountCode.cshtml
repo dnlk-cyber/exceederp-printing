@@ -1,0 +1,8 @@
+﻿@model object
+
+<div class="popupwrapper">
+
+    @Html.Kendo().TextBoxFor(model => model).HtmlAttributes(new { disabled = "disabled" }) <img src="~/Content/Images/search.png" onclick="SelectBudgetAccCode(this, BudgetCategory)" />
+</div>
+
+

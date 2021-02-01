@@ -1,0 +1,84 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Setting | Construction Item Categories</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.ConstructionItemCategory>()
+        .Name("CategoryGrid")
+        .Columns(columns =>
+        {
+            columns.ForeignKey(c => c.ItemCategoryCode, (IEnumerable)ViewData["Categories"], "ItemCategoryCode", "Name").EditorTemplateName("ItemCategory").Width(300);
+            columns.Bound(c => c.Remark);
+            columns.Bound(c => c.IsFuel).Width(80).ClientTemplate(
+                    "<input type='checkbox' value='#= ConstructionItemCategoryId #' " +
+                        "# if (IsFuel) { #" +
+                            "checked='checked'" +
+                        "# } #" +
+                    "/>"
+                );
+            columns.Bound(c => c.IsReinforcementBar).Width(120).Title("Is Deformed Bar").ClientTemplate(
+                    "<input type='checkbox' value='#= ConstructionItemCategoryId #' " +
+                        "# if (IsReinforcementBar) { #" +
+                            "checked='checked'" +
+                        "# } #" +
+                    "/>"
+                );
+
+            columns.Command(command =>
+            {
+                command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                command.Destroy().Text(Resources.ActionButton_Cancel);
+            }).Width(200);
+        })
+        .ToolBar(toolbar =>
+        {
+            toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+        })
+        .Editable(editable => editable.Mode(GridEditMode.InLine))
+        .Selectable(selectable =>
+        {
+            selectable.Mode(GridSelectionMode.Single);
+            selectable.Type(GridSelectionType.Row);
+        })
+        .Scrollable(h => h.Height(700))
+        .Sortable(sortable =>
+        {
+            sortable.SortMode(GridSortMode.SingleColumn);
+        })
+        .Filterable()
+        .Pageable(pageable => pageable
+                        .Input(true)
+                        .Numeric(false)
+                        .Refresh(true)
+                        .PageSizes(true)
+                        .ButtonCount(5))
+        .DataSource(dataSource => dataSource
+        .Ajax()
+        .PageSize(20)
+        .Events(events =>
+        {
+            events.Error("error_handler(\"CategoryGrid\")");
+            events.RequestStart("onRequestStart(\"CategoryGrid\")");
+            events.RequestEnd("onRequestEnd(\"CategoryGrid\")");
+
+        })
+        .Model(model => model.Id(p => p.ConstructionItemCategoryId))
+        .Read(read => read.Action("ConstructionItemCategory_Read", "ConstructionItemCategory"))
+        .Create(create => create.Action("ConstructionItemCategory_Create", "ConstructionItemCategory"))
+        .Update(update => update.Action("ConstructionItemCategory_Update", "ConstructionItemCategory"))
+        .Destroy(destroy => destroy.Action("ConstructionItemCategory_Destroy", "ConstructionItemCategory"))
+          )
+)
+
+
+
+
+<script>
+    
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+</script>

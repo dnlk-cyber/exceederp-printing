@@ -1,0 +1,15 @@
+﻿@(Html.Kendo().DropDownListFor(m => m)
+                      .AutoBind(false)
+                      .OptionLabel("--Select Employees--")
+                      .DataTextField("FullNameaEnglish")
+                      .DataValueField("EmployeeId")
+                        .Filter("contains")
+                            .ValuePrimitive(true)
+                      .DataSource(dataSource =>
+                      {
+                          dataSource.Read(read => read.Action("GetActiveEmployeesFromGroup", "InfoDeskDataProvider", new { area = "InfoDesk" }).Data("filterEmployee"))
+                                    .ServerFiltering(false);
+                      })
+
+)
+@Html.ValidationMessageFor(m => m)

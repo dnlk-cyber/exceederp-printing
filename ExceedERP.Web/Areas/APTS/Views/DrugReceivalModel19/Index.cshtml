@@ -1,0 +1,388 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.APTS
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Drug Receival Form</legend>
+@(Html.Kendo().Grid<DrugReceivalModel19>()
+                  .Name("DrugReceivalModel19grid")
+              .Columns(columns =>
+              {
+                  //columns.ForeignKey(c => c.DrugListsId, (IEnumerable)ViewData["druglists"], "DrugListsId", "InternalDrugCode").Width(200).Title("Internal Code");
+                  columns.Bound(c => c.DrugReceivalModel19Id).Visible(false);
+                  columns.ForeignKey(c => c.DrugStoreId, (IEnumerable)ViewData["Store"], "DrugStoreId", "NameWithCode").EditorTemplateName("DrugStores").Width(200).Title("Store Code");
+
+                  columns.Bound(c => c.ReceivingDateAmh).EditorTemplateName("Calander").Width(150).Title("Receive Date");
+                  //columns.Bound(c => c.Remark).Width(200);
+                  columns.Command(command =>
+                  {
+                      command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                      command.Destroy().Text(Resources.ActionButton_Cancel);
+                  }).Width(200);
+              })
+              .ToolBar(toolbar =>
+              {
+                  toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+              })
+              .Editable(editable => editable.Mode(GridEditMode.InLine))
+                 .Events(events => events.DetailExpand("onDetailExpandUser"))
+                
+                .Scrollable(h => h.Height(500))
+
+
+                                 .Groupable()
+                                          .Sortable(sortable =>
+                                          {
+                                              sortable.SortMode(GridSortMode.SingleColumn);
+                                          })
+                              .Filterable()
+                               .Events(x =>
+                               {
+                                   x.Edit("GetDate");
+                                   x.Save("GetDate");
+                               })
+                                 .Pageable(pageable => pageable
+                                                            .Input(true)
+                                                            .Numeric(false)
+                                                            .Refresh(true)
+                                                            .PageSizes(true)
+                                                            .ButtonCount(5))
+              .DataSource(dataSource => dataSource
+                  .Ajax()
+                        .Sort(sort => sort.Add("ReceivingDate").Descending())
+                         .Events(events =>
+                         {
+                             events.Error("error_handler(\"DrugReceivalModel19grid\")");
+                             events.RequestStart("onRequestStart(\"DrugReceivalModel19grid\")");
+                             events.RequestEnd("onRequestEnd(\"DrugReceivalModel19grid\")");
+                         }
+                      )
+
+                      .Model(model =>
+                      {
+                          model.Id(p => p.DrugReceivalModel19Id);
+                      })
+                  .Read(read => read.Action("DrugReceivalModel19_Read", "DrugReceivalModel19"))
+                  .Create(create => create.Action("DrugReceivalModel19_Create", "DrugReceivalModel19"))
+                  .Update(update => update.Action("DrugReceivalModel19_Update", "DrugReceivalModel19"))
+                  .Destroy(destroy => destroy.Action("DrugReceivalModel19_Destroy", "DrugReceivalModel19"))
+              ).ClientDetailTemplateId("templates")
+)
+
+<script id="templates" type="text/Kendo">
+    @(Html.Kendo().TabStrip()
+                          .SelectedIndex(0)
+                          .Name("tabStrip_#=DrugReceivalModel19Id#").Items(items =>
+                          {
+                              items.Add().Text("Detail").Content(
+                                @<text>
+
+                                    @*# if (!IsOnlineApproved&&!IsSendForApproval)
+                                        {#*@
+                                    <a onclick='return sendForApproval("#=DrugReceivalModel19Id#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                                    <br />
+                                    @*# } #*@
+
+                                    @*# if (IsOnlineApproved)
+                                        {#*@
+                                    @*<a href='@Url.Action("Goodreceive", "InventoryPrint")/#=GoodReceiveId#' title="Print"><i class="fa fa-print fa-2x"></i></a>*@
+                                    <br />
+                                    @*# } #*@
+                                    <div>
+                                        <hr>
+                                        <dl class="dl-horizontal">
+                                            <dt>
+                                                Store
+                                            </dt>
+                                            <dd>
+                                                #= StoreCode #
+
+                                            </dd>
+                                            <dt>
+                                                @*Supplier Name*@
+                                            </dt>
+                                            <dd>
+                                                @*#= SupplierName #*@
+                                            </dd>
+                                            <dt>
+                                                @*Supplier Invoice No.*@
+                                            </dt>
+                                            <dd>
+                                                @*#= SupplierInvoiceNo #*@
+
+                                            </dd>
+                                            <dt>
+                                                Receive Date
+                                            </dt>
+                                            <dd>
+
+                                                #=kendo.toString(kendo.parseDate(ReceivingDate), 'dd/MM/yyyy') #
+
+                                            </dd>
+                                            <dt>
+                                                Status
+                                            </dt>
+                                            <dd>
+                                                #= Status #
+
+                                            </dd>
+                                            <dt>
+                                                CreatedOn
+                                            </dt>
+                                            <dd>
+                                                #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+
+                                            </dd>
+                                            <dt>
+                                                CreatedBy
+                                            </dt>
+                                            <dd>
+                                                #=CreatedBy #
+
+                                            </dd>
+                                            <dt>
+                                                Modified By
+                                            </dt>
+                                            <dd>
+                                                #= ModifiedBy #s
+                                            </dd>
+                                            <dt>
+                                                Modified Date
+                                            </dt>
+                                            <dd>
+                                                #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+                                            </dd>
+                                        </dl>
+
+                                    </div>
+
+                                    # if (IsOnlineApproved&&!IsVoid)
+                                        {#
+
+                                    <a onclick='return voidRecord("#=DrugReceivalModel19Id#")' href='\#' title='Void Record'><i class='fa  fa-bolt fa-2x' style='color:red'></i></a>
+
+                                    @*/**/*@
+                                        # } #
+
+
+                                </text>
+                                                );
+
+                                      items.Add().Text("Drug Receival Detail").Content(
+                    @<text>
+
+                        @(Html.Kendo().Grid<DrugReceivalDetail>()
+                                                                    .Name("DrugReceivalDetail_#=DrugReceivalModel19Id#")
+                                                    .Columns(columns =>
+                                                    {
+                                                                columns.Bound(c => c.DrugReceivalModel19Id).Visible(false);
+                                                                columns.ForeignKey(c => c.DrugListsId, (IEnumerable)ViewData["druglists"], "DrugListsId", "Description").EditorTemplateName("DrugList").Width(150).Title("Drug Name");
+                                                                columns.ForeignKey(c => c.DrugUnitId, (IEnumerable)ViewData["Unit"], "DrugUnitId", "UoMName").EditorTemplateName("Unit").Width(120).Title("Unit");
+
+                                                                columns.Bound(c => c.Balance).Width(100);
+                                                                columns.Bound(c => c.QtyReceived).Width(120);
+                                                                columns.Bound(c => c.UnitCost).Width(100);
+                                                                columns.Bound(c => c.TotalCost).Width(100);
+                                                                columns.Bound(c => c.ExpiryDateAmh).EditorTemplateName("Calander").Width(150).Title("Expire Date");
+
+                                                                columns.Command(command =>
+                                                    {
+
+                                                                            command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+
+                                                                            command.Destroy().Text(Resources.ActionButton_Cancel);
+
+                                                                        }).Width(200);
+                                                            })
+                                                    .ToolBar(toolbar =>
+                                                    {
+
+                                                                toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                                                    //toolbar.Custom().Action("SendToDespensary", "PatientResult", new { id = "#=PatientResultId#" }).Text("Send For Despensary");
+
+                                                })
+                                                    .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                    .Scrollable(h => h.Height(300))
+                                                     .Events(x =>
+                       {
+                                   x.Edit("GetDate");
+                                   x.Save("GetDate");
+                               })
+                                                    .DataSource(dataSource => dataSource
+                                                        .Ajax()
+                                                                //.Events().Update()
+                                                                .Events(events =>
+                                                                {
+                                                                            events.Error("error_handler(\"DrugReceivalDetail_#=DrugReceivalModel19Id#\")");
+                                                                            events.RequestStart("onRequestStart(\"DrugReceivalDetail_#=DrugReceivalModel19Id#\")");
+                                                                            events.RequestEnd("onRequestEnd(\"DrugReceivalDetail_#=DrugReceivalModel19Id#\")");
+                                                                        })
+
+                                                        .Model(model =>
+                                                        {
+                                                                    model.Id(p => p.DrugReceivalDetailId);
+                                                                    model.Field(p => p.Balance).Editable(false);
+                                                                    model.Field(p => p.TotalCost).Editable(false);
+                                                                })
+
+                                                                .Read(read => read.Action("DrugReceivalDetail_Read", "DrugReceivalDetail", new { id = "#=DrugReceivalModel19Id#" }))
+                                                                .Create(create => create.Action("DrugReceivalDetail_Create", "DrugReceivalDetail", new { id = "#=DrugReceivalModel19Id#" }))
+                                                        .Update(update => update.Action("DrugReceivalDetail_Update", "DrugReceivalDetail"))
+                                                        .Destroy(destroy => destroy.Action("DrugReceivalDetail_Destroy", "DrugReceivalDetail"))
+                                                    ).ToClientTemplate()
+                        )
+
+                    </text>
+        );
+                              items.Add().Text("Validation").Content(
+            @<text>
+                @(Html.Kendo().Grid<APTSValidation>()
+                  .Name("APTSValidation_#=DrugReceivalModel19Id#")
+                  .Columns(columns =>
+                  {
+                      columns.Bound(c => c.Status).Width(170).EditorTemplateName("ValidationStatus");
+                      columns.Bound(c => c.Remark).Width(170);
+                      columns.Command(command =>
+                      {
+                          command.Edit();
+                          //command.Destroy();
+                      });
+                  })
+                .ToolBar(toolbar =>
+                {
+                    toolbar.Create();
+                })
+            .Editable(editable => editable.Mode(GridEditMode.InLine))
+            //.Events(e =>
+            //    {
+            //        e.DataBound("onDataBound");
+            //    })
+            .Scrollable()
+            //.Events(x => x.DataBound("onDataBoundFisrtValidation"))
+            .DataSource(dataSource => dataSource
+                .Ajax()
+                        .Events(ev => ev
+                        .Error("error_handler(\"APTSValidation_#=DrugReceivalModel19Id#\")")
+                        .RequestStart("onRequestStart(\"APTSValidation_#=DrugReceivalModel19Id#\")")
+                        .RequestEnd("onRequestEnd(\"APTSValidation_#=DrugReceivalModel19Id#\")"))
+                       .Model(model => model.Id(p => p.APTSValidationId))
+                      .Read(read => read.Action("DrugReceivalValidation_Read", "DrugReceivalValidation", new { id = "#=DrugReceivalModel19Id#" }))
+                      .Create(create => create.Action("DrugReceivalValidation_Create", "DrugReceivalValidation", new { id = "#=DrugReceivalModel19Id#" }))
+          .Update(update => update.Action("GoodReceiveValidations_Update", "DrugReceivalValidation"))
+          .Destroy(destroy => destroy.Action("GoodReceiveValidations_Destroy", "DrugReceivalValidation"))
+          ).ToClientTemplate()
+                )
+
+            </text>
+        );
+                      }).ToClientTemplate()
+
+    )
+
+ 
+</script>
+
+<script>
+
+
+</script>
+
+<script>
+    function GetDate() {
+
+
+        $("#ReceivingDateAmh").trigger("change");
+        $("#ExpiryDateAmh").trigger("change");
+    }
+
+</script>
+<script>
+    
+    function voidRecord(id) {
+        var recordStatus = "";
+        var conf = confirm("Are you sure you want to void this record number: " + id + " ?");
+        if (conf === true) {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("Void", "GoodReceive", new { area = "Inventory" })',
+                data: { id: id },
+                success: function (result) {
+                    // toastr.warnning(result.Message);
+                    alert(result.Message);
+                    recordStatus = result.Status;
+                    location.reload(true);
+                }, //end succ
+                error: function (result) {
+                    alert(result);
+                }
+            });
+        }
+    }
+
+    function sendForApproval(id) {
+        var recordStatus = "";
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("SendForApproval", "DrugReceivalValidation"@*, new { area = "Inventory" }*@)',
+            data: { id: id },
+            success: function (result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                recordStatus = result.Status;
+                location.reload(true);
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+
+</script>
+
+<script>
+    function onDetailExpandUser(e) {
+        var masterRow = e.masterRow;
+
+        var masterGrid = $("#DrugReceivalModel19grid").data("kendoGrid");
+
+        var masterDataItem = masterGrid.dataItem(masterRow);
+
+        masterId = masterDataItem.DrugReceivalModel19Id;
+        var gridName = "#RequestesStatusgrid_" + masterId;
+        $.ajax({
+            url: '@Url.Action("CheckStatus", "DrugReceivalModel19")',
+
+            data: { masterId: masterId },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                r = result;
+                if (r == "true") {
+                    $(gridName).find(".k-toolbar").hide(); //hide toolbar
+                    $(".k-grid-top", gridName).hide();
+                }
+                else if (r == "approved") {
+                    $(gridName).find(".k-toolbar").hide(); //hide toolbar
+                    $(".k-grid-top", gridName).hide();
+                    $(".k-grid-edit", gridName).hide();
+                    $(".k-grid-delete", gridName).hide();
+                }
+                else if (r == "Dapproved") {
+                    $(gridName).find(".k-toolbar").hide(); //hide toolbar
+                    $(".k-grid-top", gridName).hide();
+                    $(".k-grid-edit", gridName).hide();
+                    $(".k-grid-delete", gridName).hide();
+                }
+                else {
+                    $(gridName).find(".k-toolbar").show(); //hide toolbar
+                    $(".k-grid-top", gridName).show();
+                }
+
+            }
+
+        });
+
+    }
+</script>

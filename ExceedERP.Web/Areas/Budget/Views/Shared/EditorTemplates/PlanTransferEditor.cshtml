@@ -1,0 +1,14 @@
+﻿
+@(Html.Kendo().DropDownListFor(model => model).HtmlAttributes(new { @class = "form-control" })
+                                                .DataTextField("BudgetYear")
+                                                        .DataValueField("BudgetYear").OptionLabel("Select ").Filter(FilterType.Contains)
+                                                        .DataSource(d =>
+                    {
+                        d.Read(r =>
+                        {
+                            r.Action("PlanTransferDDBind", "BudgetDataProvider").Data("filterPlan");
+                        })
+                      .ServerFiltering(false);
+                    })
+                       .AutoBind(false) 
+                       .CascadeFrom("FromBudgetYear"))

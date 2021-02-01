@@ -1,0 +1,177 @@
+﻿@model ExceedERP.Core.Domain.Budget.BudgetPlan
+
+<script>
+
+    function onDetailExpand(e) {
+        var masterRow = e.masterRow;
+        //var masterGrid = $("#grid").data("kendoGrid");
+        var masterGrid = $("#gridCategory").data("kendoGrid");
+
+        var masterDataItem = masterGrid.dataItem(masterRow);
+        masterId = masterDataItem.PlanCategoryID;
+        console.error("master "+masterId);
+     
+    }
+</script>
+
+<legend> Budget Revision </legend>
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Budget.PlanCategory>()
+          .Name("gridCategory")
+      .Columns(columns =>
+      {
+
+          columns.Bound(c => c.Name).EditorTemplateName("CategoryEditor").Width(150);
+
+          columns.ForeignKey(c => c.GlFiscalYearId, (System.Collections.IEnumerable)ViewData["FiscalYear"], "GlFiscalYearId", "Name").Title("Fiscal Year").EditorTemplateName("YearTemplate").Width(120);
+          columns.Bound(c => c.GrandTotal).Format("{0:N0}").Width(120);
+
+       })
+                             .Events(ev =>
+                                                             {
+                                                                 ev.DetailExpand("onDetailExpand");
+                                                             })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+               .HtmlAttributes(new { style = "height: 520px;" })
+                                                          .Pageable(pageable => pageable
+                                                                            .Input(true)
+                                                                            .Numeric(false)
+                                                                            .Refresh(true)
+                                                                            .PageSizes(true)
+                                                                            .ButtonCount(5))
+
+                                                                .Scrollable()
+                                                                .Sortable()
+                                                                .Filterable()
+                                                                                                .Scrollable(h => h.Height(500))
+                  .DataSource(dataSource => dataSource
+          .Ajax() 
+                  .Model(model =>
+                  {
+                      model.Id(p => p.PlanCategoryID);
+
+                      })
+                      .Read(read => read.Action("RevisionCategory_Read", "BudgetRevision")) 
+          )
+               .ClientDetailTemplateId("template")
+)
+
+
+
+
+
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                  .Name("tabstripMain_#=PlanCategoryID#")
+          .SelectedIndex(0)
+          .Items(items =>
+          {
+              items.Add().Text("").Content(
+                @<text>
+
+                    <legend>   Budget Plan</legend>
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Budget.BudgetPlan>()
+                   .Name("BudgetRevisiongrid_#=PlanCategoryID#")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.AccountCode).EditorTemplateName("AccountCode").Width(220);
+          columns.Bound(c => c.AccountDesc);
+
+
+          columns.ForeignKey(c => c.GLChartOfAccountCostCenterId, (System.Collections.IEnumerable)ViewData["MainCompanyStructures"], "Values", "Description").EditorTemplateName("WorkUnitEditor");
+
+
+         // columns.Bound(c => c.Unit).EditorTemplateName("UnitEditorTemplate");
+          columns.Bound(c => c.CurrentYearlyBudget).Format("{0:N0}");
+          columns.Bound(c => c.TotalYearlyBudget).Format("{0:N0}");
+
+
+         // columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+         .HtmlAttributes(new { style = "height: 520px;" })
+                             .ClientDetailTemplateId("lineItemtemplate")
+           .DataSource(dataSource => dataSource
+          .Ajax() 
+              .Model(model =>
+              {
+                  model.Id(p => p.BudgetPlanID);
+                  model.Field(p => p.CurrentYearlyBudget).Editable(false);
+              })                              .Read(read => read.Action("BudgetPlan_Read", "BudgetPlan", new { RCategoryId = "#=PlanCategoryID#" }))
+                                      .Create(create => create.Action("BudgetPlan_Create", "BudgetPlan", new { CCategoryId = "#=PlanCategoryID#" }))
+              .Update(update => update.Action("BudgetPlan_Update", "BudgetPlan"))
+              .Destroy(destroy => destroy.Action("BudgetPlan_Destroy", "BudgetPlan"))
+            ).ToClientTemplate()
+                    )
+
+                </text>
+
+                           );
+                }).ToClientTemplate()
+
+    )
+</script>
+
+
+
+<script id="lineItemtemplate" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+          .Name("tabstripline_#=BudgetPlanID#")
+          .SelectedIndex(0)
+          .Items(items =>
+          {
+              items.Add().Text("Monthly Plan").Content(
+                @<text>
+
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Budget.BudgetPlanMonthly>()
+                  .Name("BudgetPlanMonthlygrid_#=BudgetPlanID#")
+      .Columns(columns =>
+      {
+          columns.ForeignKey(c => c.GLPeriodId, (System.Collections.IEnumerable)ViewData["GLPeriods"], "GLPeriodId", "Name").EditorTemplateName("BranchEditor").Width(120);
+         
+          columns.Bound(c => c.MonthlyBudget).Format("{0:N0}");
+          columns.Bound(c => c.AllocatedBudget).Format("{0:N0}");
+          columns.Bound(c => c.TransferedBudget).Format("{0:N0}");
+          columns.Bound(c => c.RevisedBudget).EditorTemplateName("NumEditor").Format("{0:N0}");
+          columns.Bound(c => c.CurrentBudget).Format("{0:N0}");
+          columns.Command(command => { command.Edit();  }).Width(180);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                      .Pageable(pageable => pageable
+                                                            .Input(true)
+                                                            .Numeric(false)
+                                                            .Refresh(true)
+                                                            .ButtonCount(5))
+
+                                                .Scrollable()
+                                                .Sortable()
+                                                .Filterable()
+                                                .Groupable()
+                                                .Scrollable(h => h.Height(100))
+               .HtmlAttributes(new { style = "height: 520px;" })
+       .DataSource(dataSource => dataSource
+          .Ajax() 
+              .Model(model =>
+              {
+                  model.Id(p => p.BudgetPlanMonthlyID);
+                  model.Field(p => p.TransferedBudget).Editable(false);
+                  model.Field(p => p.AllocatedBudget).Editable(false);
+                  model.Field(p => p.CurrentBudget).Editable(false);
+                  model.Field(p => p.MonthlyBudget).Editable(false);
+                  model.Field(p => p.GLPeriodId).Editable(false);
+              }).Events(ev => ev
+                                                    .Error("error_handler(\"BudgetPlanMonthlygrid_#=BudgetPlanID#\")")
+                                                    .RequestStart("onRequestStart(\"BudgetPlanMonthlygrid_#=BudgetPlanID#\")")
+                                                    .RequestEnd("onRequestEnd(\"BudgetPlanMonthlygrid_#=BudgetPlanID#\")")).Read(read => read.Action("BudgetPlanMonthly_Read", "BudgetPlanMonthly", new { Rid = "#=BudgetPlanID#" }))
+                              .Create(create => create.Action("BudgetPlanMonthly_Create", "BudgetPlanMonthly", new { Cid = "#=BudgetPlanID#" }))
+              .Update(update => update.Action("BudgetPlanMonthly_Update", "BudgetPlanMonthly"))
+              .Destroy(destroy => destroy.Action("BudgetPlanMonthly_Destroy", "BudgetPlanMonthly"))
+                            ).ToClientTemplate()
+                    )
+                </text>
+    );
+          }).ToClientTemplate())
+</script>
+
+ 

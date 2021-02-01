@@ -1,0 +1,15 @@
+﻿@(Html.Kendo().DropDownListFor(m => m)
+      .ValuePrimitive(true)
+      .OptionLabel("Select Direct Payment")
+      .DataTextField("Name")
+      .DataValueField("Code")
+      .Filter("contains")
+      .DataSource(dataSource =>
+      {
+          dataSource.Read(read => read.Action("GetDirectPaymentForSettlement", "FinanceDataProvider", new { area = "Finance" }))
+              .ServerFiltering(true);
+      })
+         
+                             
+      )
+@Html.ValidationMessageFor(m => m)

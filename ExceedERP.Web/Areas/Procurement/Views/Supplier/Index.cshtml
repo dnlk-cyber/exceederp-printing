@@ -1,0 +1,1142 @@
+﻿@using ExceedERP.Core.Domain.Procurement.Supplier
+<legend>Suppliers</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Procurement.Supplier.ProcurementSupplier>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Category).Width(200);
+          columns.Bound(c => c.SupplierId).Width(100);
+          columns.Bound(c => c.Name).Width(200);
+           columns.Bound(c => c.AccountCode).EditorTemplateName("AccountCode").Width(120);
+          columns.Bound(c => c.TradeLicense).Width(130);
+          columns.Bound(c => c.TIN).Width(100);
+          columns.Bound(c => c.Telephone).Title("Phone").Width(90);
+          columns.Bound(c => c.IsForShortList).Title("Short List ?").Width(100).ClientTemplate(
+              "<input type='checkbox' disabled = 'true' value='#= IsForShortList#' " +
+              "# if (IsForShortList) { #" +
+              "checked='checked'" +
+              "# } #" +
+              "/>"
+              );
+          columns.Bound(c => c.IsActive).Title("Is Active ?").Width(100).ClientTemplate(
+              "<input type='checkbox' disabled = 'true' value='#= IsActive#' " +
+              "# if (IsActive) { #" +
+              "checked='checked'" +
+              "# } #" +
+              "/>"
+              );
+          
+         
+          //columns.Bound(c => c.Remark).Width(120);
+          //columns.Bound(c => c.Rank).Width(150);
+          columns.Bound(c => c.OrgBranchName).Width(200).Hidden(true);
+          columns.Bound(c => c.DateCreated).Width(200).Format("{0:dd/MM/yyyy}").Hidden(true);
+          columns.Bound(c => c.LastModified).Width(200).Format("{0:dd/MM/yyyy}").Hidden(true);
+          columns.Bound(c => c.CreatedBy).Width(200).Hidden(true);
+          columns.Bound(c => c.ModifiedBy).Width(200).Hidden(true);
+        
+          columns.Command(command =>
+          {
+              command.Edit();// command.Destroy();
+              command.Custom("Short List").Click("Shortlist");
+          }).Width(300);
+      })
+      .HtmlAttributes(new { style = "height: 550px;" })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create();
+          // toolbar.Excel();
+          //toolbar.Pdf();
+          // toolbar.Custom().Name("BlackList").Action("index", "ProcurementSupplier", new { id = bool.TrueString }).HtmlAttributes(new { @onclick = "reloadblacklist()", @class = "btn .btn-primary" });
+      })
+      .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("ProcurementSupplier").Window(w => w.Title("Procurement Supplier")).Window(w => w.HtmlAttributes(new { @style = "width:1000px;" })))
+      .HtmlAttributes(new { style = "height: 550px;" })
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(20))
+      .Scrollable()
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Filterable()
+      .Groupable()
+      .ClientDetailTemplateId("templates")
+      .Groupable().Events(ev => ev.DetailExpand("detailExpand"))
+      .Scrollable(h => h.Height(500))
+      .Events(x => x.DataBound("onDataBoundMaster"))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Sort(sort => sort.Add("ProcurementSupplierID").Descending()) 
+          .PageSize(20)
+          .Model(
+              model =>
+              {
+                  model.Id(p => p.ProcurementSupplierID);
+                  model.Field(p => p.OrgBranchName).Editable(false);
+                  model.Field(p => p.CreatedBy).Editable(false);
+                  model.Field(p => p.ModifiedBy).Editable(false);
+                  model.Field(p => p.LastModified).Editable(false);
+                  model.Field(p => p.Rank).Editable(false);
+                  model.Field(p => p.DateCreated).Editable(false);
+              })
+          .Events(ev => ev
+              .Error("error_handler(\"grid\")")
+              .RequestStart("onRequestStart(\"grid\")")
+              .RequestEnd("onRequestEnd(\"grid\")"))
+          .Read(read => read.Action("ProcurementSuppliers_Read", "Supplier", new { id = bool.FalseString }))
+          .Create(create => create.Action("ProcurementSuppliers_Create", "Supplier"))
+          .Update(update => update.Action("ProcurementSuppliers_Update", "Supplier"))
+          .Destroy(destroy => destroy.Action("ProcurementSuppliers_Destroy", "Supplier"))
+      ))
+
+
+<script id="templates" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+          .Name("tabStrip#=ProcurementSupplierID#")
+          .SelectedIndex(0)
+          .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+          .Items(items =>
+          {
+              items.Add().Text("Supplier Detail").Content(@<text>
+
+                        
+                        <div>
+                            <hr>
+                            <dl class="dl-horizontal">
+                                
+                                <dt>
+                                    Address
+                                </dt>
+                                <dd>
+                                    #=Address #
+
+                                </dd>
+                                <dt>
+                                    Telephone
+                                </dt>
+                                <dd>
+                                    #= Telephone #
+                                </dd>
+                                <dt>
+                                    Fax
+                                </dt>
+                                <dd>
+                                    #= Fax #
+                                </dd>
+                                <dt>
+                                    Email
+                                </dt>
+                                <dd>
+                                    #=Email #
+                                </dd>
+                                
+                                <dt>
+                                    Minute No
+                                </dt>
+                                <dd>
+                                    #= MinuteNo #
+                                </dd>
+                                
+                                <dt>
+                                    Is Credit
+                                </dt>
+                                <dd>
+                                    
+                                    #if(IsCredit){#
+                                    <input type='checkbox' disabled='true' value='true' checked='checked' />
+                                    #}else{#
+                                    <input type='checkbox' disabled='true' value='false' />
+                                    #}#
+                                </dd>
+                                
+                                <dt>
+                                    Is BlackListed
+                                </dt>
+                                <dd>
+                                   
+                                    #if(IsBlackListed){#
+                                    <input type='checkbox' disabled='true' value='true' checked='checked' />
+                                    #}else{#
+                                    <input type='checkbox' disabled='true' value='false' />
+                                    #}#
+                                </dd>
+                                
+                                <dt>
+                                    Is Active
+                                </dt>
+                                <dd>
+                                    #if(IsActive){#
+                                    <input type='checkbox' disabled='true' value='true' checked='checked' />
+                                    #}else{#
+                                    <input type='checkbox' disabled='true' value='false' />
+                                    #}#
+                                </dd>
+                                
+                                <dt>
+                                    Is Short Listed
+                                </dt>
+                                <dd>
+                                    
+                                    #if(IsForShortList){#
+                                    <input type='checkbox' disabled='true' value='true' checked='checked' />
+                                    #}else{#
+                                    <input type='checkbox' disabled='true' value='false' />
+                                    #}#
+                                   
+                                </dd>
+
+                                <dt>
+                                    Created On
+                                </dt>
+                                <dd>
+                                    #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+
+                                </dd>
+                                <dt>
+                                    Created By
+                                </dt>
+                                <dd>
+                                    #= CreatedBy #
+                                </dd>
+                                <dt>
+                                    Modified By
+                                </dt>
+                                <dd>
+                                    #= ModifiedBy #
+                                </dd>
+                                <dt>
+                                    Modified Date
+                                </dt>
+                                <dd>
+                                    #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+                                </dd>
+                            </dl>
+                        </div>
+
+                    </text>
+                  );
+                    
+              items.Add().Text("Supplier Performance").Content(@<text>
+                        @(Html.Kendo().Grid<SupplierPerformance>()
+                              .Name("SupplierPerformance#=ProcurementSupplierID#")
+                              .Columns(columns =>
+                              {
+                                  columns.Bound(c => c.ProfurementRef).Width(130);
+                                  columns.Bound(c => c.Quality).Width(90);
+                                  columns.Bound(c => c.PlannedDeliveryPeriod).Width(160);
+                                  columns.Bound(c => c.ActualDeliveryPeriod).Width(180);
+                                  columns.Bound(c => c.Remark).Width(100);
+                                  columns.Bound(c => c.Status).Width(100);
+                                  columns.Bound(c => c.OrgBranchName).Width(100).Hidden(true);
+                                  columns.Bound(c => c.DateCreated).Width(150).Hidden(true);
+                                  columns.Bound(c => c.LastModified).Width(150).Hidden(true);
+                                  columns.Bound(c => c.CreatedBy).Width(100).Hidden(true);
+                                  columns.Bound(c => c.ModifiedBy).Width(100).Hidden(true);
+                                  columns.Command(command =>
+                                  {
+
+                                      command.Edit();
+                                      command.Destroy();
+
+                                  });
+                              })
+                              .ToolBar(toolbar =>
+                              {
+                                  toolbar.Create();
+                              })
+                              .Groupable().Events(ev => ev.DetailExpand("detailExpandDetail"))
+                              .Scrollable(h => h.Height(500))
+                              .Events(x => x.DataBound("onDataBoundMasterlDetail"))
+
+                              .Editable(editable => editable.Mode(GridEditMode.InLine))
+                              .HtmlAttributes(new { style = "height: 450px;" })
+                              .Pageable(pageable => pageable
+                                  .Input(true)
+                                  .Numeric(false)
+                                  .Refresh(true)
+                                  .PageSizes(true)
+                                  .ButtonCount(10))
+                              .Scrollable()
+                              .Sortable()
+                              .Filterable()
+                              .ClientDetailTemplateId("performancetemplates")
+                              .DataSource(dataSource => dataSource
+                                  .Ajax()
+                                        
+                                  .Model(
+                                      model =>
+                                      {
+                                          model.Id(p => p.SupplierPerformanceId);
+                                          model.Field(p => p.Status).Editable(false);
+                                          model.Field(p => p.OrgBranchName).Editable(false);
+                                          model.Field(p => p.CreatedBy).Editable(false);
+                                          model.Field(p => p.ModifiedBy).Editable(false);
+                                          model.Field(p => p.LastModified).Editable(false);
+                                          model.Field(p => p.DateCreated).Editable(false);
+                                      })
+                                  .Events(ev => ev
+                                      .Error("error_handler(\"SupplierPerformance#=ProcurementSupplierID#\")")
+                                      .RequestStart("onRequestStart(\"SupplierPerformance#=ProcurementSupplierID#\")")
+                                      .RequestEnd("onRequestEnd(\"SupplierPerformance#=ProcurementSupplierID#\")"))
+                                      
+                                  .Read(read => read.Action("SupplierPerformances_Read", "SupplierPerformance", new { id = "#=ProcurementSupplierID#" }))
+                                  .Create(create => create.Action("SupplierPerformances_Create", "SupplierPerformance", new { id = "#=ProcurementSupplierID#" }))
+                                  .Update(update => update.Action("SupplierPerformances_Update", "SupplierPerformance", new { id = "#=ProcurementSupplierID#" }))
+                                  .Destroy(destroy => destroy.Action("SupplierPerformances_Destroy", "SupplierPerformance"))
+                              )
+                              .Events(events => events.DataBound("onDataBoundLines"))
+                              .ToClientTemplate())
+                    </text>);
+
+              items.Add().Text("Black List").Content(
+                  @<text>
+                            @(Html.Kendo().Grid<SupplierBlackList>()
+                                  .Name("SupplierBlackList#=ProcurementSupplierID#")
+                                  .Columns(columns =>
+                                  {
+                                      columns.Bound(c => c.SupplierBlackListId).Hidden(true);
+                                      columns.Bound(c => c.Reason).Width(150);
+                                      columns.Bound(c => c.BlackListType).Width(140);
+                                      columns.Bound(c => c.DurationDays).Width(175);
+                                      columns.Bound(c => c.DateBlackListed).Width(150).Format("{0:dd/MM/yyyy}");
+                                      columns.Bound(c => c.DateBlackListedExpire).Width(150).Format("{0:dd/MM/yyyy}"); 
+                                      columns.Bound(c => c.Remark).Width(150);
+                                      columns.Bound(c => c.Status).Width(100);
+                                      columns.Bound(c => c.OrgBranchName).Width(100).Hidden(true);
+                                      columns.Bound(c => c.DateCreated).Width(150).Hidden(true);
+                                      columns.Bound(c => c.LastModified).Width(150).Hidden(true);
+                                      columns.Bound(c => c.CreatedBy).Width(100).Hidden(true);
+                                      columns.Bound(c => c.ModifiedBy).Width(100).Hidden(true);
+                                      columns.Command(command =>
+                                      {
+                                          command.Edit();
+
+                                      });
+
+                                  })
+                                  .ToolBar(toolbar =>
+                                  {
+                                      toolbar.Create();
+                                  })
+                                  .Groupable().Events(ev => ev.DetailExpand("detailExpandDetail"))
+                                  .Scrollable(h => h.Height(500))
+                                  .Events(x => x.DataBound("onDataBoundMasterlDetail"))
+
+                                  .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                  .HtmlAttributes(new { style = "height: 450px;" })
+                                  .Pageable(pageable => pageable
+                                      .Input(true)
+                                      .Numeric(false)
+                                      .Refresh(true)
+                                      .PageSizes(true)
+                                      .ButtonCount(5))
+                                  .Sortable(sortable =>
+                                  {
+                                      sortable.SortMode(GridSortMode.SingleColumn);
+                                  })
+                                  .Filterable()
+                                  .Scrollable()
+                                  .ClientDetailTemplateId("blacklisttemplates")
+                                  .DataSource(dataSource => dataSource
+                                      .Ajax()
+                                      .Model(
+                                          model =>
+                                          {
+                                              model.Id(p => p.SupplierBlackListId);
+                                              //model.Field(p => p.DateBlackListed).Editable(false);
+                                              // model.Field(p => p.DateBlackListedExpire).Editable(false);
+                                              model.Field(p => p.Status).Editable(false);
+                                              model.Field(p => p.OrgBranchName).Editable(false);
+                                              model.Field(p => p.CreatedBy).Editable(false);
+                                              model.Field(p => p.ModifiedBy).Editable(false);
+                                              model.Field(p => p.LastModified).Editable(false);
+                                              model.Field(p => p.DateCreated).Editable(false);
+                                          })
+                                      .Events(ev => ev
+                                          .Error("error_handler(\"SupplierBlackList#=ProcurementSupplierID#\")")
+                                          .RequestStart("onRequestStart(\"SupplierBlackList#=ProcurementSupplierID#\")")
+                                          .RequestEnd("onRequestEnd(\"SupplierBlackList#=ProcurementSupplierID#\")"))
+                                          
+                                      .Read(read => read.Action("SupplierBlackLists_Read", "SupplierBlackList", new { id = "#=ProcurementSupplierID#" }))
+                                      .Create(create => create.Action("SupplierBlackLists_Create", "SupplierBlackList", new { id = "#=ProcurementSupplierID#" }))
+                                      .Update(update => update.Action("SupplierBlackLists_Update", "SupplierBlackList", new { id = "#=ProcurementSupplierID#" }))
+                                      .Destroy(destroy => destroy.Action("SupplierBlackLists_Destroy", "SupplierBlackList"))
+                                  )
+                                  .ToClientTemplate())
+
+                        </text>);
+              items.Add().Text("Remove From Black List").Content(
+                  @<text>
+                            @(Html.Kendo().Grid<SupplierRemoveBlackList>()
+                                  .Name("SupplierRemoveBlackList#=ProcurementSupplierID#")
+                                  .Columns(columns =>
+                                  {
+                                      columns.Bound(c => c.SupplierRemoveBlackListId).Hidden(true);
+                                      columns.Bound(c => c.Description).Width(200);
+                                      columns.Bound(c => c.ClearedOn).Width(150).Format("{0:dd/MM/yyyy}");
+                                      columns.Bound(c => c.Remark).Width(150);
+                                      columns.Bound(c => c.Status).Width(100);
+                                      columns.Bound(c => c.OrgBranchName).Width(100).Hidden(true);
+                                      columns.Bound(c => c.DateCreated).Width(150).Hidden(true);
+                                      columns.Bound(c => c.LastModified).Width(150).Hidden(true);
+                                      columns.Bound(c => c.CreatedBy).Width(100).Hidden(true);
+                                      columns.Bound(c => c.ModifiedBy).Width(100).Hidden(true);
+                                      columns.Command(command =>
+                                      {
+                                          command.Edit();
+
+                                      });
+
+                                  })
+                                  .ToolBar(toolbar =>
+                                  {
+                                      toolbar.Create();
+                                  })
+                                  .Groupable().Events(ev => ev.DetailExpand("detailExpandDetail"))
+                                  .Scrollable(h => h.Height(500))
+                                  .Events(x => x.DataBound("onDataBoundMasterlDetail"))
+
+                                  .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                  .HtmlAttributes(new { style = "height: 450px;" })
+                                  .Pageable(pageable => pageable
+                                      .Input(true)
+                                      .Numeric(false)
+                                      .Refresh(true)
+                                      .PageSizes(true)
+                                      .ButtonCount(5))
+                                  .Sortable(sortable =>
+                                  {
+                                      sortable.SortMode(GridSortMode.SingleColumn);
+                                  })
+                                  .Filterable()
+                                  .Scrollable()
+                                  .ClientDetailTemplateId("removeblacklisttemplates")
+                                  .DataSource(dataSource => dataSource
+                                      .Ajax()
+                                      .Model(
+                                          model =>
+                                          {
+                                              model.Id(p => p.SupplierRemoveBlackListId);
+                                              model.Field(p => p.Status).Editable(false);
+                                              model.Field(p => p.OrgBranchName).Editable(false);
+                                              model.Field(p => p.CreatedBy).Editable(false);
+                                              model.Field(p => p.ModifiedBy).Editable(false);
+                                              model.Field(p => p.LastModified).Editable(false);
+                                              model.Field(p => p.DateCreated).Editable(false);
+                                          })
+                                      .Events(ev => ev
+                                          .Error("error_handler(\"SupplierRemoveBlackList#=ProcurementSupplierID#\")")
+                                          .RequestStart("onRequestStart(\"SupplierRemoveBlackList#=ProcurementSupplierID#\")")
+                                          .RequestEnd("onRequestEnd(\"SupplierRemoveBlackList#=ProcurementSupplierID#\")"))
+                                      .Read(read => read.Action("SupplierRemoveBlackLists_Read", "SupplierRemoveBlackList", new { id = "#=ProcurementSupplierID#" }))
+                                      .Create(create => create.Action("SupplierRemoveBlackLists_Create", "SupplierRemoveBlackList", new { id = "#=ProcurementSupplierID#" }))
+                                      .Update(update => update.Action("SupplierRemoveBlackLists_Update", "SupplierRemoveBlackList", new { id = "#=ProcurementSupplierID#" }))
+                                      .Destroy(destroy => destroy.Action("SupplierRemoveBlackLists_Destroy", "SupplierRemoveBlackList"))
+                                  )
+                                  .ToClientTemplate())
+
+                        </text>);
+          })
+
+          .ToClientTemplate()
+          )
+
+</script>
+    
+<script id="performancetemplates" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                .Name("tabStrip#=SupplierPerformanceId#")
+                .SelectedIndex(0)
+                .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+                .Items(items =>
+                {
+                    items.Add().Text("Performance Detail").Content(@<text>
+                        # if (!IsOnlineApproved&&!IsSendForApproval)
+                        {#
+                        <a onclick='return sendForApprovalPerformance("#=SupplierPerformanceId#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                        <br />
+                        # } #
+                       
+                        <div>
+                            <hr>
+                            <dl class="dl-horizontal">
+
+
+                                <dt>
+                                    Created On
+                                </dt>
+                                <dd>
+                                    #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+
+                                </dd>
+                                <dt>
+                                    Created By
+                                </dt>
+                                <dd>
+                                    #= CreatedBy #
+                                </dd>
+                                <dt>
+                                    Modified By
+                                </dt>
+                                <dd>
+                                    #= ModifiedBy #
+                                </dd>
+                                <dt>
+                                    Modified Date
+                                </dt>
+                                <dd>
+                                    #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+                                </dd>
+                            </dl>
+                        </div>
+
+                    </text>
+                    );
+                    
+
+                    items.Add().Text("Validation").Content(
+                        @<text>
+                            @(Html.Kendo().Grid<SupplierPerformanceValidation>()
+                                  .Name("SupplierPerformanceValidation#=SupplierPerformanceId#")
+                                  .Columns(columns =>
+                                  {
+                                      columns.Bound(c => c.SupplierPerformanceValidationId).Hidden(true);
+                                      columns.Bound(c => c.Status).EditorTemplateName("ApprovalStatus").Width(150);
+                                      columns.Bound(c => c.Remark).Width(200);
+                                      columns.Bound(c => c.DateCreated).Width(200).Title("Time").Format("{0:dd/MM/yyyy}");
+                                      columns.Bound(c => c.LastModified).Hidden(true);
+                                      columns.Bound(c => c.CreatedBy).Width(200).Title("User");
+                                      columns.Bound(c => c.ModifiedBy).Hidden(true);
+                                      columns.Command(command =>
+                                      {
+                                          command.Edit();
+
+                                      });
+
+                                  })
+                                  .ToolBar(toolbar =>
+                                  {
+                                      toolbar.Create();
+                                  })
+                                  .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                  .Events(events => events.DataBound("onDataBoundFisrtValidationDetail"))
+                                  .Pageable(pageable => pageable
+                                      .Input(true)
+                                      .Numeric(false)
+                                      .Refresh(true)
+                                      .PageSizes(true)
+                                      .ButtonCount(5))
+                                  .Sortable(sortable =>
+                                  {
+                                      sortable.SortMode(GridSortMode.SingleColumn);
+                                  })
+                                  .Filterable()
+                                  .Scrollable()
+                                  .DataSource(dataSource => dataSource
+                                      .Ajax()
+                                      .Model(
+                                          model =>
+                                          {
+                                              model.Id(p => p.SupplierPerformanceValidationId);
+                                              model.Field(p => p.OrgBranchName).Editable(false);
+                                              model.Field(p => p.CreatedBy).Editable(false);
+                                              model.Field(p => p.ModifiedBy).Editable(false);
+                                              model.Field(p => p.LastModified).Editable(false);
+                                              model.Field(p => p.DateCreated).Editable(false);
+                                          })
+                                      .Events(ev => ev
+                                          .Error("error_handler(\"SupplierPerformanceValidation#=SupplierPerformanceId#\")")
+                                          .RequestStart("onRequestStart(\"SupplierPerformanceValidation#=SupplierPerformanceId#\")")
+                                          .RequestEnd("onRequestEnd(\"SupplierPerformanceValidation#=SupplierPerformanceId#\")"))
+                                      .Read(read => read.Action("SupplierPerformanceValidations_Read", "SupplierPerformanceValidation", new { id = "#=SupplierPerformanceId#" }))
+                                      .Create(create => create.Action("SupplierPerformanceValidations_Create", "SupplierPerformanceValidation", new { id = "#=SupplierPerformanceId#" }))
+                                      .Update(update => update.Action("SupplierPerformanceValidations_Update", "SupplierPerformanceValidation", new { id = "#=SupplierPerformanceId#" }))
+                                      .Destroy(destroy => destroy.Action("SupplierPerformanceValidations_Destroy", "SupplierPerformanceValidation"))
+                                  )
+                                  .ToClientTemplate())
+
+                        </text>);
+                })
+
+                                                .ToClientTemplate()
+    )
+
+</script>
+
+<script id="blacklisttemplates" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+          .Name("tabStrip#=SupplierBlackListId#")
+          .SelectedIndex(0)
+          .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+          .Items(items =>
+          {
+              items.Add().Text("Blacklist Detail").Content(@<text>
+
+                        # if (!IsOnlineApproved&&!IsSendForApproval)
+                        {#
+                        <a onclick='return sendForApprovalBlackList("#=SupplierBlackListId#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                        <br />
+                        # } #
+                        <div>
+                            <hr>
+                            <dl class="dl-horizontal">
+
+
+                                <dt>
+                                    Created On
+                                </dt>
+                                <dd>
+                                    #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+
+                                </dd>
+                                <dt>
+                                    Created By
+                                </dt>
+                                <dd>
+                                    #= CreatedBy #
+                                </dd>
+                                <dt>
+                                    Modified By
+                                </dt>
+                                <dd>
+                                    #= ModifiedBy #
+                                </dd>
+                                <dt>
+                                    Modified Date
+                                </dt>
+                                <dd>
+                                    #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+                                </dd>
+                            </dl>
+                        </div>
+
+                    </text>
+                  );
+
+
+              items.Add().Text("Documents").Content(@<text>
+                    @UploadDocuments()
+            </text>);
+        
+              items.Add().Text("Validation").Content(
+                  @<text>
+                            @(Html.Kendo().Grid<SupplierBlackListValidation>()
+                                  .Name("SupplierBlackListValidation#=SupplierBlackListId#")
+                                  .Columns(columns =>
+                                  {
+                                      columns.Bound(c => c.SupplierBlackListValidationId).Hidden(true);
+                                      columns.Bound(c => c.Status).EditorTemplateName("ApprovalStatus").Width(150);
+                                      columns.Bound(c => c.Remark).Width(200);
+                                      columns.Bound(c => c.DateCreated).Width(200).Title("Time").Format("{0:dd/MM/yyyy}");
+                                      columns.Bound(c => c.LastModified).Hidden(true);
+                                      columns.Bound(c => c.CreatedBy).Width(200).Title("User");
+                                      columns.Bound(c => c.ModifiedBy).Hidden(true);
+                                      columns.Command(command =>
+                                      {
+                                          command.Edit();
+
+                                      });
+
+                                  })
+                                  .ToolBar(toolbar =>
+                                  {
+                                      toolbar.Create();
+                                  })
+                                  .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                  .Events(x => x.DataBound("onDataBoundFisrtValidationDetail"))
+                                  .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                  .Pageable(pageable => pageable
+                                      .Input(true)
+                                      .Numeric(false)
+                                      .Refresh(true)
+                                      .PageSizes(true)
+                                      .ButtonCount(5))
+                                  .Sortable(sortable =>
+                                  {
+                                      sortable.SortMode(GridSortMode.SingleColumn);
+                                  })
+                                  .Filterable()
+                                  .Scrollable()
+                                  .DataSource(dataSource => dataSource
+                                      .Ajax()
+                                      .Model(
+                                          model =>
+                                          {
+                                              model.Id(p => p.SupplierBlackListValidationId);
+                                              model.Field(p => p.OrgBranchName).Editable(false);
+                                              model.Field(p => p.CreatedBy).Editable(false);
+                                              model.Field(p => p.ModifiedBy).Editable(false);
+                                              model.Field(p => p.LastModified).Editable(false);
+                                              model.Field(p => p.DateCreated).Editable(false);
+                                          })
+                                      .Events(ev => ev
+                                          .Error("error_handler(\"SupplierBlackListValidation#=SupplierBlackListId#\")")
+                                          .RequestStart("onRequestStart(\"SupplierBlackListValidation#=SupplierBlackListId#\")")
+                                          .RequestEnd("onRequestEnd(\"SupplierBlackListValidation#=SupplierBlackListId#\")"))
+                                      .Read(read => read.Action("SupplierBlackListValidations_Read", "SupplierBlackListValidation", new { id = "#=SupplierBlackListId#" }))
+                                      .Create(create => create.Action("SupplierBlackListValidations_Create", "SupplierBlackListValidation", new { id = "#=SupplierBlackListId#" }))
+                                      .Update(update => update.Action("SupplierBlackListValidations_Update", "SupplierBlackListValidation", new { id = "#=SupplierBlackListId#" }))
+                                      .Destroy(destroy => destroy.Action("SupplierBlackListValidations_Destroy", "SupplierBlackListValidation"))
+                                  )
+                                  .ToClientTemplate())
+
+                        </text>);
+          })
+
+          .ToClientTemplate()
+          )
+    
+ @helper UploadDocuments()
+{
+    @(Html.Kendo().Grid<SupplierBlackFile>()
+                                .Name("SupplierBlackFile#=SupplierBlackListId#")
+                .Columns(columns =>
+                {
+                    columns.Bound(c => c.FileName).Width(200).ClientTemplate("<a href='SupplierBlackFile/FileDwonload?id=#=SupplierBlackListId#'>\\#=FileName\\#</a>");
+                    columns.Bound(c => c.Description).Width(200);
+                    columns.Command(command =>
+                    {
+                        command.Edit();
+                        command.Destroy();
+
+                    });
+                })
+                .ToolBar(toolbar =>
+                      {
+                          toolbar.Template(@<text>
+                            @Html.Kendo().Upload().Name("file").Async(a => a.Save("SupplierBlackFiles_Create", "SupplierBlackFile", new { id = "#=SupplierBlackListId#" })).Events(e => e.Complete("onUploadSuccess")).ShowFileList(false).ToClientTemplate()
+
+                        </text>);
+                      })
+
+        .Events(x => x.DataBound("onDataBoundLines"))
+        .Editable(editable => editable.Mode(GridEditMode.InLine))
+
+        .Pageable(pageable => pageable
+            .Input(true)
+            .Numeric(false)
+            .Refresh(true)
+            .PageSizes(true)
+            .ButtonCount(10))
+        .Scrollable()
+        .Sortable()
+        .Filterable()
+        .DataSource(dataSource => dataSource
+            .Ajax()
+
+            .Model(
+                model =>
+                {
+                    model.Id(p => p.SupplierBlackFileId);
+                    model.Field(p => p.FileName).Editable(false);
+                })
+            .Events(ev => ev
+                  .Error("error_handler(\"SupplierBlackFile#=SupplierBlackListId#\")")
+                   .RequestStart("onRequestStart(\"SupplierBlackFile#=SupplierBlackListId#\")")
+                 .RequestEnd("onRequestEnd(\"SupplierBlackFile#=SupplierBlackListId#\")"))
+                    .Read(read => read.Action("SupplierBlackFiles_Read", "SupplierBlackFile", new { id = "#=SupplierBlackListId#" }))
+                    .Create(create => create.Action("SupplierBlackFiles_Create", "SupplierBlackFile", new { id = "#=SupplierBlackListId#" }))
+                    .Update(update => update.Action("SupplierBlackFiles_Update", "SupplierBlackFile", new { id = "#=SupplierBlackListId#" }))
+                            .Destroy(destroy => destroy.Action("SupplierBlackFiles_Destroy", "SupplierBlackFile"))
+        )
+        .ToClientTemplate()
+    )
+}
+
+</script>
+    
+<script id="removeblacklisttemplates" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                .Name("tabStrip#=SupplierRemoveBlackListId#")
+                .SelectedIndex(0)
+                .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+                .Items(items =>
+                {
+                    items.Add().Text("Remove Black List Detail").Content(@<text>
+                        
+                            # if (!IsOnlineApproved&&!IsSendForApproval)
+                            {#
+                            <a onclick='return sendForApprovalRemoveBlackList("#=SupplierRemoveBlackListId#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                            <br />
+                            # } #
+                       
+                        <div>
+                            <hr>
+                            <dl class="dl-horizontal">
+
+
+                                <dt>
+                                    Created On
+                                </dt>
+                                <dd>
+                                    #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+
+                                </dd>
+                                <dt>
+                                    Created By
+                                </dt>
+                                <dd>
+                                    #= CreatedBy #
+                                </dd>
+                                <dt>
+                                    Modified By
+                                </dt>
+                                <dd>
+                                    #= ModifiedBy #
+                                </dd>
+                                <dt>
+                                    Modified Date
+                                </dt>
+                                <dd>
+                                    #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+                                </dd>
+                            </dl>
+                        </div>
+
+                    </text>
+                    );
+
+
+                    items.Add().Text("Validation").Content(
+                        @<text>
+                            @(Html.Kendo().Grid<SupplierRemoveBlackListValidation>()
+                                  .Name("SupplierRemoveBlackListValidation#=SupplierRemoveBlackListId#")
+                                  .Columns(columns =>
+                                  {
+                                      columns.Bound(c => c.SupplierRemoveBlackListValidationId).Hidden(true);
+                                      columns.Bound(c => c.Status).EditorTemplateName("ApprovalStatus").Width(150);
+                                      columns.Bound(c => c.Remark).Width(200);
+                                      columns.Bound(c => c.DateCreated).Width(200).Title("Time").Format("{0:dd/MM/yyyy}");
+                                      columns.Bound(c => c.LastModified).Hidden(true);
+                                      columns.Bound(c => c.CreatedBy).Width(200).Title("User");
+                                      columns.Bound(c => c.ModifiedBy).Hidden(true);
+                                      columns.Command(command =>
+                                      {
+                                          command.Edit();
+
+                                      });
+
+                                  })
+                                  .ToolBar(toolbar =>
+                                  {
+                                      toolbar.Create();
+                                  })
+                                  .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                  .Events(x => x.DataBound("onDataBoundFisrtValidationDetail"))
+                                  .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                  .Pageable(pageable => pageable
+                                      .Input(true)
+                                      .Numeric(false)
+                                      .Refresh(true)
+                                      .PageSizes(true)
+                                      .ButtonCount(5))
+                                  .Sortable(sortable =>
+                                  {
+                                      sortable.SortMode(GridSortMode.SingleColumn);
+                                  })
+                                  .Filterable()
+                                  .Scrollable()
+                                  .DataSource(dataSource => dataSource
+                                      .Ajax()
+                                      .Model(
+                                          model =>
+                                          {
+                                              model.Id(p => p.SupplierRemoveBlackListValidationId);
+                                              model.Field(p => p.OrgBranchName).Editable(false);
+                                              model.Field(p => p.CreatedBy).Editable(false);
+                                              model.Field(p => p.ModifiedBy).Editable(false);
+                                              model.Field(p => p.LastModified).Editable(false);
+                                              model.Field(p => p.DateCreated).Editable(false);
+                                          })
+                                      .Events(ev => ev
+                                          .Error("error_handler(\"SupplierRemoveBlackListValidation#=SupplierRemoveBlackListId#\")")
+                                          .RequestStart("onRequestStart(\"SupplierRemoveBlackListValidation#=SupplierRemoveBlackListId#\")")
+                                          .RequestEnd("onRequestEnd(\"SupplierRemoveBlackListValidation#=SupplierRemoveBlackListId#\")"))
+                                      .Read(read => read.Action("SupplierRemoveBlackListValidations_Read", "SupplierRemoveBlackListValidation", new { id = "#=SupplierRemoveBlackListId#" }))
+                                      .Create(create => create.Action("SupplierRemoveBlackListValidations_Create", "SupplierRemoveBlackListValidation", new { id = "#=SupplierRemoveBlackListId#" }))
+                                      .Update(update => update.Action("SupplierRemoveBlackListValidations_Update", "SupplierRemoveBlackListValidation", new { id = "#=SupplierRemoveBlackListId#" }))
+                                      .Destroy(destroy => destroy.Action("SupplierRemoveBlackListValidations_Destroy", "SupplierRemoveBlackListValidation"))
+                                  )
+                                  .ToClientTemplate())
+
+                        </text>);
+                })
+
+                                                                                .ToClientTemplate()
+    )
+
+</script>
+
+<script type="text/x-kendo-template" id="template">
+    <div id="details-container">
+        <text>
+
+        </text>
+
+    </div>
+</script>
+
+<script type="text/javascript">
+    var detailsTemplate = kendo.template($("#template").html());
+    var selectedid;
+    function supplierRanking(e) {
+        e.preventDefault();
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        selectedid = dataItem.ProcurementSupplierID;
+        var wnd = $("#supplierRank").data("kendoWindow");
+        wnd.center().open();
+    }
+
+    function Shortlist(e) {
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        $.ajax({
+            type: "GET",
+            data: dataItem.ProcurementSupplierID,
+            url: '@Url.Action("Shortlist", "Supplier")/' + dataItem.ProcurementSupplierID
+
+        });
+
+        $('#grid').data('kendoGrid').dataSource.read();
+        $('#grid').data('kendoGrid').refresh();
+        location.reload();
+    };
+
+</script>
+
+<script type="text/javascript">
+    
+    function onUploadSuccess(e) {
+        // Force the rebinding of the Grid on successful upload
+        $("#grid").data("kendoGrid").dataSource.read();
+    }
+
+    function onGridDataSourceRequestEnd(e) {
+        if (e.type === "update") {
+            this.read();
+        }
+
+        if (e.type === "create") {
+            this.read();
+        }
+    }
+
+    function sendForApproval(id) {
+        var recordStatus = "";
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("SendForApproval", "ContractManagement", new { area = "Procurement" })',
+            data: { id: id },
+            success: function (result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                recordStatus = result.Status;
+                location.reload(true);
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+
+    function sendForApprovalPerformance(id) {
+        var recordStatus = "";
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("SendForApproval", "SupplierPerformance", new {area = "Procurement"})',
+            data: { id: id },
+            success: function (result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                recordStatus = result.Status;
+                location.reload(true);
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+
+    function sendForApprovalBlackList(id) {
+        var recordStatus = "";
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("SendForApproval", "SupplierBlackList", new {area = "Procurement"})',
+            data: { id: id },
+            success: function (result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                recordStatus = result.Status;
+                location.reload(true);
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+
+    function sendForApprovalRemoveBlackList(id) {
+        var recordStatus = "";
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("SendForApproval", "SupplierRemoveBlackList", new {area = "Procurement"})',
+            data: { id: id },
+            success: function (result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                recordStatus = result.Status;
+                location.reload(true);
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+
+
+    var masterDataItem;
+    var masterRow;
+    var masterGrid;
+
+    var codeid;
+    var isapproved;
+    var issecondapproved;
+    var isSendForApproval;
+    var isOnlineTransferred;
+
+    function detailExpandDetail(e) {
+
+        masterRow = e.masterRow;
+        var grid = "#" + e.sender.element[0].id;
+        masterGrid = $(grid).data("kendoGrid");
+        masterDataItem = masterGrid.dataItem(masterRow);
+        isapproved = masterDataItem.IsOnlineApproved;
+        isSendForApproval = masterDataItem.IsSendForApproval;
+        isOnlineTransferred = masterDataItem.IsOnlineTransferred;
+        issecondapproved = masterDataItem.IsSecondOnlineApproved;
+
+    } 
+
+    function onDataBoundMasterlDetail(e) {
+        //this.expandRow(this.tbody.find("tr.k-master-row").first());
+        var gridid = "#" + e.sender.element[0].id;
+        //approved
+        var grid = $(gridid).data("kendoGrid");
+        var gridData = grid.dataSource.view();
+
+        for (var i = 0; i < gridData.length; i++) {
+            var currentUid = gridData[i].uid;
+            if (gridData[i].IsOnlineApproved || gridData[i].IsSendForApproval) {
+                var currenRow = grid.table.find("tr[data-uid='" + currentUid + "']");
+                var editButton = $(currenRow).find(".k-grid-edit");
+                var deleteButton = $(currenRow).find(".k-grid-delete");
+                editButton.hide();
+                deleteButton.hide();
+            }
+        }
+    }
+    function onDataBoundFisrtValidationDetail(e) {
+
+        var detailGrid = "#" + e.sender.element[0].id;
+
+        if (isapproved || !isSendForApproval) {
+
+            $(".k-grid-add", detailGrid).hide();
+            $(".k-grid-delete", detailGrid).hide();
+            $(".k-grid-edit", detailGrid).hide();
+        }
+
+        this.table.find(".k-grid-edit").hide();
+    }
+
+</script>
+
+<style>
+    div.k-edit-form-container {
+        width: 800px;
+        height: auto;
+        left: 20px;
+    }
+
+    div.k-content {
+        overflow: hidden;
+        height: auto;
+    }
+</style>
+
+<script> 
+        function getparameters() {
+            var ranks = $("#supplierranklist").data("kendoDropDownList").value();
+            var id = selectedid;
+            var ranksd = ranks;
+
+            return {id:id , name:ranksd}
+        }
+
+    function rankclicked(e) {
+        var ranks = $("#supplierranklist").data("kendoDropDownList").value();
+        var id = selectedid;
+        var ranksd = ranks;
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("SupplierRankUpdate", "Supplier")',
+            contentType: "application/json; charset=utf-8",
+            
+            data: { idtt: id , name: ranksd },
+             dataType: "json"
+            
+        });
+
+
+        var window = $("#supplierRank").data("kendoWindow");
+
+         
+        window.close();
+        $("#grid").data("kendoGrid").dataSource.read();
+         
+    }
+
+    function reloadblacklist() {
+        
+    }
+    //function SelectAccCode() {
+    //    //popup = window.open('/Inventory/DataProvider/GLAccount', 'WindowPopup', 'top=100, left=400, width=300, height=320,resizable=no,');
+    //    //popup.focus();
+    //    //return false;
+       
+    //    var wnd = $("#AccountCodeIssue").data("kendoWindow");
+    //    wnd.center().open();
+    //}
+    function rankclickedsup(e) {
+
+        var account = $("#Accounts").data("kendoDropDownList").value();
+        var subaccount = $("#SubAccounts").data("kendoDropDownList").value();
+        var company = $("#Company").data("kendoDropDownList").value();
+        var glAcc = account + "-" + company + "-" + "00000" + "-" + subaccount;
+        if (account !== "" && subaccount !== "" && company !== "") {
+            
+            $("#AccountCode").val(glAcc).trigger("change");
+
+            
+            var window = $("#AccountCodeIssue").data("kendoWindow");
+
+            window.close();
+        }
+        else {
+            alert("Please select all the neccessary Fields");
+        }
+
+    }
+</script>

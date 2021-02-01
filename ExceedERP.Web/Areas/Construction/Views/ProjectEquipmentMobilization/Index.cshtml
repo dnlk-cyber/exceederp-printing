@@ -1,0 +1,27 @@
+﻿@using ExceedERP.Core.Localization
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.ProjectEquipmentMobilization>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.ProjectEquipmentUtilizationId);
+        columns.Bound(c => c.EquipmentType);
+        columns.Bound(c => c.From);
+        columns.Bound(c => c.To);
+        columns.Bound(c => c.Date);
+        columns.Bound(c => c.Time);
+        columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.ProjectEquipmentMobilizationId))
+          .Read(read => read.Action("ProjectEquipmentMobilization_Read", "ProjectEquipmentMobilization"))
+          .Create(create => create.Action("ProjectEquipmentMobilization_Create", "ProjectEquipmentMobilization"))
+          .Update(update => update.Action("ProjectEquipmentMobilization_Update", "ProjectEquipmentMobilization"))
+          .Destroy(destroy => destroy.Action("ProjectEquipmentMobilization_Destroy", "ProjectEquipmentMobilization"))
+      )
+)

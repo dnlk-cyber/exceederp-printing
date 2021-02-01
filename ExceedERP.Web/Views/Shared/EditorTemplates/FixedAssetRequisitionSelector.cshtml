@@ -1,0 +1,20 @@
+﻿@using Kendo.Mvc.UI
+
+@(Html.Kendo().DropDownListFor(m => m)
+                  .AutoBind(false)
+                       .Filter("contains")
+                  .OptionLabel("Select SR...")
+                          .DataTextField("Remark")
+                              .DataValueField("FixedAssetRequisitionId")
+                  .DataSource(dataSource =>
+                  {
+                      dataSource.Read(read => read.Action("GetFixedAssetRequisitionId", "FixedAssetDataProvider", new { area = "FixedAsset" }))
+                                .ServerFiltering(false);
+                       
+                  })
+                       .Events(e =>
+                                        {
+                                            e.Select("onSelectFixedAssetRequisitionId");
+                                        })
+)
+@Html.ValidationMessageFor(m => m)

@@ -1,0 +1,27 @@
+@model  ExceedERP.Core.Domain.FleetManagement.FleetRegistration.Fleets
+
+
+<h3>Customized Person edit template</h3>
+<br />
+@Html.HiddenFor(model => model.EquipmentName)
+
+<div>
+    @Html.LabelFor(model => model.UnitNum)
+</div>
+<div>
+    @Html.TextBoxFor(model => model.TyreSize)
+    @Html.ValidationMessageFor(model => model.PlateNumber)
+</div>
+
+<div>
+    @Html.LabelFor(model => model.Color)
+</div>
+<div>
+    @Html.Kendo().DateTimePickerFor(model => model.LastMaintained)
+    @Html.ValidationMessageFor(model => model.LastMaintained)
+</div>
+@Html.Kendo().DropDownList().Name("Fleets")
+    .DataTextField("PlateNumber")
+    .DataValueField("FleetsID")
+.DataSource(d => d.Read(r => r.Action("FleetsDropDown", "Fleets")))
+

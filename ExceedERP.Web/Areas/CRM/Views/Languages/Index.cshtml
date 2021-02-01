@@ -1,0 +1,29 @@
+﻿@using System.Collections
+<legend>Language</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.Language>()
+          .Name("Languagegrid")
+      .Columns(columns =>
+      {
+          columns.ForeignKey(c => c.LanguageType, (IEnumerable)ViewData["LanguageTypes"], "Text", "Text").EditorTemplateName("LanguageType");
+        columns.Bound(c => c.Description);
+        columns.ForeignKey(c => c.Country, (System.Collections.IEnumerable)ViewData["CountryList"], "CountryID", "Name").EditorTemplateName("Countries").Width(150);
+        columns.Bound(c => c.Remark);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable(h=> h.Height( 500))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+              .Model(model => model.Id(p => p.LanguageID)).Events(ev => ev
+                                                                            .Error("error_handler(\"Languagegrid\")")
+                                                                            .RequestStart("onRequestStart(\"Languagegrid\")")
+                                                                            .RequestEnd("onRequestEnd(\"Languagegrid\")"))
+          .Read(read => read.Action("Languages_Read", "Languages"))
+          .Create(create => create.Action("Languages_Create", "Languages"))
+          .Update(update => update.Action("Languages_Update", "Languages"))
+          .Destroy(destroy => destroy.Action("Languages_Destroy", "Languages"))
+      )
+)

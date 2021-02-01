@@ -1,0 +1,73 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.APTS
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Drug Receival Form</legend>
+@(Html.Kendo().Grid<Model22>()
+          .Name("Model22grid")
+      .Columns(columns =>
+      {
+          //columns.ForeignKey(c => c.DrugListsId, (IEnumerable)ViewData["druglists"], "DrugListsId", "InternalDrugCode").Width(200).Title("Internal Code");
+          columns.ForeignKey(c => c.RequisitionModel20Id, (IEnumerable)ViewData["druglists"], "DrugListsId", "Description").Width(200).Title("Description");
+          columns.Bound(c => c.Unit).Width(200);
+          columns.Bound(c => c.QuantityIssued).Width(200);
+          columns.Bound(c => c.UnitCost).Width(200);
+          columns.Bound(c => c.TotalCost).Width(200);
+          columns.Bound(c => c.UnitPrice).Width(200);
+          //columns.Bound(c => c.ExpiryDate).Width(200);
+          columns.Bound(c => c.RetailPrice).Width(200);
+          columns.Command(command =>
+          {
+              command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+              command.Destroy().Text(Resources.ActionButton_Cancel);
+          }).Width(200);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+        .Scrollable(h => h.Height(500))
+
+
+                         .Groupable()
+                                  .Sortable(sortable =>
+                                  {
+                                      sortable.SortMode(GridSortMode.SingleColumn);
+                                  })
+                      .Filterable()
+                         .Pageable(pageable => pageable
+                                                    .Input(true)
+                                                    .Numeric(false)
+                                                    .Refresh(true)
+                                                    .PageSizes(true)
+                                                    .ButtonCount(5))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+                 .Events(events =>
+                 {
+                     events.Error("error_handler(\"Model22grid\")");
+                     events.RequestStart("onRequestStart(\"Model22grid\")");
+                     events.RequestEnd("onRequestEnd(\"Model22grid\")");
+                 }
+              )
+
+              .Model(model =>
+              {
+                  model.Id(p => p.Model22Id);
+                  //model.Field(p => p.InternalCode).Editable(false);
+                  model.Field(p => p.TotalCost).Editable(false);
+              })
+          .Read(read => read.Action("Model22_Read", "Model22"))
+          .Create(create => create.Action("Model22_Create", "Model22"))
+          .Update(update => update.Action("Model22_Update", "Model22"))
+          .Destroy(destroy => destroy.Action("Model22_Destroy", "Model22"))
+      )
+)
+<script>
+
+    function sync_handler(e) {
+        this.read();
+</script>

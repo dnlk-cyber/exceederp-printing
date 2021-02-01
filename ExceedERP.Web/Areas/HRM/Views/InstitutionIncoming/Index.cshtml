@@ -1,0 +1,791 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.Common.HRM
+@using ExceedERP.Core.Domain.HRM.ArchiveManagement
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>@Resources.View_IncommingLetterRegistration_Header</legend>
+@(Html.Kendo().Grid<IncomingLetterRegistration>()
+      .Name("IncommingLetterRegistration")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.BookNo).Width(150);
+          columns.ForeignKey(c => c.InstitutionName, (System.Collections.IEnumerable)ViewData["SubjectType"], "SubjectTypeId", "SubjectTypeName").Width(200);
+          columns.Bound(c => c.LetterAmharic ).Width(150);
+          columns.Bound(c => c.LetterReferenceNo).Width(200);
+          columns.Bound(c => c.RecivedDateAmharic).Width(150);
+          columns.Bound(c => c.OwnerName).Width(150);
+          columns.Bound(c => c.Subject).Width(150);
+          columns.Bound(c => c.FolderNo).Width(150);
+          columns.ForeignKey(c => c.OrgStructureId, (System.Collections.IEnumerable)ViewData["Departments"], "OrgStructureId", "Name").Width(200);
+          columns.Bound(c => c.EnableDisbale).Visible(false);
+          columns.Command(command =>
+          {
+              if (HttpContext.Current.User.IsInRole("Archive_User"))
+              {
+                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+              }
+              if (HttpContext.Current.User.IsInRole("Archive_Admin"))
+              {
+                  command.Custom("customAction").Text(Resources.ActionButton_EnableDisable).Click("customAction");
+              }
+          }).Width(200);
+      })
+      .ToolBar(toolbar =>
+      {
+
+          toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+
+
+
+      })
+      .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("NewIncoming").Window(window => { window.Title(""); window.Scrollable(false); }))
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Scrollable(h => h.Height(500))
+      .Groupable()
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Filterable()
+      .Events(x => { x.Edit("GetDate");
+      x.DataBound("onDataBound");
+                       x.DetailExpand("DetailExpand");
+                       x.Save("GetDate");
+                     
+      })
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(5))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Events(events =>
+          {
+
+              events.Error("error_handler(\"IncommingLetterRegistration\")");
+              events.RequestStart("onRequestStart(\"IncommingLetterRegistration\")");
+              events.RequestEnd("onRequestEnd(\"IncommingLetterRegistration\")");
+          })
+                                
+          .Model(model => model.Id(p => p.BookNo))
+          .Read(read => read.Action("NewIncommingLetter_Read", "InstitutionIncoming"))
+              .Create(create => create.Action("NewIncommingLetter_Create", "InstitutionIncoming"))
+          .Update(update => update.Action("NewIncommingLetter_Update", "InstitutionIncoming"))
+          .Destroy(destroy => destroy.Action("NewIncommingLetter_Destroy", "InstitutionIncoming"))
+      ).ClientDetailTemplateId("template"))
+<script id="template" type="text/kendo-tmpl">
+                    @(Html.Kendo().TabStrip()
+                                    .Name("tabstrip_#=BookNo#")
+    .SelectedIndex(0)
+    .Items(items =>
+     {
+         items.Add().Text(Resources .Details ).Content(
+            @<text>
+                    @(Html.Kendo().PanelBar()
+                                              .Name("panelbar_#=BookNo#")
+                      .ExpandMode(PanelBarExpandMode.Single)
+                      .Items(panelbar =>
+                      {
+                         panelbar.Add()
+                              .Expanded(true)
+                              .Content(
+                                 "<div>" +
+                        "<table class='table'>" +
+                        "<tr>"   +
+                            "<th>"+Resources.View_Incomming+"<th>"+                                                            
+                            "<th>"+Resources.View_Outgoing+ "<th>" +                         
+                         "<tr>"+
+                         "<tr>" +
+                            "<td>" + Resources.HR_ArchiveManagement_NewIncommingLetterRegistration_BookNo + " :  #=BookNo#<th>" +
+                             "<td>" + Resources.HR_ArchiveManagement_NewIncommingLetterRegistration_OutgoingLetterReferenceNo + " : #=OutgoingLetterReferenceNo# <th>" +
+                           
+                         "<tr>" +
+                          "<tr>" +
+                          "<td>"+Resources.HR_ArchiveManagement_NewIncommingLetterRegistration_LetterDate +" : #=LetterAmharic#<th>" +
+                           "<td>" + Resources.HR_ArchiveManagement_NewIncommingLetterRegistration_OutgoingLetterDate + " : #=OutgoingLetterDateAm# <th>" +
+                                                       
+                         "<tr>" +
+                            "</table>" +                        
+                    "</div>"
+                    
+                );
+
+                      }).ToClientTemplate()
+
+                )
+            </text>
+                  );
+
+
+         items.Add().Text(Resources.HR_ArchiveManagement_LetterStatus).Content(
+            @<text>
+
+               @(Html.Kendo().Grid<LetterSender>()
+                     .Name("RecivedLetters_#=BookNo#")
+                     .Columns(columns =>
+                     {
+                         columns.Bound(c => c.DateAmharic);
+                         columns.Bound(c => c.FileName).ClientTemplate(Html.ActionLink("\\#=FileName\\#", "DownloadFile", new { filename = "\\#=LetterSenderId\\#" }).ToHtmlString());
+
+                         columns.Bound(c => c.OwnerName);
+                         columns.Bound(c => c.Sender);
+                         columns.ForeignKey(c => c.SenderDepartment, (System.Collections.IEnumerable)ViewData["Departments"], "OrgStructureId", "Name").Width(200);
+                         columns.ForeignKey(c => c.Receiver, (System.Collections.IEnumerable)ViewData["Departments"], "OrgStructureId", "Name").Width(200);
+                         columns.Bound(c => c.Description);
+                         columns.Bound(c => c.CurrentStatus).Visible(false);
+                         columns.Bound(c => c.Status).EditorTemplateName("Status");
+                         columns.Bound(c => c.TransferDescription);
+                         columns.Command(command =>
+                         {
+                             command.Destroy().Text(Resources.ActionButton_Cancel);
+                             if (HttpContext.Current.User.IsInRole("Archive_Admin"))
+                             {
+                                 command.Custom("Answer").Text(Resources.HR_ArchiveManagement_Answer).Click("Answer");
+                                 command.Custom("Transfer").Text(Resources.HR_ArchiveManagement_Transfer).Click("Transfer");
+                             }
+                         }).Width(300);
+
+                     })
+                     .ToolBar(toolbar =>
+                     {
+
+
+
+                     })
+                     .Editable(editable => editable.Mode(GridEditMode.InLine))
+                     .Events(ev =>
+                     {
+                         ev.DataBound("DetailDatabound");
+
+                         //ev.Change("CheckDisablity");
+                     })
+                     .Scrollable(h => h.Height(500))
+                     .Selectable(selectable =>
+                     {
+                         selectable.Mode(GridSelectionMode.Single);
+                         selectable.Type(GridSelectionType.Row);
+                     })
+
+
+                     .DataSource(dataSource => dataSource
+                         .Ajax()
+                          .Sort(sort => sort.Add("LetterSenderId").Descending())
+                         .Events(events =>
+                         {
+
+                             events.Error("error_handler(\"RecivedLetters_#=BookNo#\")");
+                             events.RequestStart("onRequestStart(\"RecivedLetters_#=BookNo#\")");
+                             events.RequestEnd("onRequestEnd(\"RecivedLetters_#=BookNo#\")");
+                         })
+
+                         .Model(model => model.Id(p => p.LetterSenderId))
+                         .Read(read => read.Action("LetterSender_Read", "InstitutionIncoming", new { bookId = "#=BookNo#" }))
+                         .Create(create => create.Action("LetterSender_Create", "SentLetter", new { bookTwo = "#=BookNo#" }))
+                         .Update(update => update.Action("LetterSender_Update", "SentLetter"))
+                         .Destroy(destroy => destroy.Action("LetterSender_Destroy", "SentLetter"))
+                     ).ToClientTemplate())
+            </text>
+    );
+         @*items.Add().Text(Resources .HR_ArchiveManagement_LetterSender).Content(
+            @<text>
+
+                @(Html.Kendo().Grid<LetterSender>()
+                  .Name("LetterSendergrid_#=BookNo#")
+      .Columns(columns =>
+      {
+          //columns.Bound(c => c.DateAmharic).Width(200).EditorTemplateName("Calander");
+          columns.Bound(c => c.Receiver).EditorTemplateName("Users").Width(150);
+          
+          columns.Bound(c => c.Description).Width(150);
+          columns.Bound(c => c.Status).Width(150).EditorTemplateName("Status");
+          columns.Bound(c => c.FileName).Width (150);
+          columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+                             .Editable(editable => editable.Mode(GridEditMode.InLine))//.TemplateName("LetterSender").Window(window => { window.Title("Send Letter"); window.Scrollable(false); }))
+      .Scrollable(h=> h.Height(500))
+               .Events(x =>
+                       {
+                           x.Edit("GetLetterSenderDate");
+                           x.Save("GetLetterSenderDate");
+                       })
+      .ClientDetailTemplateId ("templatett")
+      .DataSource(dataSource => dataSource
+          .Ajax()
+                                   .Events(events => events.Error("error_handler(\"LetterSendergrid_#=BookNo#\")")
+                                          //    .Sync("sync_handler")
+                                              )
+          .Model(model => {model.Id(p => p.LetterSenderId);
+          model.Field(p => p.Status).Editable (false);
+          model.Field(p => p.Sender).Editable(false);
+          })
+                                                   .Read(read => read.Action("LetterSender_Read", "InstitutionIncomming", new { bookId = "#=BookNo#" }))
+                                          .Create(create => create.Action("LetterSender_Create", "LetterSender", new { bookTwo = "#=BookNo#" }))
+                                  .Update(update => update.Action("LetterSender_Update", "LetterSender"))
+                                  .Destroy(destroy => destroy.Action("LetterSender_Destroy", "LetterSender"))
+      ).ToClientTemplate()
+                )
+            </text>
+    );*@
+        
+
+
+
+     }).ToClientTemplate())
+                </script>
+
+
+
+                <script>
+                    //function error_handler(e) {
+                    //    if (e.errors) {
+                    //        var message = "Errors:\n";
+                    //        $.each(e.errors, function (key, value) {
+                    //            if ('errors' in value) {
+                    //                $.each(value.errors, function () {
+                    //                    message += this + "\n";
+                    //                });
+                    //            }
+                    //        });
+                    //        alert(message);
+
+                    //    }
+
+                    //}
+
+                    function sync_handler(e) {
+                        this.read();
+
+                    }
+                    function onGridEdit(e) {
+                        e.container.find(".k-button.k-grid-update").hide();
+                        e.container.find(".k-button.k-grid-cancel").hide();
+
+                    }
+                    function onGridEdit(e) {
+                        e.container.find(".k-button.k-grid-update").hide();
+                        e.container.find(".k-button.k-grid-cancel").hide();
+
+                    }
+                    function onChange(e) {
+                        var grid = e.sender;
+                        var selectedRows = this.select();
+                        var rowData = this.dataItem(selectedRows[0]);
+                        var id = rowData.AttachmentID;
+                        $.ajax({
+                            contentType: "application/json; charset=utf-8",
+                            url: '@Url.Action("Download", "InstitutionIncoming")',
+                            data: { 'id': id },
+                            type: 'GET',
+                            cache: false,
+                            success: function (result) {
+                                r = result;
+                            }
+
+                        });
+
+                    }
+                </script>
+                <style>
+                    div.k-edit-form-container {
+                        width: 700px;
+                    }
+                </style>
+<script>
+    function Process() {
+        var value = this.value(),
+            grid = $("#IncommingLetterRegistration").data("kendoGrid");
+
+        if (value) {
+            grid.dataSource.filter({ field: "InstitutionTypeId", operator: "eq", value: parseInt(value) });
+        } else {
+            grid.dataSource.filter({});
+        }
+    }
+</script>
+
+<style>
+    #grid .k-grid-toolbar {
+        padding: .6em 1.3em;
+    }
+
+    .category-label {
+        vertical-align: middle;
+        padding-right: .5em;
+    }
+
+    #category {
+        vertical-align: middle;
+    }
+
+    .toolbar {
+        float: right;
+    }
+    .employee-details ul li
+    {
+        margin: 0;
+        line-height: 1.7em;
+    }
+
+    .employee-details label
+    {
+        display:inline-block;
+        width:150px;
+        padding-right: 10px;
+        text-align: right;
+        font-style:normal;
+        font-weight:bold;
+    }
+</style>
+<script>
+    function GetDate() {
+
+        var x = AssignDate();
+        var y = x;
+        $("#OutgoingLetterDateAm").trigger("change");
+        $("#RecivedDateAmharic").trigger("change");
+        $("#LetterAmharic").trigger("change");
+        for (var o in y) {
+            $.ajax({
+                contentType: "application/json; charset=utf-8",
+                url: '@Url.Action("SetDate", "InstitutionIncoming")',
+                data: { name: y[o].id, value: y[o].date },
+                type: 'GET',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                }
+
+            });
+        }
+    }
+    function GetLetterStatusDate() {
+
+        var x = AssignDate();
+        var y = x;
+       
+        $("#DateAmharic").trigger("change");
+      
+        for (var o in y) {
+            $.ajax({
+                contentType: "application/json; charset=utf-8",
+                url: '@Url.Action("SetDate", "LetterStatus")',
+                data: { name: y[o].id, value: y[o].date },
+                type: 'GET',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                }
+
+            });
+        }
+    }
+    function GetLetterSenderDate() {
+
+        var x = AssignDate();
+        var y = x;
+        $("#DateAmharic").trigger("change");
+        for (var o in y) {
+            $.ajax({
+                contentType: "application/json; charset=utf-8",
+                url: '@Url.Action("SetDate", "LetterSender")',
+                data: { name: y[o].id, value: y[o].date },
+                type: 'GET',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                }
+
+            });
+        }
+    }
+</script>
+<script>
+    function AssignDate() {
+        var list = AssignDates();
+        return list;
+    }
+
+</script>
+
+<script>
+    var statusId = "";
+    var popup;
+    var bookNo = "";
+    var enableDisable ;
+    function DetailExpand(e) {
+        var masterRow = e.masterRow;
+
+        var masterGrid = $("#IncommingLetterRegistration").data("kendoGrid");
+
+        var masterDataItem = masterGrid.dataItem(masterRow);
+
+        bookNo = masterDataItem.BookNo;
+        enableDisable = masterDataItem.EnableDisbale;
+    }
+    function Answer(e) {
+        try {
+            statusId = e;
+           
+        
+            
+
+           
+            var wnd = $("#Answerw").data("kendoWindow");
+            wnd.center().open();
+           
+        } catch (ex) {
+            alert("Please select the row!!");
+        }
+
+    }
+    function Answerm() {
+        try {
+
+           
+            var url = "";
+            $.ajax({
+                url: '@Url.Action("UploadDocument", "InstitutionIncoming")',
+                //contentType: "application/json; charset=utf-8",
+                data: function () {
+                    var data = new FormData();
+                    
+                    data.append("file", $("#file").get(0).files[0]);
+                    data.append("url", url);
+                    data.append("txtValue", $("#txtValue").val());
+                    data.append("txtDecsion", $("#txtDecsion").val());
+                    data.append("id", bookNo);
+                    return data;
+                }(),
+                type: 'POST',
+                contentType: false,
+                processData: false,
+                cache: false,
+                success: function (result) {
+                    var wnd = $("#Answerw").data("kendoWindow");
+                    wnd.close();
+                    $("#IncommingLetterRegistration").data("kendoGrid").dataSource.read();
+                    $("#IncommingLetterRegistration").data("kendoGrid").refresh();
+                }
+
+
+            });
+        } catch (e) {
+            // alert("Please select the row!!");
+        }
+
+    }
+
+   
+
+   
+
+    function Transfer(e) {
+        try {
+        
+           
+            var wnd = $("#Transferw").data("kendoWindow");
+            wnd.center().open();
+
+           
+
+        } catch (ex) {
+            alert("Please select the row!!");
+        }
+    }
+
+    function TransferClick(e) {
+        try {
+          
+
+           
+            var recivers = $("#Dept").data("kendoComboBox");
+            var reciver = recivers.value();
+              var desc = $("#txtDescription").val();
+            $.ajax({
+                url: '@Url.Action("SetTransfer", "InstitutionIncoming")',
+                //contentType: "application/json; charset=utf-8",
+                data: { id: bookNo, reciver: reciver, desc: desc },
+                type: 'POST',
+                cache: false,
+                success: function(result) {
+                    var wnd = $("#Transferw").data("kendoWindow");
+                    wnd.close();
+                    $("#IncommingLetterRegistration").data("kendoGrid").dataSource.read();
+                    $("#IncommingLetterRegistration").data("kendoGrid").refresh();
+                }
+
+
+            });
+
+        } catch (ex) {
+            alert("Please select the row!!");
+        }
+
+    }
+</script>
+
+
+
+<script>
+    function customAction(e) {
+        var row = $(e.target).closest("tr");
+
+
+        var grid = $("#IncommingLetterRegistration").data("kendoGrid");
+        var dataItem = grid.dataItem(row);
+        try {
+
+            $.ajax({
+                contentType: "application/json; charset=utf-8",
+                url: '@Url.Action("UpdateStatus", "InstitutionIncoming")',
+                data: { 'BookNo': dataItem.BookNo },
+                type: 'GET',
+                cache: false,
+                success: function(result) {
+                    r = result;
+                    $("#IncommingLetterRegistration").data("kendoGrid").dataSource.read();
+                    $("#IncommingLetterRegistration").data("kendoGrid").refresh();
+                }
+
+            });
+        } catch (ee) {
+            alert("Please select the row first!!");
+        }
+    }
+
+
+    function onDataBound(e) {
+        var grid = this;
+        //var answer = $("#btnAnswer");
+        //var transfer = $("#btnTransfer");
+        //var customAction = $("#customAction");
+        //var enable=@Resources.ActionButton_Enable;
+        var gridRows = grid.tbody.find("tr");
+        for (var i = 0; i < gridRows.length; i++) {
+            var row = $(gridRows[i]);
+            var dataItem = grid.dataItem(row);
+            //perform your custom check
+            if (dataItem.EnableDisbale === false) {
+                //hide buttons using jQuery
+                row.find(".k-grid-edit").hide();
+                row.find(".k-grid-customAction").text('ይከፈት');
+            } else {
+
+                row.find(".k-grid-edit").show();
+                row.find(".k-grid-customAction").text('ይዘጋ');
+            }
+
+
+            if (dataItem.Status === 0) {
+                //answer.hide(true);
+                //transfer.hide(true);
+                row.css("background-color", "green");
+
+            } else {
+                //answer.show(true);
+                //transfer.show(true);
+                row.css("background-color", "grey");
+
+            }
+
+
+        }
+    }
+
+    function DetailDatabound(e) {
+        var grid = this;
+
+       
+
+        var gridRows = grid.tbody.find("tr");
+        for (var i = 0; i < gridRows.length; i++) {
+            var row = $(gridRows[i]);
+
+            var dataItem = grid.dataItem(row);
+            //perform your custom check
+            //if (dataItem.EnableDisbale === false) {
+            //    //hide buttons using jQuery
+            //    row.find(".k-grid-edit").hide();
+            //    row.find(".k-grid-customAction").text('Enable');
+            //} else {
+
+            //    row.find(".k-grid-edit").show();
+            //    row.find(".k-grid-customAction").text('Disable');
+            //}
+            if (enableDisable === true) {
+                if (dataItem.CurrentStatus === 0) {
+                    //answer.hide(true);
+                    //transfer.hide(true);
+                    row.css("background-color", "green");
+                    row.find(".k-grid-delete").show();
+                    row.find(".k-grid-Answer").show();
+                    row.find(".k-grid-Transfer").show();
+
+                } else if (dataItem.CurrentStatus === 1) {
+                    //answer.show(true);
+                    //transfer.show(true);
+                    row.css("background-color", "grey");
+                    row.find(".k-grid-delete").hide();
+                    row.find(".k-grid-Answer").hide();
+                    row.find(".k-grid-Transfer").show();
+
+                } else if (dataItem.CurrentStatus === 2) {
+                    //answer.show(true);
+                    //transfer.show(true);
+                    row.css("background-color", "grey");
+                    row.find(".k-grid-delete").hide();
+                    row.find(".k-grid-Answer").hide();
+                    row.find(".k-grid-Transfer").hide();
+
+                } else {
+                    row.find(".k-grid-delete").show();
+                    row.find(".k-grid-Answer").show();
+                    row.find(".k-grid-Transfer").show();
+                }
+            }
+            else {
+                row.find(".k-grid-delete").hide();
+                row.find(".k-grid-Answer").hide();
+                row.find(".k-grid-Transfer").hide();
+            }
+           } 
+        
+   
+
+    }
+</script>
+@(Html.Kendo().Window().Name("Answerw")
+        .Title(Resources.HR_ArchiveManagement_Answer)
+    .Visible(false)
+    .Modal(true)
+      .Content(@<text>
+
+        @using (Html.BeginForm("UploadDocument", "InstitutionIncoming", FormMethod.Post,
+    new { enctype = "multipart/form-data" }))
+        {
+            @Html.AntiForgeryToken()
+<fieldset>
+    <div class="editor-field">
+        @Html.TextBox("file", "", new { type = "file" })
+    </div>
+    <br />
+    <div class="editor-field">
+        @Html.TextBox("txtValue", null, new { placeholder = Resources.Common_Attachment_FileName })
+    </div>
+    <br />
+    <div class="editor-field">
+        @Html.TextArea("txtDecsion", null, new { placeholder = Resources.HR_ArchiveManagement_Decsion, style = "width: 90%; max-width: 90%;height:60%" })
+    </div>
+    <br />
+    @*<div class="editor-field">
+             <input type="submit" id="submit" value="@Resources.HR_ActionButton_Upload" />
+        </div>*@
+
+</fieldset>
+        }
+
+
+
+        <div class="pull-right">
+            @Html.Kendo().Button().Name("btnTo").Content(Resources.HR_ArchiveManagement_Answer).Events(e => e.Click("Answerm"))
+
+        </div>
+
+
+
+    </text>)
+                .Pinned(true)
+
+                                    .Draggable(true)
+                                    .Width(300)
+)
+
+@(Html.Kendo().Window().Name("Transferw")
+    .Title(Resources.HR_ArchiveManagement_Transfer)
+    .Visible(false)
+    .Modal(true)
+      .Content(@<text>
+        @(Html.Kendo().ComboBox()
+                          .Name("Dept")
+                          .ValuePrimitive(true)
+                          .Placeholder(Resources.Select)
+                                   .Filter("contains")
+              .MinLength(2)
+                          .HtmlAttributes(new { style = "width:200px" })
+                                          .DataTextField("Name")
+                                          .DataValueField("OrgStructureId")
+                                                  .BindTo((IEnumerable)ViewData["Departments"])
+        )
+
+        @Html.ValidationMessageFor(m => m)
+        <br /><br/>
+        <div class="editor-field">
+            @Html.TextArea("txtDescription", null, new { placeholder = "description", style = "width: 90%; max-width: 90%;height:60%" })
+        </div>
+          <br/>
+        <div class="pull-right">
+            @Html.Kendo().Button().Name("btnTo").Content(Resources.HR_ArchiveManagement_TransferTo).Events(e => e.Click("TransferClick"))
+
+        </div>
+
+
+    </text>)
+                                    .Draggable(true)
+                                    .Width(300)
+)
+
+
+        <script>
+     function GetData() {
+
+
+         //var institution = $("#InstitutionTypeId").data("kendoDropDownList");
+         //var institute = institution.value();
+
+         var subjectType = $("#InstitutionName").data("kendoDropDownList");
+         var subType = subjectType.value();
+        $.ajax({
+            url: '@Url.Action("GetData", "InstitutionIncoming")',
+
+            //data: { institute: institute },
+            data: { subType: subType },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+
+                console.log(result);
+                if (result.length > 0) {
+
+                    for (var i = 0; i < result.length; i++) {
+                        $("#Shelve").data("kendoDropDownList").value(result[i].Shelve);
+                        $("#Shelve").trigger("change");
+
+                        $("#Row").data("kendoDropDownList").value(result[i].Row);
+                        $("#Row").trigger("change");
+
+                        $("#FileNo").data("kendoDropDownList").value(result[i].FileNo);
+                        $("#FileNo").trigger("change");
+
+                        $("#FolderNo").data("kendoDropDownList").value(result[i].Folder);
+                        $("#FolderNo").trigger("change");
+                    }
+                }
+
+            }
+
+        });
+    }
+
+        </script>

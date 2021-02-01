@@ -1,0 +1,14 @@
+﻿@(Html.Kendo().DropDownListFor(m => m)
+                  .AutoBind(false)
+                  .ValuePrimitive(true)
+                  .Filter(FilterType.StartsWith)
+                  .OptionLabel("...Select Requisition...")
+                  .DataTextField("Description")
+                  .DataValueField("PurchaseRequisitionAssignmentId")
+                  .DataSource(dataSource =>
+                  {
+                      dataSource.Read(read => read.Action("GetPurchaseRequisitonForProforma", "ProcurementDataProvider", new { area = "Procurement" }).Data("getProforma"))
+                                .ServerFiltering(true);
+                  })
+)
+@Html.ValidationMessageFor(m => m)

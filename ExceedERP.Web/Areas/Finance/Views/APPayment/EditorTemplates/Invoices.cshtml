@@ -1,0 +1,13 @@
+﻿@using System.Collections
+@(Html.Kendo().DropDownListFor(m => m)
+                  .ValuePrimitive(true)
+                  .OptionLabel("Select invoice...")
+                                  .DataTextField("InvoiceNumber")
+                                  .DataValueField("InvoiceNumber")
+                          .BindTo((IEnumerable)ViewData["invoices"])
+                               .Events(e =>
+                            {
+                                e.Select("onSelect");
+                            })
+)
+@Html.ValidationMessageFor(m => m)

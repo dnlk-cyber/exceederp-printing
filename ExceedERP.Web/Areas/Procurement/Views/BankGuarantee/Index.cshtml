@@ -1,0 +1,143 @@
+﻿@using ExceedERP.Core.Domain.Procurement.Guarantee
+<legend>Bank Guarantee</legend>
+@(Html.Kendo().Grid<BankGuarantee>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.GuaranteeType).Width(200);
+        columns.Bound(c => c.GuaranteeRefNo).Width(200);
+        columns.Bound(c => c.Amount).Width(200);
+        
+        columns.Bound(c => c.Currency).Width(200);
+        columns.Bound(c => c.Date).Width(200) ;
+        columns.Bound(c => c.BankBranch).Width(200);
+        
+        columns.Bound(c => c.BankAddress).Width(200);
+        columns.Bound(c => c.ValidityPeriod).Width(200);
+        columns.Bound(c => c.ValidityStatus).Width(200);
+        
+        columns.Bound(c => c.GuaranteePresenterName).Width(200);
+        columns.Bound(c => c.GuaranteePresenterAddress).Width(200);
+        columns.Bound(c => c.Status).Width(200);
+        columns.Bound(c => c.Remark).Width(200);
+
+       
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .Events(events => events.DataBound("onDataBound"))
+      .ToolBar(toolbar => {
+            toolbar.Create();
+            toolbar.Excel();
+           // toolbar.Pdf();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("BankGuarantee").Window(w => w.Title("BankGuarantee")))
+   .HtmlAttributes(new { style = "height: 550px;" })
+      .Pageable(pageable => pageable
+            .Input(true)
+            .Numeric(false)
+            .Refresh(true)
+            .PageSizes(true)
+            .ButtonCount(5))
+
+      .Scrollable()
+      .Sortable()
+      .Filterable()
+      .Groupable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.BankGuaranteeID))
+          .Events(events => events .Error("error_handler_one"))
+          .Read(read => read.Action("BankGuarantees_Read", "BankGuarantee"))
+          .Create(create => create.Action("BankGuarantees_Create", "BankGuarantee"))
+          .Update(update => update.Action("BankGuarantees_Update", "BankGuarantee"))
+          .Destroy(destroy => destroy.Action("BankGuarantees_Destroy", "BankGuarantee"))
+      )
+    )
+
+
+<script>
+        function dataBound() {
+            this.expandRow(this.tbody.find("tr.k-master-row").first());
+        }
+
+</script>
+
+<script type="text/javascript">
+    function error_handler(e) {
+        if (e.errors) {
+            var message = "Errors:\n";
+            $.each(e.errors, function(key, value) {
+                if ('errors' in value) {
+                    $.each(value.errors, function() {
+                        message += this + "\n";
+                    });
+                }
+            });
+            alert(message);
+        }
+    }
+
+    function dateDiffInDays(a, b) {
+        var date1 = a;
+        var date2 = b;
+
+
+        var yearDiff = date1.getFullYear() - date2.getFullYear();
+        var y1 = date1.getFullYear();
+        var y2 = date2.getFullYear();
+        var monthDiff = (date1.getMonth() + y1 * 12) - (date2.getMonth() + y2 * 12);
+        var day1 = parseInt(date1.getDate());
+        var day2 = parseInt(date2.getDate());
+        var dayDiff = (day1 - day2) + (monthDiff * 30) + (yearDiff * 365);
+        return Math.abs(dayDiff);
+    }
+
+    function onDataBound(e) {
+        var rows = e.sender.tbody.children();
+
+        for (var j = 0; j < rows.length; j++) {
+            var row = $(rows[j]);
+            var dataItem = e.sender.dataItem(row);
+
+            var today = new Date();
+            var dateDiff = 15;
+            var periodc = 15;
+            if (dataItem.Date != null) {
+                dateDiff = dateDiffInDays(dataItem.Date, today);
+
+            }
+            if (dataItem.ValidityPeriod != null) {
+                periodc = dataItem.ValidityPeriod;
+            }
+
+            if (periodc - dateDiff < 15 ) {
+                row.css("background-color", "crimson");;
+            }
+        }
+    }
+</script>
+
+<style type="text/css">
+    .table-borderless tbody tr td, .table-borderless tbody tr th, .table-borderless thead tr th {
+        border: none;
+    }
+
+    .table-borderless th {
+        text-align: right;
+    }
+
+    div.k-edit-form-container {
+        width: 700px;
+    }
+
+    div.k-content {
+        overflow: hidden;
+        height: auto;
+    }
+
+    .k-grid {
+        width: 100%;
+    }
+</style>
+
+

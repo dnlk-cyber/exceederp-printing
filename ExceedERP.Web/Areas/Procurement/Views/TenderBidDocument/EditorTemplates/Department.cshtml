@@ -1,0 +1,15 @@
+﻿@using Kendo.Mvc.UI
+
+@(Html.Kendo().DropDownListFor(m => m)
+      .Filter(FilterType.Contains)
+      .ValuePrimitive(true)                  
+      .AutoBind(false)
+      .OptionLabel("...Select Department...")
+      .DataTextField("Name")
+      .DataValueField("Name")
+      .DataSource(dataSource =>
+      {
+          dataSource.Read(read => read.Action("GetDepartment", "Tender"))
+              .ServerFiltering(true);
+      }))
+@Html.ValidationMessageFor(m => m)

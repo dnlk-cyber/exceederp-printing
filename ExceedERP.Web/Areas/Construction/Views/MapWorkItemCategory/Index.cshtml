@@ -1,0 +1,21 @@
+﻿@using ExceedERP.Core.Localization
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.MapWorkItemCategory>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.MapWorkCategoryId))
+          .Read(read => read.Action("MapWorkItemCategory_Read", "MapWorkItemCategory"))
+          .Create(create => create.Action("MapWorkItemCategory_Create", "MapWorkItemCategory"))
+          .Update(update => update.Action("MapWorkItemCategory_Update", "MapWorkItemCategory"))
+          .Destroy(destroy => destroy.Action("MapWorkItemCategory_Destroy", "MapWorkItemCategory"))
+      )
+)

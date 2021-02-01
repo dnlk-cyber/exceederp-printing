@@ -1,0 +1,30 @@
+﻿<legend>Bank Account Detail</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.BankAccountDetail>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.Reference);
+        columns.Bound(c => c.Description);
+        columns.Bound(c => c.Type);
+        columns.Bound(c => c.Bank);
+        columns.Bound(c => c.AccountNumber);
+        columns.Bound(c => c.Remark);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+              .Model(model => model.Id(p => p.BankAccountDetailID)).Events(ev => ev
+                                                                    .Error("error_handler(\"grid\")")
+                                                                    .RequestStart("onRequestStart(\"grid\")")
+                                                                    .RequestEnd("onRequestEnd(\"grid\")"))
+          .Read(read => read.Action("BankAccountDetails_Read", "BankAccountDetail"))
+          .Create(create => create.Action("BankAccountDetails_Create", "BankAccountDetail"))
+          .Update(update => update.Action("BankAccountDetails_Update", "BankAccountDetail"))
+          .Destroy(destroy => destroy.Action("BankAccountDetails_Destroy", "BankAccountDetail"))
+      )
+)

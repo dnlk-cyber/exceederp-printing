@@ -1,0 +1,142 @@
+﻿@using ExceedERP.Helpers.Common
+@using Kendo.Mvc.UI
+@model ExceedERP.Core.Domain.HRM.Letters.Incomming
+
+
+<form>
+
+<div class="row">
+    <div class="col-md-1">
+
+    </div>
+    <div class="col-md-3">
+        <div>
+            @Html.LabelFor(model => model.LettersRefNo, htmlAttributes: new { @class = "control-label col-md-8" })
+        </div>
+        <div class="form-group">
+            @Html.Kendo().TextBoxFor(model => model.LettersRefNo)
+            @Html.ValidationMessageFor(model => model.LettersRefNo, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div>
+            @Html.LabelFor(model => model.Owner, htmlAttributes: new {@class = "control-label col-md-8"})
+        </div>
+        <div class="form-group">
+            @(Html.EnumDropDownListFor(m => m.Owner, htmlAttributes: new { @class = "k-dropdown-wrap k-state-default", @style="width: 140px"   })
+                  
+                  )
+            @Html.ValidationMessageFor(model => model.Owner, "", new {@class = "text-danger"})
+        </div>
+    </div>
+    <div class="col-md-3">
+
+        <div class="form-group">
+            <div class="k-label">
+                @Html.LabelFor(model => model.LetterDateAmmharic, htmlAttributes: new { @class = "control-label col-md-8" })
+            </div>
+            <div>
+                @Html.TextBoxFor(model => model.LetterDateAmmharic, htmlAttributes: new { disabled = "disabled", @class = "et-popup-picker" }) <img src="~/Scripts/etp/images/calendar-blue.gif" onclick="SelectDate(this)" />
+
+              
+                @Html.ValidationMessageFor(model => model.LetterDateAmmharic, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+    </div>
+</div>
+
+<br/>
+<div class="row">
+    <div class="col-md-1">
+
+    </div>
+
+
+   
+    <div class="col-md-3">
+
+        <div class="form-group">
+
+            <div class="k-label">
+                @Html.LabelFor(model => model.RecivedDateAmharic, htmlAttributes: new { @class = "control-label col-md-8" })
+
+            </div>
+            <div>
+                @Html.TextBoxFor(model => model.RecivedDateAmharic, htmlAttributes: new { disabled = "disabled", @class = "et-popup-picker" }) <img src="~/Scripts/etp/images/calendar-blue.gif" onclick="SelectDate(this)" />
+             
+                @Html.ValidationMessageFor(model => model.RecivedDateAmharic, "", new { @class = "text-danger" })
+
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="form-group">
+            <div class="k-label">
+                @Html.LabelFor(model => model.Folder, htmlAttributes: new {@class = "control-label col-md-8"})
+
+            </div>
+            <div>
+
+                @Html.Kendo().TextBoxFor(model => model.Folder)
+                @Html.ValidationMessageFor(model => model.Folder, "", new {@class = "text-danger"})
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="form-group">
+            <div class="k-label">
+                @Html.LabelFor(model => model.Cluster, htmlAttributes: new { @class = "control-label col-md-8" })
+
+            </div>
+            <div>
+
+                @Html.Kendo().TextBoxFor(model => model.Cluster)
+                @Html.ValidationMessageFor(model => model.Cluster, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    </div>
+
+</div>
+<br/>
+<div class="row">
+    <div class="col-md-1">
+
+    </div>
+
+   
+    <div class="col-md-3">
+        <div>
+            @Html.LabelFor(model => model.Subject, htmlAttributes: new { @class = "control-label col-md-8" })
+        </div>
+        <div class="form-group">
+@Html.Kendo().TextBoxFor(model => model.Subject)
+@Html.ValidationMessageFor(model => model.Subject, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div>
+            @Html.LabelFor(model => model.NoOfAttachment, htmlAttributes: new { @class = "control-label col-md-8" })
+        </div>
+        <div class="form-group">
+@Html.Kendo().TextBoxFor(model => model.NoOfAttachment)
+@Html.ValidationMessageFor(model => model.NoOfAttachment, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div>
+            @Html.LabelFor(model => model.Remark, htmlAttributes: new { @class = "control-label col-md-8" })
+
+        </div>
+        <div class="form-group">
+
+            @Html.TextAreaFor(model => model.Remark)
+            @Html.ValidationMessageFor(model => model.Remark, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+
+</div>
+
+</form>

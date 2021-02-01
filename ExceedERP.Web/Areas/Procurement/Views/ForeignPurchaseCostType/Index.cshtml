@@ -1,0 +1,43 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Procurement.ForeignPurchase.ForeignPurchaseCostType>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.CostName).Width(150);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .HtmlAttributes(new { style = "height: 550px;" })
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(20))
+      .Scrollable()
+      .Sortable()
+      .Filterable()
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Events(ev => ev
+              .Error("error_handler(\"grid\")")
+              .RequestStart("onRequestStart(\"grid\")")
+              .RequestEnd("onRequestEnd(\"grid\")"))
+          .Model(model => model.Id(p => p.ForeignPurchaseCostTypeId))
+          .Read(read => read.Action("ForeignPurchaseCostTypes_Read", "ForeignPurchaseCostType"))
+          .Create(create => create.Action("ForeignPurchaseCostTypes_Create", "ForeignPurchaseCostType"))
+          .Update(update => update.Action("ForeignPurchaseCostTypes_Update", "ForeignPurchaseCostType"))
+          .Destroy(destroy => destroy.Action("ForeignPurchaseCostTypes_Destroy", "ForeignPurchaseCostType"))
+      ))

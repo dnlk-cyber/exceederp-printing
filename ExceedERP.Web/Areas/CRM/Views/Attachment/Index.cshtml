@@ -1,0 +1,32 @@
+﻿<legend>Attachment</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.Attachment>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.ReferenceType);
+        columns.Bound(c => c.Reference);
+        columns.Bound(c => c.Description);
+        columns.Bound(c => c.URL);
+        columns.Bound(c => c.BinaryFile);
+        columns.Bound(c => c.FileType);
+        columns.Bound(c => c.Index);
+        columns.Bound(c => c.Remark);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("AttachFile").Window(window => { window.Title("Attach File"); window.Scrollable(false); }))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+              .Model(model => model.Id(p => p.AttachmentID)).Events(ev => ev
+                                                                .Error("error_handler(\"grid\")")
+                                                                .RequestStart("onRequestStart(\"grid\")")
+                                                                .RequestEnd("onRequestEnd(\"grid\")"))
+          .Read(read => read.Action("Attachments_Read", "Attachment"))
+          .Create(create => create.Action("Attachments_Create", "Attachment"))
+          .Update(update => update.Action("Attachments_Update", "Attachment"))
+          .Destroy(destroy => destroy.Action("Attachments_Destroy", "Attachment"))
+      )
+)

@@ -1,0 +1,219 @@
+﻿
+<legend>  Service Usage </legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.ServiceUsage>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Customer).Title("Customer").EditorTemplateName("OrgCustomerEditor").Width(120);
+          columns.Bound(c => c.Date).Width(100);
+          columns.Bound(c => c.ReceiveMethod).Title("Recieve Method").EditorTemplateName("GetReceiveMethod").Width(100);
+          columns.Bound(c => c.GrandTotal).Format("{0:N0}").Width(100);
+          columns.Bound(c => c.Remark).Width(150);
+          columns.Bound(c => c.Status).Width(100);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create();
+      })
+         
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+               .HtmlAttributes(new { style = "height: 520px;" })
+                      .Pageable(pageable => pageable
+                                        .Input(true)
+                                        .Numeric(false)
+                                        .Refresh(true)
+                                        .PageSizes(true)
+                                        .ButtonCount(5))
+
+                            .Scrollable()
+                            .Sortable()
+                            .Filterable()
+                            .Groupable()
+                            .Scrollable(h => h.Height(500))
+                 .Groupable().Events(ev => { ev.DetailExpand("onDetailExpandUser"); ev.DataBound("onDataBound"); })                               
+      .DataSource(dataSource => dataSource
+          .Ajax()
+                 .Model(model =>
+                  {
+                      model.Id(p => p.ServiceUsageId);
+                      model.Field(p => p.GrandTotal).Editable(false);
+                      model.Field(p => p.Status).Editable(false);
+                  }).Events(ev => ev
+                                                                .Error("error_handler(\"grid\")")
+                                                             .RequestStart("onRequestStart(\"grid\")")
+                                                           .RequestEnd("onRequestEnd(\"grid\")"))
+              .Read(read => read.Action("ServiceUsages_Read", "ServiceUsage"))
+              .Create(create => create.Action("ServiceUsages_Create", "ServiceUsage"))
+              .Update(update => update.Action("ServiceUsages_Update", "ServiceUsage"))
+              .Destroy(destroy => destroy.Action("ServiceUsages_Destroy", "ServiceUsage"))
+        ).ClientDetailTemplateId("template")
+        )
+
+
+
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                                            .Name("tabstrip_#=ServiceUsageId#")
+    .SelectedIndex(0)
+    .Items(items =>
+     {
+      
+         //*************************************************************************************************//
+         //**************************************ServiceLineItems************************************************//
+       items.Add().Text("Line Items").Content(
+            @<text>
+         
+           @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.ServiceLineItem>()
+                              .Name("LineItemGrid_#=ServiceUsageId#")
+      .Columns(columns =>
+      {
+          columns.ForeignKey(c => c.CustomerServiceId, (System.Collections.IEnumerable)ViewData["CustomerServices"], "CustomerServiceId", "Description").EditorTemplateName("Services").Title(" Service ").Width(120);
+
+          columns.Bound(c => c.UnitPrice).Format("{0:N0}").EditorTemplateName("NumEditor").Width(120);
+        //  columns.ForeignKey(c => c.Tax, (System.Collections.IEnumerable)ViewData["Tax"], "Description", "Description").EditorTemplateName("Tax").Width(80);
+          columns.ForeignKey(c => c.Tax, (System.Collections.IEnumerable)ViewData["Tax"], "TaxID", "Description").EditorTemplateName("Tax").Width(120);
+          columns.Bound(c => c.TotalAmount).Format("{0:N0}").EditorTemplateName("NumEditor").Width(120);
+
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create();
+      })
+                               .Events(ev =>
+                                                          {
+
+                                                              ev.DataBound("onDataBound");
+
+                                                          })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+                  .Model(model => model.Id(p => p.ServiceLineItemId)).Events(ev => ev
+                                                                                .Error("error_handler(\"LineItemGrid_#=ServiceUsageId#\")")
+                                                                             .RequestStart("onRequestStart(\"LineItemGrid_#=ServiceUsageId#\")")
+                                                                           .RequestEnd("onRequestEnd(\"LineItemGrid_#=ServiceUsageId#\")"))
+                                                                  .Read(read => read.Action("ServiceLineItems_Read", "ServiceLineItem", new { Id = "#=ServiceUsageId#" }))
+                                                                          .Create(create => create.Action("ServiceLineItems_Create", "ServiceLineItem", new { Id = "#=ServiceUsageId#" }))
+                          .Update(update => update.Action("ServiceLineItems_Update", "ServiceLineItem", new { ServiceUsageId = "#=ServiceUsageId#" }))
+                  .Destroy(destroy => destroy.Action("ServiceLineItems_Destroy", "ServiceLineItem"))
+     ).ToClientTemplate()
+
+                            )
+                        </text>
+
+
+            );
+
+                    /***********************************************************************************************************/
+                           items.Add().Text("Approval").Content(
+            @<text>
+         
+           @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.ServiceUsageApproval>()
+                              .Name("LineItemApprovalGrid_#=ServiceUsageId#")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Status).EditorTemplateName("UsageApproval").Width(100);
+          columns.Bound(c => c.Remark).Width(150);
+          columns.Command(command => { command.Edit().Text("Approve"); }).Width(180);
+      })
+                   .ToolBar(toolbar =>
+              {
+                  toolbar.Create();
+              })
+         .Editable(editable =>
+      {
+          editable.Mode(GridEditMode.InLine);
+          editable.DisplayDeleteConfirmation("Are You Sure To Approve Service Usage");
+      })
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+                  .Model(model => model.Id(p => p.ServiceUsageApprovalId)).Events(ev => ev
+                                                                                                .Error("error_handler(\"LineItemApprovalGrid_#=ServiceUsageId#\")")
+                                                                                             .RequestStart("onRequestStart(\"LineItemApprovalGrid_#=ServiceUsageId#\")")
+                                                                                           .RequestEnd("onRequestEnd(\"LineItemApprovalGrid_#=ServiceUsageId#\")"))
+                                                                          .Read(read => read.Action("ServiceLineItemApproval_Read", "ServiceLineItem", new { Id = "#=ServiceUsageId#" }))
+                                                                                          .Create(create => create.Action("ServiceLineItems_Approve", "ServiceLineItem", new { Id = "#=ServiceUsageId#" }))
+                  .Update(update => update.Action("ServiceLineItems_Update", "ServiceLineItem", new { Id = "#=ServiceUsageId#" }))
+   
+     ).ToClientTemplate()
+
+                            )
+                        </text>
+
+
+            );
+
+                }).ToClientTemplate()
+
+    )
+    </script>
+
+<script>
+     
+
+
+    function onDataBound(e) {
+        var grid = this;
+
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+            console.log(dataItem.IsOnlineApproved);
+            if (dataItem.IsOnlineApproved == true || dataItem.IsOnlineApproved == "true" ) {
+                $(this).find(".k-grid-edit").remove();
+                $(this).find(".k-grid-delete").remove();
+            }
+        });
+    }
+
+
+
+
+
+    function onDetailExpandUser(e) {
+        var masterRow = e.masterRow;
+
+        var masterGrid = $("#grid").data("kendoGrid");
+
+        var masterDataItem = masterGrid.dataItem(masterRow);
+
+        masterId = masterDataItem.ServiceUsageId;
+        var linegridName = "#LineItemGrid_" + masterId;
+        var ApprovallinegridName = "#LineItemApprovalGrid_" + masterId;
+        $.ajax({
+            url: '@Url.Action("GetStatus", "ServiceUsage")',
+
+            data: { Id: masterId },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                r = result;
+                console.error("resopnse status " + r);
+                if (r == "Approved" ) {
+                    $(linegridName).find(".k-toolbar").hide(); //hide toolbar
+                    $(".k-grid-top", linegridName).hide();
+                    $(".k-grid-edit", linegridName).hide();
+                    $(".k-grid-delete", linegridName).hide();
+
+                    $(ApprovallinegridName).find(".k-toolbar").hide(); //hide toolbar
+                    $(".k-grid-top", ApprovallinegridName).hide();
+                    $(".k-grid-edit", ApprovallinegridName).hide();
+                    $(".k-grid-delete", ApprovallinegridName).hide();
+                }
+
+                else {
+                    $(linegridName).find(".k-toolbar").show(); //show toolbar
+                    $(".k-grid-top", linegridName).show();
+                }
+
+            }
+
+        });
+
+    }
+
+
+</script>

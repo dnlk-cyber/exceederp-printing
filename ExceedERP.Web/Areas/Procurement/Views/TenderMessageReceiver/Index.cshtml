@@ -1,0 +1,37 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Procurement.Tender.TenderMessages>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.FileName).ClientTemplate("<a href='/TenderMessage/FileDwonload?id=\\#=TenderMessagesId \\#'>\\#=FileName \\#</a>");        
+          columns.Bound(c => c.ReciverDepartment);
+          columns.Bound(c => c.Sender);
+          columns.Bound(c => c.Reciver);
+          columns.Bound(c => c.Message);
+       
+       
+          columns.Bound(c => c.MessageStatus);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              //toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable(height => height.Height(500))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model =>
+          {
+              model.Id(p => p.TenderMessagesId);
+              model.Field(p => p.Sender).Editable(false);
+              model.Field(p => p.Reciver).Editable(false);
+              model.Field(p => p.FileName).Editable(false);
+              model.Field(p => p.Message).Editable(false);
+              model.Field(p => p.MessageStatus).Editable(false);
+              
+          } )
+          .Read(read => read.Action("TenderMessages_Read", "TenderMessageReceiver"))
+          .Create(create => create.Action("TenderMessages_Create", "TenderMessageReceiver"))
+          .Update(update => update.Action("TenderMessages_Update", "TenderMessageReceiver"))
+          .Destroy(destroy => destroy.Action("TenderMessages_Destroy", "TenderMessageReceiver"))
+      ))

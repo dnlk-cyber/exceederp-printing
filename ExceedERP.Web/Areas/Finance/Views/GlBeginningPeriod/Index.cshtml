@@ -1,0 +1,40 @@
+﻿@using System.Collections
+<legend>Beginning Period</legend>
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Finance.GL.GlBeginningPeriod>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.ForeignKey(p => p.GlFiscalYearId, (IEnumerable)ViewData["Years"], "GlFiscalYearId", "Name").Width(130).Title("Year").EditorTemplateName("GlFiscalYearSelector");
+          columns.ForeignKey(p => p.GLPeriodId, (IEnumerable)ViewData["Periods"], "GLPeriodId", "Name").Width(130).Title("Period").EditorTemplateName("GlPeriodSelector"); 
+          columns.Bound(c => c.DateCreated).Hidden();
+          columns.Bound(c => c.LastModified).Hidden();
+          columns.Bound(c => c.CreatedBy).Hidden();
+          columns.Bound(c => c.ModifiedBy).Hidden();
+          columns.Command(command => { command.Edit(); }).Width(380);
+      })
+      .ToolBar(toolbar => {
+                              if(ViewBag.Count==0)
+                              {toolbar.Create();
+                              }
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .HtmlAttributes(new { style = "height: 550px;" })
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(5))
+
+      .Scrollable()
+      .Sortable()
+      .Filterable()
+      
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.GlBeginningPeriodId))
+          .Read(read => read.Action("GlBeginningPeriods_Read", "GlBeginningPeriod"))
+          .Create(create => create.Action("GlBeginningPeriods_Create", "GlBeginningPeriod"))
+          .Update(update => update.Action("GlBeginningPeriods_Update", "GlBeginningPeriod"))
+      ))

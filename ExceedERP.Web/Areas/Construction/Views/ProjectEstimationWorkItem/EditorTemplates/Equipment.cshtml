@@ -1,0 +1,18 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@(Html.Kendo().DropDownListFor(m => m)
+    .OptionLabel( Resources.Select)
+    .Name("FleetsID")
+    .DataTextField("EquipmentName")
+    .DataValueField("FleetsID")
+    .DataSource(dataSource =>
+    {
+        dataSource.Read(read => read.Action("GetEquipment", "DataProvider"));
+        //.Data("FilterAsset"));
+        //.ServerFiltering(true);
+    })
+    //.CascadeFrom("EquipmentTypeID")
+    .Filter("contains")
+    .MinLength(2)
+    .ValuePrimitive(true)
+)

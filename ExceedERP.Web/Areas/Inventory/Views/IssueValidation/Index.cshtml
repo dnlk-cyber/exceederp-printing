@@ -1,0 +1,24 @@
+﻿@using ExceedERP.Core.Domain.Inventory
+@using Kendo.Mvc.UI
+
+@(Html.Kendo().Grid<IssueValidation>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Status);
+          columns.Bound(c => c.Remark);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.IssueValidationID))
+          .Read(read => read.Action("IssueValidations_Read", "IssueValidation"))
+          .Create(create => create.Action("IssueValidations_Create", "IssueValidation"))
+          .Update(update => update.Action("IssueValidations_Update", "IssueValidation"))
+          .Destroy(destroy => destroy.Action("IssueValidations_Destroy", "IssueValidation"))
+      ))

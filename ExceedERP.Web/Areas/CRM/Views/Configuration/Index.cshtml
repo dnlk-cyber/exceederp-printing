@@ -1,0 +1,66 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<Legend>Settings</Legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.Configuration>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Reference).EditorTemplateName("SettingCategories").Width(200).Title("Category");
+          columns.Bound(c => c.Attribute).EditorTemplateName("SettingAttribute").Width(300);
+          columns.Bound(c => c.CurrentValue).EditorTemplateName("SettingValue").Width(150);
+          columns.Bound(c => c.Remark);
+          columns.Command(command => { command.Edit(); });
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+           .Filterable()
+      .Scrollable(h => h.Height(500))
+           .Pageable(pageable => pageable
+                                        .Input(true)
+                                        .Numeric(false)
+                                        .Refresh(true)
+                                        .PageSizes(true)
+                                        .ButtonCount(5))
+
+      .DataSource(dataSource => dataSource
+          .Ajax()
+              .Model(model => model.Id(p => p.ConfigurationID)).Events(ev => ev
+                                                                    .Error("error_handler(\"grid\")")
+                                                                    .RequestStart("onRequestStart(\"grid\")")
+                                                                    .RequestEnd("onRequestEnd(\"grid\")"))
+               .Group(groups => groups.Add(p => p.Reference))
+          .Read(read => read.Action("Configurations_Read", "Configuration"))
+                              .Create(create => create.Action("Configurations_Create", "Configuration", new { Attribute = "#=Attribute#", CurrentValue = "#=CurrentValue#" }))
+          .Update(update => update.Action("Configurations_Update", "Configuration"))
+      )
+)
+<script>
+    function filterCategories() {
+        return {
+            Reference: $("#Reference").val()
+        };
+    }
+</script>
+<script>
+    function filterAttributes() {
+        return {
+            Attribute: $("#Attribute").val()
+        };
+    }
+
+
+</script>
+<script>
+    function filterCurrentValue() {
+        return {
+            Attribute: $("#CurrentValue").val()
+        };
+    }
+
+
+</script>
+ 

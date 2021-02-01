@@ -1,0 +1,27 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Procurement.Proforma.ProformPassFail>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.SupplierId);
+          columns.Bound(c => c.ItemCode);
+          columns.Bound(c => c.Result);
+          columns.Bound(c => c.DateCreated);
+          columns.Bound(c => c.LastModified);
+          columns.Bound(c => c.CreatedBy);
+          columns.Bound(c => c.ModifiedBy);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.ProformPassFailId))
+          .Read(read => read.Action("ProformPassFails_Read", "ProformPassFail"))
+          .Create(create => create.Action("ProformPassFails_Create", "ProformPassFail"))
+          .Update(update => update.Action("ProformPassFails_Update", "ProformPassFail"))
+          .Destroy(destroy => destroy.Action("ProformPassFails_Destroy", "ProformPassFail"))
+      ))

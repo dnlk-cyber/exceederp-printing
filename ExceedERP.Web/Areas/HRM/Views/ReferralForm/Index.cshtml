@@ -1,0 +1,79 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.HRM.HealthAndInsurance
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Transfer Patient to clinic</legend>
+@(Html.Kendo().Grid<ReferralForm>()
+          .Name("ReferralFormgrid")
+      .Columns(columns =>
+      {
+         
+        columns.Bound(c => c.ReferredDate).Width (120);
+        columns.Bound(c => c.ReferredTime).Width(120);
+        columns.Bound(c => c.Time).Width(150);
+        columns.Bound(c => c.Remark).Width(120);
+        columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+                  .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("ReferralForm").Window(window => { window.Title("Transfer Patient to clinic"); window.Scrollable(false); }))
+          .Scrollable(h => h.Height(500))
+                 .Groupable()
+                          .Sortable(sortable =>
+                          {
+                              sortable.SortMode(GridSortMode.SingleColumn);
+                          })
+              .Filterable()
+                 .Pageable(pageable => pageable
+                                            .Input(true)
+                                            .Numeric(false)
+                                            .Refresh(true)
+                                            .PageSizes(true)
+                                            .ButtonCount(5))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+               .Events(events =>
+                                           {
+                                               events.Error("error_handler(\"ReferralFormgrid\")");
+                                               events.RequestStart("onRequestStart(\"ReferralFormgrid\")");
+                                               events.RequestEnd("onRequestEnd(\"ReferralFormgrid\")");
+                                           })
+                        
+          .Model(model => model.Id(p => p.ReferralFormId))
+          .Read(read => read.Action("ReferralForm_Read", "ReferralForm"))
+          .Create(create => create.Action("ReferralForm_Create", "ReferralForm"))
+          .Update(update => update.Action("ReferralForm_Update", "ReferralForm"))
+          .Destroy(destroy => destroy.Action("ReferralForm_Destroy", "ReferralForm"))
+      )
+)
+<script>
+    //function error_handler(e) {
+    //    if (e.errors) {
+    //        var message = "Errors:\n";
+    //        $.each(e.errors, function(key, value) {
+    //            if ('errors' in value) {
+    //                $.each(value.errors, function() {
+    //                    message += this + "\n";
+    //                });
+    //            }
+    //        });
+    //        alert(message);
+
+    //    }
+
+    //}
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+</script>
+
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 700px;
+    }
+</style>

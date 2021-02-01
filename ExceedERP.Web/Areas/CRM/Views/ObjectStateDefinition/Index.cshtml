@@ -1,0 +1,42 @@
+﻿<legend>Object State Definition</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.ObjectStateDefinition>()
+          .Name("grid")
+      .Columns(columns =>
+      {
+          columns.ForeignKey(c => c.GSLType, (System.Collections.IEnumerable)ViewData["ListOfGSLType"], "GlobalTypeListID", "Description").EditorTemplateName("GlobalType").Width(150);
+          columns.Bound(c => c.Description);
+          columns.Bound(c => c.Color);
+          columns.Bound(c => c.Font);
+          columns.Bound(c => c.Remark);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+       .HtmlAttributes(new { style = "height: 520px;" })
+                                                      .Pageable(pageable => pageable
+                                                                        .Input(true)
+                                                                        .Numeric(false)
+                                                                        .Refresh(true)
+                                                                        .PageSizes(true)
+                                                                        .ButtonCount(5))
+
+                                                            .Scrollable()
+                                                            .Sortable()
+                                                            .Filterable()
+                                                            .Groupable()
+                                                            .Scrollable(h => h.Height(500))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+              .Model(model => model.Id(p => p.ObjectStateDefinitionID)).Events(ev => ev
+                                                                                    .Error("error_handler(\"grid\")")
+                                                                                    .RequestStart("onRequestStart(\"grid\")")
+                                                                                    .RequestEnd("onRequestEnd(\"grid\")"))
+          .Read(read => read.Action("ObjectStateDefinitions_Read", "ObjectStateDefinition"))
+          .Create(create => create.Action("ObjectStateDefinitions_Create", "ObjectStateDefinition"))
+          .Update(update => update.Action("ObjectStateDefinitions_Update", "ObjectStateDefinition"))
+          .Destroy(destroy => destroy.Action("ObjectStateDefinitions_Destroy", "ObjectStateDefinition"))
+      )
+)

@@ -1,0 +1,36 @@
+bank<--> with branch
+import export from offline-->
+stack-->online/offline ..save
+re-entry --> import after stack
+gaap/ifrs-->
+chart of account --dynamic...
+interest calculate...loan
+penality...calculate percentage
+back-up...restore
+user control...user log
+
+////
+continuity of usage-->
+language
+chart is good
+is it updated yes..activate
+security/virus
+seems usable..and easy to use
+does it show error message
+///
+bank/credit-experience
+budget/cost
+schedule
+//
+relevancy to our
+what are our parameters
+financial management
+//
+source code
+standard/international ?
+
+
+
+
+
+

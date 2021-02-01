@@ -1,0 +1,26 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Procurement.Tender.PassFailResult>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.ItemCode);
+          columns.Bound(c => c.SupplierCode);
+          columns.Bound(c => c.FinancialResult);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Sortable(sortable => {
+                                sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.PassFailResultId))
+          .Read(read => read.Action("TenderPassFailResult_Read", "TenderPassFailResult"))
+          .Create(create => create.Action("TenderPassFailResult_Create", "TenderPassFailResult"))
+          .Update(update => update.Action("TenderPassFailResult_Update", "TenderPassFailResult"))
+          .Destroy(destroy => destroy.Action("TenderPassFailResult_Destroy", "TenderPassFailResult"))
+      ))

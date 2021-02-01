@@ -1,0 +1,79 @@
+﻿@using Kendo.Mvc.UI
+@model ExceedERP.Core.Domain.CRM.CashSalesInvoice
+ 
+<form id="lineForm" method="post"   >
+
+    <div class="row col-md-12">
+        <div class="col-md-1">
+        </div>
+        <div class="col-md-3" >
+            <div class="form-group">
+                <div class="k-label">
+                     @Html.LabelFor(model => model.OrganizationCustomerId)
+                </div>
+                <div>
+                 @(Html.Kendo().DropDownListFor(model => model.OrganizationCustomerId).HtmlAttributes(new { @class = "form-control" })
+                            .DataTextField("TradeName")
+                                .DataValueField("OrganizationCustomerID").OptionLabel("Select ").Filter(FilterType.Contains).SelectedIndex(1)
+                                                                                                    .DataSource(d => d.Read(r => r.Action("CashOrgCustomerDDBind", "OrganizationCustomer")).ServerFiltering(false)).Events(e => e.Change("SwitchCustomer").DataBound("SwitchCustomer"))) 
+
+                   
+                   
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.RecieveMethod)
+                </div>
+                <div>
+                    @(Html.Kendo().DropDownListFor(model => model.RecieveMethod).HtmlAttributes(new { @class = "form-control" })
+                                .DataTextField("Name")
+                                        .DataValueField("Id").OptionLabel(" Select  ").Filter(FilterType.Contains)
+                                .DataSource(d => d.Read(r => r.Action("ReceiveMethodDDBind", "ReceiveMethod")).ServerFiltering(false)).ValuePrimitive(true))
+
+
+
+                </div>
+            </div>
+        </div>
+
+
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.Date)
+                </div>
+                <div>
+                    @(Html.Kendo().DatePickerFor(model => model.Date))
+                         
+                   
+                </div>
+            </div>
+        </div>
+        
+     
+      
+
+    </div>
+    <div class="row col-md-12">
+        <div class="col-md-1" >
+            </div>
+        <div class="col-md-3" id="NewCustomerArea">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.NewCustomer)
+                </div>
+                <div>
+                    @(Html.Kendo().TextBoxFor(model => model.NewCustomer))
+
+
+                </div>
+            </div>
+        </div>
+
+    
+        </div>
+</form>
+

@@ -1,0 +1,140 @@
+﻿
+@using System.Collections
+@using ExceedERP.Core.Domain.Common.HRM
+@using ExceedERP.Core.Localization
+<legend>@Resources.NavigatorMiscellaneous_Period</legend>
+<div>
+    @(Html.Kendo().Grid<Period>()
+          .Name("Periodgrid")
+          .Columns(columns =>
+          {
+              columns.Bound(c => c.PeriodType).EditorTemplateName("Enum").Width(200);
+              columns.Bound(c => c.PeriodName).Width(150);
+            //  columns.ForeignKey(c => c.ParentId, (System.Collections.IEnumerable)ViewData["PeriodList"], "PeriodId", "PeriodName").EditorTemplateName("Period").Width(150);
+              columns.Bound(c => c.AmharicStartDate).Width(200).EditorTemplateName("Calander");
+              columns.Bound(c => c.AmharicEndDate).Width(200).EditorTemplateName("Calander");
+            //  columns.Bound(c => c.Index);
+              columns.Bound(c => c.Remark);
+              columns.Command(command =>
+              {
+                  command.Edit().Text(Resources.ActionButton_Update);
+                 command.Destroy().Text(Resources.ActionButton_Cancel);
+              }).Width(200);
+
+          })
+
+          .ToolBar(toolbar =>
+          {
+              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+          })
+                          .Events(events => {
+                              events.Save("GetDate");
+                              events.Edit("GetDate"); 
+                          })
+          .Editable(editable => editable.Mode(GridEditMode.InLine))
+          .Scrollable(h => h.Height(500))
+          .DataSource(dataSource => dataSource
+              .Ajax()
+                         .Events(events => events.Error("error_handler")
+                                                  .Sync("sync_handler")
+                                                  .Change("Compare")
+                                                  )
+              .Model(model => model.Id(p => p.PeriodId))
+              .Read(read => read.Action("Periods_Read", "Period"))
+                                              .Create(create => create.Action("Periods_Create", "Period"))
+                                      .Update(update => update.Action("Periods_Update", "Period"))
+                      .Destroy(destroy => destroy.Action("Periods_Destroy", "Period"))
+              
+          )
+          )
+</div>
+<script>
+    function error_handler(e) {
+        if (e.errors) {
+            var message = "Errors:\n";
+            $.each(e.errors, function (key, value) {
+                if ('errors' in value) {
+                    $.each(value.errors, function () {
+                        message += this + "\n";
+                    });
+                }
+            });
+            alert(message);
+
+        }
+
+    }
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+</script>
+<script>
+    function Compare() {
+
+        var startDate = $("#StartDate");//.kendoDatePicker({
+        //    change: checkDates
+        //});
+        var endDate = $("#EndDate");//.kendoDatePicker({
+        //    change: checkDates
+        //});
+
+        if (startDate.val() != '' && endDate.val() != '') {
+            if (Date.parse(startDate.val()) > Date.parse(endDate.val())) {
+                alert('End date should be before start date');
+                endDate.val(startDate.val());
+            }
+            if (Date.parse(startDate.val()) == Date.parse(endDate.val())) {
+                alert('End date should be different from start date');
+                endDate.val(startDate.val());
+            }
+        }
+
+
+        $("#StartDate").kendoValidator({
+            rules: {
+                date: function (input) {
+                    var d = kendo.parseDate(input.val());
+                    return d instanceof Date;
+                }
+            }
+        });
+
+        $("#EndDate").kendoValidator({
+            rules: {
+                date: function (input) {
+                    var d = kendo.parseDate(input.val());
+                    return d instanceof Date;
+                }
+            }
+        });
+    };
+    function GetDate( )
+    {
+
+        var x = AssignDate();
+        var y = x;
+        $("#AmharicStartDate").trigger("change");
+        $("#AmharicEndDate").trigger("change");
+        for (var o in y) {
+            $.ajax({
+                contentType: "application/json; charset=utf-8",
+                url: '@Url.Action("SetDate", "Period")',
+                data: { name: y[o].id, value: y[o].date },
+                type: 'GET',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                }
+
+            });
+        }
+    }
+</script>
+
+
+
+
+
+

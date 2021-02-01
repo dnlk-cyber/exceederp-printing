@@ -1,0 +1,65 @@
+﻿@model ExceedERP.Core.Domain.FleetManagement.FleetRegistration.EquipmentTyreLog
+ 
+<legend>Tyre Usage History</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetRegistration.EquipmentTyreLog>()
+    .Name("grid")
+    .Columns(columns =>
+    {
+        columns.Bound(e => e.SerialNo).Width(100);
+        columns.Bound(e => e.Type).Width(100);
+        columns.Bound(e => e.Make).Width(100);
+           columns.Bound(e => e.Type).Width(100);
+        columns.Bound(e => e.Size).Width(100); 
+        columns.Bound(e => e.UnitPrice).Width(100);
+        columns.Bound(e => e.Equipment).Width(100);
+        columns.Bound(e => e.IntialOdoMeter).Width(100);
+        columns.Bound(e => e.FinalOdoMeter).Width(100);
+        columns.Bound(e => e.DiffrenceOdoMeter).Width(120).ClientGroupFooterTemplate("Total: #=sum#");      
+        columns.Bound(e => e.Efficency).Width(100).ClientGroupFooterTemplate("Average: #=average#"); ;
+     
+
+
+    })    .ToolBar(toolbar =>
+      {
+          
+          toolbar.Excel();
+          toolbar.Pdf();
+      })
+        .HtmlAttributes(new { style = "height: 520px;" })
+                      .Pageable(pageable => pageable
+                                        .Input(true)
+                                        .Numeric(false)
+                                        .Refresh(true)
+                                        .PageSizes(true)
+                                        .ButtonCount(5))
+
+                            .Scrollable()
+                            .Sortable()
+                            .Filterable()
+                           
+                            .Scrollable(h => h.Height(500)) 
+         .DataSource(dataSource => dataSource
+        .Ajax()
+                .Aggregates(aggregates =>
+            {
+                aggregates.Add(p => p.Efficency).Average();
+    
+                aggregates.Add(p => p.DiffrenceOdoMeter).Sum();
+            })
+                .Group(x => { x.Add(y => y.SerialNo); x.Add(y => y.Equipment); })
+        .ServerOperation(false)
+       
+        .Model(model =>
+              {
+                  model.Id(p => p.EquipmentTyreLogId);
+              })
+                         .Events(ev => ev
+                                .Error("error_handler(\"grid\")")
+                                .RequestStart("onRequestStart(\"grid\")")
+                                .RequestEnd("onRequestEnd(\"grid\")"))
+                        .Read(read => read.Action("TyreUsageHistory_Read", "TyreUsageHistory")) 
+  )
+)
+
+
+ 

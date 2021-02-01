@@ -1,0 +1,106 @@
+﻿@model ExceedERP.Core.Domain.Procurement.PurchaseOrder.PurchaseOrderItem
+
+@Html.HiddenFor(model => model.PurchaseOrderItemID)
+<div class="form">
+    <div class="row fullrow">
+
+        <div class="col-md-3 ro1">
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.ItemCategory, htmlAttributes: new { @class = "control-label col-md-6" })
+                <div class="col-md-6">
+                    @*@Html.Kendo().TextBoxFor(model => model.ItemCategory)*@
+                    @(Html.Kendo().DropDownListFor(model => model.ItemCategory)
+                        .ValuePrimitive(true)
+                        .OptionLabel("Select category...")
+                        .DataTextField("Name")
+                        .DataValueField("ItemCategoryCode")
+                        .DataSource(dataSource =>
+                            {
+                                dataSource.Read(read => read.Action("GetItemCategory", "DataProvider" ,new {area = "Inventory"}))
+                                .ServerFiltering(true);
+                            })
+                    )
+                    @Html.ValidationMessageFor(model => model.ItemCategory, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.InventoryItem, htmlAttributes: new { @class = "control-label col-md-6" })
+                <div class="col-md-6">
+                    @(Html.Kendo().DropDownListFor(model => model.InventoryItem)
+                          .ValuePrimitive(true)
+                          .AutoBind(false)
+                          .HtmlAttributes(new { style = "width:150%;" })
+                          .OptionLabel("Select Items...")
+                          .DataTextField("Name")
+                          .DataValueField("ItemCode")
+                          .DataSource(dataSource =>
+                          {
+                              dataSource.Read(read => read.Action("GetItems", "DataProvider", new { area = "Inventory" }).Data("filterItems"))
+                                        .ServerFiltering(true);
+                          })
+                          .CascadeFrom("ItemCategory")
+                    )
+
+
+                    @Html.ValidationMessageFor(model => model.InventoryItem, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+        </div>
+
+        <div class="col-md-3 ro1">
+            <div class="form-group">
+                @Html.LabelFor(model => model.Quantity, htmlAttributes: new { @class = "control-label col-md-6" })
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(model => model.Quantity)
+                    @Html.ValidationMessageFor(model => model.Quantity, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.UnitPrice, htmlAttributes: new { @class = "control-label col-md-6" })
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(model => model.UnitPrice)
+                    @Html.ValidationMessageFor(model => model.UnitPrice, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+        </div>
+
+        <div class="col-md-3 ro1">
+            <div class="form-group">
+                @Html.LabelFor(model => model.TaxType, htmlAttributes: new { @class = "control-label col-md-6" })
+                <div class="col-md-6">
+                    @(Html.Kendo().DropDownListFor(model => model.TaxType)
+                        .ValuePrimitive(true)
+                        .OptionLabel("Select Tax Type...")
+                        .DataTextField("Name")
+                        .DataValueField("Name")
+                        .DataSource(dataSource =>
+                            {
+                                dataSource.Read(read => read.Action("GetTaxTypes", "PurchaseOrder"))
+                                .ServerFiltering(true);
+                            })
+                    )
+                    @Html.ValidationMessageFor(model => model.TaxType, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.Remark, htmlAttributes: new { @class = "control-label col-md-6" })
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(model => model.Remark)
+                    @Html.ValidationMessageFor(model => model.Remark, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+        </div>
+    </div>
+</div>
+
+

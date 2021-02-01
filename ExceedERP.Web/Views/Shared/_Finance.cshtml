@@ -1,0 +1,893 @@
+﻿@using ExceedERP.Helpers.Finance
+<li class="">
+    <a href="#" class="dropdown-toggle">
+        <i class="menu-icon fa fa-credit-card"></i>
+        <span class="menu-text">
+            Finance
+        </span>
+
+        <b class="arrow fa fa-angle-down"></b>
+    </a>
+
+    <b class="arrow"></b>
+
+    <ul class="submenu">
+        @if (HttpContext.Current.User.IsInRole("General_Ledger_User")
+            || HttpContext.Current.User.IsInRole("General_Ledger_Post_User") 
+            || HttpContext.Current.User.IsInRole("General_Ledger_Approver") 
+            || HttpContext.Current.User.IsInRole("General_Ledger_Admin")
+            || HttpContext.Current.User.IsInRole("General_Ledger_View"))
+        {
+            <li class="">
+                <a href="#" class="dropdown-toggle">
+                    <i class="menu-icon fa fa-caret-right"></i>
+
+                    General Ledger
+                    <b class="arrow fa fa-angle-down"></b>
+                </a>
+
+                <b class="arrow"></b>
+
+                <ul class="submenu">
+                    
+                    @if (HttpContext.Current.User.IsInRole("General_Ledger_User")
+                         || HttpContext.Current.User.IsInRole("General_Ledger_Admin")
+                         || HttpContext.Current.User.IsInRole("General_Ledger_Post_User")
+                         || HttpContext.Current.User.IsInRole("General_Ledger_Approver")
+                         || HttpContext.Current.User.IsInRole("General_Ledger_View"))
+                    {
+                        <li class="">
+                            <a href="#" class="dropdown-toggle">
+                                <i class="menu-icon fa fa-caret-right"></i>
+
+                                Transaction
+                                <b class="arrow fa fa-angle-down"></b>
+                            </a>
+
+                            <b class="arrow"></b>
+
+                            <ul class="submenu">
+                                @if (HttpContext.Current.User.IsInRole("General_Ledger_User")
+                                    || HttpContext.Current.User.IsInRole("General_Ledger_Admin")
+                                     || HttpContext.Current.User.IsInRole("General_Ledger_Approver")
+                                     || HttpContext.Current.User.IsInRole("General_Ledger_View"))
+                                {
+                                    <li id="link111" class="actionlinlk">
+                                        @Html.ActionLink("New Journals", "Index", "GlRecordJournal", new { area = "Finance" }, null)<b class="arrow"></b>
+                                    </li>
+
+
+                                }
+                                @if (HttpContext.Current.User.IsInRole("General_Ledger_Post_User")
+                                    || HttpContext.Current.User.IsInRole("General_Ledger_Admin")
+                                     || HttpContext.Current.User.IsInRole("General_Ledger_View"))
+                                {
+                                    <li id="link111p" class="actionlinlk">
+                                        @Html.ActionLink("Post Journals", "Index", "GlPostJournal", new { area = "Finance" }, null)<b class="arrow"></b>
+                                    </li>
+
+                                }
+                                @if (HttpContext.Current.User.IsInRole("General_Ledger_User")
+                                    || HttpContext.Current.User.IsInRole("General_Ledger_Admin")
+                                     || HttpContext.Current.User.IsInRole("General_Ledger_Approver")
+                                     || HttpContext.Current.User.IsInRole("General_Ledger_View"))
+                                {
+                                    <li id="link112" class="actionlinlk">@Html.ActionLink("Posted Journals", "Index", "AccountsTransaction", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                                    <li id="link112ap" class="actionlinlk">@Html.ActionLink("All Approved Journals", "Index", "GlApprovedJournal", new { area = "Finance" }, null)<b class="arrow"></b></li>
+
+
+                                }
+                                @if (HttpContext.Current.User.IsInRole("General_Ledger_Post_User")
+                                    || HttpContext.Current.User.IsInRole("General_Ledger_Admin")
+                                    || HttpContext.Current.User.IsInRole("General_Ledger_View"))
+                                {
+                                    <li id="link325" class="actionlinlk">
+                                        @Html.ActionLink("Ledger", "Index", "GlLedgerPosting", new { area = "Finance" }, null)<b class="arrow"></b>
+                                    </li>
+                                }
+                            </ul>
+                        </li>
+                    }
+                   
+                    @if (HttpContext.Current.User.IsInRole("General_Ledger_Admin"))
+                    {
+                        <li class="">
+                            <a href="#" class="dropdown-toggle">
+                                <i class="menu-icon fa fa-caret-right"></i>
+
+                                GL Setup
+                                <b class="arrow fa fa-angle-down"></b>
+                            </a>
+
+                            <b class="arrow"></b>
+
+                            <ul class="submenu">
+                                <li class="">
+                                    <a href="#" class="dropdown-toggle">
+                                        <i class="menu-icon fa fa-caret-right"></i>
+
+                                        COA
+                                        <b class="arrow fa fa-angle-down"></b>
+                                    </a>
+
+                                    <b class="arrow"></b>
+
+                                    <ul class="submenu">
+    
+                                    <li id="link113" class="actionlinlk">
+                                        @Html.ActionLink("Accounts", "Index", "GlChartOfAccountAccount", new { area = "Finance" }, null)<b class="arrow"></b>
+                                    </li>
+                                    <li id="link1186" class="actionlinlk">
+                                        @Html.ActionLink("Account Category", "Index", "GlChartOfAccountCategory", new { area = "Finance" }, null)<b class="arrow"></b>
+                                    </li>
+                                    <li id="link114" class="actionlinlk">
+                                        @Html.ActionLink("Branch", "Index", "GlChartOfAccountLocation", new { area = "Finance" }, null)<b class="arrow"></b>
+                                    </li>
+                                    <li id="link115" class="actionlinlk">
+                                        @Html.ActionLink("Cost Center", "Index", "GlChartOfAccountCostCenter", new { area = "Finance" }, null)<b class="arrow"></b>
+                                    </li>
+                                    <li id="link116" class="actionlinlk">
+                                        @Html.ActionLink("Sub Account", "Index", "GlChartOfAccountSubAccount", new { area = "Finance" }, null)<b class="arrow"></b>
+                                    </li>
+                                    <li id="link11w6" class="actionlinlk">
+                                        @Html.ActionLink("Segment Length", "Index", "GlSegmentLength", new { area = "Finance" }, null)<b class="arrow"></b>
+                                    </li>
+                                    <li id="link11s6" class="actionlinlk">@Html.ActionLink("Segment Sequence", "Index", "GlSegmentSequence", new { area = "Finance" }, null)<b class="arrow"></b>
+                                    </li>
+
+                                        <li id="link3222m" class="actionlinlk">@Html.ActionLink("Dynamic Segment", "Index", "GlDynamicCofASegment", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                                        
+                                        <li id="link11b6" class="actionlinlk">@Html.ActionLink("Sub Account Range", "Index", "SubAccountRange", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                                        <li id="link11b6" class="actionlinlk">@Html.ActionLink("Branch Sub Account", "Index", "CompanyBranches", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                                        <li id="link11b6e" class="actionlinlk">@Html.ActionLink("Employee Sub Account", "Index", "EmployeeSubAccount", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                                    </ul>
+                                </li>
+                                <li id="link118" class="actionlinlk">
+                                    @Html.ActionLink("Journal Categories", "Index", "GlJournalCategoriers", new {area = "Finance"}, null)<b class="arrow"></b></li>
+                                <li id="link118js" class="actionlinlk">
+                                    @Html.ActionLink("Journal Sources", "Index", "GlJournalSources", new {area = "Finance"}, null)<b class="arrow"></b></li>
+                                <li id="link118i" class="actionlinlk">
+                                    @Html.ActionLink("Beginning", "Index", "GLRecordJournalBeg", new { area = "Finance" }, null)<b class="arrow"></b></li>
+
+                            </ul>
+                        </li>
+                    }
+
+                </ul>
+            </li>
+        }
+        @if (HttpContext.Current.User.IsInRole("General_SubLedger_Transfer"))
+        {
+            <li class="">
+                <a href="#" class="dropdown-toggle">
+                    <i class="menu-icon fa fa-caret-right"></i>
+
+                    Sub Module
+                    <b class="arrow fa fa-angle-down"></b>
+                </a>
+
+                <b class="arrow"></b>
+
+                <ul class="submenu">
+
+        
+                    @if (HttpContext.Current.User.IsInRole("General_SubLedger_Transfer"))
+                    {
+
+                        <li class="">
+                            <a href="#" class="dropdown-toggle">
+                                <i class="menu-icon fa fa-caret-right"></i>
+
+                                Inventory
+                                <b class="arrow fa fa-angle-down"></b>
+                            </a>
+
+                            <b class="arrow"></b>
+
+                            <ul class="submenu">
+                                <li id="link113r" class="actionlinlk">
+                                    @Html.ActionLink("Good Receive", "GoodReceive", "InventoryTransactions", new { area = "Finance" }, null)<b class="arrow"></b>
+                                </li>
+                                <li id="link113if" class="actionlinlk">
+                                    @Html.ActionLink("Fuel Issue", "IssueFuel", "InventoryTransactions", new { area = "Finance" }, null)<b class="arrow"></b>
+                                </li>
+                                <li id="link113i" class="actionlinlk">
+                                    @Html.ActionLink("Issue", "Issue", "InventoryTransactions", new { area = "Finance" }, null)<b class="arrow"></b>
+                                </li>
+                                <li id="link113t" class="actionlinlk">
+                                    @Html.ActionLink("Transfer Send", "ItemTransfer", "InventoryTransactions", new { area = "Finance" }, null)<b class="arrow"></b>
+                                </li>
+                                <li id="link113tr" class="actionlinlk">
+                                    @Html.ActionLink("Transfer Receive", "ItemTransferReceive", "InventoryTransactions", new { area = "Finance" }, null)<b class="arrow"></b>
+                                </li>
+                                <li id="link113t" class="actionlinlk">
+                                    @Html.ActionLink("Return", "StoreReturn", "InventoryTransactions", new { area = "Finance" }, null)<b class="arrow"></b>
+                                </li>
+                                <li id="link113st" class="actionlinlk">
+                                    @Html.ActionLink("Good Sales Or Lend", "GoodSalesOrLend", "InventoryTransactions", new { area = "Finance" }, null)<b class="arrow"></b>
+                                </li>
+                            </ul>
+                        </li>
+
+                        <li class="">
+                            <a href="#" class="dropdown-toggle">
+                                <i class="menu-icon fa fa-caret-right"></i>
+
+                                Fixed Asset
+                                <b class="arrow fa fa-angle-down"></b>
+                            </a>
+
+                            <b class="arrow"></b>
+
+                            <ul class="submenu">
+                                <li id="link113rf" class="actionlinlk">
+                                    @Html.ActionLink("Fixed Asset Receive", "FixedAssetReceive", "FixedAssetTransactions", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                            </ul>
+                        </li>
+
+                 <li class="">
+                    <a href="#" class="dropdown-toggle">
+                        <i class="menu-icon fa fa-caret-right"></i>
+                        Status Reports
+                        <b class="arrow fa fa-angle-down"></b>
+                    </a>
+
+                    <b class="arrow"></b>
+
+                     <ul class="submenu">
+                         <li id="link113jt" class="actionlinlk">@Html.ActionLink("Journal Status", "GlJournalStatus", "FinanceReports", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                         <li id="link113t" class="actionlinlk">@Html.ActionLink("Inventory Transfer", "InventoryTransferStatus", "FinanceReports", new {area = "Finance"}, null)<b class="arrow"></b></li>
+                        
+                         
+
+                     </ul>
+                    </li>
+
+                    }
+                </ul>
+            </li>
+        }
+    @if (HttpContext.Current.User.IsInRole("Account_Receivable_Admin") 
+            || HttpContext.Current.User.IsInRole("Account_Receivable_Collection")
+            || HttpContext.Current.User.IsInRole("Account_Receivable_Invoice")
+            || HttpContext.Current.User.IsInRole("Account_Receivable_Report")
+            || HttpContext.Current.User.IsInRole("Account_Receivable_view")
+            || HttpContext.Current.User.IsInRole("Account_Receivable_Approver"))
+        {
+            <li class="">
+                <a href="#" class="dropdown-toggle">
+                    <i class="menu-icon fa fa-caret-right"></i>
+
+                    Account Receivable
+                    <b class="arrow fa fa-angle-down"></b>
+                </a>
+
+                <b class="arrow"></b>
+
+                <ul class="submenu">
+                    
+                    @if (HttpContext.Current.User.IsInRole("Account_Receivable_Collection")
+                        || HttpContext.Current.User.IsInRole("Account_Receivable_Invoice")
+                        || HttpContext.Current.User.IsInRole("Account_Receivable_view"))
+                    {
+                        <li id="link119" class="actionlinlk">
+                            @Html.ActionLink("Customers", "Index", "ArCustomerProfile", new {area = "Finance"}, null)<b class="arrow"></b></li>
+                    }
+                    @if ( HttpContext.Current.User.IsInRole("Account_Receivable_Invoice")
+                         || HttpContext.Current.User.IsInRole("Account_Receivable_view")
+                         || HttpContext.Current.User.IsInRole("Account_Receivable_Approver"))
+                    {
+                        <li id="link120" class="actionlinlk">
+                            @Html.ActionLink("Invoices", "Index", "ArInvoice", new {area = "Finance"}, null)<b class="arrow"></b></li>
+                        <li id="link1203" class="actionlinlk">
+                            @Html.ActionLink("Manual Invoices", "Index", "ArInvoiceManual", new {area = "Finance"}, null)<b class="arrow"></b></li>
+                    }
+                    @if ( HttpContext.Current.User.IsInRole("AR_SalesOrder")
+                          || HttpContext.Current.User.IsInRole("AR_SalesOrder_view")
+                          || HttpContext.Current.User.IsInRole("AR_SalesOrder_Approver"))
+                    {
+                        <li id="link120" class="actionlinlk">
+                            @Html.ActionLink("Sales Orders", "Index", "ArSalesOrder", new {area = "Finance"}, null)<b class="arrow"></b></li>
+                    }
+                    @if (HttpContext.Current.User.IsInRole("Account_Receivable_Collection")
+                         || HttpContext.Current.User.IsInRole("Account_Receivable_view")
+                         || HttpContext.Current.User.IsInRole("Account_Receivable_Approver"))
+                    {
+                        <li id="link121" class="actionlinlk">
+                            @Html.ActionLink("Standard Collections", "Index", "ArStandardCollection", new {area = "Finance"}, null)<b class="arrow"></b></li>
+                        <li id="link122" class="actionlinlk">
+                            @Html.ActionLink("Miscellaneous Collections", "Index", "ArMiscelaneousCollection", new {area = "Finance"}, null)<b class="arrow"></b></li>
+                    }
+                    @if (HttpContext.Current.User.IsInRole("Account_Receivable_Admin"))
+                    {
+                        
+                        <li class="">
+                            <a href="#" class="dropdown-toggle">
+                                <i class="menu-icon fa fa-caret-right"></i>
+
+                                AR Setup
+                                <b class="arrow fa fa-angle-down"></b>
+                            </a>
+
+                            <b class="arrow"></b>
+
+                            <ul class="submenu">
+                                <li id="link123" class="actionlinlk">
+                                    @Html.ActionLink("Customer Types", "Index", "ArCustomerType", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                                <li id="link124" class="actionlinlk">
+                                    @Html.ActionLink("Product Account", "Index", "ArSetupProductServiceAccount", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                                <li id="link125" class="actionlinlk">
+                                    @Html.ActionLink("Receipt Balance Account", "Index", "ArSetupReceiptBalanceAccount", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                                <li id="link125" class="actionlinlk">
+                                    @Html.ActionLink("Revenue Account", "Index", "RevenueAccount", new { area = "Finance" }, null)<b class="arrow"></b>
+                                </li>
+                                <li id="link126" class="actionlinlk">
+                                    @Html.ActionLink("Remit Address", "Index", "ArRemitAddress", new { area = "Finance" }, null)<b class="arrow"></b></li>
+
+                                @if (HttpContext.Current.User.IsInRole("AR_SalesOrder_Approver"))
+                                {
+                                    <li id="link126p" class="actionlinlk">
+                                        @Html.ActionLink("Partners", "Index", "Partner", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                                    <li id="link126pt" class="actionlinlk">
+                                        @Html.ActionLink("Partner Type", "Index", "PartnerType", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                                }
+                            </ul>
+                        </li>
+
+                    }
+                    <li class="">
+                            <a href="#" class="dropdown-toggle">
+                                <i class="menu-icon fa fa-caret-right"></i>
+
+                                AR Report
+                                <b class="arrow fa fa-angle-down"></b>
+                            </a>
+
+                            <b class="arrow"></b>
+
+                        <ul class="submenu">
+                            
+                            <li id="link1815" class="actionlinlk">@Html.ActionLink("Customer List", "CustomerList", "FinanceReports", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                            <li id="link12311" class="actionlinlk">@Html.ActionLink("Customer Ledger", "CustomerLedger", "FinanceReports", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                            <li id="link3018" class="actionlinlk">@Html.ActionLink("Aging by Customer", "ArAgingByCustomer", "FinanceReports", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                            <li id="link3019" class="actionlinlk">@Html.ActionLink("Aging by Invoice", "ArAgingByInvoice", "FinanceReports", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                            <li id="link181a" class="actionlinlk">@Html.ActionLink("Account Analysis", "AccountAnalysis", "FinanceReports", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                            <li id="link182a" class="actionlinlk">@Html.ActionLink("Account Analysis by Segment", "AccountAnalysisBySegment", "FinanceReports", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                            <li id="link113aj" class="actionlinlk">@Html.ActionLink("AR Entries", "ArJournalEntries", "FinanceReports", new {area = "Finance"}, null)<b class="arrow"></b></li>
+                            <li id="link113at" class="actionlinlk">@Html.ActionLink("AR Transfer", "ArTransferStatus", "FinanceReports", new {area = "Finance"}, null)<b class="arrow"></b></li>
+                             <li class="">
+                            <a href="#" class="dropdown-toggle">
+                                <i class="menu-icon fa fa-caret-right"></i>
+
+                                Sales Reports
+                                <b class="arrow fa fa-angle-down"></b>
+                            </a>
+
+                            <b class="arrow"></b>
+
+                            <ul class="submenu">
+                                <li id="link1231" class="actionlinlk">@Html.ActionLink("Sales Report", "SalesReport", "FinanceReports", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                                <li id="link1241" class="actionlinlk">@Html.ActionLink("Sales Invoice", "SalesInvoiceReport", "FinanceReports", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                                <li id="link1251" class="actionlinlk">@Html.ActionLink("Sales Status", "SalesStatusReport", "FinanceReports", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                                
+                                <li id="link1231w3" class="actionlinlk">@Html.ActionLink("Sales Journal", "SalesJournalReport", "FinanceReports", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                                <li id="link1241a3" class="actionlinlk">@Html.ActionLink("Revenue by Branch", "RevenueByBranchReport", "FinanceReports", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                                <li id="link12513f" class="actionlinlk">@Html.ActionLink("Receipt", "ReceiptsReport", "FinanceReports", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                                <li id="link12314" class="actionlinlk">@Html.ActionLink("Commission By Partner", "CommissionByPrtnerReport", "FinanceReports", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                                <li id="link12414" class="actionlinlk">@Html.ActionLink("Customer Transaction", "CustomerTransactionReport", "FinanceReports", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                                <li id="link12514" class="actionlinlk">@Html.ActionLink("Invoice Register", "InvoiceRegisterReport", "FinanceReports", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                                
+                                <li id="link1235" class="actionlinlk">@Html.ActionLink("Partner and Agent Settlement", "PartnerAndAgentSettlementReport", "FinanceReports", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                                <li id="link1245l" class="actionlinlk">@Html.ActionLink("Sales Order", "SalesOrderReport", "FinanceReports", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                                <li id="link1255w" class="actionlinlk">@Html.ActionLink("Sales Order Register", "SalesOrderRegisterReport", "FinanceReports", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                                <li id="link1255d" class="actionlinlk">@Html.ActionLink("Derefered Revenue", "DereferedRevenue", "FinanceReports", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                            
+                            </ul>
+                        </li>
+                               
+                            </ul>
+                        </li>
+                </ul>
+            </li>
+        }
+
+        @if (HttpContext.Current.User.IsInRole("Account_Payable_Admin")
+            || HttpContext.Current.User.IsInRole("Account_Payable_Invoice")
+            || HttpContext.Current.User.IsInRole("Account_Payable_Payment")
+            || HttpContext.Current.User.IsInRole("Account_Payable_Approver")
+            || HttpContext.Current.User.IsInRole("Account_Payable_Report")
+            || HttpContext.Current.User.IsInRole("Account_Payable_View")
+            || HttpContext.Current.User.IsInRole("Account_Payable_PettyCash_Approver")
+            || HttpContext.Current.User.IsInRole("Account_Payable_PettyCash")
+            || HttpContext.Current.User.IsInRole("Account_Payable_TravelOrder_Approver")
+            || HttpContext.Current.User.IsInRole("Account_Payable_TravelOrder")
+            || HttpContext.Current.User.IsInRole("Account_Payable_TravelExpenseClaim_Approver")
+            || HttpContext.Current.User.IsInRole("Account_Payable_TravelExpenseClaim"))
+        {
+
+            <li class="">
+                <a href="#" class="dropdown-toggle">
+                    <i class="menu-icon fa fa-caret-right"></i>
+
+                    Account Payable
+                    <b class="arrow fa fa-angle-down"></b>
+                </a>
+
+                <b class="arrow"></b>
+
+                <ul class="submenu">
+                    @if (HttpContext.Current.User.IsInRole("Account_Payable_Invoice")
+                    || HttpContext.Current.User.IsInRole("Account_Payable_Payment")
+                    || HttpContext.Current.User.IsInRole("Account_Payable_View"))
+                    {
+                        <li id="link127" class="actionlinlk">@Html.ActionLink("Suppliers", "Index", "APProcurementSupplier", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                    }
+                    @if (HttpContext.Current.User.IsInRole("Account_Payable_Invoice")
+                         || HttpContext.Current.User.IsInRole("Account_Payable_Approver")
+                         || HttpContext.Current.User.IsInRole("Account_Payable_View"))
+                    {
+                        <li id="link128" class="actionlinlk">@Html.ActionLink("Invoices", "Index", "ApInvoices", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                        <li id="link1284" class="actionlinlk">
+                            @Html.ActionLink("Manual Invoices", "Index", "ApInvoicesManual", new { area = "Finance" }, null)<b class="arrow"></b>
+                        </li>
+                    }
+                    @if (HttpContext.Current.User.IsInRole("Account_Payable_Payment")
+                        || HttpContext.Current.User.IsInRole("Account_Payable_Settlement")                         
+                        || HttpContext.Current.User.IsInRole("Account_Payable_Approver")
+                        || HttpContext.Current.User.IsInRole("Account_Payable_View"))
+                    {
+                        <li id="link1282" class="actionlinlk">@Html.ActionLink("Payment", "Index", "APPayment", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                        <li id="link1282a" class="actionlinlk">@Html.ActionLink("Pre Payment", "Index", "APPaymentAdvance", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                        <li id="link12422" class="actionlinlk">@Html.ActionLink("Direct Payment", "Index", "ApDirectPayments", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                        <li id="link12422s" class="actionlinlk">@Html.ActionLink("Payment Settlement", "Index", "ApPaymentSettlements", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                        <li id="link12421" class="actionlinlk">@Html.ActionLink("Miscellaneous Payments", "Index", "ApMiscPayments", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                        <li id="link12423" class="actionlinlk">@Html.ActionLink("Contracts", "Index", "ContractManagementFinance", new { area = "Procurement" }, null)<b class="arrow"></b></li>
+                        <li id="link12425" class="actionlinlk">@Html.ActionLink("Foreign Purchase", "Index", "ForeignPurchaseFinance", new { area = "Procurement" }, null)<b class="arrow"></b></li>
+                        <li id="link12426" class="actionlinlk">@Html.ActionLink("Payment Request", "Index", "ApPaymentRequest", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                    }
+                    @if (HttpContext.Current.User.IsInRole("Account_Payable_PettyCash_Approver")
+                         || HttpContext.Current.User.IsInRole("Account_Payable_PettyCash"))
+                    {
+                        <li id="link1282p" class="actionlinlk">@Html.ActionLink("Petty Cash", "Index", "ApPettyCash", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                    }
+                    @if (HttpContext.Current.User.IsInRole("Account_Payable_TravelOrder_Approver")
+                         || HttpContext.Current.User.IsInRole("Account_Payable_TravelOrder"))
+                    {
+                        <li id="link1282to" class="actionlinlk">@Html.ActionLink("Travel Order", "Index", "ApTravelOrder", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                    }
+                    @if (HttpContext.Current.User.IsInRole("Account_Payable_TravelExpenseClaim_Approver")
+                         || HttpContext.Current.User.IsInRole("Account_Payable_TravelExpenseClaim"))
+                    {
+                        <li id="link1282to" class="actionlinlk">@Html.ActionLink("Travel Expense Claim", "Index", "ApTravelExpenseClaim", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                    }
+                    @if (HttpContext.Current.User.IsInRole("Account_Payable_Admin"))
+                    {
+                        <li class="">
+                            <a href="#" class="dropdown-toggle">
+                                <i class="menu-icon fa fa-caret-right"></i>
+
+                                AP Setup
+                                <b class="arrow fa fa-angle-down"></b>
+                            </a>
+
+                            <b class="arrow"></b>
+
+                            <ul class="submenu">
+                                <li id="link131" class="actionlinlk">@Html.ActionLink("Setup Items", "Index", "APSetupItem", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                                <li id="link1312" class="actionlinlk">@Html.ActionLink("Prepayment Account", "Index", "ApSetupReceiptBalanceAccount", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                                <li id="link13123" class="actionlinlk">@Html.ActionLink("Common Supplier Account", "Index", "ApSetupCommonSupplier", new { area = "Finance" }, null)<b class="arrow"></b></li>
+
+                                <li id="prc015s" class="actionlinlk">@Html.ActionLink("Cashier", "Index", "ApCashierSetup", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                                <li id="prc015sc" class="actionlinlk">
+                                    @Html.ActionLink("Service Category", "Index", "ServiceCategory", new { area = "Procurement" }, null)<b class="arrow"></b>
+                                </li>
+                                <li id="prc015s" class="actionlinlk">
+                                    @Html.ActionLink("Service", "Index", "ServiceItem", new { area = "Procurement" }, null)<b class="arrow"></b>
+                                </li>
+                            </ul>
+                        </li>
+                    }
+                    <li class="">
+                        <a href="#" class="dropdown-toggle">
+                            <i class="menu-icon fa fa-caret-right"></i>
+
+                            AP Report
+                            <b class="arrow fa fa-angle-down"></b>
+                        </a>
+
+                        <b class="arrow"></b>
+
+                        <ul class="submenu">
+                            <li id="link1816" class="actionlinlk">@Html.ActionLink("Supplier List", "SupplierList", "FinanceReports", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                            <li id="link13112" class="actionlinlk">@Html.ActionLink("Supplier Ledger", "SupplierLedger", "FinanceReports", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                            <li id="link13112" class="actionlinlk">@Html.ActionLink("Supplier Transaction", "SupplierTransactionReport", "FinanceReports", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                            @*<li id="link3018ap" class="actionlinlk">@Html.ActionLink("Aging by Supplier", "ApAgingBySupplier", "FinanceReports", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                        <li id="link3019ap" class="actionlinlk">@Html.ActionLink("Aging by Invoice", "ApAgingByInvoice", "FinanceReports", new { area = "Finance" }, null)<b class="arrow"></b></li>*@
+                            <li id="link131124" class="actionlinlk">@Html.ActionLink("Employee Ledger", "ApAgingByInvoice", "FinanceReports", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                            <li id="link1311245" class="actionlinlk">@Html.ActionLink("Purchaser Ledger", "PurchaserLedger", "FinanceReports", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                            <li id="link181ap" class="actionlinlk">@Html.ActionLink("Account Analysis", "AccountAnalysis", "FinanceReports", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                            <li id="link182ap" class="actionlinlk">@Html.ActionLink("Account Analysis by Segment", "AccountAnalysisBySegment", "FinanceReports", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                            <li id="link113apj" class="actionlinlk">@Html.ActionLink("AP Entries", "ApJournalEntries", "FinanceReports", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                            <li id="link113apt" class="actionlinlk">@Html.ActionLink("AP Transfer", "ApTransferStatus", "FinanceReports", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                        </ul>
+                    </li>
+                </ul>
+            </li>
+        }
+        @if (HttpContext.Current.User.IsInRole("Bank_Reconciliation_Admin")
+            || HttpContext.Current.User.IsInRole("Bank_Reconciliation_report")
+            || HttpContext.Current.User.IsInRole("Bank_Reconciliation_User")
+            || HttpContext.Current.User.IsInRole("Bank_Reconciliation_View"))
+        {
+
+            <li class="">
+                <a href="#" class="dropdown-toggle">
+                    <i class="menu-icon fa fa-caret-right"></i>
+
+                    Bank Reconciliation
+                    <b class="arrow fa fa-angle-down"></b>
+                </a>
+
+                <b class="arrow"></b>
+
+                <ul class="submenu">
+                    <li class="">
+                        <a href="#" class="dropdown-toggle">
+                            <i class="menu-icon fa fa-caret-right"></i>
+
+                            Reconciliation
+                            <b class="arrow fa fa-angle-down"></b>
+                        </a>
+
+                        <b class="arrow"></b>
+
+                        <ul class="submenu">
+                            <li id="link132" class="actionlinlk">
+                                @Html.ActionLink("Reconciliation", "Index", "ReconciliationSchedule", new { area = "Finance" }, null)<b class="arrow"></b>
+                            </li>
+                            <li id="link133" class="actionlinlk">
+                                @Html.ActionLink("Book Records", "Index", "ReconciliationBookAccount", new { area = "Finance" }, null)<b class="arrow"></b>
+                            </li>
+                            <li id="link134" class="actionlinlk">
+                                @Html.ActionLink("Bank Records", "Index", "ReconciliationBankAccount", new { area = "Finance" }, null)<b class="arrow"></b>
+                            </li>
+                           
+                        </ul>
+                    </li>
+                    <li class="">
+                        <a href="#" class="dropdown-toggle">
+                            <i class="menu-icon fa fa-caret-right"></i>
+
+                            Report
+                            <b class="arrow fa fa-angle-down"></b>
+                        </a>
+
+                        <b class="arrow"></b>
+
+                        <ul class="submenu">
+                            <li id="link192r" class="actionlinlk">@Html.ActionLink("Bank Journal", "BankJournal", "FinanceReports", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                        </ul>
+                    </li>
+                    <li class="">
+                        <a href="#" class="dropdown-toggle">
+                            <i class="menu-icon fa fa-caret-right"></i>
+
+                            Bank Setup
+                            <b class="arrow fa fa-angle-down"></b>
+                        </a>
+
+                        <b class="arrow"></b>
+
+                        <ul class="submenu">
+                            <li id="link192" class="actionlinlk">@Html.ActionLink("Bank Accounts", "Index", "BankAccount", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                        </ul>
+                    </li>
+
+                </ul>
+            </li>
+        }
+
+        @if (HttpContext.Current.User.IsInRole("FixedAsset_Admin--iuu") || HttpContext.Current.User.IsInRole("FixedAsset---"))
+        {
+
+            <li class="">
+                <a href="#" class="dropdown-toggle">
+                    <i class="menu-icon fa fa-caret-right"></i>
+
+                    Fixed Asset
+                    <b class="arrow fa fa-angle-down"></b>
+                </a>
+
+                <b class="arrow"></b>
+
+                <ul class="submenu">
+                    <li id="link141" class="actionlinlk">
+                        @Html.ActionLink("Asset Group", "Index", "FixedAssetGroup", new { area = "FixedAsset" }, null)<b class="arrow"></b></li>
+                    @*<li id="link" class="actionlinlk">@Html.ActionLink("Physical Count Report", "Index", "FixedAssetPhysicalCountReports", new { area = "FixedAsset" }, null)<b class="arrow"></b></li>*<li class="">*@
+                    @*<li id="link142" class="actionlinlk">@Html.ActionLink("Run Depreciation", "Index", "FixedAssetRunDepreciation", new { area = "FixedAsset" }, null)<b class="arrow"></b></li>
+                        <li id="link143" class="actionlinlk">@Html.ActionLink("Fixed Asset Depreciation Detail Report", "FixedAssetDetail", "ReportFixedAsset", new { area = "FixedAsset" }, null)<b class="arrow"></b></li>
+                        <li id="link144" class="actionlinlk">@Html.ActionLink("Fixed Asset Depreciation Summary Report", "FixedAssetSummary", "ReportFixedAsset", new { area = "FixedAsset" }, null)<b class="arrow"></b></li>*@
+                    <li id="link145" class="actionlinlk">
+                        @Html.ActionLink("Depreciation Setup", "Index", "FixedAssetDepreciationSetup", new { area = "FixedAsset" }, null)<b class="arrow"></b></li>
+                    <li id="link146" class="actionlinlk">
+                        @Html.ActionLink("Clearing Account Setup", "Index", "FixedAssetClearingAccountSetup", new { area = "FixedAsset" }, null)<b class="arrow"></b></li>
+                </ul>
+
+            </li>
+        }
+        
+    @if (HttpContext.Current.User.IsInRole("Finance_Checker"))
+    {
+
+        <li class="">
+            <a href="#" class="dropdown-toggle">
+                <i class="menu-icon fa fa-caret-right"></i>
+
+                Checker
+                <b class="arrow fa fa-angle-down"></b>
+            </a>
+
+            <b class="arrow"></b>
+
+            <ul class="submenu">
+                <li id="link141che" class="actionlinlk">@Html.ActionLink("Account Checker", "Index", "AccountChecker", new { area = "Finance" }, null)<b class="arrow"></b></li>
+               
+            </ul>
+
+        </li>
+    }
+      
+    @if (HttpContext.Current.User.IsInRole("Finance_Report"))
+        {
+
+            <li class="">
+                <a href="#" class="dropdown-toggle">
+                    <i class="menu-icon fa fa-caret-right"></i>
+
+                    Reports
+                    <b class="arrow fa fa-angle-down"></b>
+                </a>
+
+                <b class="arrow"></b>
+
+                <ul class="submenu">
+                    <li class="">
+                        <a href="#" class="dropdown-toggle">
+                            <i class="menu-icon fa fa-caret-right"></i>
+
+                            IFRS Report
+                            <b class="arrow fa fa-angle-down"></b>
+                        </a>
+
+                        <b class="arrow"></b>
+
+                        <ul class="submenu">
+                            <li id="link444s" class="actionlinlk">@Html.ActionLink("Comprehensive Income", "Scoi", "FinanceReports", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                            <li id="link444p" class="actionlinlk">@Html.ActionLink("Comprehensive Income By Project", "ScoiByProject", "FinanceReports", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                            <li id="link444pbizu" class="actionlinlk">@Html.ActionLink("Comprehensive Income By Business Unit", "ScoiByBizUnit", "FinanceReports", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                            <li id="link444pa" class="actionlinlk">@Html.ActionLink("Comprehensive Income By All Project", "SociAllProject", "FinanceReports", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                            <li id="link445" class="actionlinlk">@Html.ActionLink("Financial Position", "Sofp", "FinanceReports", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                            <li id="link44554" class="actionlinlk">@Html.ActionLink("Financial Position By Branch/Project", "SofpbyBranchOrProject", "FinanceReports", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                            <li id="link445s" class="actionlinlk">@Html.ActionLink("Financial Position By Business Unit", "SofpByBizUnit", "FinanceReports", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                            <li id="link446" class="actionlinlk">@Html.ActionLink("Cash Flow", "Socf", "FinanceReports", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                            <li id="link446k" class="actionlinlk">@Html.ActionLink("Change in Equity", "Socie", "FinanceReports", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                        </ul>
+
+                    </li>
+                    <li class="">
+                        <a href="#" class="dropdown-toggle">
+                            <i class="menu-icon fa fa-caret-right"></i>
+
+                            GAAP Report
+                            <b class="arrow fa fa-angle-down"></b>
+                        </a>
+
+                        <b class="arrow"></b>
+
+                        <ul class="submenu">
+                            <li id="link183" class="actionlinlk">@Html.ActionLink("Balance Sheet", "BalanceSheet", "FinanceReports", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                            <li id="link183sa" class="actionlinlk">@Html.ActionLink("Balance Sheet by Branch/Project", "BalanceSheetByBranchOrProject", "FinanceReports", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                            <li id="link324" class="actionlinlk">@Html.ActionLink("Cash Flow", "CashFlow", "FinanceReports", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                            <li id="link184" class="actionlinlk">@Html.ActionLink("Income Statement", "IncomeStatement", "FinanceReports", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                            <li id="link307" class="actionlinlk">
+                                @Html.ActionLink("Income Statement by Branch", "IncomeStatementByBranch", "FinanceReports", new { area = "Finance" }, null)<b class="arrow"></b>
+                            </li>
+                        </ul>
+
+                    </li>
+                    <li id="link181" class="actionlinlk">@Html.ActionLink("Account Analysis", "AccountAnalysis", "FinanceReports", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                    <li id="link182" class="actionlinlk">@Html.ActionLink("Account Analysis by Segment", "AccountAnalysisBySegment", "FinanceReports", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                    <li id="link185" class="actionlinlk">@Html.ActionLink("Trial Balance", "TrialBalance", "FinanceReports", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                    <li id="link185s" class="actionlinlk">@Html.ActionLink("Trial Balance By SubAccount", "TrialBalanceBySubAccount", "FinanceReports", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                    <li id="link185gl" class="actionlinlk">@Html.ActionLink("GL Balance", "GeneralLedgerBalance", "FinanceReports", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                    <li id="link185glb" class="actionlinlk">@Html.ActionLink("GL Balance Summary", "GeneralLedgerBalanceSummary", "FinanceReports", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                    <li id="link1810" class="actionlinlk">@Html.ActionLink("Account Schedule", "AccountSchedule", "FinanceReports", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                    <li id="link1810" class="actionlinlk">@Html.ActionLink("Account Schedule One Quarter", "AccountScheduleSingleQuarterReport", "FinanceReports", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                    <li id="link1810b" class="actionlinlk">@Html.ActionLink("Budget Balance Sheet", "BalanceSheetReport", "FinanceReports", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                    <li id="link1810b" class="actionlinlk">@Html.ActionLink("Budget Balance Sheet One Quarter", "BalanceSheetSingleQuarterReport", "FinanceReports", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                    <li id="link1810is" class="actionlinlk">@Html.ActionLink("Budget Income Statement", "IncomeStatementReport", "FinanceReports", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                    <li id="link1810is" class="actionlinlk">@Html.ActionLink("Budget Income Statement One Quarter", "IncomeStatementSingleQuarterReport", "FinanceReports", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                    <li id="link1810apr" class="actionlinlk">@Html.ActionLink("Budget Payable/Receivable", "AccountPayableReceivable", "FinanceReports", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                    <li id="link1810mra" class="actionlinlk">@Html.ActionLink("Ratio Analysis", "RatioAnalysis", "FinanceReports", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                    <li id="link1810mra2" class="actionlinlk">@Html.ActionLink("Ratio Summary", "RatioSummary", "FinanceReports", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                    <li id="link1810" class="actionlinlk">@Html.ActionLink("CoA", "ChartOfAccount", "FinanceReports", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                    <li id="link1810m2" class="actionlinlk">@Html.ActionLink("Manual Void Docs", "ManualVoidDocs", "FinanceReports", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                    <li id="link181034" class="actionlinlk">@Html.ActionLink("Audit Trail", "AuditTrail", "FinanceReports", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                    <li id="link181034" class="actionlinlk">@Html.ActionLink("Operation Log", "FinanceOperationLog", "GlobalUserAccessLogs", new { area = "" }, null)<b class="arrow"></b></li>
+
+
+                    @*<li id="link30183" class="actionlinlk">
+            @Html.ActionLink("Employee Ledger", "EmployeeLedger", "FinanceReports", new {area = "Finance"}, null) <b class="arrow"></b>
+        </li>
+        <li id="link30184" class="actionlinlk">
+            @Html.ActionLink("Purchaser Ledger", "PurchaserLedger", "FinanceReports", new { area = "Finance" }, null) <b class="arrow"></b>
+        </li>
+        <li id="link30185" class="actionlinlk">
+            @Html.ActionLink("Tax Report", "TaxReport", "FinanceReports", new { area = "Finance" }, null) <b class="arrow"></b>
+        </li>*@
+                </ul>
+
+            </li>
+        }
+        @if (HttpContext.Current.User.IsInRole("Finance_Admin"))
+        {
+
+            <li class="">
+                <a href="#" class="dropdown-toggle">
+                    <i class="menu-icon fa fa-caret-right"></i>
+
+                    Setting
+                    <b class="arrow fa fa-angle-down"></b>
+                </a>
+
+                <b class="arrow"></b>
+
+                <ul class="submenu">
+                    <li id="link117" class="actionlinlk">
+                        @Html.ActionLink("Tax Setup", "Index", "GlTaxRate", new { area = "Finance" }, null)<b class="arrow"></b>
+                    </li>
+                    <li id="link312" class="actionlinlk">
+                        @Html.ActionLink("VAT Witholding", "Index", "GlVatWithholding", new { area = "Finance" }, null)<b class="arrow"></b>
+                    </li>
+                    <li id="link187" class="actionlinlk">
+                        @Html.ActionLink("Countries", "Index", "GlCountryType", new { area = "Finance" }, null)<b class="arrow"></b>
+                    </li>
+                    <li id="link188" class="actionlinlk">
+                        @Html.ActionLink("Fiscal Years", "Index", "GlFiscalYear", new { area = "Finance" }, null)<b class="arrow"></b>
+                    </li>
+                    @*<li id="link189" class="actionlinlk">@Html.ActionLink("Currency", "Index", "FinSetupCurrency", new { area = "Finance" }, null)<b class="arrow"></b></li>
+        <li id="link313" class="actionlinlk">@Html.ActionLink("Exchange Rate", "Index", "FinSetupCurrencyExchange", new { area = "Finance" }, null)<b class="arrow"></b></li>*@
+                    <li id="link1901" class="actionlinlk">
+                        @Html.ActionLink("Retained Earning Account", "Index", "GlRetainedEarningAccount", new { area = "Finance" }, null)<b class="arrow"></b>
+                    </li>
+                   
+                    <li id="link190" class="actionlinlk">
+                        @Html.ActionLink("Payment Terms", "Index", "PaymentTerms", new { area = "Finance" }, null)<b class="arrow"></b>
+                    </li>
+                    <li id="link191" class="actionlinlk">
+                        @Html.ActionLink("Payment Methods", "Index", "PaymentMethod", new { area = "Finance" }, null)<b class="arrow"></b>
+                    </li>
+                    <li id="link191" class="actionlinlk">
+                        @Html.ActionLink("Aging Period", "Index", "AgingPeriodSetup", new { area = "Finance" }, null)<b class="arrow"></b>
+                    </li>
+                    <li id="link191o" class="actionlinlk">
+                        @Html.ActionLink("Other Settings", "Index", "FinanceSetting", new { area = "Finance" }, null)<b class="arrow"></b>
+                    </li>
+                    <li id="link191b" class="actionlinlk">
+                        @Html.ActionLink("Beginning Period", "Index", "GlBeginningPeriod", new { area = "Finance" }, null)<b class="arrow"></b>
+                    </li>
+                    <li id="link1879" class="actionlinlk">
+                        @Html.ActionLink("Currency", "Index", "FinSetupCurrency", new { area = "Finance" }, null)<b class="arrow"></b>
+                    </li>
+                    <li class="">
+                        <a href="#" class="dropdown-toggle">
+                            <i class="menu-icon fa fa-caret-right"></i>
+
+                            Inventory Setup
+                            <b class="arrow fa fa-angle-down"></b>
+                        </a>
+
+                        <b class="arrow"></b>
+
+                        <ul class="submenu">
+
+                            <li id="link190" class="actionlinlk">
+                                @Html.ActionLink("Stock Clearing Account", "Index", "StockClearingAccount", new { area = "Finance" }, null)<b class="arrow"></b>
+                            </li>
+                            <li id="invsett1343" class="actionlinlk">
+                                @Html.ActionLink("Item Category", "Index", "ItemCategory", new { area = "Inventory" }, null)<b class="arrow"></b>
+                            </li>
+
+                        </ul>
+
+                    </li>
+                    <li class="">
+                        <a href="#" class="dropdown-toggle">
+                            <i class="menu-icon fa fa-caret-right"></i>
+
+                            IFRS Report
+                            <b class="arrow fa fa-angle-down"></b>
+                        </a>
+
+                        <b class="arrow"></b>
+
+                        <ul class="submenu">
+                            <li id="link322" class="actionlinlk">
+                                @Html.ActionLink("Comprehensive Income", "Index", "IfrsStatementOfComprehensiveIncome", new { area = "Finance" }, null)<b class="arrow"></b>
+                            </li>
+                            <li id="link3222" class="actionlinlk">
+                                @Html.ActionLink("Financial Position", "Index", "IfrsStatementOfFinancialPosition", new { area = "Finance" }, null)<b class="arrow"></b>
+                            </li>
+                            <li id="link3242" class="actionlinlk">
+                                @Html.ActionLink("Changes in Equity", "Index", "IfrsStatementOfChangesInEquity", new { area = "Finance" }, null)<b class="arrow"></b>
+                            </li>
+                            <li id="link372" class="actionlinlk">
+                                @Html.ActionLink("Cash Flow", "Index", "IfrsStatementOfCashFlow", new { area = "Finance" }, null)<b class="arrow"></b>
+                            </li>
+                        </ul>
+
+                    </li>
+                    <li class="">
+                        <a href="#" class="dropdown-toggle">
+                            <i class="menu-icon fa fa-caret-right"></i>
+
+                            GAAP Report
+                            <b class="arrow fa fa-angle-down"></b>
+                        </a>
+
+                        <b class="arrow"></b>
+
+                        <ul class="submenu">
+                            <li id="link320" class="actionlinlk">
+                                @Html.ActionLink("Cash Flow Report", "Index", "GaapCashFlow", new { area = "Finance" }, null)<b class="arrow"></b>
+                            </li>
+                            <li id="link321" class="actionlinlk">
+                                @Html.ActionLink("Income Statement Report", "Index", "GaapIncomeStatement", new { area = "Finance" }, null)<b class="arrow"></b>
+                            </li>
+                            <li id="link323" class="actionlinlk">
+                                @Html.ActionLink("Balance Sheet", "Index", "GaapBalanceSheet", new { area = "Finance" }, null)<b class="arrow"></b>
+                            </li>
+
+
+                        </ul>
+
+                    </li>
+                    <li id="link323rs" class="actionlinlk">@Html.ActionLink("Revenue By Sales Type", "Index", "RevenueByType", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                    <li id="link323rsb" class="actionlinlk">
+                        @Html.ActionLink("Budget Schedule", "Index", "BudgetAccountShedule", new { area = "Finance" }, null)<b class="arrow"></b>
+                    </li>
+                    <li id="link323rsb" class="actionlinlk">
+                        @Html.ActionLink("Budget Schedule Category", "Index", "BudgetAccountSheduleCategory", new { area = "Finance" }, null)<b class="arrow"></b>
+                    </li>
+                    <li id="link323" class="actionlinlk">@Html.ActionLink("Dashboard", "Index", "FinanceDashboard", new { area = "Finance" }, null)<b class="arrow"></b></li>
+                    <li class="">
+                        <a href="#" class="dropdown-toggle">
+                            <i class="menu-icon fa fa-caret-right"></i>
+
+                            Master Setup
+                            <b class="arrow fa fa-angle-down"></b>
+                        </a>
+
+                        <b class="arrow"></b>
+
+                        <ul class="submenu">
+                            <li id="link3227m" class="actionlinlk">
+                                @Html.ActionLink("Cross Validation", "Index", "GlSegmentCrossValidation", new { area = "Finance" }, null)<b class="arrow"></b>
+                            </li>
+                            <li id="link3222m" class="actionlinlk">
+                                @Html.ActionLink("Segment Setup", "Index", "GlDynamicSegmentSetup", new { area = "Finance" }, null)<b class="arrow"></b>
+                            </li>
+                            <li id="link3242m" class="actionlinlk">
+                                @Html.ActionLink("Rule Values", "Index", "GlRuleValue", new { area = "Finance" }, null)<b class="arrow"></b>
+                            </li>
+                        </ul>
+
+                    </li>
+                </ul>
+
+            </li>
+        }
+
+    </ul>
+</li>
+

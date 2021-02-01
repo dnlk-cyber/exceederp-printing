@@ -1,0 +1,41 @@
+﻿<legend>   Account Shedule Category </legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Finance.Budget.BudgetAccountSheduleCategory>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Name);
+          columns.Bound(c => c.SheduleCategoryType);
+          columns.Bound(c => c.Remark);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .HtmlAttributes(new { style = "height: 520px;" })
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(5))
+
+      .Scrollable()
+      .Sortable()
+      .Filterable() 
+      .Scrollable(h => h.Height(500))
+                             
+      .DataSource(dataSource => dataSource
+          .Ajax() 
+          .Model(model => model.Id(p => p.BudgetAccountSheduleCategoryId))
+          .Events(ev => ev
+              .Error("error_handler(\"grid\")")
+              .RequestStart("onRequestStart(\"grid\")")
+              .RequestEnd("onRequestEnd(\"grid\")"))
+          .Read(read => read.Action("BudgetAccountSheduleCategory_Read", "BudgetAccountSheduleCategory"))
+          .Create(create => create.Action("BudgetAccountSheduleCategory_Create", "BudgetAccountSheduleCategory"))
+          .Update(update => update.Action("BudgetAccountSheduleCategory_Update", "BudgetAccountSheduleCategory"))
+          .Destroy(destroy => destroy.Action("BudgetAccountSheduleCategory_Destroy", "BudgetAccountSheduleCategory"))
+      ))
+
+ 

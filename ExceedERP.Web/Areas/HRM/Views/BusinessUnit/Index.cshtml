@@ -1,0 +1,50 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.Common.HRM
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Business Unit</legend>
+@(Html.Kendo().Grid<BusinessUnit>()
+          .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Name).Width(300);
+          columns.Bound(c => c.Accountcode).Width (300).Title("Account").EditorTemplateName("BusinessUnitAccountSelector");
+          columns.Bound(c => c.Remark);
+          columns.Command(command => {
+              command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+              command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+      })
+      .ToolBar(toolbar => {
+          toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+        .Scrollable(h => h.Height(500))
+
+
+                      .Filterable()
+                         .Pageable(pageable => pageable
+                                                    .Input(true)
+                                                    .Numeric(false)
+                                                    .Refresh(true)
+                                                    .PageSizes(true)
+                                                    .ButtonCount(5))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+                 .Events(events =>
+                 {
+                     events.Error("error_handler(\"grid\")");
+                     events.RequestStart("onRequestStart(\"grid\")");
+                     events.RequestEnd("onRequestEnd(\"grid\")");
+                 }
+              )
+
+              .Model(model => { model.Id(p => p.BusinessUnitId);
+                  model.Field(p => p.BusinessUnitId).Editable(false);})
+          .Read(read => read.Action("BusinessUnits_Read", "BusinessUnit"))
+          .Create(create => create.Action("BusinessUnits_Create", "BusinessUnit"))
+          .Update(update => update.Action("BusinessUnits_Update", "BusinessUnit"))
+          .Destroy(destroy => destroy.Action("BusinessUnits_Destroy", "BusinessUnit"))
+      )
+)

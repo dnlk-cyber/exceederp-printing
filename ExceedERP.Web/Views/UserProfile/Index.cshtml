@@ -1,0 +1,94 @@
+﻿@using System.Collections
+@using ExceedERP.Web.Areas.Finance.Controllers
+@using ExceedERP.Web.Models
+<legend>My Branches</legend>
+<p>Please click the button to update your default branch!</p>
+@(Html.Kendo().Grid<UserBranchGroup>()
+          .Name("grid")
+          .Columns(columns =>
+          {
+              columns.ForeignKey(p => p.UserBranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").Width(150);
+              columns.Bound(c => c.IsDefault).Width(80).ClientTemplate(
+                  "<input type='checkbox' disabled = 'true' value='#= IsDefault #' " +
+                  "# if (IsDefault) { #" +
+                  "checked='checked'" +
+                  "# } #" +
+                  "/>"
+                  );
+              columns.Command(
+        command => {
+            command.Custom("✅").Click("MakeDefautl");
+
+        }).Width(280);
+          })
+      .ToolBar(toolbar =>
+      {
+
+          //toolbar.Create();
+
+      })
+                        .HtmlAttributes(new { style = "height: 550px;" })
+                        .Pageable(pageable => pageable
+                            .Input(true)
+                            .Numeric(false)
+                            .Refresh(true)
+                            .PageSizes(true)
+                            .ButtonCount(20))
+                        .Scrollable()
+                        .Selectable(selectable =>
+                        {
+                            selectable.Mode(GridSelectionMode.Single);
+                            selectable.Type(GridSelectionType.Row);
+                        })
+                        .Sortable(sortable =>
+                        {
+                            sortable.SortMode(GridSortMode.SingleColumn);
+                        })
+                        .Filterable()
+
+
+                        .Scrollable(h => h.Height(500))
+
+                        .DataSource(dataSource => dataSource
+                            .Ajax()
+
+                            .PageSize(20)
+                            .Model(
+                                model =>
+                                {
+                                    model.Id(p => p.Id);
+
+                                })
+                            .Events(events => events
+                                .Error("error_handler_one")
+                                .Sync("sync_handler"))
+                            .Read(read => read.Action("MyBranches_Read", "UserProfile"))
+                        ))
+
+
+
+
+
+<script>
+    function MakeDefautl(e) {
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        var id = dataItem.Id;
+       
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("MakeDefault", "UserProfile")',
+            data: { id: id },
+            success: function (result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                location.reload(true);
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    };
+</script>
+
+
+

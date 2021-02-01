@@ -1,0 +1,241 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@using Kendo.Mvc.UI
+@using ExceedERP.Core.Domain.Production
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>  Cleaned Products Sale </legend>
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Production.CleanedProductSale>()
+                              .Name("cleanedProductSales")
+                              .Columns(columns =>
+                              {
+                                  columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("Branches");
+                                  columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["FilscalYears"], "GlFiscalYearId", "Name").EditorTemplateName("YearSelector");
+                                  //columns.Bound(c => c.Remark);
+                                  columns.Command(command =>
+                                  {
+                                      command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                      command.Destroy().Text(Resources.ActionButton_Cancel);
+                                  }).Width(200);
+                              })
+                              .ToolBar(toolbar =>
+                              {
+                                  toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                              })
+                              .Editable(editable => editable.Mode(GridEditMode.InLine))
+                              .Selectable(selectable =>
+                              {
+                                  selectable.Mode(GridSelectionMode.Single);
+                                  selectable.Type(GridSelectionType.Row);
+                              })
+                              .Scrollable(h => h.Height(500))
+                              .Sortable(sortable =>
+                              {
+                                  sortable.SortMode(GridSortMode.SingleColumn);
+                              })
+                              .Filterable()
+                              .Pageable(pageable => pageable
+                                  .Input(true)
+                                  .Numeric(false)
+                                  .Refresh(true)
+                                  .PageSizes(true)
+                                  .ButtonCount(5))
+                              .DataSource(dataSource => dataSource
+                                  .Ajax()
+
+                                  .Events(events =>
+                                  {
+                                      events.Error("error_handler(\"cleanedProductSales\")");
+                                      events.RequestStart("onRequestStart(\"cleanedProductSales\")");
+                                      events.RequestEnd("onRequestEnd(\"cleanedProductSales\")");
+                                  })
+                                  .Model(model =>
+                                  {
+                                      model.Id(f => f.CleanedProductSaleId);
+                                  })
+
+                                  .Read(read => read.Action("Sales_Read", "CleanedProductSale"))
+                                  .Create(create => create.Action("Sale_Create", "CleanedProductSale"))
+                                  .Update(update => update.Action("Sales_Update", "CleanedProductSale"))
+                                  .Destroy(destroy => destroy.Action("Sale_Destroy", "CleanedProductSale"))
+                              ).ClientDetailTemplateId("cleaned_sales_detail")
+)
+
+
+
+<script id="cleaned_sales_detail" type="text/kendo-template">
+    @(Html.Kendo().TabStrip()
+        .Name("tab_#=CleanedProductSaleId#")
+        .SelectedIndex(0)
+        .Items(items => {
+            items.Add().Text("").Content(
+                @<text>
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Production.CleanedProductSaleItem>()
+                          .Name("sales_items_#=CleanedProductSaleId#")
+                          .Columns(columns =>
+                          {
+                              columns.ForeignKey(c => c.ItemCode, (IEnumerable)ViewData["Items"], "ItemCode", "Name").EditorTemplateName("Item");
+                              columns.Group(gr => {
+                                  gr.Title("Quantity").HeaderHtmlAttributes(new { style = "font-weight:bold; text-align:center;"});
+                                  gr.Columns(innerColumns =>
+                                  {
+                                      innerColumns.Bound(ic => ic.ExternalSaleQuantity);
+                                      innerColumns.Bound(ic => ic.OnFarmSaleQuantity);
+                                      innerColumns.Bound(ic => ic.TotalQuantity);
+                                  });
+                              });
+                              columns.Group(gr =>
+                              {
+                                  gr.Title("Unit Price").HeaderHtmlAttributes(new { style = "font-weight:bold; text-align:center;" });
+                                  gr.Columns(innerColumns =>
+                                  {
+                                      innerColumns.Bound(ic => ic.UnitPriceExternal);
+                                      innerColumns.Bound(ic => ic.UnitPriceOnFarm);
+                                      
+                                  });
+                              });
+                              
+                              columns.Group(gr =>
+                              {
+                                  gr.Title("Total Value").HeaderHtmlAttributes(new { style = "font-weight:bold; text-align:center;" });
+                                  gr.Columns(innerColumns =>
+                                  {
+                                      innerColumns.Bound(ic => ic.ExternalSaleAmount);
+                                      innerColumns.Bound(ic => ic.OnFarmSaleAmount);
+                                      innerColumns.Bound(ic => ic.TotalSaleAmount);
+                                  });
+                              });
+
+                              columns.Command(command =>
+                              {
+                                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                  command.Destroy().Text(Resources.ActionButton_Cancel);
+                              }).Width(200);
+                          })
+                          .ToolBar(toolbar =>
+                          {
+                              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                          })
+                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                          .Selectable(selectable =>
+                          {
+                              selectable.Mode(GridSelectionMode.Single);
+                              selectable.Type(GridSelectionType.Row);
+                          })
+                          .Scrollable(h => h.Height(500))
+                          .Sortable(sortable =>
+                          {
+                              sortable.SortMode(GridSortMode.SingleColumn);
+                          })
+                          //.Filterable()
+                          .Pageable(pageable => pageable
+                              .Input(true)
+                              .Numeric(false)
+                              .Refresh(true)
+                              .PageSizes(true)
+                              .ButtonCount(5))
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+
+                              .Events(events =>
+                              {
+                                  events.Error("error_handler(\"sales_items_#=CleanedProductSaleId#\")");
+                                  events.RequestStart("onRequestStart(\"sales_items_#=CleanedProductSaleId#\")");
+                                  events.RequestEnd("onRequestEnd(\"sales_items_#=CleanedProductSaleId#\")");
+                              })
+                              .Model(model =>
+                              {
+                                  model.Id(f => f.CleanedProductSaleItemId);
+
+                                  model.Field(f => f.TotalQuantity).Editable(false);
+                                  model.Field(f => f.ExternalSaleAmount).Editable(false);
+                                  model.Field(f => f.OnFarmSaleAmount).Editable(false);
+                                  model.Field(f => f.TotalSaleAmount).Editable(false);
+                              })
+
+                              .Read(read => read.Action("Sales_Read", "CleanedProductSaleItem", new { id = "#=CleanedProductSaleId#" }))
+                              .Create(create => create.Action("Sale_Create", "CleanedProductSaleItem", new { id = "#=CleanedProductSaleId#" }))
+                              .Update(update => update.Action("Sale_Update", "CleanedProductSaleItem"))
+                              .Destroy(destroy => destroy.Action("Sale_Destroy", "CleanedProductSaleItem"))
+                          ).ClientDetailTemplateId("cleaned_monthly_sales_")
+                          .ToClientTemplate()
+                    )
+                </text>
+                );
+        })
+        .ToClientTemplate()
+    )
+</script>
+
+
+<script id="cleaned_monthly_sales_" type="text/kendo-template">
+    @(Html.Kendo().TabStrip()
+        .Name("tab_str_#=CleanedProductSaleItemId#")
+        .SelectedIndex(0)
+        .Items(items => {
+            items.Add().Text("").Content(
+                @<text>
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Production.CleanedProductSaleItemPerMonth>()
+                          .Name("monthly_sales_items_#=CleanedProductSaleItemId#")
+                          .Columns(columns =>
+                          {
+                              columns.ForeignKey(c => c.ProductionPeriodId, (IEnumerable)ViewData["ProductionPeriods"], "ProductionPeriodId", "Name").EditorTemplateName("CleanedItemSalesPeriodSelector");
+                              columns.Bound(c => c.Amount);
+
+                              columns.Command(command =>
+                              {
+                                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                  command.Destroy().Text(Resources.ActionButton_Cancel);
+                              }).Width(200);
+                          })
+                          .ToolBar(toolbar =>
+                          {
+                              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                          })
+                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                          .Selectable(selectable =>
+                          {
+                              selectable.Mode(GridSelectionMode.Single);
+                              selectable.Type(GridSelectionType.Row);
+                          })
+                          .Scrollable(h => h.Height(500))
+                          .Sortable(sortable =>
+                          {
+                              sortable.SortMode(GridSortMode.SingleColumn);
+                          })
+                          //.Filterable()
+                          .Pageable(pageable => pageable
+                              .Input(true)
+                              .Numeric(false)
+                              .Refresh(true)
+                              .PageSizes(true)
+                              .ButtonCount(5))
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+
+                              .Events(events =>
+                              {
+                                  events.Error("error_handler(\"monthly_sales_items_#=CleanedProductSaleItemId#\")");
+                                  events.RequestStart("onRequestStart(\"monthly_sales_items_#=CleanedProductSaleItemId#\")");
+                                  events.RequestEnd("onRequestEnd(\"monthly_sales_items_#=CleanedProductSaleItemId#\")");
+                              })
+                              .Model(model =>
+                              {
+                                  model.Id(f => f.CleanedProductSaleItemPerMonthId);
+                              })
+
+                              .Read(read => read.Action("Sales_Read", "CleanedProductSaleItemPerMonth", new { itemId = "#=CleanedProductSaleItemId#" }))
+                              .Create(create => create.Action("Sale_Create", "CleanedProductSaleItemPerMonth", new { itemId = "#=CleanedProductSaleItemId#" }))
+                              .Update(update => update.Action("Sale_Update", "CleanedProductSaleItemPerMonth"))
+                              .Destroy(destroy => destroy.Action("Sale_Destroy", "CleanedProductSaleItemPerMonth"))
+                          )//.ClientDetailTemplateId("template_productionOrder_detail")
+                          .ToClientTemplate()
+                    )
+                </text>
+                );
+        })
+        .ToClientTemplate()
+    )
+</script>

@@ -1,0 +1,61 @@
+﻿<legend>Period</legend>
+@using System.Collections
+<div>
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Common.HRM.Period>()
+          .Name("grid")
+          .Columns(columns =>
+          {
+              columns.Bound(c => c.PeriodType).EditorTemplateName("PeriodType").Width(150);
+              columns.Bound(c => c.PeriodName);
+              columns.Bound(c => c.Index).Width(80);
+              columns.Bound(c => c.StartDate);
+              columns.Bound(c => c.EndDate);
+              //  columns.Bound(c => c.Index);
+              columns.ForeignKey(c => c.ParentId, (System.Collections.IEnumerable)ViewData["PeriodList"], "PeriodId", "PeriodName").EditorTemplateName("Period").Width(150);
+              columns.Bound(c => c.Remark);
+              columns.Command(command =>
+              {
+                  command.Edit();
+                  command.Destroy();
+              }).Width(180);
+
+          })
+
+          .ToolBar(toolbar =>
+          {
+              toolbar.Create();
+          })
+          .Editable(editable => editable.Mode(GridEditMode.InLine))
+           .HtmlAttributes(new { style = "height: 520px;" })
+                                                      .Pageable(pageable => pageable
+                                                                        .Input(true)
+                                                                        .Numeric(false)
+                                                                        .Refresh(true)
+                                                                        .PageSizes(true)
+                                                                        .ButtonCount(5))
+
+                                                            .Scrollable()
+                                                            .Sortable()
+                                                            .Filterable()
+                                                            .Groupable()
+                                                            .Scrollable(h => h.Height(500))
+          .DataSource(dataSource => dataSource
+              .Ajax()
+                      .Model(model => model.Id(p => p.PeriodId)).Events(ev => ev
+                                                                            .Error("error_handler(\"grid\")")
+                                                                            .RequestStart("onRequestStart(\"grid\")")
+                                                                            .RequestEnd("onRequestEnd(\"grid\")"))
+              .Read(read => read.Action("Periods_Read", "Period"))
+                                      .Create(create => create.Action("Periods_Create", "Period"))
+              .Update(update => update.Action("Periods_Update", "Period"))
+              .Destroy(destroy => destroy.Action("Periods_Destroy", "Period"))
+              .Events(events => events.Sync("KendoGridRefresh"))
+          )
+    )
+</div>
+<script>
+    function KendoGridRefresh() {
+        var grid = $('#grid').data('kendoGrid');
+        grid.dataSource.read();
+    }
+</script>

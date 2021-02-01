@@ -1,0 +1,14 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@using ExceedERP.Core.Domain.HRM
+@(Html.Kendo().DropDownListFor(m => m)
+.OptionLabel( Resources.Select)
+                     .DataTextField("Name")
+                                .DataValueField("WorkCategoryId")
+                               .BindTo((IEnumerable)ViewData["Category"])
+                                   .Filter("contains")
+          .MinLength(2)
+                         .ValuePrimitive(true)
+      )
+
+

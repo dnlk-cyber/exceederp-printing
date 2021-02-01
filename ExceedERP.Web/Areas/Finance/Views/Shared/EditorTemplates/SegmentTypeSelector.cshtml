@@ -1,0 +1,15 @@
+﻿@(Html.Kendo().DropDownListFor(m => m)
+      .ValuePrimitive(true)
+      .OptionLabel("Select Segment Type")
+      .DataTextField("Name")
+      .DataValueField("Code")
+      .Filter("contains")
+      .DataSource(dataSource =>
+      {
+          dataSource.Read(read => read.Action("GetSegmentTypes", "FinanceDataProvider", new { area = "Finance" }))
+              .ServerFiltering(true);
+      })
+         
+                             
+      )
+@Html.ValidationMessageFor(m => m)

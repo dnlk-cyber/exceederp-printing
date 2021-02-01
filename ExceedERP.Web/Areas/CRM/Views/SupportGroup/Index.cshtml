@@ -1,0 +1,104 @@
+﻿<legend> Group </legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.SupportGroup>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.SupportGroupId).Title("#").Width(100);
+          columns.Bound(c => c.Name);
+          columns.Bound(c => c.Description);
+          
+          columns.Bound(c => c.Remark);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create();
+      })
+            .Editable(editable => editable.Mode(GridEditMode.InLine))
+                    .HtmlAttributes(new { style = "height: 520px;" })
+                                      .Pageable(pageable => pageable
+                                                        .Input(true)
+                                                        .Numeric(false)
+                                                        .Refresh(true)
+                                                        .PageSizes(true)
+                                                        .ButtonCount(5))
+
+                                            .Scrollable()
+                                            .Sortable()
+                                            .Filterable()
+                                            .Groupable()
+                                            .Scrollable(h => h.Height(500))
+      .DataSource(dataSource => dataSource
+              .Ajax().Model(model =>
+                  {
+                      model.Id(p => p.SupportGroupId);
+                      model.Field(p => p.SupportGroupId).Editable(false);
+                         
+
+                  })
+                     .Events(ev => ev
+                                                                .Error("error_handler(\"grid\")")
+                                                                .RequestStart("onRequestStart(\"grid\")")
+                                                                .RequestEnd("onRequestEnd(\"grid\")"))
+                  .Read(read => read.Action("Groups_Read", "SupportGroup"))
+                  .Create(create => create.Action("Groups_Create", "SupportGroup"))
+              .Update(update => update.Action("Groups_Update", "SupportGroup"))
+              .Destroy(destroy => destroy.Action("Groups_Destroy", "SupportGroup"))
+          ).ClientDetailTemplateId("template")
+)
+
+
+
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                                            .Name("tabstrip_#=SupportGroupId#")
+    .SelectedIndex(0)
+    .Items(items =>
+     {
+ 
+
+         items.Add().Text("   ").Content(
+            @<text>
+                <legend>Memebers</legend>
+                @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.SupportGroupDetail>()
+                                                                             .Name("Memebers_#=SupportGroupId#")
+             .Columns(columns =>
+             {
+                   columns.Bound(c => c.Name).EditorTemplateName("UserEditor").Width(100);
+                   columns.Bound(c => c.Remark).Width(100);
+                 columns.Bound(c => c.CreatedBy).Width(100);
+                 columns.Bound(c => c.DateCreated).Format("{0:dd/MM/yyyy}").Width(100);
+                 columns.Command(command => { command.Edit(); command.Destroy(); }).Width(100);
+             })
+             .ToolBar(toolbar =>
+             {
+                 toolbar.Create();
+             })
+             .Editable(editable => editable.Mode(GridEditMode.InLine))
+             .Scrollable()
+             .DataSource(dataSource => dataSource
+                 .Ajax()
+                                  .Sort(x => x.Add(s => s.DateCreated).Descending())
+                          .Model(model =>
+              {
+                  model.Id(p => p.SupportGroupDetailId);
+                  model.Field(p => p.DateCreated).Editable(false);
+                  model.Field(p => p.CreatedBy).Editable(false);
+              }).Events(ev => ev
+                                                                                                                                                                    .Error("error_handler(\"Memebers_#=SupportGroupId#\")")
+                                                                                                                                                                    .RequestStart("onRequestStart(\"Memebers_#=SupportGroupId#\")")
+                                                                                                                                                                    .RequestEnd("onRequestEnd(\"Memebers_#=SupportGroupId#\")"))
+
+
+                                                                                                                         .Read(read => read.Action("SupportGroupDetails_Read", "SupportGroupDetail", new { Id = "#=SupportGroupId#" }))
+                                                                                                                                 .Create(create => create.Action("SupportGroupDetails_Create", "SupportGroupDetail", new { Id = "#=SupportGroupId#" }))
+                                                                            .Update(update => update.Action("SupportGroupDetails_Update", "SupportGroupDetail"))
+                                                                                          .Destroy(update => update.Action("SupportGroupDetails_Destroy", "SupportGroupDetail"))
+                                                                         ).ToClientTemplate()
+                )
+
+            </text>
+            );
+         //*****************************************************************************************************//
+     }).ToClientTemplate())
+</script>

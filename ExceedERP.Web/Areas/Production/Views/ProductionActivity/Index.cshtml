@@ -1,0 +1,151 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@using ExceedERP.Core.Domain.Production
+@using Kendo.Mvc.UI
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>  Operations / Activities </legend>
+@(Html.Kendo().TabStrip()
+        .Name("activitiesTabString")
+        .SelectedIndex(0)
+        .Items( items => {
+            items.Add().Text("Machinery Operations").Content(
+                    @<text>
+                        @(Html.Kendo().Grid<ExceedERP.Core.Domain.Production.ProductionActivity>()
+                            .Name("machineryActivitiesGrid")
+                            .Columns(columns =>
+                            {
+                                columns.ForeignKey(c => c.ProductionSettingId, (IEnumerable)ViewData["ActivityTypes"], "ProductionSettingId", "Value").EditorTemplateName("ActivityTypes");
+                                columns.Bound(c => c.Name);
+                                //columns.Bound(c => c.MaterialCost);
+                                //columns.Bound(c => c.LaborCost);
+                                //columns.Bound(c => c.Equipmentcost);
+                                //columns.Bound(c => c.TotalCost);
+
+                                columns.Command(command =>
+                                {
+                                    command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                    command.Destroy().Text(Resources.ActionButton_Cancel);
+                                }).Width(200);
+                            })
+                            .ToolBar(toolbar =>
+                            {
+                                toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                            })
+                            .Editable(editable => editable.Mode(GridEditMode.InLine))
+                            .Scrollable(h => h.Height(700))
+                            .Sortable(sortable =>
+                            {
+                                sortable.SortMode(GridSortMode.SingleColumn);
+                            })
+                            .Selectable(selectable =>
+                            {
+                                selectable.Mode(GridSelectionMode.Single);
+                                selectable.Type(GridSelectionType.Row);
+                            })
+                            .Filterable()
+                            .Pageable(pageable => pageable
+                                .Input(true)
+                                .Numeric(false)
+                                .Refresh(true)
+                                .PageSizes(true)
+                                .ButtonCount(5))
+                            //.Events(e => e.Edit("onEdit"))
+                            .DataSource(dataSource => dataSource
+                                .Ajax()
+                                .Group(group =>
+                                {
+                                    group.Add(f => f.ProductionSettingId);
+                                })
+                                .Events(events =>
+                                {
+                                    events.Error("error_handler(\"machineryActivitiesGrid\")");
+                                    events.RequestStart("onRequestStart(\"machineryActivitiesGrid\")");
+                                    events.RequestEnd("onRequestEnd(\"machineryActivitiesGrid\")");
+                                })
+                                .Model(model =>
+                                {
+                                    model.Id(p => p.ProductionActivityId);
+                                    //model.Field(f => f.TotalCost).Editable(false);
+
+                                })
+                                .Read(read => read.Action("MachineryActivities_Read", "ProductionActivity"))
+                                .Create(create => create.Action("Activity_Create", "ProductionActivity", new { type = OperationType.MachineryOperation}))
+                                .Update(update => update.Action("Activity_Update", "ProductionActivity"))
+                                .Destroy(destroy => destroy.Action("Activity_Destroy", "ProductionActivity"))
+                                )
+                        )
+                    </text>
+                );
+            items.Add().Text("Labor Operations").Content(
+                    @<text>
+                         @(Html.Kendo().Grid<ExceedERP.Core.Domain.Production.ProductionActivity>()
+                            .Name("laborActivitiesGrid")
+                            .Columns(columns =>
+                            {
+                                columns.ForeignKey(c => c.ProductionSettingId, (IEnumerable)ViewData["ActivityTypes"], "ProductionSettingId", "Value").EditorTemplateName("ActivityTypes");
+                                columns.Bound(c => c.Name);
+                                //columns.Bound(c => c.MaterialCost);
+                                //columns.Bound(c => c.LaborCost);
+                                //columns.Bound(c => c.Equipmentcost);
+                                //columns.Bound(c => c.TotalCost);
+
+                                columns.Command(command =>
+                                {
+                                    command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                    command.Destroy().Text(Resources.ActionButton_Cancel);
+                                }).Width(200);
+                            })
+                            .ToolBar(toolbar =>
+                            {
+                                toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                            })
+                            .Editable(editable => editable.Mode(GridEditMode.InLine))
+                            .Scrollable(h => h.Height(700))
+                            .Sortable(sortable =>
+                            {
+                                sortable.SortMode(GridSortMode.SingleColumn);
+                            })
+                            .Selectable(selectable =>
+                            {
+                                selectable.Mode(GridSelectionMode.Single);
+                                selectable.Type(GridSelectionType.Row);
+                            })
+                            .Filterable()
+                            .Pageable(pageable => pageable
+                                .Input(true)
+                                .Numeric(false)
+                                .Refresh(true)
+                                .PageSizes(true)
+                                .ButtonCount(5))
+                            //.Events(e => e.Edit("onEdit"))
+                            .DataSource(dataSource => dataSource
+                                .Ajax()
+                                .Group(group =>
+                                {
+                                    group.Add(f => f.ProductionSettingId);
+                                })
+                                .Events(events =>
+                                {
+                                    events.Error("error_handler(\"laborActivitiesGrid\")");
+                                    events.RequestStart("onRequestStart(\"laborActivitiesGrid\")");
+                                    events.RequestEnd("onRequestEnd(\"laborActivitiesGrid\")");
+                                })
+                                .Model(model =>
+                                {
+                                    model.Id(p => p.ProductionActivityId);
+                                    //model.Field(f => f.TotalCost).Editable(false);
+
+                                })
+                                .Read(read => read.Action("LaborActivities_Read", "ProductionActivity"))
+                                .Create(create => create.Action("Activity_Create", "ProductionActivity", new { type = OperationType.LaborOperation}))
+                                .Update(update => update.Action("Activity_Update", "ProductionActivity"))
+                                .Destroy(destroy => destroy.Action("Activity_Destroy", "ProductionActivity"))
+                                )
+                        )
+                    </text>
+                );
+        })
+    )
+

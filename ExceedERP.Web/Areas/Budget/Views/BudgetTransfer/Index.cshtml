@@ -1,0 +1,181 @@
+﻿@model ExceedERP.Core.Domain.Budget.BudgetTransfer
+
+
+
+<script>
+    var masterId;
+    function filterCategory() {
+        return {
+            Group: $("#BudgetGroup").val()
+        };
+    }
+    function filterAccCode() {
+        return {
+            PlanCategoryID: masterId,
+        };
+    }
+
+    function filterFromAccCode() {
+        return {
+            PlanCategoryID: masterId ,
+            WorkUnit : $("#FromWorkUnit").val(),
+        };
+    }
+    function filterToAccCode() {
+        return {
+            PlanCategoryID: masterId,
+            WorkUnit : $("#ToWorkUnit").val(),
+            AccCode: $("#FromAccountCode").val()
+        };
+    }
+    function filterWorkUnit() {
+        return {
+            PlanCategoryID: masterId,
+
+            AccCode: $("#FromAccountCode").val()
+        };
+    }
+    function filterToWorkUnit() {
+        return {
+            PlanCategoryID: masterId,
+             
+            GLChartOfAccountCostCenterId: $("#FromWorkUnit").val()
+        };
+    }
+    function onDetailExpand(e) {
+        var masterRow = e.masterRow;
+        //var masterGrid = $("#grid").data("kendoGrid");
+        var masterGrid = $("#gridCategory").data("kendoGrid");
+
+        var masterDataItem = masterGrid.dataItem(masterRow);
+        masterId = masterDataItem.PlanCategoryID;
+        console.error("master "+masterId);
+        gridName = "#gridBudgetTransfer_" + masterId;
+
+
+    }
+</script>
+
+<legend> Budget Transfer</legend>
+
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Budget.PlanCategory>()
+          .Name("gridCategory")
+      .Columns(columns =>
+      {
+
+          columns.Bound(c => c.Name).EditorTemplateName("CategoryEditor").Width(150);
+
+          columns.ForeignKey(c => c.GlFiscalYearId, (System.Collections.IEnumerable)ViewData["FiscalYear"], "GlFiscalYearId", "Name").Title("Fiscal Year").EditorTemplateName("YearTemplate").Width(120);
+          columns.Bound(c => c.GrandTotal).Title("Total").Format("{0:N0}").Width(120);
+          
+       
+      })
+                     .Events(ev =>
+                                                             {
+                                                                 ev.DetailExpand("onDetailExpand");
+                                                             })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+         .HtmlAttributes(new { style = "height: 520px;" })
+                      .Pageable(pageable => pageable
+                                        .Input(true)
+                                        .Numeric(false)
+                                        .Refresh(true)
+                                        .PageSizes(true)
+                                        .ButtonCount(5))
+
+                            .Scrollable()
+                            .Sortable()
+                            .Filterable()
+                            .Scrollable(h => h.Height(500))
+
+           .DataSource(dataSource => dataSource
+          .Ajax() 
+                              .Model(model =>
+                          {
+                              model.Id(p => p.PlanCategoryID);
+                              model.Field(p => p.GrandTotal).Editable(false);
+
+                          }).Events(ev => ev
+                                            .Error("error_handler(\"gridCategory\")")
+                                            .RequestStart("onRequestStart(\"gridCategory\")")
+                                            .RequestEnd("onRequestEnd(\"gridCategory\")"))
+                      .Read(read => read.Action("TransferCategory_Read", "BudgetTransfer"))
+    
+          )
+               .ClientDetailTemplateId("template")
+)
+
+
+
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                          .Name("tabstripMain_#=PlanCategoryID#")
+          .SelectedIndex(0)
+          .Items(items =>
+          {
+              items.Add().Text("Budget Transfer").Content(
+                @<text>
+
+
+                    <legend>     </legend>
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Budget.BudgetTransfer>()
+                                  .Name("gridBudgetTransfer_#=PlanCategoryID#")
+      .Columns(columns =>
+      {
+         columns.Bound(c => c.FromAccountCode).Title("From Code").EditorTemplateName("AccountCodeCascade").Width(120);
+          columns.ForeignKey(c => c.FromWorkUnit, (System.Collections.IEnumerable)ViewData["MainCompanyStructures"], "Values", "Description").EditorTemplateName("WorkUnitCascade").Width(120);
+          columns.Bound(c => c.ToAccountCode).Title("To Code").EditorTemplateName("AccountCodeCascade").Width(120);
+          columns.ForeignKey(c => c.ToWorkUnit, (System.Collections.IEnumerable)ViewData["MainCompanyStructures"], "Values", "Description").EditorTemplateName("ToWorkUnitCascade").Width(120);
+
+          columns.ForeignKey(c => c.Unit, (System.Collections.IEnumerable)ViewData["BudgetCurrency"], "BudgetCurrencyId", "Name").EditorTemplateName("UnitEditorTemplate").Width(100);
+       
+       
+       //   columns.Bound(c => c.Unit).EditorTemplateName("UnitEditorTemplate").Width(120);
+          columns.Bound(c => c.Transferred).Title("Amount").EditorTemplateName("NumEditor").Format("{0:N0}").Width(120);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create();
+      })
+
+              .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("BudgetTransferEditor").Window(x=>x.Title("Budget Transfer")))
+         .HtmlAttributes(new { style = "height: 520px;" })
+                      .Pageable(pageable => pageable
+                                        .Input(true)
+                                        .Numeric(false)
+                                        .Refresh(true)
+                                        .PageSizes(true)
+                                        .ButtonCount(5))
+
+                            .Scrollable()
+                            .Sortable()
+                            .Filterable()
+                            .Scrollable(h => h.Height(500))
+
+           .DataSource(dataSource => dataSource
+          .Ajax()
+                          .Model(model => model.Id(p => p.BudgetTransferID)).Events(ev => ev
+                                                            .Error("error_handler(\"gridBudgetTransfer_#=PlanCategoryID#\")")
+                                                            .RequestStart("onRequestStart(\"gridBudgetTransfer_#=PlanCategoryID#\")")
+                                                            .RequestEnd("onRequestEnd(\"gridBudgetTransfer_#=PlanCategoryID#\")"))
+                      .Read(read => read.Action("BudgetTransfer_Read", "BudgetTransfer", new { RCategoryId = "#=PlanCategoryID#" }))
+                      .Create(create => create.Action("BudgetTransfer_Create", "BudgetTransfer", new { CCategoryId = "#=PlanCategoryID#" }))
+              .Update(update => update.Action("BudgetTransfer_Update", "BudgetTransfer"))
+              .Destroy(destroy => destroy.Action("BudgetTransfer_Destroy", "BudgetTransfer"))
+          ).ToClientTemplate()
+                    )
+
+                </text>
+
+                           );
+                }).ToClientTemplate()
+
+    )
+</script>
+
+ <style type="text/css">
+    div.k-edit-form-container {
+        width: 700px;
+    }
+</style>

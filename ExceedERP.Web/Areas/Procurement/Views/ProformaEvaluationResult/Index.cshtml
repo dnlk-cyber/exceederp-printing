@@ -1,0 +1,24 @@
+﻿@using ExceedERP.Core.Domain.Procurement.Proforma
+
+@(Html.Kendo().Grid<ProformaEvaluationResult>()
+      .Name("proformaevaluationresultgrid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.SupplierName);
+          columns.Bound(c => c.CriteriaName);
+          columns.Bound(c => c.Score);
+      
+          columns.Command(command => { command.Edit(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.ProformaEvaluationResultID))
+          .Read(read => read.Action("ProformaEvaluationResults_Read", "ProformaEvaluationResult", new { id = "#= ProformaPurchaseID #" }))
+          .Create(create => create.Action("ProformaEvaluationResults_Create", "ProformaEvaluationResult", new { id = "#= ProformaPurchaseID #" }))
+          .Update(update => update.Action("ProformaEvaluationResults_Update", "ProformaEvaluationResult"))
+      ))

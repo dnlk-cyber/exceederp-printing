@@ -1,0 +1,34 @@
+﻿<legend>Non Cash Transaction</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.NonCashTransaction>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.Voucher);
+        columns.Bound(c => c.Consignee);
+        columns.Bound(c => c.IsIncoming);
+        columns.Bound(c => c.PaymentMethod);
+        columns.Bound(c => c.ReceiveProcessor);
+        columns.Bound(c => c.Index);
+        columns.Bound(c => c.IssueDate);
+        columns.Bound(c => c.MaturityDate);
+        columns.Bound(c => c.Number);
+        columns.Bound(c => c.Amount);
+        columns.Bound(c => c.Executed);
+        columns.Bound(c => c.CurrencyCode);
+        columns.Bound(c => c.Remark);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.NonCashTransactionID))
+          .Read(read => read.Action("NonCashTransactions_Read", "NonCashTransaction"))
+          .Create(create => create.Action("NonCashTransactions_Create", "NonCashTransaction"))
+          .Update(update => update.Action("NonCashTransactions_Update", "NonCashTransaction"))
+          .Destroy(destroy => destroy.Action("NonCashTransactions_Destroy", "NonCashTransaction"))
+      )
+)

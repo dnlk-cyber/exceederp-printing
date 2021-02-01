@@ -1,0 +1,179 @@
+﻿@using ExceedERP.Core.Domain.Finance.Report
+@using ExceedERP.Core.Domain.Finance.Report.GAAP
+<legend>Revenue by Sales Type</legend>
+@(Html.Kendo().Grid<RevenueBySalesType>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.RevenueBySalesTypeId).Title("ID").Width(30);
+          columns.Command(command =>
+          {
+              if (ViewBag.Count > 0)
+              {
+                  return;
+              }
+              command.Edit(); command.Destroy();
+          }).Width(180);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .HtmlAttributes(new { style = "height: 650px;" })
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(20))
+      .Scrollable()
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .ClientDetailTemplateId("templates")
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Events(ev => ev
+              .Error("error_handler(\"grid\")")
+              .RequestStart("onRequestStart(\"grid\")")
+              .RequestEnd("onRequestEnd(\"grid\")"))
+          .Model(
+              model =>
+              {
+                  model.Id(p => p.RevenueBySalesTypeId);
+                  model.Field(p => p.RevenueBySalesTypeId).Editable(false);
+              })
+          .Read(read => read.Action("RevenueBySalesTypes_Read", "RevenueByType"))
+          .Create(create => create.Action("RevenueBySalesTypes_Create", "RevenueByType"))
+          .Update(update => update.Action("RevenueBySalesTypes_Update", "RevenueByType"))
+          .Destroy(destroy => destroy.Action("RevenueBySalesTypes_Destroy", "RevenueByType"))
+      ))
+
+
+<script id="templates" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+          .Name("RevenueList#=RevenueBySalesTypeId#")
+          .SelectedIndex(0)
+          .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+          .Items(items =>
+          {
+              items.Add().Text("Revenue").Content(@<text>
+                @(Html.Kendo().Grid<RevenueList>()
+                      .Name("RevenueList#=RevenueBySalesTypeId#")
+                      .Columns(columns =>
+                      {
+                          columns.Bound(c => c.Description).Width(300);
+                          columns.Bound(c => c.NoteNumber).Width(100);
+                          columns.Command(command =>
+                          {
+                              command.Edit();
+                              command.Destroy();
+                          });
+                      })
+                      .ToolBar(toolbar =>
+                      {
+                          toolbar.Create();
+                      })
+
+                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                      //.HtmlAttributes(new { style = "height: 500px;" })
+                      //.Scrollable()
+                      .Sortable()
+                      .ClientDetailTemplateId("revenueTemplates")
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+                          .Model(
+                              model =>
+                              {
+                                  model.Id(p => p.RevenueListId);
+                              })
+                          .Events(ev => ev
+                              .Error("error_handler(\"RevenueList#=RevenueBySalesTypeId#\")")
+                              .RequestStart("onRequestStart(\"RevenueList#=RevenueBySalesTypeId#\")")
+                              .RequestEnd("onRequestEnd(\"RevenueList#=RevenueBySalesTypeId#\")"))
+                          .Read(read => read.Action("RevenueLists_Read", "RevenueList", new { id = "#=RevenueBySalesTypeId#" }))
+                          .Create(create => create.Action("RevenueLists_Create", "RevenueList", new { id = "#=RevenueBySalesTypeId#" }))
+                          .Update(update => update.Action("RevenueLists_Update", "RevenueList", new { id = "#=RevenueBySalesTypeId#" }))
+                          .Destroy(destroy => destroy.Action("RevenueLists_Destroy", "RevenueList"))
+                      )
+                      
+                      .ToClientTemplate())
+            </text>);
+
+          })
+          .ToClientTemplate()
+    )
+
+</script>
+
+
+<script id="revenueTemplates" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+          .Name("RevenueListRange#=RevenueListId#")
+          .SelectedIndex(0)
+          .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+          .Items(items =>
+          {
+              items.Add().Text("Account Ranges").Content(@<text>
+                @(Html.Kendo().Grid<RevenueListRange>()
+                      .Name("RevenueListRange#=RevenueListId#")
+                      .Columns(columns =>
+                      {
+                          columns.Bound(c => c.AccountFrom).EditorTemplateName("AccountCodeZZZ").Width(220);
+                          columns.Bound(c => c.AccountTo).EditorTemplateName("AccountCodeZZZ").Width(220);
+                          columns.Command(command =>
+                          {
+                              command.Edit();
+                              command.Destroy();
+                          });
+                      })
+                      .ToolBar(toolbar =>
+                      {
+                          toolbar.Create();
+                      })
+
+                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                      .HtmlAttributes(new { style = "height: 600px;" })
+                      .Scrollable()
+                      .Sortable()
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+                          .Model(
+                              model =>
+                              {
+                                  model.Id(p => p.RevenueListRangeId);
+                              })
+                          .Events(events => events
+                              .Error("error_handler(\"RevenueListRange#=RevenueListId#\")")
+                              .RequestStart("onRequestStart(\"RevenueListRange#=RevenueListId#\")")
+                              .RequestEnd("onRequestEnd(\"RevenueListRange#=RevenueListId#\")"))
+                          .Read(read => read.Action("RevenueListRanges_Read", "RevenueByTypeListRange", new { id = "#=RevenueListId#" }))
+                          .Create(create => create.Action("RevenueListRanges_Create", "RevenueByTypeListRange", new { id = "#=RevenueListId#" }))
+                          .Update(update => update.Action("RevenueListRanges_Update", "RevenueByTypeListRange", new { id = "#=RevenueListId#" }))
+                          .Destroy(destroy => destroy.Action("RevenueListRanges_Destroy", "RevenueByTypeListRange"))
+                      )
+                      
+                      .ToClientTemplate())
+            </text>);
+
+          })
+
+          .ToClientTemplate()
+          )
+
+</script>
+
+
+
+
+<script>
+   
+</script>
+

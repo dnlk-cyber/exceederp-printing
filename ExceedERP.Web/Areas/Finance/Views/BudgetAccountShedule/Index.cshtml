@@ -1,0 +1,215 @@
+﻿<legend> Budget Account Shedule </legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Finance.Budget.BudgetAccountShedule>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.ForeignKey(c => c.BudgetAccountSheduleCategoryId, (System.Collections.IEnumerable)ViewData["BudgetAccountSheduleCategory"], "BudgetAccountSheduleCategoryId", "Name").EditorTemplateName("BudgetScheduleTypeEditor").Width(200);
+          columns.Bound(c => c.Remark).Width(150);
+          columns.Bound(c => c.Index).Width(100);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .HtmlAttributes(new { style = "height: 600px;" })
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(5))
+
+      .Scrollable()
+      .Sortable()
+      .Filterable()
+      .Scrollable(h => h.Height(500))
+      .ClientDetailTemplateId("subCategorytemplate")
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          //.Group(x => x.Add(y => y.Index))
+          .Model(model => model.Id(p => p.BudgetAccountSheduleId))
+          .Events(ev => ev
+              .Error("error_handler(\"grid\")")
+              .RequestStart("onRequestStart(\"grid\")")
+              .RequestEnd("onRequestEnd(\"grid\")"))
+          .Read(read => read.Action("BudgetAccountShedule_Read", "BudgetAccountShedule"))
+          .Create(create => create.Action("BudgetAccountShedule_Create", "BudgetAccountShedule"))
+          .Update(update => update.Action("BudgetAccountShedule_Update", "BudgetAccountShedule"))
+          .Destroy(destroy => destroy.Action("BudgetAccountShedule_Destroy", "BudgetAccountShedule"))
+      ))
+
+
+<script id="subCategorytemplate" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                                  .Name("tabstripMain_#=BudgetAccountSheduleId#")
+                  .SelectedIndex(0)
+                  .Items(items =>
+                  {
+                      items.Add().Text("Sub Category").Content(
+                        @<text>
+
+
+                           
+                            @(Html.Kendo().Grid<ExceedERP.Core.Domain.Finance.Budget.BudgetAccountSheduleSubCategory>()
+                                          .Name("gridBudgetAccountSheduleSubCategory_#=BudgetAccountSheduleId#")
+                                          .Columns(columns =>
+                                          {
+                                                      columns.Bound(c => c.Name).Width(200);
+                                                      columns.Command(command => { command.Edit(); command.Destroy(); }).Width(480);
+                                                  })
+                                          .ToolBar(toolbar =>
+                                          {
+                                                      toolbar.Create();
+                                                  })
+
+                                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                          .HtmlAttributes(new { style = "height: 420px;" })
+                                          .Pageable(pageable => pageable
+                                              .Input(true)
+                                              .Numeric(false)
+                                              .Refresh(true)
+                                              .PageSizes(true)
+                                              .ButtonCount(5))
+
+                                          .Scrollable()
+                                          .Sortable()
+                                          .Filterable()
+                                          .Scrollable(h => h.Height(500))
+                                          .ClientDetailTemplateId("templateLine")
+                                          .DataSource(dataSource => dataSource
+                                              .Ajax()
+                                              .Model(model => model.Id(p => p.BudgetAccountSheduleSubCategoryId))
+                                              .Events(ev => ev
+                                                  .Error("error_handler(\"gridBudgetAccountSheduleSubCategory_#=BudgetAccountSheduleId#\")")
+                                                  .RequestStart("onRequestStart(\"gridBudgetAccountSheduleSubCategory_#=BudgetAccountSheduleId#\")")
+                                                  .RequestEnd("onRequestEnd(\"gridBudgetAccountSheduleSubCategory_#=BudgetAccountSheduleId#\")"))
+                                              .Read(read => read.Action("BudgetAccountSheduleSubCategory_Read", "BudgetAccountSheduleSubCategory", new { Id = "#=BudgetAccountSheduleId#" }))
+                                              .Create(create => create.Action("BudgetAccountSheduleSubCategory_Create", "BudgetAccountSheduleSubCategory", new { Id = "#=BudgetAccountSheduleId#" }))
+                                              .Update(update => update.Action("BudgetAccountSheduleSubCategory_Update", "BudgetAccountSheduleSubCategory"))
+                                              .Destroy(destroy => destroy.Action("BudgetAccountSheduleSubCategory_Destroy", "BudgetAccountSheduleSubCategory"))
+
+                                          ).ToClientTemplate())
+
+                        </text>
+
+                                           );
+                          }).ToClientTemplate()
+
+    )
+</script>
+
+<script id="templateLine" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                                  .Name("tabstripMain_#=BudgetAccountSheduleSubCategoryId#")
+                  .SelectedIndex(0)
+                  .Items(items =>
+                  {
+                      items.Add().Text("Schedule Line").Content(
+                        @<text>
+                            @(Html.Kendo().Grid<ExceedERP.Core.Domain.Finance.Budget.BudgetAccountSheduleLine>()
+                                          .Name("gridBudgetAccountSheduleLine_#=BudgetAccountSheduleSubCategoryId#")
+                                          .Columns(columns =>
+                                          {
+                                              columns.Bound(c => c.Name).Width(200);
+                                              columns.Command(command => { command.Edit(); command.Destroy(); }).Width(480);
+                                          })
+                                          .ToolBar(toolbar =>
+                                          {
+                                              toolbar.Create();
+                                          })
+
+                                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                          .HtmlAttributes(new { style = "height: 320px;" })
+                                          .Pageable(pageable => pageable
+                                              .Input(true)
+                                              .Numeric(false)
+                                              .Refresh(true)
+                                              .PageSizes(true)
+                                              .ButtonCount(5))
+
+                                          .Scrollable()
+                                          .Sortable()
+                                          .Filterable()
+                                          .Scrollable(h => h.Height(500))
+                                          .ClientDetailTemplateId("templateRange")
+                                          .DataSource(dataSource => dataSource
+                                              .Ajax()
+                                              .Model(model => model.Id(p => p.BudgetAccountSheduleLineId))
+                                              .Events(ev => ev
+                                                  .Error("error_handler(\"gridBudgetAccountSheduleLine_#=BudgetAccountSheduleSubCategoryId#\")")
+                                                  .RequestStart("onRequestStart(\"gridBudgetAccountSheduleLine_#=BudgetAccountSheduleSubCategoryId#\")")
+                                                  .RequestEnd("onRequestEnd(\"gridBudgetAccountSheduleLine_#=BudgetAccountSheduleSubCategoryId#\")"))
+                                              .Read(read => read.Action("BudgetAccountSheduleLine_Read", "BudgetAccountSheduleLine", new { Id = "#=BudgetAccountSheduleSubCategoryId#" }))
+                                              .Create(create => create.Action("BudgetAccountSheduleLine_Create", "BudgetAccountSheduleLine", new { Id = "#=BudgetAccountSheduleSubCategoryId#" }))
+                                              .Update(update => update.Action("BudgetAccountSheduleLine_Update", "BudgetAccountSheduleLine"))
+                                              .Destroy(destroy => destroy.Action("BudgetAccountSheduleLine_Destroy", "BudgetAccountSheduleLine"))
+
+                                          ).ToClientTemplate())
+
+                        </text>
+
+                                           );
+                          }).ToClientTemplate()
+
+    )
+</script>
+
+
+<script id="templateRange" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                          .Name("tabstripMain_#=BudgetAccountSheduleLineId#")
+          .SelectedIndex(0)
+          .Items(items =>
+          {
+              items.Add().Text("Account Map").Content(
+                @<text>
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Finance.Budget.BudgetLineSheduleAccounts>()
+                          .Name("gridBudgetLineSheduleAccounts_#=BudgetAccountSheduleLineId#")
+                          .Columns(columns =>
+                          {
+                              columns.Bound(c => c.FromAccountCode).EditorTemplateName("AccountCodeZZZ").Width(220);
+                              columns.Bound(c => c.ToAccountCode).EditorTemplateName("AccountCodeZZZ").Width(220);
+                              columns.Command(command => { command.Edit(); command.Destroy(); }).Width(280);
+                          })
+                          .ToolBar(toolbar =>
+                          {
+                              toolbar.Create();
+                          })
+
+                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                          .HtmlAttributes(new { style = "height: 320px;" })
+                          .Pageable(pageable => pageable
+                              .Input(true)
+                              .Numeric(false)
+                              .Refresh(true)
+                              .PageSizes(true)
+                              .ButtonCount(5))
+
+                          .Scrollable()
+                          .Sortable()
+                          .Filterable()
+                          .Scrollable(h => h.Height(500))
+
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+                              .Model(model => model.Id(p => p.BudgetAccountSheduleLineId))
+                              .Events(ev => ev
+                                  .Error("error_handler(\"gridBudgetLineSheduleAccounts_#=BudgetAccountSheduleLineId#\")")
+                                  .RequestStart("onRequestStart(\"gridBudgetLineSheduleAccounts_#=BudgetAccountSheduleLineId#\")")
+                                  .RequestEnd("onRequestEnd(\"gridBudgetLineSheduleAccounts_#=BudgetAccountSheduleLineId#\")"))
+                              .Read(read => read.Action("BudgetLineSheduleAccounts_Read", "BudgetSheduleLineAccount", new { Id = "#=BudgetAccountSheduleLineId#" }))
+                              .Create(create => create.Action("BudgetLineSheduleAccounts_Create", "BudgetSheduleLineAccount", new { Id = "#=BudgetAccountSheduleLineId#" }))
+                              .Update(update => update.Action("BudgetLineSheduleAccounts_Update", "BudgetSheduleLineAccount"))
+                              .Destroy(destroy => destroy.Action("BudgetLineSheduleAccounts_Destroy", "BudgetSheduleLineAccount"))
+
+                          ).ToClientTemplate())
+
+                </text>
+
+                           );
+          }).ToClientTemplate()
+
+    )
+</script>

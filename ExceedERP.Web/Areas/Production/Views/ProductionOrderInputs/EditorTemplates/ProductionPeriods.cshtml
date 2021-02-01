@@ -1,0 +1,17 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@(Html.Kendo().DropDownListFor(m => m)
+    .OptionLabel(Resources.Select)
+            .DataTextField("Name")
+            .DataValueField("ProductionPeriodId")
+            .DataSource(dataSource =>
+            {
+                dataSource.Read(read => read.Action("GetProductionPeriodsUnderSpecificYear", "ProductionDataProvider", new { area = "Production", id = "#=ProductionYearId#" }));
+            })
+            .Events(ev => {
+                ev.Change("periodChanged");
+            })
+            .Filter("contains")
+            .MinLength(2)
+            .ValuePrimitive(true)
+)

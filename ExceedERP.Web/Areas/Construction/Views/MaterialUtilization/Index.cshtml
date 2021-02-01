@@ -1,0 +1,230 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Material Utilization</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.ProjectInformation>()
+          .Name("ProjectInformationgrid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Name).Width(300);
+          columns.Bound(c => c.Code).Width(150);
+          columns.Bound(c => c.Category).Width(200);
+          columns.Bound(c => c.BranchId).Width(150);
+          columns.Bound(c => c.ContractAmount).Width(150);
+
+
+          columns.Bound(c => c.Client).Width(150);
+
+          //columns.Command(command =>
+          //{
+          //   // command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+          //    //command.Destroy();
+          //}).Width(180);
+      })
+      .ToolBar(toolbar =>
+      {
+          //toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+                  .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("ProjectInformation").Window(window => { window.Title("Project Information"); window.Scrollable(false); }))
+          .Scrollable(h => h.Height(500))
+                             .Groupable()
+                                      .Sortable(sortable =>
+                                      {
+                                          sortable.SortMode(GridSortMode.SingleColumn);
+                                      })
+                          .Filterable()
+                             .Pageable(pageable => pageable
+                                                        .Input(true)
+                                                        .Numeric(false)
+                                                        .Refresh(true)
+                                                        .PageSizes(true)
+                                                        .ButtonCount(5))
+      .DataSource(dataSource => dataSource
+               .Ajax()
+                           .Events(events => events.Error("error_handler(\"ProjectInformationgrid\")")
+                            //  .Sync("sync_handler")
+                              )
+          .Model(model => model.Id(p => p.ProjectInformationId))
+              .Read(read => read.Action("ProjectInformation_Read", "ProjectBudgetDefination"))
+          .Create(create => create.Action("ProjectInformation_Create", "ProjectInformation"))
+          .Update(update => update.Action("ProjectInformation_Update", "ProjectInformation"))
+          .Destroy(destroy => destroy.Action("ProjectInformation_Destroy", "ProjectInformation"))
+          ).ClientDetailTemplateId("template")
+)
+
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+          .Name("tabstrip_#=ProjectInformationId#")
+          .SelectedIndex(0)
+          .Items(items =>
+          {
+
+              items.Add().Text("Material Utilization").Content(
+                @<text>
+
+                  @(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.MaterialUtilization>()
+                      .Name("MaterialUtilization_#=ProjectInformationId#")
+      .Columns(columns =>
+      {
+          columns.ForeignKey(c => c.ProjectMaterialId, (IEnumerable)ViewData["Materials"], "ProjectMaterialId", "Name").Width(120);
+          columns.Bound(c => c.RequestedQuantity).Width( 120);
+          columns.Bound(c => c.DeliveredQuantity).Width( 120);
+          columns.Bound(c => c.RemainingQuantity).Width( 120);        
+          columns.Bound(c => c.MaterialIssuedToSite);         
+          columns.Bound(c => c.Remark);
+          columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+                              .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("MaterialUtilization").Window(window => { window.Title("Material Utilization"); window.Scrollable(false); }))
+                                      .ClientDetailTemplateId("templateTwo")
+      .Scrollable(h=> h.Height( 500))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+                                    .Events(events => events.Error("error_handler(\"MaterialUtilization_#=ProjectInformationId#\")")
+                                      .Sync("sync_handler")
+                                      )
+          .Model(model => model.Id(p => p.MaterialUtilizationId))
+                  .Read(read => read.Action("MaterialUtilization_Read", "MaterialUtilization", new { id = "#=ProjectInformationId#" }))
+                  .Create(create => create.Action("MaterialUtilization_Create", "MaterialUtilization", new { idTwo = "#=ProjectInformationId#" }))
+          .Update(update => update.Action("MaterialUtilization_Update", "MaterialUtilization"))
+          .Destroy(destroy => destroy.Action("MaterialUtilization_Destroy", "MaterialUtilization"))
+      ).ToClientTemplate()
+                )
+
+
+
+
+                </text>
+                  );
+
+
+          }).ToClientTemplate())
+</script>
+
+<script id="templateTwo" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                                                          .Name("tabstrip_#=MaterialUtilizationId#")
+          .SelectedIndex(0)
+          .Items(items =>
+          {
+
+              items.Add().Text("Material Demand").Content(
+                @<text>
+
+                  @(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.MaterialDemand>()
+                      .Name("MaterialDemand_#=MaterialUtilizationId#")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.AdditionalDemand);
+          columns.Bound(c => c.Remark);
+          //columns.Bound(c => c.OrgBranchName);
+          //columns.Bound(c => c.DateCreated);
+          //columns.Bound(c => c.LastModified);
+          //columns.Bound(c => c.CreatedBy);
+          //columns.Bound(c => c.ModifiedBy);
+          columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel);  }).Width(200);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+                   .Events(events => events.Error("error_handler(\"MaterialDemand_#=MaterialUtilizationId#\")"))
+          .Model(model => model.Id(p => p.MaterialDemandId))
+                  .Read(read => read.Action("MaterialDemands_Read", "MaterialDemand", new { idDem = "#=MaterialUtilizationId#" }))
+                  .Create(create => create.Action("MaterialDemands_Create", "MaterialDemand", new { idDemTwo = "#=MaterialUtilizationId#" }))
+          .Update(update => update.Action("MaterialDemands_Update", "MaterialDemand"))
+          .Destroy(destroy => destroy.Action("MaterialDemands_Destroy", "MaterialDemand"))
+      ).ToClientTemplate()
+                )
+
+                </text>
+    );
+              items.Add().Text("Utilization Detail").Content(
+                @<text>
+
+                   @(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.MaterialUtilizationDetail>()
+                      .Name("MaterialUtilizationDetail_#=MaterialUtilizationId#")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.UtilizedQuantity);
+          columns.Bound(c => c.UtilizationOfItem);
+          columns.Bound(c => c.MaterialWastage);
+          columns.Bound(c => c.Remark);
+          //columns.Bound(c => c.OrgBranchName);
+          //columns.Bound(c => c.DateCreated);
+          //columns.Bound(c => c.LastModified);
+          //columns.Bound(c => c.CreatedBy);
+          //columns.Bound(c => c.ModifiedBy);
+          columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel);  }).Width(200);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+                          .Events(events => events.Error("error_handler(\"MaterialUtilizationDetail_#=MaterialUtilizationId#\")"))
+          .Model(model => model.Id(p => p.MaterialUtilzationDetlId))
+                  .Read(read => read.Action("MaterialUtilizationDetails_Read", "MaterialUtilizationDetail", new { idUt = "#=MaterialUtilizationId#" }))
+                  .Create(create => create.Action("MaterialUtilizationDetails_Create", "MaterialUtilizationDetail", new { idUtTwo = "#=MaterialUtilizationId#" }))
+          .Update(update => update.Action("MaterialUtilizationDetails_Update", "MaterialUtilizationDetail"))
+          .Destroy(destroy => destroy.Action("MaterialUtilizationDetails_Destroy", "MaterialUtilizationDetail"))
+      ).ToClientTemplate()
+                )
+
+                </text>
+    );
+
+             
+
+          }).ToClientTemplate())
+</script>
+
+
+
+<script>
+    function error_handler(e) {
+        if (e.errors) {
+            var message = "Errors:\n";
+            $.each(e.errors, function(key, value) {
+                if ('errors' in value) {
+                    $.each(value.errors, function() {
+                        message += this + "\n";
+                    });
+                }
+            });
+            alert(message);
+
+        }
+
+    }
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+
+    function onGridEdit(e) {
+        e.container.find(".k-button.k-grid-update").hide();
+        e.container.find(".k-button.k-grid-cancel").hide();
+
+    }
+
+
+</script>
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 700px;
+    }
+</style>

@@ -1,0 +1,27 @@
+﻿@using ExceedERP.Core.Domain.HRM.HealthAndInsurance
+@using ExceedERP.Core.Localization
+
+@(Html.Kendo().Grid<VehicleAccidentDetail>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.AccidentType);
+        columns.Bound(c => c.IsThirdPartAccident);
+        columns.Bound(c => c.AccidentLevel);
+        columns.Bound(c => c.Remark);
+        columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel);  }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.VehicleAccidentDetailId))
+          .Read(read => read.Action("VehicleAccidentDetail_Read", "VehicleAccidentDetail"))
+          .Create(create => create.Action("VehicleAccidentDetail_Create", "VehicleAccidentDetail"))
+          .Update(update => update.Action("VehicleAccidentDetail_Update", "VehicleAccidentDetail"))
+          .Destroy(destroy => destroy.Action("VehicleAccidentDetail_Destroy", "VehicleAccidentDetail"))
+      )
+)

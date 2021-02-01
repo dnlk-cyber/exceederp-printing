@@ -1,0 +1,32 @@
+﻿@using Location = ExceedERP.Core.Domain.FixedAsset.Registrations.Location
+
+@(Html.Kendo().Grid<Location>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.TransferFrom);
+        columns.Bound(c => c.LocationUser);
+        columns.Bound(c => c.Date);
+        columns.Bound(c => c.Description);
+        
+       
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+            toolbar.Excel();
+           // toolbar.Pdf();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Pageable()
+      .Filterable()
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.LocationID))
+          .Read(read => read.Action("Locations_Read", "Location"))
+          .Create(create => create.Action("Locations_Create", "Location"))
+          .Update(update => update.Action("Locations_Update", "Location"))
+          .Destroy(destroy => destroy.Action("Locations_Destroy", "Location"))
+      )
+)

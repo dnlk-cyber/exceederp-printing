@@ -1,0 +1,4 @@
+﻿@(Html.Kendo().DropDownList() 
+      .DataTextField("Name")
+      .DataValueField("Value")
+                  .DataSource(d => d.Read(r => r.Action("PriorityDDBind", "CRMDataProvider"))))

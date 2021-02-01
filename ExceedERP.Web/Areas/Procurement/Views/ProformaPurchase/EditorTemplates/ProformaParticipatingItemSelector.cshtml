@@ -1,0 +1,15 @@
+﻿@using Kendo.Mvc.UI
+
+@(Html.Kendo().DropDownListFor(m => m)
+      .AutoBind(false)
+      .ValuePrimitive(true)
+      .Filter(FilterType.Contains)
+      .OptionLabel("Item")
+      .DataTextField("Name")
+      .DataValueField("Code")
+      .DataSource(dataSource =>
+      {
+          dataSource.Read(read => read.Action("GetProformaParticipantItemsById", "ProformaPurchase").Data("getProformaId"))
+              .ServerFiltering(true);
+      }))
+@Html.ValidationMessageFor(m => m)

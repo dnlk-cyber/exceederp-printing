@@ -1,0 +1,58 @@
+﻿@{
+    Layout = "~/Views/Shared/_Popup.cshtml";
+}
+
+<script>
+    var Id=  '@ViewBag.Id';
+ 
+    </script>
+<form action="@Url.Action("GenrateStoreRequistion", "ServiceCenter")" method="post" class="form">
+    <div class="row"></div>
+    <div class="row ">
+        <div class="col-md-3 ro1"></div>
+            <div class="col-md-8 ro1">
+                <div class="form-group">
+                    @Html.Label("Store", htmlAttributes: new { @class = "control-label col-md-4" })
+                    <div class="col-md-9">
+                        @(Html.Kendo().DropDownList()
+                          .Name("Name")
+                          .SelectedIndex(0)
+                          .HtmlAttributes(new { style = "width:300px" })
+                          .ValuePrimitive(true)
+                          .DataTextField("Name")
+                                  .DataValueField("StoreCode").HtmlAttributes(new { @required = "required" })
+                          .DataSource(dataSource =>
+                          {
+                              dataSource.Read(read => read.Action("InventoryStoreDDBind", "FleetDataProvider")
+                                  )
+                                  .ServerFiltering(false);
+                          })
+                        )
+                    </div>
+                </div>
+                <div class="row"></div>
+                <input type="hidden" name="Remark" value="@ViewBag.Id" />
+
+                <div class="row"></div>
+                <div class="col-md-offset-3 col-md-9">
+                    <button type="submit" class="saveBtn btn btn-primary">
+                        <i class="fa fa-suitcase"></i> Genrate
+                    </button>
+                </div>
+            </div>
+        </div>
+</form>
+
+ 
+<style>
+    .k-list-container ul li.k-item{
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .k-list-container ul {
+        overflow: hidden!important;
+        }
+</style>
+

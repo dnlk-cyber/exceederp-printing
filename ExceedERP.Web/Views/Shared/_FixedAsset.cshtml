@@ -1,0 +1,224 @@
+﻿@if (HttpContext.Current.User.IsInRole("FixedAsset_Report") 
+    || HttpContext.Current.User.IsInRole("FixedAsset_Admin")
+    || HttpContext.Current.User.IsInRole("FixedAsset_Requisition_User")
+    || HttpContext.Current.User.IsInRole("FixedAsset_Requisition_Approver")
+    || HttpContext.Current.User.IsInRole("FixedAsset_User")
+    || HttpContext.Current.User.IsInRole("FixedAsset_Approver")
+    || HttpContext.Current.User.IsInRole("FixedAsset_Authorizer")
+    || HttpContext.Current.User.IsInRole("FixedAsset_Count_User")
+    || HttpContext.Current.User.IsInRole("FixedAsset_Count_Approver")
+    || HttpContext.Current.User.IsInRole("FixedAsset_Import")
+    || HttpContext.Current.User.IsInRole("FixedAsset_StoreKeeper")
+    || HttpContext.Current.User.IsInRole("FixedAsset_Void")
+    || HttpContext.Current.User.IsInRole("FixedAsset_Depreciation_User")
+    || HttpContext.Current.User.IsInRole("FixedAsset_Depreciation_Approver"))
+{ 
+    <li class="">
+        <a href="#" class="dropdown-toggle">
+            <i class="menu-icon fa fa-building"></i>
+            <span class="menu-text">
+                PPE
+            </span>
+
+            <b class="arrow fa fa-angle-down"></b>
+        </a>
+
+        <b class="arrow"></b>
+
+        <ul class="submenu">
+
+            @if (HttpContext.Current.User.IsInRole("FixedAsset_Requisition_User")
+                 || HttpContext.Current.User.IsInRole("FixedAsset_Requisition_Approver")
+                 || HttpContext.Current.User.IsInRole("FixedAsset_User")
+                 || HttpContext.Current.User.IsInRole("FixedAsset_Approver")
+                 || HttpContext.Current.User.IsInRole("FixedAsset_Authorizer")
+                 || HttpContext.Current.User.IsInRole("FixedAsset_Import")
+                 || HttpContext.Current.User.IsInRole("FixedAsset_StoreKeeper")
+                 || HttpContext.Current.User.IsInRole("FixedAsset_Void")
+                 || HttpContext.Current.User.IsInRole("FixedAsset_Depreciation_User")
+                 || HttpContext.Current.User.IsInRole("FixedAsset_Depreciation_Approver"))
+            {
+                <li class="">
+                    <a href="#" class="dropdown-toggle">
+                        <i class="menu-icon fa fa-caret-right"></i>
+
+                        PPE
+                        <b class="arrow fa fa-angle-down"></b>
+                    </a>
+
+                    <b class="arrow"></b>
+
+                    <ul class="submenu">
+
+                        @if (HttpContext.Current.User.IsInRole("FixedAsset_Requisition_User")
+                             || HttpContext.Current.User.IsInRole("FixedAsset_Requisition_Approver")
+                             || HttpContext.Current.User.IsInRole("FixedAsset_User")
+                             || HttpContext.Current.User.IsInRole("FixedAsset_Approver")
+                             || HttpContext.Current.User.IsInRole("FixedAsset_Authorizer")
+                             || HttpContext.Current.User.IsInRole("FixedAsset_Import")
+                             || HttpContext.Current.User.IsInRole("FixedAsset_StoreKeeper")
+                             || HttpContext.Current.User.IsInRole("FixedAsset_Void"))
+                        {
+                            <li id="link263r" class="actionlinlk">
+                                @Html.ActionLink("Requisition", "Index", "FixedAssetRequisition", new { area = "FixedAsset" }, null)<b class="arrow"></b></li>
+                            <li id="link263p" class="actionlinlk">@Html.ActionLink("Purchase Requisition", "Index", "PurchaseRequisition", new { area = "FixedAsset" }, null)<b class="arrow"></b></li>
+                            <li id="link263pm" class="actionlinlk">@Html.ActionLink("Manual Purchase Requisition", "Index", "PurchaseRequisitionManual", new { area = "FixedAsset" }, null)<b class="arrow"></b></li>
+                       
+                        }
+                        @if (HttpContext.Current.User.IsInRole("FixedAsset_User")
+                             || HttpContext.Current.User.IsInRole("FixedAsset_Approver")
+                             || HttpContext.Current.User.IsInRole("FixedAsset_Authorizer")
+                             || HttpContext.Current.User.IsInRole("FixedAsset_Import")
+                             || HttpContext.Current.User.IsInRole("FixedAsset_StoreKeeper")
+                             || HttpContext.Current.User.IsInRole("FixedAsset_Void"))
+                        {
+                            <li id="link263r" class="actionlinlk">
+                                @Html.ActionLink("Review Requisition", "Index", "FixedAssetRequisitionPropertyReview", new { area = "FixedAsset" }, null)<b class="arrow"></b></li>
+                            <li id="linka263" class="actionlinlk">
+                                @Html.ActionLink("Asset Transfer", "Index", "AssetTransfer", new { area = "FixedAsset" }, null)<b class="arrow"></b></li>
+                            <li id="linka263r" class="actionlinlk">
+                                @Html.ActionLink("Asset Transfer Receive", "Index", "AssetTransferReceive", new { area = "FixedAsset" }, null)<b class="arrow"></b></li>
+                            <li id="link26388" class="actionlinlk">
+                                @Html.ActionLink("Machine Transfer", "Index", "MachineryAndVehicleTransfer", new { area = "FixedAsset" }, null)<b class="arrow"></b></li>
+                            <li id="link263ssasr" class="actionlinlk">
+                                @Html.ActionLink("Machine Transfer Receive", "Index", "MachineryAndVehicleTransferReceive", new { area = "FixedAsset" }, null)<b class="arrow"></b></li>
+                            @*<li id="link266" class="actionlinlk">@Html.ActionLink("Locations", "Index", "Location", new { area = "FixedAsset" }, null)<b class="arrow"></b></li>*@
+                            <li id="fxd00r6" class="actionlinlk">
+                                @Html.ActionLink("Issue", "Index", "FixedAssetIssue", new { area = "FixedAsset" }, null)<b class="arrow"></b></li>
+                            <li id="fxd00r5" class="actionlinlk">
+                                @Html.ActionLink("Receive", "Index", "FixedAssetReceive", new { area = "FixedAsset" }, null)<b class="arrow"></b></li>
+                            <li id="fxd00r5m" class="actionlinlk">
+                                @Html.ActionLink("Receive Manual", "Index", "FixedAssetReceiveManual", new { area = "FixedAsset" }, null)<b class="arrow"></b></li>
+                            <li id="fxd00re6" class="actionlinlk">
+                                @Html.ActionLink("Asset Return", "Index", "FixedAssetReturn", new { area = "FixedAsset" }, null)<b class="arrow"></b></li>
+                            <li id="fxd000" class="actionlinlk">
+                                @Html.ActionLink("Registration", "Index", "AssetRegistration", new { area = "FixedAsset" }, null)<b class="arrow"></b></li>
+                            @*<li id="link263" class="actionlinlk">@Html.ActionLink("Revaluation", "Index", "Revaluation", new { area = "FixedAsset" }, null)<b class="arrow"></b></li>*@
+                            <li id="link263" class="actionlinlk">
+                                @Html.ActionLink("Disposal", "Index", "AssetDisposal", new { area = "FixedAsset" }, null)<b class="arrow"></b></li>
+                            <li id="fxd001" class="actionlinlk">
+                                @Html.ActionLink("User Card", "Index", "UserCardItems", new { area = "FixedAsset" }, null)<b class="arrow"></b></li>
+                        }
+                       
+                        @if (HttpContext.Current.User.IsInRole("FixedAsset_Depreciation_User")
+                             || HttpContext.Current.User.IsInRole("FixedAsset_Depreciation_Approver"))
+                        {
+                            <li id="fxd001sasas" class="actionlinlk">
+                                @Html.ActionLink("Monthly Depreciation", "Index", "MonthlyDepreciation", new { area = "FixedAsset" }, null)<b class="arrow"></b>
+                            </li>
+                            <li id="fxd001asas" class="actionlinlk">
+                                @Html.ActionLink("Annual Depreciation", "Index", "AnnualDepreciation", new { area = "FixedAsset" }, null)<b class="arrow"></b>
+                            </li>
+                            <li id="fxd00cddd" class="actionlinlk">
+                                @Html.ActionLink("Depreciation Cost", "Index", "DepreciationCost", new { area = "FixedAsset" }, null)<b class="arrow"></b>
+                            </li>
+                        }
+                    </ul>
+                </li>
+            }
+
+            @if (HttpContext.Current.User.IsInRole("FixedAsset_Count_User")
+                || HttpContext.Current.User.IsInRole("FixedAsset_Count_Approver"))
+            {
+                <li class="">
+                    <a href="#" class="dropdown-toggle">
+                        <i class="menu-icon fa fa-caret-right"></i>
+
+                        Count
+                        <b class="arrow fa fa-angle-down"></b>
+                    </a>
+
+                    <b class="arrow"></b>
+
+                    <ul class="submenu">
+
+                       
+                       
+                        @if (HttpContext.Current.User.IsInRole("FixedAsset_Count_User")
+                             || HttpContext.Current.User.IsInRole("FixedAsset_Count_Approver"))
+                        {
+                            <li id="fxd00c1f" class="actionlinlk">@Html.ActionLink("Asset Count Sheet", "AssetCountSheet", "FixedAssetReport", new { area = "FixedAsset" }, null)<b class="arrow"></b></li>
+                            <li id="fxd00c1fsum" class="actionlinlk">@Html.ActionLink("Asset Count Summary", "AssetCountSummary", "FixedAssetReport", new { area = "FixedAsset" }, null)<b class="arrow"></b></li>
+                            <li id="fxd00c2f" class="actionlinlk">@Html.ActionLink("Scafolding & Panel Count Sheet", "ScafoldingAndPanelCountSheet", "FixedAssetReport", new { area = "FixedAsset" }, null)<b class="arrow"></b></li>
+                            <li id="fxd00c2fsum" class="actionlinlk">@Html.ActionLink("Scafolding & Panel Count Summary", "ScafoldingAndPanelCountSummary", "FixedAssetReport", new { area = "FixedAsset" }, null)<b class="arrow"></b></li>
+                            <li id="fxd00c3m" class="actionlinlk">@Html.ActionLink("Equipment and Vehicle Count Sheet", "AssetMachineCountSheet", "FixedAssetReport", new { area = "FixedAsset" }, null)<b class="arrow"></b></li>
+                            <li id="fxd00cm3sum" class="actionlinlk">@Html.ActionLink("Equipment and Vehicle Count Summary", "AssetMachineCountSummary", "FixedAssetReport", new { area = "FixedAsset" }, null)<b class="arrow"></b></li>
+                        }
+                       
+                    </ul>
+                </li>
+            }
+
+
+            @if (HttpContext.Current.User.IsInRole("FixedAsset_Report"))
+            {
+                <li class="">
+                    <a href="#" class="dropdown-toggle">
+                        <i class="menu-icon fa fa-caret-right"></i>
+
+                        Reports
+                        <b class="arrow fa fa-angle-down"></b>
+                    </a>
+
+                    <b class="arrow"></b>
+
+
+                    <ul class="submenu">
+                        <li id="fxd002" class="actionlinlk">@Html.ActionLink("Asset Report", "FixedAssetReportByCategory", "FixedAssetReport", new { area = "FixedAsset" }, null)<b class="arrow"></b></li>
+                        <li id="fxd0025" class="actionlinlk">@Html.ActionLink("Asset Register", "AssetRegister", "FixedAssetReport", new { area = "FixedAsset" }, null)<b class="arrow"></b></li>
+                        <li id="fxd002" class="actionlinlk">@Html.ActionLink("Annual Depreciation", "AnnualDepreciationList", "FixedAssetReport", new { area = "FixedAsset" }, null)<b class="arrow"></b></li>
+                        <li id="fxd0023" class="actionlinlk">@Html.ActionLink("Depreciation by Branch", "DepreciationByBranch", "FixedAssetReport", new { area = "FixedAsset" }, null)<b class="arrow"></b></li>
+                        <li id="fxd0023dd" class="actionlinlk">@Html.ActionLink("Depreciation Cost Quarterly", "DepreciationCostQuarterly", "FixedAssetReport", new { area = "FixedAsset" }, null)<b class="arrow"></b></li>
+                        <li id="fxd0023dd3" class="actionlinlk">@Html.ActionLink("Depreciation Cost Annual", "DepreciationCostAnnual", "FixedAssetReport", new { area = "FixedAsset" }, null)<b class="arrow"></b></li>
+                        <li id="fxd002303" class="actionlinlk">@Html.ActionLink("Department Depreciation Cost", "DepreciationCostByDepartment", "FixedAssetReport", new { area = "FixedAsset" }, null)<b class="arrow"></b></li>
+                        <li id="fxd0021" class="actionlinlk">@Html.ActionLink("Purchased Asset", "PurchasedAsset", "FixedAssetReport", new { area = "FixedAsset" }, null)<b class="arrow"></b></li>
+                        <li id="fxd0024r" class="actionlinlk">@Html.ActionLink("Purchased Asset Details", "FixedAssetPurchaseDetail", "FixedAssetReport", new { area = "FixedAsset" }, null)<b class="arrow"></b></li>
+                        <li id="fxd0024" class="actionlinlk">@Html.ActionLink("Disposal Summary", "Disposal", "FixedAssetReport", new { area = "FixedAsset" }, null)<b class="arrow"></b></li>
+                        <li id="fxd0024d" class="actionlinlk">@Html.ActionLink("Disposal Details", "DisposalDetails", "FixedAssetReport", new { area = "FixedAsset" }, null)<b class="arrow"></b></li>
+                        <li id="fxd0024move" class="actionlinlk">@Html.ActionLink("Asset Movement", "AssetMovement", "FixedAssetReport", new { area = "FixedAsset" }, null)<b class="arrow"></b></li>
+
+                        @*<li id="fxd002" class="actionlinlk">@Html.ActionLink("Annual Depreciations", "Depreciation", "FixedAssetReport", new {area = "FixedAsset"}, null)<b class="arrow"></b></li>
+        <li id="fxd003" class="actionlinlk">@Html.ActionLink("Physical Count Report", "Index", "PhysicalCountReport", new {area = "FixedAsset"}, null)<b class="arrow"></b></li>
+        <li id="fxd004" class="actionlinlk">@Html.ActionLink("Physical Count Report Detail", "Index", "PhysicalCountReportDetail", new {area = "FixedAsset"}, null)<b class="arrow"></b></li>*@
+                    </ul>
+
+
+
+                </li>
+            }
+            @if (HttpContext.Current.User.IsInRole("FixedAsset_Admin"))
+            {
+                <li class="">
+                    <a href="#" class="dropdown-toggle">
+                        <i class="menu-icon fa fa-caret-right"></i>
+
+                        Setting
+                        <b class="arrow fa fa-angle-down"></b>
+                    </a>
+
+                    <b class="arrow"></b>
+
+                    <ul class="submenu">
+                        <li id="fxd005" class="actionlinlk">
+                            @Html.ActionLink("Asset Category", "Index", "FixedAssetCategory", new { area = "FixedAsset" }, null)<b class="arrow"></b></li>
+                        <li id="fxd006" class="actionlinlk">
+                            @Html.ActionLink("Asset Sub Category", "Index", "FixedAssetSubCategory", new { area = "FixedAsset" }, null)<b class="arrow"></b></li>
+                        @*<li id="fxd007" class="actionlinlk">@Html.ActionLink("AnnualDepreciation Setup", "Index", "FixedAssetAnnualDepreciationSetup", new { area = "FixedAsset" }, null)<b class="arrow"></b></li>
+                    <li id="fxd008" class="actionlinlk">@Html.ActionLink("Clearing Account Setup", "Index", "FixedAssetClearingAccountSetup", new { area = "FixedAsset" }, null)<b class="arrow"></b></li>*@
+                        <li id="fxd009" class="actionlinlk">
+                            @Html.ActionLink("Asset Group", "Index", "FixedAssetGroup", new { area = "FixedAsset" }, null)<b class="arrow"></b></li>
+                        <li id="fxd010" class="actionlinlk">
+                            @Html.ActionLink("Depreciation Rule", "Index", "DepreciationRule", new { area = "FixedAsset" }, null)<b class="arrow"></b></li>
+                        <li id="fxd011" class="actionlinlk">
+                            @Html.ActionLink("Tag", "Index", "TagCodeSetting", new { area = "FixedAsset" }, null)<b class="arrow"></b></li>
+                        <li id="fxd014" class="actionlinlk">
+                            @Html.ActionLink("Period", "Index", "FixedAssetPeriod", new { area = "FixedAsset" }, null)<b class="arrow"></b></li>
+                        <li id="fxd014" class="actionlinlk">
+                            @Html.ActionLink("Asset Condition", "Index", "FixedAssetCondition", new { area = "FixedAsset" }, null)<b class="arrow"></b></li>
+                    </ul>
+                </li>
+            }
+
+        </ul>
+    </li>
+}

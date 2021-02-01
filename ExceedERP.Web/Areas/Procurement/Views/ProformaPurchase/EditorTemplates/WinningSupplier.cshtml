@@ -1,0 +1,15 @@
+﻿ 
+
+@(Html.Kendo().DropDownListFor(m => m)
+                  .AutoBind(false)
+                  .OptionLabel("...Select Participant...")
+                          .DataTextField("Name")
+                              .DataValueField("Code").ValuePrimitive(true)
+                  .DataSource(dataSource =>
+                  {
+                      dataSource.Read(read => read.Action("GeProformaWinningSuppliers", "ProcurementDataProvider").Data("suppliersInItem"))
+                                .ServerFiltering(true);
+                  })
+                        .CascadeFrom("ItemCode")
+)
+@Html.ValidationMessageFor(m => m)

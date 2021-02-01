@@ -1,0 +1,155 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.HRM.HealthAndInsurance
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Laboratory</legend>
+@(Html.Kendo().Grid<PatientResult>()
+                  .Name("PatientResultGrid")
+              .Columns(columns =>
+              {
+                  columns.ForeignKey(c => c.PatientId, (IEnumerable)ViewData["employees"], "EmployeeId", "FullNameaEnglish").EditorTemplateName("EmployeeLists").Title("Patient Name").Width(150);
+                  columns.ForeignKey(c => c.DoctorId, (IEnumerable)ViewData["employees"], "EmployeeId", "FullNameaEnglish").EditorTemplateName("EmployeeLists").Width(150).Visible(false);
+                  columns.Bound(c => c.Description).Width(80);
+                  columns.Bound(c => c.RegisterDateAm).EditorTemplateName("Calander").Width(150);
+                  columns.Bound(c => c.IsForLaboratory).ClientTemplate("<input type='checkbox' disabled = 'true' #=IsForLaboratory ? checked='checked' :'' # >").Width(80);
+                 
+                  columns.Command(command =>
+                  {
+
+                      //command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+
+                      //command.Destroy().Text(Resources.ActionButton_Cancel);
+
+                  }).Width(200);
+              })
+              .ToolBar(toolbar =>
+              {
+
+                  //toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+
+              })
+
+
+                                .Editable(editable => editable.Mode(GridEditMode.InLine))//.TemplateName("Patient").Window(window => { window.Title(Resources.NavigatorTraining_CourseTracking); window.Scrollable(false); }))
+                       .Scrollable(h => h.Height(500))
+                           .Groupable()
+                                    .Sortable(sortable =>
+                                    {
+                                        sortable.SortMode(GridSortMode.SingleColumn);
+                                    })
+                        .Filterable()
+                           //.Events(e =>
+                           //{
+                           //    e.Save("GetDate");
+
+                           //    e.Edit("GetDate");
+                           //})
+                           .Pageable(pageable => pageable
+                                                      .Input(true)
+                                                      .Numeric(false)
+                                                      .Refresh(true)
+                                                      .PageSizes(true)
+                                                      .ButtonCount(5))
+                                                       .Events(e =>
+                                                       {
+                                                           e.Save("GetDate");
+                                                           e.Edit("GetDate");
+                                                       })
+                    .DataSource(dataSource => dataSource
+                        .Ajax()
+                                  .Events(events =>
+                                  {
+                                      events.Error("error_handler(\"PatientResultGrid\")");
+                                      events.RequestStart("onRequestStart(\"PatientResultGrid\")");
+                                      events.RequestEnd("onRequestEnd(\"PatientResultGrid\")");
+                                  })
+
+                        .Model(model => model.Id(p => p.PatientResultId))
+                        .Read(read => read.Action("Laboratory_Read", "Laboratory"))
+                        .Create(create => create.Action("Laboratory_Create", "Laboratory"))
+                        .Update(update => update.Action("Laboratory_Update", "Laboratory"))
+                        .Destroy(destroy => destroy.Action("Laboratory_Destroy", "Laboratory"))
+                            ).ClientDetailTemplateId("template")
+)
+
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                                                        .Name("tabstrip_#=PatientResultId#")
+                                  .SelectedIndex(0)
+                                  .Items(items =>
+                                  {
+
+                                      items.Add().Text("Lab").Content(
+                                        @<text>
+
+                                            @(Html.Kendo().Grid<PatientResultDetail>()
+                                                                        .Name("PatientResultDetail_#=PatientResultId#")
+                                                        .Columns(columns =>
+                                                        {
+                                                            columns.Bound(c => c.TestType);
+                                                            columns.Bound(c => c.Description);
+                                                            //columns.Bound(c => c.Quantity);
+                                                            //columns.ForeignKey(c => c.DrugUnitId, (IEnumerable)ViewData["drugUnit"], "DrugUnitId", "UoMName").EditorTemplateName("DrugUnits").Width(150).Title("Unit");
+                                                            //columns.ForeignKey(c => c.DrugListsId, (IEnumerable)ViewData["drugList"], "DrugListsId", "Description").EditorTemplateName("DrugLists").Width(150).Title("Drug Name");
+
+                                                            columns.Command(command =>
+                                                            {
+
+                                                                //command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+
+                                                                //command.Destroy().Text(Resources.ActionButton_Cancel);
+
+                                                            }).Width(200);
+                                                        })
+                                                        .ToolBar(toolbar =>
+                                                        {
+                                                            //toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                                                            toolbar.Save();
+
+
+                                                            toolbar.Custom().Action("Checked", "PatientResult", new { id = "#=PatientResultId#" }).Text("Send For Doctor");
+
+                                                        })
+                                                        .Editable(editable => editable.Mode(GridEditMode.InCell))
+                                                        .Scrollable(h => h.Height(500))
+                                                        .DataSource(dataSource => dataSource
+                                                            .Ajax()
+                                                                      //.Events().Update()
+                                                                      .Batch(true)
+                                                                    .Events(events =>
+                                                                    {
+                                                                        events.Error("error_handler(\"PatientResultDetail_#=PatientResultId#\")");
+                                                                        events.RequestStart("onRequestStart(\"PatientResultDetail_#=PatientResultId#\")");
+                                                                        events.RequestEnd("onRequestEnd(\"PatientResultDetail_#=PatientResultId#\")");
+                                                                    })
+
+                                                            .Model(model =>
+                                                            {
+                                                                model.Id(p => p.PatientResultDetailId);
+                                                                model.Field(p => p.TestType).Editable(false);
+                                                            })
+                                                                    .Read(read => read.Action("PatientResultDetailForLaboratory_Read", "PatientResultDetail", new { id = "#=PatientResultId#" }))
+                                                                    .Create(create => create.Action("Editing_Create", "PatientResultDetail", new { id = "#=PatientResultId#" }))
+                                                            .Update(update => update.Action("Editing_Update", "PatientResultDetail"))
+                                                            .Destroy(destroy => destroy.Action("PatientResultDetail_Destroy", "PatientResultDetail"))
+                                                        ).ToClientTemplate()
+                                            )
+
+                                        </text>
+                                                                  );
+
+                                             
+
+                                      }).ToClientTemplate())
+</script>
+
+<script>
+
+        function GetDate() {
+
+            $("#RegisterDateAm").trigger("change");
+    }
+</script>
+

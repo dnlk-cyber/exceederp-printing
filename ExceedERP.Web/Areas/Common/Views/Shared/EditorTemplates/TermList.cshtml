@@ -1,0 +1,9 @@
+﻿@using System.Collections
+@(Html.Kendo().DropDownList()
+.BindTo((IEnumerable)ViewData["TermList"])
+    .OptionLabel("--Select Term--")
+            .DataValueField("TermID")
+            .DataTextField("Description")
+            .Name("TermID")
+
+)

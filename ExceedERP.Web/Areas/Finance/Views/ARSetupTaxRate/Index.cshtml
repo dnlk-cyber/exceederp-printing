@@ -1,0 +1,33 @@
+﻿@using ExceedERP.Core.Domain.Finance.AR
+@(Html.Kendo().Grid<ARSetupTaxRate>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Tax);
+          columns.Bound(c => c.Rate);
+          columns.Bound(c => c.DateCreated).Hidden(true);
+          columns.Bound(c => c.LastModified).Hidden(true);
+          columns.Bound(c => c.CreatedBy).Hidden(true);
+          columns.Bound(c => c.ModifiedBy).Hidden(true);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+                              toolbar.Excel();
+                              // toolbar.Pdf();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Pageable()
+      .Sortable(sortable => {
+                                sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Filterable()
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.ARSetupTaxRateID))
+          .Read(read => read.Action("ARSetupTaxRates_Read", "ArSetupTaxRate"))
+          .Create(create => create.Action("ARSetupTaxRates_Create", "ArSetupTaxRate"))
+          .Update(update => update.Action("ARSetupTaxRates_Update", "ArSetupTaxRate"))
+          .Destroy(destroy => destroy.Action("ARSetupTaxRates_Destroy", "ArSetupTaxRate"))
+      ))

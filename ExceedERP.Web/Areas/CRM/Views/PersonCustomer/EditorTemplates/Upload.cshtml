@@ -1,0 +1,15 @@
+﻿@using (Html.BeginForm("Upload", "PersonCustomer", FormMethod.Post,
+    new { enctype = "multipart/form-data" }))
+{
+
+    @Html.AntiForgeryToken()
+    <fieldset>
+        <div class="editor-field">
+            @Html.TextBox("file", "", new { type = "file"})
+        </div>
+        <br/>
+        <div class="editor-field">
+            <input type="submit" value="Upload" />
+        </div>
+    </fieldset>
+}

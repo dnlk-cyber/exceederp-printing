@@ -1,0 +1,49 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Finance.AP.ApSetupCommonSupplier>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Description).Width(120);
+          columns.Bound(c => c.AccountCode).Width(220).EditorTemplateName("AccountCode");
+        
+          columns.Command(command =>
+          {
+              command.Edit(); 
+          }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              if (ViewBag.Count<1)
+                              {toolbar.Create();
+                              }
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .HtmlAttributes(new { style = "height: 550px;" })
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(5))
+      .Scrollable()
+      .Sortable()
+      .Filterable()
+      .Groupable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(
+              model =>
+              {
+                  model.Id(p => p.ApSetupCommonSupplierId);
+                  model.Field(p => p.CreatedBy).Editable(false);
+                  model.Field(p => p.ModifiedBy).Editable(false);
+                  model.Field(p => p.LastModified).Editable(false);
+                  model.Field(p => p.DateCreated).Editable(false);
+              })
+          .Events(events => events
+              .Error("error_handler_one")
+              .Sync("sync_handler"))
+          .Read(read => read.Action("ApSetupCommonSuppliers_Read", "ApSetupCommonSupplier"))
+          .Create(create => create.Action("ApSetupCommonSuppliers_Create", "ApSetupCommonSupplier"))
+          .Update(update => update.Action("ApSetupCommonSuppliers_Update", "ApSetupCommonSupplier"))
+          .Destroy(destroy => destroy.Action("ApSetupCommonSuppliers_Destroy", "ApSetupCommonSupplier"))
+      ))

@@ -1,0 +1,22 @@
+﻿@using System.Collections
+
+
+
+@(Html.Kendo().DropDownListFor(m => m)
+                  .ValuePrimitive(true)
+                  .OptionLabel("Select invoice...")
+      .DataTextField("Name")
+      .DataValueField("Code")
+      .Filter("contains")
+      .Events(e =>
+      {
+          e.Select("onSelect");
+      })
+      .DataSource(dataSource =>
+      {
+          dataSource.Read(read => read.Action("GetOpenArInvoices", "FinanceDataProvider", new { area = "Finance" }).Data("getCustomerId"))
+              .ServerFiltering(true);
+      })
+                           
+)
+@Html.ValidationMessageFor(m => m)

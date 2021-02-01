@@ -1,0 +1,95 @@
+﻿@using ExceedERP.Core.Domain.Inventory
+@using Kendo.Mvc.UI
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+@(Html.Kendo().Grid<UoM>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.UoMName).Width(200);
+          columns.Bound(c => c.Description).Width(200);
+          columns.Bound(c => c.Default).Width(90).Title("Default").ClientTemplate(
+              "<input type='checkbox' disabled = 'true' value='#= Default #' " +
+              "# if (Default) { #" +
+              "checked='checked'" +
+              "# } #" +
+              "/>"
+              );
+          columns.Command(command =>
+          {
+              command.Edit();
+              // command.Destroy();
+          });
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .HtmlAttributes(new { style = "height: 550px;" })
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(20))
+      .Scrollable()
+      .Sortable()
+      .Filterable()
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Events(events => events.Edit("edit"))
+      .Events(events => events.Save("save"))
+                        
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model =>
+          {
+              model.Id(p => p.UoMName);
+              model.Field(p => p.CreatedBy).Editable(false);
+              model.Field(p => p.DateCreated).Editable(false);
+              model.Field(p => p.ModifiedBy).Editable(false);
+              model.Field(p => p.LastModified).Editable(false);
+
+          })
+          .Events(events => events
+               
+              //.Error("error_handler_one")
+              //.Sync("sync_handler")
+              .Error("error_handler(\"grid\")")
+              .RequestStart("onRequestStart(\"grid\")")
+              .RequestEnd("onRequestEnd(\"grid\")"))
+                  
+          .Read(read => read.Action("UoMs_Read", "Uom"))
+          .Create(create => create.Action("UoMs_Create", "Uom"))
+          .Update(update => update.Action("UoMs_Update", "Uom"))
+          .Destroy(destroy => destroy.Action("UoMs_Destroy", "Uom"))
+      ))
+
+<script type="text/javascript">
+
+    function edit(e) {
+        if (e.model.isNew() === false) {
+            $("#UoMName").attr("readonly", true);
+        }
+    }
+    function save(e) {
+        var detailGrid = "#" + e.sender.element[0].id;
+        var grid = $(detailGrid).getKendoGrid();
+        e.container.find(".k-grid-update").click(stopEvent1);
+    }
+
+    function stopEvent1(e) {
+        //e.preventDefault();
+        //e.stopPropagation();
+    }
+</script>

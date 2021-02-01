@@ -1,0 +1,206 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@using Kendo.Mvc.UI
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>  Projects </legend>
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Production.ProductionProject>()
+                          .Name("projectsGrid")
+                          .Columns(columns =>
+                          {
+                              //columns.Bound(c => c.ProductionProjectId).Hidden(true);
+                              columns.Bound(c => c.Name);
+                              columns.Bound(c => c.Location);
+
+                              columns.Command(command => {
+                                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                  command.Destroy().Text(Resources.ActionButton_Cancel);
+                              }).Width(200);
+
+                          })
+                          .ToolBar(toolbar =>
+                          {
+                              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                          })
+                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                          .Selectable(selectable =>
+                          {
+                              selectable.Mode(GridSelectionMode.Single);
+                              selectable.Type(GridSelectionType.Row);
+                          })
+                          .Scrollable(h => h.Height(500))
+                          .Sortable(sortable =>
+                          {
+                              sortable.SortMode(GridSortMode.SingleColumn);
+                          })
+                          .Filterable()
+                          .Pageable(pageable => pageable
+                              .Input(true)
+                              .Numeric(false)
+                              .Refresh(true)
+                              .PageSizes(true)
+                              .ButtonCount(5))
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+
+                              .Events(events =>
+                              {
+                                  events.Error("error_handler(\"projectsGrid\")");
+                                  events.RequestStart("onRequestStart(\"projectsGrid\")");
+                                  events.RequestEnd("onRequestEnd(\"projectsGrid\")");
+                              })
+                              .Model(model =>
+                              {
+                                  model.Id(f => f.ProductionProjectId);
+                              })
+
+                              .Read(read => read.Action("Project_Read", "Project"))
+                              .Create(create => create.Action("Project_Create", "Project"))
+                              .Update(update => update.Action("Project_Update", "Project"))
+                              .Destroy(destroy => destroy.Action("Project_Destroy", "Project"))
+                          ).ClientDetailTemplateId("template_project_detail")
+)
+
+<script id="template_project_detail" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+        .Name("tabstrip_str_#=ProjectId#")
+        .SelectedIndex(0)
+        .Items(items =>
+        {
+
+            items.Add().Text("Project Activities").Content(
+                @<text>
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Production.Activity>()
+                            .Name("activities__#=ProjectId#")
+                            .Columns(columns =>
+                            {
+                                columns.Bound(c => c.Name);
+                                columns.ForeignKey(c => c.ProductionSettingId, (IEnumerable)ViewData["ActivityTypes"], "ProductionSettingId", "Value").EditorTemplateName("ActivityTypes");
+                                columns.Bound(c => c.MaterialCost);
+                                columns.Bound(c => c.LaborCost);
+                                columns.Bound(c => c.Equipmentcost);
+                                columns.Bound(c => c.TotalCost);
+
+                                columns.Command(command =>
+                                {
+                                    command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                    command.Destroy().Text(Resources.ActionButton_Cancel);
+                                }).Width(200);
+                            })
+                            .ToolBar(toolbar =>
+                            {
+                                toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                            })
+                            .Editable(editable => editable.Mode(GridEditMode.InLine))
+                            .Scrollable(h => h.Height(500))
+                            .Sortable(sortable =>
+                            {
+                                sortable.SortMode(GridSortMode.SingleColumn);
+                            })
+                            .Groupable()
+                            .Selectable(selectable =>
+                            {
+                                selectable.Mode(GridSelectionMode.Single);
+                                selectable.Type(GridSelectionType.Row);
+                            })
+                            .Filterable()
+                            .Pageable(pageable => pageable
+                                .Input(true)
+                                .Numeric(false)
+                                .Refresh(true)
+                                .PageSizes(true)
+                                .ButtonCount(5))
+                            //.Events(e => e.Edit("onEdit"))
+                            .DataSource(dataSource => dataSource
+                                .Ajax()
+                                .Events(events =>
+                                {
+                                    events.Error("error_handler(\"activities__#=ProjectId#\")");
+                                    events.RequestStart("onRequestStart(\"activities__#=ProjectId#\")");
+                                    events.RequestEnd("onRequestEnd(\"activities__#=ProjectId#\")");
+                                })
+                                .Model(model =>
+                                {
+                                    model.Id(p => p.ActivityId);
+                                    model.Field(f => f.TotalCost).Editable(false);
+
+                                })
+                                .Read(read => read.Action("Activities_Read", "Activity", new { id = "#=ProjectId#" }))
+                                .Create(create => create.Action("Activity_Create", "Activity", new { id = "#=ProjectId#" }))
+                                .Update(update => update.Action("Activity_Update", "Activity"))
+                                .Destroy(destroy => destroy.Action("Activity_Destroy", "Activity"))
+                                )
+                                .ToClientTemplate()
+                    )
+                </text>
+            );
+
+            items.Add().Text("Farming Plots").Content(
+                @<text>
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Production.Plot>()
+                            .Name("plots__#=ProjectId#")
+                            .Columns(columns =>
+                            {
+                                //columns.ForeignKey(c => c.ConfigurationId, (IEnumerable)ViewData["StrTypes"], "ConfigurationId", "CurrentValue").Title("Type").EditorTemplateName("StrTypes");
+                                columns.Bound(c => c.Width);
+                                columns.Bound(c => c.Length);
+                                columns.Bound(c => c.Area);
+
+                                columns.Command(command =>
+                                {
+                                    command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                    command.Destroy().Text(Resources.ActionButton_Cancel);
+                                }).Width(200);
+                            })
+                            .ToolBar(toolbar =>
+                            {
+                                toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                            })
+                            .Editable(editable => editable.Mode(GridEditMode.InLine))
+                            .Scrollable(h => h.Height(500))
+                            .Sortable(sortable =>
+                            {
+                                sortable.SortMode(GridSortMode.SingleColumn);
+                            })
+                            .Groupable()
+                            .Selectable(selectable =>
+                            {
+                                selectable.Mode(GridSelectionMode.Single);
+                                selectable.Type(GridSelectionType.Row);
+                            })
+                            .Filterable()
+                            .Pageable(pageable => pageable
+                                .Input(true)
+                                .Numeric(false)
+                                .Refresh(true)
+                                .PageSizes(true)
+                                .ButtonCount(5))
+                            //.Events(e => e.Edit("onEdit"))
+                            .DataSource(dataSource => dataSource
+                                .Ajax()
+                                .Events(events =>
+                                {
+                                    events.Error("error_handler(\"plots__#=ProjectId#\")");
+                                    events.RequestStart("onRequestStart(\"plots__#=ProjectId#\")");
+                                    events.RequestEnd("onRequestEnd(\"plots__#=ProjectId#\")");
+                                })
+                                .Model(model =>
+                                {
+                                    model.Id(p => p.PlotId);
+
+                                    model.Field(f => f.Area).Editable(false);
+                                })
+                                .Read(read => read.Action("Plots_Read", "Plot", new { id = "#=ProjectId#" }))
+                                .Create(create => create.Action("Plot_Create", "Plot", new { id = "#=ProjectId#" }))
+                                .Update(update => update.Action("Plot_Update", "Plot"))
+                                .Destroy(destroy => destroy.Action("Plot_Destroy", "Plot"))
+                                )
+                                .ToClientTemplate()
+                    )
+                </text>
+            );
+
+        }).ToClientTemplate())
+</script>

@@ -1,0 +1,58 @@
+﻿@using ExceedERP.Web.Areas.Procurement.Models
+@model List<ExceedERP.Core.Domain.Procurement.Tender.Lot.ParticipantsItem>
+                    
+                   <div class="col-md-12">
+                      
+                        <div class="col-md-1">
+                           
+                       </div>     
+                        <div class="col-md-3">
+                            @(Html.Kendo().DropDownList()
+                                  .Name("participantItems")
+                                  .AutoBind(false)
+                                  .Filter(FilterType.Contains)
+                                  .OptionLabel("...Select Item...")
+                                  .DataTextField("Name")
+                                  .DataValueField("ItemCode")
+                                  .DataSource(dataSource =>
+                                  {
+                                      dataSource.Read(read => read.Action("GetLotItems", "LotItem").Data("getTenderid"))
+                                          .ServerFiltering(true);
+                                  }))
+                            @Html.ValidationMessageFor(m => m)
+
+
+                       </div>     
+                        <div class="col-md-4" style="background-color: #DAB7B7">
+                 <table style="background-color: #DAB7B7">
+                       <tr>
+                       @{
+                           int cnt = 0;
+                           List<AssignItemToParticipant> itemToParticipants = ViewBag.SupplierItem;
+
+                           foreach (var itemToParticipant in itemToParticipants)
+                           {
+                               if (cnt++ % 3 == 0)
+                               {
+                                   @:</tr><tr>
+                               }
+                               @:<td class="col-md-4">
+                               <input type="checkbox"
+                                      name="selectItems"
+                                      value="@itemToParticipant.ItemCode"
+                                      @(Html.Raw(itemToParticipant.Assigned ? "checked=\"checked\"" : ""))/>
+                               @: @itemToParticipant.ItemName
+                               @:</td>
+                           }
+                           @:</tr>
+                       }
+                   </table>
+                       </div>     
+                       
+                       <div class="col-md-3">
+                           
+                       </div>     
+                        
+                   </div>
+               
+               

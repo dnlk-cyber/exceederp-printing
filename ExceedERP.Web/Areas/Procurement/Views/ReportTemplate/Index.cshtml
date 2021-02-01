@@ -1,0 +1,49 @@
+﻿@using ExceedERP.Core.Domain.Procurement.Settings
+<legend>Letter Template</legend>
+@(Html.Kendo().Grid<ReportTemplate>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Temp1).Width(90);
+          columns.Bound(c => c.Temp2).Width(130);
+          columns.Bound(c => c.Temp3).Width(90);
+          columns.Bound(c => c.Temp4).Width(90);
+          columns.Bound(c => c.Temp5).Width(130);
+          columns.Bound(c => c.Temp6).Width(130);
+          columns.Bound(c => c.Temp7).Width(110);
+          columns.Bound(c => c.Type).Width(80);
+          columns.Bound(c => c.Status).ClientTemplate("<input type='checkbox' disabled = 'true'  value='#=Status #' " + " # if (Status) { #" + "checked='checked'" + "# } #" + " />").Width(60);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+                              //toolbar.Excel();
+                              // toolbar.Pdf();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(20))
+      .Selectable(selectable => {
+                                    selectable.Mode(GridSelectionMode.Single);
+                                    selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable => {
+                                sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Scrollable(height => height.Height(500))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Events(ev => ev
+              .Error("error_handler(\"grid\")")
+              .RequestStart("onRequestStart(\"grid\")")
+              .RequestEnd("onRequestEnd(\"grid\")"))
+          .Model(model => model.Id(p => p.ReportTemplateId))
+          .Read(read => read.Action("ReportTemplates_Read", "ReportTemplate"))
+          .Create(create => create.Action("ReportTemplates_Create", "ReportTemplate"))
+          .Update(update => update.Action("ReportTemplates_Update", "ReportTemplate"))
+          .Destroy(destroy => destroy.Action("ReportTemplates_Destroy", "ReportTemplate"))
+      ))

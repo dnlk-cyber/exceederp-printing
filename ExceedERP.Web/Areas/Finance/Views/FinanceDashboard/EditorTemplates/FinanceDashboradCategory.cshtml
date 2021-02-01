@@ -1,0 +1,12 @@
+﻿@using ExceedERP.Core.Domain.Dashboard
+@using ExceedERP.Helpers.Common
+@model FinanceDashboradCategory
+
+@(
+ Html.Kendo().DropDownListFor(m => m)
+        .DataTextField("Text")
+        .DataValueField("Value")
+                    .BindTo(EnumExtension.EnumToSelectList(typeof(FinanceDashboradCategory)))
+)
+
+

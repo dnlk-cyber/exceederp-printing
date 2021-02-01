@@ -1,0 +1,273 @@
+﻿@{
+    Layout = "~/Views/Shared/_Popup.cshtml";
+}
+
+<div class="form">
+    <div class="row fullrow">
+        @*@ViewBag.PreviousAccount*@
+        <div class="col-md-8 ro1">
+            <div class="form-group">
+                @Html.Label("Account", htmlAttributes: new { @class = "control-label col-md-4" })
+                <div class="col-md-9">
+                    @(Html.Kendo().DropDownList()
+                              .Name("Accounts")
+                              .SelectedIndex(0)
+                              .HtmlAttributes(new { style = "width:600px" })
+                              .ValuePrimitive(true)
+                              .DataTextField("desc")
+                              .DataValueField("value")
+                              .Filter("contains")
+                              .DataSource(dataSource =>
+                              {
+                                  dataSource.Read(read => read.Action("GetAccounts", "AccountCode"))
+                                      .ServerFiltering(false);
+                              })
+                    )
+                </div>
+            </div>
+            <div class="row"></div>
+
+            <div class="form-group">
+                @Html.Label("Company or Branch", htmlAttributes: new { @class = "control-label col-md-4" })
+                <div class="col-md-8">
+                    @(Html.Kendo().DropDownList()
+                              .Name("Location")
+                              .SelectedIndex(0)
+                              .ValuePrimitive(true)
+                              .HtmlAttributes(new { style = "width:600px" })
+                              .DataTextField("desc")
+                              .DataValueField("value")
+                              .Filter("contains")
+                              .DataSource(dataSource =>
+                              {
+                                  dataSource.Read(read => read.Action("GetLocations", "AccountCode"))
+                                      .ServerFiltering(false);
+                              })
+                    )
+                </div>
+            </div>
+            <div class="row"></div>
+
+            <div class="form-group">
+                @Html.Label("Cost Center", htmlAttributes: new { @class = "control-label col-md-4" })
+                <div class="col-md-8">
+                    @(Html.Kendo().DropDownList()
+                              .Name("CostCenter")
+                              .SelectedIndex(0)
+                              .ValuePrimitive(true)
+                              .HtmlAttributes(new { style = "width:600px" })
+                              .DataTextField("desc")
+                              .DataValueField("value")
+                              .Filter("contains")
+                              .DataSource(dataSource =>
+                              {
+                                  dataSource.Read(read => read.Action("GetCostCenter", "AccountCode"))
+                                      .ServerFiltering(false);
+                              })
+                    )
+                </div>
+            </div>
+            <div class="row"></div>
+
+            <div class="form-group">
+                @Html.Label("Sub Account", htmlAttributes: new { @class = "control-label col-md-4" })
+                <div class="col-md-8">
+                    @(Html.Kendo().DropDownList()
+                              .Name("SubAccount")
+                              //.SelectedIndex(0)
+                              .ValuePrimitive(true)
+                              .HtmlAttributes(new { style = "width:600px" })
+                              .DataTextField("desc")
+                              .DataValueField("value")
+                              .Filter("contains")
+                              .DataSource(dataSource =>
+                              {
+                                  dataSource.Read(read => read.Action("GetSubAccounts", "AccountCode"))
+                                      .ServerFiltering(false);
+                              })
+                    )
+                </div>
+            </div>
+            <div class="row"></div>
+            <div class="col-md-offset-3 col-md-9">
+                <button type="submit" class="saveBtn btn btn-primary" onclick="javascript:changeparent();"><i class="fa fa-suitcase"></i> Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
+
+<script language="javascript">
+    
+    var  prevcompany ="";
+    var  prevaccount ="";
+    var  prevcostcenter="";
+    var prevsubaccount = "";
+
+    var seg1 = "";
+    var seg2 = "";
+    var seg3 = "";
+    var seg4 = "";
+
+    function getPrevAccont() {
+
+        var first =@Html.Raw(Json.Encode(ViewBag.Segment1));
+        var second =@Html.Raw(Json.Encode(ViewBag.Segment2));
+        var third =@Html.Raw(Json.Encode(ViewBag.Segment3));
+        var fourth =@Html.Raw(Json.Encode(ViewBag.Segment4));
+
+        var prevCom = @Html.Raw(Json.Encode(ViewBag.PreviousAccount));
+        if (prevCom.length > 0) {
+             seg1 = prevCom.split('-')[0];
+             seg2 = prevCom.split('-')[1];
+             seg3 = prevCom.split('-')[2];
+             seg4 = prevCom.split('-')[3];
+           
+             determineSAccountType(first, 1);
+             determineSAccountType(second, 2);
+             determineSAccountType(third, 3);
+             determineSAccountType(fourth, 4);
+        }
+
+       
+    }
+
+    function determineSAccountType(segment, index) {
+        var segmentValue = "";
+        switch(segment) {
+        case 0:
+            prevaccount = switchIndex(index);
+            break;
+        case 1:
+            prevcompany = switchIndex(index);
+            break;
+        case 2:
+            prevcostcenter = switchIndex(index);
+            break;
+        case 3:
+            prevsubaccount = switchIndex(index);
+            break;
+        default:
+            segmentValue = "";
+        }
+
+        return segmentValue;
+    }
+    function switchIndex(index) {
+        var segmentValue = "";
+        switch (index) {
+        case 1:
+            segmentValue = seg1;
+            break;
+        case 2:
+            segmentValue = seg2;
+            break;
+        case 3:
+            segmentValue = seg3;
+            break;
+        case 4:
+            segmentValue = seg4;
+            break;
+        default:
+            segmentValue = "";
+        }
+
+        return segmentValue;
+    }
+
+    $(document).ready(function() {
+        getPrevAccont();
+
+        if(prevaccount.length>0)
+            $("#Accounts").data('kendoDropDownList').value(prevaccount);//.trigger("change");
+        if(prevcompany.length>0)
+            $("#Location").data('kendoDropDownList').value(prevcompany);//.trigger("change");
+        if(prevcostcenter.length>0)
+            $("#CostCenter").data('kendoDropDownList').value(prevcostcenter);//.trigger("change");
+        if(prevsubaccount.length>0)
+            $("#SubAccount").data('kendoDropDownList').value(prevsubaccount);//.trigger("change");
+
+    });
+    //new sequence
+    var firstSegment = "";
+    var secondSegment = "";
+    var thirdSegment = "";
+    var fourthSegment = "";
+
+    var company = "";
+    var account = "";
+    var costcenter = "";
+    var subaccount = "";
+
+    var accCode = "";
+
+    function changeparent() {
+
+            var first = @Html.Raw(Json.Encode(ViewBag.Segment1));
+            var second =@Html.Raw(Json.Encode(ViewBag.Segment2));
+            var third =@Html.Raw(Json.Encode(ViewBag.Segment3));
+            var fourth =@Html.Raw(Json.Encode(ViewBag.Segment4));
+
+
+
+            if ((document.getElementById('Location').value.length === 0) || (document.getElementById('Accounts').value.length === 0) || (document.getElementById('CostCenter').value.length === 0) || (document.getElementById('SubAccount').value.length === 0)) {
+                alert("Please select.");
+            }
+            else {
+                company = document.getElementById('Location').value;
+                account = document.getElementById('Accounts').value;
+                costcenter = document.getElementById('CostCenter').value;
+                subaccount = document.getElementById('SubAccount').value;
+
+                //get the sequence
+                firstSegment =GetSequence(first);
+                secondSegment =GetSequence(second);
+                thirdSegment =GetSequence(third);
+                fourthSegment=GetSequence(fourth);
+
+                var accCode = firstSegment + "-" + secondSegment + "-" + thirdSegment + "-" + fourthSegment;
+                //var accCode = account + "-" + company + "-" + costcenter + "-" + subaccount;
+                opener.setLang(accCode);
+                window.close();
+            }
+        }
+        function closeWin() {
+            document.close();
+        }
+
+        function GetSequence(segment) {
+            var segmentValue = "";
+            switch(segment) {
+                case 0:
+                    segmentValue = account;
+                    break;
+                case 1:
+                    segmentValue = company;
+                    break;
+                case 2:
+                    segmentValue = costcenter;
+                    break;
+                case 3:
+                    segmentValue = subaccount;
+                    break;
+                default:
+                    segmentValue = "";
+            }
+
+            return segmentValue;
+        }
+</script>
+
+<style>
+    .k-list-container ul li.k-item{
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .k-list-container ul {
+        overflow: hidden!important;
+        }
+</style>
+

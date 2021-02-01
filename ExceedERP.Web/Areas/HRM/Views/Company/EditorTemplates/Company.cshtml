@@ -1,0 +1,83 @@
+﻿@using System.Collections
+@using Kendo.Mvc.UI
+@using ExceedERP.Core.Localization
+@model ExceedERP.Core.Domain.Common.HRM.MainCompany 
+
+
+<form>
+
+<div class="row">
+    <div class="col-md-1">
+
+    </div>
+   
+    <div class="col-md-3">
+        <div class="form-group">
+            <div class="k-label">
+                @Html.LabelFor(model => model.TradeName, htmlAttributes: new { @class = "control-label col-md-8" })
+
+            </div>
+            <div>
+
+                @Html.TextBoxFor(model => model.TradeName)
+                @Html.ValidationMessageFor(model => model.TradeName, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    </div>
+    
+
+  
+    <div class="col-md-3">
+        <div class="form-group">
+            <div class="k-label">
+                @Html.LabelFor(model => model.BrandName, htmlAttributes: new { @class = "control-label col-md-8" })
+
+            </div>
+            <div>
+
+                @Html.TextBoxFor(model => model.BrandName)
+                @Html.ValidationMessageFor(model => model.BrandName, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    </div>
+
+</div>
+
+<br/>
+
+
+<div class="row">
+    <div class="col-md-1">
+
+    </div>
+
+  
+    <div class="col-md-3">
+        <div>
+            @Html.LabelFor(model => model.AmharicName, htmlAttributes: new { @class = "control-label col-md-8" })
+        </div>
+        <div class="form-group">
+
+            @Html.TextBoxFor(model => model.AmharicName)@*//, htmlAttributes: new {onkeyup = "transcrire()" })*@
+
+                            
+            @Html.ValidationMessageFor(model => model.AmharicName, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div>
+            @Html.LabelFor(model => model.Abbreviation, htmlAttributes: new { @class = "control-label col-md-8" })
+        </div>
+        <div class="form-group">
+
+            @Html.TextBoxFor(model => model.Abbreviation)
+            @Html.ValidationMessageFor(model => model.Abbreviation, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+
+
+</div>
+ 
+
+</form>

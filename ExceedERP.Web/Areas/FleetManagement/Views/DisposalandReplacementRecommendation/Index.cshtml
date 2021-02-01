@@ -1,0 +1,48 @@
+﻿@{
+    ViewBag.Title = "Disposal and Replacement Recommendation";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Disposal and Replacement Recommendation</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.EquipmentInspection.DisposalandReplacementRecommendation>()
+    .Name("grid")
+    .Columns(columns =>
+    {
+        columns.Bound(e => e.RecommendedBy).Width(140);
+        columns.Bound(e => e.YearofReplacement).Width(140);
+        columns.Bound(e => e.Status).Width(200);
+
+        columns.Command(command =>
+            {
+            command.Edit(); command.Destroy(); }).Width(250);
+     
+    })
+
+                   .ToolBar(commands => commands.Create().Text("Register Recommendation"))
+         .Editable(editable =>
+         {
+             editable.Mode(GridEditMode.PopUp).TemplateName("RecommendationEditor");
+             editable.DisplayDeleteConfirmation("Are You Sure To Remove Recommendation");
+         })
+         .HtmlAttributes(new { style = "height: 520px;" })
+                      .Pageable(pageable => pageable
+                                        .Input(true)
+                                        .Numeric(false)
+                                        .Refresh(true)
+                                        .PageSizes(true)
+                                        .ButtonCount(5))
+
+                            .Scrollable()
+                            .Sortable()
+                            .Filterable()
+                            .Groupable()
+                            .Scrollable(h => h.Height(500))
+    .DataSource(dataSource => dataSource
+        .Ajax()
+        .ServerOperation(false)
+                         .Model(model => model.Id(p => p.DisposalandReplacementRecommendationID))
+                                   .Create(update => update.Action("DisposalandReplacementRecommendation_Create", "DisposalandReplacementRecommendation"))
+                                          .Read(read => read.Action("DisposalandReplacementRecommendation_Read", "DisposalandReplacementRecommendation"))
+                                          .Update(update => update.Action("DisposalandReplacementRecommendation_Update", "DisposalandReplacementRecommendation"))
+                                    .Destroy(update => update.Action("DisposalandReplacementRecommendation_Destroy", "DisposalandReplacementRecommendation"))
+  )
+)

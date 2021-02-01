@@ -1,0 +1,38 @@
+﻿using ExceedERP.Core.Domain.Common;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
+using System.Security.AccessControl;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ExceedERP.Core.Domain.HRM.LeaveManagment
+{
+    public class LeaveReturn : DepartmentOperations
+    {
+        public int LeaveReturnId { get; set; }
+        [Required]
+        [Display(Name = "HR_LeaveManagment_Leave_PersonEmployee", ResourceType = typeof(Localization.Resources))]
+        public int EmployeeId { get; set; }
+        [Required]
+        [Display(Name = "HR_LeaveManagment_Leave_Amount", ResourceType = typeof(Localization.Resources))]
+        public decimal Amount { get; set; }
+        [Required]
+        [Display(Name = "HR_LeaveManagment_Leave_Period", ResourceType = typeof(Localization.Resources))]
+        public int GlFiscalYearId { get; set; }
+        [NotMapped]
+        public bool IsApproved { get; set; }
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}")]
+        public DateTime From { get; set; }
+        public string FromAm { get; set; }
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}")]
+        public DateTime To { get; set; }
+        public string ToAm { get; set; }
+        [Display(Name = "HR_SelfCare_LeaveRequest_IsForOther", ResourceType = typeof(Localization.Resources))]
+        public bool IsForOther { get; set; }
+    }
+}

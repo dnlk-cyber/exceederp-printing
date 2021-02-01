@@ -1,0 +1,15 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@(Html.Kendo().DropDownListFor(m => m)
+      .OptionLabel(Resources.Select)
+      //.Name("PaymentTermsID")
+      .DataTextField("PaymentTermsDays")
+      .DataValueField("PaymentTermsID")
+      .DataSource(dataSource =>
+      {
+          dataSource.Read(read => read.Action("GetPaymentTerms", "DataProvider"));
+      })
+      .Filter("contains")
+      .MinLength(2)
+      .ValuePrimitive(true)
+      )

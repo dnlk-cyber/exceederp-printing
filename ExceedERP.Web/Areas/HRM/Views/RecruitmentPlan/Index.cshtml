@@ -1,0 +1,295 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.HRM.HRMPlan
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+   
+}
+
+
+<legend>@Resources.Navigator_Recruitment_RecruitmentPlan</legend>
+
+    @(Html.Kendo().Grid<RecruitmentPlan>()
+          .Name("RecruitmentPlanGrid")
+      .Columns(columns =>
+      {
+          columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "AmharicName").EditorTemplateName("BranchSelector").Filterable(ftb => ftb.Multi(true).Search(true)).Width(130);
+          columns.ForeignKey(c => c.WorkUnitId, (IEnumerable)ViewData["workunits"], "OrgStructureId", "Name").EditorTemplateName("OrganizationDept").Filterable(ftb => ftb.Multi(true).Search(true)).Width(130);
+          columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["organization"], "OrgStructureId", "Name").EditorTemplateName("OrgSelector").Filterable(ftb => ftb.Multi(true).Search(true)).Width(130);
+          //columns.Bound(c => c.JobtitleName).Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
+          columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["Jobtitles"], "LookupId", "Description").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
+          columns.Bound(c => c.NoOfVacantPost).Width(120);
+          columns.Bound(c => c.EduLevel).Width(150);
+          columns.Bound(c => c.FromAmharic).EditorTemplateName("Calander").Width(150);
+          columns.Bound(c => c.ToAmharic).EditorTemplateName("Calander").Width(150);
+          columns.Bound(c => c.RecruitmentType).EditorTemplateName("Enum").Width(150);
+          columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["PeriodList"], "GlFiscalYearId", "Name").EditorTemplateName("GLYearSelector").Width(100);
+
+          columns.ForeignKey(c => c.RankId, (IEnumerable)ViewData["RankList"], "RankId", "RankName").EditorTemplateName("Rank").Width(100);
+          columns.Bound(c => c.Remark).Width(100);
+          columns.Command(command =>
+          {
+              if (HttpContext.Current.User.IsInRole("HR_Recruitment_User"))
+              {
+                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+              }
+          }).Width(200);
+      })
+     .ToolBar(toolbar =>
+     {
+
+     //toolbar.Excel().Text(Resources.ActionButton_ExportExcel);
+     //toolbar.Pdf().Text(Resources.ActionButton_ExportPDF);
+     toolbar.Template(@<text>
+<div class="toolbar">
+    <label class="category-label">@Resources.HR_RecruitmentManagment_Vacancy_BranchId</label>
+    @(Html.Kendo().ComboBox()
+                                                 .Placeholder(Resources.HR_RecruitmentManagment_Vacancy_BranchId)
+                                                 .Name("BranchId")
+                                                      .BindTo((IEnumerable)ViewData["Branches"])
+                                                         .DataTextField("AmharicName")
+                                                         .DataValueField("BranchId")
+                                                         .Events(x => x.Change("Branch"))
+                                               .AutoBind(false)
+
+                        .HtmlAttributes(new { style = "width: 200px;" })
+
+    )
+
+    @(Html.Kendo().Button()
+                .Name("btnRefresh")
+                .HtmlAttributes(new { type = "button", @class = "k-primary" })
+                .Events(e => e.Click("Refresh"))
+                            .Content(Resources.Payroll_Process_Referesh))
+
+
+    @if (HttpContext.Current.User.IsInRole("HR_Admin") || HttpContext.Current.User.IsInRole("HR_Admin"))
+                {
+        @item.CustomCommandToolBarButton("Excel", "<span class='k-icon k-i-excel'></span>" + Resources.ActionButton_ExportExcel, "Excel_Export_Save", "RecruitmentPlan", "", new { @class = "k-button k-button-icontext k-grid-excel btn btn-primary btn-xs pull-right" });
+        @item.CustomCommandToolBarButton("PDF", "<span class='k-icon k-i-pdf'></span>" + Resources.ActionButton_ExportPDF, "Pdf_Export_Save", "RecruitmentPlan", "", new { @class = "k-button k-button-icontext k-grid-pdf  btn btn-primary btn-xs pull-right" });
+                }
+</div>
+         
+        </text>);
+         
+      })
+                           .Excel(excel => excel
+                                  .FileName(Resources.Navigator_Recruitment_RecruitmentPlan + ".xlsx")
+                                        .Filterable(true)
+                                              .AllPages(true)
+                                                // .ProxyURL(Url.Action("Excel_Export_Save", "RecruitmentPlan"))
+                                                       )
+                                                     .Pdf(pdf => pdf
+                                                            .AllPages()
+                                                    .FileName(Resources.Navigator_Recruitment_RecruitmentPlan + ".pdf")
+                                            //    .ProxyURL(Url.Action("Pdf_Export_Save", "RecruitmentPlan"))
+                                                        )
+                                   .Editable(editable => editable.Mode(GridEditMode.InLine))//.TemplateName("RecruitmentPlan").Window(window => { window.Title("Recruitment Plan"); window.Scrollable(false); }))
+                          .Selectable(selectable =>
+                          {
+                              selectable.Mode(GridSelectionMode.Single);
+                              selectable.Type(GridSelectionType.Row);
+                          })
+                             .Scrollable(h => h.Height(500))
+                                 .Groupable()
+                                          .Sortable(sortable =>
+                                          {
+                                              sortable.SortMode(GridSortMode.SingleColumn);
+                                          })
+                              .Filterable()
+                                   .Events(e =>
+                                                       {
+                                                           e.Save("GetDate");
+                                                           e.Edit("GetDate");
+                                                       })
+                                 .Pageable(pageable => pageable
+                                                            .Input(true)
+                                                            .Numeric(false)
+                                                            .Refresh(true)
+                                                            .PageSizes(true)
+                                                            .ButtonCount(5))
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+                                              .Sort(sort => sort.Add("DateCreated").Descending()) 
+ .Events(events =>
+ {
+events.Error("error_handler(\"RecruitmentPlanGrid\")");
+events.RequestStart("onRequestStart(\"RecruitmentPlanGrid\")");
+events.RequestEnd("onRequestEnd(\"RecruitmentPlanGrid\")");
+ })
+                                                                     
+                              .Model(model =>
+                              {
+                                  model.Id(p => p.RecruitmentPlanId);
+                                  model.Field(p => p.EduLevel).Editable(false);
+                                  model.Field(p => p.Experience).Editable(false);
+                                  model.Field(p => p.RelevantExp).Editable(false);
+                                  model.Field(p => p.SpecialSkill).Editable(false);
+                                  model.Field(p => p.PlannedSalary).Editable(false);
+                                  model.Field(p => p.NoOfVacantPost).Editable(false);
+                                  model.Field(p => p.LookupId).Editable(false);
+                                  model.Field(p => p.OrgStructureId).Editable(false);
+                                  model.Field(p => p.BranchId).Editable(false);
+                                  model.Field(p => p.WorkUnitId).Editable(false); model.Field(p => p.JobtitleName).Editable(false);
+
+                              })
+                              .Read(read => read.Action("RecruitmentPlans_Read", "RecruitmentPlan"))
+                             .Create(create => create.Action("RecruitmentPlans_Create", "RecruitmentPlan"))
+                              .Update(update => update.Action("RecruitmentPlans_Update", "RecruitmentPlan"))
+                              .Destroy(destroy => destroy.Action("RecruitmentPlans_Destroy", "RecruitmentPlan"))
+                      )
+    )
+    <style type="text/css">
+        div.k-edit-form-container {
+            width: 700px;
+        }
+    </style>
+    <style type="text/css">
+        div.k-edit-form-container {
+            width: 700px;
+        }
+    </style>
+    <script>
+        //function error_handler(e) {
+        //    if (e.errors) {
+        //        var message = "Errors:\n";
+        //        $.each(e.errors, function (key, value) {
+        //            if ('errors' in value) {
+        //                $.each(value.errors, function () {
+        //                    message += this + "\n";
+        //                });
+        //            }
+        //        });
+        //        alert(message);
+
+        //    }
+
+        //}
+
+        function sync_handler(e) {
+            this.read();
+
+        }
+    </script>
+
+    <script>
+        function filterCategories() {
+            return {
+                OrgStructureId: $("#OrgStructureId").val()
+            };
+        }
+
+    </script>
+    <script>
+        function GetDetail() {
+            $("#NoOfVacantPost").val(0);
+            $("#PlannedSalary").val(0);
+            $("#RelevantExp").val("");
+            $("#SpecialSkill").val("");
+            $("#Experience").val("");
+            $("#EduLevel").val("");
+            var Titles = $("#OrgStructureId").data("kendoComboBox");
+            var OrgId = Titles.value();
+            var jobs = $("#LookupId").data("kendoComboBox");
+            var title = jobs.value();
+            $.ajax({
+                url: '@Url.Action("GetDetail", "RecruitmentPlan")',
+
+                data: { OrgId: OrgId, title: title },
+                type: 'POST',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                    var s = r.split(/-/);
+
+                    $("#PlannedSalary").val(s[0]);
+                    $("#RelevantExp").val(s[1]);
+                    $("#SpecialSkill").val(s[2]);
+                    $("#Experience").val(s[3]);
+                    $("#EduLevel").val(s[4]);
+                    $("#NoOfVacantPost").val(s[5]);
+                }
+
+            });
+        }
+
+    </script>
+    <script>
+        function GetDate() {
+
+            var x = AssignDate();
+            var y = x;
+            $("#FromAmharic").trigger("change");
+            $("#ToAmharic").trigger("change");
+            for (var o in y) {
+                $.ajax({
+                    contentType: "application/json; charset=utf-8",
+                    url: '@Url.Action("SetDate", "RecruitmentPlan")',
+                    data: { name: y[o].id, value: y[o].date },
+                    type: 'GET',
+                    cache: false,
+                    success: function (result) {
+                        r = result;
+                    }
+
+                });
+            }
+        }
+
+    </script>
+    <script>
+        function AssignDate() {
+            var list = AssignDates();
+            return list;
+        }
+
+    </script>
+<script>
+    function Branch() {
+
+
+        var value = this.value(),
+            grid = $("#RecruitmentPlanGrid").data("kendoGrid");
+
+        if (value) {
+            grid.dataSource.filter({ field: "BranchId", operator: "eq", value: parseInt(value) });
+        } else {
+            grid.dataSource.filter({});
+        }
+    }
+</script>
+
+<script>
+
+        function Refresh(e) {
+            console.log("call");
+        try {
+            var br = $("#BranchId").data("kendoComboBox");
+            var branch = br.value();
+            console.log("branch:" + branch);
+            $.ajax({
+                url: '@Url.Action("PrepareRecruitmentPlans", "RecruitmentPlan", new { area = "HRM" })',
+                //contentType: "application/json; charset=utf-8",
+                data: {branch:branch },
+                type: 'POST',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                    alert(result.Message);
+
+                },
+                error: function (result) {
+                       
+                    alert(result);
+
+                }
+
+            });
+            
+        } catch (e) {
+            alert("Please select the row!!");
+        }
+
+    }
+
+</script>

@@ -1,0 +1,29 @@
+﻿@using ExceedERP.Core.Localization
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.MaterialDemand>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.AdditionalDemand);
+        columns.Bound(c => c.Remark);
+        columns.Bound(c => c.OrgBranchName);
+        columns.Bound(c => c.DateCreated);
+        columns.Bound(c => c.LastModified);
+        columns.Bound(c => c.CreatedBy);
+        columns.Bound(c => c.ModifiedBy);
+        columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel);  }).Width(200);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.MaterialDemandId))
+          .Read(read => read.Action("MaterialDemands_Read", "MaterialDemand"))
+          .Create(create => create.Action("MaterialDemands_Create", "MaterialDemand"))
+          .Update(update => update.Action("MaterialDemands_Update", "MaterialDemand"))
+          .Destroy(destroy => destroy.Action("MaterialDemands_Destroy", "MaterialDemand"))
+      )
+)

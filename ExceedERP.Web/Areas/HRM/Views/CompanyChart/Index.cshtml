@@ -1,0 +1,37 @@
+﻿@using ExceedERP.Web.Areas.HRM.Controllers
+@using ExceedERP.Web.Areas.HRM.Controllers.Company
+@using Kendo.Mvc.UI.Fluent
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend >@Resources.Navigator_Company_CompanyChart</legend>
+<br/>
+<br />
+<div>
+    @(
+
+    Html.Kendo().TreeView()
+        .Name("TreeViewTemplateBiding")
+        .TemplateId("TreeViewTemplate")
+        .BindTo((IEnumerable<NodeViewModel>) ViewBag.Tree, (NavigationBindingFactory<TreeViewItem> mappings) =>
+        {
+            mappings.For<NodeViewModel>(binding => binding.ItemDataBound((item, node) =>
+            {
+                item.Id = node.Id.ToString();
+                item.Text = node.Title;
+                item.Expanded = node.Expanded;
+            })
+                .Children(node => node.Children));
+        })
+          )
+</div>
+<script >
+    function name() {
+        $('#chart-container').orgChart({
+            'data': $('#TreeViewTemplateBiding')
+            
+        });
+    }
+   
+</script>

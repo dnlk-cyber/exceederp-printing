@@ -1,0 +1,26 @@
+﻿@using ExceedERP.Core.Domain.HRM.SelfCare
+
+@(Html.Kendo().Grid<RequestesStatus>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.RequestId);
+        columns.Bound(c => c.ReferenceType);
+        columns.Bound(c => c.Status);
+        columns.Bound(c => c.Remark);
+        columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.RequestStatusId))
+          .Read(read => read.Action("RequestesStatus_Read", "RequestesStatus"))
+          .Create(create => create.Action("RequestesStatus_Create", "RequestesStatus"))
+          .Update(update => update.Action("RequestesStatus_Update", "RequestesStatus"))
+          .Destroy(destroy => destroy.Action("RequestesStatus_Destroy", "RequestesStatus"))
+      )
+)

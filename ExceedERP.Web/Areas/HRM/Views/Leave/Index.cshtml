@@ -1,0 +1,228 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.HRM.LeaveManagment
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>@Resources.NavigatorLeave_Leave</legend>
+
+@(Html.Kendo().Grid<Leave>()
+              .Name("Leavegrid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.EmployeeCode).Width(150);
+          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["AllEmployeeList"], "EmployeeId", "FullNameAmharic").EditorTemplateName("ListOfEmployee").Width(180);
+          columns.Bound(c => c.LeaveType).EditorTemplateName("Enum").Width( 120);
+          columns.Bound(c => c.Amount).Width( 90);
+          columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["PeriodList"], "GlFiscalYearId", "Name").EditorTemplateName("GLPeriodSelector").Width(80);
+          columns.Bound(c => c.FromAmharic).Width(120);
+          columns.Bound(c => c.ToAmharic).Width( 120);
+          columns.Bound(c => c.Day).Width(80);
+          //columns.Bound(c => c.MorningOrAfternoon).Width( 100);
+          //columns.Bound(c => c.After).Width( 100);
+          //columns.Bound(c => c.Remark).Width( 100);
+          columns.Command(command =>
+          {
+              //if (HttpContext.Current.User.IsInRole("HR_Leave_User"))
+              //{
+               //   command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+             // }
+             // if (HttpContext.Current.User.IsInRole("HR_Admin") || HttpContext.Current.User.IsInRole("HR_Leave_Admin"))
+             // {
+             //     command.Destroy().Text(Resources.ActionButton_Cancel);
+             // }
+          }).Width(200);
+      })
+      .ToolBar(toolbar =>
+      {
+          if (HttpContext.Current.User.IsInRole("HR_Leave_User"))
+          {
+            //  toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+          }
+      })
+                  .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("LeaveTaken").Window(window => { window.Title(Resources.NavigatorLeave_Leave); window.Scrollable(false); }))
+          .Scrollable(h => h.Height(500))
+             .Groupable()
+                      .Sortable(sortable =>
+                      {
+                          sortable.SortMode(GridSortMode.SingleColumn);
+                      })
+                          //.Events(x => x.Edit("onGridEdit(e)")                      )
+          .Filterable()
+               .Events(x =>
+                           {
+                               x.Edit("GetDate");
+                               x.Save("GetDate");
+                           })
+             .Pageable(pageable => pageable
+                                        .Input(true)
+                                        .Numeric(false)
+                                        .Refresh(true)
+                                        .PageSizes(true)
+                                        .ButtonCount(5))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+              .Sort(sort => sort.Add("DateCreated").Descending()) 
+               .Events(events =>
+                                        {
+
+                                            events.Error("error_handler(\"Leavegrid\")");
+                                            events.RequestStart("onRequestStart(\"Leavegrid\")");
+                                            events.RequestEnd("onRequestEnd(\"Leavegrid\")");
+                                        })
+                      
+          .Model(model =>
+          {
+              model.Id(p => p.TakenLeaveId);
+              model.Field(p => p.After).Editable(false);
+              model.Field(p => p.Before).Editable(false);
+              model.Field(p => p.OrgName).Editable(false);
+              model.Field(p => p.Amount).Editable(false);
+          })
+                  .Read(read => read.Action("Leaves_Read", "Leave"))
+                  .Create(create => create.Action("Leaves_Create", "Leave"))
+          .Update(update => update.Action("Leaves_Update", "Leave"))
+          .Destroy(destroy => destroy.Action("Leaves_Destroy", "Leave"))
+      )
+)
+
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 700px;
+    }
+     .Employee-photo {
+        display: inline-block;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background-size: 32px 35px;
+        background-position: center center;
+        vertical-align: middle;
+        line-height: 32px;
+        box-shadow: inset 0 0 1px #999, inset 0 0 10px rgba(0,0,0,.2);
+        margin-left: 5px;
+    }
+
+    .Employee-name {
+        display: inline-block;
+        vertical-align: middle;
+        line-height: 32px;
+        padding-left: 3px;
+    }
+</style>
+
+<script>
+    //function error_handler(e) {
+    //    if (e.errors) {
+    //        var message = "Errors:\n";
+    //        $.each(e.errors, function(key, value) {
+    //            if ('errors' in value) {
+    //                $.each(value.errors, function() {
+    //                    message += this + "\n";
+    //                });
+    //            }
+    //        });
+    //        alert(message);
+
+    //    }
+
+    //}
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+</script>
+<style>
+    div.k-edit-form-container {
+        width: 700px;
+    }
+</style>
+<script >
+    function filterByType()
+    {
+        var types = $("#LeaveType").data("kendoDropDownList");
+        var type = types.value();
+        if (type === "1") {
+           // var dropDown = $("#Before").data("kendoTextEdit");
+           // dropDown.enable(true);
+            $("#Before").prop("disabled", false).removeClass("k-state-disabled");
+            $("#After").prop("disabled", false).removeClass("k-state-disabled");
+        }
+        else {
+            $("#Before").prop("disabled", true).addClass("k-state-disabled");
+            $("#After").prop("disabled", true).addClass("k-state-disabled");
+        }
+
+        if (type === "4") {
+            $("#OrgName").prop("disabled", false).removeClass("k-state-disabled");
+          
+        }
+        else {
+            $("#OrgName").prop("disabled", true).addClass("k-state-disabled");
+         
+        }
+
+    }
+</script>
+<script >
+    function onGridEdit(e) {
+        e.container.find(".k-button.k-grid-update").text=@Resources.ActionButton_Update;
+        e.container.find(".k-button.k-grid-cancel").text=@Resources.ActionButton_Cancel;
+
+    }
+</script>
+<script>
+    function GetDate() {
+
+        var x = AssignDate();
+        var y = x;
+        $("#FromAmharic").trigger("change");
+        $("#ToAmharic").trigger("change");
+        for (var o in y) {
+            $.ajax({
+                contentType: "application/json; charset=utf-8",
+                url: '@Url.Action("SetDate", "Leave")',
+                data: { name: y[o].id, value: y[o].date },
+                type: 'GET',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                }
+
+            });
+        }
+    }
+
+</script>
+<script>
+    function AssignDate() {
+        var list = AssignDates();
+        return list;
+    }
+    function valueMapper(options) {
+        $.ajax({
+            url: "/HRM/Leave/Employee_ValueMapper/",
+            data: {
+                value: options.value || 0,
+                status: 1,
+                excludeId: -1
+            },
+            success: function (data) {
+                options.success(data);
+            }
+        });
+    }
+
+    function convertValues(value) {
+        var data = {};
+
+        value = $.isArray(value) ? value : [value];
+
+        for (var idx = 0; idx < value.length; idx++) {
+            data["values[" + idx + "]"] = value[idx];
+        }
+
+        return data;
+    }
+</script>

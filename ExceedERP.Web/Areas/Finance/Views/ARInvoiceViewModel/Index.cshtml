@@ -1,0 +1,38 @@
+﻿@using ExceedERP.Core.Domain.Finance.AR
+@(Html.Kendo().Grid<ArInvoiceViewModel>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.CustomerName);
+          columns.Bound(c => c.CustomerId);
+          columns.Bound(c => c.TransactionClass);
+          columns.Bound(c => c.Date);
+          columns.Bound(c => c.PaymentTerm);
+          columns.Bound(c => c.DueDate);
+          columns.Bound(c => c.LineAmount);
+          columns.Bound(c => c.TaxAmount);
+          columns.Bound(c => c.TotalAmount);
+          columns.Bound(c => c.AmountDue);
+          columns.Bound(c => c.InvoiceStatus);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+                              toolbar.Excel();
+                              // toolbar.Pdf();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Pageable()
+      .Sortable(sortable => {
+                                sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Filterable()
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.ArInvoiceViewModelId))
+          .Read(read => read.Action("ARInvoiceViewModels_Read", "ArInvoiceViewModel"))
+          .Create(create => create.Action("ARInvoiceViewModels_Create", "ArInvoiceViewModel"))
+          .Update(update => update.Action("ARInvoiceViewModels_Update", "ArInvoiceViewModel"))
+          .Destroy(destroy => destroy.Action("ARInvoiceViewModels_Destroy", "ArInvoiceViewModel"))
+      ))

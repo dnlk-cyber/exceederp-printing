@@ -1,0 +1,545 @@
+﻿@using System.Collections
+@using System.Security.AccessControl
+@using ExceedERP.Core.Domain.HRM.EmployeeDetail
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>@Resources.NavigatorPlacment_EmployeePlacment</legend>
+
+@(Html.Kendo().Grid<Placement>()
+              .Name("PlacementGrid")
+              .Columns(columns =>
+              {
+                  // columns.Bound(c => c.EmployeeCode).Width(150);
+                  columns.ForeignKey(c => c.EmployeeCode, (IEnumerable)ViewData["EmployeeCode"], "EmployeeCode", "EmployeeCode").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).HeaderHtmlAttributes(new { style = "overflow: visible; white-space: normal" }).Width(90);
+
+                  columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameAmharic").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
+                  columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeListEnglish"], "EmployeeId", "FullNameaEnglish").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
+                  columns.Bound(c => c.Boss).Width(150);
+                  // columns.ForeignKey(c => c.JobTitleCode, (IEnumerable)ViewData["jobTitle"], "OrgStructureId", "Name").EditorTemplateName("JobTitles").Width(130);
+                  columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["workunits"], "OrgStructureId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(200);
+
+                  columns.Bound(c => c.JobTitleName).Filterable(ftb => ftb.Multi(true).Search(true)).Width(140);
+                  columns.Bound(c => c.IsHead).ClientTemplate(
+                    "<input type='checkbox' disabled = 'true' value='#= IsHead#' " +
+                    "# if (IsHead) { #" +
+                    "checked='checked'" +
+                    "# } #" +
+                    "/>"
+                    ).HeaderHtmlAttributes(new { style = "overflow: visible; white-space: normal" }).Width(75);
+                  ////columns.Bound(c => c.HaveFixedAsset).Width(90).ClientTemplate(
+                  ////    "<input type='checkbox' disabled = 'true' value='#= HaveFixedAsset#' " +
+                  ////    "# if (HaveFixedAsset) { #" +
+                  ////    "checked='checked'"
+                  ////    "# } #" +
+                  ////    "/>"
+                  ////    );
+                  //columns.Bound(c => c.ImmediateSupervisor).Width(140);
+                  columns.Bound(c => c.AssignmentDateAmharic).HeaderHtmlAttributes(new { style = "overflow: visible; white-space: normal" }).Width(100); ;
+                  columns.ForeignKey(c => c.RankId, (IEnumerable)ViewData["RankList"], "RankId", "RankName").EditorTemplateName("Rank").Width(70);
+                  columns.ForeignKey(c => c.StepId, (IEnumerable)ViewData["StepList"], "StepId", "StepName").EditorTemplateName("Step").Width(65);
+                  columns.Bound(c => c.Salary).Width(80);
+                  columns.Bound(c => c.AssignmentType).HeaderHtmlAttributes(new { style = "overflow: visible; white-space: normal" }).Width(120);
+                  columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["branches"], "BranchId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(80);
+                  // columns.ForeignKey(c => c.ReportsTo, (IEnumerable)ViewData["jobTitle"], "OrgStructureId", "Name").EditorTemplateName("JobTitles").Width(200);
+                  // columns.Bound(c => c.ResponsibilityLevel);
+                  columns.Bound(c => c.isCurrent).ClientTemplate("<input type='checkbox' disabled='true' value='#=isCurrent #' " + " # if (isCurrent) { #" + "checked='checked'" + "# } #" + " />").Width(100);
+                  columns.Bound(c => c.IsPend).ClientTemplate("<input type='checkbox' disabled='true' value='#=IsPend #' " + " # if (IsPend) { #" + "checked='checked'" + "# } #" + " />").Width(100).Visible(false);
+                  columns.Bound(c => c.Remark).Width(100);
+                  columns.Command(command =>
+                  {
+                      if (HttpContext.Current.User.IsInRole("HR_Placement_User"))
+                      {
+
+                          command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                          command.Custom("").Click("Pend").Text("  Pend ").IconClass("fa fa-remove fa4x").HtmlAttributes(new { @class = "btn btn-yellow", @title = "Pend the employee to stop payroll processing ", @id = "pend" });
+                          command.Custom("").Click("UnPend").Text(" UnPend").IconClass("fa fa-check fa4x").HtmlAttributes(new { @class = "btn btn-white", @title = "Remove the employee from pend lists to start payroll processing ", @id = "unpend" });
+                      }
+                     
+                      if (HttpContext.Current.User.IsInRole("HR_Placement_Admin") || HttpContext.Current.User.IsInRole("HR_Admin"))
+                      {
+                          command.Destroy().Text(Resources.ActionButton_Cancel);
+                      }
+                  }).Width(350);
+              })
+              .ToolBar(toolbar =>
+              {
+                  if (HttpContext.Current.User.IsInRole("HR_Placement_User"))
+                  {
+                      toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                  }
+                  if (HttpContext.Current.User.IsInRole("HR_Placement_Admin") || HttpContext.Current.User.IsInRole("HR_Admin"))
+                  {
+                      toolbar.Excel().Text(Resources.ActionButton_ExportExcel).HtmlAttributes(new { @class = "btn btn-primary btn-xs pull-right" });
+                      toolbar.Pdf().Text(Resources.ActionButton_ExportPDF).HtmlAttributes(new { @class = "btn btn-primary btn-xs pull-right" });
+                  }
+                  if (HttpContext.Current.User.IsInRole("GenerateDayAbsent"))
+                  {
+                      ///toolbar.Custom()
+                        //.Name("Refresh")
+                        // .Text("Update Salary")
+                         // .HtmlAttributes(new { id = "btnRefresh", onclick = "Refresh()" });
+
+                  }
+                  //toolbar.Custom().Text(Resources.ActionButton_Refersh).Action("Refresh", "EmployeePlacmentWithJ");
+              })
+              .Excel(excel => excel
+                  .FileName(Resources.NavigatorPlacment_EmployeePlacment + ".xlsx")
+                  .Filterable(true)
+                  .AllPages(true)
+                  .ProxyURL(Url.Action("Excel_Export_Save", "EmployeePlacmentWithJ"))
+              )
+              .Pdf(pdf => pdf
+                  .AllPages()
+                  .FileName(Resources.NavigatorPlacment_EmployeePlacment + ".pdf")
+                  .ProxyURL(Url.Action("Pdf_Export_Save", "EmployeePlacmentWithJ"))
+              )
+              .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("Placement").Window(window =>
+              {
+                  window.Title(Resources.NavigatorPlacment_EmployeePlacment);
+                  window.Scrollable(false);
+              }))
+              .Scrollable(h => h.Height(500))
+              .Groupable()
+              .Sortable(sortable =>
+              {
+                  sortable.SortMode(GridSortMode.SingleColumn);
+              })
+              .Filterable()
+              .Events(e =>
+              {
+                  e.Save("GetDate");
+                  e.Edit("GetDate");
+                  e.DataBound("onDataBound");
+                  //e.Edit("onEdit");
+
+              })
+              .Pageable(pageable => pageable
+                  .Input(true)
+                  .Numeric(false)
+                  .Refresh(true)
+                  .PageSizes(true)
+                  .ButtonCount(5))
+
+              .DataSource(dataSource => dataSource
+                  .Ajax()
+                      .Sort(sort => sort.Add("EmployeeCode"))
+                  .Events(events =>
+                  {
+                      events.Error("error_handler(\"PlacementGrid\")");
+                      events.RequestStart("onRequestStart(\"PlacementGrid\")");
+                      events.RequestEnd("onRequestEnd(\"PlacementGrid\")");
+                  }
+                  )
+                  .Model(model => model.Id(p => p.PlacementId))
+                                      .Read(read => read.Action("Placements_Read", "EmployeePlacmentWithJ"))
+                                                  .Create(create => create.Action("Placements_Create", "EmployeePlacmentWithJ"))
+                                              .Update(update => update.Action("Placements_Update", "EmployeePlacmentWithJ"))
+                                          .Destroy(destroy => destroy.Action("Placements_Destroy", "EmployeePlacmentWithJ"))
+
+              ).ClientDetailTemplateId("template")
+)
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                                                            .Name("tabstrip_#=PlacementId#")
+                                                    .SelectedIndex(0)
+                                                    .Items(items =>
+                                                     {
+
+                                                         items.Add().Text(Resources.Details).Content(
+                        @<text>
+
+                            @(Html.Kendo().PanelBar()
+                                                               .Name("panelbar_#=PlacementId#")
+                                                              .ExpandMode(PanelBarExpandMode.Single)
+                                                              .Items(panelbar =>
+                                                              {
+                                                                          panelbar.Add().Text("Status")
+                                                                              .Expanded(true)
+                                                                              .Content(
+
+                                                                                   "<div>" +
+                                                                        "<table class='table'>" +
+
+                                                                         "<tr>" +
+                                                                            "<td>" + "<div class='employee-details'>" +
+                                                                                  "<ul>" +
+
+                                                                                  "<li><label>" + "Created By " + ": &nbsp; </label>#=CreatedBy #</li>" +
+                                                                                  // "<li><label>Title:  </label>#=Title #</li>" +
+                                                                                  "<li><label>" + "Created Date " + ":&nbsp;  </label>#=DateCreated #</li>" +
+                                                                                  "<li><label>" + "Modified By " + ": &nbsp;   </label>#=ModifiedBy #</li>" +
+                                                                                  "<li><label>" + "Last Modified Date " + ": &nbsp; </label>#=LastModified #</li>" +
+
+                                                                                  "</ul>" +
+                                                                                  "</div>" + "<th>" +
+                                                                            // "<td>" + EmployeeChartsResult() + "<th>" +
+
+                                                                            "</table>" +
+                                                                    "</div>"
+                                                                              );
+
+
+
+                                                                      }).ToClientTemplate()
+                            )
+                            <a href='@Url.Action("ChangeOfPayroll", "PrintableLetter")/?id=#=PlacementId#' title="Print"><i class="fa fa-print fa-2x"></i></a>
+                        </text>
+                               );
+
+
+                                                                 items.Add().Text("Employees").Content(
+                                                        @<text>
+
+
+                                                            @(Html.Kendo().Grid<EmployeesUnderBossVM>()
+                                                                                                                      .Name("EmployeesUnderBoss#=PlacementId#")
+                                                                                                      .Columns(columns =>
+                                                                                                      {
+
+                                                                                                                  columns.Bound(c => c.EmployeeCode).Width(100);
+                                                                                                                  columns.Bound(c => c.FullName).Width(100);
+                                                                                                      //columns.Bound(c => c.IsCurrent).Width(100);
+                                                                                                      columns.Command(command =>
+                                                                                                                  {
+
+                                                                                                                          }).Width(300);
+                                                                                                              })
+
+
+                                                                                              .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                                              .Scrollable()
+                                                                                              .Selectable()
+                                                                                              .DataSource(dataSource => dataSource
+                                                                                                  .Ajax()
+                                                                                                          .Events(events =>
+                                                                                                          {
+                                                                                                                      events.Error("error_handler(\"EmployeesUnderBoss#=PlacementId#\")");
+                                                                                                                      events.RequestStart("onRequestStart(\"EmployeesUnderBoss#=PlacementId#\")");
+                                                                                                                      events.RequestEnd("onRequestEnd(\"EmployeesUnderBoss#=PlacementId#\")");
+                                                                                                                  })
+
+
+                                                                                                  .Model(model => model.Id(p => p.EmployeesUnderBossId))
+                                                                                             .Read(read => read.Action("EmployeesUnderBoss_Read", "EmployeesUnderBoss", new { id = "#=PlacementId#" }))
+
+
+                                                                                              ).ToClientTemplate()
+                                                            )
+
+                                                        </text>
+                                                                                                  );
+
+                                                                     }).ToClientTemplate())
+
+
+</script>
+
+
+
+
+
+
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 1000px;
+    }
+</style>
+<script>
+    function GetEmployeeNameEmploye(e) {
+        var autocomplete = $("#EmployeeId").data("kendoAutoComplete");
+        var id = autocomplete.value();
+
+        $.ajax({
+            url: '@Url.Action("SetEmployeeId", "EmployeePlacmentWithJ")',
+            contentType: "application/json; charset=utf-8",
+            data: { 'fullName': id },
+            type: 'GET',
+            cache: false,
+            success: function (result) {
+                r = result;
+            }
+
+        });
+    }
+</script>
+<script>
+    //function error_handler(e) {
+    //    if (e.errors) {
+    //        var message = "Errors:\n";
+    //        $.each(e.errors, function (key, value) {
+    //            if ('errors' in value) {
+    //                $.each(value.errors, function () {
+    //                    message += this + "\n";
+    //                });
+    //            }
+    //        });
+    //        alert(message);
+
+    //    }
+
+    //}
+
+    //function sync_handler(e) {
+    //    this.read();
+
+    //}
+</script>
+
+
+<script>
+    function GetSalary() {
+        $("#Salary").val(0);
+        var Ranks = $("#RankId").data("kendoDropDownList");
+        var rank = Ranks.value();
+        var Steps = $("#StepId").data("kendoDropDownList");
+        var step = Steps.value();
+        var Jobs = $("#LookupId").data("kendoDropDownList");
+        var job = Jobs.value();
+        if(rank.length!==0 && step.length!==0 && job.length!==0)
+        {
+
+            $.ajax({
+                url: '@Url.Action("GetSalaryAmount", "EmployeePlacmentWithJ")',
+
+                data: { rank: rank, step: step, job: job },
+                type: 'POST',
+                cache: false,
+                success: function (result) {
+                    r = result;
+
+                    $("#Salary").val(r);
+                }
+
+            });
+        }
+    }
+
+</script>
+
+
+<script>
+    @* function GetDepartment() {
+
+        var Titles = $("#OrgStructureId").data("kendoDropDownList");
+        var OrgId = Titles.value();
+        var jobs = $("#LookupId").data("kendoDropDownList");
+        var title = jobs.value();
+        $.ajax({
+            url: '@Url.Action("GetDepartments", "EmployeePlacmentWithJ")',
+
+            data: { OrgId: OrgId, title: title },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                r = result;
+                var s = r.split(/-/);
+
+                $("#Salary").val(s[0]);
+                $("#RankId").val(Number( s[1]));
+                $("#StepId").val(Number(s[2]));
+            }
+
+        });
+    }*@
+
+</script>
+<script>
+    function filterCategories() {
+        return {
+            OrgStructureId: $("#OrgStructureId").val()
+        };
+    }
+
+    function filterStructure() {
+        return {
+            OrgStructureId: $("#OrgStructureId").val()
+        };
+    }
+</script>
+<script>
+    function GetDate(e) {
+
+       var x = AssignDate();
+        var y = x;
+        $("#AssignmentDateAmharic").trigger("change");
+        for (var o in y) {
+            $.ajax({
+                contentType: "application/json; charset=utf-8",
+                url: '@Url.Action("SetDate", "EmployeePlacmentWithJ")',
+                data: { name: y[o].id, value: y[o].date },
+                type: 'GET',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                }
+
+            });
+        }
+        if (e.model.isNew() === false) {
+            $("#EmployeeId").kendoDropDownList({
+                enable: false
+            });
+
+        }
+
+    }
+
+</script>
+<script>
+    function AssignDate() {
+        var list = AssignDates();
+        return list;
+    }
+
+    //function valueMapper(options) {
+    //    $.ajax({
+    //        url: "/HRM/EmployeePlacmentWithJ/Employee_ValueMapper/",
+    //        data: {
+    //            value: options.value || 0,
+    //            status: 1,
+    //            excludeId: -1
+    //        },
+    //        success: function (data) {
+    //            options.success(data);
+    //        }
+    //    });
+    //}
+
+    function convertValues(value) {
+        var data = {};
+
+        value = $.isArray(value) ? value : [value];
+
+        for (var idx = 0; idx < value.length; idx++) {
+            data["values[" + idx + "]"] = value[idx];
+        }
+
+        return data;
+    }
+
+
+    function Refresh(e) {
+        if (confirm("are you sure to refresh salary")) {
+            $.ajax({
+                url: "/HRM/EmployeePlacmentWithJ/Refresh/",
+                //data: {
+                //    value: options.value || 0,
+                //    status: 1,
+                //    excludeId: -1
+                //},
+                success: function (data) {
+                    options.success(data);
+                }
+            });
+        }
+        else {
+            alert("not updated");
+        }
+    }
+</script>
+<script>
+    function onEdit(e) {
+
+        if (e.model.isNew() === false) {
+            $("#EmployeeId").kendoDropDownList({
+                enable: false
+            });
+
+        }
+
+    }
+</script>
+
+<script>
+    function Pend(e) {
+
+     var row = $(e.target).closest("tr");
+        var grid = $("#PlacementGrid").data("kendoGrid");
+        var dataItem = grid.dataItem(row);
+        var id = dataItem.PlacementId;
+
+        if (id.length !== 0 )
+        {
+            $('#loading-image').show();
+
+            $.ajax({
+                url: '@Url.Action("Pend", "EmployeePlacmentWithJ")',
+
+                data: { id: id},
+                type: 'POST',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                    alert(r.Message);
+                    $('#loading-image').hide();
+                    grid.dataSource.read();
+                }
+            });
+
+        }
+
+    }
+
+    ////////////////////////////////
+
+    function UnPend(e) {
+
+     var row = $(e.target).closest("tr");
+        var grid = $("#PlacementGrid").data("kendoGrid");
+        var dataItem = grid.dataItem(row);
+        var id = dataItem.PlacementId;
+
+        if (id.length !== 0 )
+        {
+            $('#loading-image').show();
+
+            $.ajax({
+                url: '@Url.Action("UnPend", "EmployeePlacmentWithJ")',
+
+                data: { id: id},
+                type: 'POST',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                    alert(r.Message);
+                    $('#loading-image').hide();
+                    grid.dataSource.read();
+                }
+            });
+
+        }
+
+    }
+
+</script>
+
+<script>
+
+    function onDataBound(e) {
+
+        var grid = this;
+        var gridRows = grid.tbody.find("tr");
+        for (var i = 0; i < gridRows.length; i++) {
+            var row = $(gridRows[i]);
+            var dataItem = grid.dataItem(row);
+            //perform your custom check
+         
+            if (dataItem.isCurrent === true && dataItem.IsPend === false) {
+                row.find("#pend").show();
+                row.find("#unpend").hide();
+            }
+            else if (dataItem.isCurrent === true && dataItem.IsPend === true) {
+                row.css("background-color", "red");
+                row.find("#pend").hide();
+                row.find("#unpend").show();
+            }
+            else if (dataItem.isCurrent === false) {
+                row.find("#pend").hide();
+                row.find("#unpend").hide();
+            }
+        }
+    }
+
+</script>

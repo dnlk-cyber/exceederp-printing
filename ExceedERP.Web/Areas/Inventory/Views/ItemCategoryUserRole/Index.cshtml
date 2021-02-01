@@ -1,0 +1,26 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Inventory.ItemCategoryUserRole>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.RoleName);
+          columns.Bound(c => c.Remark);
+          columns.Bound(c => c.DateCreated);
+          columns.Bound(c => c.LastModified);
+          columns.Bound(c => c.CreatedBy);
+          columns.Bound(c => c.ModifiedBy);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.ItemCategoryUserRoleId))
+          .Read(read => read.Action("ItemCategoryUserRoles_Read", "ItemCategoryUserRole"))
+          .Create(create => create.Action("ItemCategoryUserRoles_Create", "ItemCategoryUserRole"))
+          .Update(update => update.Action("ItemCategoryUserRoles_Update", "ItemCategoryUserRole"))
+          .Destroy(destroy => destroy.Action("ItemCategoryUserRoles_Destroy", "ItemCategoryUserRole"))
+      ))

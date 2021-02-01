@@ -1,0 +1,612 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.Construction
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Project Expenses</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.ProjectInformation>()
+      .Name("ProjectInformationgrid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Name).Width(350);
+          columns.Bound(c => c.Code);
+          //columns.Bound(c => c.Category).Width(200);
+          columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["Branchs"], "BranchId", "Name");
+          columns.Bound(c => c.ContractAmount).ClientTemplate(
+                          "# if (ContractAmount === 0) { #" +
+                                                      " -----" +
+                                                      "# } else {#" +
+                                                      "#: kendo.toString( ContractAmount, 'N2') #" +
+                                                      "# } #"
+                          );
+          columns.Bound(c => c.Client);
+      })
+
+      .Scrollable(h => h.Height(700))
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Filterable()
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Pageable(pageable => pageable
+                            .Input(true)
+                            .Numeric(false)
+                            .Refresh(true)
+                            .PageSizes(true)
+                            .ButtonCount(10))
+      .DataSource(dataSource => dataSource
+              .Ajax()
+              .PageSize(20)
+              .Events(events => events.Error("error_handler(\"ProjectInformationgrid\")"))
+              .Model(model => model.Id(p => p.ProjectInformationId))
+              .Read(read => read.Action("ProjectInformation_Read", "ProjectExpenses"))
+          //.Create(create => create.Action("ProjectInformation_Create", "ProjectInformation"))
+          //.Update(update => update.Action("ProjectInformation_Update", "ProjectInformation"))
+          //.Destroy(destroy => destroy.Action("ProjectInformation_Destroy", "ProjectInformation"))
+          ).ClientDetailTemplateId("template_detail")
+)
+@*@(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.MaterialExpenseProjectViewModel>()
+          .Name("ProjectInformationgrid")
+          .Columns(columns =>
+          {
+              columns.Bound(c => c.Name);
+              columns.Bound(c => c.Code);
+
+          })
+
+          .Scrollable(h => h.Height(500))
+          .Sortable(sortable =>
+          {
+              sortable.SortMode(GridSortMode.SingleColumn);
+          })
+          .Filterable()
+          .Selectable(selectable =>
+          {
+              selectable.Mode(GridSelectionMode.Single);
+              selectable.Type(GridSelectionType.Row);
+          })
+          .Pageable(pageable => pageable
+                                .Input(true)
+                                .Numeric(false)
+                                .Refresh(true)
+                                .PageSizes(true)
+                                .ButtonCount(10))
+          .DataSource(dataSource => dataSource
+                  .Ajax()
+                  .PageSize(20)
+                  .Events(events => events.Error("error_handler(\"ProjectInformationgrid\")"))
+                  .Model(model => model.Id(p => p.BranchId))
+                  .Read(read => read.Action("ProjectBranches_Read", "ProjectExpenses"))
+
+              ).ClientDetailTemplateId("template_detail")
+    )*@
+
+<script id="template_detail" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                  .Name("tabstrip__#=ProjectInformationId#")
+                  .SelectedIndex(0)
+                  .Items(items =>
+                  {
+                  items.Add().Text("Total Material Consumption").Content(
+                    @<text>
+                        @(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.ProjectMaterialExpense>()
+                                .Name("material_exp_#=ProjectInformationId#")
+                                .Columns(columns =>
+                                {
+                                    columns.ForeignKey(c => c.GLPeriodId, (IEnumerable)ViewData["PeriodList"], "InventoryPeriodId", "Name").EditorTemplateName("GLPeriods").Width(100).Hidden(true);
+                                    //.ClientGroupHeaderTemplate("\\#=value\\#");
+                                    columns.ForeignKey(c => c.ItemCategoryCode, (IEnumerable)ViewData["ItemCategories"], "ItemCategoryCode", "Name").EditorTemplateName("ItemCategory").Width(150);
+                                    columns.ForeignKey(c => c.ItemCode, (IEnumerable)ViewData["InventoryItems"], "ItemCode", "Name").EditorTemplateName("Item").Width(120);
+                                    columns.Bound(c => c.Unit).Width(60);
+                                    columns.Bound(c => c.UnitPrice).Width(60);
+                                    columns.Group(g => g.Title("Quantity of Material").HeaderHtmlAttributes(new { style = "text-align: center; font-weight: bold; " })
+                                    .Columns(outercolumn =>
+                                    {
+                                        outercolumn.Group(gr => gr.Title("Previous").HeaderHtmlAttributes(new { style = "text-align: center; font-weight: bold; " })
+                                        .Columns(innercolumn =>
+                                        {
+                                            innercolumn.Bound(x => x.DeliveredQuantityPrevMonth).Width(70).Format("{0:N2}");
+                                            innercolumn.Group(grp => grp.Title("Issued").HeaderHtmlAttributes(new { style = "text-align: center; font-weight: bold; " })
+                                            .Columns(innerinnercolumn =>
+                                            {
+                                                innerinnercolumn.Bound(x => x.ConsumedQuantityPrevMonth).Width(60).Format("{0:N2}");
+                                                innerinnercolumn.Bound(x => x.MaterilOnSitePrevMonth).Width(60).Format("{0:N2}");
+
+                                            })
+                                           );
+                                        })
+                                        );
+                                        outercolumn.Group(gr => gr.Title("This Month").HeaderHtmlAttributes(new { style = "text-align: center; font-weight: bold; " })
+                                        .Columns(innercolumn =>
+                                        {
+                                            innercolumn.Bound(x => x.DeliveredQuantity).Width(70).Format("{0:N2}");
+                                            innercolumn.Bound(x => x.ConsumedQuantity).Width(60).Format("{0:N2}");
+                                            innercolumn.Bound(x => x.TranIn).Width(60).Format("{0:N2}");
+                                            innercolumn.Bound(x => x.TranOut).Width(60).Format("{0:N2}");
+                                        })
+                                        );
+                                        outercolumn.Group(gr => gr.Title("To Date").HeaderHtmlAttributes(new { style = "text-align: center; font-weight: bold; " })
+                                        .Columns(innercolumn =>
+                                        {
+                                            innercolumn.Bound(x => x.DeliveredQuantityToDate).Width(70).Format("{0:N2}");
+                                            innercolumn.Group(grp => grp.Title("Issued").HeaderHtmlAttributes(new { style = "text-align: center; font-weight: bold; " })
+                                            .Columns(innerinnercolumn =>
+                                            {
+                                                innerinnercolumn.Bound(x => x.ConsumedQuantityToDate).Width(60).Format("{0:N2}");
+                                                innerinnercolumn.Bound(x => x.ShipedQuantityToDate).Width(60).Format("{0:N2}");
+                                                innerinnercolumn.Bound(x => x.StockBalance).Width(60).Format("{0:N2}");
+                                            })
+                                            );
+                                            innercolumn.Bound(x => x.MaterialOnSiteToDate).Width(60).Format("{0:N2}");
+                                        })
+                                        );
+                                    })
+                                    );
+                                    columns.Group(g => g.Title("Cost of Material").HeaderHtmlAttributes(new { style = "text-align: center; font-weight: bold; " })
+                                    .Columns(outercolumn =>
+                                    {
+                                        outercolumn.Group(gr => gr.Title("Consumed").HeaderHtmlAttributes(new { style = "text-align: center; font-weight: bold; " })
+                                        .Columns(innercolumn =>
+                                        {
+                                            innercolumn.Group(grp => grp.Title("Previous").HeaderHtmlAttributes(new { style = "text-align: center; font-weight: bold; " })
+                                            .Columns(innerinnercolumn =>
+                                            {
+                                                innerinnercolumn.Bound(x => x.CostOfConsumedMaterialPrevMonth).Width(60).Format("{0:N2}");
+                                            })
+                                           );
+                                            innercolumn.Group(grp => grp.Title("This Month").HeaderHtmlAttributes(new { style = "text-align: center; font-weight: bold; " })
+                                            .Columns(innerinnercolumn =>
+                                            {
+                                                innerinnercolumn.Bound(x => x.CostOfConsumedMaterialThisMonth).Width(60).Format("{0:N2}");
+                                            })
+                                           );
+                                            innercolumn.Group(grp => grp.Title("To Date").HeaderHtmlAttributes(new { style = "text-align: center; font-weight: bold; " })
+                                            .Columns(innerinnercolumn =>
+                                            {
+                                                innerinnercolumn.Bound(x => x.CostOfConsumedMaterialToDate).Width(60).Format("{0:N2}");
+                                            })
+                                           );
+                                        })
+                                        );
+
+                                        outercolumn.Bound(x => x.StockAmount).Width(60).Format("{0:N2}");
+                                        outercolumn.Bound(x => x.MaterialOnSiteAmount).Width(60).Format("{0:N2}");
+                                    })
+                                    );
+                                    columns.Command(command =>
+                                    {
+                                        command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                        //command.Destroy().Text(Resources.ActionButton_Cancel);
+                                        //command.Custom("CustomCommand").Text("Detail");
+                                    }).Width(100);
+                                })
+                                //.Events(evnt =>
+                                //{
+                                //    evnt.DataBound("onDataBound");
+                                //})
+                                .ToolBar(toolbar =>
+                                {
+                                    //toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                                    toolbar.Custom().Name("FetchLatestConsumption").IconClass("fa fa-refresh").Text("&nbsp;&nbsp;Fetch Latest Consumption").Url(Url.Action("PrepareProjectMaterialExpense", "ProjectExpenses", new { area = "Constrution" }));
+
+                                })
+                                .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                .Selectable(selectable =>
+                                {
+                                    selectable.Mode(GridSelectionMode.Single);
+                                    selectable.Type(GridSelectionType.Row);
+                                })
+                                .Scrollable(h => h.Height(500))
+                                //.Groupable()
+                                //.Events(ev => {
+                                //    ev.DataBound("dataBound");
+                                //})
+                                .Sortable(sortable =>
+                                {
+                                    sortable.SortMode(GridSortMode.SingleColumn);
+                                })
+                                //.Filterable()
+                                .Pageable(pageable => pageable
+                                                        .Input(true)
+                                                        .Numeric(false)
+                                                        .Refresh(true)
+                                                        .PageSizes(true)
+                                                        .ButtonCount(5))
+                                .DataSource(dataSource => dataSource
+                                    .Ajax()
+                                    .Group(group =>
+                                    {
+                                        group.Add(f => f.GLPeriodId);
+                                    })
+                                    .Events(events =>
+                                    {
+                                        events.Error("error_handler(\"material_exp_#=ProjectInformationId#\")");
+                                        events.RequestStart("onRequestStart(\"material_exp_#=ProjectInformationId#\")");
+                                        events.RequestEnd("onRequestEnd(\"material_exp_#=ProjectInformationId#\")");
+                                    })
+                                    .Model(model =>
+                                    {
+                                        model.Id(f => f.ProjectMaterialExpenseId);
+
+                                        model.Field(f => f.Unit).Editable(false);
+                                        model.Field(f => f.UnitPrice).Editable(false);
+                                        model.Field(f => f.DeliveredQuantity).Editable(false);
+                                        model.Field(f => f.ConsumedQuantity).Editable(false);
+                                        model.Field(f => f.DeliveredQuantityPrevMonth).Editable(false);
+                                        model.Field(f => f.ConsumedQuantityPrevMonth).Editable(false);
+                                        model.Field(f => f.DeliveredQuantityToDate).Editable(false);
+                                        model.Field(f => f.ConsumedQuantityToDate).Editable(false);
+                                        model.Field(f => f.StockBalance).Editable(false);
+                                        model.Field(f => f.CostOfConsumedMaterialPrevMonth).Editable(false);
+                                        model.Field(f => f.CostOfConsumedMaterialThisMonth).Editable(false);
+                                        model.Field(f => f.CostOfConsumedMaterialToDate).Editable(false);
+                                        model.Field(f => f.StockAmount).Editable(false);
+                                        model.Field(f => f.MaterialOnSiteAmount).Editable(false);
+
+                                    })
+
+                                    .Read(read => read.Action("MaterialExpense_Read", "ProjectMaterialExpense", new { branchId = "#=BranchId#" }))
+                                    .Create(create => create.Action("MaterialExpense_Create", "ProjectMaterialExpense", new { projectIdCreate = "#=BranchId#" }))
+                                    .Update(update => update.Action("MaterialExpense_Update", "ProjectMaterialExpense"))
+                                    .Destroy(destroy => destroy.Action("MaterialExpense_Destroy", "ProjectMaterialExpense"))
+                                    )//.ClientDetailTemplateId("schedule_charts")
+                                    .ToClientTemplate()
+                        )
+                    </text>
+                  );
+
+                      items.Add().Text("Direct Material Consumption").Content(
+                        @<text>
+                            @(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.ProjectDirectMaterialExpense>()
+                                .Name("direct_material_exp_#=ProjectInformationId#")
+                                .Columns(columns =>
+                                {
+                                    columns.ForeignKey(c => c.GLPeriodId, (IEnumerable)ViewData["PeriodList"], "InventoryPeriodId", "Name").EditorTemplateName("GLPeriods").Width(100);
+                                    //.ClientGroupHeaderTemplate("\\#=value\\#");
+                                    columns.ForeignKey(c => c.ItemCategoryCode, (IEnumerable)ViewData["ItemCategories"], "ItemCategoryCode", "Name").EditorTemplateName("ItemCategory").Width(150);
+                                    columns.ForeignKey(c => c.ItemCode, (IEnumerable)ViewData["InventoryItems"], "ItemCode", "Name").EditorTemplateName("Item").Width(120);
+                                    columns.Bound(c => c.Unit).Width(60);
+                                    columns.Bound(c => c.UnitPrice).Width(60);
+                                    columns.Group(g => g.Title("Quantity of Material").HeaderHtmlAttributes(new { style = "text-align: center; font-weight: bold; " })
+                                    .Columns(outercolumn =>
+                                    {
+                                        outercolumn.Group(gr => gr.Title("Previous").HeaderHtmlAttributes(new { style = "text-align: center; font-weight: bold; " })
+                                        .Columns(innercolumn =>
+                                        {
+                                            innercolumn.Bound(x => x.DeliveredQuantityPrevMonth).Width(70).Format("{0:N2}");
+                                            innercolumn.Group(grp => grp.Title("Issued").HeaderHtmlAttributes(new { style = "text-align: center; font-weight: bold; " })
+                                            .Columns(innerinnercolumn =>
+                                            {
+                                                innerinnercolumn.Bound(x => x.ConsumedQuantityPrevMonth).Width(60).Format("{0:N2}");
+                                                innerinnercolumn.Bound(x => x.MaterilOnSitePrevMonth).Width(60).Format("{0:N2}");
+
+                                            })
+                                           );
+                                        })
+                                        );
+                                        outercolumn.Group(gr => gr.Title("This Month").HeaderHtmlAttributes(new { style = "text-align: center; font-weight: bold; " })
+                                        .Columns(innercolumn =>
+                                        {
+                                            innercolumn.Bound(x => x.DeliveredQuantity).Width(70).Format("{0:N2}");
+                                            innercolumn.Bound(x => x.ConsumedQuantity).Width(60).Format("{0:N2}");
+                                            innercolumn.Bound(x => x.TranIn).Width(60).Format("{0:N2}");
+                                            innercolumn.Bound(x => x.TranOut).Width(60).Format("{0:N2}");
+                                        })
+                                        );
+                                        outercolumn.Group(gr => gr.Title("To Date").HeaderHtmlAttributes(new { style = "text-align: center; font-weight: bold; " })
+                                        .Columns(innercolumn =>
+                                        {
+                                            innercolumn.Bound(x => x.DeliveredQuantityToDate).Width(70).Format("{0:N2}");
+                                            innercolumn.Group(grp => grp.Title("Issued").HeaderHtmlAttributes(new { style = "text-align: center; font-weight: bold; " })
+                                            .Columns(innerinnercolumn =>
+                                            {
+                                                innerinnercolumn.Bound(x => x.ConsumedQuantityToDate).Width(60).Format("{0:N2}");
+                                                innerinnercolumn.Bound(x => x.ShipedQuantityToDate).Width(60).Format("{0:N2}");
+                                                innerinnercolumn.Bound(x => x.StockBalance).Width(60).Format("{0:N2}");
+                                            })
+                                            );
+                                            innercolumn.Bound(x => x.MaterialOnSiteToDate).Width(60).Format("{0:N2}");
+                                        })
+                                        );
+                                    })
+                                    );
+                                    columns.Group(g => g.Title("Cost of Material").HeaderHtmlAttributes(new { style = "text-align: center; font-weight: bold; " })
+                                    .Columns(outercolumn =>
+                                    {
+                                        outercolumn.Group(gr => gr.Title("Consumed").HeaderHtmlAttributes(new { style = "text-align: center; font-weight: bold; " })
+                                        .Columns(innercolumn =>
+                                        {
+                                            innercolumn.Group(grp => grp.Title("Previous").HeaderHtmlAttributes(new { style = "text-align: center; font-weight: bold; " })
+                                            .Columns(innerinnercolumn =>
+                                            {
+                                                innerinnercolumn.Bound(x => x.CostOfConsumedMaterialPrevMonth).Width(60).Format("{0:N2}");
+                                            })
+                                           );
+                                            innercolumn.Group(grp => grp.Title("This Month").HeaderHtmlAttributes(new { style = "text-align: center; font-weight: bold; " })
+                                            .Columns(innerinnercolumn =>
+                                            {
+                                                innerinnercolumn.Bound(x => x.CostOfConsumedMaterialThisMonth).Width(60).Format("{0:N2}");
+                                            })
+                                           );
+                                            innercolumn.Group(grp => grp.Title("To Date").HeaderHtmlAttributes(new { style = "text-align: center; font-weight: bold; " })
+                                            .Columns(innerinnercolumn =>
+                                            {
+                                                innerinnercolumn.Bound(x => x.CostOfConsumedMaterialToDate).Width(60).Format("{0:N2}");
+                                            })
+                                           );
+                                        })
+                                        );
+
+                                        outercolumn.Bound(x => x.StockAmount).Width(60).Format("{0:N2}");
+                                        outercolumn.Bound(x => x.MaterialOnSiteAmount).Width(60).Format("{0:N2}");
+                                    })
+                                    );
+                                    columns.Command(command =>
+                                    {
+                                        command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                        command.Destroy().Text(Resources.ActionButton_Cancel);
+                                        //command.Custom("CustomCommand").Text("Detail");
+                                    }).Width(250);
+                                })
+                                //.Events(evnt =>
+                                //{
+                                //    evnt.DataBound("onDataBound");
+                                //})
+                                .ToolBar(toolbar =>
+                                {
+                                    toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                                    toolbar.Custom().Name("FetchLatestConsumption").IconClass("fa fa-refresh").Text("&nbsp;&nbsp;Fetch Latest Consumption").Url(Url.Action("PrepareProjectMaterialExpense", "ProjectExpenses", new { area = "Constrution" }));
+                                })
+                                .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                .Selectable(selectable =>
+                                {
+                                    selectable.Mode(GridSelectionMode.Single);
+                                    selectable.Type(GridSelectionType.Row);
+                                })
+                                .Scrollable(h => h.Height(500))
+                                //.Groupable()
+                                .Sortable(sortable =>
+                                {
+                                    sortable.SortMode(GridSortMode.SingleColumn);
+                                })
+                                //.Filterable()
+                                .Pageable(pageable => pageable
+                                                        .Input(true)
+                                                        .Numeric(false)
+                                                        .Refresh(true)
+                                                        .PageSizes(true)
+                                                        .ButtonCount(5))
+                                .DataSource(dataSource => dataSource
+                                    .Ajax()
+                                    .Group(group =>
+                                    {
+                                        group.Add(f => f.GLPeriodId);
+                                    })
+                                    .Events(events =>
+                                    {
+                                        events.Error("error_handler(\"direct_material_exp_#=ProjectInformationId#\")");
+                                        events.RequestStart("onRequestStart(\"direct_material_exp_#=ProjectInformationId#\")");
+                                        events.RequestEnd("onRequestEnd(\"direct_material_exp_#=ProjectInformationId#\")");
+                                    })
+                                    .Model(model =>
+                                    {
+                                        model.Id(f => f.ProjectDirectMaterialExpenseId);
+
+                                        model.Field(f => f.Unit).Editable(false);
+                                        model.Field(f => f.UnitPrice).Editable(false);
+                                        //model.Field(f => f.DeliveredQuantity).Editable(false);
+                                        //model.Field(f => f.ConsumedQuantity).Editable(false);
+                                        //model.Field(f => f.DeliveredQuantityPrevMonth).Editable(false);
+                                        //model.Field(f => f.ConsumedQuantityPrevMonth).Editable(false);
+                                        model.Field(f => f.DeliveredQuantityToDate).Editable(false);
+                                        model.Field(f => f.ConsumedQuantityToDate).Editable(false);
+                                        model.Field(f => f.StockBalance).Editable(false);
+                                        model.Field(f => f.CostOfConsumedMaterialPrevMonth).Editable(false);
+                                        model.Field(f => f.CostOfConsumedMaterialThisMonth).Editable(false);
+                                        model.Field(f => f.CostOfConsumedMaterialToDate).Editable(false);
+                                        model.Field(f => f.StockAmount).Editable(false);
+                                        model.Field(f => f.MaterialOnSiteAmount).Editable(false);
+
+                                    })
+
+                                    .Read(read => read.Action("MaterialExpense_Read", "ProjectDirectMaterialExpense", new { branchId = "#=BranchId#" }))
+                                    .Create(create => create.Action("MaterialExpense_Create", "ProjectDirectMaterialExpense", new { branchId = "#=BranchId#" }))
+                                    .Update(update => update.Action("MaterialExpense_Update", "ProjectDirectMaterialExpense"))
+                                    .Destroy(destroy => destroy.Action("MaterialExpense_Destroy", "ProjectDirectMaterialExpense"))
+                                    )//.ClientDetailTemplateId("schedule_charts")
+                                    .ToClientTemplate()
+                            )
+                        </text>
+                  );
+
+                      items.Add().Text("Indirect Material Consumption").Content(
+                        @<text>
+                            @(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.ProjectIndirectMaterialExpense>()
+                                .Name("Indirect_material_exp_#=ProjectInformationId#")
+                                .Columns(columns =>
+                                {
+                                    columns.ForeignKey(c => c.GLPeriodId, (IEnumerable)ViewData["PeriodList"], "InventoryPeriodId", "Name").EditorTemplateName("GLPeriods").Width(100);
+                                    //.ClientGroupHeaderTemplate("\\#=value\\#");
+                                    columns.ForeignKey(c => c.ItemCategoryCode, (IEnumerable)ViewData["ItemCategories"], "ItemCategoryCode", "Name").EditorTemplateName("ItemCategory").Width(150);
+                                    columns.ForeignKey(c => c.ItemCode, (IEnumerable)ViewData["InventoryItems"], "ItemCode", "Name").EditorTemplateName("Item").Width(120);
+                                    columns.Bound(c => c.Unit).Width(60);
+                                    columns.Bound(c => c.UnitPrice).Width(60);
+                                    columns.Group(g => g.Title("Quantity of Material").HeaderHtmlAttributes(new { style = "text-align: center; font-weight: bold; " })
+                                    .Columns(outercolumn =>
+                                    {
+                                        outercolumn.Group(gr => gr.Title("Previous").HeaderHtmlAttributes(new { style = "text-align: center; font-weight: bold; " })
+                                        .Columns(innercolumn =>
+                                        {
+                                            innercolumn.Bound(x => x.DeliveredQuantityPrevMonth).Width(70).Format("{0:N2}");
+                                            innercolumn.Group(grp => grp.Title("Issued").HeaderHtmlAttributes(new { style = "text-align: center; font-weight: bold; " })
+                                            .Columns(innerinnercolumn =>
+                                            {
+                                                innerinnercolumn.Bound(x => x.ConsumedQuantityPrevMonth).Width(60).Format("{0:N2}");
+                                                innerinnercolumn.Bound(x => x.MaterilOnSitePrevMonth).Width(60).Format("{0:N2}");
+
+                                            })
+                                           );
+                                        })
+                                        );
+                                        outercolumn.Group(gr => gr.Title("This Month").HeaderHtmlAttributes(new { style = "text-align: center; font-weight: bold; " })
+                                        .Columns(innercolumn =>
+                                        {
+                                            innercolumn.Bound(x => x.DeliveredQuantity).Width(70).Format("{0:N2}");
+                                            innercolumn.Bound(x => x.ConsumedQuantity).Width(60).Format("{0:N2}");
+                                            innercolumn.Bound(x => x.TranIn).Width(60).Format("{0:N2}");
+                                            innercolumn.Bound(x => x.TranOut).Width(60).Format("{0:N2}");
+                                        })
+                                        );
+                                        outercolumn.Group(gr => gr.Title("To Date").HeaderHtmlAttributes(new { style = "text-align: center; font-weight: bold; " })
+                                        .Columns(innercolumn =>
+                                        {
+                                            innercolumn.Bound(x => x.DeliveredQuantityToDate).Width(70).Format("{0:N2}");
+                                            innercolumn.Group(grp => grp.Title("Issued").HeaderHtmlAttributes(new { style = "text-align: center; font-weight: bold; " })
+                                            .Columns(innerinnercolumn =>
+                                            {
+                                                innerinnercolumn.Bound(x => x.ConsumedQuantityToDate).Width(60).Format("{0:N2}");
+                                                innerinnercolumn.Bound(x => x.ShipedQuantityToDate).Width(60).Format("{0:N2}");
+                                                innerinnercolumn.Bound(x => x.StockBalance).Width(60).Format("{0:N2}");
+                                            })
+                                            );
+                                            innercolumn.Bound(x => x.MaterialOnSiteToDate).Width(60).Format("{0:N2}");
+                                        })
+                                        );
+                                    })
+                                    );
+                                    columns.Group(g => g.Title("Cost of Material").HeaderHtmlAttributes(new { style = "text-align: center; font-weight: bold; " })
+                                    .Columns(outercolumn =>
+                                    {
+                                        outercolumn.Group(gr => gr.Title("Consumed").HeaderHtmlAttributes(new { style = "text-align: center; font-weight: bold; " })
+                                        .Columns(innercolumn =>
+                                        {
+                                            innercolumn.Group(grp => grp.Title("Previous").HeaderHtmlAttributes(new { style = "text-align: center; font-weight: bold; " })
+                                            .Columns(innerinnercolumn =>
+                                            {
+                                                innerinnercolumn.Bound(x => x.CostOfConsumedMaterialPrevMonth).Width(60).Format("{0:N2}");
+                                            })
+                                           );
+                                            innercolumn.Group(grp => grp.Title("This Month").HeaderHtmlAttributes(new { style = "text-align: center; font-weight: bold; " })
+                                            .Columns(innerinnercolumn =>
+                                            {
+                                                innerinnercolumn.Bound(x => x.CostOfConsumedMaterialThisMonth).Width(60).Format("{0:N2}");
+                                            })
+                                           );
+                                            innercolumn.Group(grp => grp.Title("To Date").HeaderHtmlAttributes(new { style = "text-align: center; font-weight: bold; " })
+                                            .Columns(innerinnercolumn =>
+                                            {
+                                                innerinnercolumn.Bound(x => x.CostOfConsumedMaterialToDate).Width(60).Format("{0:N2}");
+                                            })
+                                           );
+                                        })
+                                        );
+
+                                        outercolumn.Bound(x => x.StockAmount).Width(60).Format("{0:N2}");
+                                        outercolumn.Bound(x => x.MaterialOnSiteAmount).Width(60).Format("{0:N2}");
+                                    })
+                                    );
+                                    columns.Command(command =>
+                                    {
+                                        command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                        command.Destroy().Text(Resources.ActionButton_Cancel);
+                                        //command.Custom("CustomCommand").Text("Detail");
+                                    }).Width(250);
+                                })
+                                //.Events(evnt =>
+                                //{
+                                //    evnt.DataBound("onDataBound");
+                                //})
+                                .ToolBar(toolbar =>
+                                {
+                                    toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                                    toolbar.Custom().Name("FetchLatestConsumption").IconClass("fa fa-refresh").Text("&nbsp;&nbsp;Fetch Latest Consumption").Url(Url.Action("PrepareProjectMaterialExpense", "ProjectExpenses", new { area = "Constrution" }));
+                                })
+                                .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                .Selectable(selectable =>
+                                {
+                                    selectable.Mode(GridSelectionMode.Single);
+                                    selectable.Type(GridSelectionType.Row);
+                                })
+                                .Scrollable(h => h.Height(500))
+                                //.Groupable()
+                                .Sortable(sortable =>
+                                {
+                                    sortable.SortMode(GridSortMode.SingleColumn);
+                                })
+                                //.Filterable()
+                                .Pageable(pageable => pageable
+                                                        .Input(true)
+                                                        .Numeric(false)
+                                                        .Refresh(true)
+                                                        .PageSizes(true)
+                                                        .ButtonCount(5))
+                                .DataSource(dataSource => dataSource
+                                    .Ajax()
+                                    .Group(group =>
+                                    {
+                                        group.Add(f => f.GLPeriodId);
+                                    })
+                                    .Events(events =>
+                                    {
+                                        events.Error("error_handler(\"Indirect_material_exp_#=ProjectInformationId#\")");
+                                        events.RequestStart("onRequestStart(\"Indirect_material_exp_#=ProjectInformationId#\")");
+                                        events.RequestEnd("onRequestEnd(\"Indirect_material_exp_#=ProjectInformationId#\")");
+                                    })
+                                    .Model(model =>
+                                    {
+                                        model.Id(f => f.ProjectIndirectMaterialExpenseId);
+
+                                        model.Field(f => f.Unit).Editable(false);
+                                        model.Field(f => f.UnitPrice).Editable(false);
+                                        //model.Field(f => f.DeliveredQuantity).Editable(false);
+                                        //model.Field(f => f.ConsumedQuantity).Editable(false);
+                                        //model.Field(f => f.DeliveredQuantityPrevMonth).Editable(false);
+                                        //model.Field(f => f.ConsumedQuantityPrevMonth).Editable(false);
+                                        model.Field(f => f.DeliveredQuantityToDate).Editable(false);
+                                        model.Field(f => f.ConsumedQuantityToDate).Editable(false);
+                                        model.Field(f => f.StockBalance).Editable(false);
+                                        model.Field(f => f.CostOfConsumedMaterialPrevMonth).Editable(false);
+                                        model.Field(f => f.CostOfConsumedMaterialThisMonth).Editable(false);
+                                        model.Field(f => f.CostOfConsumedMaterialToDate).Editable(false);
+                                        model.Field(f => f.StockAmount).Editable(false);
+                                        model.Field(f => f.MaterialOnSiteAmount).Editable(false);
+
+                                    })
+
+                                    .Read(read => read.Action("MaterialExpense_Read", "ProjectIndirectMaterialExpense", new { branchId = "#=BranchId#" }))
+                                    .Create(create => create.Action("MaterialExpense_Create", "ProjectIndirectMaterialExpense", new { branchId = "#=BranchId#" }))
+                                    .Update(update => update.Action("MaterialExpense_Update", "ProjectIndirectMaterialExpense"))
+                                    .Destroy(destroy => destroy.Action("MaterialExpense_Destroy", "ProjectIndirectMaterialExpense"))
+                                    )//.ClientDetailTemplateId("schedule_charts")
+                                    .ToClientTemplate()
+                            )
+                        </text>
+                  );
+                  }).ToClientTemplate())
+</script>
+
+<script>
+    function filterCategories() {
+        //return {
+        //    ItemCategoryCode: $("#ItemCategoryCode").val()
+        //};
+        //
+        // summary:
+        //      send the filtering text along with the parent widget's value
+        var dropdownlist = $("#ItemCode").data("kendoDropDownList");
+        var filterInput = dropdownlist.filterInput;
+        return {
+            ItemCategoryCode: $("#ItemCategoryCode").val(), filterString: filterInput.val()
+        };
+    }
+    
+    //function dataBound(e) {
+    //    $(".k-grid-FetchLatestConsumption").find("span").addClass("fa fa-refresh ");
+    //}
+</script>

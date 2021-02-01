@@ -1,0 +1,30 @@
+﻿@using ExceedERP.Core.Domain.Finance.AR
+@(Html.Kendo().Grid<ARSetupTransactionClass>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.ClassName);
+          columns.Bound(c => c.Description);
+          columns.Bound(c => c.DateCreated);
+          columns.Bound(c => c.LastModified);
+          columns.Bound(c => c.CreatedBy);
+          columns.Bound(c => c.ModifiedBy);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+                              toolbar.Excel();
+                              // toolbar.Pdf();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Pageable()
+      .Filterable()
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.ARSetupTransactionClassID))
+          .Read(read => read.Action("ARSetupTransactionClasses_Read", "ArSetupTransactionClass"))
+          .Create(create => create.Action("ARSetupTransactionClasses_Create", "ArSetupTransactionClass"))
+          .Update(update => update.Action("ARSetupTransactionClasses_Update", "ArSetupTransactionClass"))
+          .Destroy(destroy => destroy.Action("ARSetupTransactionClasses_Destroy", "ArSetupTransactionClass"))
+      ))

@@ -1,0 +1,284 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.FixedAsset.Registrations
+
+@(Html.Kendo().Grid<AssetDisposal>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.AssetDisposalId).Title("Disposal No.").Width(120).ClientTemplate("#=appendZeros(AssetDisposalId)#");
+          columns.ForeignKey(p => p.CustomerId, (IEnumerable)ViewData["customers"], "CustomerId", "CompanyName").Title("Customer").EditorTemplateName("ActiveCustomerSelectorAR").Width(180);
+          columns.Bound(c => c.Date).Width(130);
+          columns.Bound(c => c.DisposalType).Width(120);
+          columns.Bound(c => c.Description).Width(200);
+          columns.Bound(c => c.Status).Width(100);
+          columns.Command(command =>
+          {
+
+              command.Edit();
+              command.Destroy();
+
+
+          }).Width(180);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .HtmlAttributes(new { style = "height: 550px;" })
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(20))
+      .Scrollable()
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Filterable()
+      .Groupable()
+      .Groupable().Events(ev => ev.DetailExpand("detailExpand"))
+      .Scrollable(h => h.Height(500))
+      .Events(x => x.DataBound("onDataBoundMaster"))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Sort(sort => sort.Add("AssetDisposalId").Descending())
+          .Events(ev => ev
+              .Error("error_handler(\"grid\")")
+              .RequestStart("onRequestStart(\"grid\")")
+              .RequestEnd("onRequestEnd(\"grid\")"))
+          .Model(model =>
+          {
+              model.Id(p => p.AssetDisposalId);
+              model.Field(p => p.OrgBranchName).Editable(false);
+              model.Field(p => p.Status).Editable(false);
+              model.Field(p => p.AssetDisposalId).Editable(false);
+          })
+          .Read(read => read.Action("AssetDisposals_Read", "AssetDisposal"))
+          .Create(create => create.Action("AssetDisposals_Create", "AssetDisposal"))
+          .Update(update => update.Action("AssetDisposals_Update", "AssetDisposal"))
+          .Destroy(destroy => destroy.Action("AssetDisposals_Destroy", "AssetDisposal"))
+      ).ClientDetailTemplateId("templates"))
+
+<script id="templates" type="text/Kendo-tmpl">
+    @(Html.Kendo().TabStrip().Name("tabStrip_#=AssetDisposalId#").SelectedIndex(0).Items(items =>
+      {
+          items.Add().Text("Detail").Content(
+              @<text>
+
+
+                # if (!IsOnlineApproved&&!IsSendForApproval)
+                {#
+                    <a onclick='return sendForApproval("#=AssetDisposalId#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                <br />
+                # } #
+
+                # if (IsOnlineApproved)
+                {#
+                @*<a href='@Url.Action("IssuePrint", "InventoryPrint")/#=AssetDisposalId#' title="Print"><i class="fa fa-print fa-2x"></i></a>*@
+                <br />
+                # } #
+                <div>
+                    <hr>
+                    <dl class="dl-horizontal">
+                        <dt>
+                            No.
+                        </dt>
+                        <dd>
+                            #=AssetDisposalId #
+                        </dd>                      
+
+                        <dt>
+                            Date
+                        </dt>
+                        <dd>
+                            #=kendo.toString(kendo.parseDate(Date), 'dd/MM/yyyy') #
+
+                        </dd>
+                        <dt>
+                            Status
+                        </dt>
+                        <dd>
+                            #= Status #
+                        </dd>
+                        <dt>
+                            CreatedOn
+                        </dt>
+                        <dd>
+                            #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+
+                        </dd>
+                        <dt>
+                            CreatedBy
+                        </dt>
+                        <dd>
+                            #= CreatedBy #
+                        </dd>
+                        <dt>
+                            Modified By
+                        </dt>
+                        <dd>
+                            #= ModifiedBy #
+                        </dd>
+                        <dt>
+                            Modified Date
+                        </dt>
+                        <dd>
+                            #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+                        </dd>
+                    </dl>
+                </div>
+
+            </text>
+              );
+
+          items.Add().Text("Item").Content(
+              @<text>
+
+                @(Html.Kendo().Grid<DisposalItem>()
+                      .Name("DisposalItem_#=AssetDisposalId#")
+                      .Columns(columns =>
+                      {
+                          columns.ForeignKey(p => p.FixedAssetCategoryID, (IEnumerable)ViewData["Category"], "FixedAssetCategoryID", "CategoryName").Title("Category").EditorTemplateName("FixedAssetCategorySelector").Width(180);
+                          columns.ForeignKey(p => p.FixedAssetSubCategoryID, (IEnumerable)ViewData["SubCategory"], "FixedAssetSubCategoryID", "SubCategoryName").Title("Sub Category").EditorTemplateName("FixedAssetSubCategorySelector").Width(180);
+                          columns.ForeignKey(p => p.AssetRegistrationId, (IEnumerable)ViewData["FixedAsset"], "AssetRegistrationId", "Name").Title("Item").EditorTemplateName("FixedAssetDisposalSelector").Width(180);
+                          columns.Bound(c => c.BookValue).Hidden().Width(130);
+                          columns.Bound(c => c.SalesPrice).Width(130);
+                          columns.ForeignKey(p => p.GlTaxRateId, (IEnumerable)ViewData["tax"], "GLTaxRateID", "TaxName").Title("Tax Name").EditorTemplateName("TaxSelectorAR").Width(180);
+                          columns.Bound(c => c.TaxAmount).Width(130);
+                          columns.Bound(c => c.Total).Width(130);
+
+                          columns.Bound(c => c.CreatedBy).Hidden();
+                          columns.Bound(c => c.DateCreated).Hidden();
+                          columns.Bound(c => c.ModifiedBy).Hidden();
+                          columns.Bound(c => c.LastModified).Hidden();
+                          columns.Command(command =>
+                          {
+                              command.Edit();
+                              command.Destroy();
+                          }).Width(180);
+                      })
+                      .ToolBar(toolbar =>
+                      {
+                          toolbar.Create();
+                      })
+                      .Events(ev => ev.Edit("onItemEdit"))
+                      .Events(x => x.DataBound("onDataBoundLines"))
+                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                      .Scrollable()
+                      .Selectable()
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+                          .Events(ev => ev
+                              .Error("error_handler(\"DisposalItem_#=AssetDisposalId#\")")
+                              .RequestStart("onRequestStart(\"DisposalItem_#=AssetDisposalId#\")")
+                              .RequestEnd("onRequestEnd(\"DisposalItem_#=AssetDisposalId#\")"))
+                          .Model(model =>
+                          {
+                              model.Id(p => p.DisposalItemId);
+                              model.Field(p => p.TaxAmount).Editable(false);
+                              model.Field(p => p.Total).Editable(false);
+                              model.Field(p => p.CreatedBy).Editable(false);
+                              model.Field(p => p.DateCreated).Editable(false);
+                              model.Field(p => p.ModifiedBy).Editable(false);
+                              model.Field(p => p.LastModified).Editable(false);
+
+                          })
+                          .Read(read => read.Action("DisposalItems_Read", "AssetDisposalItem", new { id = "#=AssetDisposalId#" }))
+                          .Create(create => create.Action("DisposalItems_Create", "AssetDisposalItem", new { id = "#=AssetDisposalId#" }))
+                          .Update(update => update.Action("DisposalItems_Update", "AssetDisposalItem", new { id = "#=AssetDisposalId#" }))
+                          .Destroy(destroy => destroy.Action("DisposalItems_Destroy", "AssetDisposalItem"))
+                      ).ToClientTemplate())
+
+            </text>
+              );
+
+          items.Add().Text("Validation").Content(
+              @<text>
+                @(Html.Kendo().Grid<AssetDisposalValidation>()
+                      .Name("AssetDisposalValidation_#=AssetDisposalId#")
+                      .Columns(columns =>
+                      {
+                          columns.Bound(c => c.Status).Width(170).EditorTemplateName("ValidationStatus");
+                          columns.Bound(c => c.Remark).Width(170);
+                          columns.Command(command =>
+                          {
+                              command.Edit();
+                              //command.Destroy();
+                          });
+                      })
+                      .ToolBar(toolbar =>
+                      {
+                          toolbar.Create();
+                      })
+                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                      .Scrollable()
+                      .Events(x => x.DataBound("onDataBoundFisrtValidation"))
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+                          .Events(ev => ev
+                              .Error("error_handler(\"AssetDisposalValidation_#=AssetDisposalId#\")")
+                              .RequestStart("onRequestStart(\"AssetDisposalValidation_#=AssetDisposalId#\")")
+                              .RequestEnd("onRequestEnd(\"AssetDisposalValidation_#=AssetDisposalId#\")"))
+                          .Model(model =>
+                          {
+                              model.Id(p => p.AssetDisposalValidationId);
+                          }
+                          )
+                          .Read(read => read.Action("AssetDisposalValidation_Read", "AssetDisposalValidation", new { id = "#=AssetDisposalId#" }))
+                          .Create(create => create.Action("AssetDisposalValidation_Create", "AssetDisposalValidation", new { id = "#=AssetDisposalId#" }))
+                          .Update(update => update.Action("AssetDisposalValidation_Update", "AssetDisposalValidation"))
+                          .Destroy(destroy => destroy.Action("AssetDisposalValidation_Destroy", "AssetDisposalValidation"))
+                      ).ToClientTemplate())
+
+
+            </text>
+
+              );
+
+      }).ToClientTemplate()
+
+          )
+
+
+
+</script>
+
+<script>
+
+    function sendForApproval(id) {
+        var recordStatus = "";
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("SendForApproval", "AssetDisposal", new { area = "FixedAsset" })',
+            data: { id: id },
+            success: function (result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                recordStatus = result.Status;
+                location.reload(true);
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+
+    function filterAssetsForDisposal() {
+
+        return {
+            subCategoryCode: $("#FixedAssetSubCategoryID").data("kendoDropDownList").value()
+        };
+    }
+    function onItemEdit() {
+
+    }
+</script>

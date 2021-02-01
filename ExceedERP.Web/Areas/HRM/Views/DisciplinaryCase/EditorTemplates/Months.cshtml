@@ -1,0 +1,16 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@using ExceedERP.Core.Domain.Common
+@(Html.Kendo().DropDownListFor(m => m)
+.OptionLabel(Resources.Select)
+                    .DataTextField("ExpireYear")
+                    .DataValueField("ExpireYear")
+                    .OptionLabel(Resources.Select)
+                    .Filter("contains")
+                          .DataSource(dataSource =>
+                          {
+                              dataSource.Read(read => read.Action("GetMonths", "HRMDataProvider", new { area = "HRM" }))
+                                                    .ServerFiltering(false);
+                          })
+                         .ValuePrimitive(true)
+)

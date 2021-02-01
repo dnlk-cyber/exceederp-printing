@@ -1,0 +1,226 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.Finance.GL
+<legend>Account Segment</legend>
+@(Html.Kendo().Grid<GLChartOfAccountAccount>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Values).Width(90);
+          columns.Bound(c => c.Description).Width(120);
+          columns.ForeignKey(c => c.HasParent, (IEnumerable)ViewData["parents"], "HasParent", "HasParent").Width(120).Title("Parent");
+          columns.Bound(c => c.Enable).Width(100).Title("Enable").ClientTemplate(
+              "<input type='checkbox' disabled = 'true' value='#= Values #' " +
+              "# if (Enable) { #" +
+              "checked='checked'" +
+              "# } #" +
+              "/>"
+              );
+          columns.Bound(c => c.Parent).Width(100).Title("Is Parent?").ClientTemplate(
+              "<input type='checkbox' disabled = 'true' value='#= Values #' " +
+              "# if (Parent) { #" +
+              "checked='checked'" +
+              "# } #" +
+              "/>"
+              );
+
+          columns.Bound(c => c.AllowBudgeting).Width(140).ClientTemplate(
+              "<input type='checkbox' disabled = 'true' value='#= Values #' " +
+              "# if (AllowBudgeting) { #" +
+              "checked='checked'" +
+              "# } #" +
+              "/>"
+              );
+          columns.Bound(c => c.AllowPosting).Width(150).ClientTemplate(
+              "<input type='checkbox' disabled = 'true' value='#= Values #' " +
+              "# if (AllowPosting) { #" +
+              "checked='checked'" +
+              "# } #" +
+              "/>"
+              );
+          columns.Bound(c => c.AccountType).Width(150).EditorTemplateName("GLAccountTypes").Title("Type");
+          columns.Bound(c => c.AccountSubType).Width(150).EditorTemplateName("GLAccountCategory").Title("Category");
+
+          columns.Bound(c => c.OrgBranchName).Width(100).Hidden(true);
+          columns.Bound(c => c.DateCreated).Width(150).Format("{0:dd/MM/yyyy}").Hidden(true);
+          columns.Bound(c => c.LastModified).Width(150).Format("{0:dd/MM/yyyy}").Hidden(true);
+          columns.Bound(c => c.CreatedBy).Width(100).Hidden(true);
+          columns.Bound(c => c.ModifiedBy).Width(100).Hidden(true);
+          columns.Command(command =>
+          {
+              command.Edit();
+              command.Custom("En").Click("Enable");
+          }).Width(180);
+
+
+
+      })
+      .Events(events => events
+          .DataBound("onDataBoundMaster"))
+      //.ToolBar(toolbar =>
+      //{
+      //    toolbar.Create();
+      //    toolbar.Excel();
+      //   // toolbar.Pdf();
+      //})    
+      .ToolBar(toolbar =>
+      {
+
+          toolbar.Template(@<text>
+                               <div class="toolbar row">
+                                   <div class="col-md-3">
+                                       <a class="k-button k-button-icontext k-grid-add" href='#'>Add New</a>
+                                       <a class="k-button k-button-icontext k-grid-excel" href="#"><span class="k-icon k-i-excel"></span>Export to Excel</a>
+                                   </div>
+
+                                   <div class="col-md-2 pull-right">
+                                       @(Html.Kendo().Upload()
+                                             .Name("file")
+                                             .Async(a => a.Save("GLChartOfAccountAccounts_Import", "GLChartOfAccountAccount"))
+                                             .Events(e => e.Complete("onUploadSuccess").Upload("checkFileType"))
+                                             .ShowFileList(false).Events(events => events .Error("error_handler_one")))
+                                   </div>
+                                   <div class="pull-right">
+                                       @Html.Kendo().Button().Name("downloadTemplate").Content("Get Template").Events(events => events.Click("downloadTemplateClicked")).HtmlAttributes(new { @class = "btn btn-primary" })
+                                   </div>
+                               </div>
+
+                            </text>);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .HtmlAttributes(new { style = "height: 550px;" })
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(5))
+
+      .Scrollable()
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Filterable()
+      .Groupable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(
+              model =>
+              {
+                  model.Id(p => p.Values);
+                  model.Field(p => p.OrgBranchName).Editable(false);
+                  model.Field(p => p.CreatedBy).Editable(false);
+                  model.Field(p => p.ModifiedBy).Editable(false);
+                  model.Field(p => p.LastModified).Editable(false);
+                  model.Field(p => p.DateCreated).Editable(false);
+
+              })
+          .Events(events => events
+              .Error("error_handler_one")
+              .Sync("sync_handler"))
+          .Events(events => events.RequestEnd("onGridDataSourceRequestEnd"))
+          .Read(read => read.Action("GLChartOfAccountAccounts_Read", "GlChartOfAccountAccount"))
+          .Create(create => create.Action("GLChartOfAccountAccounts_Create", "GlChartOfAccountAccount"))
+          .Update(update => update.Action("GLChartOfAccountAccounts_Update", "GlChartOfAccountAccount"))
+          .Destroy(destroy => destroy.Action("GLChartOfAccountAccounts_Destroy", "GlChartOfAccountAccount"))
+      ))
+
+
+<script type="text/javascript">
+
+    function filterAccountCategories() {
+
+        return {
+            accountType: $("#AccountType").data("kendoDropDownList").value()
+        };
+    }
+
+    function onDataBound(e) {
+        e.sender.tbody.find(".k-button.fa").each(function(idx, element){
+            $(element).removeClass("fa fa-map-marker").find("span").addClass("fa fa-map-marker");
+        });
+    }
+
+
+
+    function onGridDataSourceRequestEnd(e) {
+        if (e.type === "update") {
+            this.read();
+        }
+
+        if (e.type === "create") {
+            this.read();
+        }
+    }
+
+    function onUploadSuccess(e) {
+
+    }
+
+    function checkFileType(e) {
+        var files = e.files;
+
+        $.each(files, function () {
+
+            if (this.extension.toLowerCase() === ".xls" || this.extension.toLowerCase() === ".xlsx" || this.extension.toLowerCase() === ".xlsm") {
+
+            } else {
+                alert("Only .xls, .xlsx, .xlsm files can be uploaded!");
+                e.preventDefault();
+            }
+
+        });
+    }
+
+    function downloadTemplateClicked(e) {
+        $.ajax(
+   {
+       type: "GET",
+
+       url: '@Url.Action("DownloadTemplate", "Issue")',
+       dataType: "json"
+
+   });
+    }
+    $(document).ready(function () {
+        $("#file").closest(".k-upload").find("span").text("Import");
+    });
+
+</script>
+
+<script>
+    //function onClick() {
+    //    var grid = $("#grid").data("kendoGrid")._data;
+    //    var values = grid[0]["Values"];
+
+    //    $.ajax({
+    //        url: "GLChartOfAccountAccount/Enable_Disable",
+
+    //        data: { id: values }
+    //    });
+    //}
+
+    function Enable(e) {
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        var id = dataItem.Values;
+        $.ajax({
+            //url: "GLChartOfAccountAccount/Enable_Disable",
+
+            //data: { id: dataItem.Values }
+            type: "GET",
+            data: dataItem.Values, //I obtained the id properly
+            url: '@Url.Action("Enable_Disable", "GlChartOfAccountAccount")/' + dataItem.Values
+
+        });
+
+        $('#grid').data('kendoGrid').dataSource.read();
+        $('#grid').data('kendoGrid').refresh();
+        location.reload();
+    };
+</script>
+

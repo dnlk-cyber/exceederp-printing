@@ -1,0 +1,62 @@
+﻿@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Setting | Delay Types</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.DelayType>()
+      .Name("delayTypeGrid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Description);
+          columns.Bound(c => c.Type).EditorTemplateName("DelayTypes");
+          columns.Bound(c => c.Abbriviation);
+          columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit); command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+      //.Editable(editable => editable.Mode(GridEditMode.InLine))
+      //.Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("Calendar").Window(window => { window.Title("Calender"); window.Scrollable(false); }))
+
+      .Scrollable(h => h.Height(500))
+      .Groupable()
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Filterable()
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(5))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Events(events =>
+          {
+              events.Error("error_handler(\"delayTypeGrid\")");
+              events.RequestStart("onRequestStart(\"delayTypeGrid\")");
+              events.RequestEnd("onRequestEnd(\"delayTypeGrid\")");
+          })
+          .Model(model => model.Id(p => p.DelayTypeId))
+          .Read(read => read.Action("DelayType_Read", "DelayType"))
+          .Create(create => create.Action("DelayType_Create", "DelayType"))
+          .Update(update => update.Action("DelayType_Update", "DelayType"))
+          .Destroy(destroy => destroy.Action("DelayType_Destroy", "DelayType"))
+      )
+)
+
+<script>
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+</script>

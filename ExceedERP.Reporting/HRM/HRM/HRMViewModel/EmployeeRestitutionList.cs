@@ -1,0 +1,10 @@
+﻿namespace ExceedERP.Reporting.HRM.HRM.HRMViewModel
+{
+    public class EmployeeRestitutionList
+    {
+
+        public string RestitutionName { get; set; }
+        public int PeriodOneCount { get; set; }
+        public int PeriodTwoCount { get; set; }
+    }
+}

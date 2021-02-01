@@ -1,0 +1,782 @@
+﻿@using ExceedERP.Core.Domain.Procurement.ForeignPurchase
+@using System.Collections
+<legend>Foreign Purchase Follow Up</legend>
+@(Html.Kendo().Grid<ForeignPurchase>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.ForeignPurchaseId).Width(50).Title("#");
+          columns.Bound(c => c.TenderRef).Title("Tender Ref.").Width(130);
+          columns.Bound(c => c.PurchaseRef).Title("Purchase Ref.").Width(130);
+          columns.Bound(c => c.Supplier).Width(130);
+          columns.Bound(c => c.ItemDesc).Width(150);
+          columns.Bound(c => c.FOBMethod).Width(150);
+          columns.Bound(c => c.ProcurementMethod).Width(130);
+          columns.Bound(c => c.ApprovalDate).Width(130);
+          columns.Bound(c => c.OpenigDate).Width(130);
+          columns.Bound(c => c.TechnicalDocSendDate).Width(150);
+          columns.Bound(c => c.FinancialOpenigDate).Width(150);
+          columns.Bound(c => c.MinuteApprovedDate).Width(130);
+          columns.Bound(c => c.AwardDate).Width(120);
+          columns.Bound(c => c.ContractDate).Width(120);
+          columns.Bound(c => c.Status).Width(80);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+      })
+      .Groupable().Events(ev => ev.DetailExpand("detailExpand"))
+      .Events(x => x.DataBound("onDataBoundMaster"))
+      .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("ForeignPurchase").Window(w => w.Title("Foreign Purchase")))
+      .HtmlAttributes(new { style = "height: 600px;" })
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(20))
+      .Scrollable()
+      .Sortable()
+      .Filterable()
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Groupable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Sort(sort => sort.Add("ForeignPurchaseId").Descending())
+          .Events(ev => ev
+              .Error("error_handler(\"grid\")")
+              .RequestStart("onRequestStart(\"grid\")")
+              .RequestEnd("onRequestEnd(\"grid\")"))
+          .Model(
+              model =>
+              {
+                  model.Id(p => p.ForeignPurchaseId);
+                  model.Field(p => p.Status).Editable(false);
+                  model.Field(p => p.OrgBranchName).Editable(false);
+                  model.Field(p => p.CreatedBy).Editable(false);
+                  model.Field(p => p.ModifiedBy).Editable(false);
+                  model.Field(p => p.LastModified).Editable(false);
+                  model.Field(p => p.DateCreated).Editable(false);
+                  model.Field(p => p.Status).Editable(false);
+              })
+          .Read(read => read.Action("ForeignPurchases_Read", "ForeignPurchase"))
+          .Create(create => create.Action("ForeignPurchases_Create", "ForeignPurchase"))
+          .Update(update => update.Action("ForeignPurchases_Update", "ForeignPurchase"))
+          .Destroy(destroy => destroy.Action("ForeignPurchases_Destroy", "ForeignPurchase"))
+      )
+      .ClientDetailTemplateId("foreignpurchasetemplate"))
+
+<script id="foreignpurchasetemplate" type="text/Kendo-tmpl">
+    @(Html.Kendo().TabStrip().Name("tabStrip_#=ForeignPurchaseId#").SelectedIndex(0).Items(itemn =>
+      {
+          itemn.Add().Text("Detail").Content(
+              @<text>
+                <hr />
+                 # if (!IsOnlineApproved&&!IsSendForApproval)
+                        {#
+                        <a onclick='return sendForApproval("#=ForeignPurchaseId#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                        <br />
+                        # } #
+                <div>
+                    <hr>
+                    <dl class="dl-horizontal">
+
+                        <dt>
+                            CreatedOn
+                        </dt>
+                        <dd>
+                            #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+                        </dd>
+                        <dt>
+                            CreatedBy
+                        </dt>
+                        <dd>
+                            #= CreatedBy #
+
+                        </dd>
+                        <dt>
+                            Modified By
+                        </dt>
+                        <dd>
+                            #= ModifiedBy #s
+                        </dd>
+                        <dt>
+                            Modified Date
+                        </dt>
+                        <dd>
+                            #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+                        </dd>
+                    </dl>
+
+                </div>
+                    <hr>
+  
+                        # if (IsOnlineApproved&&!IsVoid)
+                        {#
+                        @if (HttpContext.Current.User.IsInRole("Procurement_Void"))
+                        {
+                            <a onclick='return voidRecord("#=ForeignPurchaseId#")' href='\#' title='Void Record'><i class='fa  fa-bolt fa-2x' style='color:red'></i></a>
+                        }
+                        # } #
+
+
+
+            </text>);
+
+          itemn.Add().Text("Items").Content(
+              @<text>
+                @(Html.Kendo().Grid<ForeignPurchaseFollowUpItems>()
+                      .Name("PurchaseFollowUpItems_#=ForeignPurchaseId#")
+                      .Columns(columns =>
+                      {
+                          columns.Bound(c => c.CatCode).Width(130);
+                          columns.Bound(c => c.ItmCode).Width(130);
+                          columns.Bound(c => c.PartNo).Width(120);
+                          columns.Bound(c => c.ItemSpecification).Width(150);
+                          columns.Bound(c => c.UoM).Width(100);
+                          columns.Bound(c => c.Quantity).Width(100);
+                          columns.Bound(c => c.UnitPrice).Width(100);
+                          columns.Bound(c => c.SubTotal).Width(100);
+                          columns.ForeignKey(p => p.GLTaxRateID, (IEnumerable)ViewData["tax"], "GLTaxRateID", "TaxName").Title("Tax Name").EditorTemplateName("TaxSelector").Width(90);
+                          columns.Bound(c => c.TaxAmount).Width(100);
+                          columns.Bound(c => c.AdditionalUnitCost).Width(100);
+                          columns.Bound(c => c.FinalUnitPrice).Width(100);
+                          columns.Bound(c => c.Total).Width(100);
+                          columns.Command(command => { }).Width(380);
+                      })
+
+
+                      .Events(x => x.DataBound("onDataBoundLines"))
+                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                      .Scrollable()
+                      //.ClientDetailTemplateId("itemcostTemplate")
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+                          .Events(ev => ev
+                              .Error("error_handler(\"PurchaseFollowUpItems_#=ForeignPurchaseId#\")")
+                              .RequestStart("onRequestStart(\"PurchaseFollowUpItems_#=ForeignPurchaseId#\")")
+                              .RequestEnd("onRequestEnd(\"PurchaseFollowUpItems_#=ForeignPurchaseId#\")"))
+                          .Model(model =>
+                          {
+                              model.Id(p => p.ForeignPurchaseFollowUpItemsID);
+                              model.Field(p => p.CatCode).Editable(false);
+                              model.Field(p => p.ItmCode).Editable(false);
+                              model.Field(p => p.UoM).Editable(false);
+                              model.Field(p => p.PartNo).Editable(false);
+                              model.Field(p => p.ItemSpecification).Editable(false);
+                              model.Field(p => p.GLTaxRateID).Editable(false);
+                              model.Field(p => p.TaxAmount).Editable(false);
+                              model.Field(p => p.SubTotal).Editable(false);
+                              model.Field(p => p.FinalUnitPrice).Editable(false);
+                              model.Field(p => p.Total).Editable(false);
+
+                          })
+                          .Read(read => read.Action("ForeignPurchaseFollowUpItems_Read", "ForeignPurchaseFollowUpItems", new { id = "#=ForeignPurchaseId#" }))
+                          .Update(update => update.Action("ForeignPurchaseFollowUpItems_Update", "ForeignPurchaseFollowUpItems", new { id = "#=ForeignPurchaseId#" }))
+                      ).ToClientTemplate())
+
+
+            </text>);
+
+          itemn.Add().Text("Cost").Content(
+              @<text>
+                @(Html.Kendo().Grid<ForeignPurchaseCost>()
+                      .Name("ForeignPurchaseCost_#=ForeignPurchaseId#")
+                      .Columns(columns =>
+                      {
+                          columns.Bound(c => c.Date).Width(110);
+                          columns.Bound(c => c.Payee).Width(130);
+                          columns.Bound(c => c.CostType).Width(110).EditorTemplateName("CostType");
+                          columns.Bound(c => c.ForexAmount).Width(90);
+                          columns.Bound(c => c.Currency).Width(90).EditorTemplateName("CurrencySelector");
+                          columns.Bound(c => c.ExchangeRate).Width(70);
+                          columns.Bound(c => c.Amount).Width(90);
+                          columns.Bound(c => c.Paid).Width(80).ClientTemplate("<input type='checkbox' disabled = 'true' \\#= Paid ? checked='checked' :'' \\# />");
+                          columns.Bound(c => c.Remark).Width(110);
+                          columns.Bound(c => c.Status).Width(110);
+                          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(680);
+                      })
+                      .ToolBar(toolbar =>
+                      {
+                          toolbar.Create();
+                      })
+                     
+                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                      .Events(ev => ev.DetailExpand("detailExpandPayment"))
+                      .Events(x => x.DataBound("onDataBoundMasterPayment"))
+                      .Scrollable()
+                      .ClientDetailTemplateId("costDetailTemplate")
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+
+                          .Events(ev => ev
+                              .Error("error_handler(\"ForeignPurchaseCost_#=ForeignPurchaseId#\")")
+                              .RequestStart("onRequestStart(\"ForeignPurchaseCost_#=ForeignPurchaseId#\")")
+                              .RequestEnd("onRequestEnd(\"ForeignPurchaseCost_#=ForeignPurchaseId#\")"))
+                          .Model(model =>
+                          {
+                              model.Id(p => p.ForeignPurchaseCostId);
+                              model.Field(p => p.Status).Editable(false);
+                              model.Field(p => p.Amount).Editable(false);
+                              model.Field(p => p.Paid).Editable(false);
+                              model.Field(p => p.CreatedBy).Editable(false);
+                              model.Field(p => p.DateCreated).Editable(false);
+                              model.Field(p => p.ModifiedBy).Editable(false);
+                              model.Field(p => p.LastModified).Editable(false);
+
+
+                          })
+                          .Read(read => read.Action("ForeignPurchaseCosts_Read", "ForeignPurchaseCost", new { id = "#=ForeignPurchaseId#" }))
+                          .Create(create => create.Action("ForeignPurchaseCosts_Create", "ForeignPurchaseCost", new { id = "#=ForeignPurchaseId#" }))
+                          .Update(update => update.Action("ForeignPurchaseCosts_Update", "ForeignPurchaseCost"))
+                          .Destroy(destroy => destroy.Action("ForeignPurchaseCosts_Destroy", "ForeignPurchaseCost"))
+                      ).ToClientTemplate())
+
+
+            </text>);
+
+          itemn.Add().Text("Manual Status").Content(
+              @<text>
+                @(Html.Kendo().Grid<ForeignPurchaseFollowUpStatus>()
+                      .Name("PurchaseFollowUpStatus_#=ForeignPurchaseId#")
+                      .Columns(columns =>
+                      {
+                          columns.Bound(c => c.Date).Width(130);
+                          columns.Bound(c => c.Description).Width(250);
+                          columns.Bound(c => c.Remark).Width(150);
+                          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(480);
+                      })
+                      .ToolBar(toolbar =>
+                      {
+                          toolbar.Create();
+                      })
+                      .Events(x => x.DataBound("onDataBoundLines"))
+                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                      .Scrollable()
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+
+                          .Events(ev => ev
+                              .Error("error_handler(\"PurchaseFollowUpStatus_#=ForeignPurchaseId#\")")
+                              .RequestStart("onRequestStart(\"PurchaseFollowUpStatus_#=ForeignPurchaseId#\")")
+                              .RequestEnd("onRequestEnd(\"PurchaseFollowUpStatus_#=ForeignPurchaseId#\")"))
+                          .Model(model =>
+                          {
+                              model.Id(p => p.ForeignPurchaseFollowUpStatusId);
+                              model.Field(p => p.CreatedBy).Editable(false);
+                              model.Field(p => p.DateCreated).Editable(false);
+                              model.Field(p => p.ModifiedBy).Editable(false);
+                              model.Field(p => p.LastModified).Editable(false);
+
+
+                          })
+                          .Read(read => read.Action("ForeignPurchaseFollowUpStatus_Read", "ForeignPurchaseFollowUpStatus", new { id = "#=ForeignPurchaseId#" }))
+                          .Create(create => create.Action("ForeignPurchaseFollowUpStatus_Create", "ForeignPurchaseFollowUpStatus", new { id = "#=ForeignPurchaseId#" }))
+                          .Update(update => update.Action("ForeignPurchaseFollowUpStatus_Update", "ForeignPurchaseFollowUpStatus"))
+                          .Destroy(destroy => destroy.Action("ForeignPurchaseFollowUpStatus_Destroy", "ForeignPurchaseFollowUpStatus"))
+                      ).ToClientTemplate())
+
+
+            </text>);
+
+          itemn.Add().Text("System Status").Content(
+              @<text>
+                @(Html.Kendo().Grid<ForeignPurchaseFollowUpSystemStatus>()
+                      .Name("PurchaseFollowUpSystemStatus_#=ForeignPurchaseId#")
+                      .Columns(columns =>
+                      {
+                          columns.Bound(c => c.Date).Width(150).Format("{0:dd/MM/yyyy HH:mm:ss}");
+                          columns.Bound(c => c.Description).Width(200);
+                          columns.Bound(c => c.User).Width(100);
+                          columns.Command(command => { }).Width(480);
+                      })
+
+                      .Events(x => x.DataBound("onDataBoundLines"))
+                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                      .Scrollable()
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+
+                          .Events(ev => ev
+                              .Error("error_handler(\"PurchaseFollowUpSystemStatus_#=ForeignPurchaseId#\")")
+                              .RequestStart("onRequestStart(\"PurchaseFollowUpSystemStatus_#=ForeignPurchaseId#\")")
+                              .RequestEnd("onRequestEnd(\"PurchaseFollowUpSystemStatus_#=ForeignPurchaseId#\")"))
+                          .Model(model =>
+                          {
+                              model.Id(p => p.ForeignPurchaseFollowUpSystemStatusId);
+
+                          })
+                          .Read(read => read.Action("ForeignPurchaseFollowUpSystemStatus_Read", "ForeignPurchaseFollowUpSystemStatus", new { id = "#=ForeignPurchaseId#" }))
+                      ).ToClientTemplate())
+
+
+            </text>);
+
+          itemn.Add().Text("Account").Content(
+              @<text>
+                @(Html.Kendo().Grid<ForeignPurchaseAccount>()
+                      .Name("ForeignPurchaseAccount#=ForeignPurchaseId#")
+                      .Columns(columns =>
+                      {
+                          columns.Bound(c => c.AccountCode).Width(200).EditorTemplateName("AccountCode");
+                          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(480);
+                      })
+                      .ToolBar(toolbar =>
+                      {
+                          toolbar.Create();
+                      })
+
+                      //.Events(x => x.DataBound("onDataBoundLines"))
+                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                      .Scrollable()
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+
+                          .Events(ev => ev
+                              .Error("error_handler(\"ForeignPurchaseAccount#=ForeignPurchaseId#\")")
+                              .RequestStart("onRequestStart(\"ForeignPurchaseAccount#=ForeignPurchaseId#\")")
+                              .RequestEnd("onRequestEnd(\"ForeignPurchaseAccount#=ForeignPurchaseId#\")"))
+                          .Model(model =>
+                          {
+                              model.Id(p => p.ForeignPurchaseAccountId);
+
+                          })
+                          .Read(read => read.Action("ForeignPurchaseAccounts_Read", "ForeignPurchaseAccount", new { id = "#=ForeignPurchaseId#" }))
+                          .Create(create => create.Action("ForeignPurchaseAccounts_Create", "ForeignPurchaseAccount", new { id = "#=ForeignPurchaseId#" }))
+                          .Update(update => update.Action("ForeignPurchaseAccounts_Update", "ForeignPurchaseAccount"))
+                          .Destroy(destroy => destroy.Action("ForeignPurchaseAccounts_Destroy", "ForeignPurchaseAccount"))
+                      ).ToClientTemplate())
+
+
+            </text>);
+
+          itemn.Add().Text("Validation").Content(@<text>
+
+                    @(Html.Kendo().Grid<ForeignPurchaseValidation>()
+                          .Name("validation_#=ForeignPurchaseId#")
+                          .Columns(columns =>
+                          {
+                              columns.Bound(c => c.Status).Width(170).EditorTemplateName("ApprovalStatus");
+                              columns.Bound(c => c.Remark).Width(170);
+                              columns.Bound(c => c.DateCreated).Width(200).Title("Time").Format("{0:dd/MM/yyyy}");
+                              columns.Bound(c => c.LastModified).Hidden(true);
+                              columns.Bound(c => c.CreatedBy).Width(200).Title("User");
+                              columns.Bound(c => c.ModifiedBy).Hidden(true);
+                              columns.Command(command =>
+                              {
+                                  command.Edit();
+                                  //command.Destroy();
+                              });
+                          })
+                          .ToolBar(toolbar =>
+                          {
+                              toolbar.Create();
+                          })
+                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                          .Scrollable()
+                          .Events(x => x.DataBound("onDataBoundFisrtValidation"))
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+                       
+                              .Model(model =>
+                              {
+                                  model.Id(p => p.ForeignPurchaseValidationId);
+                                  model.Field(p => p.CreatedBy).Editable(false);
+                                  model.Field(p => p.DateCreated).Editable(false);
+                                  model.Field(p => p.ModifiedBy).Editable(false);
+                                  model.Field(p => p.LastModified).Editable(false);
+                              })
+                              .Events(ev => ev
+                                  .Error("error_handler(\"validation_#=ForeignPurchaseId#\")")
+                                  .RequestStart("onRequestStart(\"validation_#=ForeignPurchaseId#\")")
+                                  .RequestEnd("onRequestEnd(\"validation_#=ForeignPurchaseId#\")"))
+
+                              .Read(read => read.Action("ForeignPurchaseValidations_Read", "ForeignPurchaseValidation", new { id = "#=ForeignPurchaseId#" }))
+                              .Create(create => create.Action("ForeignPurchaseValidations_Create", "ForeignPurchaseValidation", new { id = "#=ForeignPurchaseId#" }))
+                              .Update(update => update.Action("ForeignPurchaseValidations_Update", "ForeignPurchaseValidation"))
+                              .Destroy(destroy => destroy.Action("ForeignPurchaseValidations_Destroy", "ForeignPurchaseValidation"))
+                          )
+                       
+                          .ToClientTemplate())
+                </text>
+              );
+
+
+
+
+      }).ToClientTemplate())
+</script>
+
+<script id="costDetailTemplate" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                  .Name("tabStrip#=ForeignPurchaseCostId#")
+                  .SelectedIndex(0)
+                  .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+                  .Items(items =>
+                  {
+                      items.Add().Text("Cost Detail").Content(@<text>
+
+                        # if (!IsOnlineApproved&&!IsSendForApproval)
+                        {#
+                        <a onclick='return sendPaymentForApproval("#=ForeignPurchaseCostId#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                        <br />
+                        # } #
+
+                        # if (IsOnlineApproved)
+                        {#
+                        <a href='@Url.Action("ForeignPurchaseCost", "ProcurementPrint")/#=ForeignPurchaseCostId#' title="Print"><i class="fa fa-print fa-2x"></i></a>
+                        <br />
+                        # } #
+                        <div>
+                            <hr>
+                            <dl class="dl-horizontal">
+
+
+                                <dt>
+                                    Created On
+                                </dt>
+                                <dd>
+                                    #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+
+                                </dd>
+                                <dt>
+                                    Created By
+                                </dt>
+                                <dd>
+                                    #= CreatedBy #
+                                </dd>
+                                <dt>
+                                    Modified By
+                                </dt>
+                                <dd>
+                                    #= ModifiedBy #
+                                </dd>
+                                <dt>
+                                    Modified Date
+                                </dt>
+                                <dd>
+                                    #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+                                </dd>
+                            </dl>
+                        </div>
+                        # if (IsOnlineApproved&&!IsVoid)
+                        {#
+                        @if (HttpContext.Current.User.IsInRole("Procurement_Void"))
+                                    {
+                            <a onclick='return voidPaymentRecord("#=ForeignPurchaseCostId#")' href='\#' title='Void Record'><i class='fa  fa-bolt fa-2x' style='color:red'></i></a>
+                                    }
+                        /**/
+                        # } #
+                    </text>
+                                );
+
+
+
+                            items.Add().Text("Validation").Content(
+                                @<text>
+                                    @(Html.Kendo().Grid<ForeignPurchaseCostValidation>()
+                                                  .Name("ForeignPurchaseCostValidation#=ForeignPurchaseCostId#")
+                                                  .Columns(columns =>
+                                                  {
+                                                                    columns.Bound(c => c.ForeignPurchaseCostValidationId).Hidden(true);
+                                                                    columns.Bound(c => c.Status).EditorTemplateName("ApprovalStatus").Width(150);
+                                                                    columns.Bound(c => c.Remark).Width(130);
+                                                                    columns.Bound(c => c.DateCreated).Width(150).Title("Time").Format("{0:dd/MM/yyyy}");
+                                                                    columns.Bound(c => c.LastModified).Hidden(true);
+                                                                    columns.Bound(c => c.CreatedBy).Width(150).Title("User");
+                                                                    columns.Bound(c => c.ModifiedBy).Hidden(true);
+                                                                    columns.Command(command =>
+                                                                    {
+                                                                        command.Edit();
+
+                                                                    });
+
+                                                                })
+                                                  .ToolBar(toolbar =>
+                                                  {
+                                                                    toolbar.Create();
+                                                                })
+                                                  .Editable(editable => editable.Mode(GridEditMode.InLine))
+
+                                                  .Pageable(pageable => pageable
+                                                      .Input(true)
+                                                      .Numeric(false)
+                                                      .Refresh(true)
+                                                      .PageSizes(true)
+                                                      .ButtonCount(5))
+                                                  .Sortable(sortable =>
+                                                  {
+                                                                    sortable.SortMode(GridSortMode.SingleColumn);
+                                                                })
+                                                  //.Filterable()
+                                                  .Scrollable()
+                                                  .Events(events => events.DataBound("onDataBoundPaymentValidation"))
+                                                  .DataSource(dataSource => dataSource
+                                                      .Ajax()
+                                                      .Model(
+                                                          model =>
+                                                          {
+                                                                            model.Id(p => p.ForeignPurchaseCostValidationId);
+                                                                            model.Field(p => p.OrgBranchName).Editable(false);
+                                                                            model.Field(p => p.CreatedBy).Editable(false);
+                                                                            model.Field(p => p.ModifiedBy).Editable(false);
+                                                                            model.Field(p => p.LastModified).Editable(false);
+                                                                            model.Field(p => p.DateCreated).Editable(false);
+                                                                        })
+                                                      .Events(ev => ev
+                                                          .Error("error_handler(\"ForeignPurchaseCostValidation#=ForeignPurchaseCostId#\")")
+                                                          .RequestStart("onRequestStart(\"ForeignPurchaseCostValidation#=ForeignPurchaseCostId#\")")
+                                                          .RequestEnd("onRequestEnd(\"ForeignPurchaseCostValidation#=ForeignPurchaseCostId#\")"))
+
+                                                      .Read(read => read.Action("ForeignPurchaseCostValidations_Read", "ForeignPurchaseCostValidation", new { id = "#=ForeignPurchaseCostId#" }))
+                                                      .Create(create => create.Action("ForeignPurchaseCostValidations_Create", "ForeignPurchaseCostValidation", new { id = "#=ForeignPurchaseCostId#" }))
+                                                      .Update(update => update.Action("ForeignPurchaseCostValidations_Update", "ForeignPurchaseCostValidation", new { id = "#=ForeignPurchaseCostId#" }))
+                                                      .Destroy(destroy => destroy.Action("ForeignPurchaseCostValidations_Destroy", "ForeignPurchaseCostValidation"))
+                                                  )
+                                                  .ToClientTemplate())
+
+                                </text>);
+                                })
+
+                                .ToClientTemplate()
+    )
+
+</script>
+
+<script id="itemcostTemplate" type="text/Kendo-tmpl">
+    @(Html.Kendo().TabStrip().Name("tabStrip_#=ForeignPurchaseFollowUpItemsID#").SelectedIndex(0).Items(itemn =>
+{
+    itemn.Add().Text("Cost").Content(
+            @<text>
+                @(Html.Kendo().Grid<ForeignPurchaseItemCost>()
+                      .Name("ForeignPurchaseItemCost#=ForeignPurchaseFollowUpItemsID#")
+                      .Columns(columns =>
+                      {
+                          columns.Bound(c => c.Date).Width(110);
+                          columns.Bound(c => c.Payee).Width(130);
+                          columns.Bound(c => c.CostType).Width(110).EditorTemplateName("CostType");
+                          columns.Bound(c => c.ForexAmount).Width(90);
+                          columns.Bound(c => c.Currency).Width(90).EditorTemplateName("CurrencySelector");
+                          columns.Bound(c => c.ExchangeRate).Width(90);
+                          columns.Bound(c => c.Amount).Width(90);
+                          columns.Bound(c => c.Paid).Width(90).ClientTemplate("<input type='checkbox' disabled = 'true' \\#= Paid ? checked='checked' :'' \\# />");
+                          columns.Bound(c => c.Remark).Width(110);
+                          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(580);
+                      })
+                      .ToolBar(toolbar =>
+                      {
+                          toolbar.Create();
+                      })
+                      .Events(x => x.DataBound("onDataBoundLines"))
+                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                      .Scrollable()
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+
+                          .Events(ev => ev
+                              .Error("error_handler(\"ForeignPurchaseItemCost#=ForeignPurchaseFollowUpItemsID#\")")
+                              .RequestStart("onRequestStart(\"ForeignPurchaseItemCost#=ForeignPurchaseFollowUpItemsID#\")")
+                              .RequestEnd("onRequestEnd(\"ForeignPurchaseItemCost#=ForeignPurchaseFollowUpItemsID#\")"))
+                          .Model(model =>
+                          {
+                              model.Id(p => p.ForeignPurchaseItemCostId);
+                              model.Field(p => p.Amount).Editable(false);
+                              model.Field(p => p.Paid).Editable(false);
+                              model.Field(p => p.CreatedBy).Editable(false);
+                              model.Field(p => p.DateCreated).Editable(false);
+                              model.Field(p => p.ModifiedBy).Editable(false);
+                              model.Field(p => p.LastModified).Editable(false);
+
+
+                          })
+                          .Read(read => read.Action("ForeignPurchaseItemCosts_Read", "ForeignPurchaseItemCost", new { id = "#=ForeignPurchaseFollowUpItemsID#" }))
+                          .Create(create => create.Action("ForeignPurchaseItemCosts_Create", "ForeignPurchaseItemCost", new { id = "#=ForeignPurchaseFollowUpItemsID#" }))
+                          .Update(update => update.Action("ForeignPurchaseItemCosts_Update", "ForeignPurchaseItemCost"))
+                          .Destroy(destroy => destroy.Action("ForeignPurchaseItemCosts_Destroy", "ForeignPurchaseItemCost"))
+                      ).ToClientTemplate())
+
+
+            </text>);
+
+
+      }).ToClientTemplate())
+</script>
+
+<script>
+
+    var masterDataItem;
+    var masterRow;
+    var masterGrid;
+
+    var codeid;
+    var isapproved;
+    var issecondapproved;
+    var status;
+
+    function detailExpandPayment(e) {
+
+        masterRow = e.masterRow;
+        masterGrid = $("#grid").data("kendoGrid");
+        masterDataItem = masterGrid.dataItem(masterRow);
+        codeid = masterDataItem.StoreRequisitionID;
+        isapproved = masterDataItem.IsOnlineApproved;
+        issecondapproved = masterDataItem.IsSecondOnlineApproved;
+        status = masterDataItem.PurchaseStatus;
+
+    }
+    function onDataBoundMasterPayment(e) {
+        //this.expandRow(this.tbody.find("tr.k-master-row").first());
+
+        //approved
+        var detailGrid = "#" + e.sender.element[0].id;
+        var grid = $(detailGrid).data("kendoGrid");
+        var gridData = grid.dataSource.view();
+
+        for (var i = 0; i < gridData.length; i++) {
+            var currentUid = gridData[i].uid;
+            var currenRow = grid.table.find("tr[data-uid='" + currentUid + "']");
+            var deleteButton = $(currenRow).find(".k-grid-delete");
+            deleteButton.hide();
+            if (gridData[i].IsOnlineApproved) {
+                var editButton = $(currenRow).find(".k-grid-edit");
+                editButton.hide();
+            }
+        }
+
+        //changing colors
+        var rows = e.sender.tbody.children();
+        for (var j = 0; j < rows.length; j++) {
+            var row = $(rows[j]);
+            var dataItem = e.sender.dataItem(row);
+            if (dataItem.IsSendForApproval && !dataItem.IsOnlineApproved) {
+                row.css("background-color", "lightgreen");
+            }
+            if (!dataItem.IsSendForApproval && !dataItem.IsOnlineApproved) {
+                row.css("background-color", "lightskyblue");
+            }
+        }
+    }
+    function onDataBoundPaymentLines(e) {
+
+        var detailGrid = "#" + e.sender.element[0].id;
+        if (status === "2")
+            {
+                $(".k-grid-add", detailGrid).hide();
+                $(".k-grid-delete", detailGrid).hide();
+                $(".k-grid-edit", detailGrid).hide();
+            }
+
+    }
+    function onDataBoundPaymentValidation(e) {
+        var detailGrid = "#" + e.sender.element[0].id;
+        $(".k-grid-delete", detailGrid).hide();
+        if (isapproved) {
+            $(".k-grid-add", detailGrid).hide();
+            $(".k-grid-edit", detailGrid).hide();
+        }
+
+        this.table.find(".k-grid-edit").hide();
+    }
+
+
+
+    function filterPurchaseReferences() {
+
+        return {
+            purReference: $("#ProcurementMethod").data("kendoDropDownList").value(),
+           // text: $("#ProcurementMethod").data("kendoDropDownList").filterInput.val()
+        };
+    }
+
+
+    function voidRecord(id) {
+        var recordStatus = "";
+        var conf = confirm("Are you sure you want to void this record number: " + id + " ?");
+        if (conf === true) {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("Void", "ForeignPurchase", new {area = "Procurement"})',
+                data: { id: id },
+                success: function (result) {
+                    // toastr.warnning(result.Message);
+                    alert(result.Message);
+                    recordStatus = result.Status;
+                    location.reload(true);
+                }, //end succ
+                error: function (result) {
+                    alert(result);
+                }
+            });
+        }
+    }
+
+    function voidPaymentRecord(id) {
+        var recordStatus = "";
+        var conf = confirm("Are you sure you want to void this record number: " + id + " ?");
+        if (conf === true) {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("Void", "ForeignPurchaseCost", new {area = "Procurement"})',
+                data: { id: id },
+                success: function (result) {
+                    // toastr.warnning(result.Message);
+                    alert(result.Message);
+                    recordStatus = result.Status;
+                    location.reload(true);
+                }, //end succ
+                error: function (result) {
+                    alert(result);
+                }
+            });
+        }
+    }
+
+    function sendForApproval(id) {
+        var recordStatus = "";
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("SendForApproval", "ForeignPurchase", new { area = "Procurement" })',
+            data: { id: id },
+            success: function (result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                recordStatus = result.Status;
+                location.reload(true);
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+
+
+    function sendPaymentForApproval(id) {
+        var recordStatus = "";
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("SendForApproval", "ForeignPurchaseCost", new { area = "Procurement" })',
+            data: { id: id },
+            success: function (result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                recordStatus = result.Status;
+                location.reload(true);
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+
+    
+</script>

@@ -1,0 +1,8 @@
+﻿@using System.Collections
+@(Html.Kendo().DropDownList().Name("ProductID")
+                    .BindTo((IEnumerable)ViewData["ProductList"])
+    .OptionLabel("--Select Thing--")
+                    .DataValueField("ProductID")
+            .DataTextField("Name")
+            
+)

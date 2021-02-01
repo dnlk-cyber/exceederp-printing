@@ -1,0 +1,241 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@using Kendo.Mvc.UI
+@using ExceedERP.Core.Domain.Production
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>  Raw Seed Purchases </legend>
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Production.RawProductPurchase>()
+                              .Name("rawProductPurchaseGrid")
+                              .Columns(columns =>
+                              {
+                                  columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("Branches");
+                                  columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["FilscalYears"], "GlFiscalYearId", "Name").EditorTemplateName("YearSelector");
+                                  //columns.Bound(c => c.Remark);
+                                  columns.Command(command =>
+                                  {
+                                      command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                      command.Destroy().Text(Resources.ActionButton_Cancel);
+                                  }).Width(200);
+                              })
+                              .ToolBar(toolbar =>
+                              {
+                                  toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                              })
+                              .Editable(editable => editable.Mode(GridEditMode.InLine))
+                              .Selectable(selectable =>
+                              {
+                                  selectable.Mode(GridSelectionMode.Single);
+                                  selectable.Type(GridSelectionType.Row);
+                              })
+                              .Scrollable(h => h.Height(500))
+                              .Sortable(sortable =>
+                              {
+                                  sortable.SortMode(GridSortMode.SingleColumn);
+                              })
+                              .Filterable()
+                              .Pageable(pageable => pageable
+                                  .Input(true)
+                                  .Numeric(false)
+                                  .Refresh(true)
+                                  .PageSizes(true)
+                                  .ButtonCount(5))
+                              .DataSource(dataSource => dataSource
+                                  .Ajax()
+
+                                  .Events(events =>
+                                  {
+                                      events.Error("error_handler(\"rawProductPurchaseGrid\")");
+                                      events.RequestStart("onRequestStart(\"rawProductPurchaseGrid\")");
+                                      events.RequestEnd("onRequestEnd(\"rawProductPurchaseGrid\")");
+                                  })
+                                  .Model(model =>
+                                  {
+                                      model.Id(f => f.RawProductPurchaseId);
+                                  })
+
+                                  .Read(read => read.Action("Purchases_Read", "RawProductPurchase"))
+                                  .Create(create => create.Action("Purchase_Create", "RawProductPurchase"))
+                                  .Update(update => update.Action("Purchase_Update", "RawProductPurchase"))
+                                  .Destroy(destroy => destroy.Action("Purchase_Destroy", "RawProductPurchase"))
+                              ).ClientDetailTemplateId("raw_purchase_detail")
+)
+
+
+
+<script id="raw_purchase_detail" type="text/kendo-template">
+    @(Html.Kendo().TabStrip()
+        .Name("tab_#=RawProductPurchaseId#")
+        .SelectedIndex(0)
+        .Items(items => {
+            items.Add().Text("").Content(
+                @<text>
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Production.RawProductPurchaseItem>()
+                          .Name("items_#=RawProductPurchaseId#")
+                          .Columns(columns =>
+                          {
+                              columns.ForeignKey(c => c.ItemCode, (IEnumerable)ViewData["Items"], "ItemCode", "Name").EditorTemplateName("Item");
+                              columns.Group(gr => {
+                                  gr.Title("Quantity").HeaderHtmlAttributes(new { style = "font-weight:bold; text-align:center;"});
+                                  gr.Columns(innerColumns =>
+                                  {
+                                      innerColumns.Bound(ic => ic.ExternalPurchaseQuantity);
+                                      innerColumns.Bound(ic => ic.OnFarmPurchaseQuantity);
+                                      innerColumns.Bound(ic => ic.TotalQuantity);
+                                  });
+                              });
+                              columns.Group(gr =>
+                              {
+                                  gr.Title("Unit Price").HeaderHtmlAttributes(new { style = "font-weight:bold; text-align:center;" });
+                                  gr.Columns(innerColumns =>
+                                  {
+                                      innerColumns.Bound(ic => ic.UnitPriceExternal);
+                                      innerColumns.Bound(ic => ic.UnitPriceOnFarm);
+
+                                  });
+                              });
+
+                              columns.Group(gr =>
+                              {
+                                  gr.Title("Total Value").HeaderHtmlAttributes(new { style = "font-weight:bold; text-align:center;" });
+                                  gr.Columns(innerColumns =>
+                                  {
+                                      innerColumns.Bound(ic => ic.ExternalPurchaseAmount);
+                                      innerColumns.Bound(ic => ic.OnFarmPurchaseAmount);
+                                      innerColumns.Bound(ic => ic.TotalPurchaseAmount);
+                                  });
+                              });
+
+                              columns.Command(command =>
+                              {
+                                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                  command.Destroy().Text(Resources.ActionButton_Cancel);
+                              }).Width(200);
+                          })
+                          .ToolBar(toolbar =>
+                          {
+                              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                          })
+                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                          .Selectable(selectable =>
+                          {
+                              selectable.Mode(GridSelectionMode.Single);
+                              selectable.Type(GridSelectionType.Row);
+                          })
+                          .Scrollable(h => h.Height(500))
+                          .Sortable(sortable =>
+                          {
+                              sortable.SortMode(GridSortMode.SingleColumn);
+                          })
+                          //.Filterable()
+                          .Pageable(pageable => pageable
+                              .Input(true)
+                              .Numeric(false)
+                              .Refresh(true)
+                              .PageSizes(true)
+                              .ButtonCount(5))
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+
+                              .Events(events =>
+                              {
+                                  events.Error("error_handler(\"items_#=RawProductPurchaseId#\")");
+                                  events.RequestStart("onRequestStart(\"items_#=RawProductPurchaseId#\")");
+                                  events.RequestEnd("onRequestEnd(\"items_#=RawProductPurchaseId#\")");
+                              })
+                              .Model(model =>
+                              {
+                                  model.Id(f => f.RawProductPurchaseItemId);
+
+                                  model.Field(f => f.TotalQuantity).Editable(false);
+                                  model.Field(f => f.ExternalPurchaseAmount).Editable(false);
+                                  model.Field(f => f.OnFarmPurchaseAmount).Editable(false);
+                                  model.Field(f => f.TotalPurchaseAmount).Editable(false);
+                              })
+
+                              .Read(read => read.Action("Purchases_Read", "RawProductPurchaseItem", new { id = "#=RawProductPurchaseId#" }))
+                              .Create(create => create.Action("Purchase_Create", "RawProductPurchaseItem", new { id = "#=RawProductPurchaseId#" }))
+                              .Update(update => update.Action("Purchase_Update", "RawProductPurchaseItem"))
+                              .Destroy(destroy => destroy.Action("Purchase_Destroy", "RawProductPurchaseItem"))
+                          ).ClientDetailTemplateId("raw_monthly_purchase")
+                          .ToClientTemplate()
+                    )
+                </text>
+                );
+        })
+        .ToClientTemplate()
+    )
+</script>
+
+
+<script id="raw_monthly_purchase" type="text/kendo-template">
+    @(Html.Kendo().TabStrip()
+        .Name("tab_str_#=RawProductPurchaseItemId#")
+        .SelectedIndex(0)
+        .Items(items => {
+            items.Add().Text("").Content(
+                @<text>
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Production.RawProductPurchaseItemPerMonth>()
+                          .Name("monthly_items_#=RawProductPurchaseItemId#")
+                          .Columns(columns =>
+                          {
+                              columns.ForeignKey(c => c.ProductionPeriodId, (IEnumerable)ViewData["ProductionPeriods"], "ProductionPeriodId", "Name").EditorTemplateName("RawProductPurchasePeriodSelector");
+                              columns.Bound(c => c.Amount);
+
+                              columns.Command(command =>
+                              {
+                                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                  command.Destroy().Text(Resources.ActionButton_Cancel);
+                              }).Width(200);
+                          })
+                          .ToolBar(toolbar =>
+                          {
+                              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                          })
+                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                          .Selectable(selectable =>
+                          {
+                              selectable.Mode(GridSelectionMode.Single);
+                              selectable.Type(GridSelectionType.Row);
+                          })
+                          .Scrollable(h => h.Height(500))
+                          .Sortable(sortable =>
+                          {
+                              sortable.SortMode(GridSortMode.SingleColumn);
+                          })
+                          //.Filterable()
+                          .Pageable(pageable => pageable
+                              .Input(true)
+                              .Numeric(false)
+                              .Refresh(true)
+                              .PageSizes(true)
+                              .ButtonCount(5))
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+
+                              .Events(events =>
+                              {
+                                  events.Error("error_handler(\"monthly_items_#=RawProductPurchaseItemId#\")");
+                                  events.RequestStart("onRequestStart(\"monthly_items_#=RawProductPurchaseItemId#\")");
+                                  events.RequestEnd("onRequestEnd(\"monthly_items_#=RawProductPurchaseItemId#\")");
+                              })
+                              .Model(model =>
+                              {
+                                  model.Id(f => f.RawProductPurchaseItemPerMonthId);
+                              })
+
+                              .Read(read => read.Action("Purchases_Read", "RawProductPurchaseItemPerMonth", new { itemId = "#=RawProductPurchaseItemId#" }))
+                              .Create(create => create.Action("Purchase_Create", "RawProductPurchaseItemPerMonth", new { itemId = "#=RawProductPurchaseItemId#" }))
+                              .Update(update => update.Action("Purchase_Update", "RawProductPurchaseItemPerMonth"))
+                              .Destroy(destroy => destroy.Action("Purchase_Destroy", "RawProductPurchaseItemPerMonth"))
+                          )//.ClientDetailTemplateId("template_productionOrder_detail")
+                          .ToClientTemplate()
+                    )
+                </text>
+                );
+        })
+        .ToClientTemplate()
+    )
+</script>

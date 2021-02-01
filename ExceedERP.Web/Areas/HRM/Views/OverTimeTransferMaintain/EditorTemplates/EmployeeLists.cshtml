@@ -1,0 +1,21 @@
+﻿@using ExceedERP.Core.Domain.Common
+@using ExceedERP.Core.Localization
+@(Html.Kendo().DropDownListFor(m => m)
+
+                .DataTextField("FullNameaEnglish")
+                            .DataValueField("EmployeeId")
+                            .OptionLabel(Resources.Select)
+               .DataSource(source =>
+               {
+                   source.Read(read =>
+                   {
+                       read.Action("GetOverTimeEmployees", "HRMDataProvider");
+
+                   })
+                   .ServerFiltering(true);
+               })
+                         .ValuePrimitive(true)
+)
+
+
+

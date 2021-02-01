@@ -1,0 +1,27 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Procurement.Supplier.SupplierPerformanceValidation>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Status);
+          columns.Bound(c => c.Remark);
+          columns.Bound(c => c.OrgBranchName);
+          columns.Bound(c => c.DateCreated);
+          columns.Bound(c => c.LastModified);
+          columns.Bound(c => c.CreatedBy);
+          columns.Bound(c => c.ModifiedBy);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.SupplierPerformanceValidationId))
+          .Read(read => read.Action("SupplierPerformanceValidations_Read", "SupplierPerformanceValidation"))
+          .Create(create => create.Action("SupplierPerformanceValidations_Create", "SupplierPerformanceValidation"))
+          .Update(update => update.Action("SupplierPerformanceValidations_Update", "SupplierPerformanceValidation"))
+          .Destroy(destroy => destroy.Action("SupplierPerformanceValidations_Destroy", "SupplierPerformanceValidation"))
+      ))

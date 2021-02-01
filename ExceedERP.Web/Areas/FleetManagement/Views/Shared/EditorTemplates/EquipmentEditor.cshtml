@@ -1,0 +1,5 @@
+﻿ 
+@(Html.Kendo().DropDownList().Name("FleetsId")
+      .DataTextField("PlateNumber")
+              .DataValueField("FleetsID").Filter(FilterType.Contains).OptionLabel("Select")
+      .DataSource(d => d.Read(r => r.Action("FleetsDDBind", "EquipmentRegistration")).ServerFiltering(false)))

@@ -1,0 +1,273 @@
+﻿@using System.Collections
+
+@using ExceedERP.Web.Areas.Finance.Controllers
+<legend>Data Archive Process</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Inventory.ViewModels.InventoryDataArchiveVm>()
+                  .Name("grid")
+                  .Columns(columns =>
+                  {
+
+                      columns.Bound(c => c.Type).Width(130);
+                      columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["Years"], "GlFiscalYearId", "Name").Width(130).Title("Year");
+                      columns.ForeignKey(c => c.GLPeriodId, (IEnumerable)ViewData["Periods"], "GLPeriodId", "Name").Width(130).Title("Period");
+
+                      columns.Command(
+                          command =>
+                          {
+                              command.Custom("✅Archive Data").Click("archiveData");
+
+                          }).Width(380);
+                  })
+              .ToolBar(toolbar =>
+              {
+
+                  toolbar.Template(@<text>
+                    <div class="toolbar">
+
+                        <table>
+                            <tr>
+                                <td>
+                                    <i>Data Type:</i>
+                                    @(Html.Kendo().DropDownListFor(m => m)
+                                                                          .Name("DataTypeList")
+                                                                          .BindTo((IEnumerable)ViewData["DataTypeList"])
+                                                                          .DataTextField("Name")
+                                                                          .DataValueField("Code")
+                                                                          .HtmlAttributes(new { style = "width: 200px;" })
+                                                                  .ValuePrimitive(true))
+
+                                    @(Html.Kendo().DropDownList()
+                                            .OptionLabel("Select Year")
+                                            .Name("yearSelector")
+                                            .AutoBind(false)
+                                            .DataValueField("GlFiscalYearId")
+                                            .DataTextField("Name")
+                                            .HtmlAttributes(new { style = "width: 200px;" })
+                                            .DataSource(dataSource =>
+                                            {
+                                                                       dataSource.Read(read => read.Action("GetPreviosYears", "GlobalDataProvider", new { area = "Common" }))
+                                                                           .ServerFiltering(false);
+                                                                   }))
+
+
+
+
+                                    @(Html.Kendo().DropDownList()
+                                                  .Name("periodSelector")
+                                                  .AutoBind(false)
+                                                  .DataValueField("GLPeriodId")
+                                                  .DataTextField("Name")
+                                                  .HtmlAttributes(new { style = "width: 200px;" })
+                                                  .DataSource(dataSource =>
+                                                  {
+                                                                       dataSource.Read(read => read.Action("GetPeriods", "GlobalDataProvider", new { area = "Common" }).Data("getFiscalYear"))
+                                                                           .ServerFiltering(true);
+                                                                   })
+                                                  .CascadeFrom("yearSelector"))
+
+                                    @(Html.Kendo().Button()
+                                                                  .Name("btnFilter")
+                                                                  .HtmlAttributes(new { type = "search", @class = "k-primary" })
+                                                                  .Events(e => e.Click("filterParameters"))
+                                                                  .Content("Select Parameters"))
+                                </td>
+
+
+                                
+
+
+                            </tr>
+                        </table>
+
+                    </div>
+                </text>);
+                    })
+                                            .HtmlAttributes(new { style = "height: 550px;" })
+                                            .Pageable(pageable => pageable
+                                                .Input(true)
+                                                .Numeric(false)
+                                                .Refresh(true)
+                                                .PageSizes(true)
+                                                .ButtonCount(20))
+                                            .Scrollable()
+                                            .Selectable(selectable =>
+                                            {
+                                                selectable.Mode(GridSelectionMode.Single);
+                                                selectable.Type(GridSelectionType.Row);
+                                            })
+                                            .Sortable(sortable =>
+                                            {
+                                                sortable.SortMode(GridSortMode.SingleColumn);
+                                            })
+                                            .Filterable()
+
+
+                                            .Scrollable(h => h.Height(500))
+
+                                            .DataSource(dataSource => dataSource
+                                                .Ajax()
+
+                                                .PageSize(20)
+
+                                                .Model(
+                                                    model =>
+                                                    {
+                                                        model.Id(p => p.Type);
+
+                                                    })
+                                                .Events(events => events
+                                                    .Error("error_handler_one")
+                                                    .Sync("sync_handler"))
+                                                .Read(read => read.Action("InventoryDataArchive_Read", "InventoryDataArchive").Data("passSearchData"))
+                                            ))
+
+
+
+
+<script>
+    function getFiscalYear() {
+        return { year: $("#yearSelector").data("kendoDropDownList").value() }
+    }
+
+    function change() {
+        $("#gridPeriod").data("kendoGrid").dataSource.read();
+    }
+
+    function data() {
+        var periodObject = $("#FiscalYears").data("kendoDropDownList");
+        var fiscalYearId = periodObject.value();
+
+        return {
+            id: fiscalYearId
+        };
+    }
+
+    function UpdateDaily(e) {
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        var id = dataItem.GLPeriodId;
+        $("#loading-image").show();
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("UpdateDailyBalance", "AccountChecker", new {area = "Finance"})',
+            data: { period: id },
+            success: function (result) {
+                //toastr.error(result.Message);
+               alert(result.Message);
+               // console.log(result);
+                $("#loading-image").hide();
+
+            }, //end succ
+
+            error: function (result) {
+                alert(result);
+            }
+        });
+
+        //$('#gridPeriod').data('kendoGrid').dataSource.read();
+        //$('#gridPeriod').data('kendoGrid').refresh();
+        //location.reload();
+    }
+
+
+
+    function updateBalance() {
+        var conf = confirm("Are you sure you want to update balance");
+        if (conf === true) {
+                            var periodObject = $("#FiscalYears").data("kendoDropDownList");
+                            var fiscalYearId = periodObject.value();
+
+                            if (fiscalYearId != null) {
+
+                                $.ajax({
+                                    type: "POST",
+                                    url: '@Url.Action("UpdateBalance", "AccountChecker", new {area = "Finance"})',
+                                data: { id: fiscalYearId },
+                                success: function (result) {
+                                    // toastr.warnning(result.Message);
+                                    alert(result.Message);
+                                    location.reload(true);
+                                }, //end succ
+                                beforeSend: function(){
+                                    // Show image container
+                                    $("#loading-image").show();
+                                },
+                                complete:function(data){
+                                    // Hide image container
+                                    $("#loading-image").hide();
+                                },
+                                error: function (result) {
+                                    alert(result);
+                                }
+                            });
+
+
+                            $("#grid").data("kendoGrid").dataSource.read();
+                           }
+                            else {
+                            alert("Please select year.");
+                                }
+                }
+
+    }
+
+
+    function filterParameters() {
+        
+        var typeObject = $("#DataTypeList").data("kendoDropDownList");
+        var typeValue = typeObject.value();
+
+        var yearObject = $("#yearSelector").data("kendoDropDownList");
+        var yearValue = yearObject.value();
+
+        var periodObject = $("#periodSelector").data("kendoDropDownList");
+        var periodValue = periodObject.value();
+        console.log(periodValue);
+        if (typeValue == "" || yearValue == "" || periodValue == "")
+            alert("Please select all parameters.");
+        else
+            $("#grid").data("kendoGrid").dataSource.read();
+    }
+
+    function passSearchData() {
+        var typeObject = $("#DataTypeList").data("kendoDropDownList");
+        var typeValue = typeObject.value();
+
+        var yearObject = $("#yearSelector").data("kendoDropDownList");
+        var yearValue = yearObject.value();
+
+        var periodObject = $("#periodSelector").data("kendoDropDownList");
+        var periodValue = periodObject.value();
+
+        
+        return {
+            type: typeValue,
+            year: yearValue,
+            period: periodValue
+        };
+    }
+
+    function archiveData(e) {
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        $("#loading-image").show();
+        $.ajax({
+            type: "GET",
+            data: { type: dataItem.Type, year: dataItem.GlFiscalYearId, period: dataItem.GLPeriodId},
+            url: '@Url.Action("Archive", "InventoryDataArchive")',
+            success: function (result) {
+                //toastr.error(result.Message);
+                alert(result.Message);
+                // console.log(result);
+                $("#loading-image").hide();
+
+            }, //end succ
+
+            error: function (result) {
+                alert(result);
+            }
+
+        });
+    }
+</script>
+
+
+

@@ -1,0 +1,313 @@
+﻿@using System.Collections
+@using ExceedERP.Helpers.Common
+@using ExceedERP.Core.Localization
+@using Kendo.Mvc.UI
+@model ExceedERP.Core.Domain.Construction.MonthlyProjectReport
+<form>
+    <div class="row">
+        <div class=" col-md-1"></div>
+        <div class="col-md-2">
+            <div class="k-label">
+                @Html.LabelFor(model => model.Points, htmlAttributes: new { @class = "control-label col-md-12", @style = "font-weight:bold;text-align:center; font-size:14px" })
+            </div>
+            <br />
+
+        </div>
+        <div class="col-md-4 custom-md-4">
+            <div class="k-label">
+                @Html.LabelFor(model => model.Completeness, htmlAttributes: new { @class = "control-label col-md-12", @style = "font-weight:bold;text-align:center; font-size:14px" })
+            </div>
+            <br />
+
+        </div>
+
+        <div class="col-md-2">
+            <div class="k-label">
+                @Html.LabelFor(model => model.Narrative, htmlAttributes: new { @class = "control-label col-md-12", @style = "font-weight:bold;text-align:center; font-size:14px;" })
+            </div>
+            <br />
+
+        </div>
+
+    </div>
+    <hr />
+    @*<div class="row">
+            <div class="col-md-12" style="text-align:center; font-weight: bold"> Quality Planning</div>
+        </div>*@
+    <div class="row">
+        <div class=" col-md-1"></div>
+        <div class="col-md-2">
+            <br />
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.ReportingTime, htmlAttributes: new { @class = "control-label col-md-12" })
+
+                </div>
+                <div>
+                    <div class="textbox-container">
+                        @(Html.Kendo().ComboBoxFor(model => model.ReportingTime)
+                            .Placeholder(Resources.Select)
+                            .DataTextField("Text")
+                            .DataValueField("Value")
+                            .HtmlAttributes(new { @class = "custom-input" })
+                            .ValuePrimitive(true)
+                            .BindTo(EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.Construction.MonthlyDueDate))))
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.Progress, htmlAttributes: new { @class = "control-label col-md-12" })
+
+                </div>
+                <div class="textbox-container">
+                    @Html.Kendo().TextBoxFor(model => model.Progress).HtmlAttributes(new { @class = "custom-input" })
+                    @Html.ValidationMessageFor(model => model.Progress, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <br />
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.MaterialUtilization, htmlAttributes: new { @class = "control-label col-md-12" })
+
+                </div>
+                <div class="textbox-container">
+                    @Html.Kendo().TextBoxFor(model => model.MaterialUtilization).HtmlAttributes(new { @class = "custom-input" })
+                    @Html.ValidationMessageFor(model => model.MaterialUtilization, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.ProperIdentificationOfProblems, htmlAttributes: new { @class = "control-label col-md-12" })
+                </div>
+                <div class="textbox-container">
+                    @Html.Kendo().TextBoxFor(model => model.ProperIdentificationOfProblems).HtmlAttributes(new { @class = "custom-input" })
+                    @Html.ValidationMessageFor(model => model.ProperIdentificationOfProblems, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+    </div>
+    <br />
+
+    <div class="row">
+        <div class=" col-md-1"></div>
+        <div class="col-md-2">
+            <br />
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.Days, htmlAttributes: new { @class = "control-label col-md-12" })
+                </div>
+                <div class="textbox-container">
+                    @Html.Kendo().NumericTextBoxFor(model => model.Days).HtmlAttributes(new { @class = "custom-input" })
+                    @Html.ValidationMessageFor(model => model.Days, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <br />
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.QualityControl, htmlAttributes: new { @class = "control-label col-md-12" })
+
+                </div>
+                <div class="textbox-container">
+                    @Html.Kendo().TextBoxFor(model => model.QualityControl).HtmlAttributes(new { @class = "custom-input" })
+                    @Html.ValidationMessageFor(model => model.QualityControl, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <br />
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.LabourUtilixation, htmlAttributes: new { @class = "control-label col-md-12" })
+                </div>
+                <div class="textbox-container">
+                    @Html.Kendo().TextBoxFor(model => model.LabourUtilixation).HtmlAttributes(new { @class = "custom-input" })
+                    @Html.ValidationMessageFor(model => model.LabourUtilixation, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <br />
+            <br />
+
+            <div class="form-group">
+
+                @*<div class="k-label">
+                        @Html.LabelFor(model => model.ClaimApprovalStatus, htmlAttributes: new { @class = "control-label col-md-12" })
+
+                    </div>
+                    <div>
+                        @(Html.Kendo().ComboBoxFor(model => model.ClaimApprovalStatus)
+                            .Placeholder(Resources.Select)
+                            .DataTextField("Text")
+                            .DataValueField("Value")
+                            .ValuePrimitive(true)
+                            .BindTo(EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.Construction.MonthlyClaimRequestApprovalStatus))))
+                    </div>*@
+            </div>
+        </div>
+
+    </div>
+
+    <br />
+    <div class="row">
+        <div class=" col-md-1"></div>
+        <div class="col-md-2">
+            <br />
+            <div class="form-group">
+                @*<div class="k-label">
+                        @Html.LabelFor(model => model.SubmssinTimeAcctoManual, htmlAttributes: new { @class = "control-label col-md-12" })
+
+                    </div>
+                    <div>
+                        @(Html.Kendo().ComboBoxFor(model => model.SubmssinTimeAcctoManual)
+                            .Placeholder(Resources.Select)
+                            .DataTextField("Text")
+                            .DataValueField("Value")
+                            .ValuePrimitive(true)
+                            .BindTo(EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.Construction.MonthlyDueDate))))
+                    </div>*@
+            </div>
+        </div>
+        <div class="col-md-2">
+            <br />
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.HealthAndSafety, htmlAttributes: new { @class = "control-label col-md-12" })
+                </div>
+                <div class="textbox-container">
+                    @Html.Kendo().TextBoxFor(model => model.HealthAndSafety).HtmlAttributes(new { @class = "custom-input" })
+                    @Html.ValidationMessageFor(model => model.HealthAndSafety, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <br />
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.EquipmentUtulization, htmlAttributes: new { @class = "control-label col-md-12" })
+                </div>
+                <div class="textbox-container">
+                    @Html.Kendo().TextBoxFor(model => model.EquipmentUtulization).HtmlAttributes(new { @class = "custom-input" })
+                    @Html.ValidationMessageFor(model => model.EquipmentUtulization, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <br />
+            <div class="form-group">
+                <br />
+                <br />
+                @*<div class="k-label">
+                        @Html.LabelFor(model => model.FromHeadOffice, htmlAttributes: new { @class = "control-label col-md-12" })
+
+                    </div>
+                    <div>
+                        @Html.Kendo().NumericTextBoxFor(model => model.FromHeadOffice)
+                        @Html.ValidationMessageFor(model => model.FromHeadOffice, "", new { @class = "text-danger" })
+                    </div>*@
+            </div>
+        </div>
+
+    </div>
+
+    <br />
+    <div class="row">
+        <div class=" col-md-1"></div>
+        <div class="col-md-2">
+            <br />
+            <div class="form-group">
+                @*<div class="k-label">
+                        @Html.LabelFor(model => model.DaysAfterOrBeforeDueDateAccToManual, htmlAttributes: new { @class = "control-label col-md-12" })
+
+                    </div>
+                    <div>
+                        @Html.Kendo().TextBoxFor(model => model.DaysAfterOrBeforeDueDateAccToManual).Enable(false)
+                        @Html.ValidationMessageFor(model => model.DaysAfterOrBeforeDueDateAccToManual, "", new { @class = "text-danger" })
+                    </div>*@
+            </div>
+        </div>
+        <div class="col-md-2">
+            <br />
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.EarnedValueAnalysis, htmlAttributes: new { @class = "control-label col-md-12" })
+
+                </div>
+                <div class="textbox-container">
+                    @Html.Kendo().TextBoxFor(model => model.EarnedValueAnalysis).HtmlAttributes(new { @class = "custom-input" })
+                    @Html.ValidationMessageFor(model => model.EarnedValueAnalysis, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <br />
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.FuelUtilization, htmlAttributes: new { @class = "control-label col-md-12" })
+
+                </div>
+                <div class="textbox-container">
+                    @Html.Kendo().TextBoxFor(model => model.FuelUtilization).HtmlAttributes(new { @class = "custom-input" })
+                    @Html.ValidationMessageFor(model => model.FuelUtilization, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2">
+            <br />
+            <div class="form-group">
+                @*<div class="k-label">
+                        @Html.LabelFor(model => model.FromQualityEngineer, htmlAttributes: new { @class = "control-label col-md-12" })
+
+                    </div>
+                    <div>
+                        @Html.Kendo().NumericTextBoxFor(model => model.FromQualityEngineer)
+                        @Html.ValidationMessageFor(model => model.FromQualityEngineer, "", new { @class = "text-danger" })
+                    </div>*@
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <br />
+        <div class=" col-md-1"></div>
+        <div class="col-md-2" style="background-color:azure">
+            <br />
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.Label("withinProjectLabel", " ", htmlAttributes: new { @class = "control-label col-md-12", id = "withinProjectScroe", style = "font-weight:bold; font-size:14px; text-align:center;" })
+                </div>
+            </div>
+            <br />
+        </div>
+        <div class="col-md-4 custom-md-4" style="background-color:honeydew">
+            <br />
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.Label("goodGovernanceComplaintLabel", " ", htmlAttributes: new { @class = "control-label col-md-12", @id = "goodGovernanceComplaintScore", style = "font-weight:bold; font-size:14px;text-align:center;" })
+                </div>
+            </div>
+            <br />
+        </div>
+        <div class="col-md-2" style="background-color:azure">
+            <br />
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.Label("withHeadOfficeLabel", " ", htmlAttributes: new { @class = "control-label col-md-12", id = "withHeadOfficeScore", style = "font-weight:bold; font-size:14px;text-align:center;" })
+                </div>
+            </div>
+            <br />
+        </div>
+    </div>
+</form>
+
+

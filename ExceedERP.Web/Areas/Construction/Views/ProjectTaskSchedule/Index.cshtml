@@ -1,0 +1,1050 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Schedule | Detail</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.ProjectInformation>()
+    .Name("ProjectInformationgrid")
+    .Columns(columns =>
+    {
+        columns.Bound(c => c.Name);
+        columns.Bound(c => c.Code);
+        columns.Bound(c => c.ContractAmount).ClientTemplate(
+                        "# if (ContractAmount === 0) { #" +
+                                                    " -----" +
+                                                    "# } else {#" +
+                                                    "#: kendo.toString( ContractAmount, 'N2') #" +
+                                                    "# } #"
+                        );
+        columns.Bound(c => c.Client);
+    })
+    .ToolBar(toolbar =>
+    {
+    toolbar.Template(@<text>
+        <div class="toolbar row">
+            <div class="pull-right" style="margin-right:30px;">
+                <a href='/Construction/Scheduler/' title="Go to Gantt charts"><i class="fa fa-align-left fa-2x"></i></a>
+                @*@Html.Kendo().Button().Name("goTimelineView").Content("Timeline View").Events(events => events.Click("timelineViewClicked")).Icon("k-icon k-i-plus").HtmlAttributes(new { @class = "btn btn-primary" })*@
+            </div>
+        </div>
+    </text>);
+    })
+    .Scrollable(h => h.Height(700))
+    .Sortable(sortable =>
+    {
+        sortable.SortMode(GridSortMode.SingleColumn);
+    })
+    .Filterable()
+    .Selectable(selectable =>
+    {
+        selectable.Mode(GridSelectionMode.Single);
+        selectable.Type(GridSelectionType.Row);
+    })
+    .Pageable(pageable => pageable
+                    .Input(true)
+                    .Numeric(false)
+                    .Refresh(true)
+                    .PageSizes(true)
+                    .ButtonCount(5))
+    .DataSource(dataSource => dataSource
+        .Ajax()
+        .PageSize(20)
+        .Events(events => events.Error("error_handler(\"ProjectInformationgrid\")"))
+        .Model(model => model.Id(p => p.ProjectInformationId))
+        .Read(read => read.Action("ProjectInformation_Read", "ProjectTaskSchedule"))
+    ).ClientDetailTemplateId("template_task")
+)
+
+<script id="template_wbd" type="text/kendo-tmpl">
+    @*@(Html.Kendo().TabStrip()
+        .Name("tabstrip_#=ProjectInformationId#")
+        .SelectedIndex(0)
+        .Items(items =>
+        {
+        items.Add().Text("Structures").Content(
+    @<text>
+        @(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.ProjectWorkBreakDown>()
+                    .Name("WBS_#=ProjectInformationId#")
+                    .Columns(columns =>
+                    {
+                        //columns.Bound(c => c.ProjectWorkBreakDownId);
+                        columns.Bound(c => c.Description).Title("Name");
+                        columns.Bound(c => c.WBSCode).Title("Code");
+
+                        columns.Command(command =>
+                        {
+                            command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                            command.Destroy().Text(Resources.ActionButton_Cancel);
+                            command.Custom("CmdImportWorkItem").Text("Import ").Click("ImportWorkItems");
+                        }).Width(300);
+                    })
+                    .ToolBar(toolbar => toolbar.Create().Text("Add New"))
+                    .Events(e => {
+                        e.DetailExpand("wbsRowExpanded(\"WBS_#=ProjectInformationId#\")");
+                        e.DataBound("wbsDataBound");
+                    })
+                    .Editable(editable => editable.Mode(GridEditMode.InLine))
+                    .HtmlAttributes(new { style = "height: 400px;" })
+                    .Scrollable(s => s.Enabled(true).Height("auto"))
+                    .Sortable(sortable =>
+                    {
+                        sortable.SortMode(GridSortMode.SingleColumn);
+                    })
+                    .Selectable(selectable =>
+                    {
+                        selectable.Mode(GridSelectionMode.Single);
+                        selectable.Type(GridSelectionType.Row);
+                    })
+
+                    .DataSource(dataSource => dataSource
+                        .Ajax()
+                        .Model(model =>
+                        {
+                            model.Id(wbs => wbs.ProjectWorkBreakDownId);
+                            model.Field(wbs => wbs.OriginalDuration).Editable(false);
+                        })
+                        .Events(events =>
+                        {
+                            events.Error("error_handler(\"WBS_#=ProjectInformationId#\")");
+                            events.RequestStart("onRequestStart(\"WBS_#=ProjectInformationId#\")");
+                            events.RequestEnd("onRequestEnd(\"WBS_#=ProjectInformationId#\")");
+                        })
+                        .Read(read => read.Action("ProjectWorkBreakDown_Read", "ProjectWorkBreakDown", new { idOne = "#=ProjectInformationId#" }))
+                        .Create(create => create.Action("ProjectWorkBreakDown_Create", "ProjectWorkBreakDown", new { idTwo = "#=ProjectInformationId#" }))
+                        .Update(update => update.Action("ProjectWorkBreakDown_Update", "ProjectWorkBreakDown"))
+                        .Destroy(destroy => destroy.Action("ProjectWorkBreakDown_Destroy", "ProjectWorkBreakDown"))
+                    ).ClientDetailTemplateId("template_task")
+                    .ToClientTemplate()
+        )
+    </text>
+        );
+        }).ToClientTemplate())*@
+</script>
+
+<script id="template_task" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+        .Name("tabstrip_#=ProjectInformationId#")
+        .SelectedIndex(0)
+        .Items(items =>
+        {
+            items.Add().Text("Work Items / Tasks").Content(
+                @<text>
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.TaskViewModel>()
+                          .Name("task_#=ProjectInformationId#")
+                          .Columns(columns =>
+                          {
+                              columns.Bound(c => c.Version).Hidden(true)
+                              .ClientGroupHeaderTemplate(
+                                  "Schedule Version: Ver. \\#=value\\#"
+                                  );
+                              columns.Bound(c => c.SubProjectTypeName).Hidden(true)
+                              .ClientGroupHeaderTemplate(
+                                  "\\#=value\\#"
+                                  );
+                              columns.Bound(c => c.BlockName).Hidden(true).ClientGroupHeaderTemplate(
+                                  "\\#=value\\#"
+                                  );
+                              columns.Bound(c => c.StructureyType).Hidden(true).ClientGroupHeaderTemplate(
+                                  "\\#=value\\#"
+                                  );
+                              columns.Bound(c => c.WorkCategory).Hidden(true).ClientGroupHeaderTemplate(
+                                  "\\#=value\\#"
+                                  );
+                              //columns.Bound(c => c.TaskID).Title("ID").Width(100);
+                              columns.Bound(c => c.ProjectSpecificId).Width(100);
+                              //columns.Bound(c => c.TaskCode).Title("Code").Width(100);
+                              //columns.ForeignKey(c => c.WorkItemDurationId, (IEnumerable)ViewData["WorkItemDurations"], "WorkItemDurationId", "WorkDescription").EditorTemplateName("WorkItems").Width(120).Title("Work Item");
+                              columns.Bound("Title").Title("Title/Description").Width(220);
+                              columns.Bound(c => c.TotalQuantityOfWork).Title("Qty of Work").Width(100);
+                              columns.Bound(c => c.Start).Width(100).Sortable(true);
+                              columns.Bound(c => c.ActualDuration).Title("Duration").Width(90);
+                              columns.Bound(c => c.End).Width(100).Sortable(true);
+                              columns.Bound(c => c.OrderId).Title("Order").Width(100);
+                              columns.ForeignKey(c => c.ParentID, (IEnumerable)ViewData["tasks"], "TaskID", "Title").EditorTemplateName("TaskParent").Width(120).Title("Parent");
+                              //columns.ForeignKey(c => c.ParentID, (IEnumerable)ViewData["tasks"], "TaskID", "Title").Width(120).Title("Parent");
+                              //columns.Bound(c => c.ParentID).Title("Parent Id").Width(90);
+                              columns.Command(command =>
+                              {
+                                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                  command.Destroy().Text(Resources.ActionButton_Cancel);
+                              }).Width(200);
+                          })
+
+                          .Scrollable(s => s.Enabled(true).Height(600))
+                          .Selectable(selectable =>
+                          {
+                              selectable.Mode(GridSelectionMode.Single);
+                              selectable.Type(GridSelectionType.Row);
+                          })
+                          .Pageable(pageable => pageable
+                              .Input(true)
+                              .Numeric(false)
+                              .Refresh(true)
+                              .PageSizes(true)
+                              .ButtonCount(5))
+                          //.Events(evnt => {
+                          //    evnt.DataBound("TaskGridDataBound");
+                          //})
+                          //.Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("ProjectTasks").Window(window => { window.Title("Work Item / Task"); window.Scrollable(false); }))
+                          //.Events(events =>
+                          //{
+                          //    events.Edit("editTaskPerwbs");
+                          //})
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+                              .Sort(srt => {
+                                  srt.Add(f => f.OrderId);
+                              })
+                              .PageSize(100)
+                              .Group(g =>
+                              {
+                                  g.Add(f => f.Version);
+                                  g.Add(f => f.SubProjectTypeName);
+                                  g.Add(f => f.BlockName);
+                                  g.Add(f => f.StructureyType);
+                                  g.Add(f => f.WorkCategory);
+
+                              })
+                               .Model(model =>
+                               {
+                                   model.Id(t => t.TaskID);
+                                   model.Field(t => t.TaskID).Editable(false);
+                                   model.Field(t => t.ProjectSpecificId).Editable(false);
+                                   model.Field(f => f.End).Editable(false);
+                                   model.Field(f => f.ParentID).Editable(false);
+                                   model.Field(f => f.TotalQuantityOfWork).Editable(false);
+                               })
+                              //.Events(events => {
+                              //    events.Ed
+                              //})
+                              .Read(read => read.Action("ReadTasksPerProject", "Scheduler", new { projectId = "#=ProjectInformationId#" }))
+                              .Create(create => create.Action("CreateTaskPerProjectBd", "Scheduler", new { pwbIdCreate = "#=ProjectInformationId#" }))
+                              .Update(update => update.Action("UpdateTask", "Scheduler"))
+                              .Destroy(destroy => destroy.Action("DestroyTask", "Scheduler"))
+                          ).ClientDetailTemplateId("template_dependecy")
+                          .ToClientTemplate()
+                    )
+                </text>
+                );
+
+            items.Add().Text("Work Items (Tasks) | Exportable Content ").Content(
+                @<text>
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.TaskViewModel>()
+                          .Name("task_ex_#=ProjectInformationId#")
+                          .Columns(columns =>
+                          {
+                              columns.Bound(c => c.Version).Hidden(true)
+                              .ClientGroupHeaderTemplate(
+                                  "Schedule Version: Ver. \\#=value\\#"
+                                  );
+                              columns.Bound(c => c.SubProjectTypeName).Hidden(true)
+                              .ClientGroupHeaderTemplate(
+                                  "\\#=value\\#"
+                                  );
+                              columns.Bound(c => c.BlockName).Hidden(true).ClientGroupHeaderTemplate(
+                                  "\\#=value\\#"
+                                  );
+                              columns.Bound(c => c.StructureyType).Hidden(true).ClientGroupHeaderTemplate(
+                                  "\\#=value\\#"
+                                  );
+                              columns.Bound(c => c.WorkCategory).Hidden(true).ClientGroupHeaderTemplate(
+                                  "\\#=value\\#"
+                                  );
+                              //columns.Bound(c => c.TaskID).Width(100).Title("Id").Locked(true);
+                              columns.Bound(c => c.ProjectSpecificId).Width(100);
+                              columns.Bound(c => c.Title).Width(220).Locked(true);
+                              columns.Bound(c => c.TotalQuantityOfWork).Title("Qty of Work").Width(100);
+                              columns.Bound(c => c.Start).Width(100).Sortable(true);
+                              columns.Bound(c => c.ActualDuration).Title("Duration").Width(90);
+                              columns.Bound(c => c.End).Width(90);
+                              columns.Group(g => g.Title("Planned Costs").HeaderHtmlAttributes(new { style = "text-align: center; font-weight: bold; " })
+                                                             .Columns(info =>
+                                                             {
+                                                                 info.Bound(x => x.BudgetCost).Width(80).Format("{0:N2}");
+                                                                 info.Bound(x => x.MaterialCost).Width(80).Format("{0:N2}");
+                                                                 info.Bound(x => x.LabourCost).Width(80).Format("{0:N2}");
+                                                                 info.Bound(x => x.EquipmentCost).Width(80).Format("{0:N2}");
+                                                                 info.Bound(x => x.DirectCost).Width(80).Title("Total Direct Cost").Format("{0:N2}");
+                                                                 //info.Bound(x => x.Profi).Width(80).Format("{0:N2}");
+                                                                 //info.Bound(x => x.MaterialCost).Width(80).Format("{0:N2}");
+                                                             })
+                                                             );
+                              columns.Bound(c => c.OrderId).Title("Order").Width(80);
+                              columns.Bound(c => c.ParentID).Title("Parent").Width(80);
+                              columns.Bound(c => c.PercentComplete).Title("% Complete").Width(80).Format("{0:P2}");
+                              columns.Bound(c => c.Predecessors).Width(80);
+                              columns.Group(g => g.Title("Actual Qty of Work & Actual Costs").HeaderHtmlAttributes(new { style = "text-align: center; font-weight: bold; " })
+                                                            .Columns(info =>
+                                                            {
+                                                                info.Bound(x => x.ExecutedQuantityTillPrevVersion).Width(80).Format("{0:N2}");
+                                                                info.Bound(x => x.ExecutedQuantityThisVersion).Width(80).Format("{0:N2}");
+                                                                info.Bound(x => x.ExecutedQuantityToDate).Width(80).Format("{0:N2}");
+                                                                info.Bound(x => x.ExecutedAmountTillPrevVersion).Width(80).Format("{0:N2}");
+                                                                info.Bound(x => x.ExecutedAmountThisVersion).Width(80).Title("Total Direct Cost").Format("{0:N2}");
+                                                                info.Bound(x => x.ExecutedAmountToDate).Width(80).Format("{0:N2}");
+                                                            })
+                                                            );
+
+                          })
+                          .ToolBar(toolbar =>
+                          {
+                              toolbar.Excel();
+                          })
+                           .Excel(excel => excel
+                            .FileName("Schedule Export.xlsx")
+                            //.Filterable(true)
+                            .AllPages(true)
+                            .ProxyURL(Url.Action("Excel_Export_Save", "ProjectTaskSchedule"))
+                        )
+                        .Sortable()
+                          .Scrollable(s => s.Enabled(true).Height(400))
+                          .Selectable(selectable =>
+                          {
+                              selectable.Mode(GridSelectionMode.Single);
+                              selectable.Type(GridSelectionType.Row);
+                          })
+                          .Pageable(pageable => pageable
+                              .Input(true)
+                              .Numeric(false)
+                              .Refresh(true)
+                              .PageSizes(true)
+                              .ButtonCount(5))
+
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+                              .PageSize(100)
+                               .Group(g =>
+                               {
+                                   g.Add(f => f.Version);
+                                   g.Add(f => f.SubProjectTypeName);
+                                   g.Add(f => f.BlockName);
+                                   g.Add(f => f.StructureyType);
+                                   g.Add(f => f.WorkCategory);
+                               })
+                               .Model(model =>
+                               {
+                                   model.Id(t => t.TaskID);
+                               })
+
+                              .Read(read => read.Action("ReadAllTasksForExport", "Scheduler", new { projectId = "#=ProjectInformationId#" }))
+                              .Create(create => create.Action("CreateTaskPerProjectBd", "Scheduler", new { pwbIdCreate = "#=ProjectInformationId#" }))
+                              .Update(update => update.Action("UpdateTask", "Scheduler"))
+                              .Destroy(destroy => destroy.Action("DestroyTask", "Scheduler"))
+                          )//.ClientDetailTemplateId("template_dependecy")
+                          .ToClientTemplate()
+                    )
+                </text>
+                );
+
+        }).ToClientTemplate()
+    )
+</script>
+
+<script id="template_dependecy" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+        .Name("tabstrip_#=TaskID#")
+        .SelectedIndex(0)
+        .Items(items =>
+        {
+            items.Add().Text("Detail").Content(
+                @<text>
+
+                    @(Html.Kendo().PanelBar()
+                          .Name("panelbar_#=TaskID#")
+                          .ExpandMode(PanelBarExpandMode.Single)
+                          .Items(panelbar =>
+                          {
+                              panelbar.Add()
+                                  .Expanded(true)
+                                  .Content(
+                                      "<div class='task-details'>" +
+                                      "<ul>" +
+                                      "<li> <label> Material Cost: </label> #= kendo.toString(MaterialCost, 'N4')# </li>" +
+                                      "<li> <label> Equipment Cost: </label> #= kendo.toString(EquipmentCost, 'N4')# </strong> </li>" +
+                                      "<li> <label> Labor Cost: </label> #= kendo.toString(LabourCost, 'N4')# </li>" +
+                                      "<li> <label> Direct Cost:</label> #= kendo.toString( DirectCost, 'N4')# </li>" +
+                                      "<li> <label> Total Cost (planned) :</label> #= kendo.toString(BudgetCost, 'N4')# </li>" +
+                                      "<li> <label> Qty Prev Ver :</label> #= kendo.toString(ExecutedQuantityTillPrevVersion, 'N4')# </li>" +
+                                      "<li> <label> Qty This Ver. :</label> #= kendo.toString(ExecutedQuantityThisVersion, 'N4')# </li>" +
+                                      "<li> <label> Qty Todate  :</label> #= kendo.toString(ExecutedQuantityToDate, 'N4')# </li>" +
+                                      "<li> <label> Amnt. Prev Ver. :</label> #= kendo.toString(ExecutedAmountTillPrevVersion, 'N4')# </li>" +
+                                      "<li> <label> Amnt. This Ver. :</label> #= kendo.toString(ExecutedAmountThisVersion, 'N4')# </li>" +
+                                      "<li> <label> Amnt. Todate :</label> #= kendo.toString(ExecutedAmountToDate, 'N4')# </li>" +
+
+                                      "</ul>" +
+                                      "</div>"
+
+                                  );
+                          }).ToClientTemplate()
+                    )
+
+                </text>
+                  );
+
+            items.Add().Text("Predecessors").Content(
+                @<text>
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.DependencyViewModel>()
+                          .Name("predecessor_#=TaskID#")
+                          .Columns(columns =>
+                          {
+                              columns.ForeignKey(c => c.PredecessorID, (IEnumerable)ViewData["AllTasks"], "ID", "Title").EditorTemplateName("Predecessors");
+                              //columns.Bound(c => c.PredecessorID).edi;
+                              //columns.Bound(c => c.predecessorTaskname);
+                              //columns.Bound(c => c.SuccessorID).Title("Successor");
+                              columns.Bound(c => c.Type).Title("Dependency Type").EditorTemplateName("TaskDependecyType");
+                              columns.Bound(c => c.LagTime);
+                              columns.Command(command =>
+                              {
+                                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                  command.Destroy().Text(Resources.ActionButton_Cancel);
+                              }).Width(200);
+                          })
+                          .Scrollable(s => s.Enabled(true).Height(300))
+                          //.Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("TaskDependencies").Window(window => { window.Title("Predecessor"); window.Scrollable(false); }))
+                          .ToolBar(toolbar =>
+                          {
+                              toolbar.Create();
+
+                          })
+                          .Selectable(selectable =>
+                          {
+                              selectable.Mode(GridSelectionMode.Single);
+                              selectable.Type(GridSelectionType.Row);
+                          })
+                          .Pageable(pageable => pageable
+                              .Input(true)
+                              .Numeric(false)
+                              .Refresh(true)
+                              .PageSizes(true)
+                              .ButtonCount(5))
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+                               .Model(model =>
+                               {
+                                   model.Id(dp => dp.DependencyID);
+                                   model.Field(dp => dp.SuccessorID).DefaultValue(null).Editable(false);
+                               })
+                              .Read(read => read.Action("ReadPredessors", "Scheduler", new { taskId = "#=TaskID#" }))
+                              .Create(create => create.Action("AddPredecessor", "Scheduler", new { taskId = "#=TaskID#" }))
+                              .Update(update => update.Action("UpdatePredecessor", "Scheduler", new { taskId = "#=TaskID#" }))
+                              .Destroy(destroy => destroy.Action("DeletePredecessor", "Scheduler", new { taskId = "#=TaskID#" }))
+                          )
+                          .ToClientTemplate()
+                    )
+                </text>
+                );
+        items.Add().Text("Successors").Content(
+            @<text>
+                @(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.DependencyViewModel>()
+                          .Name("successors_#=TaskID#")
+                          .Columns(columns =>
+                          {
+                              columns.ForeignKey(c => c.SuccessorID, (IEnumerable)ViewData["AllTasks"], "ID", "Title").EditorTemplateName("Predecessors");
+                              columns.Bound(c => c.SuccessorTaskname);
+                              //columns.Bound(c => c.SuccessorID).Title("Successor");
+                              columns.Bound(c => c.Type).Title("Dependency Type");
+                              columns.Bound(c => c.LagTime);
+
+                          })
+                          .Scrollable(s => s.Enabled(true).Height(300))
+                          .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("TaskDependencies").Window(window => { window.Title("Predecessor"); window.Scrollable(false); }))
+                          .Selectable(selectable =>
+                          {
+                              selectable.Mode(GridSelectionMode.Single);
+                              selectable.Type(GridSelectionType.Row);
+                          })
+                          .Pageable(pageable => pageable
+                              .Input(true)
+                              .Numeric(false)
+                              .Refresh(true)
+                              .PageSizes(true)
+                              .ButtonCount(5))
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+                               .Events(events =>
+                                    {
+                                        events.Error("error_handler(\"successors_#=TaskID#\")");
+                                        events.RequestStart("onRequestStart(\"successors_#=TaskID#\")");
+                                        events.RequestEnd("onRequestEnd(\"successors_#=TaskID#\")");
+
+                                    })
+                               .Model(model =>
+                               {
+                                   model.Id(dp => dp.DependencyID);
+                                   model.Field(dp => dp.SuccessorID).DefaultValue(null).Editable(false);
+                               })
+                              .Read(read => read.Action("ReadSuccessors", "Scheduler", new { taskId = "#=TaskID#" }))
+                              .Create(create => create.Action("CreateDependency", "Scheduler", new { tId = "#=TaskID#" }))
+                              .Update(update => update.Action("UpdateDependency", "Scheduler"))
+                              .Destroy(destroy => destroy.Action("DestroyDependency", "Scheduler"))
+                          )
+                          .ToClientTemplate()
+                )
+            </text>
+                );
+
+            @*items.Add().Text("Resources").Content(
+                @<text>
+
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.ResourceViewModel>()
+                           .Name("resource_#=TaskID#")
+                           .Columns(columns =>
+                           {
+                               columns.Bound(c => c.ID);
+                               columns.Bound(c => c.Name);
+                               columns.Bound(c => c.ResourceType);
+                               columns.Bound(c => c.UnitofMeasure);
+                               columns.Bound(c => c.PrimaryRole);
+                               columns.Bound(c => c.Color);
+                           })
+                           .Scrollable()
+                           .Selectable(selectable =>
+                           {
+                               selectable.Mode(GridSelectionMode.Single);
+                               selectable.Type(GridSelectionType.Row);
+                           })
+                           .DataSource(dataSource => dataSource
+                               .Ajax()
+                               .Model(model =>
+                               {
+                                   model.Id(r => r.ID);
+                               })
+                               .Read(read => read.Action("ReadTaskResources", "Scheduler", new { tskId = "#=TaskID#" }))
+                      ).ToClientTemplate()
+                    )
+                </text>
+                );*@
+    items.Add().Text("Cost Break Down").Content(
+        @<text>
+            @(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.TaskDetail>()
+                                        .Name("scheduledCostsBreakDownGrid_#=TaskID#")
+                                        .Columns(column =>
+                                        {
+                                            column.ForeignKey(c => c.ConstructionPeriodId, (IEnumerable)ViewData["Periods"], "ConstructionPeriodId", "Name").Width(100).EditorTemplateName("Periods");
+                                            //column.Bound(c => c.ConstructionPeriodId);
+                                            column.Bound(c => c.PlannedQuantityOfWork).Format("{0:N4}").ClientFooterTemplate("\\#=kendo.toString(sum, 'N4')\\#");
+
+                                            column.Bound(c => c.PlannedMaterialCost).Format("{0:N4}").ClientFooterTemplate("\\#=kendo.toString(sum, 'N4')\\#");
+                                            column.Bound(c => c.PlannedEquipmentCost).Format("{0:N4}").ClientFooterTemplate("\\#=kendo.toString(sum, 'N4')\\#");
+                                            column.Bound(c => c.PlannedLaborCost).Format("{0:N4}").ClientFooterTemplate("\\#=kendo.toString(sum, 'N4')\\#");
+                                            column.Bound(c => c.PlannedDirectCost).Format("{0:N4}").ClientFooterTemplate("\\#=kendo.toString(sum, 'N4')\\#");
+                                            //column.Bound(c => c.PlannedProfitCost).Format("{0:N2}");
+                                            //column.Bound(c => c.PlannedOverHeadCost).Format("{0:N2}");
+                                            column.Bound(c => c.TotalCost).Format("{0:N4}").ClientFooterTemplate("\\#=kendo.toString(sum, 'N4')\\#");
+
+                                            column.Command(command =>
+                                            {
+                                                command.Edit().UpdateText("Save").CancelText("Cancel").Text("Edit");
+                                                //command.Destroy().Text("Delete");
+                                            });
+                                        })
+                                        //.Pageable()
+                                        //.Scrollable()
+                                        //.Events(ev =>
+                                        //{
+                                        //    ev.DataBound("taskDetailDataBound");
+                                        //})
+                                        .Selectable(selectable =>
+                                        {
+                                            selectable.Mode(GridSelectionMode.Single);
+                                            selectable.Type(GridSelectionType.Row);
+                                        })
+                                        //.Filterable()
+                                        .Scrollable(s => s.Enabled(true).Height(300))
+                                        .Pageable(pageable => pageable
+                                              .Input(true)
+                                              .Numeric(false)
+                                              .Refresh(true)
+                                              .PageSizes(true)
+                                              .ButtonCount(5))
+                                        .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                        .DataSource(dataSource => dataSource
+                                            .Ajax()
+                                            .Aggregates(ag =>
+                                            {
+                                                ag.Add(c => c.PlannedQuantityOfWork).Sum();
+                                                ag.Add(c => c.PlannedMaterialCost).Sum();
+                                                ag.Add(c => c.PlannedLaborCost).Sum();
+                                                ag.Add(c => c.PlannedEquipmentCost).Sum();
+                                                ag.Add(c => c.PlannedDirectCost).Sum();
+                                                ag.Add(c => c.PlannedProfitCost).Sum();
+                                                ag.Add(c => c.PlannedOverHeadCost).Sum();
+                                                ag.Add(c => c.TotalCost).Sum();
+                                            })
+                                            .Model(model =>
+                                            {
+                                                model.Id(p => p.TaskDetailId);
+                                                model.Field(p => p.PlannedMaterialCost).Editable(false);
+                                                model.Field(p => p.PlannedLaborCost).Editable(false);
+                                                model.Field(p => p.PlannedEquipmentCost).Editable(false);
+                                                model.Field(p => p.PlannedProfitCost).Editable(false);
+                                                model.Field(p => p.PlannedOverHeadCost).Editable(false);
+                                                model.Field(p => p.PlannedDirectCost).Editable(false);
+                                                model.Field(p => p.TotalCost).Editable(false);
+                                            })
+                                            .Read(read =>
+                                            {
+                                                read.Action("TaskDetail_Read", "TaskDetail", new { theCurrentTaskId = "#=TaskID#" });
+                                                //.Data("getCurrentTaskId");
+                                            })
+                                            .Create(create =>
+                                            {
+                                                create.Action("TaskDetail_Create", "TaskDetail", new { theCurrentTaskId = "#=TaskID#" });
+                                                //.Data("getCurrentTaskId");
+                                            })
+                                            .Update(update =>
+                                            {
+                                                update.Action("TaskDetail_Update", "TaskDetail");
+                                            })
+                                            .Destroy(destroy => destroy.Action("TaskDetail_Destroy", "TaskDetail"))
+                                        )
+                                        .ClientDetailTemplateId("template_sub_detail")
+                                        .ToClientTemplate()
+            )
+        </text>
+                );
+            items.Add().Text("Sub-activities").Content(
+                @<text>
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.TaskViewModel>()
+                        .Name("subActivities_#=TaskID#")
+                        .Columns(columns =>
+                        {
+
+                            //columns.Bound(c => c.TaskID).Title("ID").Width(50);
+                            columns.Bound(c => c.ProjectSpecificId).Width(50);
+                            columns.Bound(c => c.Title).Width(200);
+                            columns.Bound(c => c.Start).Width(80);
+                            columns.Bound(c => c.ActualDuration).Title("Duration (days)").Width(90);
+                            columns.Bound(c => c.End).Width(80);
+                            //columns.Bound(c => c.ProjectInformationId).Title("Project Id").Width(100);
+                            //columns.Bound(c => c.ProjectWorkBreakDownId).Title("PWB ID").Width(80);
+                            columns.Bound(c => c.BudgetCost).Width(80).Title("Budgeted Cost").Format("{0:N2}");
+                            columns.Bound(c => c.TotalQuantityOfWork).Title("QTY of Work").Width(90);
+                            columns.Bound(c => c.OrderId).Title("Order").Width(80);
+
+                            //columns.Bound(c => c.EstimatedDuration).Title("Estimated Duration (days)").Width(90);
+                            //columns.Bound(c => c.RemainingDuration).Title("Remaining (days)").Width(90);
+
+                            columns.Command(command =>
+                            {
+                                command.Edit().UpdateText("Save").CancelText("Cancel").Text("Edit");
+                                command.Destroy().Text("Delete");
+                            }).Width(180);
+                        })
+                        //.Pageable()
+                        //.Scrollable()
+                        //.Events(ev =>
+                        //{
+                        //    ev.DataBound("taskDetailDataBound");
+                        //})
+                        .Selectable(selectable =>
+                        {
+                            selectable.Mode(GridSelectionMode.Single);
+                            selectable.Type(GridSelectionType.Row);
+                        })
+                        //.Filterable()
+                        .ToolBar(toolbar =>
+                        {
+                            toolbar.Create().Text("Add Sub Activity");
+                        })
+                        .Editable(editable => editable.Mode(GridEditMode.InLine))
+                        .DataSource(dataSource => dataSource
+                            .Ajax()
+                            .Model(model =>
+                            {
+                                model.Id(p => p.TaskID);
+
+                                model.Field(f => f.TaskID).Editable(false);
+                                model.Field(f => f.End).Editable(false);
+                                model.Field(f => f.ProjectSpecificId).Editable(false);
+                            })
+                            .Events(events =>
+                            {
+                                events.Error("error_handler(\"subActivities_#=TaskID#\")");
+                                events.RequestStart("onRequestStart(\"subActivities_#=TaskID#\")");
+                                events.RequestEnd("onRequestEnd(\"subActivities_#=TaskID#\")");
+                            })
+                            .Read(read =>
+                            {
+                                read.Action("GetChildTasks", "Scheduler", new { theCurrentTaskId = "#=TaskID#" });
+                                //.Data("getCurrentTaskId");
+                            })
+                            .Create(create =>
+                            {
+                                create.Action("CreateSubActivity", "Scheduler", new { theCurrentTaskId = "#=TaskID#" });
+                                //.Data("getCurrentTaskId");
+                            })
+                            .Update(update =>
+                            {
+                                update.Action("UpdateTask", "Scheduler");
+                            })
+                            .Destroy(destroy => destroy.Action("DestroyTask", "Scheduler"))
+                        ).ToClientTemplate()
+                    )
+                </text>
+                );
+
+        }).ToClientTemplate()
+)
+</script>
+<script id="template_resources" type="text/kendo-tmpl">
+</script>
+
+<script id="template_sub_detail" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+        .Name("tabstrip_str_#=TaskDetailId#")
+        .SelectedIndex(0)
+        .Items(items =>
+        {
+            items.Add().Text("Detail").Content(
+                @<text>
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.TaskDetailBreakDown>()
+                            .Name("subPeriods__#=TaskDetailId#")
+                            .Columns(column =>
+                            {
+                                column.ForeignKey(c => c.ConstructionSubPeriodId, (IEnumerable)ViewData["SubPeriods"], "ConstructionSubPeriodId", "Name").Width(100).EditorTemplateName("SubPeriods");
+                                //column.Bound(c => c.ConstructionPeriodId);
+                                column.Bound(c => c.PlannedQuantityOfWork).Format("{0:N4}").ClientFooterTemplate("\\#=kendo.toString(sum, 'N4')\\#");
+
+                                column.Bound(c => c.PlannedMaterialCost).Format("{0:N4}").ClientFooterTemplate("\\#=kendo.toString(sum, 'N4')\\#");
+                                column.Bound(c => c.PlannedEquipmentCost).Format("{0:N4}").ClientFooterTemplate("\\#=kendo.toString(sum, 'N4')\\#");
+                                column.Bound(c => c.PlannedLaborCost).Format("{0:N4}").ClientFooterTemplate("\\#=kendo.toString(sum, 'N4')\\#");
+                                column.Bound(c => c.PlannedDirectCost).Format("{0:N4}").ClientFooterTemplate("\\#=kendo.toString(sum, 'N4')\\#");
+                                //column.Bound(c => c.PlannedProfitCost).Format("{0:N2}");
+                                //column.Bound(c => c.PlannedOverHeadCost).Format("{0:N2}");
+                                column.Bound(c => c.TotalCost).Format("{0:N4}").ClientFooterTemplate("\\#=kendo.toString(sum, 'N4')\\#");
+
+                                column.Command(command =>
+                                {
+                                    command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                    command.Destroy().Text(Resources.ActionButton_Cancel);
+                                }).Width(180);
+                            })
+                            .ToolBar(toolbar =>
+                            {
+                                toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                            })
+                            .Editable(editable => editable.Mode(GridEditMode.InLine))
+                            .Scrollable(h => h.Height(300))
+                            .Sortable(sortable =>
+                            {
+                                sortable.SortMode(GridSortMode.SingleColumn);
+                            })
+                            //.Groupable()
+                            .Selectable(selectable =>
+                            {
+                                selectable.Mode(GridSelectionMode.Single);
+                                selectable.Type(GridSelectionType.Row);
+                            })
+                            //.Filterable()
+                            .Pageable(pageable => pageable
+                                .Input(true)
+                                .Numeric(false)
+                                .Refresh(true)
+                                .PageSizes(true)
+                                .ButtonCount(5))
+                            //.Events(e => e.DataBound("structureTypeDataBound"))
+                            .DataSource(dataSource => dataSource
+                                .Ajax()
+                                .Aggregates(ag =>
+                                {
+                                    ag.Add(c => c.PlannedQuantityOfWork).Sum();
+                                    ag.Add(c => c.PlannedMaterialCost).Sum();
+                                    ag.Add(c => c.PlannedLaborCost).Sum();
+                                    ag.Add(c => c.PlannedEquipmentCost).Sum();
+                                    ag.Add(c => c.PlannedDirectCost).Sum();
+                                    ag.Add(c => c.PlannedProfitCost).Sum();
+                                    ag.Add(c => c.PlannedOverHeadCost).Sum();
+                                    ag.Add(c => c.TotalCost).Sum();
+                                })
+                                .Events(events =>
+                                {
+                                    events.Error("error_handler(\"subPeriods__#=TaskDetailId#\")");
+                                    events.RequestStart("onRequestStart(\"subPeriods__#=TaskDetailId#\")");
+                                    events.RequestEnd("onRequestEnd(\"subPeriods__#=TaskDetailId#\")");
+                                })
+                                .Model(model =>
+                                {
+                                    model.Id(p => p.TaskDetailBreakDownId);
+
+                                    model.Field(p => p.PlannedMaterialCost).Editable(false);
+                                    model.Field(p => p.PlannedLaborCost).Editable(false);
+                                    model.Field(p => p.PlannedEquipmentCost).Editable(false);
+                                    model.Field(p => p.PlannedProfitCost).Editable(false);
+                                    model.Field(p => p.PlannedOverHeadCost).Editable(false);
+                                    model.Field(p => p.PlannedDirectCost).Editable(false);
+                                    model.Field(p => p.TotalCost).Editable(false);
+                                })
+                                .Read(read => read.Action("Detail_Read", "TaskDetailBreakDown", new { id = "#=TaskDetailId#" }))
+                                .Create(create => create.Action("Detail_Create", "TaskDetailBreakDown", new { id = "#=TaskDetailId#" }))
+                                .Update(update => update.Action("Detail_Update", "TaskDetailBreakDown"))
+                                .Destroy(destroy => destroy.Action("Detail_Destroy", "TaskDetailBreakDown"))
+
+                                ).ToClientTemplate()
+                    )
+                </text>
+            );
+
+
+        }).ToClientTemplate())
+</script>
+
+@(Html.Kendo().Window()
+    .Name("ImportWorkItemsWindow")
+    .Title("Import Work Items")
+    .Content(@<text>
+        @*<div style="height: 100%;">*@
+        <div style="overflow: auto; height: calc(100% - 55px)">
+            @(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.ImportWorkItemToScheduleViewModel>()
+        .Name("workItems")
+        .Columns(column =>
+        {
+            column.Bound(c => c.IsImported).Width(10).Filterable(false).Title(" ").ClientTemplate(
+            "<input type='checkbox' value='#= Id #' " +
+                "# if (IsImported) { #" +
+                    "checked='checked'" +
+                "# } #" +
+            "/>"
+            );
+            //column.Bound(c => c.Id);
+            column.Bound(c => c.BlockName).Width(80).Title(" ");
+            column.Bound(c => c.StructureyType).Width(80).Title("Str.");
+            column.Bound(c => c.ItemName).Width(200);
+            column.Bound(c => c.TotalQuantityOfWork).Width(90).Title("Qty of Work").ClientTemplate(
+                "#=kendo.toString(TotalQuantityOfWork, 'N2') # #= UnitOfMeasurement === null ? ' ' : UnitOfMeasurement#"
+                );
+            column.Bound(c => c.TotalUnitCost).Width(100).Title("Unit Rate").Format("{0:N2}");
+            column.Command(command =>
+            {
+                command.Custom("CustomCmdSelect").Text("Add").Click("ImportCurrentWorkItem");
+            }).Width(100);
+        })
+        //.Scrollable()
+        .Selectable(selectable =>
+        {
+            selectable.Mode(GridSelectionMode.Single);
+            selectable.Type(GridSelectionType.Row);
+        })
+        .Filterable()
+        .Events(ev =>
+        {
+            ev.DataBound("ImportWorkItemDataBound");
+        })
+            .Editable(editable => editable.Mode(GridEditMode.InLine))
+            .DataSource(dataSource => dataSource
+                .Ajax()
+                .Model(model =>
+                {
+                    model.Id(p => p.Id);
+                    //model.Field(p => p.IsSelected);
+                })
+                //.Read(read => read.Action("ReadPredecessors", "Scheduler"))
+                .Read(read =>
+                {
+                    read.Action("WorkItemsToImport_Read", "ProjectEstimation")
+                    .Data("getExpandedProjectId");
+                })
+
+            )
+            )
+
+        </div>
+        <div style="width: 100%; height: 40px; border-top: solid #C5C5C5 1px">
+            <div style="float: right; margin: 10px">
+                @*<a class="k-primary k-button k-gantt-update" href="#" onclick="saveDependencyChanges()">Save</a>*@
+                <a class="k-primary k-button k-gantt-cancel" href="#" onclick="closeImportWorkItemEditor()">Close</a>
+            </div>
+        </div>
+
+    </text>)
+    .Draggable()
+    .Resizable()
+    .Width(800)
+    .Height(350)
+    .Modal(true)
+    .Visible(false)
+)
+<script type="text/javascript">
+    var selectedProject = 0;
+    var selectedWBS = 0;
+    function wbsRowExpanded(projId) {
+        selectedProject = projId;
+    }
+    function ImportWorkItems(e) {
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+
+        var projId = dataItem.ProjectInformationId;
+        var wbsId = dataItem.ProjectWorkBreakDownId;
+
+        selectedProject = projId;
+        selectedWBS = wbsId;
+        var editorGrid = $("#workItems").data("kendoGrid");
+        var wdw = $("#ImportWorkItemsWindow").data("kendoWindow");
+        wdw.open();
+        wdw.center();
+        editorGrid.dataSource.read();
+        //return false;
+    }
+    function getExpandedProjectId() {
+        //var uid = '#=uid#';
+        //var selector = kendo.format("tr[data-uid='{0}']", uid);
+        //var currentGridElement = $(selector).closest("[data-role=grid]");
+        //var parentRow = currentGridElement.closest(".k-detail-row").prev();
+        //var parentGrid = parentRow.closest("[data-role=grid]").data("kendoGrid");
+        //var parentModel = parentGrid.dataItem(parentRow);
+        //return {
+        //    parentModelId: parentModel.id
+        //};
+        return {
+            currentProjectId: selectedProject,
+            workBreakDownStructureId: selectedWBS
+        };
+    }
+    function TaskGridDataBound(e) {
+        e.preventDefault();
+        $(".import-wokitems").click(function () {
+            //alert("Import Clicked !");
+            var editorGrid = $("#workItems").data("kendoGrid");
+            var wdw = $("#ImportWorkItemsWindow").data("kendoWindow");
+            wdw.open();
+            wdw.center();
+            editorGrid.dataSource.read();
+            return false;
+        });
+
+    }
+    function editTaskPerwbs() {
+        var h = $("#taskParentList").data("kendoDropDownList");
+    }
+    function error_handler(e) {
+        if (e.errors) {
+            var message = "Errors:\n";
+            $.each(e.errors, function (key, value) {
+                if ('errors' in value) {
+                    $.each(value.errors, function () {
+                        message += this + "\n";
+                    });
+                }
+            });
+            alert(message);
+        }
+    }
+
+    function sync_handler(e) {
+        this.read();
+    }
+
+    function onGridEdit(e) {
+        e.container.find(".k-button.k-grid-update").hide();
+        e.container.find(".k-button.k-grid-cancel").hide();
+    }
+
+    function timelineViewClicked(e) {
+        e.preventDefault();
+        window.location.href = "@Url.Action("Index", "Scheduler")";
+    }
+
+    //
+    // for passing the current model's property to the popup window
+    function passCurrentTask(e, currentId) {
+        if (e.model.isNew()) {
+            //e.container.find("input:SuccessorID").val(currentId);
+            e.model.set("SuccessorID", currentId);
+        }
+    }
+
+    //function importWorkItemClicked() {
+    //    //alert("custom toolbar");
+
+    //    var editorGrid = $("#workItems").data("kendoGrid");
+    //    var wdw = $("#ImportWorkItemsWindow").data("kendoWindow");
+    //    wdw.open();
+    //    wdw.center();
+    //    editorGrid.dataSource.read();
+    //}
+    function ImportCurrentWorkItem(e) {
+        var grid = $("#workItems").data("kendoGrid");
+
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        var id = dataItem.Id;
+        $.ajax({
+            url: '@Url.Action("ImportWorkItemToSchedule", "ProjectWorkBreakDown")',
+            //contentType: "application/json; charset=utf-8",
+            data: { currentWBSId: selectedWBS, workkItemId: id },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                r = result;
+                grid.dataSource.read();
+            }
+
+        });
+    }
+    function WorkItemDropDownListChange() {
+        var id = $("#WorkItemDurationId").val();
+
+        $.ajax({
+            url: '@Url.Action("GetTaskTitleFromWorkItem", "DataProvider", new {area = "Construction"})',
+            data: { workItemDurationId: id },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                $("#Title").val(result);
+                $("#Title").trigger("change");
+            }
+
+        });
+    }
+    function closeImportWorkItemEditor() {
+        var wdw = $("#ImportWorkItemsWindow").data("kendoWindow");
+        wdw.close();
+    }
+    function wbsDataBound() {
+        $(".k-grid-CmdImportWorkItem").find("span").addClass("k-icon k-i-plus");
+
+    }
+    function ImportWorkItemDataBound() {
+        $(".k-grid-CustomCmdSelect").find("span").addClass("k-icon k-i-plus");
+
+
+        var grid = this;
+        var gridRows = grid.tbody.find("tr");
+
+        for (var i = 0; i < gridRows.length; i++) {
+            var row = $(gridRows[i]);
+            var dataItem = grid.dataItem(row);
+            if (dataItem.IsImported === true) {
+                //row.find(".k-grid-edit").hide();
+                //row.find(".k-grid-delete").hide();
+                row.find(".k-grid-CustomCmdSelect").hide();
+                row.addClass("highlighted-row");
+            } else {
+
+                //row.find(".k-grid-edit").show();
+                //row.find(".k-grid-delete").show();
+                row.find(".k-grid-CustomCmdSelect").show();
+            }
+        }
+    }
+
+</script>
+
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 750px;
+    }
+
+    div.k-content {
+        height: inherit;
+    }
+
+    .highlighted-row {
+        background-color: #aafeaa;
+    }
+
+        .highlighted-row.k-alt {
+            background-color: #bff1b4;
+        }
+   
+</style>

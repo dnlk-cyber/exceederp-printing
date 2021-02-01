@@ -1,0 +1,183 @@
+﻿@using System.Security.AccessControl
+@using ExceedERP.Core.Domain.Common.HRM
+@using ExceedERP.Core.Domain.HRM.EmployeeDetail
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Clearance</legend>
+
+@(Html.Kendo().Grid<Person_Employee>()
+          .Name("Person_Employeegrid")
+      .Columns(columns =>
+      {
+          
+          columns.Bound(c => c.FirstName).Width(100);
+          columns.Bound(c => c.MiddleName).Width(100);
+          columns.Bound(c => c.LastName).Width(100);
+          columns.Bound(c => c.MothersFullName).Width(100);
+          columns.Bound(c => c.Gender).Width(100);
+          columns.Bound(c => c.DateOfBirth).Width(100);
+          columns.Bound(c => c.BirthPlace).Width(100);
+          columns.Bound(c => c.Nation).Width(100);
+          columns.Bound(c => c.MartialStatus).Width(100);
+          columns.Bound(c => c.IsActive).Width(100).ClientTemplate("<input type='checkbox' disabled = 'true' \\#= Status ? checked='checked' :'' \\# />").Width(100);
+
+          columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+      })
+      .ToolBar(toolbar =>
+      {
+          // toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+              //.Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("EmployeeId").Window(window => { window.Title("Maintain Employee"); window.Scrollable(false); }))
+          .Scrollable(h => h.Height(500))
+             .Groupable()
+                      .Sortable(sortable =>
+                      {
+                          sortable.SortMode(GridSortMode.SingleColumn);
+                      })
+          .Filterable()
+             .Pageable(pageable => pageable
+                                        .Input(true)
+                                        .Numeric(false)
+                                        .Refresh(true)
+                                        .PageSizes(true)
+                                        .ButtonCount(5))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+                .Events(events =>
+                                                      {
+                                                          events.Error("error_handler(\"Person_Employeegrid\")");
+                                                          events.RequestStart("onRequestStart(\"Person_Employeegrid\")");
+                                                          events.RequestEnd("onRequestEnd(\"Person_Employeegrid\")");
+                                                      })
+                      
+          .Model(model => model.Id(p => p.EmployeeId))
+          .Read(read => read.Action("Person_Employee_Read", "EmployeeProfile"))
+          .Create(create => create.Action("Person_Employee_Create", "EmployeeProfile"))
+          .Update(update => update.Action("Person_Employee_Update", "EmployeeProfile"))
+          .Destroy(destroy => destroy.Action("Person_Employee_Destroy", "EmployeeProfile"))
+          ).ClientDetailTemplateId("template")
+)
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+    .Name("tabstrip_#=EmployeeId#")
+    .SelectedIndex(0)
+    .Items(items =>
+     {
+         items.Add().Text("Detail").Content(
+            @<text>
+                @(Html.Kendo().PanelBar()
+                          .Name("panelbar")
+                          .ExpandMode(PanelBarExpandMode.Single)
+                          .Items(panelbar =>
+                          {
+                              panelbar.Add().Text("Detail")
+                                  .Expanded(true)
+                                  .Content(
+                                      "<div class='emp-details'>" +
+                                      "<ul>" +
+                                      "<li><label>Gender:</label>#= Gender #</li>" +
+                                       "<li><label>Date Of Birth:</label>#= DateOfBirth #</li>" +
+                                      "<li><label>Title:</label>#= Title#</li>" +
+                                       "<li><label>Remark:</label>#= Remark #</li>" +
+                                      "</ul>" +
+                                      "</div>"
+                                  );
+
+                          }).ToClientTemplate()
+
+                )
+
+            </text>
+
+
+     );
+
+
+
+
+
+         //*****************************************************************************************************//
+         //*********************************Prohibition*************************************************//
+         items.Add().Text("Clearance").Content(
+            @<text>
+               
+    @(Html.Kendo().Grid<Clearance>()
+                  .Name("Clearancegrid-#=EmployeeId#")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.ReasonOfTermination);
+          columns.Bound(c => c.TerminatedSince);
+          columns.Bound(c => c.Remark);
+          columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+                                           .Events(events =>
+                                                              {
+                                                                  events.Error("error_handler(\"Clearancegrid-#=EmployeeId#\")");
+                                                                  events.RequestStart("onRequestStart(\"Clearancegrid-#=EmployeeId#\")");
+                                                                  events.RequestEnd("onRequestEnd(\"Clearancegrid-#=EmployeeId#\")");
+                                                              })
+
+          .Model(model => model.Id(p => p.ClearanceId))
+                  .Read(read => read.Action("Clearances_Read", "Clearance", new { Area = "HRM", id = "#=EmployeeId#" }))
+                  .Create(create => create.Action("Clearances_Create", "Clearance", new { Area = "HRM", id = "#=EmployeeId#" }))
+          .Update(update => update.Action("Clearances_Update", "Clearance"))
+          .Destroy(destroy => destroy.Action("Clearances_Destroy", "Clearance"))
+      ).ToClientTemplate() 
+    )
+
+            </text>
+            );
+
+
+
+
+
+     }).ToClientTemplate())
+</script>
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 700px;
+    }
+</style>
+<script>
+    //function error_handler(e) {
+    //    if (e.errors) {
+    //        var message = "Errors:\n";
+    //        $.each(e.errors, function(key, value) {
+    //            if ('errors' in value) {
+    //                $.each(value.errors, function() {
+    //                    message += this + "\n";
+    //                });
+    //            }
+    //        });
+    //        alert(message);
+
+    //    }
+
+    //}
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+</script>
+
+
+
+
+

@@ -1,0 +1,158 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@using ExceedERP.Core.Domain.Construction
+@using ExceedERP.Helpers.Common
+@using Kendo.Mvc.UI
+@model ExceedERP.Core.Domain.Construction.WorkItemDuration
+<form>
+    <div class="row">
+        <div class="col-sm-1">
+            @Html.HiddenFor(model => model.SubProjectTypeName)
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.ItemCode, "Item Number", htmlAttributes: new { @class = "control-label" })
+
+                </div>
+                <div>
+                    @Html.Kendo().TextBoxFor(model => model.ItemCode)
+                    @Html.ValidationMessageFor(model => model.ItemCode, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-6">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.WorkDescription, htmlAttributes: new { @class = "control-label" })
+                </div>
+                <div>
+                    @Html.Kendo().TextBoxFor(model => model.WorkDescription)
+                    @Html.ValidationMessageFor(model => model.WorkDescription, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-sm-1">
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.Unit, htmlAttributes: new { @class = "control-label col-sm-12" })
+                </div>
+                <div>
+                    @(Html.Kendo().DropDownListFor(m => m.Unit)
+                            .OptionLabel(Resources.Select)
+                            .DataTextField("Abbreviation")
+                            .DataValueField("Abbreviation")
+                            //.BindTo((IEnumerable)ViewData["uom"])
+                            .DataSource(dataSource =>
+                            {
+                                dataSource.Read(read => read.Action("GetUom", "DataProvider"));
+                            })
+
+                            .Filter("contains")
+                            .MinLength(2)
+                            .ValuePrimitive(true)
+                    )
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.Quantity, htmlAttributes: new { @class = "control-label col-sm-12" })
+                </div>
+                <div>
+                    @Html.Kendo().TextBoxFor(model => model.Quantity)
+                    @Html.ValidationMessageFor(model => model.Quantity, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.ProductivityOfCrewPerDay, htmlAttributes: new { @class = "control-label col-sm-12" })
+                </div>
+                <div>
+                    @Html.Kendo().TextBoxFor(model => model.ProductivityOfCrewPerDay)
+                    @Html.ValidationMessageFor(model => model.ProductivityOfCrewPerDay, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-sm-1">
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.DurationPerCrew, htmlAttributes: new { @class = "control-label col-sm-12" })
+
+                </div>
+                <div>
+                    @Html.Kendo().TextBoxFor(model => model.DurationPerCrew).Enable(false)
+                    @Html.ValidationMessageFor(model => model.DurationPerCrew, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.NumberOfCrew, htmlAttributes: new { @class = "control-label col-sm-12" })
+
+                </div>
+                <div>
+                    @Html.Kendo().NumericTextBoxFor(model => model.NumberOfCrew)
+                    @Html.ValidationMessageFor(model => model.NumberOfCrew, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+        <div class="col-sm-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.EstimatedDuration, htmlAttributes: new { @class = "control-label col-sm-12" })
+
+                </div>
+                <div>
+                    @Html.Kendo().TextBoxFor(model => model.EstimatedDuration)
+                    @Html.ValidationMessageFor(model => model.EstimatedDuration, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <br />
+    <div class="row">
+        <div class="col-sm-1">
+        </div>
+        <div class=" col-sm-3">
+            <div class="form-group">
+                <div>
+                    @Html.Kendo().CheckBoxFor(model => model.HasSubWorkItems).Label("Has Sub-items")
+                    @Html.ValidationMessageFor(model => model.HasSubWorkItems, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+        @*<div class="col-sm-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.Source, "Item Source", htmlAttributes: new { @class = "control-label col-sm-12" })
+
+                    </div>
+                    <div>
+                        @(Html.Kendo().DropDownListFor(m => m)
+                                            .Name("Source")
+                                            .OptionLabel(Resources.Select)
+                                            .DataTextField("Text")
+                                            .DataValueField("Value")
+                                            .ValuePrimitive(true)
+                                            .BindTo(EnumExtension.EnumToSelectList(typeof(DurationItemSource))))
+                    </div>
+                </div>
+            </div>*@
+    </div>
+</form>

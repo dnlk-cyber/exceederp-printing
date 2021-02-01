@@ -1,0 +1,30 @@
+﻿@{
+    Layout = "~/Views/Shared/_Popup.cshtml";
+}
+@using ExceedERP.Core.Localization
+<div class="form">
+    @using (Html.BeginForm("UploadDocument", "EmployeeLetterSender", FormMethod.Post,
+    new { name = "UploadDocument", id = "UploadDocument", enctype = "multipart/form-data" }))
+    {
+
+        @Html.AntiForgeryToken()
+        <fieldset>
+            <div class="editor-field">
+                @Html.TextBox("file", "", new { type = "file", accept = ".xlsx,.xls,image/*,.doc, .docx,.ppt, .pptx,.txt,.pdf", onchange = "validateDocFileType()" })
+            </div>
+            <br />
+            <div class="editor-field">
+                @Html.TextArea("txtValue", null, new { placeholder = Resources.Common_Attachment_FileName })
+            </div>
+            <div class="editor-field">
+                @Html.TextArea("txtDecsion", null, new { placeholder = Resources.Common_Attachment_FileName })
+            </div>
+            <br />
+            <div class="editor-field">
+                <input id="uploadBut" type="submit" value="@Resources.HR_ActionButton_Upload" />
+            </div>
+
+        </fieldset>
+    }
+
+</div>

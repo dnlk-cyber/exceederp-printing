@@ -1,0 +1,189 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@using Kendo.Mvc.UI
+@using ExceedERP.Core.Domain.Production
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>  Projected Monthly Cash Flow </legend>
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Production.ProjectedMonthlyCashFlow>()
+                          .Name("projectedCashFlow")
+                          .Columns(columns =>
+                          {
+                              columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("Branches");
+                              columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["FilscalYears"], "GlFiscalYearId", "Name").EditorTemplateName("YearSelector");
+                              columns.Bound(c => c.Remark);
+                              columns.Command(command =>
+                              {
+                                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                  command.Destroy().Text(Resources.ActionButton_Cancel);
+                              }).Width(200);
+                          })
+                          .ToolBar(toolbar =>
+                          {
+                              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                          })
+                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                          .Selectable(selectable =>
+                          {
+                              selectable.Mode(GridSelectionMode.Single);
+                              selectable.Type(GridSelectionType.Row);
+                          })
+                          .Scrollable(h => h.Height(500))
+                          .Sortable(sortable =>
+                          {
+                              sortable.SortMode(GridSortMode.SingleColumn);
+                          })
+                          .Filterable()
+                          .Pageable(pageable => pageable
+                              .Input(true)
+                              .Numeric(false)
+                              .Refresh(true)
+                              .PageSizes(true)
+                              .ButtonCount(5))
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+
+                              .Events(events =>
+                              {
+                                  events.Error("error_handler(\"projectedCashFlow\")");
+                                  events.RequestStart("onRequestStart(\"projectedCashFlow\")");
+                                  events.RequestEnd("onRequestEnd(\"projectedCashFlow\")");
+                              })
+                              .Model(model =>
+                              {
+                                  model.Id(f => f.ProjectedMonthlyCashFlowId);
+                              })
+
+                              .Read(read => read.Action("CashFlow_Read", "ProjectedMonthlyCashFlow"))
+                              .Create(create => create.Action("CashFlow_Create", "ProjectedMonthlyCashFlow"))
+                              .Update(update => update.Action("CashFlow_Update", "ProjectedMonthlyCashFlow"))
+                              .Destroy(destroy => destroy.Action("CashFlow_Destroy", "ProjectedMonthlyCashFlow"))
+                          ).ClientDetailTemplateId("monthly_cashflow_detail")
+)
+
+<script id="monthly_cashflow_detail" type="text/kendo-template">
+    @(Html.Kendo().TabStrip()
+        .Name("tab_#=ProjectedMonthlyCashFlowId#")
+        .SelectedIndex(0)
+        .Items(items => {
+            items.Add().Text("").Content(
+                @<text>
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Production.ProjectedMonthlyCashFlowItem>()
+                          .Name("projected_cf_#=ProjectedMonthlyCashFlowId#")
+                          .Columns(columns =>
+                          {
+                              columns.ForeignKey(c => c.ProductionPeriodId, (IEnumerable)ViewData["ProductionPeriods"], "ProductionPeriodId", "Name").Width(80).EditorTemplateName("ProductionPeriods");
+                              columns.Group(gr => {
+                                  gr.Title("Income").HeaderHtmlAttributes(new { style = "font-weight:bold; text-align:center;"});
+                                  gr.Columns(innerColumns =>
+                                  {
+                                      innerColumns.Bound(ic => ic.CleanProductSales).Width(80);
+                                      innerColumns.Bound(ic => ic.CustomCleaningIncome).Width(80);
+                                      innerColumns.Bound(ic => ic.ByproductSales).Width(80);
+                                      innerColumns.Bound(ic => ic.TotalIncome).Width(80);
+                                  });
+                              });
+                              columns.Group(gr =>
+                              {
+                                  gr.Title("Expenditure").HeaderHtmlAttributes(new { style = "font-weight:bold; text-align:center;" });
+                                  gr.Columns(innerColumns =>
+                                  {
+                                      innerColumns.Bound(ic => ic.RawProductPurchase).Width(80);
+                                      innerColumns.Bound(ic => ic.OtherDirectCosts).Width(80);
+                                      innerColumns.Bound(ic => ic.ProcessingAndStorage).Width(80);
+                                      innerColumns.Bound(ic => ic.Maintenance).Width(80);
+                                      innerColumns.Bound(ic => ic.Administration).Width(80);
+                                      innerColumns.Bound(ic => ic.HeadOfficeAllocation).Width(80);
+                                      innerColumns.Bound(ic => ic.TotalExpenditure).Width(80);
+                                  });
+                              });
+                              columns.Group(gr =>
+                              {
+                                  gr.Title("Non-cash Expenditure").HeaderHtmlAttributes(new { style = "font-weight:bold; text-align:center;" });
+                                  gr.Columns(innerColumns =>
+                                  {
+                                      innerColumns.Bound(ic => ic.Depreciation).Width(80);
+                                  });
+                              });
+                              columns.Bound(c => c.TotalCashExpenditure).Width(80);
+                              columns.Bound(c => c.NetCashIncome).Width(80);
+                              columns.Bound(c => c.CumulativeCashIncome).Width(80);
+                              columns.Group(gr =>
+                              {
+                                  gr.Title("Corrected ").HeaderHtmlAttributes(new { style = "font-weight:bold; text-align:center;" });
+                                  gr.Columns(innerColumns =>
+                                  {
+                                      innerColumns.Bound(ic => ic.AdditionalIncome).Width(80);
+                                      innerColumns.Bound(ic => ic.RevisedNetCashIncome).Width(80);
+                                      innerColumns.Bound(ic => ic.RevisedCumulativeCashIncome).Width(80);
+                                  });
+                              });
+
+                              columns.Command(command =>
+                              {
+                                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                  command.Destroy().Text(Resources.ActionButton_Cancel);
+                              }).Width(200);
+                          })
+                          .ToolBar(toolbar =>
+                          {
+                              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                          })
+                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                          .Selectable(selectable =>
+                          {
+                              selectable.Mode(GridSelectionMode.Single);
+                              selectable.Type(GridSelectionType.Row);
+                          })
+                          .Scrollable(h => h.Height(400))
+                          .Sortable(sortable =>
+                          {
+                              sortable.SortMode(GridSortMode.SingleColumn);
+                          })
+                          //.Filterable()
+                          .Pageable(pageable => pageable
+                              .Input(true)
+                              .Numeric(false)
+                              .Refresh(true)
+                              .PageSizes(true)
+                              .ButtonCount(5))
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+
+                              .Events(events =>
+                              {
+                                  events.Error("error_handler(\"projected_cf_#=ProjectedMonthlyCashFlowId#\")");
+                                  events.RequestStart("onRequestStart(\"projected_cf_#=ProjectedMonthlyCashFlowId#\")");
+                                  events.RequestEnd("onRequestEnd(\"projected_cf_#=ProjectedMonthlyCashFlowId#\")");
+                              })
+                              .Model(model =>
+                              {
+                                  model.Id(f => f.ProjectedMonthlyCashFlowId);
+
+                                  model.Field(f => f.CleanProductSales).Editable(false);
+                                  model.Field(f => f.CustomCleaningIncome).Editable(false);
+                                  model.Field(f => f.TotalIncome).Editable(false);
+                                  model.Field(f => f.RawProductPurchase).Editable(false);
+                                  model.Field(f => f.TotalExpenditure).Editable(false);
+                                  model.Field(f => f.TotalCashExpenditure).Editable(false);
+                                  model.Field(f => f.NetCashIncome).Editable(false);
+                                  model.Field(f => f.CumulativeCashIncome).Editable(false);
+                                  model.Field(f => f.RevisedNetCashIncome).Editable(false);
+                                  model.Field(f => f.RevisedCumulativeCashIncome).Editable(false);
+                              })
+
+                              .Read(read => read.Action("CashFlow_Read", "ProjectedMonthlyCashFlowItem", new { id = "#=ProjectedMonthlyCashFlowId#" }))
+                              .Create(create => create.Action("CashFlow_Create", "ProjectedMonthlyCashFlowItem", new { id = "#=ProjectedMonthlyCashFlowId#" }))
+                              .Update(update => update.Action("CashFlow_Update", "ProjectedMonthlyCashFlowItem"))
+                              .Destroy(destroy => destroy.Action("CashFlow_Destroy", "ProjectedMonthlyCashFlowItem"))
+                          )//.ClientDetailTemplateId("template_productionOrder_detail")
+                          .ToClientTemplate()
+                    )
+                </text>
+                );
+        })
+        .ToClientTemplate()
+    )
+</script>

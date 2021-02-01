@@ -1,0 +1,181 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.HRM.HealthAndInsurance
+@using ExceedERP.Core.Localization 
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>@Resources.NavigatorHealthAndInsurance_EmployeeInsurance</legend>
+@(Html.Kendo().Grid<Insurance>()
+          .Name("Insurancegrid")
+      .Columns(columns =>
+      {
+          columns.ForeignKey(c => c.InsuranceCategoryId, (IEnumerable)ViewData["InsuranceCatagory"], "InsuranceCategoryId", "Name").Width(200);//EditorTemplateName("Group").Width(200);
+                                                                                                                                               // columns.Bound(c => c.From);
+                                                                                                                                               // columns.Bound(c => c.To);
+                                                                                                                                               //columns.ForeignKey(c => c.ClassOfBusiness, (IEnumerable)ViewData["classList"], "LookupId", "Description").EditorTemplateName("BusinessClass").Width(200);
+                                                                                                                                               // columns.Bound(c => c.InsuranceCorporation);
+          columns.Bound(c => c.FromAmharic);
+          columns.Bound(c => c.ToAmharic);
+          columns.Bound(c => c.Number);
+          columns.Bound(c => c.Salary);
+          columns.Bound(c => c.SumofInsured);
+          columns.Bound(c => c.Premium);
+          // columns.Bound(c => c.Remark);
+          columns.Command(command =>
+          {
+
+              if (HttpContext.Current.User.IsInRole("Insurance_User"))
+              {
+                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+              }
+              if (HttpContext.Current.User.IsInRole("Insurance_Admin"))
+              {
+                  command.Destroy().Text(Resources.ActionButton_Cancel);
+              }
+          }).Width(200);
+      })
+      .ToolBar(toolbar =>
+      {
+          if (HttpContext.Current.User.IsInRole("Insurance_User"))
+          {
+
+              //toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+          }
+      })
+                     .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("Insurance").Window(window => { window.Title(Resources.NavigatorHealthAndInsurance_EmployeeInsurance); window.Scrollable(false); }))
+         .Scrollable(h => h.Height(500))
+                     .Groupable()
+                     .Events(x => { x.Edit("GetDate");
+                         x.Save("GetDate");})
+                              .Sortable(sortable =>
+                              {
+                                  sortable.SortMode(GridSortMode.SingleColumn);
+                              })
+                  .Filterable()
+                     .Pageable(pageable => pageable
+                                                .Input(true)
+                                                .Numeric(false)
+                                                .Refresh(true)
+                                                .PageSizes(true)
+                                                .ButtonCount(5))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+                            .Events(events =>
+                            {
+
+                                events.Error("error_handler(\"Insurancegrid\")");
+                                events.RequestStart("onRequestStart(\"Insurancegrid\")");
+                                events.RequestEnd("onRequestEnd(\"Insurancegrid\")");
+                            })
+
+          .Model(model =>
+          {
+              model.Id(p => p.InsuranceId);
+              model.Field(p => p.Number).Editable(false);
+              model.Field(p => p.Salary).Editable(false);
+              model.Field(p => p.Premium).Editable(false);
+              model.Field(p => p.SumofInsured).Editable(false);
+          })
+          .Read(read => read.Action("Insurance_Read", "Insurance"))
+          .Create(create => create.Action("Insurance_Create", "Insurance"))
+          .Update(update => update.Action("Insurance_Update", "Insurance"))
+          .Destroy(destroy => destroy.Action("Insurance_Destroy", "Insurance"))
+      )
+)
+<script>
+    //function error_handler(e) {
+    //    if (e.errors) {
+    //        var message = "Errors:\n";
+    //        $.each(e.errors, function(key, value) {
+    //            if ('errors' in value) {
+    //                $.each(value.errors, function() {
+    //                    message += this + "\n";
+    //                });
+    //            }
+    //        });
+    //        alert(message);
+
+    //    }
+
+    //}
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+</script>
+<style>
+    div.k-edit-form-container {
+        width: 700px;
+    }
+</style>
+
+<script>
+    function GetInsuranceDetail() {
+        var InsuranceGroupIds = $("#InsuranceCategoryId").data("kendoDropDownList");
+        var group = InsuranceGroupIds.value();
+        //var Classes = $("#LookupId").data("kendoDropDownList");
+        //var classe = Classes.value();
+        $.ajax({
+            url: '@Url.Action("GetInsuranceSalary", "Insurance")',
+
+            data: { group: group },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                r = result;
+                var filds = r.split(/-/);
+                var sal = filds[0];
+                var num = filds[1];
+                var si = filds[2];
+                //var pi = filds[2];
+                $("#Number").val(num);
+                $("#Salary").val(sal);
+                //$("#SumofInsured").val(si);
+                //$("#Salary").val(sal);
+                //$("#Premium").val(pi);
+                //$("#SumofInsured").val(si);
+            }
+
+        });
+    }
+
+</script>
+<script>
+    function GetDate() {
+
+        var x = AssignDate();
+        var y = x;
+        $("#FromAmharic").trigger("change");
+        $("#ToAmharic").trigger("change");
+        for (var o in y) {
+            $.ajax({
+                contentType: "application/json; charset=utf-8",
+                url: '@Url.Action("SetDate", "Insurance")',
+                data: { name: y[o].id, value: y[o].date },
+                type: 'GET',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                }
+
+            });
+        }
+    }
+
+</script>
+<script>
+    function AssignDate() {
+        var list = AssignDates();
+        return list;
+    }
+
+</script>
+<script>
+    function filterCategories() {
+       
+        return {
+            InsuranceTypeId: $("#InsuranceTypeId").data("kendoDropDownList").value()
+        };
+    }
+</script>

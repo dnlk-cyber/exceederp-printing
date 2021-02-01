@@ -1,0 +1,13 @@
+﻿@using System.Collections
+@(Html.Kendo().DropDownListFor(m => m)
+                  .ValuePrimitive(true)
+                  .OptionLabel("Select Type...")
+                      .DataTextField("CustomerTypeName")
+                      .DataValueField("CustomerTypeName")
+      .DataSource(dataSource =>
+      {
+          dataSource.Read(read => read.Action("GetCustomerTypes", "FinanceDataProvider", new { area = "Finance" }))
+              .ServerFiltering(true);
+      })
+)
+@Html.ValidationMessageFor(m => m)

@@ -1,0 +1,50 @@
+﻿@using ExceedERP.Core.Domain.FixedAsset.Setting
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<legend>Tag</legend>
+@(Html.Kendo().Grid<TagCodeSetting>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Type).Width(150).EditorTemplateName("TagType");
+          columns.Bound(c => c.Index).Width(70);
+          columns.Bound(c => c.Remark).Width(150);
+          columns.Command(command => {
+                                         command.Edit();
+                                         command.Destroy();
+          }).Width(300);
+      })
+
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+         
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .HtmlAttributes(new { style = "height: 550px;" })
+      .Pageable()
+      .Selectable(selectable => {
+                                    selectable.Mode(GridSelectionMode.Single);
+                                    selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable => {
+                                sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Filterable()
+      .Scrollable(h => h.Height(500))
+
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Events(ev => ev
+              .Error("error_handler(\"grid\")")
+              .RequestStart("onRequestStart(\"grid\")")
+              .RequestEnd("onRequestEnd(\"grid\")"))
+          .Model(model => model.Id(p => p.TagCodeSettingId))
+          .Read(read => read.Action("TagSettings_Read", "TagCodeSetting"))
+          .Create(create => create.Action("TagSettings_Create", "TagCodeSetting"))
+          .Update(update => update.Action("TagSettings_Update", "TagCodeSetting"))
+          .Destroy(destroy => destroy.Action("TagSettings_Destroy", "TagCodeSetting"))
+      ))
+
+

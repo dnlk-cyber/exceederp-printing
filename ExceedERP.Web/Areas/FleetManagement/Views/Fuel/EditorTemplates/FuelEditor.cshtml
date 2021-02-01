@@ -1,0 +1,189 @@
+﻿@model  ExceedERP.Core.Domain.FleetManagement.FuelManagement.Fuel
+
+
+
+
+<div class = "demo-section k-content">
+    <form>
+   
+                                         <div class = "row">
+                                             <div class = "col-md-1">
+                                             </div>
+                                             <div class="col-md-3">
+                                                 <div class="form-group">
+                                                     <div class="k-label">
+                                                         @Html.LabelFor(model => model.FleetsID)
+
+                                                     </div>
+                                                     <div>
+                                                         @(Html.Kendo().DropDownListFor(model => model.FleetsID).Name("FleetsID")
+                                                               .DataTextField("PlateNumber")
+                                                               .DataValueField("FleetsID").OptionLabel(" Select Equipment ")
+                                                                               .DataSource(d => d.Read(r => r.Action("FleetsDDBind", "EquipmentRegistration"))).Events(e => e.Change("BindFuelDetail")))
+
+                                                     </div>
+
+                                                 </div>
+                                             </div>
+                                   
+                                             <div class="col-md-3">
+                                                 <div class="form-group">
+                                                     <div class="k-label">
+                                                         @Html.LabelFor(model => model.Project)
+                                                     </div>
+                                                     <div>
+                                                         @Html.Kendo().TextBoxFor(model => model.Project).Enable(false)
+                                                         @Html.ValidationMessageFor(model => model.Project)
+                                                     </div>
+
+                                                 </div>
+                                             </div>
+
+                                             <div class = "col-md-3">
+                                                 <div class = "form-group">
+                                                     <div class = "k-label">
+                                                       @(Html.LabelFor(model=>model.FuelSource))
+                                                         @( Html.Kendo().DropDownListFor(m => m.FuelSource).Name("FuelSource")
+                                                                .DataTextField("Text")
+                                                                .DataValueField("Text").OptionLabel(" Select ")
+                                                                .BindTo(EnumHelper.GetSelectList(typeof (ExceedERP.Core.Domain.FleetManagement.FuelManagement.Fuel.FuelSourceenum))))
+
+                                                     </div>
+
+                                                 </div>
+                                             </div>
+
+                                         </div>
+                                         <div class = "row">
+                                             <div class = "col-md-1">
+                                             </div>
+                                             <div class = "col-md-3">
+                                                 <div class = "form-group">
+                                                     <div class = "k-label">
+                                                         @Html.LabelFor(model => model.InitialKmHr)
+                                                     </div>
+                                                     <div>
+                                                         @Html.Kendo().NumericTextBoxFor(model => model.InitialKmHr).Min(0)
+                                                         @Html.ValidationMessageFor(model => model.InitialKmHr)
+                                                     </div>
+
+                                                 </div>
+                                             </div>
+
+
+                                             <div class = "col-md-3">
+                                                 <div class = "form-group">
+                                                     <div class = "k-label">
+                                                         @Html.LabelFor(model => model.FinalKmHr)
+                                                     </div>
+                                                     <div>
+                                                         @Html.Kendo().NumericTextBoxFor(model => model.FinalKmHr).Min(0)
+                                                         @Html.ValidationMessageFor(model => model.FinalKmHr)
+                                                     </div>
+
+                                                 </div>
+                                             </div>
+
+
+                                             <div class = "col-md-3">
+                                                 <div class = "form-group">
+                                                     <div class = "k-label">
+                                                         @Html.LabelFor(model => model.PlanKmHr)
+                                                     </div>
+                                                     <div>
+                                                         @Html.Kendo().NumericTextBoxFor(model => model.PlanKmHr).Min(0)
+                                                         @Html.ValidationMessageFor(model => model.PlanKmHr)
+                                                     </div>
+
+                                                 </div>
+                                             </div>
+                                         </div>
+                                         <div class = "row">
+                                             <div class = "col-md-1">
+                                             </div>
+                                             <div class = "col-md-3">
+                                                 <div class = "form-group">
+                                                     <div class = "k-label">
+                                                         @Html.LabelFor(model => model.ReceiptNo)
+                                                     </div>
+                                                     <div>
+                                                         @Html.Kendo().TextBoxFor(model => model.ReceiptNo)
+                                                         @Html.ValidationMessageFor(model => model.ReceiptNo)
+                                                     </div>
+
+                                                 </div>
+                                             </div>
+
+
+                                             <div class = "col-md-3">
+                                                 <div class = "form-group">
+                                                     <div class = "k-label">
+                                                         @Html.LabelFor(model => model.UnitPrice)
+                                                     </div>
+                                                     <div>
+                                                         @Html.Kendo().NumericTextBoxFor(model => model.UnitPrice).Min(0)
+                                                         @Html.ValidationMessageFor(model => model.UnitPrice)
+                                                     </div>
+
+                                                 </div>
+                                             </div>
+
+
+                                             <div class = "col-md-3">
+                                                 <div class = "form-group">
+                                                     <div class = "k-label">
+                                                         @Html.LabelFor(model => model.FuelFilledAmount)
+                                                     </div>
+                                                     <div>
+                                                         @Html.Kendo().NumericTextBoxFor(model => model.FuelFilledAmount).Min(0)
+                                                         @Html.ValidationMessageFor(model => model.FuelFilledAmount)
+                                                     </div>
+
+                                                 </div>
+                                             </div>
+                                         </div>
+                                         <div class = "row">
+                                             <div class = "col-md-1">
+                                             </div>
+                                             <div class="col-md-3">
+                                                 <div class="form-group">
+                                                     <div class="k-label">
+                                                         @Html.LabelFor(model => model.FuelSourceDetail)
+                                                     </div>
+                                                     <div>
+                                                         @Html.Kendo().TextBoxFor(model => model.FuelSourceDetail) 
+                                                         @Html.ValidationMessageFor(model => model.FuelSourceDetail)
+                                                     </div>
+
+                                                 </div>
+                                             </div>
+                                             <div class = "col-md-3">
+                                                 <div class = "form-group">
+                                                     <div class = "k-label">
+                                                         @Html.LabelFor(model => model.FuelStandard)
+                                                     </div>
+                                                     <div>
+                                                         @Html.Kendo().TextBoxFor(model => model.FuelStandard).Enable(false)
+                                                                                            </div>
+
+                                                 </div>
+                                             </div>
+
+
+                                             <div class="col-md-3">
+                                                 <div class="form-group">
+                                                     <div class="k-label">
+                                                         @(Html.LabelFor(model => model.FuelType))
+
+                                                     </div>
+                                                     @Html.Kendo().TextBoxFor(model => model.FuelType).Enable(false)
+                                                 </div>
+                                             </div>
+
+
+
+                                         
+                                         </div>
+                                 
+    </form>
+</div>

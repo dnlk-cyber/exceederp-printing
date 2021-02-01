@@ -1,0 +1,77 @@
+﻿@using Telerik.Reporting.Charting.Styles
+@{
+    Layout = "~/Views/Shared/_Popup.cshtml";
+}
+<div class="form">
+    <div class="row fullrow">
+
+        <div class="col-md-3 ro1">
+            <div class="form-group">
+                @Html.Label("ReferenceType", htmlAttributes: new { @class = "control-label col-md-6" })
+                <div class="col-md-6">
+                    @(Html.Kendo().DropDownList()
+                          .Name("ReferenceType")
+                          .HtmlAttributes(new { style = "width:200px" })
+                          .ValuePrimitive(true)
+                          .OptionLabel("...Reference Type...")
+                          .DataTextField("Description")
+                          .DataValueField("GlobalTypeListID")
+                          .DataSource(dataSource =>
+                          {
+                              dataSource.Read(read => read.Action("GetReferenceType", "CRMDataProvider"))
+                                  .ServerFiltering(true);
+                          })
+                    )
+                </div>
+            </div>
+        </div>
+        <div class="row"></div>
+
+        <div class="form-group">
+            @Html.Label("Reference", htmlAttributes: new { @class = "control-label col-md-6" })
+            <div class="col-md-6">
+                @(Html.Kendo().DropDownList()
+                          .Name("References")
+                          .ValuePrimitive(true)
+                          .OptionLabel("...Reference...")
+                          .HtmlAttributes(new { style = "width:200px" })
+                                                          .DataTextField("Discription")
+                                                  .DataValueField("Code")
+                          .DataSource(dataSource =>
+                          {
+                              dataSource.Read(read => read.Action("GetReferenceList", "CRMDataProvider").Data("RetrieveReferenceType"))
+                                  .ServerFiltering(true);
+                          }).CascadeFrom("ReferenceType")
+                )
+            </div>
+        </div>
+        <div class="row"></div>
+
+        <div class="row"></div>
+
+
+        <div class="row"></div>
+        <div class="col-md-offset-3 col-md-9">
+            <button type="submit" class="saveBtn btn btn-primary" onclick="javascript:changeparent()"><i class="fa fa-suitcase"></i> Submit</button>
+        </div>
+    </div>
+</div>
+
+<script language="javascript">
+    function RetrieveReferenceType() {
+        //var LookupID = opener.storeCode;
+        return {
+            referenceType: $("#ReferenceType").data("kendoDropDownList").value(),
+        };
+    }
+
+    function changeparent() {
+        var referenceID = document.getElementById('References').value;
+        opener.setReferenceID(referenceID);
+        window.close();
+
+    }
+    function closeWin() {
+        document.close();
+    }
+</script>

@@ -1,0 +1,340 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.HRM.RecruitmentManagment
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<legend>@Resources.Navigator_Recruitment_ApplicantScreeningResult</legend>
+@(Html.Kendo().Grid<ApplicantRegistration>()
+                          .Name("ApplicantRegistrationgrid")
+                          .Columns(columns =>
+                          {
+                          columns.Bound(c => c.Check).Template(@<text></text>).ClientTemplate("<input type='checkbox' #= Check ? checked='checked':'' # class='chkbx' />")
+                              .HeaderTemplate("<input type='checkbox' id='masterCheckBox' onclick='checkAll(this)'/>").Width(60);
+                              columns.ForeignKey(c => c.VacancyId, (IEnumerable)ViewData["Vacancy"], "VacancyId", "VaccancyCode").EditorTemplateName("Vacancy").Width(150);
+                              columns.Bound(c => c.ApplicantName).Width(200);
+                              columns.Bound(c => c.Age).Width(150);
+                              columns.Bound(c => c.Sex).Width(150);
+                              columns.Bound(c => c.TotalResult).Width(150);
+                              columns.Bound(c => c.Rank).Width(80);
+                              columns.Command(command =>
+                              {
+                                  //command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                  //command.Destroy();
+                              }).Width(180);
+                          })
+                           .ToolBar(toolbar =>
+                           {
+
+                           toolbar.Template(@<text>
+        <div class="toolbar">
+
+            <label class="category-label">@Resources.HR_HRMPlan_RecruitmentPlan_RecruitmentType</label>
+
+
+            @(Html.Kendo().ComboBox()
+                                             .Placeholder(Resources.HR_HRMPlan_RecruitmentPlan_RecruitmentType)
+                                              .Name("VacancyType")
+                     .BindTo(EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.Common.VacancyType)))
+                                                     .DataTextField("Text")
+                                                      .DataValueField("Value")
+                                                       .Events(x => x.Change("RecruitmentType"))
+                                                   .AutoBind(false)
+
+                            .HtmlAttributes(new { style = "width:200px;" })
+
+            )
+            <label class="category-label">@Resources.HR_HRMPlan_RecruitmentPlan_LookupId</label>
+            @(Html.Kendo().ComboBox()
+                                                                             .Placeholder(Resources.HR_HRMPlan_RecruitmentPlan_LookupId)
+                                                             .Name("LookupId")
+                                                                     .BindTo((IEnumerable)ViewData["JobTitle"])
+                                                             .DataTextField("Description")
+                                                                     .DataValueField("LookupId")
+                                                                     .Events(x => x.Change("JobTitle"))
+                                                   .AutoBind(false)
+
+                            .HtmlAttributes(new { style = "width: 200px;" })
+
+            )
+
+            <br />
+            <br />
+            @item.SaveButton()
+        </div>
+        @*@item.SaveButton()*@
+
+        </text>);
+
+                           })
+        .Editable(editable => editable.Mode(GridEditMode.InCell))//TemplateName("ApplicantRegistration").Window(window =>
+                                                                 //{
+                                                                 //    window.Title("Applicant Registration Form");
+                                                                 //    window.Scrollable(false);
+                                                                 //}))
+
+                          .Groupable()
+                                .HtmlAttributes(new { style = "height: 550px;" })
+                               .Groupable()
+                              .Sortable(sortable =>
+                              {
+                                  sortable.SortMode(GridSortMode.SingleColumn);
+                              })
+                               .Filterable()
+                              .Scrollable()
+                          .Pageable(pageable => pageable
+                                                .Input(true)
+                                                .Numeric(false)
+                                                .Refresh(true)
+                                                .PageSizes(true)
+                                                .ButtonCount(5))
+                            .ClientDetailTemplateId("AddressTemplate")
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+                                    .Sort(sort => sort.Add("TotalResult").Descending())
+                                                .Batch(true)
+                                                  .Events(events =>
+                                                  {
+                                                      events.Error("error_handler(\"ApplicantRegistrationgrid\")");
+                                                      events.RequestStart("onRequestStart(\"ApplicantRegistrationgrid\")");
+                                                      events.RequestEnd("onRequestEnd(\"ApplicantRegistrationgrid\")");
+                                                  })
+
+                              .Model(model =>
+                              {
+                                  model.Id(p => p.ApplicantRegistrationId);
+                                  model.Field(p => p.TotalResult).Editable(false);
+                                  model.Field(p => p.ApplicantName).Editable(false);
+                                  model.Field(p => p.VacancyCode).Editable(false);
+                                  model.Field(p => p.Age).Editable(false);
+
+                              })
+                                  .Read(read => read.Action("ApplicantRegistration_Read", "ApplicantRegistration"))
+                              .Create(create => create.Action("Editing_Create", "ApplicantRegistration"))
+                              .Update(update => update.Action("Editing_Create", "ApplicantRegistration"))
+                              .Destroy(destroy => destroy.Action("ApplicantRegistration_Destroy", "ApplicantRegistration"))
+                              ).ClientDetailTemplateId("template")
+)
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                    .Name("tabstrip_#=ApplicantRegistrationId#")
+    .SelectedIndex(0)
+    .Items(items =>
+     {
+
+
+         items.Add().Text(Resources.Navigator_Recruitment_ApplicantScreeningResult).Content(
+            @<text>
+                @* <legend>Screening Result</legend>*@
+                @(Html.Kendo().Grid<ApplicantScreeningResult>()
+                      .Name("ApplicantScreeningResultgrid_#=ApplicantRegistrationId#")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Criteria).Width(120);
+          columns.Bound(c => c.SettingValue).Width(120);
+          columns.Bound(c => c.CurrentResult).Width(150);
+          columns.Bound(c => c.Remark).Width(120);
+          columns.Command(command =>
+          {
+              if (HttpContext.Current.User.IsInRole("HR_Recruitment_User"))
+              {
+                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+              }
+          }).Width(200);
+      })
+      .ToolBar(toolbar =>
+      {
+          // toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable(h => h.Height(500))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+                  .Events(events =>
+                  {
+                      events.Error("error_handler(\"ApplicantScreeningResultgrid_#=ApplicantRegistrationId#\")");
+                      events.RequestStart("onRequestStart(\"ApplicantScreeningResultgrid_#=ApplicantRegistrationId#\")");
+                      events.RequestEnd("onRequestEnd(\"ApplicantScreeningResultgrid_#=ApplicantRegistrationId#\")");
+                  })
+
+          .Model(model =>
+          {
+              model.Id(p => p.ScreeningResultId);
+              model.Field(p => p.Criteria).Editable(false);
+              model.Field(p => p.SettingValue).Editable(false);
+          })
+                  .Read(read => read.Action("ApplicantScreeningResult_Read", "ApplicantScreeningResult", new { id = "#=ApplicantRegistrationId#" }))
+                  .Create(create => create.Action("ApplicantScreeningResult_Create", "ApplicantScreeningResult", new { id = "#=ApplicantRegistrationId#" }))
+          .Update(update => update.Action("ApplicantScreeningResult_Update", "ApplicantScreeningResult"))
+          .Destroy(destroy => destroy.Action("ApplicantScreeningResult_Destroy", "ApplicantScreeningResult"))
+      ).ToClientTemplate()
+                )
+
+
+            </text>
+    );
+
+
+         items.Add().Text(Resources.Navigator_Recruitment_ApplicantExamResult).Content(
+            @<text>
+                @*<legend>Exam Result</legend>*@
+                @(Html.Kendo().Grid<ApplicantExamResult>()
+                      .Name("ApplicantExamResultgrid_#=ApplicantRegistrationId#")
+      .Columns(columns =>
+      {
+          // columns.Bound(c => c.ApplicantRegistrationId);
+          columns.Bound(c => c.Criteria).Width(120);
+          columns.Bound(c => c.SettingValue).Width(120);
+          columns.Bound(c => c.CurrentResult).Width(120);
+          //  columns.Bound(c => c.Total).Width( 120);
+          // columns.Bound(c => c.Rank).Width( 120);
+          columns.Bound(c => c.Remark);
+          columns.Command(command =>
+          {
+              if (HttpContext.Current.User.IsInRole("HR_Recruitment_User"))
+              {
+                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+              }
+
+
+          }).Width(200);
+      })
+      .ToolBar(toolbar =>
+      {
+          // toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+                  .Events(events =>
+                  {
+                      events.Error("error_handler(\"ApplicantExamResultgrid_#=ApplicantRegistrationId#\")");
+                      events.RequestStart("onRequestStart(\"ApplicantExamResultgrid_#=ApplicantRegistrationId#\")");
+                      events.RequestEnd("onRequestEnd(\"ApplicantExamResultgrid_#=ApplicantRegistrationId#\")");
+                  })
+
+                  .Model(model =>
+                  {
+                      model.Id(p => p.ApplicantResultId);
+                      model.Field(p => p.Criteria).Editable(false);
+                      model.Field(p => p.SettingValue).Editable(false);
+                  })
+                  .Read(read => read.Action("ApplicantExamResult_Read", "ApplicantExamResult", new { id = "#=ApplicantRegistrationId#" }))
+                  .Create(create => create.Action("ApplicantExamResult_Create", "ApplicantExamResult", new { id = "#=ApplicantRegistrationId#" }))
+          .Update(update => update.Action("ApplicantExamResult_Update", "ApplicantExamResult"))
+          .Destroy(destroy => destroy.Action("ApplicantExamResult_Destroy", "ApplicantExamResult"))
+      ).ToClientTemplate()
+                )
+            </text>
+    );
+
+
+
+
+
+     }).ToClientTemplate())
+</script>
+
+<script>
+    //function error_handler(e) {
+    //    if (e.errors) {
+    //        var message = "Errors:\n";
+    //        $.each(e.errors, function (key, value) {
+    //            if ('errors' in value) {
+    //                $.each(value.errors, function () {
+    //                    message += this + "\n";
+    //                });
+    //            }
+    //        });
+    //        alert(message);
+
+    //    }
+
+    //}
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+</script>
+<script>
+    function JobTitle() {
+
+
+        var value = this.value(),
+            grid = $("#ApplicantRegistrationgrid").data("kendoGrid");
+
+        if (value) {
+            grid.dataSource.filter({ field: "LookupId", operator: "eq", value: parseInt(value) });
+        } else {
+            grid.dataSource.filter({});
+        }
+    }
+</script>
+<script>
+    function RecruitmentType() {
+
+
+        var value = this.value(),
+            grid = $("#ApplicantRegistrationgrid").data("kendoGrid");
+
+        if (value) {
+            grid.dataSource.filter({ field: "RecruitmentType", operator: "eq", value: parseInt(value) });
+        } else {
+            grid.dataSource.filter({});
+        }
+    }
+</script>
+<script>
+    function Vacancy() {
+
+        var value = this.value(),
+            grid = $("#ApplicantRegistrationgrid").data("kendoGrid");
+
+        if (value) {
+            grid.dataSource.filter({ field: "VacancyCode", operator: "eq", value: parseInt(value) });
+        } else {
+            grid.dataSource.filter({});
+        }
+
+    }
+</script>
+<script>
+    function RecruitmentType() {
+
+
+        var value = this.value(),
+            grid = $("#ApplicantRegistrationgrid").data("kendoGrid");
+
+        if (value) {
+            grid.dataSource.filter({ field: "VacancyType", operator: "eq", value: parseInt(value) });
+        } else {
+            grid.dataSource.filter({});
+        }
+    }
+</script>
+
+<script type="text/javascript">
+    $(function () {
+        $('#ApplicantRegistrationgrid').on('click', '.chkbx', function () {
+            var checked = $(this).is(':checked');
+            var grid = $('#ApplicantRegistrationgrid').data().kendoGrid;
+            var dataItem = grid.dataItem($(this).closest('tr'));
+            dataItem.set('Check', checked);
+        })
+    })
+
+    function checkAll(ele) {
+        var state = $(ele).is(':checked');
+        var grid = $('#ApplicantRegistrationgrid').data().kendoGrid;
+        $.each(grid.dataSource.view(), function () {
+            if (this['Check'] != state)
+                this.dirty = true;
+            this['Check'] = state;
+        });
+        grid.refresh();
+    }
+
+</script>

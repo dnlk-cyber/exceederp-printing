@@ -1,0 +1,95 @@
+﻿@using ExceedERP.Core.Domain.Finance.GL.Dynamic
+<legend>Segment Structure</legend>
+@(Html.Kendo().Grid<GLSegmentSetup>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Name).Width(80);
+          columns.Bound(c => c.Description).Width(80);
+          columns.Bound(c => c.SegmentLength).Width(80);
+          columns.Bound(c => c.Sequence).Width(80);
+          columns.Bound(c => c.SegmentType).Width(80).EditorTemplateName("DynamicSegmentTypeSelector");
+
+
+          columns.Bound(c => c.Displayed).Width(80).ClientTemplate(
+              "<input type='checkbox' disabled = 'true' value='#= Displayed#' " +
+              "# if (Displayed) { #" +
+              "checked='checked'" +
+              "# } #" +
+              "/>"
+              );
+          columns.Bound(c => c.Enabled).Width(80).ClientTemplate(
+              "<input type='checkbox' disabled = 'true' value='#= Enabled#' " +
+              "# if (Enabled) { #" +
+              "checked='checked'" +
+              "# } #" +
+              "/>"
+              );
+
+          columns.Command(command => { command.Edit(); /*command.Destroy(); */ command.Custom("En").Click("Enable"); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+          toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .HtmlAttributes(new { style = "height: 550px;" })
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(5))
+
+      .Scrollable()
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Filterable()
+      .Groupable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Events(ev => ev
+              .Error("error_handler(\"grid\")")
+              .RequestStart("onRequestStart(\"grid\")")
+              .RequestEnd("onRequestEnd(\"grid\")"))
+          .Model(model => model.Id(p => p.GLSegmentSetupId))
+          .Read(read => read.Action("GlSegmentSetups_Read", "GlDynamicSegmentSetup"))
+          .Create(create => create.Action("GlSegmentSetups_Create", "GlDynamicSegmentSetup"))
+          .Update(update => update.Action("GlSegmentSetups_Update", "GlDynamicSegmentSetup"))
+      // .Destroy(destroy => destroy.Action("GlSegmentSetups_Destroy", "GlDynamicSegmentSetup"))
+      ))
+
+
+<script>
+  
+
+    function Enable(e) {
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        var id = dataItem.GLSegmentSetupId;
+        $.ajax({
+        
+            type: "GET",
+            data: dataItem.GLSegmentSetupId, //I obtained the id properly
+            url: '@Url.Action("Enable_Disable", "GlDynamicSegmentSetup")/' + dataItem.GLSegmentSetupId,
+            success: function (result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                location.reload(true);
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+
+        });
+
+        $('#grid').data('kendoGrid').dataSource.read();
+        $('#grid').data('kendoGrid').refresh();
+        location.reload();
+    };
+</script>

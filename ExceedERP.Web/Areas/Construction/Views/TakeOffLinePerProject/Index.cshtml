@@ -1,0 +1,35 @@
+﻿@using ExceedERP.Core.Localization
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.TakeOffLinePerProject>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.T);
+        columns.Bound(c => c.D);
+        columns.Bound(c => c.S);
+        columns.Bound(c => c.Description);
+        columns.Bound(c => c.LookupId);
+        columns.Bound(c => c.Length);
+        columns.Bound(c => c.Width);
+        columns.Bound(c => c.Height);
+        columns.Bound(c => c.OrgBranchName);
+        columns.Bound(c => c.DateCreated);
+        columns.Bound(c => c.LastModified);
+        columns.Bound(c => c.CreatedBy);
+        columns.Bound(c => c.ModifiedBy);
+        columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel);  }).Width(200);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.TakeOffLinePerProjectId))
+          .Read(read => read.Action("TakeOffLinePerProject_Read", "TakeOffLinePerProject"))
+          .Create(create => create.Action("TakeOffLinePerProject_Create", "TakeOffLinePerProject"))
+          .Update(update => update.Action("TakeOffLinePerProject_Update", "TakeOffLinePerProject"))
+          .Destroy(destroy => destroy.Action("TakeOffLinePerProject_Destroy", "TakeOffLinePerProject"))
+      )
+)

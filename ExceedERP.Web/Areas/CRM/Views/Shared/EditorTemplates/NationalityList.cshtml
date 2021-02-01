@@ -1,0 +1,8 @@
+﻿@using System.Collections
+@(Html.Kendo().DropDownList().BindTo((IEnumerable)ViewData["NationalityList"])
+.OptionLabel("Select..")
+            .DataTextField("Nationality")
+        .DataValueField("CountryID")
+        .Name("CountryID")
+             .ValuePrimitive(true)
+)

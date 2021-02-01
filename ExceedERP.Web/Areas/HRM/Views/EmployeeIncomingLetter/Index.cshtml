@@ -1,0 +1,89 @@
+﻿@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>New Incomming Letter</legend>
+@(Html.Kendo().Grid<NewIncomingLetter>()
+      .Name("NewIncommingLettergrid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.FolderNo);
+          columns.Bound(c => c.LetterDate);
+          columns.Bound(c => c.LetterReferenceNo);
+          columns.Bound(c => c.RecivedDate);
+          columns.Bound(c => c.OwnerName);
+          columns.ForeignKey(c => c.InstitutionTypeId, (System.Collections.IEnumerable)ViewData["InstuType"], "InstitutionTypeId", "InstitutionName").EditorTemplateName("Institution");
+          columns.Bound(c => c.Subject);
+          // columns.Bound(c => c.Shelve);
+          //columns.Bound(c => c.Row);
+          //columns.Bound(c => c.FileNo);
+          //columns.Bound(c => c.NoOfAttachment);
+          columns.Bound(c => c.SerialNo);
+          //columns.Bound(c => c.Remark);
+          columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Update);command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("NewIncomming").Window(window => { window.Title("New Incomming Letter"); window.Scrollable(false); }))
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Scrollable(h => h.Height(500))
+      .Groupable()
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Filterable()
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(5))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Events(events => events.Error("error_handler(\"NewIncommingLettergrid\")")
+          // .Sync("sync_handler")
+          )
+          .Model(model => model.Id(p => p.NewIncommingLetterId))
+          .Read(read => read.Action("NewIncommingLetter_Read", "NewIncomingLetter"))
+          .Create(create => create.Action("NewIncommingLetter_Create", "NewIncomingLetter"))
+          .Update(update => update.Action("NewIncommingLetter_Update", "NewIncomingLetter"))
+          .Destroy(destroy => destroy.Action("NewIncommingLetter_Destroy", "NewIncomingLetter"))
+      ))
+<script>
+    //function error_handler(e) {
+    //    if (e.errors) {
+    //        var message = "Errors:\n";
+    //        $.each(e.errors, function (key, value) {
+    //            if ('errors' in value) {
+    //                $.each(value.errors, function () {
+    //                    message += this + "\n";
+    //                });
+    //            }
+    //        });
+    //        alert(message);
+
+    //    }
+
+    //}
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+    function onGridEdit(e) {
+        e.container.find(".k-button.k-grid-update").hide();
+        e.container.find(".k-button.k-grid-cancel").hide();
+
+    }
+</script>
+<style>
+    div.k-edit-form-container {
+        width: 700px;
+    }
+</style>

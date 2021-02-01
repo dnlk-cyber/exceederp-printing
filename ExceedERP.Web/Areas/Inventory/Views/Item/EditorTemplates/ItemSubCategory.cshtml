@@ -1,0 +1,15 @@
+﻿@using System.ServiceModel.Security
+ 
+ 
+@(Html.Kendo().DropDownList().Name("SubCategoryCode")
+    
+                    .DataValueField("SubCategoryCode")
+                    .DataTextField("Name")
+                    .OptionLabel("Sub Category")
+      .CascadeFrom("ItemCategoryCode")
+      .DataSource(
+            read => read.Read(re => re.Action("GetItemSubCategoryForItemDef", "DataProvider").Data("filterSubcategories"))
+                .ServerFiltering(true)
+               
+            )
+      )

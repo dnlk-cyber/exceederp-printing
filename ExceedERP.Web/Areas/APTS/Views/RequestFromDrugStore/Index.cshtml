@@ -1,0 +1,260 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.APTS
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Request To Be Confirmed </legend>
+@(Html.Kendo().Grid<DrugRequest>()
+                          .Name("DrugRequestgrid")
+                      .Columns(columns =>
+                      {
+                          columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "AmharicName").EditorTemplateName("Branch").Width(150).Filterable(ftb => ftb.Multi(true).Search(true)).Title("Branch");
+                          columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["FiscalYear"], "GlFiscalYearId", "Name").EditorTemplateName("Year").Filterable(ftb => ftb.Multi(true).Search(true)).Width(120).Title("Year");
+
+                          columns.Bound(c => c.RequestDateAm).EditorTemplateName("Calander").Width(120).Title("Request Date");
+                          columns.Bound(c => c.IsSendForApproval).ClientTemplate("<input type='checkbox' disabled = 'true' #=IsSendForApproval ? checked='checked' :'' # >").Width(120).Title("Is Sent?");
+                          columns.Bound(c => c.IsConfirmed).ClientTemplate("<input type='checkbox' disabled = 'true' #=IsConfirmed ? checked='checked' :'' # >").Width(120).Title("Is Signed?");
+                          columns.Bound(c => c.IsClosed).ClientTemplate("<input type='checkbox' disabled = 'true' #=IsClosed ? checked='checked' :'' # >").Width(120).Title("Is Closed?");
+                          columns.Bound(c => c.Remark).Width(80);
+
+
+                          columns.Command(command =>
+                          {
+                  //command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+
+                  command.Custom("l").IconClass("fa fa-check fa-2x").Text("&nbsp;").Click("Confirmation").HtmlAttributes(new { @class = "btn btn-success", @title = "Sign to confrim drug request", @id = "confirm" });
+                          }).Width(300);
+                      })
+                      .ToolBar(toolbar =>
+                      {
+              //toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+          })
+                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                        .Scrollable(h => h.Height(500))
+
+
+                                         .Groupable()
+                                                  .Sortable(sortable =>
+                                                  {
+                                                      sortable.SortMode(GridSortMode.SingleColumn);
+                                                  })
+                                      .Filterable()
+                                       .Events(e =>
+                                       {
+                                           e.DataBound("onDataBound");
+                                       })
+                                         .Pageable(pageable => pageable
+                                                                    .Input(true)
+                                                                    .Numeric(false)
+                                                                    .Refresh(true)
+                                                                    .PageSizes(true)
+                                                                    .ButtonCount(5))
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+                            .Sort(sort => sort.Add("DateCreated").Descending())
+                                 .Events(events =>
+                                 {
+                                     events.Error("error_handler(\"DrugRequestgrid\")");
+                                     events.RequestStart("onRequestStart(\"DrugRequestgrid\")");
+                                     events.RequestEnd("onRequestEnd(\"DrugRequestgrid\")");
+                                 }
+                              )
+
+                              .Model(model =>
+                              {
+                                  model.Id(p => p.DrugRequestId);
+
+                              })
+                          .Read(read => read.Action("RequestFromDrugStore_Read", "RequestFromDrugStore"))
+                      //.Create(create => create.Action("Model22AndRequisitions_Create", "Model22AndRequisitions"))
+                      // .Update(update => update.Action("RequestFromDrugStore_Update", "RequestFromDrugStore"))
+                      //.Destroy(destroy => destroy.Action("Model22AndRequisitions_Destroy", "Model22AndRequisitions"))
+                      ).ClientDetailTemplateId("template")
+)
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                                     .Name("tabstrip_#=DrugRequestId#")
+                                 .SelectedIndex(0)
+                                  .Items(items =>
+                                {
+                                    items.Add().Text(Resources.HR_RequestStatus).Content(
+                            @<text>
+                                @*<legend>Status</legend>*@
+
+                                @(Html.Kendo().Grid<APTSRequestStatus>()
+                                                                     .Name("RequestesStatusgrid_#=DrugRequestId#")
+                                                                         .Columns(columns =>
+                                                                         {
+                                                                         //columns.Bound(c => c.RequestId);
+                                                                         columns.Bound(c => c.DateReqStatAm).Width(80);
+                                                                                     columns.Bound(c => c.Status).EditorTemplateName("Enum").Width(100);
+                                                                         //columns.Bound(c => c.Remark).Width(50);
+                                                                         columns.Command(command =>
+                                                                                     {
+                                                                             //command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                                                             //command.Destroy().Text(Resources.ActionButton_Cancel);
+                                                                         }).Width(400);
+                                                                                 })
+                                                                                                 .ToolBar(toolbar =>
+                                                                                                 {
+                                                                                                 //toolbar.Custom().Action("SendForApproval", "DrugRequest").Text(Resources.HR_Send_For_Approval);
+                                                                                             })
+                                                                                                        .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                                                          .Scrollable()
+                                                                                                             .DataSource(dataSource => dataSource
+                                                                                                              .Ajax()
+                                                                                                                    .Events(events =>
+                                                                                                                    {
+                                                                                                                                events.Error("error_handler(\"RequestesStatusgrid_#=DrugRequestId#\")");
+                                                                                                                                events.RequestStart("onRequestStart(\"RequestesStatusgrid_#=DrugRequestId#\")");
+                                                                                                                                events.RequestEnd("onRequestEnd(\"RequestesStatusgrid_#=DrugRequestId#\")");
+                                                                                                                            })
+
+                                                                          .Model(model =>
+                                                                               {
+                                                                                           model.Id(p => p.APTSRequestStatusId);
+                                                                                           model.Field(p => p.Date).Editable(false).DefaultValue(DateTime.Today);
+                                                                                       })
+
+                                                                                     .Read(read => read.Action("APTSRequestesStatus_Read", "APTSRequestesStatus", new { id = "#=DrugRequestId#", referenceType = "DrugRequest"/*, area = "HRM"*/ }))
+                                                                                                                       // .Create(create => create.Action("APTSRequestesStatus_Create", "APTSRequestesStatus", new { id = "#=DrugRequestId#", referenceType2 = "DrugRequest"/*, area = "HRM"*/ }))
+                                                                                                                       //.Update(update => update.Action("APTSRequestesStatus_Update", "APTSRequestesStatus"/*, new { area = "HRM" }*/))
+                                                                                                                       // .Destroy(destroy => destroy.Action("APTSRequestesStatus_Destroy", "APTSRequestesStatus"))
+                                                                                                                       ).ToClientTemplate()
+                                )
+
+
+                            </text>
+                                             );
+
+                                            items.Add().Text("Request Items").Content(
+                    @<text>
+
+                        @(Html.Kendo().Grid<DrugRequestItem>()
+                                                                                  .Name("DrugRequestItem_#=DrugRequestId#")
+                                                                  .Columns(columns =>
+                                                                  {
+                                                                              columns.ForeignKey(c => c.DrugListsId, (IEnumerable)ViewData["DrugLists"], "DrugListsId", "Description").EditorTemplateName("DrugLists").Width(150).Title("Drug Name");
+                                                                              columns.ForeignKey(c => c.DrugUnitId, (IEnumerable)ViewData["UnitsList"], "DrugUnitId", "UoMName").EditorTemplateName("DrugUnits").Width(150).Title("Unit");
+                                                                  //columns.Bound(c => c.BegStock).Title("Beg stok").Width(150);
+                                                                  //columns.Bound(c => c.EndStock).Title("End Stock").Width(150);
+
+
+                                                                  //columns.Bound(c => c.ReceivedQty).Width(100);
+                                                                  //columns.Bound(c => c.Loss).Width(100);
+                                                                  columns.Bound(c => c.QtyRequested).Width(100);
+                                                                              columns.Bound(c => c.QtyApproved).Width(100);
+                                                                              columns.Bound(c => c.QtyAllowed).Width(100);
+                                                                              columns.Command(command =>
+                                                                              {
+                                                                      //command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                                                      //command.Destroy().Text(Resources.ActionButton_Cancel);//
+                                                                  }).Width(200);
+                                                                          })
+                                                                  .ToolBar(toolbar =>
+                                                                  {
+                                                                  //toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                                                              })
+                                                                  .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                  .Scrollable(h => h.Height(300))
+                                                                  .DataSource(dataSource => dataSource
+                                                                      .Ajax()
+                                                                              .Events(events =>
+                                                                              {
+
+                                                                                          events.Error("error_handler(\"DrugRequestItem_#=DrugRequestId#\")");
+                                                                                          events.RequestStart("onRequestStart(\"DrugRequestItem_#=DrugRequestId#\")");
+                                                                                          events.RequestEnd("onRequestEnd(\"DrugRequestItem_#=DrugRequestId#\")");
+                                                                                      })
+
+                                                                      .Model(model => model.Id(p => p.DrugRequestItemId))
+                                                                                      .Read(read => read.Action("DrugReqeustItem_Read", "DrugReqeustItem", new { id = "#=DrugRequestId#" }))
+                                                                  //        .Create(create => create.Action("DrugReqeustItem_Create", "DrugReqeustItem", new { idTwo = "#=DrugRequestId#" }))
+                                                                  //  .Update(update => update.Action("DrugReqeustItem_Update", "DrugReqeustItem"))
+                                                                  // .Destroy(destroy => destroy.Action("DrugReqeustItem_Destroy", "DrugReqeustItem"))
+                                                                  ).ToClientTemplate()
+                        )
+
+
+                    </text>
+                                         );
+
+                                }).ToClientTemplate())
+</script>
+
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 800px;
+    }
+</style>
+<script>
+
+    function sync_handler(e) {
+        this.read();
+</script>
+
+
+
+<script>
+        function Confirmation(e) {
+
+
+        var row = $(e.target).closest("tr");
+            var grid = $("#DrugRequestgrid").data("kendoGrid");
+        var dataItem = grid.dataItem(row);
+            var id = dataItem.DrugRequestId;
+
+
+        if (id.length !== 0 )
+        {
+            $('#loading-image').show();
+
+            $.ajax({
+                url: '@Url.Action("Confirmed", "RequestFromDrugStore")',
+
+                data: { id: id},
+                type: 'POST',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                    alert("your signature successfully submited")
+                    $('#loading-image').hide();
+                    grid.dataSource.read();
+                }
+
+            });
+
+        }
+    }
+</script>
+<script>
+
+    function onDataBound(e) {
+        var rows = e.sender.tbody.children();
+
+        for (var j = 0; j < rows.length; j++) {
+            var row = $(rows[j]);
+            var dataItem = e.sender.dataItem(row);
+            if (dataItem.IsConfirmed === true) {
+                row.find("#confirm").hide();
+            }
+            if (dataItem.IsSendForApproval === true && dataItem.IsConfirmed === false && dataItem.IsClosed === false) {
+
+                row.css("background-color", "orange");
+            }
+            else if (dataItem.IsSendForApproval === true && dataItem.IsConfirmed === true && dataItem.IsClosed === false) {
+
+                row.css("background-color", "lightgreen");
+            }
+            else if (dataItem.IsSendForApproval === true && dataItem.IsConfirmed === true && dataItem.IsClosed === true) {
+
+                row.css("background-color", "darkgrey");
+            }
+
+        }
+    }
+
+</script>
+
+

@@ -1,0 +1,28 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Procurement.PurchaseValidationItem>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.ItemCode);
+        columns.Bound(c => c.Quantity);
+        columns.Bound(c => c.Unit);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+            toolbar.Excel();
+           // toolbar.Pdf();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Pageable()
+      .Filterable()
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.PurchaseValidationItemId))
+          .Read(read => read.Action("PurchaseValidationItems_Read", "PurchaseValidationItem"))
+          .Create(create => create.Action("PurchaseValidationItems_Create", "PurchaseValidationItem"))
+          .Update(update => update.Action("PurchaseValidationItems_Update", "PurchaseValidationItem"))
+          .Destroy(destroy => destroy.Action("PurchaseValidationItems_Destroy", "PurchaseValidationItem"))
+      )
+)

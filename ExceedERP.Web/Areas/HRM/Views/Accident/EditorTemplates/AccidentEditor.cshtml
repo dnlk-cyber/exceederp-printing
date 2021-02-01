@@ -1,0 +1,443 @@
+﻿@model ExceedERP.Core.Domain.FleetManagement.FleetRegistration.Accident
+
+<script>
+    function onUploadSuccess(e) {
+
+    }
+
+    function checkFileType(e) {
+        var files = e.files;
+
+        $.each(files, function () {
+
+            if (this.extension.toLowerCase() === ".pdf" || this.extension.toLowerCase() === ".doc" || this.extension.toLowerCase() === ".docx") {
+
+            } else {
+                alert("Only .pdf or .docx or .doc files can be uploaded!");
+                e.preventDefault();
+            }
+
+        });
+    }
+
+
+</script>
+
+<div class="demo-section k-content">
+    <form>
+
+        <div class="row">
+            <div class="col-md-1">
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @(Html.LabelFor(m => m.FleetsID))
+                    </div>
+                        @(Html.Kendo().DropDownListFor(model => model.FleetsID).Name("FleetsID").Enable(false)
+                                          .DataTextField("EquipmentName")
+                                                  .DataValueField("FleetsID")
+                                                  .OptionLabel(" Select Equipment")
+                                                  .Filter(FilterType.Contains)
+                                          .DataSource(d => d.Read(r => r.Action("GetEquipment", "Accident")).ServerFiltering(false)))
+                 
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @(Html.LabelFor(m => m.LevelOfDamage))
+                    </div>
+                        @(Html.Kendo().DropDownListFor(m => m.LevelOfDamage).Name("LevelOfDamage").Enable(false)
+                                     .DataTextField("Text")
+                               .DataValueField("Value")
+                          .OptionLabel(" Select Type Of Damage")
+                          .BindTo(EnumHelper.GetSelectList(typeof(ExceedERP.Core.Domain.FleetManagement.FleetRegistration.Accident.LevelOfDamageenum))))
+                 
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.Accountablebody)
+                    </div>
+                    <div>
+                        @Html.Kendo().TextBoxFor(model => model.Accountablebody).Enable(false)
+                        @Html.ValidationMessageFor(model => model.Accountablebody)
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="row">
+            <div class="col-md-1">
+            </div>
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+
+                        @Html.LabelFor(model => model.AccidentLocation)
+                    </div>
+                    <div>
+                        @Html.Kendo().TextBoxFor(model => model.AccidentLocation).Enable(false)
+                        @Html.ValidationMessageFor(model => model.AccidentLocation)
+                    </div>
+                </div>
+            </div>
+
+
+            <div class="col-md-3">
+                <div class="form-group ">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.CauseOfAccident)
+                    </div>
+                    <div>
+                        @Html.Kendo().TextBoxFor(model => model.CauseOfAccident).Enable(false)
+                        @Html.ValidationMessageFor(model => model.CauseOfAccident)
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3">
+                <div class="form-group ">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.ThirdPartyDamage)
+                    </div>
+                    <div>
+                      @Html.Kendo().TextBoxFor(model => model.ThirdPartyDamage).Enable(false)
+                        @Html.ValidationMessageFor(model => model.ThirdPartyDamage)
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="row">
+            <div class="col-md-1">
+            </div>
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+
+                        @*@Html.LabelFor(model => model.PersonWasAtAccident)*@
+                    </div>
+                    <div>
+                        @Html.Kendo().CheckBoxFor(model => model.PersonWasAtAccident).Enable(false)
+                        @Html.ValidationMessageFor(model => model.PersonWasAtAccident)
+                    </div>
+                </div>
+               @* <div class="col-lg-3">*@
+                    <div class="form-group ">
+                        <div class="k-label">
+                            @Html.LabelFor(model => model.CurrentValue)
+                        </div>
+                        <div>
+                            @Html.Kendo().TextBoxFor(model => model.CurrentValue).Enable(false)
+                            @Html.ValidationMessageFor(model => model.CurrentValue)
+                        </div>
+                    </div>
+                @*</div>*@
+            </div>
+
+
+            <div class="col-md-3">
+                <div class="form-group ">
+                    <div class="k-label">
+                        @*@Html.LabelFor(model => model.IsHornHeared)*@
+                    </div>
+                    <div>
+                        @Html.Kendo().CheckBoxFor(model => model.IsHornHeared).Enable(false)
+                        @Html.ValidationMessageFor(model => model.IsHornHeared)
+                    </div>
+                </div>
+                <div class="form-group ">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.PlateNo)
+                    </div>
+                    <div>
+                        @Html.Kendo().TextBoxFor(model => model.PlateNo).Enable(false)
+                        @Html.ValidationMessageFor(model => model.PlateNo)
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.VehicleSpeed)
+                    </div>
+                    <div>
+                        @Html.Kendo().NumericTextBoxFor(model => model.VehicleSpeed).Min(0).Enable(false)
+                        @Html.ValidationMessageFor(model => model.VehicleSpeed)
+                    </div>
+                </div>
+            </div>
+
+   
+        </div>
+
+        <div class="row">
+            <div class="col-lg-1">
+            </div>
+
+            <div class="col-lg-3">
+                <div class="form-group ">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.VehicleDistanceFromRoadEdge)
+                    </div>
+                    <div>
+                        @Html.Kendo().NumericTextBoxFor(model => model.VehicleDistanceFromRoadEdge).Enable(false)
+                        @Html.ValidationMessageFor(model => model.VehicleDistanceFromRoadEdge)
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="form-group ">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.Description)
+                    </div>
+                    <div>
+                       @Html.Kendo().TextBoxFor(model => model.Description)
+                        @Html.ValidationMessageFor(model => model.Description)
+                    </div>
+                </div>
+            </div>
+           
+
+           
+                <div class="col-lg-3">
+                    <div class="form-group ">
+                        <div class="k-label">
+                            @Html.LabelFor(model => model.InjuredPersons)
+                        </div>
+                        <div>
+                            @Html.EditorFor(model => model.InjuredPersons)
+                            @Html.ValidationMessageFor(model => model.InjuredPersons)
+                        </div>
+                    </div>
+                </div>
+             
+
+        </div>
+
+       
+        <div class="row">
+            <div class="col-lg-1">
+            </div>
+            <div class="col-md-3">
+                <div class="form-group ">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.OpionionResponsible)
+                    </div>
+                    <div>
+                        @Html.EditorFor(model => model.OpionionResponsible)
+                        @Html.ValidationMessageFor(model => model.OpionionResponsible)
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3">
+                <div class="form-group ">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.PolicyIdNo)
+                    </div>
+                    <div>
+                        @Html.EditorFor(model => model.PolicyIdNo)
+                        @Html.ValidationMessageFor(model => model.PolicyIdNo)
+                    </div>
+                </div>
+            </div>
+            <div class="col-lg-3">
+                <div class="form-group ">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.WittnessDescription)
+                    </div>
+                    <div>
+                        @Html.EditorFor(model => model.WittnessDescription)
+                        @Html.ValidationMessageFor(model => model.WittnessDescription)
+                    </div>
+                </div>
+            </div>
+    
+
+        </div>
+        <div class="row">
+            <div class="col-lg-1">
+            </div>
+            <div class="col-md-3">
+                <div class="form-group ">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.AssetDamage)
+                    </div>
+                    <div>
+                        @Html.EditorFor(model => model.AssetDamage)
+                        @Html.ValidationMessageFor(model => model.AssetDamage)
+                    </div>
+                </div>
+            </div>
+    
+     
+
+
+        @*////////////////////////////////////////////////////////////////////////////////////////////////*@
+
+       
+            <div class="col-md-3">
+                <div class="form-group ">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.FullName)
+                    </div>
+                    <div>
+                        @Html.EditorFor(model => model.FullName)
+                        @Html.ValidationMessageFor(model => model.FullName)
+                    </div>
+                </div>
+            </div>
+
+       
+
+
+       
+            <div class="col-md-3">
+                <div class="form-group ">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.Insured)
+                    </div>
+                    <div>
+                        @Html.EditorFor(model => model.Insured)
+                        @Html.ValidationMessageFor(model => model.Insured)
+                    </div>
+                </div>
+            </div>
+        </div>
+
+@*==================================*@
+        <div class="row">
+            <div class="col-lg-1">
+            </div>
+            <div class="col-md-3">
+                <div class="form-group ">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.Address)
+                    </div>
+                    <div>
+                        @Html.EditorFor(model => model.Address)
+                        @Html.ValidationMessageFor(model => model.Address)
+                    </div>
+                </div>
+            </div>
+       
+            <div class="col-md-3">
+                <div class="form-group ">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.Occupation)
+                    </div>
+                    <div>
+                        @Html.EditorFor(model => model.Occupation)
+                        @Html.ValidationMessageFor(model => model.Occupation)
+                    </div>
+                </div>
+            </div>
+       
+            <div class="col-md-3">
+                <div class="form-group ">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.PhoneNo)
+                    </div>
+                    <div>
+                        @Html.EditorFor(model => model.PhoneNo)
+                        @Html.ValidationMessageFor(model => model.PhoneNo)
+                    </div>
+                </div>
+            </div>
+        </div>
+@*===========================================================*@
+        <div class="row">
+            <div class="col-lg-1">
+            </div>
+            <div class="col-md-3">
+                <div class="form-group ">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.PolicyNo)
+                    </div>
+                    <div>
+                        @Html.EditorFor(model => model.PolicyNo)
+                        @Html.ValidationMessageFor(model => model.PolicyNo)
+                    </div>
+                </div>
+            </div>
+      
+
+        
+            <div class="col-md-3">
+                <div class="form-group ">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.RenewalDate)
+                    </div>
+                    <div>
+                        @Html.EditorFor(model => model.RenewalDate)
+                        @*@Html.TextBoxFor(model => model.RenewalDateAmh, htmlAttributes: new { disabled = "disabled", @class = "et-popup-picker" }) <img src="~/Scripts/etp/images/calendar-blue.gif" onclick="SelectDate(this)" />*@
+
+                        @Html.ValidationMessageFor(model => model.RenewalDate)
+                    </div>
+                </div>
+            </div>
+       
+            <div class="col-md-3">
+                <div class="form-group ">
+                    <div class="k-label">
+                     @*   @Html.LabelFor(model => model.DoYouHaveMoreThanOneInsurance)*@
+                    </div>
+                    <div>
+                        @Html.Kendo().CheckBoxFor(model => model.DoYouHaveMoreThanOneInsurance)
+                        @Html.ValidationMessageFor(model => model.DoYouHaveMoreThanOneInsurance)
+                    </div>
+                </div>
+            </div>
+        </div>
+@*==========================================================================*@
+        <div class="row">
+            <div class="col-lg-1">
+            </div>
+            <div class="col-md-3">
+                <div class="form-group ">
+                    <div class="k-label">
+                    @*    @Html.LabelFor(model => model.DoYouHaveOtherInsuranceCanEarnForTheAccident)*@
+                    </div>
+                    <div>
+                        @Html.Kendo().CheckBoxFor(model => model.DoYouHaveOtherInsuranceCanEarnForTheAccident)
+                        @Html.ValidationMessageFor(model => model.DoYouHaveOtherInsuranceCanEarnForTheAccident)
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="form-group ">
+                    <div class="k-label">
+                            @*@Html.LabelFor(model => model.DoThePoliceRecoredIt)*@
+                    </div>
+                    <div>
+                        @Html.Kendo().CheckBoxFor(model => model.DoThePoliceRecoredIt)
+                        @Html.ValidationMessageFor(model => model.DoThePoliceRecoredIt)
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="form-group ">
+                    <div class="k-label">
+                            @*@Html.LabelFor(model => model.WitnessInYourCar)*@
+                    </div>
+                    <div>
+                        @Html.Kendo().CheckBoxFor(model => model.WitnessInYourCar)
+                        @Html.ValidationMessageFor(model => model.WitnessInYourCar)
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+
+
+
+    </form>
+</div>

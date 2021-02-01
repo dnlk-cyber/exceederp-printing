@@ -1,0 +1,344 @@
+﻿@model ExceedERP.Core.Domain.FleetManagement.FleetEquipmentRent.RentRequest
+@{
+    ViewBag.Title = "Rent Request";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Rent Request</legend>
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetEquipmentRent.RentRequest>()
+    .Name("grid")
+    .Columns(columns =>
+    {
+        columns.Bound(e => e.RequestNumber).Title("Request Num").Width(120);
+        columns.Bound(e => e.FromBranchName).Width(120);
+        columns.Bound(e => e.FromStructureName).Width(120);
+        columns.Bound(e => e.Status).Width(100);
+
+
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(200);
+
+    })
+            .ToolBar(commands => commands.Create())
+        .Editable(editable =>
+        {
+            editable.Mode(GridEditMode.PopUp).TemplateName("RentRequestEditor");
+            editable.DisplayDeleteConfirmation("Are You Sure To Remove RentRequest");
+        })
+       .HtmlAttributes(new { style = "height: 520px;" })
+                          .Pageable(pageable => pageable
+                                            .Input(true)
+                                            .Numeric(false)
+                                            .Refresh(true)
+                                            .PageSizes(true)
+                                            .ButtonCount(5))
+
+                                .Scrollable()
+                                .Sortable()
+                                .Filterable()
+                                .Groupable()
+                                .Scrollable(h => h.Height(500))
+    .ClientDetailTemplateId("template").Groupable().Events(ev => ev.DetailExpand("onDetailExpand"))
+      .DataSource(dataSource => dataSource
+        .Ajax()
+        .ServerOperation(false)
+                                        .Sort(x => x.Add(s => s.RequestNumber).Descending())
+        .Model(model =>
+              {
+                  model.Id(p => p.RentRequestID);
+                  model.Field(p => p.RentRequestID).Editable(false);
+
+              }).Events(ev => ev
+                                                    .Error("error_handler(\"grid\")")
+                                                    .RequestStart("onRequestStart(\"grid\")")
+                                                    .RequestEnd("onRequestEnd(\"grid\")"))
+                    .Create(create => create.Action("RentRequest_Create", "RentRequest"))
+                    .Read(read => read.Action("RentRequest_Read", "RentRequest"))
+                    .Update(read => read.Action("RentRequest_Update", "RentRequest"))
+                    .Destroy(read => read.Action("RentRequest_Destroy", "RentRequest"))
+  )
+   .Events(events => events.DataBound("dataBound"))
+)
+
+
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                            .Name("tabStrip_#=RentRequestID#")
+            .SelectedIndex(0)
+            .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+            .Items(items =>
+            {
+      items.Add().Text("Detail").Content(
+                        @<text>
+                            <legend>Detail</legend>
+
+                            <div class="box">
+
+                                <div class="box-col">
+
+                                    # if (IsSendForApproval == false || IsSendForApproval == "false")
+                                    {#
+
+                                    <a href='@Url.Action("RentRequest_SendForOnlineApproval", "RentRequestApproval")/?EId=#=RentRequestID#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                                    # }#
+                                </div>
+                            </div> 
+                            <div class="demo-section k-header export-app">
+                                <div class="demo-section content-wrapper">
+
+                                    <form>
+
+                                       
+
+                                        <div class="row">
+                                            <div class="col-md-1">
+                                            </div>
+                                            <div class="col-md-2">
+                                                <div class="form-group">
+                                                    <div class="label">
+                                                        @Html.LabelFor(model => model.CreatedBy)
+                                                    </div>
+                                                    <div>
+                                                        #=CreatedBy#
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <div class="form-group">
+                                                    <div class="label">
+                                                        @Html.LabelFor(model => model.DateCreated)
+                                                    </div>
+                                                    <div>
+                                                        #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                       
+                                            <div class="col-md-2">
+                                                <div class="form-group">
+                                                    <div class="label">
+                                                        @Html.LabelFor(model => model.ModifiedBy)
+                                                    </div>
+                                                    <div>
+
+                                                        #=ModifiedBy#
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                       
+                                                    <div class="col-md-2">
+                                                <div class="form-group">
+                                                    <div class="label">
+                                                        @Html.LabelFor(model => model.LastModified)
+                                                    </div>
+                                                    <div>
+                                                        #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                          
+                                        </div>
+
+                                    </form>
+
+                                </div>
+                            </div>
+
+
+
+                        </text>
+
+
+            );
+                items.Add().Text("Requests").Content(@<text>
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetResource.RequestedEquipment>()
+                                                .Name("AssignedEquipmentgrid_#=RentRequestID#")
+                        .Columns(columns =>
+                        {
+                            columns.Bound(o => o.Type).EditorTemplateName("EquipmentType").Width(100);
+                            columns.Bound(o => o.EquipmentName).Title("Category").EditorTemplateName("EquipmentSubType").Width(120);
+                            columns.Bound(o => o.EquipmentStatus).EditorTemplateName("EquipmentStatus").Width(80);
+                            columns.Bound(o => o.Quantity).EditorTemplateName("Integer").Width(80);
+                            columns.Bound(o => o.StartDate).Width(80);
+                            columns.Bound(o => o.EndDate).Width(80);
+                            columns.Command(command => { command.Edit(); command.Destroy(); }).Width(150);
+
+                        })
+                                               .ToolBar(commands => commands.Create().Text(" Request Equipment"))
+                                           .Editable(editable =>
+                {
+                    editable.Mode(GridEditMode.InLine);
+                    editable.DisplayDeleteConfirmation("Are You Sure To Remove Request Equipment");
+                }).Events(events => events.DataBound("dataBound"))
+
+                        .DataSource(dataSource => dataSource
+                            .Ajax()
+                                                 .PageSize(5)
+                                     .Model(model => model.Id(p => p.RequestedEquipmentId)).Events(ev => ev
+                                                                        .Error("error_handler(\"AssignedEquipmentgrid_#=RentRequestID#\")")
+                                                                        .RequestStart("onRequestStart(\"AssignedEquipmentgrid_#=RentRequestID#\")")
+                                                                        .RequestEnd("onRequestEnd(\"AssignedEquipmentgrid_#=RentRequestID#\")"))
+                                                                                                                            .Create(update => update.Action("RequestEquipment_Create", "AssignedEquipment", new { createRequestNumber = "#=RentRequestID#", createType = "RENT" }))
+                                                                                                                    .Read(read => read.Action("RequestedViewEquipment", "AssignedEquipment", new { readRequestNumber = "#=RentRequestID#", readType = "RENT" }))
+                                                                                           .Update(update => update.Action("AssignedEquipment_Update", "AssignedEquipment"))
+                                                                            .Destroy(destroy => destroy.Action("AssignedEquipment_Destroy", "AssignedEquipment"))
+                        )
+                        .Sortable()
+                        .ToClientTemplate())
+                </text>
+                );
+
+                items.Add().Text("Assigned Equipment").Content(@<text>
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetResource.AssignedEquipment>()
+                                                .Name("AssignedConfirmedEquipmentgrid_#=RentRequestID#")
+                        .Columns(columns =>
+                        {
+                            columns.Bound(o => o.CategoryRef).Title(" Request ").EditorTemplateName("AssignmentBind").Width(150);
+                            columns.Bound(o => o.EquipmentName).EditorTemplateName("AssignEquipment").Width(150);
+
+
+
+
+                        })
+                      .DataSource(dataSource => dataSource
+                            .Ajax()
+                            .PageSize(5)
+                                     .Model(model => model.Id(p => p.AssignedEquipmentID)).Events(ev => ev
+                                                                                        .Error("error_handler(\"AssignedConfirmedEquipmentgrid_#=RentRequestID#\")")
+                                                                                        .RequestStart("onRequestStart(\"AssignedConfirmedEquipmentgrid_#=RentRequestID#\")")
+                                                                                        .RequestEnd("onRequestEnd(\"AssignedConfirmedEquipmentgrid_#=RentRequestID#\")"))
+                                 .Read(read => read.Action("AssignedConfirmedEquipment", "AssignedEquipment", new { rentRequest = "#=RentRequestID#", type = "RENT" })))
+
+                        .Sortable()
+                        .ToClientTemplate())
+                </text>
+                );
+
+
+
+
+                items.Add().Text(" Approval").Content(@<text>
+            
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetEquipmentRent.RentRequestApproval>()
+                                                                                                        .Name("RentRequestApproval#=RentRequestID#")
+                        .Columns(columns =>
+                        {
+                            columns.Bound(o => o.Status).EditorTemplateName("ApprovalEditor").Width(126);
+
+                            columns.Bound(o => o.Remark).Width(200);
+                            columns.Bound(c => c.CreatedBy).Width(150);
+                            columns.Bound(c => c.DateCreated).Format("{0:yyyy-MM-dd}").Width(150);
+                            columns.Command(command => { command.Edit(); }).Width(250);
+
+                        }).Events(ev =>
+                        {
+                            ev.DataBound("approveonDataBound");
+                        })
+                             .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                       .DataSource(dataSource => dataSource
+                            .Ajax()
+                            .PageSize(5)
+                                                       .Model(model =>
+                              {
+                                  model.Id(p => p.RentRequestApprovalID);
+                                  model.Field(p => p.CreatedBy).Editable(false);
+                                  model.Field(p => p.DateCreated).Editable(false);
+                              })
+                                                                                .Events(ev => ev
+                                                            .Error("error_handler(\"RentRequestApproval#=RentRequestID#\")")
+                                                            .RequestStart("onRequestStart(\"RentRequestApproval#=RentRequestID#\")")
+                                                            .RequestEnd("onRequestEnd(\"RentRequestApproval#=RentRequestID#\")"))
+                                                                                                                           .Create(update => update.Action("RentRequest_Approve", "RentRequestApproval", new { EId = "#=RentRequestID#" }))
+                                                                                                                     .Read(read => read.Action("RentRequestApproval_Read", "RentRequestApproval", new { EId = "#=RentRequestID#" }))
+                                                                                                                   .Update(update => update.Action("RentRequest_Approve", "RentRequestApproval"))
+
+
+                                                      )
+                                               .ToClientTemplate())
+                </text>
+                );
+            })
+                                                                                                                                                                                                                                                            .ToClientTemplate())
+</script>
+
+<script>
+    function dataBound() {
+        this.expandRow(this.tbody.find("tr.k-master-row").first());
+
+        var grid = this;
+
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+
+            if (dataItem.Status == "Approved") {
+                console.log("Approved");
+
+                $(this).find(".k-grid-edit").remove();
+                $(this).find(".k-grid-delete").remove();
+            }
+
+            if (dataItem.Status == "Approve" || IsApproved == true || IsSendForApproved == true) {
+                console.log("Approved");
+                $(this).find(".k-grid-edit").remove();
+                $(this).find(".k-grid-delete").remove();
+            }
+        });
+    }
+
+
+</script>
+
+<script type="text/javascript">
+    var IsApproved;
+    var IsSendForApproved;
+    var masterId;
+
+    function filterEquipmentIdentity() {
+        return {
+            EquipmentIdentityID: $("#Type").val()
+        };
+    }
+    function onDetailExpand(e) {
+        var masterRow = e.masterRow;
+
+        var masterGrid = $("#grid").data("kendoGrid");
+
+        var masterDataItem = masterGrid.dataItem(masterRow);
+        masterId = masterDataItem.RentRequestID;
+        IsApproved = masterDataItem.IsOnlineApproved;
+        IsSendForApproved = masterDataItem.IsSendForApproval;
+        var linegridName = "#AssignedEquipmentgrid_" + masterId;
+
+        if (IsApproved == true || IsSendForApproved == true) {
+            $(linegridName).find(".k-toolbar").hide(); //hide toolbar
+            $(".k-grid-top", linegridName).hide();
+            $(".k-grid-edit", linegridName).hide();
+        }
+    }
+    function approveonDataBound(e) {
+        var grid = this;
+
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+            if (dataItem.Status == "Approve" || IsApproved == true) {
+                console.log("Approved");
+                $(this).find(".k-grid-edit").remove();
+                $(this).find(".k-grid-delete").remove();
+            }
+
+
+
+        });
+    }
+
+    
+
+</script>
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 700px;
+    }
+</style>    

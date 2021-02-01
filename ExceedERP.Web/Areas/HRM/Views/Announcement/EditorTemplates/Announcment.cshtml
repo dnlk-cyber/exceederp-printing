@@ -1,0 +1,56 @@
+﻿@using System.Collections
+@using Kendo.Mvc.UI
+@using ExceedERP.Core.Localization
+@model ExceedERP.Core.Domain.HRM.Company.AnnouncmentDetail
+
+
+<form style=" width:600px">
+
+<div class="row">
+    <div class="col-md-1">
+
+    </div>
+   
+    <div class="col-md-3">
+        <div class="form-group">
+            <div class="k-label">
+                @Html.LabelFor(model => model.Detail, htmlAttributes: new { @class = "control-label col-md-8" })
+
+            </div>
+            <div>
+
+                @(Html.Kendo().EditorFor(model => model.Detail)
+.HtmlAttributes(new { style = "width:300px" })
+                 .Tools(tools => tools
+                                .Clear()
+                                .Bold().Italic().Underline().Strikethrough()
+                                .JustifyLeft().JustifyCenter().JustifyRight().JustifyFull()
+                                .CreateLink().Unlink()
+                                .InsertImage()
+                                .TableEditing()
+                                .FontColor().BackColor()
+                          )
+                  )
+       
+                @Html.ValidationMessageFor(model => model.Detail, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    </div>
+    @*<div class="col-md-3">
+        <div>
+            @Html.LabelFor(model => model.Remark, htmlAttributes: new { @class = "control-label col-md-8" })
+        </div>
+        <div class="form-group">
+            @Html.TextAreaFor(model => model.Remark)
+            @Html.ValidationMessageFor(model => model.Remark, "", new { @class = "text-danger" })
+        </div>
+    </div>*@
+   
+
+</div>
+
+<br/>
+
+
+
+</form>

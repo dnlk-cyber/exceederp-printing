@@ -1,0 +1,24 @@
+﻿@using ExceedERP.Core.Domain.Finance.Report.IFRS
+
+@(Html.Kendo().Grid<IfrsScoiOtherComprehensiveIncome>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Description);
+          columns.Bound(c => c.AccountFrom);
+          columns.Bound(c => c.AccountTo);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.IfrsScoiOtherComprehensiveIncomeId))
+          .Read(read => read.Action("IfrsScoiOtherComprehensiveIncomes_Read", "IfrsScoiOtherComprehensiveIncome"))
+          .Create(create => create.Action("IfrsScoiOtherComprehensiveIncomes_Create", "IfrsScoiOtherComprehensiveIncome"))
+          .Update(update => update.Action("IfrsScoiOtherComprehensiveIncomes_Update", "IfrsScoiOtherComprehensiveIncome"))
+          .Destroy(destroy => destroy.Action("IfrsScoiOtherComprehensiveIncomes_Destroy", "IfrsScoiOtherComprehensiveIncome"))
+      ))

@@ -1,0 +1,7 @@
+-company information...more than name
+-Perspective should be 4 and have index for sorting
+-plan and performance not by same interface
+-plan should be done at once
+-to edit plan/perfo...Grid
+-Time ...
+period definition

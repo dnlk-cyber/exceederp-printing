@@ -1,0 +1,285 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.HRM.ArchiveManagement
+@using ExceedERP.Core.Localization
+@using ExceedERP.Core.Domain.Common.HRM
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>@Resources.NavigatorArchiveManagement_EmployeeFolder</legend>
+@(Html.Kendo().Grid<PersonalArchiveNo>()
+                      .Name("PersonalArchiveNogrid")
+                  .Columns(columns =>
+                  {
+                      columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameAmharic").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).Width(250);
+                      columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["Branch"], "BranchId", "AmharicName").EditorTemplateName("Branch").Filterable(ftb => ftb.Multi(true).Search(true)).Width(300);
+                      columns.Bound(c => c.Folder).Width(100);
+                      columns.Bound(c => c.FileNo).Width(150);
+                      columns.Bound(c => c.RoomNo).Width(100);
+                      columns.Bound(c => c.Shelve).Width(100);
+                      columns.Bound(c => c.Row).Width(100);
+
+                      columns.Bound(c => c.Remark).Width(100);
+                      columns.Command(command =>
+                      {
+                          if (HttpContext.Current.User.IsInRole("Archive_User"))
+                          {
+                              command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                          }
+                          if (HttpContext.Current.User.IsInRole("Archive_Admin"))
+                          {
+                              command.Destroy().Text(Resources.ActionButton_Cancel);
+                          }
+                      }).Width(200);
+                  })
+                  .ToolBar(toolbar =>
+                  {
+                      if (HttpContext.Current.User.IsInRole("Archive_User"))
+                      {
+                          toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                      }
+                  })
+                          .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("PersonArchive").Window(window => { window.Title(Resources.NavigatorArchiveManagement_EmployeeFolder); window.Scrollable(false); }))
+                         .Selectable(selectable =>
+                         {
+                             selectable.Mode(GridSelectionMode.Single);
+                             selectable.Type(GridSelectionType.Row);
+                         })
+                              .Scrollable(h => h.Height(500))
+                                 .Groupable()
+                                          .Sortable(sortable =>
+                                          {
+                                              sortable.SortMode(GridSortMode.SingleColumn);
+                                          })
+                              .Filterable()
+                                 .Pageable(pageable => pageable
+                                                            .Input(true)
+                                                            .Numeric(false)
+                                                            .Refresh(true)
+                                                            .PageSizes(true)
+                                                            .ButtonCount(5))
+                  .DataSource(dataSource => dataSource
+                      .Ajax()
+                           .Events(events =>
+                           {
+                               events.Error("error_handler(\"PersonalArchiveNogrid\")");
+                               events.RequestStart("onRequestStart(\"PersonalArchiveNogrid\")");
+                               events.RequestEnd("onRequestEnd(\"PersonalArchiveNogrid\")");
+                           })
+
+                      .Model(model => model.Id(p => p.PersonalArchiveNoId))
+                      .Read(read => read.Action("PersonalArchiveNo_Read", "PersonalArchiveNo"))
+                      .Create(create => create.Action("PersonalArchiveNo_Create", "PersonalArchiveNo"))
+                      .Update(update => update.Action("PersonalArchiveNo_Update", "PersonalArchiveNo"))
+                      .Destroy(destroy => destroy.Action("PersonalArchiveNo_Destroy", "PersonalArchiveNo"))
+                  ).ClientDetailTemplateId("template")
+)
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                                                                                            .Name("tabstrip_#=PersonalArchiveNoId#")
+                                            .SelectedIndex(0)
+                                            .Items(items =>
+                                             {
+                                                 items.Add().Text(Resources.Navigator_Company_UploadDocument).Content(
+                                @<text>
+                                    @* <Legend>Photo</Legend>*@
+
+                                    @(Html.Kendo().Grid<AttachmentArchive>()
+                                          .Name("Documents_#=PersonalArchiveNoId#")
+                                          .Columns(columns =>
+                                          {
+                                                      columns.Bound(c => c.FileName);
+                                                      columns.Bound(c => c.Description); //.Title("File Name").ClientTemplate((@Html.ActionLink("#=Description#", "DownloadFile", "DownloadDocument", new { filename = "#=Description#" }, null).ToHtmlString()));
+                                                                                         // columns.Bound(c => c.FileType).ClientTemplate(Html.ActionLink("DownLoad", "DownloadDoument", new { filename = "#=EmployeeId#" }).ToHtmlString());
+                                          columns.Bound(m => m.FileType).ClientTemplate(Html.ActionLink(Resources.Common_Attachment_FileType, "DownloadFileFromAttachmentArchive", "HRMDataProvider", new { filename = "\\#= AttachmentArchiveId\\#", type = "Doc" }, null).ToString());
+                                                      columns.Command(command =>
+                                          {   
+                                                                  if (HttpContext.Current.User.IsInRole("HR_Profile_Admin") || HttpContext.Current.User.IsInRole("HR_Admin"))
+                                                                  {
+                                                                      command.Destroy().Text(Resources.ActionButton_Cancel);//
+                                                      }
+                                                      //    command.Custom("Download").Click("DownloadAttachmnets");
+
+                                                  }).Width(300);
+
+                                                  })
+                                          .Events(e =>
+                                                  {
+                                                              e.Change("onChange");
+                                                              e.Edit("onGridEdit");
+                                                          })
+                                                       .ToolBar(toolbar =>
+                                                       {
+                                                                   toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                                                               })
+                                                              .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("UploadDocument").Window(window =>
+                                                              {
+                                                                          window.Scrollable(false);
+                                                                          window.Title(Resources.Navigator_Company_UploadDocument);
+                                                                      }))
+
+                                              .Scrollable()
+                                              .Selectable()
+                                              .DataSource(dataSource => dataSource
+                                                  .Ajax()
+                                                           .Events(events =>
+                                                           {
+
+                                                                       events.Error("error_handler(\"Documents_#=PersonalArchiveNoId#\")");
+                                                                       events.RequestStart("onRequestStart(\"Documents_#=PersonalArchiveNoId#\")");
+                                                                       events.RequestEnd("onRequestEnd(\"Documents_#=PersonalArchiveNoId#\")");
+                                                                   })
+
+
+                                                  .Model(model => model.Id(p => p.AttachmentArchiveId))
+                                                    .Read(read => read.Action("AttachmentArchive_Read", "AttachmentArchive", new { Area = "HRM", attachmentReferenceType = "DOCUMENT", id = "#=PersonalArchiveNoId#", fileOwner = "#=PersonalArchiveNoId#" }))
+                                                     .Create(create => create.Action("AttachmentArchive_Create", "AttachmentArchive", new { Area = "HRM", attachmentReferenceType = "DOCUMENT", id = "#=PersonalArchiveNoId#", fileOwner = "#=PersonalArchiveNoId#" }))
+                                                       .Destroy(destroy => destroy.Action("Attachments_Destroy", "PersonalArchiveNo"))
+
+                                              ).ToClientTemplate()
+                                    )
+
+                                </text>
+                                                                                                      );
+
+                                                     }).ToClientTemplate())
+</script>
+<script>
+    //function error_handler(e) {
+    //    if (e.errors) {
+    //        var message = "Errors:\n";
+    //        $.each(e.errors, function (key, value) {
+    //            if ('errors' in value) {
+    //                $.each(value.errors, function () {
+    //                    message += this + "\n";
+    //                });
+    //            }
+    //        });
+    //        alert(message);
+
+    //    }
+
+    //}
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+    function onGridEdit(e) {
+        e.container.find(".k-button.k-grid-update").hide();
+        e.container.find(".k-button.k-grid-cancel").hide();
+
+    }
+    function valueMapper(options) {
+        $.ajax({
+            url: "/HRM/HRMDataProvider/Employee_ValueMapper/",
+            data: {
+                value: options.value || 0,
+                status: 1,
+                excludeId: -1
+            },
+            success: function (data) {
+                options.success(data);
+            }
+        });
+    }
+
+    function convertValues(value) {
+        var data = {};
+
+        value = $.isArray(value) ? value : [value];
+
+        for (var idx = 0; idx < value.length; idx++) {
+            data["values[" + idx + "]"] = value[idx];
+        }
+
+        return data;
+    }
+</script>
+<style>
+    div.k-edit-form-container {
+        width: 700px;
+    }
+</style>
+
+<script>
+   
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+    function onGridEdit(e) {
+        e.container.find(".k-button.k-grid-update").hide();
+        e.container.find(".k-button.k-grid-cancel").hide();
+
+    }
+    function onChange(e) {
+        var grid = e.sender;
+        var selectedRows = this.select();
+        var rowData = this.dataItem(selectedRows[0]);
+        var id = rowData.AttachmentArchiveId;
+        $.ajax({
+            contentType: "application/json; charset=utf-8",
+            url: '@Url.Action("Download", "PersonalArchiveNo")',
+            data: { 'id': id },
+            type: 'GET',
+            cache: false,
+            success: function (result) {
+                r = result;
+            }
+
+        });
+
+    }
+
+    function OnChangeAdd(e) {
+        var grid = e.sender;
+        var selectedRows = this.select();
+        var rowData = this.dataItem(selectedRows[0]);
+        var id = rowData.Category;
+        @*$.ajax({
+            contentType: "application/json; charset=utf-8",
+            url: '@Url.Action("Download", "EmployeeProfile")',
+            data: { 'id': id },
+            type: 'GET',
+            cache: false,
+            success: function (result) {
+                r = result;
+            }
+
+        });*@
+
+    }
+</script>
+
+@(Html.Kendo().Window().Name("AttachmentWindow")
+            .Title(Resources.Templates)
+        .Visible(false)
+        .Modal(true)
+          .Content(@<text>
+
+            @(Html.Kendo().Grid<AttachmentArchive>()
+                              .Name("AttachmentGrid")
+                      .Columns(columns =>
+                      {
+                                columns.Bound(c => c.Description).Width(200); //.Title("File Name").ClientTemplate((@Html.ActionLink("#=Description#", "DownloadFile", "DownloadDocument", new { filename = "#=Description#" }, null).ToHtmlString()));
+                    columns.Bound(c => c.FileType).ClientTemplate(Html.ActionLink("DownLoad", "DownloadTemplate", new { area = "HRM", filename = "#=Description#" }).ToHtmlString()).Width(200);
+
+                            })
+
+                          .Scrollable()
+                          .Selectable()
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+                                                       .Events(events => events.Error("error_handler(\"AttachmentGrid\")"))
+
+                              .Model(model => model.Id(p => p.AttachmentArchiveId))
+                                              .Read(read => read.Action("AttachmentArchive_Read", "AttachmentArchive", new { Area = "Common", attachmentReferenceType = "TEMPLATE", id = 0 }))
+
+
+                          )
+            )
+
+        </text>).Width(500)
+
+)

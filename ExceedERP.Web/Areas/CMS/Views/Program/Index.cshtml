@@ -1,0 +1,39 @@
+﻿
+<legend>Programs </legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.CMS.CMSProgram>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Name);
+          columns.Bound(c => c.Code);
+          //columns.Bound(c => c.DateCreated);
+          //columns.Bound(c => c.LastModified);
+          //columns.Bound(c => c.CreatedBy);
+          //columns.Bound(c => c.ModifiedBy);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+          toolbar.Create();
+          toolbar.Excel();
+          toolbar.Pdf();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Navigatable()
+      .Sortable(sortable => {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Filterable()
+      .Scrollable(s => s.Height(700))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Events(ev => ev
+                    .Error("error_handler(\"grid\")")
+                    .RequestStart("onRequestStart(\"grid\")")
+                    .RequestEnd("onRequestEnd(\"grid\")"))
+          .Model(model => model.Id(p => p.CMSProgramId))
+          .Read(read => read.Action("CMSPrograms_Read", "Program"))
+          .Create(create => create.Action("CMSPrograms_Create", "Program"))
+          .Update(update => update.Action("CMSPrograms_Update", "Program"))
+          .Destroy(destroy => destroy.Action("CMSPrograms_Destroy", "Program"))
+      )
+)

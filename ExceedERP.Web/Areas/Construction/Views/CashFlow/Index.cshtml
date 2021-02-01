@@ -1,0 +1,987 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Cash Flow</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.PerformanceProjectGeneralInformationVM>()
+      .Name("ProjectInformationgrid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.ProjectName);
+          //columns.Bound(c => c.ProjectType).ClientGroupHeaderTemplate(
+          //  "# if (value === 0) { #" +
+          //      " BUILDING " +
+          //    "# } else if (value === 1) {#" +
+          //      " ROAD " +
+          //    "# } else if (value === 2) {#" +
+          //       " DAM " +
+          //    "# } else if (value === 3) {#" +
+          //      " IRRIGATION" +
+          //    "# } #"
+          //  ).Hidden(true);
+          //columns.Bound(c => c.ProjectScope);
+          //columns.Bound(c => c.Consultant);
+          columns.Bound(c => c.ProjectCode);
+      })
+      .Scrollable(h => h.Height(700))
+      //.Groupable()
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Filterable()
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(5))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .PageSize(20)
+          //.Group(groups =>
+          //{
+          //    groups.Add(p => p.ProjectType);
+          //})
+          .Events(events =>
+          {
+              events.Error("error_handler(\"ProjectInformationgrid\")");
+              events.RequestStart("onRequestStart(\"ProjectInformationgrid\")");
+              events.RequestEnd("onRequestEnd(\"ProjectInformationgrid\")");
+
+          })
+
+          .Model(model => model.Id(p => p.ProjectInformationId))
+          .Read(read => read.Action("ProjectInformation_Read", "ProjectPerformance"))
+      ).ClientDetailTemplateId("template_budgetyear")
+)
+
+
+<script id="template_budgetyear" type="text/kendo-tmpl">
+    
+    @(Html.Kendo().TabStrip()
+          .Name("tabstrip_#=ProjectInformationId#")
+          .SelectedIndex(0)
+          .Items(items =>
+          {
+              items.Add().Text("Project Detail").Content(
+                @<text>
+
+                    @(Html.Kendo().PanelBar()
+                          .Name("panelbar_#=ProjectInformationId#")
+                          .ExpandMode(PanelBarExpandMode.Single)
+                          .Items(panelbar =>
+                          {
+                              panelbar.Add()
+                                  .Expanded(true)
+                                  .Content(
+                                      "<div class='project-details'>" +
+                                          "<ul>" +
+                                              "<li> <label> Total Original Contract Amount: </label> <strong> #= kendo.toString(ContractAmount, 'N4')# </strong> </li>" +
+                                              "<li> <label> Supplementary Agreements : </label> <strong>#= kendo.toString(Supplemetary, 'N4')# </strong> </li>" +
+                                              "<li> <label> Variation Works: </label> <strong> #=kendo.toString(Variation, 'N4')# </strong> </li>" +
+                                              "<li> <label> Total Contract Price: </label> <strong> #=kendo.toString(TotalProjectAmount, 'N4')# </strong> </li>" +
+                                          "</ul>" +
+                                      "</div>"
+                                  );
+                          }).ToClientTemplate()
+                    )
+
+                </text>
+                      );
+              items.Add().Text("Budget Year").Content(
+                @<text>
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.CashFlowYear>()
+                          .Name("years_#=ProjectInformationId#")
+                          .Columns(columns =>
+                          {
+
+                              columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["FiscalYears"], "GlFiscalYearId", "Name").EditorTemplateName("Fiscalyears");
+                              columns.Bound(c => c.Remark);
+                              columns.Command(command =>
+                              {
+                                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                  command.Destroy().Text(Resources.ActionButton_Cancel);
+                              }).Width(200);
+
+                          })
+                           .ToolBar(toolbar =>
+                           {
+                               toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                           })
+                          .Scrollable(h => h.Height(450))
+                          .Sortable(sortable =>
+                          {
+                              sortable.SortMode(GridSortMode.SingleColumn);
+                          })
+                          .Selectable(selectable =>
+                          {
+                              selectable.Mode(GridSelectionMode.Single);
+                              selectable.Type(GridSelectionType.Row);
+                          })
+                          .Pageable(pageable => pageable
+                              .Input(true)
+                              .Numeric(false)
+                              .Refresh(true)
+                              .PageSizes(true)
+                              .ButtonCount(5))
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+                              .Events(events =>
+                              {
+                                  events.Error("error_handler(\"years_#=ProjectInformationId#\")");
+                                  events.RequestStart("onRequestStart(\"years_#=ProjectInformationId#\")");
+                                  events.RequestEnd("onRequestEnd(\"years_#=ProjectInformationId#\")");
+                              })
+
+                              .Model(model =>
+                              {
+                                  model.Id(p => p.CashFlowYearId);
+                              }
+                              )
+                              .Read(read => read.Action("Years_Read", "CashFlowYear", new { id = "#=ProjectInformationId#" }))
+                              .Create(create => create.Action("Year_Create", "CashFlowYear", new { id = "#=ProjectInformationId#" }))
+                              .Update(update => update.Action("Year_Update", "CashFlowYear"))
+                              .Destroy(destroy => destroy.Action("Year_Destroy", "CashFlowYear"))
+                          ).ClientDetailTemplateId("template_cashflow")
+                          .ToClientTemplate()
+                    )
+                </text>
+                  );
+          }).ToClientTemplate())
+</script>
+<script id="template_cashflow" type="text/kendo-tmpl">
+
+    @(Html.Kendo().TabStrip()
+          .Name("tab_#=CashFlowYearId#")
+          .SelectedIndex(0)
+          .Items(items =>
+          {
+              items.Add().Text("Contract Data").Content(
+                @<text>
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.CashFlowContractData>()
+                          .Name("contaractData_#=CashFlowYearId#")
+                          .Columns(columns =>
+                          {
+
+                              //columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["FiscalYears"], "GlFiscalYearId", "Name").EditorTemplateName("Fiscalyears");
+                              columns.Bound(c => c.ContractorAmountWithVat).Format("{0:N2}");
+                              columns.Bound(c => c.ProvisionalSum).Format("{0:N2}");
+                              columns.Bound(c => c.SubContractWorks).Format("{0:N2}");
+                              columns.Bound(c => c.DayWorks).Format("{0:N2}");
+                              columns.Bound(c => c.TotalOriginalContractAmount).Format("{0:N2}");
+                              columns.Bound(c => c.SupplementaryAgreement).Format("{0:N2}");
+                              columns.Bound(c => c.VariationWorks).Format("{0:N2}");
+                              columns.Bound(c => c.TotalContractAmount).Format("{0:N2}");
+
+
+                              columns.Command(command =>
+                              {
+                                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                  command.Destroy().Text(Resources.ActionButton_Cancel);
+                              }).Width(200);
+
+                          })
+                           .ToolBar(toolbar =>
+                           {
+                               toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                           })
+                          .Scrollable(h => h.Height(400))
+                          .Sortable(sortable =>
+                          {
+                              sortable.SortMode(GridSortMode.SingleColumn);
+                          })
+                          .Selectable(selectable =>
+                          {
+                              selectable.Mode(GridSelectionMode.Single);
+                              selectable.Type(GridSelectionType.Row);
+                          })
+                          .Pageable(pageable => pageable
+                              .Input(true)
+                              .Numeric(false)
+                              .Refresh(true)
+                              .PageSizes(true)
+                              .ButtonCount(5))
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+                              .Events(events =>
+                              {
+                                  events.Error("error_handler(\"contaractData_#=CashFlowYearId#\")");
+                                  events.RequestStart("onRequestStart(\"contaractData_#=CashFlowYearId#\")");
+                                  events.RequestEnd("onRequestEnd(\"contaractData_#=CashFlowYearId#\")");
+                              })
+
+                              .Model(model =>
+                              {
+                                  model.Id(p => p.CashFlowContractDataId);
+                                  model.Field(f => f.TotalContractAmount).Editable(false);
+                                  model.Field(f => f.TotalOriginalContractAmount).Editable(false);
+                                  model.Field(f => f.VariationWorks).Editable(false);
+                                  model.Field(f => f.SupplementaryAgreement).Editable(false);
+
+                              }
+                              )
+                              .Read(read => read.Action("ContractData_Read", "CashFlowContractData", new { yearId = "#=CashFlowYearId#" }))
+                              .Create(create => create.Action("ContractData_Create", "CashFlowContractData", new { yearId = "#=CashFlowYearId#" }))
+                              .Update(update => update.Action("ContractData_Update", "CashFlowContractData"))
+                              .Destroy(destroy => destroy.Action("ContractData_Destroy", "CashFlowContractData"))
+                          ).ClientDetailTemplateId("template_contractData_detail")
+                          .ToClientTemplate()
+                    )
+                </text>
+                  );
+          items.Add().Text("Financial Sources").Content(
+            @<text>
+                @(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.CashFlowFinanceSource>()
+                          .Name("financeSource_#=CashFlowYearId#")
+                          .Columns(columns =>
+                          {
+
+                              //columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["FiscalYears"], "GlFiscalYearId", "Name").EditorTemplateName("Fiscalyears");
+                              columns.Bound(c => c.MainContractAdvancePayment);
+                              columns.Bound(c => c.Revenue);
+                              columns.Bound(c => c.SuppliersCredit);
+                              columns.Bound(c => c.SubContractorFinancing);
+                              columns.Bound(c => c.SubContractorRetentionWithholding);
+                              columns.Bound(c => c.SubContractorAdvanceRepayment);
+                              columns.Bound(c => c.HeadOfficeFinancing);
+                              columns.Bound(c => c.MainContractRetentionReleased);
+                              columns.Bound(c => c.MaterialOnSite);
+                              columns.Bound(c => c.Loan);
+                              columns.Bound(c => c.TotalFinanceSource);
+
+                              columns.Command(command =>
+                              {
+                                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                  command.Destroy().Text(Resources.ActionButton_Cancel);
+                              }).Width(200);
+
+                          })
+                           .ToolBar(toolbar =>
+                           {
+                               toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                           })
+                          .Scrollable(h => h.Height(400))
+                          .Sortable(sortable =>
+                          {
+                              sortable.SortMode(GridSortMode.SingleColumn);
+                          })
+                          .Selectable(selectable =>
+                          {
+                              selectable.Mode(GridSelectionMode.Single);
+                              selectable.Type(GridSelectionType.Row);
+                          })
+                          .Pageable(pageable => pageable
+                              .Input(true)
+                              .Numeric(false)
+                              .Refresh(true)
+                              .PageSizes(true)
+                              .ButtonCount(5))
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+                              .Events(events =>
+                              {
+                                  events.Error("error_handler(\"financeSource_#=CashFlowYearId#\")");
+                                  events.RequestStart("onRequestStart(\"financeSource_#=CashFlowYearId#\")");
+                                  events.RequestEnd("onRequestEnd(\"financeSource_#=CashFlowYearId#\")");
+                              })
+
+                              .Model(model =>
+                              {
+                                  model.Id(p => p.CashFlowFinanceSourceId);
+                                  model.Field(f => f.TotalFinanceSource).Editable(false);
+                                  //model.Field(f => f.TotalOriginalContractAmount).Editable(false);
+                                  //model.Field(f => f.VariationWorks).Editable(false);
+                                  //model.Field(f => f.SupplementaryAgreement).Editable(false);
+
+                              }
+                              )
+                              .Read(read => read.Action("FinancialSources_Read", "CashFlowFinaceSource", new { yearId = "#=CashFlowYearId#" }))
+                              .Create(create => create.Action("FinancialSource_Create", "CashFlowFinaceSource", new { yearId = "#=CashFlowYearId#" }))
+                              .Update(update => update.Action("FinancialSource_Update", "CashFlowFinaceSource"))
+                              .Destroy(destroy => destroy.Action("FinancialSource_Destroy", "CashFlowFinaceSource"))
+                          ).ClientDetailTemplateId("template_financeSource_detail")
+                          .ToClientTemplate()
+                )
+            </text>
+                  );
+          items.Add().Text("Deductions").Content(
+            @<text>
+                @(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.CashFlowDeduction>()
+                          .Name("deductions_#=CashFlowYearId#")
+                          .Columns(columns =>
+                          {
+
+                              //columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["FiscalYears"], "GlFiscalYearId", "Name").EditorTemplateName("Fiscalyears");
+                              columns.Bound(c => c.MainContractAdvanceRepayment);
+                              columns.Bound(c => c.IncomeTaxes);
+                              columns.Bound(c => c.MainContractRetentionWithheld);
+                              columns.Bound(c => c.Rebate);
+                              columns.Bound(c => c.OmmissionWorks);
+                              columns.Bound(c => c.Others);
+                              columns.Bound(c => c.TotalDeduction);
+
+                              columns.Command(command =>
+                              {
+                                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                  command.Destroy().Text(Resources.ActionButton_Cancel);
+                              }).Width(200);
+
+                          })
+                           .ToolBar(toolbar =>
+                           {
+                               toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                           })
+                          .Scrollable(h => h.Height(400))
+                          .Sortable(sortable =>
+                          {
+                              sortable.SortMode(GridSortMode.SingleColumn);
+                          })
+                          .Selectable(selectable =>
+                          {
+                              selectable.Mode(GridSelectionMode.Single);
+                              selectable.Type(GridSelectionType.Row);
+                          })
+                          .Pageable(pageable => pageable
+                              .Input(true)
+                              .Numeric(false)
+                              .Refresh(true)
+                              .PageSizes(true)
+                              .ButtonCount(5))
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+                              .Events(events =>
+                              {
+                                  events.Error("error_handler(\"deductions_#=CashFlowYearId#\")");
+                                  events.RequestStart("onRequestStart(\"deductions_#=CashFlowYearId#\")");
+                                  events.RequestEnd("onRequestEnd(\"deductions_#=CashFlowYearId#\")");
+                              })
+
+                              .Model(model =>
+                              {
+                                  model.Id(p => p.CashFlowDeductionId);
+                                  model.Field(f => f.TotalDeduction).Editable(false);
+                              }
+                              )
+                              .Read(read => read.Action("Deductions_Read", "CashFlowDeduction", new { yearId = "#=CashFlowYearId#" }))
+                              .Create(create => create.Action("Deduction_Create", "CashFlowDeduction", new { yearId = "#=CashFlowYearId#" }))
+                              .Update(update => update.Action("Deduction_Update", "CashFlowDeduction"))
+                              .Destroy(destroy => destroy.Action("Deduction_Destroy", "CashFlowDeduction"))
+                          ).ClientDetailTemplateId("template_deduction_detail")
+                          .ToClientTemplate()
+                )
+            </text>
+                  );
+          items.Add().Text("Net Operational Cah Flow").Content(
+              @<text>
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.NetOperationalCahFlowViewModel>()
+                          .Name("netCahFlowPerProject_#=CashFlowYearId#")
+                          .Columns(columns =>
+                          {
+
+                              //columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["FiscalYears"], "GlFiscalYearId", "Name").EditorTemplateName("Fiscalyears");
+                              columns.Bound(c => c.Id).ClientTemplate(" ").Title(" ");
+                              columns.Bound(c => c.CummulativeNetOperationalCashFlow).Format("{0:N2}");
+
+                          })
+                          //.ToolBar(toolbar =>
+                          //{
+                          //    toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                          //})
+                          .Scrollable(h => h.Height(400))
+                          .Sortable(sortable =>
+                          {
+                              sortable.SortMode(GridSortMode.SingleColumn);
+                          })
+                          .Selectable(selectable =>
+                          {
+                              selectable.Mode(GridSelectionMode.Single);
+                              selectable.Type(GridSelectionType.Row);
+                          })
+                          .Pageable(pageable => pageable
+                              .Input(true)
+                              .Numeric(false)
+                              .Refresh(true)
+                              .PageSizes(true)
+                              .ButtonCount(5))
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+                              //.Events(events =>
+                              //{
+                              //    events.Error("error_handler(\"netCahFlow_#=CashFlowYearId#\")");
+                              //    events.RequestStart("onRequestStart(\"netCahFlow_#=CashFlowYearId#\")");
+                              //    events.RequestEnd("onRequestEnd(\"netCahFlow_#=CashFlowYearId#\")");
+                              //})
+
+                              .Model(model =>
+                              {
+                                  model.Id(p => p.Id);
+
+                              }
+                              )
+                              .Read(read => read.Action("ProjectNetOperationalCashFlow_Read", "NetOperationCashFlow", new { yearId = "#=CashFlowYearId#" }))
+                          //.Create(create => create.Action("NetCashFlow_Create", "NetOperationCashFlow", new { yearId = "#=CashFlowYearId#" }))
+                          //.Update(update => update.Action("NetCashFlow_Update", "NetOperationCashFlow"))
+                          //.Destroy(destroy => destroy.Action("NetCashFlow_Destroy", "NetOperationCashFlow"))
+                          ).ClientDetailTemplateId("template_netCashFlowPerProject_detail")
+                          .ToClientTemplate()
+                    )
+              </text>
+              );
+          items.Add().Text("Expenses / costs").Content(
+            @<text>
+                @(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.NetOperationCashFlow>()
+                          .Name("netCahFlow_#=CashFlowYearId#")
+                          .Columns(columns =>
+                          {
+
+                              //columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["FiscalYears"], "GlFiscalYearId", "Name").EditorTemplateName("Fiscalyears");
+                              columns.Bound(c => c.DirectMaterialExpense);
+                              columns.Bound(c => c.DirectAndIndirectlaborExpense);
+                              columns.Bound(c => c.DirectEquipmentCost);
+                              columns.Bound(c => c.ProjectOverheadExpense);
+                              columns.Bound(c => c.HeadOfficeOverheadExpense);
+                              columns.Bound(c => c.SubContractWorksAdvance);
+                              columns.Bound(c => c.SubContractPiecerateWorksSettlement);
+                              columns.Bound(c => c.HeadOfficeFinancingSettlement);
+                              columns.Bound(c => c.SuppliersCreditSettlement);
+                              columns.Bound(c => c.DayWorksSettlement);
+                              columns.Bound(c => c.TaxSettlement);
+                              columns.Bound(c => c.LoanSettlement);
+                              columns.Bound(c => c.TotalExpense);
+
+                              columns.Command(command =>
+                              {
+                                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                  command.Destroy().Text(Resources.ActionButton_Cancel);
+                              }).Width(200);
+
+                          })
+                           .ToolBar(toolbar =>
+                           {
+                               toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                           })
+                          .Scrollable(h => h.Height(400))
+                          .Sortable(sortable =>
+                          {
+                              sortable.SortMode(GridSortMode.SingleColumn);
+                          })
+                          .Selectable(selectable =>
+                          {
+                              selectable.Mode(GridSelectionMode.Single);
+                              selectable.Type(GridSelectionType.Row);
+                          })
+                          .Pageable(pageable => pageable
+                              .Input(true)
+                              .Numeric(false)
+                              .Refresh(true)
+                              .PageSizes(true)
+                              .ButtonCount(5))
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+                              .Events(events =>
+                              {
+                                  events.Error("error_handler(\"netCahFlow_#=CashFlowYearId#\")");
+                                  events.RequestStart("onRequestStart(\"netCahFlow_#=CashFlowYearId#\")");
+                                  events.RequestEnd("onRequestEnd(\"netCahFlow_#=CashFlowYearId#\")");
+                              })
+
+                              .Model(model =>
+                              {
+                                  model.Id(p => p.NetOperationCashFlowId);
+                                  model.Field(f => f.TotalExpense).Editable(false);
+
+                              }
+                              )
+                              .Read(read => read.Action("NetCashFlows_Read", "NetOperationCashFlow", new { yearId = "#=CashFlowYearId#" }))
+                              .Create(create => create.Action("NetCashFlow_Create", "NetOperationCashFlow", new { yearId = "#=CashFlowYearId#" }))
+                              .Update(update => update.Action("NetCashFlow_Update", "NetOperationCashFlow"))
+                              .Destroy(destroy => destroy.Action("NetCashFlow_Destroy", "NetOperationCashFlow"))
+                          ).ClientDetailTemplateId("template_netCashFlow_detail")
+                          .ToClientTemplate()
+                )
+            </text>
+                  );
+          items.Add().Text("Cash Flow Balance").Content(
+            @<text>
+                @(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.CashFlowBalanceVieModel>()
+                          .Name("cashFlowBalance_#=CashFlowYearId#")
+                          .Columns(columns =>
+                          {
+
+                              columns.Bound(c => c.Id).ClientTemplate(" ").Title(" ");
+                              columns.Bound(c => c.NetBalance).Format("{0:N2}");
+                          })
+                          
+                          .Scrollable(h => h.Height(400))
+                          .Sortable(sortable =>
+                          {
+                              sortable.SortMode(GridSortMode.SingleColumn);
+                          })
+                          .Selectable(selectable =>
+                          {
+                              selectable.Mode(GridSelectionMode.Single);
+                              selectable.Type(GridSelectionType.Row);
+                          })
+                          .Pageable(pageable => pageable
+                              .Input(true)
+                              .Numeric(false)
+                              .Refresh(true)
+                              .PageSizes(true)
+                              .ButtonCount(5))
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+                              
+                              .Model(model =>
+                              {
+                                  model.Id(p => p.Id);
+
+                              }
+                              )
+                              .Read(read => read.Action("ProjectCashFlowBalance_Read", "CashFlowBalance", new { yearId = "#=CashFlowYearId#" }))
+                          ).ClientDetailTemplateId("template_cashFlowBalance_detail")
+                          .ToClientTemplate()
+                )
+            </text>
+                  );
+          }).ToClientTemplate())
+</script>
+
+<script id="template_contractData_detail" type="text/kendo-tmpl">
+
+    @(Html.Kendo().TabStrip()
+          .Name("tabst_#=CashFlowContractDataId#")
+          .SelectedIndex(0)
+          .Items(items =>
+          {
+              items.Add().Text("Contract Data | Monthly Breack down").Content(
+                @<text>
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.CashFlowContractDataDetail>()
+                          .Name("contaractDataDetail_#=CashFlowContractDataId#")
+                          .Columns(columns =>
+                          {
+
+                              columns.ForeignKey(c => c.ConstructionPeriodId, (IEnumerable)ViewData["Periods"], "ConstructionPeriodId", "Name").EditorTemplateName("ConstructionPeriods");
+                              columns.Bound(c => c.MonthlyProgress).Format("{0:P2}");
+                              columns.Bound(c => c.CummulativeProgress).Format("{0:P2}");
+                              columns.Bound(c => c.ContractorAmountWithVat);
+                              columns.Bound(c => c.ProvisionalSum);
+                              columns.Bound(c => c.SubContractWorks);
+                              columns.Bound(c => c.DayWorks);
+                              columns.Bound(c => c.TotalOriginalContractAmount);
+                              columns.Bound(c => c.SupplementaryAgreement);
+                              columns.Bound(c => c.VariationWorks);
+                              columns.Bound(c => c.TotalContractAmount);
+                              //columns
+
+                              columns.Command(command =>
+                              {
+                                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                  command.Destroy().Text(Resources.ActionButton_Cancel);
+                              }).Width(200);
+
+                          })
+                           .ToolBar(toolbar =>
+                           {
+                               toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                           })
+                          .Scrollable(h => h.Height(400))
+                          .Sortable(sortable =>
+                          {
+                              sortable.SortMode(GridSortMode.SingleColumn);
+                          })
+                          .Selectable(selectable =>
+                          {
+                              selectable.Mode(GridSelectionMode.Single);
+                              selectable.Type(GridSelectionType.Row);
+                          })
+                          .Pageable(pageable => pageable
+                              .Input(true)
+                              .Numeric(false)
+                              .Refresh(true)
+                              .PageSizes(true)
+                              .ButtonCount(5))
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+                              .Events(events =>
+                              {
+                                  events.Error("error_handler(\"contaractDataDetail_#=CashFlowContractDataId#\")");
+                                  events.RequestStart("onRequestStart(\"contaractDataDetail_#=CashFlowContractDataId#\")");
+                                  events.RequestEnd("onRequestEnd(\"contaractDataDetail_#=CashFlowContractDataId#\")");
+                              })
+
+                              .Model(model =>
+                              {
+                                  model.Id(p => p.CashFlowContractDataId);
+                                  model.Field(f => f.TotalContractAmount).Editable(false);
+                                  model.Field(f => f.TotalOriginalContractAmount).Editable(false);
+                                  model.Field(f => f.VariationWorks).Editable(false);
+                                  model.Field(f => f.SupplementaryAgreement).Editable(false);
+                                  model.Field(f => f.CummulativeProgress).Editable(false);
+
+                              }
+                              )
+                              .Read(read => read.Action("ContractData_Read", "CashFlowContractDataDetail", new { ctrdataId = "#=CashFlowContractDataId#" }))
+                              .Create(create => create.Action("ContractData_Create", "CashFlowContractDataDetail", new { ctrdataId = "#=CashFlowContractDataId#" }))
+                              .Update(update => update.Action("ContractData_Update", "CashFlowContractDataDetail"))
+                              .Destroy(destroy => destroy.Action("ContractData_Destroy", "CashFlowContractDataDetail"))
+                          )//.ClientDetailTemplateId("template_road")
+                          .ToClientTemplate()
+                    )
+                </text>
+                  );
+          }).ToClientTemplate())
+</script>
+
+<script id="template_financeSource_detail" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+          .Name("tb_#=CashFlowFinanceSourceId#")
+          .SelectedIndex(0)
+          .Items(items =>
+          {
+              items.Add().Text("Financial Sources | Monthly Breack down").Content(
+                @<text>
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.CashFlowFinanceSourceDetail>()
+                          .Name("financeSourceDetail_#=CashFlowFinanceSourceId#")
+                          .Columns(columns =>
+                          {
+
+                              columns.ForeignKey(c => c.ConstructionPeriodId, (IEnumerable)ViewData["Periods"], "ConstructionPeriodId", "Name").EditorTemplateName("ConstructionPeriods");
+                              columns.Bound(c => c.MainContractAdvancePayment);
+                              columns.Bound(c => c.Revenue);
+                              columns.Bound(c => c.SuppliersCredit);
+                              columns.Bound(c => c.SubContractorFinancing);
+                              columns.Bound(c => c.SubContractorRetentionWithholding);
+                              columns.Bound(c => c.SubContractorAdvanceRepayment);
+                              columns.Bound(c => c.HeadOfficeFinancing);
+                              columns.Bound(c => c.MainContractRetentionReleased);
+                              columns.Bound(c => c.MaterialOnSite);
+                              columns.Bound(c => c.Loan);
+                              columns.Bound(c => c.TotalFinanceSource);
+
+                              columns.Command(command =>
+                              {
+                                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                  command.Destroy().Text(Resources.ActionButton_Cancel);
+                              }).Width(200);
+
+                          })
+                           .ToolBar(toolbar =>
+                           {
+                               toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                           })
+                          .Scrollable(h => h.Height(400))
+                          .Sortable(sortable =>
+                          {
+                              sortable.SortMode(GridSortMode.SingleColumn);
+                          })
+                          .Selectable(selectable =>
+                          {
+                              selectable.Mode(GridSelectionMode.Single);
+                              selectable.Type(GridSelectionType.Row);
+                          })
+                          .Pageable(pageable => pageable
+                              .Input(true)
+                              .Numeric(false)
+                              .Refresh(true)
+                              .PageSizes(true)
+                              .ButtonCount(5))
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+                              .Events(events =>
+                              {
+                                  events.Error("error_handler(\"financeSourceDetail_#=CashFlowFinanceSourceId#\")");
+                                  events.RequestStart("onRequestStart(\"financeSourceDetail_#=CashFlowFinanceSourceId#\")");
+                                  events.RequestEnd("onRequestEnd(\"financeSourceDetail_#=CashFlowFinanceSourceId#\")");
+                              })
+
+                              .Model(model =>
+                              {
+                                  model.Id(p => p.CashFlowFinanceSourceDetailId);
+                                  model.Field(f => f.TotalFinanceSource).Editable(false);
+                                  //model.Field(f => f.TotalOriginalContractAmount).Editable(false);
+                                  //model.Field(f => f.VariationWorks).Editable(false);
+                                  //model.Field(f => f.SupplementaryAgreement).Editable(false);
+                              }
+                              )
+                              .Read(read => read.Action("FinancialSources_Read", "CashFlowFinaceSourceDetail", new { srcId = "#=CashFlowFinanceSourceId#" }))
+                              .Create(create => create.Action("FinancialSource_Create", "CashFlowFinaceSourceDetail", new { srcId = "#=CashFlowFinanceSourceId#" }))
+                              .Update(update => update.Action("FinancialSource_Update", "CashFlowFinaceSourceDetail"))
+                              .Destroy(destroy => destroy.Action("FinancialSource_Destroy", "CashFlowFinaceSourceDetail"))
+                          ).ToClientTemplate()
+                    )
+                </text>
+                  );
+          }).ToClientTemplate())
+</script>
+
+<script id="template_deduction_detail" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+          .Name("tbst_#=CashFlowDeductionId#")
+          .SelectedIndex(0)
+          .Items(items =>
+          {
+              items.Add().Text("Deduction | Monthly Breack down").Content(
+                @<text>
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.CashFlowDeductionDetail>()
+                          .Name("deductionDetail_#=CashFlowDeductionId#")
+                          .Columns(columns =>
+                          {
+
+                              columns.ForeignKey(c => c.ConstructionPeriodId, (IEnumerable)ViewData["Periods"], "ConstructionPeriodId", "Name").EditorTemplateName("ConstructionPeriods");
+                              columns.Bound(c => c.MainContractAdvanceRepayment);
+                              columns.Bound(c => c.IncomeTaxes);
+                              columns.Bound(c => c.MainContractRetentionWithheld);
+                              columns.Bound(c => c.Rebate);
+                              columns.Bound(c => c.OmmissionWorks);
+                              columns.Bound(c => c.Others);
+                              columns.Bound(c => c.TotalDeduction);
+
+                              columns.Command(command =>
+                              {
+                                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                  command.Destroy().Text(Resources.ActionButton_Cancel);
+                              }).Width(200);
+
+                          })
+                           .ToolBar(toolbar =>
+                           {
+                               toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                           })
+                          .Scrollable(h => h.Height(400))
+                          .Sortable(sortable =>
+                          {
+                              sortable.SortMode(GridSortMode.SingleColumn);
+                          })
+                          .Selectable(selectable =>
+                          {
+                              selectable.Mode(GridSelectionMode.Single);
+                              selectable.Type(GridSelectionType.Row);
+                          })
+                          .Pageable(pageable => pageable
+                              .Input(true)
+                              .Numeric(false)
+                              .Refresh(true)
+                              .PageSizes(true)
+                              .ButtonCount(5))
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+                              .Events(events =>
+                              {
+                                  events.Error("error_handler(\"deductionDetail_#=CashFlowDeductionId#\")");
+                                  events.RequestStart("onRequestStart(\"deductionDetail_#=CashFlowDeductionId#\")");
+                                  events.RequestEnd("onRequestEnd(\"deductionDetail_#=CashFlowDeductionId#\")");
+                              })
+
+                              .Model(model =>
+                              {
+                                  model.Id(p => p.CashFlowDeductionDetailId);
+                                  model.Field(f => f.TotalDeduction).Editable(false);
+                              }
+                              )
+                              .Read(read => read.Action("Deductions_Read", "CashFlowDeductionDetail", new { deductionId = "#=CashFlowDeductionId#" }))
+                              .Create(create => create.Action("Deduction_Create", "CashFlowDeductionDetail", new { deductionId = "#=CashFlowDeductionId#" }))
+                              .Update(update => update.Action("Deduction_Update", "CashFlowDeductionDetail"))
+                              .Destroy(destroy => destroy.Action("Deduction_Destroy", "CashFlowDeductionDetail"))
+                          ).ToClientTemplate()
+                    )
+                </text>
+                  );
+          }).ToClientTemplate())
+</script>
+
+<script id="template_netCashFlowPerProject_detail" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+          .Name("tbst_#=Id#")
+          .SelectedIndex(0)
+          .Items(items =>
+          {
+              items.Add().Text("Net Operational Cash Flow | Monthly Breack down").Content(
+                @<text>
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.NetOperationalCahFlowDetailViewModel>()
+                                          .Name("netCahFlow_#=Id#")
+                                          .Columns(columns =>
+                                          {
+
+                                              //columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["FiscalYears"], "GlFiscalYearId", "Name").EditorTemplateName("Fiscalyears");
+                                              columns.Bound(c => c.Month).Title(" ");
+                                              columns.Bound(c => c.CummulativeNetOperationalCashFlow).Format("{0:N2}");
+
+                                          })
+                                          //.ToolBar(toolbar =>
+                                          //{
+                                          //    toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                                          //})
+                                          .Scrollable(h => h.Height(400))
+                                          .Sortable(sortable =>
+                                          {
+                                              sortable.SortMode(GridSortMode.SingleColumn);
+                                          })
+                                          .Selectable(selectable =>
+                                          {
+                                              selectable.Mode(GridSelectionMode.Single);
+                                              selectable.Type(GridSelectionType.Row);
+                                          })
+                                          .Pageable(pageable => pageable
+                                              .Input(true)
+                                              .Numeric(false)
+                                              .Refresh(true)
+                                              .PageSizes(true)
+                                              .ButtonCount(5))
+                                          .DataSource(dataSource => dataSource
+                                              .Ajax()
+                              
+                                              .Model(model =>
+                                              {
+                                                  model.Id(p => p.Month);
+                                              }
+                                              )
+                                              .Read(read => read.Action("ProjectNetOperationalCashFlowMonthlyValue_Read", "NetOperationCashFlow", new { yearId = "#=Id#" }))
+                                          //.Create(create => create.Action("NetCashFlow_Create", "NetOperationCashFlow", new { yearId = "#=CashFlowYearId#" }))
+                                          //.Update(update => update.Action("NetCashFlow_Update", "NetOperationCashFlow"))
+                                          //.Destroy(destroy => destroy.Action("NetCashFlow_Destroy", "NetOperationCashFlow"))
+                                          )//.ClientDetailTemplateId("template_netCashFlow_detail")
+                                          .ToClientTemplate()
+                    )
+                </text>
+                  );
+          }).ToClientTemplate())
+</script>
+
+<script id="template_cashFlowBalance_detail" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+          .Name("tb_#=Id#")
+          .SelectedIndex(0)
+          .Items(items =>
+          {
+              items.Add().Text("Cash Flow Balance | Monthly Breack down").Content(
+                @<text>
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.CashFlowBalanceDetailVieModel>()
+                                          .Name("netBalance_#=Id#")
+                                          .Columns(columns =>
+                                          {
+                                              columns.Bound(c => c.Month).Title(" ");
+                                              columns.Bound(c => c.NetBalance).Format("{0:N2}");
+                                          })
+                                         
+                                          .Scrollable(h => h.Height(400))
+                                          .Sortable(sortable =>
+                                          {
+                                              sortable.SortMode(GridSortMode.SingleColumn);
+                                          })
+                                          .Selectable(selectable =>
+                                          {
+                                              selectable.Mode(GridSelectionMode.Single);
+                                              selectable.Type(GridSelectionType.Row);
+                                          })
+                                          .Pageable(pageable => pageable
+                                              .Input(true)
+                                              .Numeric(false)
+                                              .Refresh(true)
+                                              .PageSizes(true)
+                                              .ButtonCount(5))
+                                          .DataSource(dataSource => dataSource
+                                              .Ajax()
+
+                                              .Model(model =>
+                                              {
+                                                  model.Id(p => p.Month);
+                                              }
+                                              )
+                                              .Read(read => read.Action("ProjectCashFlowBalanceDetail_Read", "CashFlowBalance", new { yearId = "#=Id#" }))
+                                          )
+                                          .ToClientTemplate()
+                    )
+                </text>
+                  );
+          }).ToClientTemplate())
+</script>
+
+
+
+<script id="template_netCashFlow_detail" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+          .Name("tstr_#=NetOperationCashFlowId#")
+          .SelectedIndex(0)
+          .Items(items =>
+          {
+              items.Add().Text("Expenses  | Monthly Breack down").Content(
+                @<text>
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.NetOperationCashFlowDetail>()
+                          .Name("netOperationDetail_#=NetOperationCashFlowId#")
+                          .Columns(columns =>
+                          {
+
+                              columns.ForeignKey(c => c.ConstructionPeriodId, (IEnumerable)ViewData["Periods"], "ConstructionPeriodId", "Name").EditorTemplateName("ConstructionPeriods");
+                              columns.Bound(c => c.DirectMaterialExpense);
+                              columns.Bound(c => c.DirectAndIndirectlaborExpense);
+                              columns.Bound(c => c.DirectEquipmentCost);
+                              columns.Bound(c => c.ProjectOverheadExpense);
+                              columns.Bound(c => c.HeadOfficeOverheadExpense);
+                              columns.Bound(c => c.SubContractWorksAdvance);
+                              columns.Bound(c => c.SubContractPiecerateWorksSettlement);
+                              columns.Bound(c => c.HeadOfficeFinancingSettlement);
+                              columns.Bound(c => c.SuppliersCreditSettlement);
+                              columns.Bound(c => c.DayWorksSettlement);
+                              columns.Bound(c => c.TaxSettlement);
+                              columns.Bound(c => c.LoanSettlement);
+                              columns.Bound(c => c.TotalExpense);
+
+                              columns.Command(command =>
+                              {
+                                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                  command.Destroy().Text(Resources.ActionButton_Cancel);
+                              }).Width(200);
+
+                          })
+                           .ToolBar(toolbar =>
+                           {
+                               toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                           })
+                          .Scrollable(h => h.Height(400))
+                          .Sortable(sortable =>
+                          {
+                              sortable.SortMode(GridSortMode.SingleColumn);
+                          })
+                          .Selectable(selectable =>
+                          {
+                              selectable.Mode(GridSelectionMode.Single);
+                              selectable.Type(GridSelectionType.Row);
+                          })
+                          .Pageable(pageable => pageable
+                              .Input(true)
+                              .Numeric(false)
+                              .Refresh(true)
+                              .PageSizes(true)
+                              .ButtonCount(5))
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+                              .Events(events =>
+                              {
+                                  events.Error("error_handler(\"netOperationDetail_#=NetOperationCashFlowId#\")");
+                                  events.RequestStart("onRequestStart(\"netOperationDetail_#=NetOperationCashFlowId#\")");
+                                  events.RequestEnd("onRequestEnd(\"netOperationDetail_#=NetOperationCashFlowId#\")");
+                              })
+
+                              .Model(model =>
+                              {
+                                  model.Id(p => p.NetOperationCashFlowDetailId);
+                                  model.Field(f => f.TotalExpense).Editable(false);
+                              }
+                              )
+                              .Read(read => read.Action("NetCashFlows_Read", "NetOperationCashFlowDetail", new { id = "#=NetOperationCashFlowId#" }))
+                              .Create(create => create.Action("NetCashFlow_Create", "NetOperationCashFlowDetail", new { id = "#=NetOperationCashFlowId#" }))
+                              .Update(update => update.Action("NetCashFlow_Update", "NetOperationCashFlowDetail"))
+                              .Destroy(destroy => destroy.Action("NetCashFlow_Destroy", "NetOperationCashFlowDetail"))
+                          ).ToClientTemplate()
+                    )
+                </text>
+                  );
+          }).ToClientTemplate())
+</script>

@@ -1,0 +1,210 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.HRM.PerformanceManagment
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend> Probation Performance Measurment</legend>
+@(Html.Kendo().Grid<ProbationPerformance>()
+              .Name("ProbationPerformance")
+              .Columns(columns =>
+              {
+                  columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["Employees"], "EmployeeId", "FullNameaEnglish").Width(150).Title("Employee");
+                  columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["Org"], "OrgStructureId", "Name").Width(150);
+                  columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["Jobtitle"], "LookupId", "Description").Width(150);
+                  columns.Bound(c => c.HireDateAm).EditorTemplateName("Calander").Width(150).Title("Hire Date");
+                  columns.Bound(c => c.Status).EditorTemplateName("Enum").Width(150);
+                  columns.Bound(c => c.ProbationEndDateAm).EditorTemplateName("Calander").Width(150).Title("Prabation End Date");
+
+
+                  columns.Command(command =>
+                  {
+                      command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                      command.Destroy().Text(Resources.ActionButton_Cancel);
+                  }).Width(150);
+              })
+              .ToolBar(toolbar =>
+              {
+                  toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+              })
+              .Editable(editable => editable.Mode(GridEditMode.InLine).TemplateName("ComplainRequest").Window(window => { window.Title(Resources.NavigatorLeave_LeaveRequest); window.Scrollable(false); }))
+              .Scrollable(h => h.Height(500))
+              .Selectable(selectable =>
+              {
+                  selectable.Mode(GridSelectionMode.Single);
+                  selectable.Type(GridSelectionType.Row);
+              })
+              .Groupable()
+              .Sortable(sortable =>
+              {
+                  sortable.SortMode(GridSortMode.SingleColumn);
+              })
+              .Filterable()
+
+              .Pageable(pageable => pageable
+                  .Input(true)
+                  .Numeric(false)
+                  .Refresh(true)
+                  .PageSizes(true)
+                  .ButtonCount(5))
+              .DataSource(dataSource => dataSource
+                  .Ajax()
+                      .Events(events =>
+                      {
+                          events.Error("error_handler(\"ProbationPerformance\")");
+                          events.RequestStart("onRequestStart(\"ProbationPerformance\")");
+                          events.RequestEnd("onRequestEnd(\"ProbationPerformance\")");
+                      })
+
+                  .Model(model =>
+                  {
+                      model.Id(p => p.ProbationPerformanceId);
+                      model.Field(p => p.LookupId).Editable(false);
+                      model.Field(p => p.OrgStructureId).Editable(false);
+                      model.Field(p => p.HireDateAm).Editable(false);
+                  })
+                  .Read(read => read.Action("ProbationPerformance_Read", "ProbationPerformance"))
+                  .Create(create => create.Action("ProbationPerformance_Create", "ProbationPerformance", new { Area = "HRM" }))
+                  .Update(update => update.Action("ProbationPerformance_Update", "ProbationPerformance"))
+                  .Destroy(destroy => destroy.Action("ProbationPerformance_Destroy", "ProbationPerformance"))
+
+             ).ClientDetailTemplateId("template")
+)
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                                                                            .Name("tabstrip_#=ProbationPerformanceId#")
+                                                                    .SelectedIndex(0)
+                                                                    .Items(items =>
+                                                                     {
+
+
+                                                             //*****************************************************************************************************//
+                                                             items.Add().Text("Probation Performance Detail").Content(
+                                                                        @<text>
+
+
+                                                                            @(Html.Kendo().Grid<ProbationPerformanceDetail>()
+                                                                                                                                                              .Name("ProbationPerformanceDetail#=ProbationPerformanceId#")
+                                                                                                                                              .Columns(columns =>
+                                                                                                                                              {
+
+                                                                                                                                                  columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["Measurments"], "LookupId", "Description").EditorTemplateName("Measure").Width(150).Title("Measurement");
+                                                                                                                                                  columns.Bound(c => c.Score).Width(100);
+                                                                                                                                                  columns.Bound(c => c.Measurement).Width(100).Title("Measurement Value");
+                                                                                                                                                  columns.Command(command =>
+                                                                                                                                                  {
+
+                                                                                                                                                      command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                                                                                                                                      command.Destroy().Text(Resources.ActionButton_Cancel);
+
+                                                                                                                                                  }).Width(100);
+                                                                                                                                              })
+
+                                                                                                                                              .ToolBar(toolbar =>
+                                                                                                                                              {
+                                                                                                                                                  toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                                                                                                                                              })
+
+                                                                                                                                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                                                                                      .Scrollable()
+                                                                                                                                      .Selectable()
+                                                                                                                                      .DataSource(dataSource => dataSource
+                                                                                                                                          .Ajax()
+                                                                                                                                                  .Events(events =>
+                                                                                                                                                  {
+                                                                                                                                                      events.Error("error_handler(\"ProbationPerformanceDetail#=ProbationPerformanceId#\")");
+                                                                                                                                                      events.RequestStart("onRequestStart(\"ProbationPerformanceDetail#=ProbationPerformanceId#\")");
+                                                                                                                                                      events.RequestEnd("onRequestEnd(\"ProbationPerformanceDetail#=ProbationPerformanceId#\")");
+                                                                                                                                                  })
+
+
+                                                                      .Model(model =>
+                                                                      {
+                                                                          model.Id(p => p.ProbationPerformanceDetailId);
+                                                                          model.Field(p=>p.Measurement).Editable(false);
+                                                                      })
+                                                                   .Read(read => read.Action("ProbationPerformanceDetail_Read", "ProbationPerformanceDetail", new { id = "#=ProbationPerformanceId#" }))
+                                                                   .Create(create => create.Action("ProbationPerformanceDetail_Create", "ProbationPerformanceDetail", new { id = "#=ProbationPerformanceId#" }))
+                                                                  .Update(update => update.Action("ProbationPerformanceDetail_Update", "ProbationPerformanceDetail"))
+                                                                  .Destroy(destroy => destroy.Action("ProbationPerformanceDetail_Destroy", "ProbationPerformanceDetail"))
+
+                                                                                                                                      ).ToClientTemplate()
+                                                                            )
+
+                                                                        </text>
+                                                                                                                                          );
+
+                                                                     //**********************************************************************************//
+                                                                     
+                                                                         
+
+                                                                                 }).ToClientTemplate())
+</script>
+
+
+
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 850px;
+    }
+</style>
+
+<script>
+    function GetDate() {
+
+        var x = AssignDate();
+        var y = x;
+        $("#DateAmharic").trigger("change");
+
+        for (var o in y) {
+            $.ajax({
+                contentType: "application/json; charset=utf-8",
+                url: '@Url.Action("SetDate", "Complain")',
+                data: { name: y[o].id, value: y[o].date },
+                type: 'GET',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                }
+
+            });
+        }
+    }
+
+</script>
+<script>
+    //function error_handler(e) {
+    //    if (e.errors) {
+    //        var message = "Errors:\n";
+    //        $.each(e.errors, function (key, value) {
+    //            if ('errors' in value) {
+    //                $.each(value.errors, function () {
+    //                    message += this + "\n";
+    //                });
+    //            }
+    //        });
+    //        alert(message);
+
+    //    }
+
+    //}
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+    function onGridEdit(e) {
+        e.container.find(".k-button.k-grid-update").hide();
+        e.container.find(".k-button.k-grid-cancel").hide();
+
+    }
+
+</script>
+
+<script>
+    function AssignDate() {
+        var list = AssignDates();
+        return list;
+    }
+
+</script>

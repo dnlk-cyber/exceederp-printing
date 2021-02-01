@@ -1,0 +1,31 @@
+﻿@using ExceedERP.Core.Localization
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.MaterialUtilizationDetail>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.UtilizedQuantity);
+        columns.Bound(c => c.UtilizationOfItem);
+        columns.Bound(c => c.MaterialWastage);
+        columns.Bound(c => c.Remark);
+        columns.Bound(c => c.OrgBranchName);
+        columns.Bound(c => c.DateCreated);
+        columns.Bound(c => c.LastModified);
+        columns.Bound(c => c.CreatedBy);
+        columns.Bound(c => c.ModifiedBy);
+        columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel);  }).Width(200);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.MaterialUtilzationDetlId))
+          .Read(read => read.Action("MaterialUtilizationDetails_Read", "MaterialUtilizationDetail"))
+          .Create(create => create.Action("MaterialUtilizationDetails_Create", "MaterialUtilizationDetail"))
+          .Update(update => update.Action("MaterialUtilizationDetails_Update", "MaterialUtilizationDetail"))
+          .Destroy(destroy => destroy.Action("MaterialUtilizationDetails_Destroy", "MaterialUtilizationDetail"))
+      )
+)

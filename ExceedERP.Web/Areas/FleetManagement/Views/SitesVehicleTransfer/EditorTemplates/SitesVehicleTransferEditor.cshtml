@@ -1,0 +1,252 @@
+﻿@model  ExceedERP.Core.Domain.FleetManagement.FleetResource.SitesVehicleTransfer
+
+
+
+<div class="demo-section k-content">
+
+
+    <div class = "row">
+        <div class = "col-md-1">
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+
+                    @Html.LabelFor(model => model.FleetsID)
+                    @(Html.Kendo().DropDownListFor(model => model.FleetsID).Name("FleetsID")
+                          .DataTextField("PlateNumber")
+                          .DataValueField("FleetsID").OptionLabel(" Select ").Filter(FilterType.Contains)
+                                          .DataSource(d => d.Read(r => r.Action("FleetsDDBind", "EquipmentRegistration")).ServerFiltering(false)).Events(e => e.Change("BindIntialSite")))
+
+                </div>
+
+            </div>
+        </div>
+        <div class = "col-md-3">
+            <div class = "form-group">
+                <div class = "k-label">
+                    @Html.LabelFor(model => model.InitialSite)
+                </div>
+                <div>
+                    @Html.Kendo().TextBoxFor(model => model.InitialSite).Enable(false)
+
+                    @Html.ValidationMessageFor(model => model.InitialSite)
+                </div>
+            </div>
+        </div>
+
+        <div class = "col-md-3">
+            <div class = "form-group">
+                <div class = "k-label">
+                    @Html.LabelFor(model => model.DestinationSite)
+                </div>
+                <div>
+                    @(Html.Kendo().DropDownListFor(model => model.DestinationSite)
+        .DataTextField("Name")
+                                .DataValueField("Name").OptionLabel(" Select")
+                    .DataSource(d => d.Read(r => r.Action("BranchDDBind", "Branch"))))
+                </div>
+            </div>
+        </div>
+
+  
+    </div>
+    <div class="row">
+        <div class="col-md-1">
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.StartingDate)
+                </div>
+                <div>
+                    @Html.Kendo().DatePickerFor(model => model.StartingDate)
+                    @Html.ValidationMessageFor(model => model.StartingDate)
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.ToDate)
+                </div>
+                <div>
+                    @Html.Kendo().DatePickerFor(model => model.ToDate)
+                    @Html.ValidationMessageFor(model => model.ToDate)
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.Description)
+                </div>
+                <div>
+                    @Html.Kendo().TextBoxFor(model => model.Description)
+                    @Html.ValidationMessageFor(model => model.Description)
+                </div>
+            </div>
+        </div>
+
+  
+
+    </div>
+
+
+    <div class="row">
+        <div class="col-md-1">
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.BatteryStatus)
+                </div>
+                <div>
+                    @Html.EnumDropDownListFor(model => model.BatteryStatus)
+                    @Html.ValidationMessageFor(model => model.BatteryStatus)
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.BatteryQuantity)
+                </div>
+                <div>
+                    @Html.Kendo().TextBoxFor(model => model.BatteryQuantity)
+                    @Html.ValidationMessageFor(model => model.BatteryQuantity)
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.BatteryAmpere)
+                </div>
+                <div>
+                    @Html.Kendo().TextBoxFor(model => model.BatteryAmpere)
+                    @Html.ValidationMessageFor(model => model.BatteryAmpere)
+                </div>
+            </div>
+        </div>
+
+
+
+    </div>
+
+    <div class="row">
+        <div class="col-md-1">
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.EquipmentCondition)
+                </div>
+                <div>
+                    @Html.EnumDropDownListFor(model => model.EquipmentCondition)
+                    @Html.ValidationMessageFor(model => model.EquipmentCondition)
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.FuelAmount)
+                </div>
+                <div>
+                    @Html.EnumDropDownListFor(model => model.FuelAmount)
+                    @Html.ValidationMessageFor(model => model.FuelAmount)
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.Hydrolic)
+                </div>
+                <div>
+                    @Html.EnumDropDownListFor(model => model.Hydrolic)
+                    @Html.ValidationMessageFor(model => model.Hydrolic)
+                </div>
+            </div>
+        </div>
+
+
+
+    </div>
+
+    <div class="row">
+        <div class="col-md-1">
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.TransferMode)
+                </div>
+                <div>
+                    @Html.EnumDropDownListFor(model => model.TransferMode)
+                    @Html.ValidationMessageFor(model => model.TransferMode)
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.TransferedOperator)
+                </div>
+                <div>
+                    @Html.Kendo().TextBoxFor(model => model.TransferedOperator)
+                    @Html.ValidationMessageFor(model => model.TransferedOperator)
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.LoadedPlateNo)
+                </div>
+                <div>
+                    @Html.Kendo().TextBoxFor(model => model.LoadedPlateNo)
+                    @Html.ValidationMessageFor(model => model.LoadedPlateNo)
+                </div>
+            </div>
+        </div>
+   
+
+    </div>
+
+    <div class="row">
+        <div class="col-md-1">
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                   Odometer
+                </div>
+                <div>
+                   @(Html.Kendo().TextBoxFor(x => x).Name("Odometer").Enable(true))
+                   
+                   </div>
+            </div>
+       </div>
+       
+       
+       
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.TransferReason)
+                </div>
+                <div>
+                    @Html.TextBoxFor(model => model.TransferReason)
+                    @Html.ValidationMessageFor(model => model.TransferReason)
+                </div>
+            </div>
+       
+        </div>
+        </div>
+    </div>
+            

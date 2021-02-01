@@ -1,0 +1,34 @@
+﻿<legend>Advance Measure</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetMaintenance.AdvanceMeasure>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Description).Width(200);
+        columns.Bound(c => c.DateCreated).Format("{0:d}").Width(150);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+         .HtmlAttributes(new { style = "height: 520px;" })
+                          .Pageable(pageable => pageable
+                                            .Input(true)
+                                            .Numeric(false)
+                                            .Refresh(true)
+                                            .PageSizes(true)
+                                            .ButtonCount(5))
+
+                                .Scrollable()
+                                .Sortable()
+                                .Filterable()
+                              .Scrollable(h => h.Height(500))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.AdvanceMeasureId))
+          .Read(read => read.Action("AdvanceMeasures_Read", "AdvanceMeasure"))
+          .Create(create => create.Action("AdvanceMeasures_Create", "AdvanceMeasure"))
+          .Update(update => update.Action("AdvanceMeasures_Update", "AdvanceMeasure"))
+          .Destroy(destroy => destroy.Action("AdvanceMeasures_Destroy", "AdvanceMeasure"))
+      )
+)

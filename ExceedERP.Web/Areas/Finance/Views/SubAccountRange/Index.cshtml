@@ -1,0 +1,46 @@
+﻿<legend>Sub Account Ranges</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Finance.SubAccountRange>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.From).Width(100);
+        columns.Bound(c => c.To).Width(100);
+        columns.Bound(c => c.Type).Width(120);
+      
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .HtmlAttributes(new { style = "height: 550px;" })
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(20))
+      .Scrollable()
+      .Sortable()
+      .Filterable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Events(ev => ev
+              .Error("error_handler(\"grid\")")
+              .RequestStart("onRequestStart(\"grid\")")
+              .RequestEnd("onRequestEnd(\"grid\")"))
+          .Model(model =>
+          {
+              model.Id(p => p.SubAccountRangeId);
+              model.Field(p => p.SubAccountRangeId).Editable(false);
+              model.Field(p => p.CreatedBy).Editable(false);
+              model.Field(p => p.DateCreated).Editable(false);
+              model.Field(p => p.ModifiedBy).Editable(false);
+              model.Field(p => p.LastModified).Editable(false);
+          })
+          .Read(read => read.Action("SubAccountRanges_Read", "SubAccountRange"))
+          .Create(create => create.Action("SubAccountRanges_Create", "SubAccountRange"))
+          .Update(update => update.Action("SubAccountRanges_Update", "SubAccountRange"))
+          .Destroy(destroy => destroy.Action("SubAccountRanges_Destroy", "SubAccountRange"))
+      )
+)

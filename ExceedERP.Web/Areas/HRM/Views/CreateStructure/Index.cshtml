@@ -1,0 +1,112 @@
+﻿@using ExceedERP.Core.Domain.Common.HRM
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<Legend >@Resources.Navigator_Company_MaintainCompanyStructure</Legend>
+@(Html.Kendo().Grid<MainCompanyStructure>()
+          .Name("MainCompanyStructuregrid")
+      .Columns(columns =>
+      {
+          columns.Bound (c => c.Name).Width (150);//, (System.Collections.IEnumerable)ViewData["structures"], "LookupId", "Description").Width(120).EditorTemplateName("structures");
+          columns.ForeignKey(c => c.StructureId, (System.Collections.IEnumerable)ViewData["structures"], "StructureId", "Name").Width(120).EditorTemplateName("structures");
+          columns.ForeignKey(c => c.Parent, (System.Collections.IEnumerable)ViewData["Parent"], "OrgStructureId", "Name").EditorTemplateName("Sections").Width(150);
+          columns.Bound(c => c.Remark).Width (100).Visible (false);
+          columns.Command(command =>
+          {
+              if (HttpContext.Current.User.IsInRole("HR_Company_User"))
+
+              {
+                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+              }
+              if (HttpContext.Current.User.IsInRole("HR_Admin") || HttpContext.Current.User.IsInRole("HR_Company_Admin"))
+
+              {
+                   command.Destroy().Text(Resources.ActionButton_Cancel);//
+              }
+          }).Width(100);
+      })
+         // .Events(e => e.Edit("cokclick"))
+      .ToolBar(toolbar =>
+      {
+          if (HttpContext.Current.User.IsInRole("HR_Company_User"))
+
+          {
+              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+          }
+            if (HttpContext.Current.User.IsInRole("HR_Admin") || HttpContext.Current.User.IsInRole("HR_Company_Admin"))
+
+            
+          {
+              toolbar.Excel().Text(Resources.ActionButton_ExportExcel).HtmlAttributes(new { @class = "btn btn-primary btn-xs pull-right" });
+              toolbar.Pdf().Text(Resources.ActionButton_ExportPDF).HtmlAttributes(new { @class = "btn btn-primary btn-xs pull-right" });
+          }
+      })
+           .Excel(excel => excel
+                                            .FileName(Resources.Navigator_Company_MaintainCompanyStructure + ".xlsx")
+                                .Filterable(true)
+                                    .AllPages(true)
+                                                    .ProxyURL(Url.Action("Excel_Export_Save", "CreateStructure"))
+                            )
+                                 .Pdf(pdf => pdf
+                                .AllPages()
+                                                .FileName(Resources.Navigator_Company_MaintainCompanyStructure + ".pdf")
+                                                    .ProxyURL(Url.Action("Pdf_Export_Save", "CreateStructure"))
+                            )
+                  .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("CreateStructure").Window(window => { window.Title(Resources.Navigator_Company_MaintainCompanyStructure); window.Scrollable(false); }))
+          .Scrollable(h => h.Height(500))
+             .Groupable()
+                      .Sortable(sortable =>
+                      {
+                          sortable.SortMode(GridSortMode.SingleColumn);
+                      })
+          .Filterable()
+             .Pageable(pageable => pageable
+                                        .Input(true)
+                                        .Numeric(false)
+                                        .Refresh(true)
+                                        .PageSizes(true)
+                                        .ButtonCount(5))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+              .Events(events =>
+                        {
+                            events.Error("error_handler(\"MainCompanyStructuregrid\")");
+                            events.RequestStart("onRequestStart(\"MainCompanyStructuregrid\")");
+                            events.RequestEnd("onRequestEnd(\"MainCompanyStructuregrid\")");
+                        })
+                      
+          .Model(model => model.Id(p => p.OrgStructureId))
+          .Read(read => read.Action("MainCompanyStructures_Read", "CreateStructure"))
+          .Create(create => create.Action("MainCompanyStructures_Create", "CreateStructure"))
+          .Update(update => update.Action("MainCompanyStructures_Update", "CreateStructure"))
+          .Destroy(destroy => destroy.Action("MainCompanyStructures_Destroy", "CreateStructure"))
+      )
+)
+<style>
+    div.k-edit-form-container {
+        width: 700px;
+    }
+</style>
+<script>
+    //function error_handler(e) {
+    //    if (e.errors) {
+    //        var message = "Errors:\n";
+    //        $.each(e.errors, function(key, value) {
+    //            if ('errors' in value) {
+    //                $.each(value.errors, function() {
+    //                    message += this + "\n";
+    //                });
+    //            }
+    //        });
+    //        alert(message);
+
+    //    }
+
+    //}
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+</script>

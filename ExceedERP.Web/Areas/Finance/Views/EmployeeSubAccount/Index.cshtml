@@ -1,0 +1,62 @@
+﻿@using System.Collections
+<legend>Employee Sub Account</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Finance.EmployeeSubAccount>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.ForeignKey(p => p.EmployeeId, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Title("Employee").Width(200).EditorTemplateName("EmployeeSelector");
+        columns.Bound(c => c.SubAccountCode).Width(150).EditorTemplateName("SubAccountSelector");
+          columns.Bound(c => c.Enable).Width(90).Title("Enable").ClientTemplate(
+              "<input type='checkbox' disabled = 'true' value='#= Enable #' " +
+              "# if (Enable) { #" +
+              "checked='checked'" +
+              "# } #" +
+              "/>"
+              );
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .HtmlAttributes(new { style = "height: 550px;" })
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(20))
+      .Scrollable()
+      .Sortable()
+      .Filterable()
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+     
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Events(ev => ev
+              .Error("error_handler(\"grid\")")
+              .RequestStart("onRequestStart(\"grid\")")
+              .RequestEnd("onRequestEnd(\"grid\")"))
+          .Model(model =>
+          {
+              model.Id(p => p.EmployeeSubAccountId);
+              model.Field(p => p.EmployeeSubAccountId).Editable(false);
+              model.Field(p => p.CreatedBy).Editable(false);
+              model.Field(p => p.DateCreated).Editable(false);
+              model.Field(p => p.ModifiedBy).Editable(false);
+              model.Field(p => p.LastModified).Editable(false);
+          })
+          .Read(read => read.Action("EmployeeSubAccounts_Read", "EmployeeSubAccount"))
+          .Create(create => create.Action("EmployeeSubAccounts_Create", "EmployeeSubAccount"))
+          .Update(update => update.Action("EmployeeSubAccounts_Update", "EmployeeSubAccount"))
+          .Destroy(destroy => destroy.Action("EmployeeSubAccounts_Destroy", "EmployeeSubAccount"))
+      )
+)

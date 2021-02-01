@@ -1,0 +1,41 @@
+﻿@using ExceedERP.Core.Domain.Procurement.Settings
+
+@(Html.Kendo().Grid<SupplierRank>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.Name);
+        columns.Bound(c => c.Description);
+        
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+            toolbar.Excel();
+           // toolbar.Pdf();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Pageable()
+      .Selectable(selectable => {
+            selectable.Mode(GridSelectionMode.Single);
+            selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable => {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Filterable()
+      .Scrollable(h => h.Height(500))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Events(ev => ev
+              .Error("error_handler(\"grid\")")
+              .RequestStart("onRequestStart(\"grid\")")
+              .RequestEnd("onRequestEnd(\"grid\")"))
+          .Model(model => model.Id(p => p.SupplierRankId))
+          .Read(read => read.Action("SupplierRanks_Read", "SupplierRank"))
+          .Create(create => create.Action("SupplierRanks_Create", "SupplierRank"))
+          .Update(update => update.Action("SupplierRanks_Update", "SupplierRank"))
+          .Destroy(destroy => destroy.Action("SupplierRanks_Destroy", "SupplierRank"))
+      )
+)
+    

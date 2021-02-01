@@ -1,0 +1,16 @@
+﻿@using System.Collections
+@(Html.Kendo().DropDownListFor(m => m)
+                  .ValuePrimitive(true)
+                  .OptionLabel("Select Supplier...")
+                              .DataTextField("Name")
+                                      .DataValueField("Supplier")
+                              .Filter("contains")
+                               .DataSource(dataSource =>
+                              {
+                                  dataSource.Read(read => read.Action("GetReceiveSuppliers", "DataProvider", new { area = "Inventory" }).Data("filterSuppliers"))
+                                            .ServerFiltering(true);
+                              })
+                                  .CascadeFrom("ReceiveRef")
+                                   
+)
+@Html.ValidationMessageFor(m => m)

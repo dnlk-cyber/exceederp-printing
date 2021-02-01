@@ -1,0 +1,419 @@
+﻿@using ExceedERP.Core.Localization
+@using ExceedERP.Core.Domain.Construction
+@using System.Collections
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Earned Value Analysis | Analysis by Project</legend>
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.EVMProjectGeneralInfomationViewModel>()
+        .Name("ProjectInformationgrid")
+        .Columns(columns =>
+        {
+            columns.Bound(c => c.Name).Width(150);
+            //columns.Bound(c => c.Code).Width(150);
+            columns.Bound(c => c.ProjectType).Width(150);
+            columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["Branch"], "BranchId", "Name").EditorTemplateName("Branch").Width(150);
+            columns.Bound(c => c.ContractAmount).Width(150).ClientTemplate(
+                "# if (ContractAmount === 0) { #" +
+                                            " -----" +
+                                            "# } else {#" +
+                                            "#: kendo.toString( ContractAmount, 'N2') #" +
+                                            "# } #"
+                );
+            columns.Bound(c => c.Client).Width(150);
+
+        })
+        .Scrollable(h => h.Height(700))
+        .Sortable(sortable =>
+        {
+            sortable.SortMode(GridSortMode.SingleColumn);
+        })
+        .Selectable(selectable =>
+        {
+            selectable.Mode(GridSelectionMode.Single);
+            selectable.Type(GridSelectionType.Row);
+        })
+        .Filterable()
+        .Pageable(pageable => pageable
+                                .Input(true)
+                                .Numeric(false)
+                                .Refresh(true)
+                                .PageSizes(true)
+                                .ButtonCount(5))
+        .DataSource(dataSource => dataSource
+            .Ajax()
+            .PageSize(20)
+            .Events(events => events.Error("error_handler(\"ProjectInformationgrid\")")
+                )
+            .Model(model => model.Id(p => p.ProjectInformationId))
+            .Read(read => read.Action("ProjectInformation_Read", "EarnedValuePerProject"))
+        //.Create(create => create.Action("ProjectInformation_Create", "ProjectInformation"))
+        //.Update(update => update.Action("ProjectInformation_Update", "ProjectInformation"))
+        //.Destroy(destroy => destroy.Action("ProjectInformation_Destroy", "ProjectInformation"))
+        ).ClientDetailTemplateId("monthly-records")
+)
+
+<script id="monthly-records" type="text/kendo-tmpl">
+    #if (ProjectType == 1){#
+    @(Html.Kendo().TabStrip()
+          .Name("tabstrip_#=ProjectInformationId#")
+          .SelectedIndex(0)
+          .Items(items =>
+          {
+              items.Add().Text("Project Detail").Content(
+                @<text>
+                    @(Html.Kendo().PanelBar()
+                          .Name("panelbar_#=ProjectInformationId#")
+                          .ExpandMode(PanelBarExpandMode.Single)
+                          .Items(panelbar =>
+                          {
+                              panelbar.Add()
+                                  .Expanded(true)
+                                  .Content(
+                                      "<div class='project-details'>" +
+                                          "<ul>" +
+                                              "<li> <label> Contract Amount: </label> <strong> #= kendo.toString(ContractAmount, 'N2')# </strong> </li>" +
+                                              "<li> <label> Expected Profit Rate : </label> <strong> #=ExpectedProfitRate#% </strong> </li>" +
+                                              "<li> <label> Expected Profit: </label> <strong> #=kendo.toString(ExpectedProfit, 'N2')# </strong> </li>" +
+                                              "<li> <label> BAC: </label> <strong> #=kendo.toString(BAC, 'N2')# </strong> </li>" +
+                                          "</ul>" +
+                                      "</div>"
+                                  );
+                          }).ToClientTemplate()
+                    )
+
+                </text>
+                      );
+              items.Add().Text("EVA Records").Content(
+                @<text>
+                   @(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.EarnedValuePerProject>()
+                        .Name("earnedValue_#=ProjectInformationId#")
+                        .Columns(columns =>
+                        {
+                            columns.Bound(c => c.GlFiscalYear).Hidden(true)
+                              .ClientGroupHeaderTemplate(
+                                  "\\#=value\\#"
+                                  );
+                            columns.ForeignKey(c => c.ConstructionPeriodId, (IEnumerable)ViewData["Periods"], "ConstructionPeriodId", "Name").EditorTemplateName("RoadProjectsConstructionPeriodsSelector").Width(80);
+                            columns.Group(g => g.Title("Inputs").HeaderHtmlAttributes(new { style = "text-align: center; font-weight: bold;" })
+                                .Columns(detail =>
+                                {
+                                    detail.Bound(evp => evp.BAC).Width(100).Format("{0:N2}");
+                                    //detail.Bound(evp => evp.BCWSRaw).Width(100).Format("{0:N2}");
+                                    detail.Bound(evp => evp.BCWS).Width(100).Format("{0:N2}");
+                                    //detail.Bound(evp => evp.BCWPRaw).Width(100).Format("{0:N2}");
+                                    detail.Bound(evp => evp.BCWP).Width(100).Format("{0:N2}");
+                                    //detail.Bound(evp => evp.ACWPRaw).Width(100).Format("{0:N2}");
+                                    detail.Bound(evp => evp.ACWP).Width(100).Format("{0:N2}");
+                                })
+                                );
+                            columns.Group(g => g.Title("Indicators").HeaderHtmlAttributes(new { style = "text-align: center; font-weight: bold;" })
+                                .Columns(info =>
+                                {
+                                    info.Bound(x => x.PCP).Width(100).ClientTemplate("\\#=PCP\\#%");
+                                    info.Bound(x => x.PCA).Width(100).ClientTemplate("\\#=PCA\\#%");
+                                    info.Bound(x => x.CV).Width(100).Format("{0:N2}");
+                                    info.Bound(x => x.CVPercentage).Width(60).Title("CV%").ClientTemplate("\\#=CVPercentage\\#%");
+                                    info.Bound(x => x.CPI).Width(100);
+                                    info.Bound(x => x.SV).Width(100).Format("{0:N2}");
+                                    info.Bound(x => x.SVPercentage).Width(60).Title("SV%").ClientTemplate("\\#=SVPercentage\\#%");
+                                    info.Bound(x => x.SPI).Width(100);
+                                    info.Bound(x => x.CR).Width(100);
+                                })
+                                );
+                            columns.Group(g => g.Title("Predictors").HeaderHtmlAttributes(new { style = "text-align: center; font-weight: bold; " })
+                            .Columns(info =>
+                            {
+                                info.Bound(x => x.TCPI).Width(100);
+                                info.Bound(x => x.TSPI).Width(100);
+                                info.Bound(x => x.EAC).Width(100).Format("{0:N2}");
+                                info.Bound(x => x.VAC).Width(100).Format("{0:N2}");
+                                info.Bound(x => x.ETC).Width(100).Format("{0:N2}");
+                            })
+                            );
+
+                            columns.Command(command =>
+                            {
+                                command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                command.Destroy().Text(Resources.ActionButton_Cancel);
+                            }).Width(200);
+                        })
+                        .ToolBar(toolbar =>
+                        {
+                            toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                        })
+                        .Editable(editable => editable.Mode(GridEditMode.InLine))
+                        .Scrollable(h => h.Height(500))
+                        .Selectable(selectable =>
+                        {
+                            selectable.Mode(GridSelectionMode.Single);
+                            selectable.Type(GridSelectionType.Row);
+                        })
+                        //.Groupable()
+                        .Sortable(sortable =>
+                        {
+                            sortable.SortMode(GridSortMode.SingleColumn);
+                        })
+                        //.Filterable()
+                        .Pageable(pageable => pageable
+                            .Input(true)
+                            .Numeric(false)
+                            .Refresh(true)
+                            .PageSizes(true)
+                            .ButtonCount(5))
+                        // .Events(e => e.Edit("onEdit"))
+                        .DataSource(dataSource => dataSource
+                            .Ajax()
+                            .Group(group =>
+                            {
+                                group.Add(evpp => evpp.GlFiscalYear);
+                            })
+                            .Events(events =>
+                            {
+                                events.Error("error_handler(\"earnedValue_#=ProjectInformationId#\")");
+                                events.RequestStart("onRequestStart(\"earnedValue_#=ProjectInformationId#\")");
+                                events.RequestEnd("onRequestEnd(\"earnedValue_#=ProjectInformationId#\")");
+                            })
+                            .Model(model =>
+                            {
+                                model.Id(p => p.EarnedValuePerProjectId);
+
+                                //model.Field(x => x.BAC).Editable(false);
+                                //model.Field(x => x.BCWS).Editable(false);
+                                //model.Field(x => x.BCWP).Editable(false);
+                                //model.Field(x => x.ACWP).Editable(false);
+
+                                model.Field(x => x.PCP).Editable(false);
+                                model.Field(x => x.PCA).Editable(false);
+                                model.Field(x => x.CV).Editable(false);
+                                model.Field(x => x.CVPercentage).Editable(false);
+                                model.Field(x => x.SV).Editable(false);
+                                model.Field(x => x.SVPercentage).Editable(false);
+                                model.Field(x => x.CPI).Editable(false);
+                                model.Field(x => x.SPI).Editable(false);
+                                model.Field(x => x.CR).Editable(false);
+                                model.Field(x => x.TCPI).Editable(false);
+                                model.Field(x => x.TSPI).Editable(false);
+                                model.Field(x => x.EAC).Editable(false);
+                                model.Field(x => x.VAC).Editable(false);
+                                model.Field(x => x.ETC).Editable(false);
+
+                            })
+                            .Read(read => read.Action("EarnedValuePerProject_Read", "EarnedValuePerProject", new { projectIdRead = "#=ProjectInformationId#" }))
+                            .Create(create => create.Action("EarnedValuePerProject_Create", "EarnedValuePerProject", new { projectIdCreate = "#=ProjectInformationId#", projectType = AvailableProjectTypes.Road}))
+                            .Update(update => update.Action("EarnedValuePerProject_Update", "EarnedValuePerProject", new { projectType = AvailableProjectTypes.Road }))
+                            .Destroy(destroy => destroy.Action("EarnedValuePerProject_Destroy", "EarnedValuePerProject"))
+                        ).ToClientTemplate()
+                )
+                </text>
+                );
+              
+          }).ToClientTemplate())
+    #}else{#
+    @(Html.Kendo().TabStrip()
+          .Name("tabstrip_#=ProjectInformationId#")
+          .SelectedIndex(0)
+          .Items(items =>
+          {
+              items.Add().Text("Project Detail").Content(
+                @<text>
+
+                    @(Html.Kendo().PanelBar()
+                          .Name("panelbar_#=ProjectInformationId#")
+                          .ExpandMode(PanelBarExpandMode.Single)
+                          .Items(panelbar =>
+                          {
+                              panelbar.Add()
+                                  .Expanded(true)
+                                  .Content(
+                                      "<div class='project-details'>" +
+                                          "<ul>" +
+                                              "<li> <label> Contract Amount: </label> <strong> #= kendo.toString(ContractAmount, 'N2')# </strong> </li>" +
+                                              "<li> <label> Expected Profit Rate : </label> <strong> #=ExpectedProfitRate#% </strong> </li>" +
+                                              "<li> <label> Expected Profit: </label> <strong> #=kendo.toString(ExpectedProfit, 'N2')# </strong> </li>" +
+                                              "<li> <label> BAC: </label> <strong> #=kendo.toString(BAC, 'N2')# </strong> </li>" +
+                                          "</ul>" +
+                                      "</div>"
+                                  );
+                          }).ToClientTemplate()
+                    )
+
+                </text>
+                      );
+              items.Add().Text("EVA Records").Content(
+                @<text>
+                   @(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.EarnedValuePerProject>()
+                        .Name("earnedValue_#=ProjectInformationId#")
+                        .Columns(columns =>
+                        {
+                            // columns.Bound(c => c.FormHr).Width(150).ClientTemplate("<input type='checkbox' disabled='true'  onclick='FromHr(this.checked) value='#=FormHr #' " + " # if (FormHr) { #" + "checked='checked'" + "# } #" + " />");
+                            //columns.ForeignKey(c => c.ProjectInformationId, (IEnumerable)ViewData["Projects"], "ProjectInformationId", "Name").EditorTemplateName("Projects").Width(130).Title("Project");
+                            //columns.Bound(c => c.Year).Width(100).EditorTemplateName("Years");
+                            columns.Bound(c => c.GlFiscalYear).Hidden(true)
+                              .ClientGroupHeaderTemplate(
+                                  "\\#=value\\#"
+                                  );
+                            columns.ForeignKey(c => c.ConstructionPeriodId, (IEnumerable)ViewData["Periods"], "ConstructionPeriodId", "Name").EditorTemplateName("ConstructionPeriods").Width(80);
+                            columns.Group(g => g.Title("Inputs").HeaderHtmlAttributes(new { style = "text-align: center; font-weight: bold;" })
+                                .Columns(detail =>
+                                {
+                                    detail.Bound(evp => evp.BAC).Width(100).Format("{0:N2}");
+                                    detail.Bound(evp => evp.BCWSRaw).Width(100).Format("{0:N2}");
+                                    detail.Bound(evp => evp.BCWS).Width(100).Format("{0:N2}");
+                                    detail.Bound(evp => evp.BCWPRaw).Width(100).Format("{0:N2}");
+                                    detail.Bound(evp => evp.BCWP).Width(100).Format("{0:N2}");
+                                    detail.Bound(evp => evp.ACWPRaw).Width(100).Format("{0:N2}");
+                                    detail.Bound(evp => evp.ACWP).Width(100).Format("{0:N2}");
+                                })
+                                );
+                            columns.Group(g => g.Title("Indicators").HeaderHtmlAttributes(new { style = "text-align: center; font-weight: bold;" })
+                                .Columns(info =>
+                                {
+                                    info.Bound(x => x.PCP).Width(100).ClientTemplate("\\#=PCP\\#%");
+                                    info.Bound(x => x.PCA).Width(100).ClientTemplate("\\#=PCA\\#%");
+                                    info.Bound(x => x.CV).Width(100).Format("{0:N2}");
+                                    info.Bound(x => x.CVPercentage).Width(60).Title("CV%").ClientTemplate("\\#=CVPercentage\\#%");
+                                    info.Bound(x => x.CPI).Width(100);
+                                    info.Bound(x => x.SV).Width(100).Format("{0:N2}");
+                                    info.Bound(x => x.SVPercentage).Width(60).Title("SV%").ClientTemplate("\\#=SVPercentage\\#%");
+                                    info.Bound(x => x.SPI).Width(100);
+                                    info.Bound(x => x.CR).Width(100);
+                                })
+                                );
+                            columns.Group(g => g.Title("Predictors").HeaderHtmlAttributes(new { style = "text-align: center; font-weight: bold; " })
+                            .Columns(info =>
+                            {
+                                info.Bound(x => x.TCPI).Width(100);
+                                info.Bound(x => x.TSPI).Width(100);
+                                info.Bound(x => x.EAC).Width(100).Format("{0:N2}");
+                                info.Bound(x => x.VAC).Width(100).Format("{0:N2}");
+                                info.Bound(x => x.ETC).Width(100).Format("{0:N2}");
+                            })
+                            );
+
+                            columns.Command(command =>
+                            {
+                                command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                command.Destroy().Text(Resources.ActionButton_Cancel);
+                            }).Width(200);
+                        })
+                        .ToolBar(toolbar =>
+                        {
+                            toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                        })
+                        .Editable(editable => editable.Mode(GridEditMode.InLine))
+                        .Scrollable(h => h.Height(500))
+                        .Selectable(selectable =>
+                        {
+                            selectable.Mode(GridSelectionMode.Single);
+                            selectable.Type(GridSelectionType.Row);
+                        })
+                        //.Groupable()
+                        .Sortable(sortable =>
+                        {
+                            sortable.SortMode(GridSortMode.SingleColumn);
+                        })
+                        //.Filterable()
+                        .Pageable(pageable => pageable
+                            .Input(true)
+                            .Numeric(false)
+                            .Refresh(true)
+                            .PageSizes(true)
+                            .ButtonCount(5))
+                        // .Events(e => e.Edit("onEdit"))
+                        .DataSource(dataSource => dataSource
+                            .Ajax()
+                            .Group(group =>
+                            {
+                                group.Add(evpp => evpp.GlFiscalYear);
+                            })
+                            .Events(events =>
+                            {
+                                events.Error("error_handler(\"earnedValue_#=ProjectInformationId#\")");
+                                events.RequestStart("onRequestStart(\"earnedValue_#=ProjectInformationId#\")");
+                                events.RequestEnd("onRequestEnd(\"earnedValue_#=ProjectInformationId#\")");
+                            })
+                            .Model(model =>
+                            {
+                                model.Id(p => p.EarnedValuePerProjectId);
+
+                                model.Field(x => x.BAC).Editable(false);
+                                model.Field(x => x.BCWS).Editable(false);
+                                model.Field(x => x.BCWP).Editable(false);
+                                model.Field(x => x.ACWP).Editable(false);
+
+                                model.Field(x => x.PCP).Editable(false);
+                                model.Field(x => x.PCA).Editable(false);
+                                model.Field(x => x.CV).Editable(false);
+                                model.Field(x => x.CVPercentage).Editable(false);
+                                model.Field(x => x.SV).Editable(false);
+                                model.Field(x => x.SVPercentage).Editable(false);
+                                model.Field(x => x.CPI).Editable(false);
+                                model.Field(x => x.SPI).Editable(false);
+                                model.Field(x => x.CR).Editable(false);
+                                model.Field(x => x.TCPI).Editable(false);
+                                model.Field(x => x.TSPI).Editable(false);
+                                model.Field(x => x.EAC).Editable(false);
+                                model.Field(x => x.VAC).Editable(false);
+                                model.Field(x => x.ETC).Editable(false);
+
+                            })
+                            .Read(read => read.Action("EarnedValuePerProject_Read", "EarnedValuePerProject", new { projectIdRead = "#=ProjectInformationId#" }))
+                            .Create(create => create.Action("EarnedValuePerProject_Create", "EarnedValuePerProject", new { projectIdCreate = "#=ProjectInformationId#", projectType = AvailableProjectTypes.Building }))
+                            .Update(update => update.Action("EarnedValuePerProject_Update", "EarnedValuePerProject", new { projectType = AvailableProjectTypes.Building }))
+                            .Destroy(destroy => destroy.Action("EarnedValuePerProject_Destroy", "EarnedValuePerProject"))
+                        ).ToClientTemplate()
+                )
+                </text>
+                );
+              
+          }).ToClientTemplate())
+    #}#
+</script>
+
+<script>
+    function ConstructionPeriodChanged(e, id, defaultBAC){
+        var periodId = $('#ConstructionPeriodId').val();
+        $("#BAC").val(defaultBAC);
+        $("#BAC").trigger("change");
+        $.ajax({
+            url: '@Url.Action("GetCalculatedBudgetedCostOfWorkScheduled", "EarnedValuePerProject", new {area = "Construction"})',
+            data: { constructionPeriodId: periodId, projectId: id },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                //var bcws = result[0];
+                $("#BCWS").val(result);
+                $("#BCWS").trigger("change");
+            }
+
+        });
+
+        $.ajax({
+            url: '@Url.Action("GetCalculatedBudgetedCostOfWorkPerformed", "EarnedValuePerProject", new {area = "Construction"})',
+            data: { constructionPeriodId: periodId, projectId: id },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                $("#BCWP").val(result);
+                $("#BCWP").trigger("change");
+            }
+
+        });
+
+        $.ajax({
+            url: '@Url.Action("GetCalculatedActualCostOfWorkPerformed", "EarnedValuePerProject", new {area = "Construction"})',
+            data: { constructionPeriodId: periodId, projectId: id },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                $("#ACWP").val(result);
+                $("#ACWP").trigger("change");
+            }
+
+        });
+    }
+</script>
+
+

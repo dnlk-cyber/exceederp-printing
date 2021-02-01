@@ -1,0 +1,692 @@
+﻿
+<li class="">
+    <a href="#" class="dropdown-toggle">
+        <i class="menu-icon fa fa-th"></i>
+        @*<i class="fa fa-dashboard"></i>*@
+        <span class="menu-text">
+            Construction
+        </span>
+        <b class="arrow fa fa-angle-down"></b>
+    </a>
+    <b class="arrow"></b>
+    <ul class="submenu">
+        <li class="">
+            @if (User.IsInRole("Construction_Setting_Admin"))
+            {
+                <a href="#" class="dropdown-toggle">
+                    <i class="menu-icon fa fa-cog"></i>
+                    Settings
+                    <b class="arrow fa fa-angle-down"></b>
+                </a>
+                <b class="arrow"></b>
+                <ul class="submenu">
+                    <li id="CON018" class="actionlinlk">
+                        @Html.ActionLink("General", "Index", "Setting", new { area = "Construction" }, null)<b class="arrow"></b>
+                    </li>
+                    <li id="CON019" class="actionlinlk">
+                        @Html.ActionLink("Project Type Mapping", "Index", "ProjectTypeMapping", new { area = "Construction" }, null)<b class="arrow"></b>
+                    </li>
+                    <li id="CON019" class="actionlinlk">
+                        @Html.ActionLink("Project User Assignment", "Index", "ProjectUserAssignment", new { area = "Construction" }, null)<b class="arrow"></b>
+                    </li>
+                    <li id="CON020" class="actionlinlk">
+                        @Html.ActionLink("Construction Item Category", "Index", "ConstructionItemCategory", new { area = "Construction" }, null)<b class="arrow"></b>
+                    </li>
+                    @*<li id="CON0190" class="actionlinlk">
+                        @Html.ActionLink("Resources", "Index", "ResourceType", new { area = "Construction" }, null)<b class="arrow"></b>
+                    </li>*@
+                    <li id="CON0191" class="actionlinlk">
+                        @Html.ActionLink("Reinforcement Bars", "Index", "DeformedBar", new { area = "Construction" }, null)<b class="arrow"></b>
+                    </li>
+                    @*<li id="CON0192" class="actionlinlk">
+                        @Html.ActionLink("Crew", "Index", "ProjectCrew", new { area = "Construction" }, null)<b class="arrow"></b>
+                    </li>*@
+                    <li id="CON0193" class="actionlinlk">
+                        @Html.ActionLink("Labor Rate Index Factor", "Index", "LaborRateIndexFactorAttribute", new { area = "Construction" }, null)<b class="arrow"></b>
+                    </li>
+                    @*<li id="CON0194" class="actionlinlk">
+                        @Html.ActionLink("Crew", "Index", "ProjectCrew", new { area = "Construction" }, null)<b class="arrow"></b>
+                    </li>*@
+                    @*<li id="CON010" class="actionlinlk">@Html.ActionLink("Unit Weight", "Index", "UnitRate", new { area = "Construction" }, null)<b class="arrow"></b></li>*@
+                    <li id="CON010222" class="actionlinlk">@Html.ActionLink("Unit Of Measurement", "Index", "UnitOfMeasurement", new { area = "Construction" }, null)<b class="arrow"></b></li>
+                    <li id="CON1010" class="actionlinlk">
+                        @*@Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorPayrollSetup_PerdimeSetting, "Index", "PerdimeSetting", new { area = "Construction" }, null)<b class="arrow"></b>*@
+                    </li>
+
+                    <li id="CON1011" class="actionlinlk">
+                        @Html.ActionLink("Job Title Mapping", "Index", "ProjectJobTitle", new { area = "Construction" }, null)<b class="arrow"></b>
+                    </li>
+                    @*<li id="CON010290" class="actionlinlk">@Html.ActionLink("Monthly Fuel Cost", "Index", "MonthlyFuelCost", new { area = "Construction" }, null)<b class="arrow"></b></li>*@
+                    <li id="CON0102901" class="actionlinlk">@Html.ActionLink("Methods of Work", "Index", "MethodOfWork", new { area = "Construction" }, null)<b class="arrow"></b></li>
+                    <li id="CON0102902" class="actionlinlk">@Html.ActionLink("Earned Value Management Terms & Abbriviations", "Index", "EarnedValueManagementTerms", new { area = "Construction" }, null)<b class="arrow"></b></li>
+                    <li id="CON0102903" class="actionlinlk">@Html.ActionLink("Performance Evaluation Component Weights", "Index", "PerformanceComponentWeight", new { area = "Construction" }, null)<b class="arrow"></b></li>
+                    @*<li id="CON0102903" class="actionlinlk">@Html.ActionLink("Performance Evaluation Cost Rates", "Index", "PEVCostSetting", new { area = "Construction" }, null)<b class="arrow"></b></li>*@
+                    <li id="CON0102904" class="actionlinlk">@Html.ActionLink("Payment Components", "Index", "ProjectPaymentAttribute", new { area = "Construction" }, null)<b class="arrow"></b></li>
+                    <li id="CON0102905" class="actionlinlk">@Html.ActionLink("Delay Types", "Index", "DelayType", new { area = "Construction" }, null)<b class="arrow"></b></li>
+                    <li id="CON0102906" class="actionlinlk">@Html.ActionLink("Variation Order Types", "Index", "VariationOrderType", new { area = "Construction" }, null)<b class="arrow"></b></li>
+
+                    <li id="CON10101" class="actionlinlk">
+                        @Html.ActionLink("Construction Periods", "Index", "ConstructionPeriod", new { area = "Construction" }, null)<b class="arrow"></b>
+                    </li>
+                    <li id="CON10102" class="actionlinlk">
+                        @Html.ActionLink("Working Days", "Index", "Calendar", new { area = "Construction" }, null)<b class="arrow"></b>
+                    </li>
+                </ul>
+            }
+        </li>
+        <li class="">
+            @if (User.IsInRole("Estimation_User"))
+            {
+                <a href="#" class="dropdown-toggle">
+                    <i class="menu-icon fa fa-caret-right"></i>
+                    Estimation data Registration 
+                    <b class="arrow fa fa-angle-down"></b>
+                </a>
+                <b class="arrow"></b>
+                <ul class="submenu">
+                    <li class="">
+                        <a href="#" class="dropdown-toggle">
+                            <i class="menu-icon fa fa-caret-right"></i>
+                            Project Input
+                            <b class="arrow fa fa-angle-down"></b>
+                        </a>
+                        <b class="arrow"></b>
+                        <ul class="submenu">
+                            <li id="CON001" class="actionlinlk">
+                                @Html.ActionLink("Inputs", "Index", "ProjectInputs", new { area = "Construction" }, null)<b class="arrow"></b>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li class="">
+                        <a href="#" class="dropdown-toggle">
+                            <i class="menu-icon fa fa-caret-right"></i>
+                            Template
+                            <b class="arrow fa fa-angle-down"></b>
+                        </a>
+                        <b class="arrow"></b>
+                        <ul class="submenu">
+                            <li id="CON00221" class="actionlinlk">
+                                @Html.ActionLink("Building", "Index", "ProjectEstimationWorkItem", new { area = "Construction", type = 0 }, null)<b class="arrow"></b>
+                            </li>
+                            <li id="CON00222" class="actionlinlk">
+                                @Html.ActionLink("Road", "Index", "ProjectEstimationWorkItem", new { area = "Construction", type = 1 }, null)<b class="arrow"></b>
+                            </li>
+                            <li id="CON00223" class="actionlinlk">
+                                @Html.ActionLink("Dam", "Index", "ProjectEstimationWorkItem", new { area = "Construction", type = 2 }, null)<b class="arrow"></b>
+                            </li>
+                            <li id="CON00224" class="actionlinlk">
+                                @Html.ActionLink("Irrigation", "Index", "ProjectEstimationWorkItem", new { area = "Construction", type = 3 }, null)<b class="arrow"></b>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li class="">
+                        <a href="#" class="dropdown-toggle">
+                            <i class="menu-icon fa fa-caret-right"></i>
+                            Estimation
+                            <b class="arrow fa fa-angle-down"></b>
+                        </a>
+                        <b class="arrow"></b>
+                        <ul class="submenu">
+                            <li id="CON0004999" class="actionlinlk">
+                                @Html.ActionLink("Project Estimation", "Index", "ProjectEstimationDetail", new { area = "Construction" }, null)<b class="arrow"></b>
+                            </li>
+                            <li id="CON0004999000" class="actionlinlk">
+                                @Html.ActionLink("Estimation - Split", "Index", "ProjectEstimationSplit", new { area = "Construction" }, null)<b class="arrow"></b>
+                            </li>
+                            <li id="CON00049990" class="actionlinlk">
+                                @Html.ActionLink("Copy Estimation", "Index", "ProjectEstimationCopy", new { area = "Construction" }, null)<b class="arrow"></b>
+                            </li>
+                            <li id="CON00049991" class="actionlinlk">
+                                @Html.ActionLink("Clone Estimation", "Index", "CloneWorkItemPerProject", new { area = "Construction" }, null)<b class="arrow"></b>
+                            </li>
+                            <li id="CON00049992" class="actionlinlk">
+                                @Html.ActionLink("Take Off Sheet for Cost Estimation", "Index", "TakeOffPerProject", new { area = "Construction" }, null)<b class="arrow"></b>
+                            </li>
+                            <li id="CON00049992" class="actionlinlk">
+                                @Html.ActionLink("Quantity of Work Estimation", "WorkQuantity", "ProjectEstimation", new { area = "Construction" }, null)<b class="arrow"></b>
+                            </li>
+                            @*<li id="CON00049993" class="actionlinlk">
+                                @Html.ActionLink("Duration Estimation", "Index", "DurationEstimation", new { area = "Construction" }, null)<b class="arrow"></b>
+                            </li>*@
+                            @*<li id="CON00049994" class="actionlinlk">
+                                @Html.ActionLink("Priced BOQ", "Index", "ProjectEstimationBoqBreakdown", new { area = "Construction" }, null)<b class="arrow"></b>
+                            </li>
+                            <li id="CON00049995" class="actionlinlk">
+                                @Html.ActionLink("Summary Of BOQ", "Index", "BoqSummary", new { area = "Construction" }, null)<b class="arrow"></b>
+                            </li>*@
+                        </ul>
+                    </li>
+
+                    <li class="">
+                        <a href="#" class="dropdown-toggle">
+                            <i class="menu-icon fa fa-caret-right"></i>
+                                Variation & Supplementary Works
+                            <b class="arrow fa fa-angle-down"></b>
+                        </a>
+                        <b class="arrow"></b>
+                        <ul class="submenu">
+                            <li id="CON00221" class="actionlinlk">
+                                @Html.ActionLink("Variation Works (new)", "Index", "VariationWork", new { area = "Construction"}, null)<b class="arrow"></b>
+                            </li>
+                            <li id="CON00222" class="actionlinlk">
+                                @Html.ActionLink("Supplementary Works (new)", "Index", "SupplementaryWorks", new { area = "Construction"}, null)<b class="arrow"></b>
+                            </li>
+                            <li id="CON00223" class="actionlinlk">
+                                @Html.ActionLink("Omitted and Added Works (existing Works)", "Index", "OmittedOrAddedWorks", new { area = "Construction"}, null)<b class="arrow"></b>
+                            </li>
+                        </ul>
+                    </li>
+
+                </ul>
+            }
+        </li>
+
+        <li class="">
+            @if (User.IsInRole("Construction_Setting_Admin") || User.IsInRole("Estimation_Approver"))
+            {
+                <a href="#" class="dropdown-toggle">
+                    <i class="menu-icon fa fa-caret-right"></i>
+                    Projects
+                    <b class="arrow fa fa-angle-down"></b>
+                </a>
+
+                <b class="arrow"></b>
+                <ul class="submenu">
+                    <li id="CON000" class="actionlinlk">
+                        @Html.ActionLink("Project Information", "Index", "ProjectInformation", new { area = "Construction" }, null)<b class="arrow"></b>
+                    </li>
+                    <li id="CON000" class="actionlinlk">
+                        @Html.ActionLink("Project Status Mgmt", "Index", "ProjectStatus", new { area = "Construction" }, null)<b class="arrow"></b>
+                    </li>
+                </ul>
+            }
+        </li>
+        <li class="">
+            @if (User.IsInRole("Contract_Management_User"))
+            {
+                <a href="#" class="dropdown-toggle">
+                    <i class="menu-icon fa fa-caret-right"></i>
+                    Contract
+                    <b class="arrow fa fa-angle-down"></b>
+                </a>
+                <b class="arrow"></b>
+                <ul class="submenu">
+                    <li id="CON005" class="actionlinlk">
+                        @Html.ActionLink("Main Contract", "Index", "ProjectContract", new { area = "Construction" }, null)<b class="arrow"></b>
+                    </li>
+                    <li id="CON0055" class="actionlinlk">
+                        @Html.ActionLink("Sub Contract", "Index", "ProjectSubContract", new { area = "Construction" }, null)<b class="arrow"></b>
+                    </li>
+                </ul>
+            }
+        </li>
+
+        <li class="">
+            @if (User.IsInRole("Scheduling_User"))
+            {
+                <a href="#" class="dropdown-toggle">
+                    <i class="menu-icon fa fa-caret-right"></i>
+                    Scheduling
+                    <b class="arrow fa fa-angle-down"></b>
+                </a>
+                <b class="arrow"></b>
+                <ul class="submenu">
+                    <li id="CON00049993" class="actionlinlk">
+                        @*@Html.ActionLink("Duration Estimation", "Index", "DurationEstimation", new { area = "Construction" }, null)<b class="arrow"></b>*@
+                        @Html.ActionLink("Duration Estimation", "Index", "WorkItemDuration", new { area = "Construction" }, null)<b class="arrow"></b>
+                    </li>
+                    <li id="CON007" class="actionlinlk">
+                        @Html.ActionLink("Schedule Detail", "Index", "ProjectTaskSchedule", new { area = "Construction" }, null)<b class="arrow"></b>
+                    </li>
+                    <li id="CON006" class="actionlinlk">
+                        @Html.ActionLink("Gantt Chart", "Index", "Scheduler", new { area = "Construction" }, null)<b class="arrow"></b>
+                    </li>
+                    <li id="CON008" class="actionlinlk">
+                        @Html.ActionLink("Schedule Summary", "Diagram", "Scheduler", new { area = "Construction" }, null)<b class="arrow"></b>
+                    </li>
+                    <li id="CON009" class="actionlinlk">
+                        @Html.ActionLink("Schedule Revision", "Index", "ProjectSchedules", new { area = "Construction" }, null)<b class="arrow"></b>
+                    </li>
+                    <li id="CON00000009" class="actionlinlk">
+                        @Html.ActionLink("Settings (working days, Holidays ... )", "Index", "ScheduleSettings", new { area = "Construction" }, null)<b class="arrow"></b>
+                    </li>
+                </ul>
+            }
+        </li>
+        <li class="">
+            @if (User.IsInRole("Project_Tracking"))
+            {
+                <a href="#" class="dropdown-toggle">
+                    <i class="menu-icon fa fa-caret-right"></i>
+                    Tracking & Performance
+                    <b class="arrow fa fa-angle-down"></b>
+                </a>
+                <b class="arrow"></b>
+                <ul class="submenu">
+                    <li class="">
+                        <a href="#" class="dropdown-toggle">
+                            <i class="menu-icon fa fa-caret-right"></i>
+                            Performance
+                            <b class="arrow fa fa-angle-down"></b>
+                        </a>
+                        <b class="arrow"></b>
+                        <ul class="submenu">
+                            <li id="CONREP006" class="actionlinlk">
+                                @Html.ActionLink("Performance Evaluation", "Index", "ProjectPerformance", new { area = "Construction" }, null)<b class="arrow"></b>
+                            </li>
+                            <li id="CONREP007" class="actionlinlk">
+                                @*@Html.ActionLink("BoQ Summary", "SummaryReport", "ConstructionReport", new { area = "Construction" }, null)<b class="arrow"></b>
+                                @Html.ActionLink("BoQ Grand Summary", "GrandSummaryReport", "ConstructionReport", new { area = "Construction" }, null)<b class="arrow"></b>
+                                @Html.ActionLink("BOQ Grand Summary", "BOQGrandSummary", "PrintableDocument", new { area = "Construction" }, null)<b class="arrow"></b>*@
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="">
+                        <a href="#" class="dropdown-toggle">
+                            <i class="menu-icon fa fa-caret-right"></i>
+                            Tracking
+                            <b class="arrow fa fa-angle-down"></b>
+                        </a>
+                        <b class="arrow"></b>
+                        <ul class="submenu">
+                            <li id="CON0050" class="actionlinlk">
+                                @Html.ActionLink("Earned Value Analysis by Project", "Index", "EarnedValuePerProject", new { area = "Construction" }, null)<b class="arrow"></b>
+                            </li>
+                            <li id="CON00500" class="actionlinlk">
+                                @Html.ActionLink("Earned Value Analysis by Item", "Index", "EarnedValuePerItem", new { area = "Construction" }, null)<b class="arrow"></b>
+                            </li>
+                        </ul>
+                </ul>
+            }
+        </li>
+        
+
+        <li class="">
+            @if (User.IsInRole("Costing_User"))
+            {
+                <a href="#" class="dropdown-toggle">
+                    <i class="menu-icon fa fa-caret-right"></i>
+                    Billing (Payment)
+                    <b class="arrow fa fa-angle-down"></b>
+                </a>
+
+                <b class="arrow"></b>
+
+                <ul class="submenu">
+                    <li id="CON003000" class="actionlinlk">
+                        @Html.ActionLink("Take off sheets(of Excuted Work)", "Index", "ProjectTakeOff", new { area = "Construction" }, null)<b class="arrow"></b>
+                    </li>
+                    <li id="CON003000" class="actionlinlk">
+                        @Html.ActionLink("BoQ of Excuted Works", "Index", "BoQOfExecutedWork", new { area = "Construction" }, null)<b class="arrow"></b>
+                    </li>
+                    <li id="CON003" class="actionlinlk">
+                        @Html.ActionLink("Payment Certificates ", "Index", "ProjectPaymentCertificate", new { area = "Construction" }, null)<b class="arrow"></b>
+                    </li>
+                    <li id="CON003001" class="actionlinlk">
+                        @Html.ActionLink("Work In Progress (Revenu Estimation)", "Index", "WorkInProgress", new { area = "Construction" }, null)<b class="arrow"></b>
+                    </li>
+                    <li id="CON003002" class="actionlinlk">
+                        @Html.ActionLink("AR Invoice", "Index", "ReceivableInvoice", new { area = "Construction" }, null)<b class="arrow"></b>
+                    </li>
+                    <li id="CON003003" class="actionlinlk">
+                        @Html.ActionLink("AR Standard Collection", "Index", "StandardCollection", new { area = "Construction" }, null)<b class="arrow"></b>
+                    </li>
+                    <li id="CON003003" class="actionlinlk">
+                        @Html.ActionLink("Payment Aging Setup", "Index", "ConsPaymentAgingPeriod", new { area = "Construction" }, null)<b class="arrow"></b>
+                    </li>
+                </ul>
+            }
+        </li>
+        <li class="">
+            @if (User.IsInRole("Costing_User"))
+            {
+                <a href="#" class="dropdown-toggle">
+                    <i class="menu-icon fa fa-caret-right"></i>
+                    Expense (Costing)
+                    <b class="arrow fa fa-angle-down"></b>
+                </a>
+                <b class="arrow"></b>
+                <ul class="submenu">
+                    <li id="CON002" class="actionlinlk">
+                        @*@Html.ActionLink("Project Budget", "Index", "ProjectBudgetDefination", new { area = "Construction" }, null)<b class="arrow"></b>
+                        @Html.ActionLink("Project Budget Request", "Index", "ProjectBudgetRequest", new { area = "Construction" }, null)<b class="arrow"></b>
+                        @Html.ActionLink("Project Budget Transfer", "Index", "ProjectBudgetTransfer", new { area = "Construction" }, null)<b class="arrow"></b>
+                        @Html.ActionLink("Project Budget Utilization", "Index", "ProjectBudgetUtilization", new { area = "Construction" }, null)<b class="arrow"></b>
+                        @Html.ActionLink("Material  Utilization", "Index", "MaterialUtilization", new { area = "Construction" }, null)<b class="arrow"></b>
+                            @Html.ActionLink("Human resource Utilization", "Index", "ProjectHumanResourceUtilization", new { area = "Construction" }, null)<b class="arrow"></b>
+                            @Html.ActionLink("Equipment Utilization", "Index", "ProjectEquipmentUtilization", new { area = "Construction" }, null)<b class="arrow"></b>*@
+                        @Html.ActionLink("Resource Utilization", "Index", "ResourceUtilization", new { area = "Construction" }, null)<b class="arrow"></b>
+                    </li>
+                    <li id="CON0021" class="actionlinlk">
+                        @Html.ActionLink("Project Consumption", "Index", "ProjectExpenses", new { area = "Construction" }, null)<b class="arrow"></b>
+                    </li>
+                </ul>
+            }
+        </li>
+        <li class="">
+            @if (User.IsInRole("Costing_User"))
+            {
+                <a href="#" class="dropdown-toggle">
+                    <i class="menu-icon fa fa-caret-right"></i>
+                    Permission
+                    <b class="arrow fa fa-angle-down"></b>
+                </a>
+
+                <b class="arrow"></b>
+
+                <ul class="submenu">
+                    <li id="CON003000" class="actionlinlk">
+                        @Html.ActionLink("Purchase Permissions ", "Index", "PurchasePermission", new { area = "Construction" }, null)<b class="arrow"></b>
+                    </li>
+
+                </ul>
+            }
+        </li>
+        
+        <li class="">
+            <a href="#" class="dropdown-toggle">
+                <i class="menu-icon fa fa-caret-right"></i>
+                Cash Flow
+                <b class="arrow fa fa-angle-down"></b>
+            </a>
+            <b class="arrow"></b>
+            <ul class="submenu">
+                <li id="CON007" class="actionlinlk">
+                    @Html.ActionLink("Cash Flow", "Index", "CashFlow", new { area = "Construction" }, null)<b class="arrow"></b>
+                </li>
+
+            </ul>
+        </li>
+        @*<li class="">
+                @if (HttpContext.Current.User.IsInRole("Project_Document"))
+                {
+                    <a href="#" class="dropdown-toggle">
+                        <i class="menu-icon fa fa-caret-right"></i>
+                        Document
+                        <b class="arrow fa fa-angle-down"></b>
+                    </a>
+
+                    <b class="arrow"></b>
+
+                    <ul class="submenu">
+                        <li id="CON007" class="actionlinlk">
+                            @Html.ActionLink("Upload Document", "Index", "ProjectUpload", new { area = "Construction" }, null)<b class="arrow"></b>
+                        </li>
+
+                    </ul>
+                }
+            </li>*@
+
+        <li class="">
+            @if (User.IsInRole("Project_Reporting"))
+            {
+                <a href="#" class="dropdown-toggle">
+                    <i class="menu-icon fa fa-caret-right"></i>
+                    Reporting
+                    <b class="arrow fa fa-angle-down"></b>
+                </a>
+                <b class="arrow"></b>
+                <ul class="submenu">
+                    <li class="">
+                        <a href="#" class="dropdown-toggle">
+                            <i class="menu-icon fa fa-caret-right"></i>
+                            Estimation Template
+                            <b class="arrow fa fa-angle-down"></b>
+                        </a>
+                        <b class="arrow"></b>
+                        <ul class="submenu">
+                            <li id="CONREP0060" class="actionlinlk">
+                                @Html.ActionLink("Template Work Items", "TemplateWorkItems", "ConstructionReport", new { area = "Construction" }, null)<b class="arrow"></b>
+                            </li>
+                            <li id="CONREP0063" class="actionlinlk">
+                                @Html.ActionLink("Piece Rate", "EstimationPieceRateReport", "ConstructionReport", new { area = "Construction" }, null)<b class="arrow"></b>
+                            </li>
+                            <li id="CONREP0064" class="actionlinlk">
+                                @Html.ActionLink("Sub Contract Work Items", "EstimationSubcontractReport", "ConstructionReport", new { area = "Construction" }, null)<b class="arrow"></b>
+                            </li>
+                            @*<li id="CONREP0065" class="actionlinlk">
+                                @Html.ActionLink("Custom Work Items", "CustomWorkItemReport", "ConstructionReport", new { area = "Construction" }, null)<b class="arrow"></b>
+                            </li>*@
+                            <li id="CONREP0066" class="actionlinlk">
+                                @Html.ActionLink("All in One", "EstimationTemplateWorkItemsReport", "ConstructionReport", new { area = "Construction" }, null)<b class="arrow"></b>
+                            </li>
+
+                        </ul>
+                    </li>
+                    <li class="">
+                        <a href="#" class="dropdown-toggle">
+                            <i class="menu-icon fa fa-caret-right"></i>
+                            Project Estimation
+                            <b class="arrow fa fa-angle-down"></b>
+                        </a>
+                        <b class="arrow"></b>
+                        <ul class="submenu">
+
+                            <li id="CONREP006501" class="actionlinlk">
+                                @Html.ActionLink("Project Cost Analysis", "ProjectCostAnalysis", "ConstructionReport", new { area = "Construction" }, null)<b class="arrow"></b>
+                            </li>
+                            <li id="CONREP0065" class="actionlinlk">
+                                @Html.ActionLink("Project Work Items", "ProjectWorkItems", "ConstructionReport", new { area = "Construction" }, null)<b class="arrow"></b>
+                            </li>
+                            <li id="CONREP0065" class="actionlinlk">
+                                @Html.ActionLink("Estimation Cost Summary", "ProjectEstimationReport", "ConstructionReport", new { area = "Construction" }, null)<b class="arrow"></b>
+                            </li>
+                            <li id="CONREP0065" class="actionlinlk">
+                                @Html.ActionLink("Work Category Cost % with respect to Total Project Cost", "WorkCategory", "ConstructionReport", new { area = "Construction" }, null)<b class="arrow"></b>
+                            </li>
+                            <li id="CONREP0065" class="actionlinlk">
+                                @Html.ActionLink("Material Cost % with respect to Total Project Cost", "MajorMaterialsReport", "ConstructionReport", new { area = "Construction" }, null)<b class="arrow"></b>
+                            </li>
+                            <li id="CONREP00610" class="actionlinlk">
+                                @Html.ActionLink("BoQ", "BoQReport", "ConstructionReport", new { area = "Construction" }, null)<b class="arrow"></b>
+                            </li>
+                            <li id="CONREP0061" class="actionlinlk">
+                                @Html.ActionLink("BoQ Summary", "SummaryReport", "ConstructionReport", new { area = "Construction" }, null)<b class="arrow"></b>
+                            </li>
+                            <li id="CONREP0062" class="actionlinlk">
+                                @Html.ActionLink("BoQ Grand Summary - Building", "GrandSummaryReport", "ConstructionReport", new { area = "Construction" }, null)<b class="arrow"></b>
+                            </li>
+                            <li id="CONREP0062" class="actionlinlk">
+                                @Html.ActionLink("BoQ Grand Summary - Road", "RoadGrandSummary", "ConstructionReport", new { area = "Construction" }, null)<b class="arrow"></b>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="">
+                        <a href="#" class="dropdown-toggle">
+                            <i class="menu-icon fa fa-caret-right"></i>
+                            Costing
+                            <b class="arrow fa fa-angle-down"></b>
+                        </a>
+                        <b class="arrow"></b>
+                        <ul class="submenu">
+                            <li id="CONREP008" class="actionlinlk">
+                                @Html.ActionLink("Resource Utilization", "ResourceUtilizationReport", "ConstructionReport", new { area = "Construction" }, null)<b class="arrow"></b>
+                            </li>
+
+                        </ul>
+                    </li>
+                    <li class="">
+                        <a href="#" class="dropdown-toggle">
+                            <i class="menu-icon fa fa-caret-right"></i>
+                            Billing
+                            <b class="arrow fa fa-angle-down"></b>
+                        </a>
+                        <b class="arrow"></b>
+                        <ul class="submenu">
+                            <li id="CONREP0090" class="actionlinlk">
+                                @Html.ActionLink("Payment Certificate", "PaymentCertificateReport", "ConstructionReport", new { area = "Construction" }, null)<b class="arrow"></b>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="">
+                        <a href="#" class="dropdown-toggle">
+                            <i class="menu-icon fa fa-caret-right"></i>
+                            Contract
+                            <b class="arrow fa fa-angle-down"></b>
+                        </a>
+                        <b class="arrow"></b>
+                        <ul class="submenu">
+                            @*<li id="CONREP0091" class="actionlinlk">
+                                    @Html.ActionLink("Price Adjustment", "PriceAdjustment", "ConstructionReport", new { area = "Construction" }, null)<b class="arrow"></b>
+                                </li>*@
+                            <li id="CONREP0091" class="actionlinlk">
+                                @Html.ActionLink("Representative Elements", "RepresentativeElementsReport", "ConstructionReport", new { area = "Construction" }, null)<b class="arrow"></b>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="">
+                        <a href="#" class="dropdown-toggle">
+                            <i class="menu-icon fa fa-caret-right"></i>
+                            Project Tracking
+                            <b class="arrow fa fa-angle-down"></b>
+                        </a>
+                        <b class="arrow"></b>
+
+                        <ul class="submenu">
+                            <li id="CONREP0010" class="actionlinlk">
+                                @Html.ActionLink("Earned Value Analysis by Project (+graph)", "EarnedValuePerPerProjectYearlyReport", "ConstructionReport", new { area = "Construction" }, null)<b class="arrow"></b>
+                            </li>
+
+                            <li id="CONREP0011" class="actionlinlk">
+                                @Html.ActionLink("Earned Value Analysis by Project (graph only)", "EarnedValuePerPerProjectGraph", "ConstructionReport", new { area = "Construction" }, null)<b class="arrow"></b>
+                            </li>
+                            <li id="CONREP00120" class="actionlinlk">
+                                @Html.ActionLink("Earned Value Analysis by Project  (Graphical Summary)", "EVPerProjectSummaryReport", "ConstructionReport", new { area = "Construction" }, null)<b class="arrow"></b>
+                            </li>
+                            <li id="CONREP00121" class="actionlinlk">
+                                @Html.ActionLink("Earned Value Analysis by Item", "EarnedValuePerItemReport", "ConstructionReport", new { area = "Construction" }, null)<b class="arrow"></b>
+                            </li>
+                        </ul>
+                    </li>
+
+                    <li class="">
+                        <a href="#" class="dropdown-toggle">
+                            <i class="menu-icon fa fa-caret-right"></i>
+                            Project Performance
+                            <b class="arrow fa fa-angle-down"></b>
+                        </a>
+                        <b class="arrow"></b>
+                        <ul class="submenu">
+                            <li id="CONREP010" class="actionlinlk">
+                                @Html.ActionLink("Monthly Performance", "PerformanceEvaluationReport", "ConstructionReport", new { area = "Construction" }, null)<b class="arrow"></b>
+                            </li>
+                            <li id="CONREP010" class="actionlinlk">
+                                @Html.ActionLink("Performance Summary", "EvaluationSummary", "ConstructionReport", new { area = "Construction" }, null)<b class="arrow"></b>
+                            </li>
+                            <li id="CONREP010" class="actionlinlk">
+                                @Html.ActionLink("Road Monthly Performance", "PerformanceEvaluation", "ConstructionReport", new { area = "Construction" }, null)<b class="arrow"></b>
+                            </li>
+                            <li id="CONREP010" class="actionlinlk">
+                                @Html.ActionLink("Road Performance Summary", "RoadEvaluationSummary", "ConstructionReport", new { area = "Construction" }, null)<b class="arrow"></b>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="">
+                        <a href="#" class="dropdown-toggle">
+                            <i class="menu-icon fa fa-caret-right"></i>
+                            Project Progress
+                            <b class="arrow fa fa-angle-down"></b>
+                        </a>
+                        <b class="arrow"></b>
+                        <ul class="submenu">
+                            <li class="">
+                                <a href="#" class="dropdown-toggle">
+                                    <i class="menu-icon fa fa-caret-right"></i>
+                                    Income Reports
+                                    <b class="arrow fa fa-angle-down"></b>
+                                </a>
+                                <b class="arrow"></b>
+                                <ul class="submenu">
+                                    <li id="CONREP0111" class="actionlinlk">
+                                        @Html.ActionLink("Detailed Work Progress", "WorkProgressReport", "ConstructionReport", new { area = "Construction" }, null)<b class="arrow"></b>
+                                    </li>
+                                    <li id="CONREP0112" class="actionlinlk">
+                                        @Html.ActionLink("Summary of Detailed Work Progress", "WorkProgressSummaryReport", "ConstructionReport", new { area = "Construction" }, null)<b class="arrow"></b>
+                                    </li>
+                                    <li id="CONREP0113" class="actionlinlk">
+                                        @Html.ActionLink("All Block Summary of Detailed Work Progress", "WorkProgressSummarySummaryReport", "ConstructionReport", new { area = "Construction" }, null)<b class="arrow"></b>
+                                    </li>
+                                </ul>
+
+                            </li>
+                            <li class="">
+                                <a href="#" class="dropdown-toggle">
+                                    <i class="menu-icon fa fa-caret-right"></i>
+                                    Expense Reports
+                                    <b class="arrow fa fa-angle-down"></b>
+                                </a>
+                                <b class="arrow"></b>
+                                <ul class="submenu">
+                                    <li id="CONREP0012" class="actionlinlk">
+                                        @Html.ActionLink("Total Material Consumption", "MaterialExpenseReport", "ConstructionReport", new { area = "Construction" }, null)<b class="arrow"></b>
+                                    </li>
+                                    <li id="CONREP0012" class="actionlinlk">
+                                        @Html.ActionLink("Direct Material Consumption", "DirectMaterialExpense", "ConstructionReport", new { area = "Construction" }, null)<b class="arrow"></b>
+                                    </li>
+                                    <li id="CONREP0012" class="actionlinlk">
+                                        @Html.ActionLink("Indirect Material Consumption", "InDirectMaterialExpense", "ConstructionReport", new { area = "Construction" }, null)<b class="arrow"></b>
+                                    </li>
+                                    <li id="CONREP0114" class="actionlinlk">
+                                        @Html.ActionLink("Direct Fuel and Lubricant Cost", "DirectFuelAndLubricantReport", "ConstructionReport", new { area = "Construction" }, null)<b class="arrow"></b>
+                                    </li>
+                                    <li id="CONREP0115" class="actionlinlk">
+                                        @Html.ActionLink("Indirect Fuel and Lubricant Cost", "IndirectFuelAndLubricantReport", "ConstructionReport", new { area = "Construction" }, null)<b class="arrow"></b>
+                                    </li>
+                                    <li id="CONREP0116" class="actionlinlk">
+                                        @Html.ActionLink("Miscellaneous of Expenses", "MiscellaneousExpensesReport", "ConstructionReport", new { area = "Construction" }, null)<b class="arrow"></b>
+                                    </li>
+                                </ul>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="">
+                        <a href="#" class="dropdown-toggle">
+                            <i class="menu-icon fa fa-caret-right"></i>
+                            Cash Flow
+                            <b class="arrow fa fa-angle-down"></b>
+                        </a>
+                        <b class="arrow"></b>
+                        <ul class="submenu">
+                            <li id="CONREP010" class="actionlinlk">
+                                @Html.ActionLink("Projects Cash Flow", "CashFlowReport", "ConstructionReport", new { area = "Construction" }, null)<b class="arrow"></b>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="">
+                        <a href="#" class="dropdown-toggle">
+                            <i class="menu-icon fa fa-caret-right"></i>
+                            Other Reports
+                            <b class="arrow fa fa-angle-down"></b>
+                        </a>
+                        <b class="arrow"></b>
+                        <ul class="submenu">
+                            <li id="CONREP009" class="actionlinlk">
+                                @Html.ActionLink("Sample Report", "", "", new { area = "Construction" }, null)<b class="arrow"></b>
+                            </li>
+                        </ul>
+                    </li>
+                </ul>
+            }
+        </li>
+
+        <li class="">
+            <a href="#" class="dropdown-toggle">
+                <i class="menu-icon fa fa-recycle"></i>
+                Recyle Bin
+                <b class="arrow fa fa-angle-down"></b>
+            </a>
+            <b class="arrow"></b>
+            <ul class="submenu">
+                <li id="CON007" class="actionlinlk">
+                    @Html.ActionLink("Projects", "Projects", "Recycler", new { area = "Construction" }, null)<b class="arrow"></b>
+                </li>
+                <li id="CON007" class="actionlinlk">
+                    @Html.ActionLink("Sub-Project Types", "SubProjectTypes", "Recycler", new { area = "Construction" }, null)<b class="arrow"></b>
+                </li>
+            </ul>
+        </li>
+    </ul>
+
+</li>

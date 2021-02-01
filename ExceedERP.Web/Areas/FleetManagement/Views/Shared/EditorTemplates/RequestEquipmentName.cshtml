@@ -1,0 +1,19 @@
+﻿@(Html.Kendo().DropDownListFor(model => model)
+                                                  .DataTextField("Name")
+                                                      .DataValueField("Name").OptionLabel("Select ")
+                                                                  .Filter(FilterType.Contains)
+                                                  .HtmlAttributes(new { style = "width:100%" })
+
+                                                     .DataSource(d =>
+                    {
+                        d.Read(r =>
+                        {
+                            r.Action("FixedNameBySubTypeByName", "EquipmentRegistration").Data("filterFixedAssetSubCategory");
+                        })
+                      .ServerFiltering(true);
+                    })
+              .Enable(false)
+                      .AutoBind(false)//.Events(ev => ev.Change("PopulateFixedAsset"))
+                       .CascadeFrom("EquipmentName")
+)
+

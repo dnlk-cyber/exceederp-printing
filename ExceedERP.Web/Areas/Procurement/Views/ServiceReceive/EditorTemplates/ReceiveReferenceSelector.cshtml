@@ -1,0 +1,15 @@
+﻿@using System.Collections
+@(Html.Kendo().DropDownListFor(m => m)
+                  .ValuePrimitive(true)
+                  .OptionLabel("Select Reference...")
+                              .DataTextField("Name")
+                             .DataValueField("referenceId")
+                              .Filter("contains")
+                               .DataSource(dataSource =>
+                              {
+                                  dataSource.Read(read => read.Action("GetReceiveRefernences", "DataProvider", new { area = "Inventory" }).Data("filterTypes"))
+                                            .ServerFiltering(true);
+                              })
+                              .CascadeFrom("ReceiveTypeId")   
+)
+@Html.ValidationMessageFor(m => m)

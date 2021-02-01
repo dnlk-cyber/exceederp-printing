@@ -1,0 +1,381 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.Inventory
+@using Kendo.Mvc.UI
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+@(Html.Kendo().Grid<PurchaseReturn>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.PurchaseReturnID).Title("Return No.").Width(120).ClientTemplate("#=appendZeros(PurchaseReturnID)#");
+          columns.Bound(c => c.GoodReceiveId).Title("GRN").EditorTemplateName("GoodReceives").Width(130);
+          columns.ForeignKey(p => p.StoreCode, (System.Collections.IEnumerable)ViewData["stores"], "StoreCode", "Name").Title("Store").EditorTemplateName("StoreReadOnly").Width(130);
+          columns.Bound(c => c.Reason).Width(130);
+          columns.Bound(c => c.Remark).Width(120);
+          columns.Bound(c => c.Status).Width(110);
+        
+          columns.Command(command =>
+          {
+              command.Edit(); 
+              command.Destroy();
+          }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+      })
+      .Filterable()
+      .Groupable()
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(5))
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Groupable().Events(ev => ev.DetailExpand("detailExpand"))
+      .Scrollable(h => h.Height(500))
+      .Events(x => x.DataBound("onDataBoundMaster"))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Sort(sort => sort.Add("PurchaseReturnID").Descending())
+          .Events(ev => ev
+              .Error("error_handler(\"grid\")")
+              .RequestStart("onRequestStart(\"grid\")")
+              .RequestEnd("onRequestEnd(\"grid\")"))
+          .Model(model =>
+          {
+              
+              model.Id(p => p.PurchaseReturnID);
+              // model.Field(p => p.StoreCode).Editable(false);
+              model.Field(p => p.Reference).Editable(false);
+              model.Field(p => p.Status).Editable(false);
+              model.Field(p => p.PurchaseReturnID).Editable(false);
+          })
+          .Events(ev => ev .Error("error_handler_one").Sync("sync_handler"))
+          .Read(read => read.Action("PurchaseReturns_Read", "PurchaseReturn"))
+          .Create(create => create.Action("PurchaseReturns_Create", "PurchaseReturn"))
+          .Update(update => update.Action("PurchaseReturns_Update", "PurchaseReturn"))
+          .Destroy(destroy => destroy.Action("PurchaseReturns_Destroy", "PurchaseReturn"))
+      ).ClientDetailTemplateId("purchasereturntemp"))
+<script id="purchasereturntemp" type="text/kendo">
+    @(Html.Kendo().TabStrip().Name("tabStrip_#=PurchaseReturnID#").SelectedIndex(0).Items(items =>
+      {
+          items.Add().Text("Detail").Content(@<text>        
+   
+    
+            # if (!IsOnlineApproved&&!IsSendForApproval)
+            {#
+            <a id="sendForApproval" href='@Url.Action("PurchaseReturn_Approval", "PurchaseReturn")/#=PurchaseReturnID#'>Send for Approval</a>
+            <br />
+            # } #
+
+            # if (IsOnlineApproved)
+            {#
+            @*<a href='@Url.Action("Goodreceive", "InventoryPrint")/#=PurchaseReturnID#' title="Print"><i class="fa fa-print fa-2x"></i></a>*@
+            <br />
+            # } #
+        <div>
+        <hr>
+        <dl class="dl-horizontal">
+            <dt>
+                Purchase Return Number
+            </dt>
+            <dd>
+                #= PurchaseReturnID #
+            </dd>
+            <dt>
+                GoodReceive Number
+            </dt>
+            <dd>
+                #= GoodReceiveId #
+            </dd>
+            <dt>
+                Store
+            </dt>
+            <dd>
+                #= StoreCode #
+            </dd>
+          
+           
+            <dt>
+                Reason
+            </dt>
+            <dd>
+                #= Reason #
+            </dd>
+             
+            
+            <dt>
+                Status
+            </dt>
+            <dd>
+                #= Status #
+            </dd>
+            <dt>
+                CreatedOn
+            </dt>
+            <dd>
+                #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+
+            </dd>
+            <dt>
+                CreatedBy
+            </dt>
+            <dd>
+                #= CreatedBy #
+            </dd>
+        </dl>
+
+
+    </div>
+      </text>);
+        
+          items.Add().Text("Item").Content(@<text>
+             @(Html.Kendo().Grid<PurchaseReturnItems>()
+                   .Name("Itemgird#=PurchaseReturnID#")
+                   .Columns(columns =>
+                   {
+                       columns.ForeignKey(p => p.ItemCategoryCode, (IEnumerable)ViewData["Category"], "ItemCategoryCode", "Name").Title("Category").EditorTemplateName("ItemCategorySelector").Width(180);
+                       columns.ForeignKey(p => p.ItemCode, (IEnumerable)ViewData["Items"], "ItemCode", "Name").Title("Items").EditorTemplateName("ItemSelector").Width(180);
+                       columns.Bound(c => c.Quantity).Width(150);
+                       columns.Bound(c => c.UnitPrice).Width(150);
+                       columns.ForeignKey(p => p.GLTaxRateID, (IEnumerable)ViewData["tax"], "GLTaxRateID", "TaxName").Title("Tax Name").EditorTemplateName("TaxSelector").Width(180);
+                       columns.Bound(c => c.SubTotal).Width(150);
+                       columns.Bound(c => c.TaxAmount).Width(150);
+                       columns.Bound(c => c.TotalAmount).Width(150);
+                      
+
+                       columns.Bound(c => c.CreatedBy).Hidden();
+                       columns.Bound(c => c.DateCreated).Hidden();
+                       columns.Bound(c => c.ModifiedBy).Hidden();
+                       columns.Bound(c => c.LastModified).Hidden();
+
+                       columns.Command(command =>
+                       {
+                           command.Edit();
+                           command.Destroy();
+                       }).Width(180);
+                   })
+                 
+                   .Editable(editable => editable.Mode(GridEditMode.InLine))
+                   .Events(x => x.DataBound("onDataBoundLines"))
+                   .Scrollable()
+                   .DataSource(dataSource => dataSource
+                       .Ajax()
+
+                       .Events(ev => ev
+                           .Error("error_handler(\"Itemgird#=PurchaseReturnID#\")")
+                           .RequestStart("onRequestStart(\"Itemgird#=PurchaseReturnID#\")")
+                           .RequestEnd("onRequestEnd(\"Itemgird#=PurchaseReturnID#\")"))
+                       .Model(model =>
+                       {
+                           model.Id(p => p.PurchaseReturnItemsID);
+                           model.Field(p => p.ItemCategoryCode).Editable(false);
+                           model.Field(p => p.ItemCode).Editable(false);
+                           model.Field(p => p.UnitPrice).Editable(false);
+                           model.Field(p => p.TotalAmount).Editable(false);
+                           model.Field(p => p.SubTotal).Editable(false);
+                           model.Field(p => p.GLTaxRateID).Editable(false);
+                           model.Field(p => p.TaxAmount).Editable(false);
+                           model.Field(p => p.InventoryItem).Editable(false);
+                           model.Field(p => p.ModifiedBy).Editable(false);
+                           model.Field(p => p.LastModified).Editable(false);
+                       })
+                       .Events(ev => ev .Error("error_handler_one").Sync("sync_handler"))
+                       
+                       .Read(read => read.Action("PurchaseReturnItemss_Read", "PurchaseReturnItem" , new {id = "#= PurchaseReturnID#"}))
+                       .Create(create => create.Action("PurchaseReturnItemss_Create", "PurchaseReturnItem", new { id = "#= PurchaseReturnID#" }))
+                       .Update(update => update.Action("PurchaseReturnItemss_Update", "PurchaseReturnItem"))
+                       .Destroy(destroy => destroy.Action("PurchaseReturnItemss_Destroy", "PurchaseReturnItem"))
+                   ).ToClientTemplate())
+         </text>);
+        
+       
+    items.Add().Text("Validation").Content(@<text>
+    @(Html.Kendo().Grid<PurchaseReturnValidation>()
+      .Name("validationGrid#=PurchaseReturnID#")
+        .Columns(columns =>
+            {
+                columns.Bound(c => c.Status).Width(170).EditorTemplateName("ValidationStatus");
+                columns.Bound(c => c.Remark).Width(170);
+                columns.Command(command =>
+                {
+                    command.Edit();
+                    //command.Destroy();
+                });
+            })
+            .ToolBar(toolbar =>
+            {
+                toolbar.Create();
+            })
+        .Editable(editable => editable.Mode(GridEditMode.InLine))
+        .Scrollable()
+                .Events(x => x.DataBound("onDataBoundFisrtValidation"))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+                  .Events(ev => ev
+                                    .Error("error_handler(\"validationGrid#=PurchaseReturnID#\")")
+                                    .RequestStart("onRequestStart(\"validationGrid#=PurchaseReturnID#\")")
+                                    .RequestEnd("onRequestEnd(\"validationGrid#=PurchaseReturnID#\")"))
+          .Model(model => model.Id(p => p.PurchaseReturnValidationID))
+                  .Read(read => read.Action("PurchaseReturnValidations_Read", "PurchaseReturnValidation", new { id = "#= PurchaseReturnID#" }))
+                  .Create(create => create.Action("PurchaseReturnValidations_Create", "PurchaseReturnValidation", new { id = "#= PurchaseReturnID#" }))
+          .Update(update => update.Action("PurchaseReturnValidations_Update", "PurchaseReturnValidation"))
+          .Destroy(destroy => destroy.Action("PurchaseReturnValidations_Destroy", "PurchaseReturnValidation"))
+      )   .ToClientTemplate()
+          )
+   
+    </text>);
+
+}).ToClientTemplate())
+    
+    
+
+    <h6> Distribution </h6>     
+    # if (IsOnlineApproved && !IsOnlineTransferred )
+    {#
+    <a href='@Url.Action("PurchaseReturn_OnlineTransfer", "PurchaseReturn")/#=PurchaseReturnID#'>Transfer</a>
+    <br />
+    # } #
+    @(Html.Kendo().Grid<PurchaseReturnDistribution>()
+          .Name("distributiongrid#=PurchaseReturnID#")
+          .Columns(columns =>
+          {
+              columns.Bound(c => c.AccountCode);
+              columns.Bound(c => c.AccountDesc);
+              columns.Bound(c => c.Debit);
+              columns.Bound(c => c.Credit);
+              columns.Command(command =>
+              {
+                  command.Edit();
+                  command.Destroy();
+              }).Width(180);
+          })
+          .ToolBar(toolbar =>
+          {
+              
+          })
+          .Editable(editable => editable.Mode(GridEditMode.InLine))
+          .Scrollable()
+          .DataSource(dataSource => dataSource
+              .Ajax()
+              .Model(model =>
+              {
+                  model.Id(p => p.PurchaseReturnDistributionID);
+                  model.Field(p => p.Debit).Editable(false);
+                  model.Field(p => p.AccountDesc).Editable(false);
+                  model.Field(p => p.Credit).Editable(false);
+              })
+              .Read(read => read.Action("PurchaseReturnDistributions_Read", "PurchaseReturnDistribution", new { id = "#= PurchaseReturnID#" }))
+              .Create(create => create.Action("PurchaseReturnDistributions_Create", "PurchaseReturnDistribution", new { id = "#= PurchaseReturnID#" }))
+              .Update(update => update.Action("PurchaseReturnDistributions_Update", "PurchaseReturnDistribution"))
+              .Destroy(destroy => destroy.Action("PurchaseReturnDistributions_Destroy", "PurchaseReturnDistribution"))
+          ).ToClientTemplate())
+
+
+</script>
+
+<script>
+
+    function onSelectGoodReceiveId(e) {
+
+        var dataItem = this.dataItem(e.item);
+        //begin
+        var item = dataItem.GoodReceiveId;
+        $.ajax({
+            url: '/Inventory/DataProvider/GetStoreCodeFromGrNo',
+            type: 'POST',
+            data: { id: item },
+            success: function (result) {
+                if (result.length > 0) {
+                    for (var i = 0; i < result.length; i++) {
+                        $("#StoreCode").val(result[i].StoreCode).trigger("change");
+                    }
+                }
+                else {
+
+                }
+
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        }); //end post
+        //end
+    }
+
+    //var storeCode;
+    //var codeid;
+
+    //function onEdit(e) {
+    //    var masterRow = this.wrapper.closest("tr.k-detail-row").prev(".k-master-row");
+    //    var masterGrid = $("#grid").data("kendoGrid");
+
+    //    var masterDataItem = masterGrid.dataItem(masterRow);
+    //    storeCode = masterDataItem.StoreCode;
+    //    codeid = masterDataItem.GoodSellingAndLendingID;
+    //}
+
+
+    //function getItems() {
+
+    //    return {
+    //        StoreCode: storeCode
+    //    }
+
+    //}
+
+    var masterDataItem;
+    var masterRow;
+    var masterGrid;
+    var codeid;
+
+    function detailExpand(e) {
+
+        masterRow = e.masterRow;
+
+        masterGrid = $("#grid").data("kendoGrid");
+
+        masterDataItem = masterGrid.dataItem(masterRow);
+
+        //  var masterDataItem = masterGrid.dataItem();
+        codeid = masterDataItem.PurchaseReturnID;
+    }
+
+    function OnIndexCall(elem) {
+
+        var a = codeid;
+        $(elem).attr('href', $(elem).attr('href') + '?id=' + a);
+
+
+    }
+</script>
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 700px;
+    }
+
+    div.k-edit-form-container div.editor-field textarea, input.k-textbox {
+        width: auto;
+        max-width: none;
+    }
+
+    div.k-popup-edit-form.k-window-content.k-content {
+    }
+
+    div.k-content {
+        height: auto;
+    }
+</style>

@@ -1,0 +1,91 @@
+﻿@using ExceedERP.Core.Domain.Finance.AR
+<legend>Customers</legend>
+@(Html.Kendo().Grid<ArCustomerProfile>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.ArCustomerProfileId).Hidden();
+        columns.Bound(c => c.CustomerId).Width(120);
+        columns.Bound(c => c.CompanyName).Width(150);
+         columns.Bound(c => c.AccountCode).EditorTemplateName("AccountCode").Width(220);
+        columns.Bound(c => c.TinNo).Title("TIN").Width(120);
+
+        columns.Bound(c => c.CustomerType).EditorTemplateName("CustomerTypes").Width(150);
+        columns.Bound(c => c.ContactName).Width(150);
+        columns.Bound(c => c.PhoneNumber).Title("Phone").Width(120);
+          
+        columns.Bound(c => c.Address).Width(200);
+        columns.Bound(c => c.Country).EditorTemplateName("CountrySelector").Width(150);
+        columns.Bound(c => c.IsActive).Width(100).ClientTemplate(
+           "<input type='checkbox' disabled = 'true' value='#= IsActive #' " +
+               "# if (IsActive) { #" +
+                   "checked='checked'" +
+               "# } #" +
+           "/>"
+       );
+       
+
+        columns.Bound(c => c.OrgBranchName).Width(200).Hidden(true);
+        columns.Bound(c => c.DateCreated).Width(150).Hidden(true).Format("{0:dd/MM/yyyy}");
+        columns.Bound(c => c.LastModified).Width(150).Hidden(true).Format("{0:dd/MM/yyyy}");
+        columns.Bound(c => c.CreatedBy).Width(150).Hidden(true);
+        columns.Bound(c => c.ModifiedBy).Width(150).Hidden(true);
+        columns.Command(command =>
+        {
+            command.Edit();
+           
+        }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+            toolbar.Excel();
+           
+      })
+              .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("Customer").Window(w => w.Title("Customer Registration")))
+   .HtmlAttributes(new { style = "height: 550px;" })
+      .Pageable(pageable => pageable
+                       .Input(true)
+                       .Numeric(false)
+                       .Refresh(true)
+                       .PageSizes(true)
+                       .ButtonCount(5))
+      .Scrollable()
+           .Selectable(selectable =>
+                        {
+                            selectable.Mode(GridSelectionMode.Single);
+                            selectable.Type(GridSelectionType.Row);
+                        })
+                    .Sortable(sortable =>
+                    {
+                        sortable.SortMode(GridSortMode.SingleColumn);
+                    })
+      .Filterable()
+      .Groupable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model =>
+          {
+              model.Id(p => p.ArCustomerProfileId);
+              model.Field(p => p.ArCustomerProfileId).Editable(false);
+              model.Field(p => p.CreatedBy).Editable(false);
+              model.Field(p => p.DateCreated).Editable(false);
+              model.Field(p => p.ModifiedBy).Editable(false);
+              model.Field(p => p.LastModified).Editable(false);
+          })
+                 .Events(ev => ev
+                    .Error("error_handler(\"grid\")")
+                    .RequestStart("onRequestStart(\"grid\")")
+                    .RequestEnd("onRequestEnd(\"grid\")"))
+          .Read(read => read.Action("ARCustomerProfiles_Read", "ARCustomerProfile"))
+          .Create(create => create.Action("ARCustomerProfiles_Create", "ARCustomerProfile"))
+          .Update(update => update.Action("ARCustomerProfiles_Update", "ARCustomerProfile"))
+          .Destroy(destroy => destroy.Action("ARCustomerProfiles_Destroy", "ARCustomerProfile"))
+      )
+)
+
+
+<script>
+  
+</script>
+
+

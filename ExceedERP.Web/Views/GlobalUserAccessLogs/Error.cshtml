@@ -1,0 +1,69 @@
+﻿@model IEnumerable<ExceedERP.Web.Controllers.GlobalUserAccessLogsController.LogView>
+@{
+    ViewBag.Title = "Error";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<legend>Error Log</legend>
+
+
+<div class="row">
+   <div class="col-sm-3" style='overflow-y: auto; height: 600PX'>
+  <table class="table table-striped table-bordered table-condensed table-hover">
+    <tr>
+        <th>
+           log Files
+        </th>
+       
+       
+    </tr>
+
+@foreach (var item in Model) {
+    <tr>
+        <td>
+            <a onclick='return getLogContent("@item.FileName")' href='#' title="Open"> @Html.DisplayFor(modelItem => item.FileName) </a>
+        </td>
+       
+    </tr>
+}
+
+</table>
+    </div>
+    <div class="col-sm-9">
+        
+        <table class="table table-striped table-bordered table-condensed table-hover">
+            <tr>
+                <td width="100%">
+                    <div id="filename"  style='font-style: italic; font-size: 15px;color:crimson'></div>
+                    <div id="logData" style='white-space: pre; overflow-y: auto; height: 600PX; font-size: 13px'></div>
+
+                </td>
+       
+            </tr>
+
+        </table>
+       
+    </div>
+    
+</div>
+
+
+<script>
+    function getLogContent(id) {
+        //alert(id);
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("GetErrorLogDetail", "GlobalUserAccessLogs")',
+            data: { file: id },
+            success: function (result) {
+                //$("#logData").val(result.LodData).trigger("change");
+                $("#filename").text("Log File :"+id).trigger("change");
+                $("#logData").text(result.LodData).trigger("change");
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+</script>

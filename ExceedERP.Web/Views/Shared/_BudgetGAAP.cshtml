@@ -1,0 +1,109 @@
+﻿
+ 
+
+@if (HttpContext.Current.User.IsInRole("Budget_User")
+            || HttpContext.Current.User.IsInRole("Budget_Admin") )
+{
+
+    <li class="">
+        <a href="#" class="dropdown-toggle">
+            <i class="menu-icon fa glyphicon-euro"></i>
+            <span class="menu-text">
+               FBC Budget 
+            </span>
+
+            <b class="arrow fa fa-angle-down"></b>
+        </a>
+
+        <b class="arrow"></b>
+
+        <ul class="submenu">
+                        @if (HttpContext.Current.User.IsInRole("Budget_User"))
+          
+            {
+
+                            <li class="">
+                            
+ 
+
+
+                                <b class="arrow"></b>
+
+
+         
+            <li class="">
+                <a href="#" class="dropdown-toggle">
+                    <i class="menu-icon fa fa-caret-right"></i>
+                    Plan
+                    <b class="arrow fa fa-angle-down"></b>
+                </a>
+
+                <b class="arrow"></b>
+
+
+                <b class="arrow"></b>
+
+                <ul class="submenu">
+                    <li id="budgetgaap001" class="actionlinlk">@Html.ActionLink("Balance Sheet", "Index", "BalanceSheet", new { area = "BudgetGAAP" }, null)<b class="arrow"></b></li>
+                    <li id="budgetgaap002" class="actionlinlk">@Html.ActionLink("Cost Of Service Sold", "Index", "CostOfServiceSold", new { area = "BudgetGAAP" }, null)<b class="arrow"></b></li>
+                    <li id="budgetgaap0101" class="actionlinlk">@Html.ActionLink("Expenditure", "Index", "Expenditure", new { area = "BudgetGAAP" }, null)<b class="arrow"></b></li>
+                    <li id="budgetgaap0302" class="actionlinlk">@Html.ActionLink("Forcasted Income Statement", "Index", "ForcastedIncomeStatement", new { area = "BudgetGAAP" }, null)<b class="arrow"></b></li>
+                    <li id="budgetgaap0101" class="actionlinlk">@Html.ActionLink("Investment Plan", "Index", "InvestmentPlan", new { area = "BudgetGAAP" }, null)<b class="arrow"></b></li>
+                    <li id="budgetgaap0702" class="actionlinlk">@Html.ActionLink("Profit Loss Statement", "Index", "ProfitLossStatement", new { area = "BudgetGAAP" }, null)<b class="arrow"></b></li>
+
+
+
+                </ul>
+            </li>
+
+
+                 </li>
+
+            }
+            @if (HttpContext.Current.User.IsInRole("Budget_Report"))
+            {
+
+                <li class="">
+                    <a href="#" class="dropdown-toggle">
+                        <i class="menu-icon fa fa-caret-right"></i>
+                        Report
+                        <b class="arrow fa fa-angle-down"></b>
+                    </a>
+                    <b class="arrow"></b>
+                    <ul class="submenu">
+                        <li id="budgetgaapgap009" class="actionlinlk">@Html.ActionLink("Revenue", "Revenue", "BudgetGAAPReport", new { area = "BudgetGAAP" }, null)<b class="arrow"></b></li>
+
+                        <li id="budgetgaapgap009" class="actionlinlk">@Html.ActionLink("Expense", "Expense", "BudgetGAAPReport", new { area = "BudgetGAAP" }, null)<b class="arrow"></b></li>
+                        <li id="budgetgaapgap009" class="actionlinlk">@Html.ActionLink("Investment Plan", "InvestmentPlan", "BudgetGAAPReport", new { area = "BudgetGAAP" }, null)<b class="arrow"></b></li>
+                        <li id="budgetgaapgap909" class="actionlinlk">@Html.ActionLink("Profit Loss", "ProfitLoss", "BudgetGAAPReport", new { area = "BudgetGAAP" }, null)<b class="arrow"></b></li>
+
+                        <li id="budgetgaapgap0010" class="actionlinlk">@Html.ActionLink("Balance Sheet", "BalanceSheet", "BudgetGAAPReport", new { area = "BudgetGAAP" }, null)<b class="arrow"></b></li>
+    </ul>
+                </li>
+   
+            }
+
+            @if (HttpContext.Current.User.IsInRole("Budget_Admin"))
+            {
+
+                <li class="">
+                    <a href="#" class="dropdown-toggle">
+                        <i class="menu-icon fa fa-caret-right"></i>
+
+                        Setting
+                        <b class="arrow fa fa-angle-down"></b>
+                    </a>
+
+                    <b class="arrow"></b>
+
+                    <ul class="submenu">
+                        <li id="budgetgaap009" class="actionlinlk">@Html.ActionLink(" Sheet Category", "Index", "BudgetSheetCategory", new { area = "BudgetGAAP" }, null)<b class="arrow"></b></li>
+
+                        <li id="budgetgaap009" class="actionlinlk">@Html.ActionLink("Profit Loss Category", "Index", "ProfitLossStatementCategory", new { area = "BudgetGAAP" }, null)<b class="arrow"></b></li>
+                      
+
+                    </ul>
+                </li>
+            }
+ </ul></li>
+}

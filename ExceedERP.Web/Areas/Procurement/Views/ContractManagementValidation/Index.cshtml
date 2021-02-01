@@ -1,0 +1,27 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Procurement.Contract.ContractManagementValidation>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Status);
+          columns.Bound(c => c.Remark);
+          columns.Bound(c => c.OrgBranchName);
+          columns.Bound(c => c.DateCreated);
+          columns.Bound(c => c.LastModified);
+          columns.Bound(c => c.CreatedBy);
+          columns.Bound(c => c.ModifiedBy);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.ContractManagementValidationId))
+          .Read(read => read.Action("ContractManagementValidations_Read", "ContractManagementValidation"))
+          .Create(create => create.Action("ContractManagementValidations_Create", "ContractManagementValidation"))
+          .Update(update => update.Action("ContractManagementValidations_Update", "ContractManagementValidation"))
+          .Destroy(destroy => destroy.Action("ContractManagementValidations_Destroy", "ContractManagementValidation"))
+      ))

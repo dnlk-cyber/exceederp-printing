@@ -1,0 +1,37 @@
+﻿<legend>Profit Loss Statement Category</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Budget.GAAP.ProfitLossStatementCategory>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.Name);
+        columns.Bound(c => c.ProfitLostType).EditorTemplateName("ProfitLossTypeBind");
+        columns.Bound(c => c.Remark);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+            .Editable(editable => editable.Mode(GridEditMode.InLine))
+             .HtmlAttributes(new { style = "height: 520px;" })
+                          .Pageable(pageable => pageable
+                                            .Input(true)
+                                            .Numeric(false)
+                                            .Refresh(true)
+                                            .PageSizes(true)
+                                            .ButtonCount(5))
+
+                                .Scrollable()
+                                .Sortable()
+                                .Filterable()
+                                .Groupable()
+                                .Scrollable(h => h.Height(500))
+
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.ProfitLossStatementCategoryId))
+          .Read(read => read.Action("ProfitLossStatementCategories_Read", "ProfitLossStatementCategory"))
+          .Create(create => create.Action("ProfitLossStatementCategories_Create", "ProfitLossStatementCategory"))
+          .Update(update => update.Action("ProfitLossStatementCategories_Update", "ProfitLossStatementCategory"))
+          .Destroy(destroy => destroy.Action("ProfitLossStatementCategories_Destroy", "ProfitLossStatementCategory"))
+      )
+)

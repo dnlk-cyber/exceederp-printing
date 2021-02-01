@@ -1,0 +1,43 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Inventory.ItemTransferReceiveItem>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.ItemCode);
+          columns.Bound(c => c.PartOrCodeNumber);
+          columns.Bound(c => c.RequestedQuantity);
+          columns.Bound(c => c.ShippedQuantity);
+          columns.Bound(c => c.UPrice);
+          columns.Bound(c => c.TPrice);
+          columns.Bound(c => c.ReceivedQuantity);
+          columns.Bound(c => c.Remark);
+       
+       
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+                              toolbar.Excel();
+                              // toolbar.Pdf();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Filterable()
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model =>
+          {
+              model.Id(p => p.ItemTransferReceiveItemID);
+              model.Field(p => p.RequestedQuantity).Editable(false);
+              model.Field(p => p.ShippedQuantity).Editable(false);
+              model.Field(p => p.ItemCode).Editable(false);
+              model.Field(p => p.UPrice).Editable(false);
+              model.Field(p => p.PartOrCodeNumber).Editable(false);
+ 
+              
+          })
+          .Read(read => read.Action("ItemTransferReceivesItems_Read", "ItemTransferReceiveItem"))
+          .Create(create => create.Action("ItemTransferReceivesItems_Create", "ItemTransferReceiveItem"))
+          .Update(update => update.Action("ItemTransferReceivesItems_Update", "ItemTransferReceiveItem"))
+          .Destroy(destroy => destroy.Action("ItemTransferReceivesItems_Destroy", "ItemTransferReceiveItem"))
+      ))

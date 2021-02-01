@@ -1,0 +1,43 @@
+﻿@using ExceedERP.Core.Domain.FixedAsset.Setting
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Fixed Asset AnnualDepreciation Setup</legend>
+@(Html.Kendo().Grid<FixedAssetDepreciationSetup>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.FixedAssetAccountCode).Width(200);
+          columns.Bound(c => c.FixedAssetAccountCodeDescription).Width(200);
+          columns.Bound(c => c.DepreciationAccountCode).Width(200);
+          columns.Bound(c => c.AccumulatedDepreciationAccountCode).Width(200);
+        
+          columns.Bound(c => c.DateCreated);
+          columns.Bound(c => c.LastModified);
+          columns.Bound(c => c.CreatedBy);
+          columns.Bound(c => c.ModifiedBy);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Pageable()
+      .Scrollable()
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.FixedAssetDepreciationSetupID))
+          .Read(read => read.Action("FixedAssetDepreciationSetups_Read", "FixedAssetDepreciationSetup"))
+          .Create(create => create.Action("FixedAssetDepreciationSetups_Create", "FixedAssetDepreciationSetup"))
+          .Update(update => update.Action("FixedAssetDepreciationSetups_Update", "FixedAssetDepreciationSetup"))
+          .Destroy(destroy => destroy.Action("FixedAssetDepreciationSetups_Destroy", "FixedAssetDepreciationSetup"))
+      ))

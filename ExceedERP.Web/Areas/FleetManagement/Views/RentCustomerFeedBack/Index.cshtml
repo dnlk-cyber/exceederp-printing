@@ -1,0 +1,76 @@
+﻿@{
+    ViewBag.Title = "RentCustomerFeedBack";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@(Html.Kendo().Button().Name("addrecord").Content(" Rent Customer FeedBack").Events(events => events.Click("onClick")))
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetEquipmentRent.RentCustomerFeedBack>()
+    .Name("grid")
+    .Columns(columns =>
+    {
+        columns.Bound(o => o.DetailFeedBack);
+        columns.Bound(o => o.FeedBackDate).Format("{0:d}");
+       
+
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
+
+    })
+     .Editable(editable =>
+        {
+            editable.Mode(GridEditMode.PopUp).TemplateName("RentCustomerFeedBackEditor");
+            editable.DisplayDeleteConfirmation("Are You Sure To Remove Rent Customer FeedBack");
+        })
+        .HtmlAttributes(new { style = "height: 520px;" })
+                          .Pageable(pageable => pageable
+                                            .Input(true)
+                                            .Numeric(false)
+                                            .Refresh(true)
+                                            .PageSizes(true)
+                                            .ButtonCount(5))
+
+                                .Scrollable()
+                                .Sortable()
+                                .Filterable()
+                                .Groupable()
+                                .Scrollable(h => h.Height(500))
+    .DataSource(dataSource => dataSource
+        .Ajax()
+        .ServerOperation(false)
+                       .Model(model =>
+              {
+                  model.Id(p => p.RentCustomerFeedBackID);
+                  model.Field(p => p.RentCustomerFeedBackID).Editable(false);
+
+              })
+                   .Events(ev => ev
+                                                        .Error("error_handler(\"grid\")")
+                                                        .RequestStart("onRequestStart(\"grid\")")
+                                                        .RequestEnd("onRequestEnd(\"grid\")")) 
+                    .Create(create => create.Action("RentCustomerFeedBack_Create", "RentCustomerFeedBack"))
+                    .Read(read => read.Action("RentCustomerFeedBack_Read", "RentCustomerFeedBack"))
+                    .Update(read => read.Action("RentCustomerFeedBack_Update", "RentCustomerFeedBack"))
+                    .Destroy(read => read.Action("RentCustomerFeedBack_Destroy", "RentCustomerFeedBack"))
+  )
+)
+
+<script type="text/javascript">
+    function error_handler(e) {
+        if (e.errors) {
+            var message = "Errors:\n";
+            $.each(e.errors, function (key, value) {
+                if ('errors' in value) {
+                    $.each(value.errors, function () {
+                        message += this + "\n";
+                    });
+                }
+            });
+            alert(message);
+        }
+    }
+    function sync_handler(e) {
+        this.read();
+
+    }
+    function onClick() {
+        $("#grid").data("kendoGrid").addRow();
+    }
+</script>

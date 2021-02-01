@@ -1,0 +1,674 @@
+﻿@using ExceedERP.Web.Controllers
+
+@{
+    ViewBag.Title = "ProcurementDashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<link href="~/Content/dashboard.css" rel="stylesheet" />
+<a style="align-content:center;color:white" onclick='return refreshData()' href='#' title="Refresh Data"><i class="fa fa-refresh fa-2x"></i></a>
+
+<div class="row">
+        
+    <div class="col-sm-7 col-lg-3 chartcontainer">
+
+        <div class="demo-section k-content wide">
+            <canvas id="prStatus" width="400" height="400" class="chartarea"></canvas>
+        </div>
+
+
+    </div>
+    <div class="col-sm-7 col-lg-3 chartcontainer">
+
+        <div class="demo-section k-content wide">
+            <canvas id="poStatus" width="400" height="400"></canvas>
+        </div>
+
+
+    </div>
+    <div class="col-sm-7 col-lg-3 chartcontainer">
+
+        <div class="demo-section k-content wide">
+            <canvas id="proformaStatus" width="400" height="400"></canvas>
+        </div>
+
+
+    </div>
+    <div class="col-sm-7 col-lg-3 chartcontainer">
+
+        <div class="demo-section k-content wide">
+            <canvas id="tenderStatus" width="400" height="400"></canvas>
+        </div>
+
+
+    </div>
+    
+</div>
+<div class="row">
+          
+    <div class="col-sm-7 col-lg-3 chartcontainer">
+
+        <div class="demo-section k-content wide">
+            <canvas id="servicereceiveStatus" width="400" height="400"></canvas>
+        </div>
+
+
+    </div>
+    <div class="col-sm-7 col-lg-3 chartcontainer">
+
+        <div class="demo-section k-content wide">
+            <canvas id="contractStatus" width="400" height="400"></canvas>
+        </div>
+
+
+    </div>
+
+    <div class="col-sm-7 col-lg-3 chartcontainer">
+
+        <div class="demo-section k-content wide">
+            <canvas id="suppliers" width="400" height="400"></canvas>
+        </div>
+
+
+    </div>
+    <div class="col-sm-7 col-lg-3 chartcontainer">
+
+        <div class="demo-section k-content wide">
+            <canvas id="procurement" width="400" height="400"></canvas>
+        </div>
+
+
+    </div>
+</div>
+
+
+
+<script src="~/Scripts/Chart.bundle.js"></script>
+<script src="~/Scripts/Chart.PieceLabel.js"></script>
+<script>
+
+    window.chartColors = {
+        red: 'rgb(255, 99, 132)',
+        orange: 'rgb(255, 159, 64)',
+        yellow: 'rgb(255, 205, 86)',
+        green: 'rgb(75, 192, 192)',
+        blue: 'rgb(54, 162, 235)',
+        purple: 'rgb(153, 102, 255)',
+        grey: 'rgb(201, 203, 207)'
+    };
+
+    procurement();
+    servicereceive();
+    suppliers();
+    purchaserequisition();
+    po();
+    proforma();
+    tender();
+    contract();
+    storeReturnStatus();
+
+
+    function suppliers() {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetSupplierStatus", "Dashboard", new {area = ""})',
+        success: function (result) {
+            //render
+            var ctx = document.getElementById("suppliers").getContext('2d');
+            var myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: result.Labels,
+                    datasets: [{
+                        label: 'Suppliers',
+                        data: result.Data,
+                        backgroundColor: [
+                            window.chartColors.green,
+                            window.chartColors.blue,
+                            window.chartColors.red,
+                            window.chartColors.green,
+                            window.chartColors.blue
+                        ],
+                        borderColor: [
+                            window.chartColors.red,
+                            window.chartColors.orange,
+                            window.chartColors.yellow,
+                            window.chartColors.green,
+                            window.chartColors.blue
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+
+
+                options: {
+
+                    title: {
+                        display: true,
+                        text: 'Suppliers'
+                    },
+                    gridLines: {
+                        display: false
+                    },
+                    pieceLabel: {
+                        render: 'value',
+                        fontColor: ['green', 'white', 'black'],
+                        precision: 2
+                    },
+                    legend: {
+                        position: 'bottom',
+                        fontSize: 8,
+                        fullWidth: true,
+                        padding: 6,
+                        labels: {
+                            boxWidth:15
+                        }
+                    }
+
+
+                }
+            });
+
+        }, //end succ
+        error: function (result) {
+            alert(result);
+        }
+        });
+    }
+
+
+
+
+    function procurement() {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetProcurementStatus", "Dashboard", new {area = ""})',
+        success: function (result) {
+            //render
+            var ctx = document.getElementById("procurement").getContext('2d');
+            var myChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: result.Labels,
+                    datasets: [{
+                        label: 'Procurement Status',
+                        data: result.Data,
+                        backgroundColor: [
+                            window.chartColors.red,
+                            window.chartColors.orange,
+                            window.chartColors.blue,
+                            window.chartColors.green,
+                            window.chartColors.blue
+                        ],
+                        borderColor: [
+                            window.chartColors.red,
+                            window.chartColors.orange,
+                            window.chartColors.blue,
+                            window.chartColors.green,
+                            window.chartColors.blue
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+
+
+                options: {
+
+                    title: {
+                        display: true,
+                        text: 'Procurement Status'
+                    },
+                    gridLines: {
+                        display: false
+                    },
+                    pieceLabel: {
+                        render: 'value',
+                        fontColor: ['green', 'white', 'red'],
+                        precision: 2
+                    },
+                    legend: {
+                        position: 'bottom',
+                        fontSize: 8,
+                        fullWidth: true,
+                        padding: 6,
+                        labels: {
+                            boxWidth:15
+                        }
+                    }
+
+
+                }
+            });
+
+        }, //end succ
+        error: function (result) {
+            alert(result);
+        }
+        });
+    }
+
+     function purchaserequisition() {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetPrStatus", "Dashboard", new {area = ""})',
+        success: function (result) {
+            //render
+            var ctx = document.getElementById("prStatus").getContext('2d');
+            var myChart = new Chart(ctx, {
+                type: 'pie',
+                data: {
+                    labels: result.Labels,
+                    datasets: [{
+                        label: 'Purchase Requisition Status',
+                        data: result.Data,
+                        backgroundColor: [
+                            window.chartColors.red,
+                            window.chartColors.orange,
+                            window.chartColors.blue,
+                            window.chartColors.green,
+                            window.chartColors.blue
+                        ],
+                        borderColor: [
+                            window.chartColors.red,
+                            window.chartColors.orange,
+                            window.chartColors.blue,
+                            window.chartColors.green,
+                            window.chartColors.blue
+                        ],
+                        borderWidth: 1
+                    }]
+                },
+
+
+                options: {
+
+                    title: {
+                        display: true,
+                        text: 'Purchase Requisition Status'
+                    },
+                    gridLines: {
+                        display: false
+                    },
+                    pieceLabel: {
+                        render: 'value',
+                        fontColor: ['green', 'white', 'red'],
+                        precision: 2
+                    },
+                    legend: {
+                        position: 'bottom',
+                        fontSize: 8,
+                        fullWidth: true,
+                        padding: 6,
+                        labels: {
+                            boxWidth:15
+                        }
+                    }
+
+
+                }
+            });
+
+        }, //end succ
+        error: function (result) {
+            alert(result);
+        }
+        });
+    }
+
+    function po() {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetPoStatus", "Dashboard", new {area = ""})',
+            success: function (result) {
+                //render
+                var ctx = document.getElementById("poStatus").getContext('2d');
+                var myChart = new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: result.Labels,
+                        datasets: [{
+                            label: 'PO Status',
+                            data: result.Data,
+                            backgroundColor: [
+                                window.chartColors.red,
+                                window.chartColors.orange,
+                                window.chartColors.yellow,
+                                window.chartColors.green,
+                                window.chartColors.blue
+                            ],
+                            borderColor: [
+                                window.chartColors.red,
+                                window.chartColors.orange,
+                                window.chartColors.yellow,
+                                window.chartColors.green,
+                                window.chartColors.blue
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+
+
+                    options: {
+
+                        title: {
+                            display: true,
+                            text: 'PO Status'
+                        },
+                        gridLines: {
+                            display: false
+                        },
+                        pieceLabel: {
+                            render: 'value',
+                            fontColor: ['green', 'white', 'red'],
+                            precision: 2
+                        },
+                        legend: {
+                            position: 'bottom',
+                            fontSize: 8,
+                            fullWidth: true,
+                            padding:6
+                        }
+                    }
+                });
+
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+
+    function proforma() {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetProformaStatus", "Dashboard", new {area = ""})',
+            success: function (result) {
+                //render
+                var ctx = document.getElementById("proformaStatus").getContext('2d');
+                var myChart = new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: result.Labels,
+                        datasets: [{
+                            label: 'Proforma Status',
+                            data: result.Data,
+                            backgroundColor: [
+                                window.chartColors.red,
+                                window.chartColors.orange,
+                                window.chartColors.yellow,
+                                window.chartColors.green,
+                                window.chartColors.blue
+                            ],
+                            borderColor: [
+                                window.chartColors.red,
+                                window.chartColors.orange,
+                                window.chartColors.yellow,
+                                window.chartColors.green,
+                                window.chartColors.blue
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+
+
+                    options: {
+
+                        title: {
+                            display: true,
+                            text: 'Proforma Status'
+                        },
+                        gridLines: {
+                            display: false
+                        },
+                        pieceLabel: {
+                            render: 'value',
+                            fontColor: ['green', 'white', 'red'],
+                            precision: 2
+                        },
+                        legend: {
+                            position: 'bottom',
+                            fontSize: 8,
+                            fullWidth: true,
+                            padding:6
+                        }
+                    }
+                });
+
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+
+
+     function tender() {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetTenderStatus", "Dashboard", new {area = ""})',
+            success: function (result) {
+                //render
+                var ctx = document.getElementById("tenderStatus").getContext('2d');
+                var myChart = new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: result.Labels,
+                        datasets: [{
+                            label: 'Tender Status',
+                            data: result.Data,
+                            backgroundColor: [
+                                window.chartColors.red,
+                                window.chartColors.orange,
+                                window.chartColors.yellow,
+                                window.chartColors.green,
+                                window.chartColors.blue
+                            ],
+                            borderColor: [
+                                window.chartColors.red,
+                                window.chartColors.orange,
+                                window.chartColors.yellow,
+                                window.chartColors.green,
+                                window.chartColors.blue
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+
+
+                    options: {
+
+                        title: {
+                            display: true,
+                            text: 'Tender Status'
+                        },
+                        gridLines: {
+                            display: false
+                        },
+                        pieceLabel: {
+                            render: 'value',
+                            fontColor: ['green', 'white', 'red'],
+                            precision: 2
+                        },
+                        legend: {
+                            position: 'bottom',
+                            fontSize: 8,
+                            fullWidth: true,
+                            padding:6
+                        }
+                    }
+                });
+
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+
+     function contract() {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetContractStatus", "Dashboard", new {area = ""})',
+            success: function (result) {
+                //render
+                var ctx = document.getElementById("contractStatus").getContext('2d');
+                var myChart = new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: result.Labels,
+                        datasets: [{
+                            label: 'Contract Status',
+                            data: result.Data,
+                            backgroundColor: [
+                                window.chartColors.red,
+                                window.chartColors.orange,
+                                window.chartColors.yellow,
+                                window.chartColors.green,
+                                window.chartColors.blue
+                            ],
+                            borderColor: [
+                                window.chartColors.red,
+                                window.chartColors.orange,
+                                window.chartColors.yellow,
+                                window.chartColors.green,
+                                window.chartColors.blue
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+
+
+                    options: {
+
+                        title: {
+                            display: true,
+                            text: 'Contract Status'
+                        },
+                        gridLines: {
+                            display: false
+                        },
+                        pieceLabel: {
+                            render: 'value',
+                            fontColor: ['green', 'white', 'red'],
+                            precision: 2
+                        },
+                        legend: {
+                            position: 'bottom',
+                            fontSize: 8,
+                            fullWidth: true,
+                            padding:6
+                        }
+                    }
+                });
+
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+     }
+
+     function servicereceive() {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetServiceGrntStatus", "Dashboard", new {area = ""})',
+            success: function (result) {
+                //render
+                var ctx = document.getElementById("servicereceiveStatus").getContext('2d');
+                var myChart = new Chart(ctx, {
+                    type: 'pie',
+                    data: {
+                        labels: result.Labels,
+                        datasets: [{
+                            label: 'Service Receive Status',
+                            data: result.Data,
+                            backgroundColor: [
+                                window.chartColors.red,
+                                window.chartColors.orange,
+                                window.chartColors.yellow,
+                                window.chartColors.green,
+                                window.chartColors.blue
+                            ],
+                            borderColor: [
+                                window.chartColors.red,
+                                window.chartColors.orange,
+                                window.chartColors.yellow,
+                                window.chartColors.green,
+                                window.chartColors.blue
+                            ],
+                            borderWidth: 1
+                        }]
+                    },
+
+
+                    options: {
+
+                        title: {
+                            display: true,
+                            text: 'Service Receive Status'
+                        },
+                        gridLines: {
+                            display: false
+                        },
+                        pieceLabel: {
+                            render: 'value',
+                            fontColor: ['green', 'white', 'red'],
+                            precision: 2
+                        },
+                        legend: {
+                            position: 'bottom',
+                            fontSize: 8,
+                            fullWidth: true,
+                            padding:6
+                        }
+                    }
+                });
+
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+
+
+
+
+    $(document).on('click', '.panel-heading span.clickable', function (e) {
+        var $this = $(this);
+        if (!$this.hasClass('panel-collapsed')) {
+            $this.parents('.panel').find('.panel-body').slideUp();
+            $this.addClass('panel-collapsed');
+            $this.find('i').removeClass('glyphicon-chevron-up').addClass('glyphicon-chevron-down');
+        } else {
+            $this.parents('.panel').find('.panel-body').slideDown();
+            $this.removeClass('panel-collapsed');
+            $this.find('i').removeClass('glyphicon-chevron-down').addClass('glyphicon-chevron-up');
+        }
+    })
+
+    function refreshData() {
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("RefreshProcurementDashboard", "Dashboard")',
+            success: function(result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                recordStatus = result.Status;
+                location.reload(true);
+            }, //end succ
+            beforeSend: function () {
+                // Show image container
+                $("#loading-image").show();
+            },
+            complete: function (data) {
+                // Hide image container
+                $("#loading-image").hide();
+            },
+            error: function(result) {
+                alert(result);
+            }
+        });
+    }
+</script>
+

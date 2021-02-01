@@ -1,0 +1,31 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Procurement.ForeignPurchase.ForeignPurchaseCost>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Date);
+          columns.Bound(c => c.CostType);
+          columns.Bound(c => c.Amount);
+          columns.Bound(c => c.Currency);
+          columns.Bound(c => c.ExchangeRate);
+          columns.Bound(c => c.Remark);
+          columns.Bound(c => c.OrgBranchName);
+          columns.Bound(c => c.DateCreated);
+          columns.Bound(c => c.LastModified);
+          columns.Bound(c => c.CreatedBy);
+          columns.Bound(c => c.ModifiedBy);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.ForeignPurchaseCostId))
+          .Read(read => read.Action("ForeignPurchaseCosts_Read", "ForeignPurchaseCost"))
+          .Create(create => create.Action("ForeignPurchaseCosts_Create", "ForeignPurchaseCost"))
+          .Update(update => update.Action("ForeignPurchaseCosts_Update", "ForeignPurchaseCost"))
+          .Destroy(destroy => destroy.Action("ForeignPurchaseCosts_Destroy", "ForeignPurchaseCost"))
+      ))

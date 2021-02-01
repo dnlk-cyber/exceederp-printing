@@ -1,0 +1,12 @@
+﻿@(Html.Kendo().DropDownListFor(m => m)
+                  .ValuePrimitive(true)
+                  .OptionLabel("Select Year")
+                      .DataTextField("Name")
+                          .DataValueField("GlFiscalYearId")
+                            .DataSource(dataSource =>
+                                    {
+                                        dataSource.Read(read => read.Action("GetGlYears", "DataProvider", new { area = "Inventory" }))
+                                        .ServerFiltering(false);
+                                    })
+)
+@Html.ValidationMessageFor(m => m)

@@ -1,0 +1,18 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@(Html.Kendo().DropDownListFor(m => m)
+        .OptionLabel(Resources.Select)
+        .Name("ItemCategoryCode")
+        .DataTextField("Name")
+        .DataValueField("ItemCategoryCode")
+        //    .BindTo((IEnumerable)ViewData["Items"])
+        .DataSource(dataSource =>
+        {
+            dataSource.Read(read => read.Action("AllItemCategoryFromInventory", "DataProvider", new { area= "Construction" }));
+            //.ServerFiltering(true);
+        })
+
+        .Filter("contains")
+        .MinLength(2)
+        .ValuePrimitive(true)
+)

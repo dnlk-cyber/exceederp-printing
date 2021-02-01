@@ -1,0 +1,38 @@
+﻿<legend> Receive Method </legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.ReceiveMethod>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          
+        columns.Bound(c => c.Name).Width(120);
+        columns.Bound(c => c.Description).Width(150);
+       
+        columns.Command(command => {   }).Width(180);
+      })
+      
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+       .HtmlAttributes(new { style = "height: 520px;" })
+                                                  .Pageable(pageable => pageable
+                                                                    .Input(true)
+                                                                    .Numeric(false)
+                                                                    .Refresh(true)
+                                                                    .PageSizes(true)
+                                                                    .ButtonCount(5))
+
+                                                        .Scrollable()
+                                                        .Sortable()
+                                                        .Filterable()
+                                                        .Groupable()
+                                                        .Scrollable(h => h.Height(500))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+              .Model(model => model.Id(p => p.ReceiveMethodID)).Events(ev => ev
+                                                                                .Error("error_handler(\"grid\")")
+                                                                                .RequestStart("onRequestStart(\"grid\")")
+                                                                                .RequestEnd("onRequestEnd(\"grid\")"))
+          .Read(read => read.Action("ReceiveMethods_Read", "ReceiveMethod"))
+          .Create(create => create.Action("ReceiveMethods_Create", "ReceiveMethod"))
+          .Update(update => update.Action("ReceiveMethods_Update", "ReceiveMethod"))
+          .Destroy(destroy => destroy.Action("ReceiveMethods_Destroy", "ReceiveMethod"))
+      )
+)

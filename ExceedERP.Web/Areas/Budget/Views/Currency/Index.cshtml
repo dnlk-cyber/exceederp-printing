@@ -1,0 +1,46 @@
+﻿@model ExceedERP.Core.Domain.Budget.BudgetCategory
+
+
+<legend>  Currency </legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Budget.BudgetCurrency>()
+              .Name("gridCategory")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Name).Width(150);
+          columns.Bound(c => c.Description).Width(250);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create();
+      })
+
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+         .HtmlAttributes(new { style = "height: 520px;" })
+                      .Pageable(pageable => pageable
+                                        .Input(true)
+                                        .Numeric(false)
+                                        .Refresh(true)
+                                        .PageSizes(true)
+                                        .ButtonCount(5))
+
+                            .Scrollable()
+                            .Sortable()
+                            .Filterable()
+                            .Scrollable(h => h.Height(500))
+
+           .DataSource(dataSource => dataSource
+          .Ajax()
+                      .Model(model => model.Id(p => p.BudgetCurrencyId))
+                      .Events(ev => ev
+                                            .Error("error_handler(\"gridCategory\")")
+                                            .RequestStart("onRequestStart(\"gridCategory\")")
+                                            .RequestEnd("onRequestEnd(\"gridCategory\")"))
+                          .Read(read => read.Action("BudgetCurrency_Read", "Currency"))
+                      .Create(create => create.Action("BudgetCurrency_Create", "Currency"))
+                      .Update(update => update.Action("BudgetCurrency_Update", "Currency"))
+                      .Destroy(destroy => destroy.Action("BudgetCurrency_Destroy", "Currency"))
+          )
+
+)
+

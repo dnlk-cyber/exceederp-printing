@@ -1,0 +1,12 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.Common
+@(Html.Kendo().DropDownListFor(m => m)
+                .DataTextField("Description")
+                    .DataValueField("LookupId")
+      .DataSource(dataSource =>
+      {
+          dataSource.Read(read => read.Action("GetTermination", "HRMDataProvider", new { area = "HRM" }))
+              .ServerFiltering(false);
+      })
+                     .ValuePrimitive(true)
+)

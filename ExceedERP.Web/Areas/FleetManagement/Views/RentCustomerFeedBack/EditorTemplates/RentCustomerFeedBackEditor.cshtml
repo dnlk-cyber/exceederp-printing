@@ -1,0 +1,41 @@
+﻿@model ExceedERP.Core.Domain.FleetManagement.FleetEquipmentRent.RentCustomerFeedBack
+
+
+
+<div class="demo-section k-content">
+    @(Html.Kendo().TabStrip()
+          .Name("tabstrip")
+          .Animation(animation =>
+              animation.Open(effect =>
+                  effect.Fade(FadeDirection.In)))
+          .Items(tabstrip =>
+          {
+              tabstrip.Add().Text(" Rent Customer FeedBack ")
+                  .Selected(true)
+                  .Content(@<text>
+
+                    <div>
+                        @Html.LabelFor(model => model.DetailFeedBack)
+                    </div>
+                    <div>
+                        @Html.Kendo().TextBoxFor(model => model.DetailFeedBack)
+                        @Html.ValidationMessageFor(model => model.DetailFeedBack)
+                    </div>
+
+
+                    <div>
+                        <h6 style="margin-top: 1em;"> Requests :</h6>
+                        @(Html.Kendo().DropDownListFor(model => model.RentRequestID).Name("RentRequestID")
+            .DataTextField("ProjectSite")
+            .DataValueField("RentRequestID").OptionLabel("Select Request")
+                    .DataSource(d => d.Read(r => r.Action("RentRequestDDBind", "RentRequest"))))
+
+                        
+                    </div>
+      </text>);
+
+
+                  })
+    )
+</div>
+  

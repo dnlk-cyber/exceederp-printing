@@ -1,0 +1,592 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.Finance.AP.PettyCash
+@using ExceedERP.Core.Domain.Finance.AP.Travel
+@using ExceedERP.Core.Domain.Inventory
+@using ExceedERP.Web.Areas.Finance.Controllers.AP.Travel
+<legend>Petty Cash</legend>
+@(Html.Kendo().Grid<ApPettyCash>()
+          .Name("grid")
+          .Columns(columns =>
+          {
+              columns.Bound(c => c.ApPettyCashId).ClientTemplate("#=appendZeros(ApPettyCashId)#").Width(100).Title("ID");
+              columns.ForeignKey(p => p.ApCashierSetupId, (IEnumerable)ViewData["cashiers"], "ApCashierSetupId", "Description").Width(120).EditorTemplateName("CashierSelector");
+              columns.Bound(c => c.PurposeOfPayment).Width(200);
+              columns.Bound(c => c.Date).Width(120);
+              columns.Bound(c => c.Reference).Width(120);
+              columns.Bound(c => c.Status).Width(90);
+              columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+          })
+          .ToolBar(toolbar =>
+          {
+              toolbar.Create();
+          })
+          .Editable(editable => editable.Mode(GridEditMode.InLine))
+           .HtmlAttributes(new { style = "height: 550px;" })
+                .Pageable(pageable => pageable
+                            .Input(true)
+                            .Numeric(false)
+                            .Refresh(true)
+                            .PageSizes(true)
+                            .ButtonCount(20))
+                .Scrollable()
+                .Sortable()
+                .Filterable()
+                    .Selectable(selectable =>
+                    {
+                        selectable.Mode(GridSelectionMode.Single);
+                        selectable.Type(GridSelectionType.Row);
+                    })
+                .Sortable(sortable =>
+                {
+                    sortable.SortMode(GridSortMode.SingleColumn);
+                })
+                .Groupable()
+                 .Events(ev => ev.Edit("onMasterEdit"))
+                 .Groupable().Events(ev => ev.DetailExpand("detailExpandMasterNew"))
+                .Scrollable(h => h.Height(500))
+                 .Events(x => x.DataBound("onDataBoundMasterNew"))
+          .DataSource(dataSource => dataSource
+              .Ajax()
+                .Sort(sort => sort.Add("ApPettyCashId").Descending())
+                                       .Events(ev => ev
+                                                                .Error("error_handler(\"grid\")")
+                                                                .RequestStart("onRequestStart(\"grid\")")
+                                                                .RequestEnd("onRequestEnd(\"grid\")"))
+              .Model(model =>
+              {
+                  model.Id(p => p.ApPettyCashId);
+                  model.Field(p => p.ApPettyCashId).Editable(false);
+                  model.Field(p => p.Status).Editable(false);
+                  model.Field(p => p.IsPostedToSecondLedger).Editable(false);
+                  model.Field(p => p.CurrentBalance).Editable(false);
+                  model.Field(p => p.CreatedBy).Editable(false);
+                  model.Field(p => p.DateCreated).Editable(false);
+                  model.Field(p => p.ModifiedBy).Editable(false);
+                  model.Field(p => p.LastModified).Editable(false);
+              })
+              .Read(read => read.Action("ApPettyCash_Read", "ApPettyCash"))
+              .Create(create => create.Action("ApPettyCash_Create", "ApPettyCash"))
+              .Update(update => update.Action("ApPettyCash_Update", "ApPettyCash"))
+              .Destroy(destroy => destroy.Action("ApPettyCash_Destroy", "ApPettyCash"))
+          ).ClientDetailTemplateId("detailtemplate")
+)
+
+<script id="detailtemplate" type="text/Kendo-tmpl">
+    @(Html.Kendo().TabStrip().Name("tabStrip_#=ApPettyCashId#").SelectedIndex(0).Items(items =>
+                                              {
+                                                  items.Add().Text("Detail").Content(
+                                                    @<text>
+
+
+                                                        # if (!IsOnlineApproved&&!IsSendForApproval)
+                                                        {#
+                                                        <a onclick='return sendForApproval("#=ApPettyCashId#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                                                        <br />
+                                                        # } #
+
+
+                                                        # if (IsOnlineApproved)
+                                                        {#
+                                                        <a target="_new" href='@Url.Action("ApPettyCash", "FinancePrint")/#=ApPettyCashId#' title="Print"><i class="fa fa-print fa-2x"></i></a>
+                                                        <br />
+                                                        # } #
+
+                                                        # if (IsOnlineApproved && !IsOnlineTransferred )
+                                                        {#
+                                                        <a onclick='return transferToGl("#=ApPettyCashId#")' href=' \#' title="Transfer to GL"><i class="fa fa-paper-plane fa-2x"></i></a>
+                                                        # } #
+
+                                                        <div>
+                                                            <hr>
+                                                            <dl class="dl-horizontal">
+
+                                                                <dt>
+                                                                    No.
+                                                                </dt>
+                                                                <dd>
+                                                                    #= ApPettyCashId #
+                                                                </dd>
+                                                                <dt>
+                                                                    Store
+                                                                </dt>
+
+
+
+                                                                <dt>
+                                                                    Date
+                                                                </dt>
+                                                                <dd>
+
+                                                                    #=kendo.toString(kendo.parseDate(Date), 'dd/MM/yyyy') #
+
+                                                                </dd>
+                                                                <dt>
+                                                                    Status
+                                                                </dt>
+                                                                <dd>
+                                                                    #= Status #
+                                                                </dd>
+                                                                <dt>
+                                                                    CreatedOn
+                                                                </dt>
+                                                                <dd>
+                                                                    #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+
+                                                                </dd>
+                                                                <dt>
+                                                                    CreatedBy
+                                                                </dt>
+                                                                <dd>
+                                                                    #= CreatedBy #
+                                                                </dd>
+                                                                <dt>
+                                                                    Modified By
+                                                                </dt>
+                                                                <dd>
+                                                                    #= ModifiedBy #
+                                                                </dd>
+                                                                <dt>
+                                                                    Modified Date
+                                                                </dt>
+                                                                <dd>
+                                                                    #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+                                                                </dd>
+                                                            </dl>
+                                                        </div>
+                                                        <hr>
+
+                                                        # if (IsOnlineApproved&&!IsVoid)
+                                                        {#
+                                                        @if (HttpContext.Current.User.IsInRole("Property_Void"))
+                                                                    {
+                                                            <a onclick='return voidRecord("#=ApPettyCashId#")' href='\#' title='Void Record'><i class='fa  fa-bolt fa-2x' style='color:red'></i></a>
+                                                                    }
+                                                        /**/
+
+
+                                                        # } #
+
+
+
+                                                    </text>
+                                                                        );
+
+
+                                                          items.Add().Text("Payment").Content(
+                        @<text>
+
+                            @(Html.Kendo().Grid<ApPettyCashPayment>()
+                                                                .Name("ApPettyCashPayment#=ApPettyCashId#")
+                                                                .Columns(columns =>
+                                                            {
+                                                                        columns.Bound(c => c.Description).Width(80);
+                                                                        columns.Bound(c => c.PaymentMethod).Width(80).EditorTemplateName("PaymentMethodSelectorAP");
+                                                                        columns.Bound(c => c.Amount).Width(70);
+                                                                        columns.Bound(c => c.Reference).Width(70);
+
+                                                                        columns.Bound(c => c.CreatedBy).Hidden();
+                                                                        columns.Bound(c => c.DateCreated).Hidden();
+                                                                        columns.Bound(c => c.ModifiedBy).Hidden();
+                                                                        columns.Bound(c => c.LastModified).Hidden();
+                                                                        columns.Command(command =>
+                        {
+                                                command.Edit();
+                                                command.Destroy();
+                                            }).Width(180);
+                                                                    })
+                                                          .ToolBar(toolbar =>
+                                                          {
+                                                                      toolbar.Create();
+                                                                  })
+
+                                                          .Events(x => x.DataBound("onDataBoundLineNew"))
+                                                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                          .Scrollable()
+                                                          .Selectable()
+                                                          .DataSource(dataSource => dataSource
+                                                              .Ajax()
+                                                                    .Events(ev => ev
+                                                                        .Error("error_handler(\"ApPettyCashPayment#=ApPettyCashId#\")")
+                                                                        .RequestStart("onRequestStart(\"ApPettyCashPayment#=ApPettyCashId#\")")
+                                                                                .RequestEnd("onRequestEnd(\"ApPettyCashPayment#=ApPettyCashId#\")"))
+                                                              .Model(model =>
+                                                              {
+                                                                          model.Id(p => p.ApPettyCashPaymentId);
+                                                                          model.Field(p => p.ApPettyCashPaymentId).Editable(false);
+                                                                          model.Field(p => p.CreatedBy).Editable(false);
+                                                                          model.Field(p => p.DateCreated).Editable(false);
+                                                                          model.Field(p => p.ModifiedBy).Editable(false);
+                                                                          model.Field(p => p.LastModified).Editable(false);
+
+                                                                      })
+                                                                              .Read(read => read.Action("ApPettyCashPayments_Read", "ApPettyCashPayment", new { id = "#=ApPettyCashId#" }))
+                                                                              .Create(create => create.Action("ApPettyCashPayments_Create", "ApPettyCashPayment", new { id = "#=ApPettyCashId#" }))
+                                                                              .Update(update => update.Action("ApPettyCashPayments_Update", "ApPettyCashPayment", new { id = "#=ApPettyCashId#" }))
+                                                                              .Destroy(destroy => destroy.Action("ApPettyCashPayments_Destroy", "ApPettyCashPayment"))
+                                                                          ).ToClientTemplate()
+                            )
+
+                        </text>
+);
+
+                                              items.Add().Text("Utilization").Content(
+                    @<text>
+
+                        @(Html.Kendo().Grid<ApPettyCashUtilization>()
+                                                            .Name("ApPettyCashUtilization#=ApPettyCashId#")
+                                                            .Columns(columns =>
+                                                            {
+                                                                        columns.Bound(c => c.Date).Width(130);
+                                                                        columns.Bound(c => c.PaidTo).Width(150);
+                                                                        columns.Bound(c => c.Amount).Width(90);
+                                                                        columns.Bound(c => c.Purpose).Width(140);
+                                                                        columns.Bound(c => c.AccountCode).Width(170).EditorTemplateName("AccountCode");
+                                                                        columns.Bound(c => c.Reference).Width(120);
+
+                                                                        columns.Bound(c => c.CreatedBy).Hidden();
+                                                                        columns.Bound(c => c.DateCreated).Hidden();
+                                                                        columns.Bound(c => c.ModifiedBy).Hidden();
+                                                                        columns.Bound(c => c.LastModified).Hidden();
+                                                                        columns.Command(command =>
+                                                {
+                                                                        command.Edit();
+                                                                        command.Destroy();
+                                                                    }).Width(180);
+                                                                    })
+                                                      .ToolBar(toolbar =>
+                                                      {
+                                                                  toolbar.Create();
+                                                              })
+
+                                                      .Events(x => x.DataBound("onDataBoundLineNew"))
+                                                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                      .Scrollable()
+                                                      .Selectable()
+                                                      .DataSource(dataSource => dataSource
+                                                          .Ajax()
+                                                                .Events(ev => ev
+                                                                    .Error("error_handler(\"ApPettyCashUtilization#=ApPettyCashId#\")")
+                                                                    .RequestStart("onRequestStart(\"ApPettyCashUtilization#=ApPettyCashId#\")")
+                                                                            .RequestEnd("onRequestEnd(\"ApPettyCashUtilization#=ApPettyCashId#\")"))
+                                                          .Model(model =>
+                                                          {
+                                                                      model.Id(p => p.ApPettyCashUtilizationId);
+                                                                      model.Field(p => p.ApPettyCashUtilizationId).Editable(false);
+
+
+                                                                      model.Field(p => p.CreatedBy).Editable(false);
+                                                                      model.Field(p => p.DateCreated).Editable(false);
+                                                                      model.Field(p => p.ModifiedBy).Editable(false);
+                                                                      model.Field(p => p.LastModified).Editable(false);
+
+                                                                  })
+                                                                          .Read(read => read.Action("ApPettyCashUtilizations_Read", "ApPettyCashUtilization", new { id = "#=ApPettyCashId#" }))
+                                                                          .Create(create => create.Action("ApPettyCashUtilizations_Create", "ApPettyCashUtilization", new { id = "#=ApPettyCashId#" }))
+                                                                          .Update(update => update.Action("ApPettyCashUtilizations_Update", "ApPettyCashUtilization", new { id = "#=ApPettyCashId#" }))
+                                                                          .Destroy(destroy => destroy.Action("ApPettyCashUtilizations_Destroy", "ApPettyCashUtilization"))
+                                                                      ).ToClientTemplate()
+                        )
+
+                    </text>
+        );
+                                              items.Add().Text("Distribution").Content(
+@<text>
+    @(Html.Kendo().Grid<ApPettyCashDistribution>()
+                                            .Name("ApPettyCashDistribution#=ApPettyCashId#")
+                                            .Columns(columns =>
+                                            {
+                                                         columns.Bound(c => c.AccountCode).EditorTemplateName("AccountCode").Width(200);
+                                                        columns.Bound(c => c.AccountDesc).Width(200);
+                                                        columns.Bound(c => c.Debit).Width(50).Format("{0:n}").ClientFooterTemplate("\\#=kendo.toString(sum, 'n')\\# ");
+                                                        columns.Bound(c => c.Credit).Width(50).Format("{0:n}").ClientFooterTemplate("\\#=kendo.toString(sum, 'n')\\# ");
+                                                        columns.Bound(c => c.AdditionalDescription).Width(100);
+                                                        columns.Command(command =>
+                                {
+                                                        command.Edit();
+                                                        command.Destroy();
+                                                    }).Width(380).ClientFooterTemplate("Difference: \\#=Debit.sum-Credit.sum\\# ");
+                                                    })
+                                          .ToolBar(toolbar =>
+                                          {
+                                                      toolbar.Create();
+                                                  })
+
+                                            .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                            .Pageable()
+                                            .Scrollable()
+                                            .Events(ev => ev.DataBound("onDataBoundDistributionNew"))
+                                            .DataSource(dataSource => dataSource
+                                                .Ajax()
+                                                .Aggregates(aggregates =>
+                                                {
+                                                            aggregates.Add(p => p.Debit).Sum();
+                                                            aggregates.Add(p => p.Credit).Sum();
+                                                        })
+                                                .Model(model =>
+                                                {
+                                                            model.Id(p => p.ApPettyCashDistributionId);
+                                                            model.Field(p => p.AccountDesc).Editable(false);
+                                                //model.Field(p => p.Debit).Editable(false);
+                                                //model.Field(p => p.Credit).Editable(false);
+                                            })
+                                                .Read(read => read.Action("ApPettyCashDistributions_Read", "ApPettyCashDistribution", new { id = "#=ApPettyCashId#" }))
+                                                .Create(create => create.Action("ApPettyCashDistributions_Create", "ApPettyCashDistribution", new { id = "#=ApPettyCashId#" }))
+                                                .Update(update => update.Action("ApPettyCashDistributions_Update", "ApPettyCashDistribution"))
+                                                .Destroy(destroy => destroy.Action("ApPettyCashDistributions_Destroy", "ApPettyCashDistribution"))
+                                            ).ToClientTemplate()
+
+
+    )
+
+
+</text>);
+
+                                      items.Add().Text("Validation").Content(
+                            @<text>
+                                @(Html.Kendo().Grid<ApPettyCashValidation>()
+                                                                              .Name("ApPettyCashValidation#=ApPettyCashId#")
+                                                                             .Columns(columns =>
+                                                                          {
+                                                                                      columns.Bound(c => c.Status).Width(170).EditorTemplateName("ValidationStatus");
+                                                                                      columns.Bound(c => c.Remark).Width(170);
+                                                                                      columns.Bound(c => c.DateCreated).Width(200).Title("Time").Format("{0:dd/MM/yyyy}");
+                                                                                      columns.Bound(c => c.LastModified).Hidden(true);
+                                                                                      columns.Bound(c => c.CreatedBy).Width(200).Title("User");
+                                                                                      columns.Bound(c => c.ModifiedBy).Hidden(true);
+                                                                                      columns.Command(command =>
+                                      {
+                                                              command.Edit();
+                                                  //command.Destroy();
+                                              });
+                                                                                  })
+                                                                          .ToolBar(toolbar =>
+                                                                          {
+                                                                                      toolbar.Create();
+                                                                                  })
+                                                                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                      .Scrollable()
+                                                                              .Events(x => x.DataBound("onDataBoundValidationNew"))
+                                                                      .DataSource(dataSource => dataSource
+                                                                          .Ajax()
+                                                                                    .Events(ev => ev
+                                                                                                .Error("error_handler(\"ApPettyCashValidation#=ApPettyCashId#\")")
+                                                                                                .RequestStart("onRequestStart(\"ApPettyCashValidation#=ApPettyCashId#\")")
+                                                                                                .RequestEnd("onRequestEnd(\"ApPettyCashValidation#=ApPettyCashId#\")"))
+
+                                                                                  .Model(model =>
+                                                                                  {
+                                                                                              model.Id(p => p.ApPettyCashValidationId);
+                                                                                              model.Field(p => p.CreatedBy).Editable(false);
+                                                                                              model.Field(p => p.DateCreated).Editable(false);
+                                                                                              model.Field(p => p.ModifiedBy).Editable(false);
+                                                                                              model.Field(p => p.LastModified).Editable(false);
+                                                                                          }
+                                                                                 )
+                                                                                  .Read(read => read.Action("ApPettyCashValidations_Read", "ApPettyCashValidation", new { id = "#=ApPettyCashId#" }))
+                                                                                  .Create(create => create.Action("ApPettyCashValidations_Create", "ApPettyCashValidation", new { id = "#=ApPettyCashId#" }))
+                                                                                  .Update(update => update.Action("ApPettyCashValidations_Create", "ApPettyCashValidation"))
+
+                                                                              ).ToClientTemplate()
+
+
+                                )
+
+
+                            </text>
+
+);
+
+                  }).ToClientTemplate()
+
+    )
+
+</script>
+
+
+
+
+<script type="text/javascript">
+
+
+    function voidRecord(id) {
+        var recordStatus = "";
+        var conf = confirm("Are you sure you want to void this record number: " + id + " ?");
+        if (conf === true) {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("Void", "ApPettyCash", new {area = "Finance"})',
+            data: { id: id },
+            success: function (result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                recordStatus = result.Status;
+                location.reload(true);
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+       }
+    }
+
+    function sendForApproval(id) {
+        var recordStatus = "";
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("SendForApproval", "ApPettyCash", new { area = "Finance" })',
+            data: { id: id },
+            success: function (result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                recordStatus = result.Status;
+                location.reload(true);
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+        
+    }
+
+   
+
+    function transferToGl(id) {
+        var desc = prompt("Please enter transaction description:");
+        if (desc != null) {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("TransferDistribution", "ApPettyCash", new { area = "Finance" })',
+                data: {
+                    id: id,
+                    description: desc
+                },
+                success: function (result) {
+                    // toastr.warnning(result.Message);
+                    alert(result.Message);
+                    location.reload(true);
+                }, //end succ
+                error: function (result) {
+                    alert(result);
+                }
+            });
+        }
+    }
+
+
+
+
+    function onMasterEdit() {
+
+    }
+
+
+      var masterDataItem;
+    var masterRow;
+    var masterGrid;
+
+    var codeid;
+    var isapproved;
+    var issecondapproved;
+    var isSendForApproval;
+    var isOnlineTransferred;
+    var nextApprover;
+
+    function detailExpandMasterNew(e) {
+
+        masterRow = e.masterRow;
+        masterGrid = $("#grid").data("kendoGrid");
+        masterDataItem = masterGrid.dataItem(masterRow);
+        isapproved = masterDataItem.IsOnlineApproved;
+        isSendForApproval = masterDataItem.IsSendForApproval;
+        isOnlineTransferred = masterDataItem.IsOnlineTransferred;
+        issecondapproved = masterDataItem.IsSecondOnlineApproved;
+        nextApprover = masterDataItem.ForwardedTo;
+
+    }
+    function onDataBoundMasterNew() {
+        //this.expandRow(this.tbody.find("tr.k-master-row").first());
+
+        //approved
+        var grid = $("#grid").data("kendoGrid");
+        var gridData = grid.dataSource.view();
+
+        for (var i = 0; i < gridData.length; i++) {
+            var currentUid = gridData[i].uid;
+            if (gridData[i].IsOnlineApproved || gridData[i].IsSendForApproval) {
+                var currenRow = grid.table.find("tr[data-uid='" + currentUid + "']");
+                var editButton = $(currenRow).find(".k-grid-edit");
+                var deleteButton = $(currenRow).find(".k-grid-delete");
+                editButton.hide();
+                deleteButton.hide();
+            }
+        }
+
+        //changing colors
+        var data = this.dataSource.data();
+        $.each(data, function (i, row) {
+            if (row.get("IsOnlineApproved") === "true") {
+                var element1 = $('tr[data-uid="' + row.uid + '"] ');
+                element1.addClass("approved-row");
+            }
+
+            if (row.get("IsSecondOnlineApproved") === "true") {
+                var element2 = $('tr[data-uid="' + row.uid + '"] ');
+                element2.addClass("secondapproved-row");
+            }
+
+            if (row.get("IsVoid") === "true") {
+                var element3 = $('tr[data-uid="' + row.uid + '"] ');
+                element3.addClass("void-row");
+            }
+        });
+    }
+    function onDataBoundLineNew(e) {
+
+        var detailGrid = "#" + e.sender.element[0].id;
+        if (isapproved || isSendForApproval) {
+
+            $(".k-grid-add", detailGrid).hide();
+            $(".k-grid-delete", detailGrid).hide();
+            $(".k-grid-edit", detailGrid).hide();
+        }
+
+       
+    }
+    function onDataBoundValidationNew(e) {
+        var currentUser=@Html.Raw(Json.Encode(User.Identity.Name));
+        var detailGrid = "#" + e.sender.element[0].id;
+
+        if (isapproved || !isSendForApproval) {
+
+            $(".k-grid-add", detailGrid).hide();
+            $(".k-grid-delete", detailGrid).hide();
+            $(".k-grid-edit", detailGrid).hide();
+        }
+        if (nextApprover !== currentUser) {
+            $(".k-grid-add", detailGrid).hide();
+        }
+
+        this.table.find(".k-grid-edit").hide();
+    }
+    function onDataBoundDistributionNew(e) {
+
+        var detailGrid = "#" + e.sender.element[0].id;
+
+        if (isOnlineTransferred) {
+
+            $(".k-grid-add", detailGrid).hide();
+            $(".k-grid-delete", detailGrid).hide();
+            $(".k-grid-edit", detailGrid).hide();
+        }
+
+        
+    }
+  
+     
+
+  
+    
+
+
+</script>

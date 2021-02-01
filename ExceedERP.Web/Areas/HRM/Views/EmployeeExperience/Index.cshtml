@@ -1,0 +1,238 @@
+﻿@using System.Collections
+@using System.Security.AccessControl
+@using ExceedERP.Core.Domain.Common.HRM
+@using ExceedERP.Core.Domain.HRM.EmployeeDetail
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>@Resources.Navigator_Employee_Experience</legend>
+
+@(Html.Kendo().Grid<Experience>()
+                      .Name("Expriancegrid")
+
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.EmployeeCode).ClientTemplate(
+                        @"<div class='Employee-photo'
+                        style='background-image: url(" + Url.Content("~/Content/Images/") + "#:data.EmployeeId#-Photo/" + "#:data.EmployeeId#.jpg" + ");'></div>" +
+                    "<div class='Employee-name'>#:EmployeeCode#</div>").Width(120);
+          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "PersonId", "FullNameWithOutCode").EditorTemplateName("ListOfEmployee").Width(200);
+          columns.Bound(c => c.Organozation).Width (150);
+          columns.Bound(c => c.OrgFullAddress).Width (160);
+         // columns.Bound(c => c.EmploymentType).EditorTemplateName("EmployementType").Width( 150);
+          columns.Bound(c => c.From).Width (100);
+          columns.Bound(c => c.To).Width (100);
+         // columns.Bound(c => c.TotalDuration);
+          columns.Bound(c => c.Responsibility).Width(150);
+         // columns.Bound(c => c.ClearanceDateTime);
+          //columns.Bound(c => c.CleranceReason);
+          //columns.Bound(c => c.IncomeTaxPaymentRefNo);
+          //columns.Bound(c => c.Remark);
+          columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+                              .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("EmployeeExperience").Window(window => { window.Title("Employee Experience "); window.Scrollable(false); }))
+          .Scrollable(h => h.Height(500))
+             .Groupable()
+                      .Sortable(sortable =>
+                      {
+                          sortable.SortMode(GridSortMode.SingleColumn);
+                      })
+          .Filterable()
+             .Pageable(pageable => pageable
+                                        .Input(true)
+                                        .Numeric(false)
+                                        .Refresh(true)
+                                        .PageSizes(true)
+                                        .ButtonCount(5))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Events(events =>
+{
+ events.Error("error_handler(\"Expriancegrid\")");
+ events.RequestStart("onRequestStart(\"Expriancegrid\")");
+ events.RequestEnd("onRequestEnd(\"Expriancegrid\")");
+})
+              
+          .Model(model => model.Id(p => p.ExperienceId))
+                          .Read(read => read.Action("Experiences_Read", "EmployeeExperience", new { Area = "HRM" }))
+                                  .Create(create => create.Action("Experiences_Create", "EmployeeExperience", new { Area = "HRM" }))
+                  .Update(update => update.Action("Experiences_Update", "EmployeeExperience"))
+                  .Destroy(destroy => destroy.Action("Experiences_Destroy", "EmployeeExperience"))
+          ).ClientDetailTemplateId("template")
+)
+
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                    .Name("tabstrip_#=ExperienceId#")
+    .SelectedIndex(0)
+    .Items(items =>
+     {
+        
+
+        
+        
+
+        
+
+        
+         //*****************************************************************************************************//
+
+         //*********************************Attachment***********************************************************//
+         items.Add().Text(Resources.HR_File).Content(
+            @<text>
+
+                @(Html.Kendo().Grid<Attachment>()
+              .Name("AttachmentGrid_#=ExperienceId#")
+      .Columns(columns =>
+      {
+
+          columns.Bound(c => c.Description);
+             
+                  
+             
+         //columns.Bound(c => c.Reference);
+          columns.Bound(c => c.FileType).ClientTemplate(Html.ActionLink("DownLoad", "DownloadFile", new { filename = "#=EmployeeId#" }).ToHtmlString()); 
+         // columns.Bound(c => c.Remark);
+          columns.Command(command => {command.Destroy().Text(Resources.ActionButton_Cancel);
+          //command.Custom("Download").Click("DownloadAttachmnets");
+          }).Width(300);
+
+      })
+                      .Events(e =>
+                               {
+                                   e.Edit("onGridEdit");
+                                   e.Change("onChange");
+                               }) 
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+              .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("Upload").Window(window => {window.Scrollable(false);
+                                                                                                             window.Title(Resources .HR_Upload_File);
+              }))
+      .Scrollable()
+               .Selectable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+                           .Events(events =>
+        {
+            events.Error("error_handler(\"AttachmentGrid_#=ExperienceId#\")");
+            events.RequestStart("onRequestStart(\"AttachmentGrid_#=ExperienceId#\")");
+            events.RequestEnd("onRequestEnd(\"AttachmentGrid_#=ExperienceId#\")");
+        })
+                                          
+          .Model(model => model.Id(p => p.AttachmentId))
+                                                                  .Read(read => read.Action("Attachments_Read", "Attachment", new { Area = "Common", attachmentReferenceType = "Experience", id = "#=EmployeeId#", fileOwner = "#=ExperienceId#" }))
+                                                         .Create(create => create.Action("Attachments_Create", "Attachment", new { Area = "Common", attachmentReferenceType = "Experience", id = "#=EmployeeId#", fileOwner = "#=ExperienceId#" }))
+        // .Update(update => update.Action("Attachments_Update", "Attachment"))
+                  .Destroy(destroy => destroy.Action("Attachments_Destroy", "EmployeeExperience"))
+          
+          ).ToClientTemplate()
+                )
+            </text>
+    );
+         //*****************************************************************************************************//
+
+     }).ToClientTemplate())
+</script>
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 700px;
+    }
+</style>
+
+
+
+<script>
+    function DownloadAttachmnets(e) {
+
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        var dd = dataItem.Description;
+        var id = dataItem.Reference;
+      $.ajax({
+           
+            url: '@Url.Action("Download", "EmployeeExperience")',
+          contentType: "application/json; charset=utf-8",
+          data: { 'data': dd ,'id':id},
+          type: 'GET',
+          cache: false,
+          success: function (result) {
+              r = result;
+}
+            
+        });
+
+    }
+</script>
+
+<script>
+    function error_handler(e) {
+        if (e.errors) {
+            var message = "Errors:\n";
+            $.each(e.errors, function (key, value) {
+                if ('errors' in value) {
+                    $.each(value.errors, function () {
+                        message += this + "\n";
+                    });
+                }
+            });
+            alert(message);
+
+        }
+
+    }
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+    function onGridEdit(e) {
+        e.container.find(".k-button.k-grid-update").hide();
+        e.container.find(".k-button.k-grid-cancel").hide();
+
+    }
+    function onChange(e) {
+        var grid = e.sender;
+        var selectedRows = this.select();
+        var rowData = this.dataItem(selectedRows[0]);
+        var id = rowData.AttachmentID;
+        $.ajax({
+            url: '@Url.Action("Download", "EmployeeExperience")',
+            contentType: "application/json; charset=utf-8",
+            data: { 'id': id },
+            type: 'GET',
+            cache: false,
+            success: function (result) {
+                r = result;
+            }
+
+        });
+
+    }
+</script>
+<style>
+    .Employee-photo {
+        display: inline-block;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background-size: 32px 35px;
+        background-position: center center;
+        vertical-align: middle;
+        line-height: 32px;
+        box-shadow: inset 0 0 1px #999, inset 0 0 10px rgba(0,0,0,.2);
+        margin-left: 5px;
+    }
+
+    .Employee-name {
+        display: inline-block;
+        vertical-align: middle;
+        line-height: 32px;
+        padding-left: 3px;
+    }
+</style>

@@ -1,0 +1,68 @@
+﻿@model ExceedERP.Core.Domain.Global.GlobalBranchsetup
+
+@{
+    ViewBag.Title = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+
+<div>
+    <h4>Branchs</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.OrgBranchName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.OrgBranchName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.OrgBranchAbbreviation)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.OrgBranchAbbreviation)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.BranchAccountCode)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.BranchAccountCode)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Description)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Description)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CreatedOn)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CreatedOn)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CreatedBy)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CreatedBy)
+        </dd>
+
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.GlobalBranchsetupID }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

@@ -1,0 +1,141 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@using ExceedERP.Helpers.Common
+@using ExceedERP.Web.Areas.APTS
+@using Kendo.Mvc.UI
+@model ExceedERP.Core.Domain.APTS.Model22
+
+<div class="form">
+
+    <div class="row fullrow">
+        <div class="col-md-3 ro1">
+
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.RequisitionModel20Id, htmlAttributes: new { @class = "control-label col-md-8" })
+
+                @(Html.Kendo().DropDownListFor(model => model.RequisitionModel20Id)
+                  .OptionLabel(Resources.Select)
+                           .Filter("contains")
+                           .MinLength(2)
+                  .DataTextField("Description")
+                  .DataValueField("DrugListsId")
+                                  .DataSource(source =>
+                                  {
+
+                                      source.Read(read => read.Action("GetDrugLists", "RequisitionModel20"));
+
+
+                                  })
+                  // .BindTo((IEnumerable)ViewData["organization"])
+                  .ValuePrimitive(true)
+
+                )
+                @Html.ValidationMessageFor(model => model.RequisitionModel20Id, "", new { @class = "text-danger" })
+            </div>
+
+
+
+
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.Unit, htmlAttributes: new { @class = "control-label col-md-8" })
+
+                <div class="col-md-6">
+                    @(Html.Kendo().TextBoxFor(model => model.Unit)
+                          .HtmlAttributes(new { style = "width:150px" })
+                          )
+                    @Html.ValidationMessageFor(model => model.Unit, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+        </div>
+
+        <div class="col-md-4 ro1">
+
+            <div class="form-group">
+
+                @Html.LabelFor(model => model.QuantityIssued, htmlAttributes: new { @class = "control-label col-md-8" })
+
+                <div class="col-md-6">
+                    @(Html.Kendo().TextBoxFor(model => model.QuantityIssued)
+                          .HtmlAttributes(new { style = "width:150px" })
+                          )
+                    @Html.ValidationMessageFor(model => model.QuantityIssued, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.UnitCost, htmlAttributes: new { @class = "control-label col-md-8" })
+
+                <div class="col-md-6">
+                    @(Html.Kendo().TextBoxFor(model => model.UnitCost)
+                          .HtmlAttributes(new { style = "width:150px" })
+                          )
+                    @Html.ValidationMessageFor(model => model.UnitCost, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.TotalCost, htmlAttributes: new { @class = "control-label col-md-8" })
+
+                <div class="col-md-6">
+                    @(Html.Kendo().TextBoxFor(model => model.TotalCost)
+                          .HtmlAttributes(new { style = "width:150px" })
+                    )
+                    @Html.ValidationMessageFor(model => model.TotalCost, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+           
+        </div>
+
+        <div class="col-md-3 ro1">
+
+
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.UnitPrice, htmlAttributes: new { @class = "control-label col-md-8" })
+
+                <div class="col-md-6">
+                    @(Html.Kendo().TextBoxFor(model => model.UnitPrice)
+                          .HtmlAttributes(new { style = "width:150px" })
+                          )
+                    @Html.ValidationMessageFor(model => model.UnitPrice, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.RetailPrice, htmlAttributes: new { @class = "control-label col-md-8" })
+
+                <div class="col-md-6">
+                    @(Html.Kendo().TextBoxFor(model => model.RetailPrice)
+                          .HtmlAttributes(new { style = "width:150px" })
+                    )
+                    @Html.ValidationMessageFor(model => model.RetailPrice, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            @*@Html.LabelFor(model => model.RequestDate, htmlAttributes: new { @class = "control-label col-md-8" })
+            <div class="col-md-6">
+
+                @(Html.Kendo().DatePickerFor(model => model.RequestDate)
+                          .HtmlAttributes(new { style = "width:150px" })
+                //.Enable(false)
+                )
+                @Html.ValidationMessageFor(model => model.RequestDate, "", new { @class = "text-danger" })
+            </div>
+            @Html.LabelFor(model => model.RequestDateAm, htmlAttributes: new { @class = "control-label col-md-8" })
+            <div class="col-md-10">
+                @Html.TextBoxFor(model => model.RequestDateAm, htmlAttributes: new { disabled = "disabled", @class = "et-popup-picker", @style = "width: 120px", }) <img src="~/Scripts/etp/images/calendar-blue.gif" onclick="SelectDate(this)" />
+                @Html.ValidationMessageFor(model => model.RequestDateAm, "", new { @class = "text-danger" })
+            </div>*@       
+                        
+
+        </div>
+
+
+
+
+    </div>
+
+</div>
+
+
+

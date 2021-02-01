@@ -1,0 +1,14 @@
+﻿
+@{
+    ViewBag.Title = "BackUp";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h4>BackUp</h4>
+
+
+<div class="alert alert-success fade in">
+    <a href="#" class="close" data-dismiss="alert">&times;</a>
+    <h4>@ViewBag.BakcUpStatus</h4>
+</div>
+@Html.ActionLink("Click to Return", "Index")

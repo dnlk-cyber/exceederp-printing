@@ -1,0 +1,15 @@
+﻿@(Html.Kendo().DropDownListFor(m => m)
+      .ValuePrimitive(true)
+      .OptionLabel("Select Approval Groupe...")
+      .DataTextField("Name")
+      .DataValueField("Code")
+      .Filter("contains")
+      .DataSource(dataSource =>
+      {
+          dataSource.Read(read => read.Action("GetDocumentApprovalGroup", "GlobalDataProvider", new {area = "Common"}).Data("filterApprovalGroup"))
+              .ServerFiltering(true);
+      })
+                             
+      )
+
+@Html.ValidationMessageFor(m => m)

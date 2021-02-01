@@ -1,0 +1,17 @@
+﻿@using System.Collections
+@(Html.Kendo().DropDownListFor(m => m)
+                    .AutoBind(false)
+                  .ValuePrimitive(true)
+                  .OptionLabel("Select Category...")
+                      .DataTextField("Name")
+                              .DataValueField("CategoryCode")
+                              .Filter("contains")
+                               .DataSource(dataSource =>
+                              {
+                                  dataSource.Read(read => read.Action("GetCategoryForRul", "FixedAssetDataProvider", new { area = "FixedAsset" }).Data("filterCategories"))
+                                            .ServerFiltering(true);
+                              })
+                             .CascadeFrom("FixedAssetGroupID")
+                                   
+)
+@Html.ValidationMessageFor(m => m)

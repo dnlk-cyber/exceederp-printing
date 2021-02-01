@@ -1,0 +1,51 @@
+﻿@using ExceedERP.Core.Domain.Inventory
+@using Kendo.Mvc.UI
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Work Unit Cost Center</legend>
+@(Html.Kendo().Grid<DepartmentCostCenter>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.DepartmentName);
+          columns.Bound(c => c.LocationCode).EditorTemplateName("GlCostCenter");
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create().Text("Work Unit Cost Center");
+      })
+           
+      .Sortable()
+      .Filterable()
+      .Groupable()
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(5))
+
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable(h => h.Height(500) )
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Events(ev => ev
+              .Error("error_handler(\"grid\")")
+              .RequestStart("onRequestStart(\"grid\")")
+              .RequestEnd("onRequestEnd(\"grid\")"))
+          .Model(model => model.Id(p => p.DepartmentCostCenterID))
+          .Read(read => read.Action("DepartmentCostCenters_Read", "Department"))
+          .Create(create => create.Action("DepartmentCostCenters_Create", "Department"))
+          .Update(update => update.Action("DepartmentCostCenters_Update", "Department"))
+          .Destroy(destroy => destroy.Action("DepartmentCostCenters_Destroy", "Department"))
+      ))
+<style>
+    .k-widget .k-grid {
+           height: 100%;
+    }
+    .page-content {
+       
+         height: 600px;
+    }
+</style>

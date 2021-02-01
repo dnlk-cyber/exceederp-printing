@@ -1,0 +1,229 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@using ExceedERP.Core.Domain.HRM.Payroll
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>@Resources.NavigatorPayroll_OverTimeTransferMaintain </legend>
+@(Html.Kendo().Grid<OverTimeTransfer>()
+          .Name("OverTimeTransfergrid")
+      .Columns(columns =>
+      {
+          //columns.Bound(c => c.Check).ClientTemplate("<input type='checkbox' #= Check ? checked='checked':'' # class='chkbx' />")
+          //          .HeaderTemplate("<input type='checkbox' id='masterCheckBox' onclick='checkAll(this)'/>").Width(200);
+          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["Employees"], "EmployeeId", "FullNameaEnglish").EditorTemplateName("EmployeeLists").Width(260);
+          columns.ForeignKey(c => c.GLPeriodId, (IEnumerable)ViewData["PeriodList"], "GLPeriodId", "Name").EditorTemplateName("GLPeriod").Width(150);
+          columns.Bound(c => c.NormalHours).Width(150);
+          columns.Bound(c => c.NightHours).Width(150);
+          columns.Bound(c => c.HolidayHours).Width(150);
+          columns.Bound(c => c.RestdayHours).Width(150);
+          columns.Bound(c => c.IsSendForApproval).Width(150);
+
+          columns.Command( command => {
+              command.Custom("").Text("Send For Approval").Click("sendforapproval");
+              command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);  command.Destroy().Text(Resources.ActionButton_Cancel);
+          }).Width(300);
+      })
+      .ToolBar(toolbar => {
+          toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+          // toolbar.Save();
+      })
+         .Editable(editable => editable.Mode(GridEditMode.InLine))
+            .Scrollable(h => h.Height(500))
+                                                 .Groupable()
+                                                 //.Sortable(sortable =>
+                                                 //{
+                                                 //    sortable.SortMode(GridSortMode.SingleColumn);
+                                                 //})
+                                                 // .Filterable()
+                                                 .Pageable(pageable => pageable
+                                                                            .Input(true)
+                                                                            .Numeric(false)
+                                                                            .Refresh(true)
+                                                                            .PageSizes(true)
+                                                                            .ButtonCount(5))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+                .Events(events =>
+                {
+                    events.Error("error_handler(\"OverTimeTransfergrid\")");
+                    events.RequestStart("onRequestStart(\"OverTimeTransfergrid\")");
+                    events.RequestEnd("onRequestEnd(\"OverTimeTransfergrid\")");
+                })
+          // .Batch(true)
+
+          .Model(model => model.Id(p => p.OverTimeTransferId))
+              .Read(read => read.Action("OverTimeTransfers_Read", "OverTimeTransferMaintain"))
+                      .Create(create => create.Action("OverTimeTransfers_Create", "OverTimeTransferMaintain"))
+                      .Update(update => update.Action("OverTimeTransfers_Update", "OverTimeTransferMaintain"))
+              .Destroy(destroy => destroy.Action("OverTimeTransfers_Destroy", "OverTimeTransferMaintain"))
+          )//.ClientDetailTemplateId("template")
+      )
+
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                                          .Name("tabstrip_#=OverTimeTransferId#")
+          .SelectedIndex(0)
+          .Items(items =>
+          {
+              items.Add().Text(Resources.Details).Content(
+                @<text>
+
+
+                  @(Html.Kendo().Grid<OverTime>()
+                  .Name("OverTimegrid_#=OverTimeTransferId#")
+      .Columns(columns =>
+      {
+         // columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "PersonId", "FullNameWithOutCode").EditorTemplateName("ListOfEmployee").Width(200);
+          //columns.ForeignKey(c => c.PeriodId, (IEnumerable)ViewData["PeriodList"], "PeriodId", "PeriodName").EditorTemplateName("Period").Width(120);
+          columns.Bound(c => c.NormalHours).Width(100);
+          columns.Bound(c => c.NightHours).Width(100);
+          columns.Bound(c => c.HolidayHours).Width(100);
+          columns.Bound(c => c.RestdayHours).Width(100);
+          //columns.Bound(c => c.Remark);
+          columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+        .Scrollable(h => h.Height(500))
+            
+      .DataSource(dataSource => dataSource
+          .Ajax()
+                  .Events(events =>
+        {
+            events.Error("error_handler(\"OverTimegrid_#=OverTimeTransferId#\")");
+            events.RequestEnd("onRequestEnd(\"OverTimegrid_#=OverTimeTransferId#\")");
+        }) 
+              
+          .Model(model => model.Id(p => p.OverTimeId))
+              .Read(read => read.Action("OverTimes_Read", "OverTimeTrasferDetail", new { id = "#=EmployeeId#", period = "#=GLPeriodId#", tId = "#=OverTimeTransferId#" }))
+                                  .Create(create => create.Action("OverTimes_Create", "OverTimeTrasferDetail", new { idTwo = "#=EmployeeId#", periodTwo = "#=GLPeriodId#", tIdTwo = "#=OverTimeTransferId#" }))
+                  .Update(update => update.Action("OverTimes_Update", "OverTimeTrasferDetail"))
+                  .Destroy(destroy => destroy.Action("OverTimes_Destroy", "OverTimeTrasferDetail"))
+      ).ToClientTemplate()
+                )
+
+
+
+                </text>
+                  );
+           
+
+
+          }).ToClientTemplate())
+</script>
+
+<script>
+    function error_handler(e) {
+        if (e.errors) {
+            var message = "Errors:\n";
+            $.each(e.errors, function(key, value) {
+                if ('errors' in value) {
+                    $.each(value.errors, function() {
+                        message += this + "\n";
+                    });
+                }
+            });
+            alert(message);
+
+        }
+
+    }
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+    function checkAll(ele) {
+        var state = $(ele).is(':checked');
+        var grid = $('#OverTimeTransfergrid').data().kendoGrid;
+        $.each(grid.dataSource.view(), function () {
+            if (this['Check'] != state)
+                this.dirty = true;
+            this['Check'] = state;
+        });
+        grid.refresh();
+    }
+</script>
+
+<style>
+    .Employee-photo {
+        display: inline-block;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background-size: 32px 35px;
+        background-position: center center;
+        vertical-align: middle;
+        line-height: 32px;
+        box-shadow: inset 0 0 1px #999, inset 0 0 10px rgba(0, 0, 0, .2);
+        margin-left: 5px;
+    }
+
+    .Employee-name {
+        display: inline-block;
+        vertical-align: middle;
+        line-height: 32px;
+        padding-left: 3px;
+    }
+
+    .k-detail-cell .k-tabstrip .k-content {
+        padding: 0.2em;
+    }
+
+    .employee-details ul {
+        list-style: none;
+        font-style: italic;
+        margin: 15px;
+        padding: 0;
+    }
+
+        .employee-details ul li {
+            margin: 0;
+            line-height: 1.7em;
+        }
+
+    .employee-details label {
+        display: inline-block;
+        width: 90px;
+        padding-right: 10px;
+        text-align: right;
+        font-style: normal;
+        font-weight: bold;
+    }
+</style>
+
+<script>
+    function sendforapproval(e) {
+
+
+        var row = $(e.target).closest("tr");
+        var grid = $("#grid").data("kendoGrid");
+        var dataItem = grid.dataItem(row);
+        var id = dataItem.OverTimeTransferId;
+
+
+        if (id.length !== 0 )
+        {
+
+            $.ajax({
+                url: '@Url.Action("SendForApproval", "OverTimeTransferMaintain")',
+
+                data: { id: id},
+                type: 'POST',
+                cache: false,
+                success: function (result) {
+                    r = result;
+
+                }
+
+
+
+            });
+
+        }
+    }
+</script>

@@ -1,0 +1,1356 @@
+﻿@model ExceedERP.Core.Domain.CRM.CashSalesInvoice
+@using ExceedERP.Web.Areas.CRM.Models;
+
+
+
+
+<style>
+
+
+
+
+    .k-grid table tr.k-state-Issued {
+        background: #b7ff9e;
+        color: #040000;
+    }
+
+
+    .k-grid table tr.k-state-Rejected {
+        background: #fcabab;
+        color: #040000;
+    }
+</style>
+
+
+<legend>  Credit Invoice</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.CashSalesInvoice>()
+          .Name("CashSalesInvoice")
+          .Columns(columns =>
+              {
+                  columns.Bound(c => c.CashSalesInvoiceID).Title("#").Width(50);
+                  columns.ForeignKey(c => c.OrganizationCustomerId, (System.Collections.IEnumerable)ViewData["OrganizationCustomers"], "OrganizationCustomerID", "TradeName").Title("Customer").EditorTemplateName("CreditOrgCustomerEditor").Width(100);
+                  columns.Bound(c => c.Date).Width(80);
+                  columns.Bound(c => c.PaymentMethod).Title("Payment Method").EditorTemplateName("PaymentMethodType").Width(120).Hidden();
+                  columns.ForeignKey(c => c.RecieveMethod, (System.Collections.IEnumerable)ViewData["PaymentMethod"], "PaymentMethodID", "Method").Title("Recieve Method").EditorTemplateName("RecieveMethodType").Width(120);
+                  columns.Bound(c => c.References).Width(80);
+                  columns.Bound(c => c.GrandTotal).Format("{0:N0}").Width(100);
+                  columns.Bound(c => c.Status).Width(100);
+                  columns.Command(command =>
+                       {
+                           command.Edit();
+                           command.Custom("Reject").Click("RejectPopUp").HtmlAttributes("class='btn-danger'");
+                           command.Destroy().Text("Accept Payment");
+
+                       }).Width(250);
+
+              })
+          .ToolBar(toolbar =>
+              {
+                  toolbar.Template(@<text>
+                    <div class="toolbar">
+
+                        @(Html.Kendo().ComboBoxFor(m => m)
+                                                     .Name("SalesOrderVoucherReference")
+                                              .Placeholder("Please Select,Sales Order Voucher..")
+                                                     .BindTo((System.Collections.IEnumerable)ViewData["SalesOrderVoucherList"])
+                                                     .DataTextField("SalesOrderVoucherID")
+                                                     .DataValueField("SalesOrderVoucherID")
+                                                     .ValuePrimitive(true)
+
+
+                        )
+
+                        @(Html.Kendo().Button()
+                                                     .Name("btnRefer")
+                                                     .HtmlAttributes(new { type = "button", @class = "k-primary" })
+                                                     .Events(e => e.Click("DisplayReferenceInformation"))
+                                                     .Content("Refer"))
+                        <br />
+                        <br />
+                        <a class="k-button k-button-icontext k-grid-add k-primary" href='#'>Add New</a>
+
+                    </div>
+                </text>);
+                    })
+                                                     .Events(ev =>
+                                                           {
+                                                               ev.DetailExpand("onDetailExpand");
+                                                               ev.DataBound("onDataBound");
+
+                                                           })
+                                   .Editable(editable =>
+                                                    {
+                                                        editable.Mode(GridEditMode.InLine);
+                                                        editable.DisplayDeleteConfirmation("Are You Sure To Approve Invoice");
+                                                    })
+                                    .HtmlAttributes(new { style = "height: 520px;" })
+                                                        .Pageable(pageable => pageable
+                                                                          .Input(true)
+                                                                          .Numeric(false)
+                                                                          .Refresh(true)
+                                                                          .PageSizes(true)
+                                                                          .ButtonCount(5))
+
+                                                              .Scrollable()
+                                                              .Sortable()
+                                                              .Filterable()
+                                                              .Scrollable(h => h.Height(500))
+           .Events(ev => ev.DetailExpand("onDetailExpandUser"))
+                .DataSource(dataSource => dataSource
+                                            .Ajax().Events(ev => ev
+                                                                                                                          .Error("error_handler(\"CashSalesInvoice\")")
+                                                                                                                          .RequestStart("onRequestStart(\"CashSalesInvoice\")")
+                                                                                                                          .RequestEnd("onRequestEnd(\"CashSalesInvoice\")"))
+            .Sort(x => x.Add(s => s.CashSalesInvoiceID).Descending())
+                    .Model(model =>
+                        {
+                            model.Id(p => p.CashSalesInvoiceID);
+                            model.Field(p => p.GrandTotal).Editable(false);
+
+                            model.Field(p => p.CashSalesInvoiceID).Editable(false);
+                            model.Field(p => p.References).Editable(false);
+                            model.Field(v => v.Status).Editable(false);
+                            model.Field(v => v.Remark).Editable(false);
+                        })
+
+                                                                                            .Read(read => read.Action("CreditsSalesInvoices_Read", "CreditsSalesInvoice"))
+                                                                                            .Create(create => create.Action("CreditsSalesInvoices_Create", "CreditsSalesInvoice"))
+                                                                                            .Update(update => update.Action("CreditsSalesInvoices_Update", "CreditsSalesInvoice"))
+                                                                                            .Destroy(destroy => destroy.Action("CreditsSalesInvoices_Destroy", "CreditsSalesInvoice"))
+                ).ClientDetailTemplateId("template")
+)
+
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                            .Name("tabstrip_#=CashSalesInvoiceID#")
+            .SelectedIndex(0)
+            .Items(items =>
+                        {
+                /***********************************************Detail*******************************************/
+
+                            items.Add().Text("Detail").Content(
+                                @<text>
+                                    <legend>Detail</legend>
+
+                                    <div class="box">
+
+                                        <div class="box-col">
+                                            # if (IsSendForApproval == false || IsSendForApproval == "false")
+                                            {#
+
+                                            <a href='@Url.Action("SendForOnlineApproval", "CreditsSalesInvoice")/?Id=#=CashSalesInvoiceID#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                                            # }
+                                         if ((IsSendForApproval == true || Status != "UnForwarded") && IsOnlineApproved == false)
+                                            {#
+
+                                            <a href='@Url.Action("UndoForOnlineApproval", "CreditsSalesInvoice")/?Id=#=CashSalesInvoiceID#' title="Undo Send for Approval"><i class="fa fa-reply fa-2x"></i></a>
+                                            # }#
+                                            <a href='@Url.Action("InvoicePrint", "Print")/#=CashSalesInvoiceID#' title="Print"><i class="fa fa-print fa-2x"></i></a>
+
+                                        </div>
+                                    </div>
+                                    <div class="demo-section k-header export-app">
+                                        <div class="demo-section content-wrapper">
+
+                                            <form>
+
+
+
+                                                <div class="row">
+                                                    <div class="col-md-1">
+                                                    </div>
+                                                    <div class="col-md-2">
+                                                        <div class="form-group">
+                                                            <div class="label">
+                                                                @Html.LabelFor(model => model.CreatedBy)
+                                                            </div>
+                                                            <div>
+                                                                #=CreatedBy#
+
+                                                            </div>
+                                                        </div>
+                                                    </div>
+                                                    <div class="col-md-2">
+                                                        <div class="form-group">
+                                                            <div class="label">
+                                                                @Html.LabelFor(model => model.DateCreated)
+                                                            </div>
+                                                            <div>
+                                                                #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-md-2">
+                                                        <div class="form-group">
+                                                            <div class="label">
+                                                                @Html.LabelFor(model => model.ModifiedBy)
+                                                            </div>
+                                                            <div>
+
+                                                                #=ModifiedBy#
+
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                    <div class="col-md-2">
+                                                        <div class="form-group">
+                                                            <div class="label">
+                                                                @Html.LabelFor(model => model.LastModified)
+                                                            </div>
+                                                            <div>
+                                                                #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+
+                                                            </div>
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                                <div class="row">
+                                                    <div class="col-md-1">
+                                                    </div>
+                                                    
+                                                 
+                                                </div>
+                                            </form>
+
+                                        </div>
+                                    </div>
+
+
+
+                                </text>
+
+
+                            );
+                        /***********************************************LineItems**************************************************/
+                                    items.Add().Text("Line Items").Content(
+                                        @<text>
+
+                                            <legend>Line Items</legend>
+                                            @(Html.Kendo().Grid<ExceedERP.Web.Areas.CRM.Models.LineItemViewModel>()
+                                                          .Name("LineItems_#=CashSalesInvoiceID#")
+                                .Columns(columns =>
+                                {
+                                            columns.ForeignKey(c => c.StoreID, (System.Collections.IEnumerable)ViewData["SalesStore"], "SalesStoreId", "Description").Title("Store").Width(150);
+                                            columns.ForeignKey(c => c.ThingID, (System.Collections.IEnumerable)ViewData["Thing"], "ProductID", "Name").Title("Product").Title("Product").Width(100);
+                                //   columns.Bound(c => c.Variety).Width(80);
+                                // columns.Bound(c => c.Class).Width(50);
+
+                                columns.Bound(c => c.UnitAmount).Title("Price").Format("{0:N0}").Width(70);
+                                            columns.Bound(c => c.Quantity).Title("QTY").Format("{0:N0}").Width(70);
+                                            columns.Bound(c => c.CalculatedCost).Title("Sub Total").Format("{0:N0}").Width(80);
+                                            columns.Bound(c => c.TaxAmount).Format("{0:N0}").Width(70);
+                                            columns.Bound(c => c.TotalAmount).Title("Total").Format("{0:N0}").Width(70);
+                                            columns.ForeignKey(c => c.Tax, (System.Collections.IEnumerable)ViewData["Tax"], "GLTaxRateID", "TaxName").Title("Tax Type").Width(80);
+                                //  columns.Bound(c => c.WithHoldingTax).Width(100);
+                                //   columns.Bound(c => c.TaxWithHolding ).ClientTemplate("<input type='checkbox'  disabled='true' \\#= TaxWithHolding? checked='checked': checked='' \\# class='checkbox'  />").Width(80);
+                                columns.Bound(c => c.Vat).Format("{0:N0}").Width(60);
+                                            columns.Bound(c => c.Status).Width(80);
+
+                                            columns.Command(command =>
+                                            {
+                                                command.Edit();
+
+                                                command.Destroy();
+                                            }).Width(180);
+                                        })
+                                .ToolBar(t => t.Create())
+                                  .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("LineitemEditorTemplate").Window(w =>
+                               {
+                                           w.Title("Line Item");
+                                           w.Scrollable(false);
+                                       }))
+                                           .Scrollable(h => h.Height(500)).Events(e => e.Edit("AddCostItemInit"))
+                              .ClientDetailTemplateId("lineItemTemplate")
+                              .DataSource(dataSource => dataSource
+                                  .Ajax()
+                                           .Model(model =>
+                                           {
+                                                       model.Id(p => p.LineItemID);
+                                                       model.Field(v => v.TotalAmount).Editable(false);
+                                                       model.Field(v => v.TaxAmount).Editable(false);
+                                                       model.Field(v => v.CalculatedCost).Editable(false);
+                                                       model.Field(v => v.Status).Editable(false);
+                                                   }
+                                                  ).Events(ev => ev
+                                                                                                                                                        .Error("error_handler(\"LineItems_#=CashSalesInvoiceID#\")")
+                                                                                                                                                        .RequestStart("onRequestStart(\"LineItems_#=CashSalesInvoiceID#\")")
+                                                                                                                                                        .RequestEnd("onRequestEnd(\"LineItems_#=CashSalesInvoiceID#\")"))
+
+                                                                  .Read(read => read.Action("LineItems_Read", "LineItem", new { voucherID = "#=CashSalesInvoiceID#", voucherDefinitionID = "2" }))
+                                                                  .Create(create => create.Action("LineItems_Create", "LineItem", new { voucherID = "#=CashSalesInvoiceID#", voucherDefinitionIDCreate = "2" }))
+                                          .Update(update => update.Action("LineItems_Update", "LineItem", new { voucherID = "#=CashSalesInvoiceID#", voucherDefinitionID = "2" }))
+                                  .Destroy(destroy => destroy.Action("LineItems_Destroy", "LineItem"))
+                              ).ToClientTemplate()
+
+                                            )
+                                        </text>
+
+
+                                    );
+                                /***********************************************StoreTransactions*******************************************/
+                                            items.Add().Text("Store Transactions").Content(
+                                                @<text>
+                                                    <legend>Store Transactions</legend>
+                                                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.StoreTransaction>()
+                                                                                      .Name("StoreTransactions_#=CashSalesInvoiceID#")
+
+                                                   .Columns(columns =>
+                                              {
+
+                                                          columns.Bound(c => c.Source);
+                                                          columns.Bound(c => c.Destination);
+                                                          columns.Bound(c => c.TransactionType);
+                                                          columns.Bound(c => c.Amount);
+                                                          columns.Bound(c => c.Quantity);
+                                                          columns.Bound(c => c.beforeStock).Title("Before Stock");
+                                                          columns.Bound(c => c.afterStock).Title("After Stock");
+
+                                                      })
+                                                   .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                              .Scrollable()
+                                              .DataSource(dataSource => dataSource
+                                          .Ajax()
+                                          .Model(model => model.Id(p => p.StoreTransactionID))
+                                                  .Events(ev => ev
+                                                                                                                                                                                .Error("error_handler(\"StoreTransactions_#=CashSalesInvoiceID#\")")
+                                                                                                                                                                                .RequestStart("onRequestStart(\"StoreTransactions_#=CashSalesInvoiceID#\")")
+                                                                                                                                                                                .RequestEnd("onRequestEnd(\"StoreTransactions_#=CashSalesInvoiceID#\")"))
+
+
+                                                                          .Read(read => read.Action("StoreTransactions_Read", "StoreTransaction", new { voucherID = "#=CashSalesInvoiceID#" }))
+                                                                                  .Create(create => create.Action("StoreTransactions_Create", "StoreTransaction", new { voucherID = "#=CashSalesInvoiceID#", hasEffect = "true" }))
+                                          .Update(update => update.Action("StoreTransactions_Update", "StoreTransaction"))
+                                          .Destroy(destroy => destroy.Action("StoreTransactions_Destroy", "StoreTransaction"))
+                                      ).ToClientTemplate()
+
+                                                    )
+                                                </text>
+
+                                         );
+
+                                        /***********************************************************************************************************/
+                                        /***********************************************TransactionReference*******************************************/
+                                                    items.Add().Text("References").Content(
+                                                        @<text>
+                                                            <legend>References</legend>
+                                                            @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.TransactionReference>()
+
+                                                                   .Name("TransactionReference_#=CashSalesInvoiceID#")
+                                                   .Columns(columns =>
+                                                   {
+                                                               columns.ForeignKey(c => c.Referenced, (System.Collections.IEnumerable)ViewData["VoucherReferenceList"], "SalesQuoteVoucherID", "SalesQuoteVoucherID");
+                                                               columns.Bound(c => c.Value);
+                                                               columns.Bound(c => c.Remark);
+
+                                                           })
+
+                                                   .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                   .Scrollable()
+                                                   .DataSource(dataSource => dataSource
+                                                   .Ajax()
+                                                     .Model(model => model.Id(tr => tr.TransactionReferenceID))
+                                                                               .Events(ev => ev
+                                                                  .Error("error_handler(\"TransactionReference_#=CashSalesInvoiceID#\")")
+                                                                .RequestStart("onRequestStart(\"TransactionReference_#=CashSalesInvoiceID#\")")
+                                                                     .RequestEnd("onRequestEnd(\"TransactionReference_#=CashSalesInvoiceID#\")"))
+                                                                           .Read(read => read.Action("TransactionReferences_Read", "TransactionReference", new { voucherID = "#=CashSalesInvoiceID#" }))
+                                                                           .Create(create => create.Action("TransactionReferences_Create", "TransactionReference", new { voucherID = "#=CashSalesInvoiceID#" }))
+                                                   .Update(update => update.Action("TransactionReferences_Update", "TransactionReference"))
+                                                   .Destroy(destroy => destroy.Action("TransactionReferences_Destroy", "TransactionReference"))
+                                                   ).ToClientTemplate()
+
+                                                            )
+                                                        </text>
+
+                                                 );
+
+                                                /***********************************************************************************************************/
+                                                /***********************************************Cart Transactions*******************************************/
+                                                @*   items.Add().Text("Cart").Content(
+                                                                      @<text>
+                                                                          <legend>Cart</legend>
+                                                                          @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.CartTransaction>()
+                                                                                    .Name("CartTransactions_#=CashSalesInvoiceID#")
+                                                    .Columns(columns =>
+                                                    {
+                                                        columns.ForeignKey(c => c.Cart, (System.Collections.IEnumerable)ViewData["CartList"], "CartID", "Description");
+                                                        columns.Bound(c => c.Description);
+                                                        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+                                                    })
+                                                    .ToolBar(toolbar => { toolbar.Create(); })
+                                                    .Scrollable()
+                                                    .DataSource(dataSource => dataSource
+                                                        .Ajax()
+                                                                .Model(model => model.Id(ct => ct.CartTransactionID))
+                                                                            .Events(ev => ev
+                                                                                        .Error("error_handler(\"CartTransactions_#=CashSalesInvoiceID#\")")
+                                                                                      .RequestStart("onRequestStart(\"CartTransactions_#=CashSalesInvoiceID#\")")
+                                                                                           .RequestEnd("onRequestEnd(\"CartTransactions_#=CashSalesInvoiceID#\")"))
+                                                                                                          .Read(read => read.Action("CartTransactions_Read", "CartTransaction", new { voucherID = "#=CashSalesInvoiceID#" }))
+                                                                                                         .Create(create => create.Action("CartTransactions_Create", "CartTransaction", new { voucherID = "#=CashSalesInvoiceID#" }))
+                                                                                 .Update(update => update.Action("CartTransactions_Update", "CartTransaction"))
+                                                                                 .Destroy(destroy => destroy.Action("CartTransactions_Destroy", "CartTransaction"))
+                                                            ).ToClientTemplate()
+                                                                          )
+
+                                                                      </text>
+
+                                                       );*@
+                                                /***********************************************************************************************************/
+
+                                                /***********************************************Voucher Terms*******************************************/
+                                                            items.Add().Text("VoucherTerms").Content(
+                                                                @<text>
+                                                                    <legend>Voucher Terms</legend>
+                                                                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.VoucherTerm>()
+                                                                              .Name("VoucherTerms_#=CashSalesInvoiceID#")
+                                                              .Columns(columns =>
+                                                              {
+                                                                          columns.ForeignKey(c => c.Term, (System.Collections.IEnumerable)ViewData["TermList"], "TermID", "TermID");
+                                                                          columns.Bound(c => c.Value);
+                                                                          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+                                                                      })
+                                                              .ToolBar(toolbar =>
+                                                              {
+                                                                          toolbar.Create();
+                                                                      })
+                                                              .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                              .Scrollable()
+                                                              .DataSource(dataSource => dataSource
+                                                                  .Ajax()
+                                                                  .Model(model => model.Id(p => p.VoucherTermID))
+                                                                                 .Events(ev => ev
+                                                                                                          .Error("error_handler(\"VoucherTerms_#=CashSalesInvoiceID#\")")
+                                                                                                        .RequestStart("onRequestStart(\"VoucherTerms_#=CashSalesInvoiceID#\")")
+                                                                                                             .RequestEnd("onRequestEnd(\"VoucherTerms_#=CashSalesInvoiceID#\")"))
+                                                                                                  .Read(read => read.Action("VoucherTerms_Read", "VoucherTerm", new { voucherID = "#=CashSalesInvoiceID#" }))
+                                                                                                  .Create(create => create.Action("VoucherTerms_Create", "VoucherTerm", new { voucherID = "#=CashSalesInvoiceID#" }))
+                                                                  .Update(update => update.Action("VoucherTerms_Update", "VoucherTerm"))
+                                                                  .Destroy(destroy => destroy.Action("VoucherTerms_Destroy", "VoucherTerm"))
+                                                              ).ToClientTemplate()
+                                                                    )
+
+                                                                </text>
+
+                                                         );
+                                                        @*/*************************************************************************************************************/
+                                                                          /***********************************************Non Cash Transactions*******************************************/
+                                                                          items.Add().Text("Non Cash Transactions").Content(
+                                                                              @<text>
+                                                                                  <legend>Non Cash Transactions</legend>
+                                                                                  @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.NonCashTransaction>()
+                                                                                                    .Name("NonCashTransactions_#=CashSalesInvoiceID#")
+
+                                                                      .Columns(columns =>
+                                                            {
+                                                                columns.Bound(c => c.Consignee).Width(120);
+                                                                columns.Bound(c => c.ReceiveMethod).Width(130);
+                                                                columns.Bound(c => c.ReceiveProcessor).Width(180);
+                                                                columns.Bound(c => c.Index).Width(100);
+                                                                columns.Bound(c => c.IssueDate).Format("{0:yyyy-MM-dd}").Width(120);
+                                                                columns.Bound(c => c.MaturityDate).Format("{0:yyyy-MM-dd}").Width(120);
+                                                                columns.Bound(c => c.Number).Width(180);
+                                                                columns.Bound(c => c.Amount);
+                                                                columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+                                                            })
+                                                            .ToolBar(toolbar =>
+                                                            {
+                                                                toolbar.Create();
+                                                            })
+                                                                    .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("NonCashTransaction").Window(w =>
+                                                                    {
+                                                                        w.Title("Maintain Non Cash Transaction");
+                                                                        w.Scrollable(false);
+                                                                    }
+                                                                        ))
+                                                            .Scrollable()
+                                                            .DataSource(dataSource => dataSource
+                                                                                        .Ajax().Events(e => e.Change("BindNonTransaction").Error("error_handler(\"NonCashTransactions_#=CashSalesInvoiceID#\")")
+                                                                                                                                      .RequestStart("onRequestStart(\"NonCashTransactions_#=CashSalesInvoiceID#\")")
+                                                                                                                                           .RequestEnd("onRequestEnd(\"NonCashTransactions_#=CashSalesInvoiceID#\")"))
+                                                                        .Model(model => model.Id(p => p.NonCashTransactionID))
+                                                                                                .Read(read => read.Action("NonCashTransactions_Read", "NonCashTransaction", new { voucherID = "#=CashSalesInvoiceID#" }))
+                                                                                                .Create(create => create.Action("NonCashTransactions_Create", "NonCashTransaction", new { voucherID = "#=CashSalesInvoiceID#" }))
+                                                                        .Update(update => update.Action("NonCashTransactions_Update", "NonCashTransaction"))
+                                                                .Destroy(destroy => destroy.Action("NonCashTransactions_Destroy", "NonCashTransaction"))
+                                                            ).ToClientTemplate()
+
+                                                                                  )
+                                                                              </text>
+
+                                                               );*@
+                                                                    items.Add().Text("Issue History").Content(
+                                                                        @<text>
+                                                                            @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.IssueHistory>()
+                                                                                          .Name("LineItemHistory_#=CashSalesInvoiceID#")
+                                                                .Columns(columns =>
+                                                                {
+
+                                                                            columns.Bound(c => c.Remark).Width(100);
+                                                                            columns.Bound(c => c.Amount).Format("{0:N0}").Width(80);
+                                                                            columns.Bound(c => c.DateCreated).Format("{0:yyyy-MM-dd}").Width(80);
+
+                                                                        })
+
+
+                                                              .Scrollable(s => s.Height(500))
+
+
+                                                              .DataSource(dataSource => dataSource
+                                                                  .Ajax()
+                                                                           .Model(model =>
+                                                                           {
+                                                                                       model.Id(p => p.IssueHistoryId);
+
+                                                                                   }
+                                                                          ).Read(read => read.Action("IssueHistory_Read", "SalesInventory", new { InvoiceId = "#=CashSalesInvoiceID#" }))
+
+                                                              ).ToClientTemplate()
+
+                                                                            )
+                                                                        </text>
+
+
+
+
+                                                                    );
+                                                                            items.Add().Text("Distribution").Content(
+                                                                                @<text>
+                                                                                    <legend>Distribution</legend>
+                                                                                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.SalesInvoicePaymentDistibution>()
+                                                                                                              .Name("Distribution_#=CashSalesInvoiceID#")
+
+                                                                                .Columns(columns =>
+                                                                      {
+                                                                                  columns.Bound(c => c.AccountCode).Width(120);
+                                                                                  columns.Bound(c => c.AccountDesc).Width(130);
+                                                                                  columns.Bound(c => c.Credit).Width(180);
+                                                                                  columns.Bound(c => c.Debit).Width(100);
+
+                                                                                  columns.Command(command => { }).Width(180);
+                                                                              })
+
+                                                                      .Scrollable()
+                                                                      .DataSource(dataSource => dataSource
+                                                                                                          .Ajax().Events(e => e.Error("error_handler(\"Distribution_#=CashSalesInvoiceID#\")")
+                                                                                                                                                        .RequestStart("onRequestStart(\"Distribution_#=CashSalesInvoiceID#\")")
+                                                                                                                                                             .RequestEnd("onRequestEnd(\"Distribution_#=CashSalesInvoiceID#\")"))
+                                                                                  .Model(model => model.Id(p => p.SalesInvoicePaymentDistibutionId))
+                                                                                                                          .Read(read => read.Action("CashSalesInvoiceDistrubtions_Read", "CashSalesInvoice", new { Id = "#=CashSalesInvoiceID#" }))
+
+                                                                      ).ToClientTemplate()
+
+                                                                                    )
+                                                                                </text>
+
+                                                                         );
+                                                                        /*************************************************************************************************************/
+
+                                                                        /***********************************************VoucherExtensions*******************************************/
+                                                                        @* items.Add().Text("VoucherExtensions").Content(
+                                                                                            @<text>
+                                                                                                <legend>Voucher Extensions</legend>
+                                                                                                @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.VoucherExtensionTransaction>()
+                                                                                                                                  .Name("VoucherExtensions_#=CashSalesInvoiceID#")
+                                                                            .Columns(columns =>
+                                                                                  {
+                                                                                      columns.ForeignKey(c => c.VoucherExtension, (System.Collections.IEnumerable)ViewData["VoucherExtensionList"], "VoucherExtensionID", "Description");
+                                                                                      columns.Bound(c => c.Number);
+                                                                                      columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+                                                                                  })
+                                                                                  .ToolBar(toolbar =>
+                                                                                  {
+                                                                                      toolbar.Create();
+                                                                                  })
+                                                                                  .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                                  .Scrollable()
+                                                                                  .DataSource(dataSource => dataSource
+                                                                                      .Ajax()
+                                                                                      .Model(model => model.Id(p => p.VoucherExtensionTransactionID))
+                                                                                                 .Events(ev => ev
+                                                                                                                                              .Error("error_handler(\"VoucherExtensions_#=CashSalesInvoiceID#\")")
+                                                                                                                                            .RequestStart("onRequestStart(\"VoucherExtensions_#=CashSalesInvoiceID#\")")
+                                                                                                                                                 .RequestEnd("onRequestEnd(\"VoucherExtensions_#=CashSalesInvoiceID#\")"))
+                                                                                                                      .Read(read => read.Action("VoucherExtensionTransactions_Read", "VoucherExtensionTransaction", new { voucherID = "#=CashSalesInvoiceID#" }))
+                                                                                                                      .Create(create => create.Action("VoucherExtensionTransactions_Create", "VoucherExtensionTransaction", new { voucherID = "#=CashSalesInvoiceID#" }))
+                                                                                              .Update(update => update.Action("VoucherExtensionTransactions_Update", "VoucherExtensionTransaction"))
+                                                                                              .Destroy(destroy => destroy.Action("VoucherExtensionTransactions_Destroy", "VoucherExtensionTransaction"))
+                                                                                  ).ToClientTemplate()
+
+                                                                                                )
+                                                                                            </text>
+
+                                                                             );*@
+                                                                        /***********************************************************************************************************/
+                                                                        /***********************************************VoucherValues**************************************************/
+
+                                                                        @*    items.Add().Text("VoucherValues").Content(
+                                                                                        @<text>
+
+                                                                                            @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.VoucherValue>()
+                                                                                     .Name("VoucherValues_#=CashSalesInvoiceID#")
+                                                                              .Columns(columns =>
+                                                                              {
+                                                                                  columns.Bound(c => c.Voucher);
+                                                                                  columns.Bound(c => c.Discount);
+                                                                                  columns.Bound(c => c.SubTotal);
+                                                                                  columns.Bound(c => c.AdditionalCharge);
+                                                                              })
+                                                                              .Scrollable()
+                                                                              .DataSource(dataSource => dataSource
+                                                                                          .Ajax().Events(ev => ev
+                                                                                                                                                          .Error("error_handler(\"VoucherValues_#=CashSalesInvoiceID#\")")
+                                                                                                                                                        .RequestStart("onRequestStart(\"VoucherValues_#=CashSalesInvoiceID#\")")
+                                                                                                                                                             .RequestEnd("onRequestEnd(\"VoucherValues_#=CashSalesInvoiceID#\")"))
+
+                                                                                                                  .Read(read => read.Action("VoucherValues_Read", "VoucherValue", new { voucherID = "#=CashSalesInvoiceID#" }))
+                                                                              ).ToClientTemplate()
+
+                                                                                            )
+                                                                                        </text>
+
+
+                                                                            );
+
+                                                                        *@ /***********************************************************************************************************/
+                                                                                }).ToClientTemplate()
+
+    )
+
+</script>
+<script id="lineItemTemplate" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                    .Name("tabstripLineItem_#=LineItemID#")
+            .SelectedIndex(0)
+            .Items(items =>
+                        {
+
+                /*****************************************************SerialCodes*******************************************/
+                            items.Add().Text("SerialCodes").Content(
+                                @<text>
+                                    <legend>Serial Codes</legend>
+                                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.SerialCode>()
+
+                            .Name("SerialCode_#=LineItemID#")
+                              .Columns(columns =>
+                              {
+                                          columns.Bound(c => c.SerialDefinition).EditorTemplateName("SerialDefinitionList");
+                                          columns.Bound(c => c.Number);
+                                          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+                                      })
+                                       .Events(e => e.Edit("GetThingId"))
+                              .ToolBar(toolbar =>
+                              {
+                                          toolbar.Create();
+                                      })
+                              .Editable(editable => editable.Mode(GridEditMode.InLine))
+                              .Scrollable()
+                              .DataSource(dataSource => dataSource
+                                  .Ajax()
+                                  .Model(model => model.Id(p => p.SerialCodeID))
+                                          .Events(ev => ev
+                                                                                                                          .Error("error_handler(\"SerialCode_#=LineItemID#\")")
+                                                                                                                        .RequestStart("onRequestStart(\"SerialCode_#=LineItemID#\")")
+                                                                                                                             .RequestEnd("onRequestEnd(\"SerialCode_#=LineItemID#\")"))
+
+                                          .Read(read => read.Action("SerialCodes_Read", "SerialCode", new { lineitemID = "#=LineItemID#" }))
+                                          .Create(create => create.Action("SerialCodes_Create", "SerialCode", new { lineitemID = "#=LineItemID#" }))
+                                  .Update(update => update.Action("SerialCodes_Update", "SerialCode"))
+                                  .Destroy(destroy => destroy.Action("SerialCodes_Destroy", "SerialCode"))
+                              ).ToClientTemplate()
+
+                                    )
+                                </text>
+                    );
+                        /***********************************************************************************************************/
+                        /***********************************************LifeSpan*******************************************/
+                                    items.Add().Text("LifeSpan").Content(
+                                        @<text>
+                                            <legend>Life Span</legend>
+                                            @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.LifeSpan>()
+
+                                                       .Name("LifeSpan_#=LineItemID#")
+                                               .Columns(columns =>
+                                                {
+                                                            columns.Bound(c => c.ProductionDate).Format("{0:yyyy-MM-dd}");
+                                                            columns.Bound(c => c.ExpiryDate).Format("{0:yyyy-MM-dd}");
+                                                            columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+                                                        })
+                                                .ToolBar(toolbar =>
+                                                {
+                                                            toolbar.Create();
+                                                        })
+                                                .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                .Scrollable()
+                                                .DataSource(dataSource => dataSource
+                                                    .Ajax()
+                                                    .Model(model => model.Id(p => p.LifeSpanID))
+                                                              .Events(ev => ev
+                                                                                                                                                  .Error("error_handler(\"LifeSpan_#=LineItemID#\")")
+                                                                                                                                                .RequestStart("onRequestStart(\"LifeSpan_#=LineItemID#\")")
+                                                                                                                                                     .RequestEnd("onRequestEnd(\"LifeSpan_#=LineItemID#\")"))
+
+                                                                            .Read(read => read.Action("LifeSpans_Read", "LifeSpan", new { lineitemID = "#=LineItemID#" }))
+                                                                            .Create(create => create.Action("LifeSpans_Create", "LifeSpan", new { lineitemID = "#=LineItemID#" }))
+                                                    .Update(update => update.Action("LifeSpans_Update", "LifeSpan"))
+                                                    .Destroy(destroy => destroy.Action("LifeSpans_Destroy", "LifeSpan"))
+
+                                                   ).ToClientTemplate()
+
+                                            )
+                                        </text>
+
+                                                   );
+                                /***********************************************************************************************************/
+                                /***********************************************Communication Source*******************************************/
+                                            items.Add().Text("CommunicationSource").Content(
+                                                @<text>
+                                                    <legend>Communication Source</legend>
+                                                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.CommunicationSource>()
+                                      .Name("CommunicationSource#=LineItemID#")
+                                      .Columns(columns =>
+                                      {
+                                                  columns.Bound(c => c.Reference);
+                                                  columns.Bound(c => c.CommunicationType);
+                                                  columns.Bound(c => c.CommunicationCode);
+                                                  columns.Bound(c => c.Remark);
+                                                  columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+                                              })
+                                      .ToolBar(toolbar =>
+                                      {
+                                                  toolbar.Create();
+                                              })
+                                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                      .Scrollable()
+                                      .DataSource(dataSource => dataSource
+                                          .Ajax()
+                                          .Model(model => model.Id(p => p.CommunicationSourceID))
+                                          .Read(read => read.Action("CommunicationSources_Read", "CommunicationSource"))
+                                          .Create(create => create.Action("CommunicationSources_Create", "CommunicationSource"))
+                                          .Update(update => update.Action("CommunicationSources_Update", "CommunicationSource"))
+                                          .Destroy(destroy => destroy.Action("CommunicationSources_Destroy", "CommunicationSource"))
+                                      ).ToClientTemplate()
+                                                    )
+
+                                                </text>
+
+                                                           );
+                                                }).ToClientTemplate()
+
+    )
+</script>
+@(Html.Kendo().Window().Name("Details")
+        .Title("Invoice Reject ")
+        .Visible(false)
+        .Modal(true)
+        .Draggable(true)
+        .Width(400)
+)
+
+<script type="text/x-kendo-template" id="Rejectemplate">
+    <div id="details-container">
+        <form action="@Url.Action("Vouchers_Reject", "CashSalesInvoice") " method="post">
+
+            <input type="hidden" name="Id" value="#= CashSalesInvoiceID #">
+            <textarea rows="5" cols="10" class="form-control" name="Name" />
+            <input type="submit" class=" btn-danger k-button" value="Reject" />
+        </form>
+
+    </div>
+</script>
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 1000px;
+    }
+
+    .export-app {
+        display: table;
+        width: 100%;
+        height: 750px;
+        padding: 0;
+    }
+
+    .menu-wrapper,
+    .content-wrapper {
+        display: table-cell;
+        vertical-align: top;
+    }
+</style>
+<script>
+
+    var detailsTemplate = kendo.template($("#Rejectemplate").html());
+    function RejectPopUp(e) {
+        e.preventDefault();
+
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        var wnd = $("#Details").data("kendoWindow");
+
+        wnd.content(detailsTemplate(dataItem));
+        wnd.center().open();
+    }
+
+    function filterPayment() {
+        return {
+            customerId: $("#Consignee").val()
+        };
+    }
+    function filterThing() {
+        return {
+            StoreID: $("#StoreID").val()
+        };
+    }
+
+
+    function filterVariety() {
+        return {
+            ThingID: $("#ThingID").val()
+        };
+    }
+    function filterclass() {
+        return {
+            ProductName: $("#ThingID").val()
+        };
+    }
+
+    function GetStockBalance() {
+
+        var storeobj = $("#StoreID").data("kendoDropDownList");
+        var stID = storeobj.value();
+        var thingobj = $("#ThingID").data("kendoDropDownList");
+        var tID = thingobj.value();
+
+        $.ajax({
+            url: '@Url.Action("GetStockBalance", "CRMDataProvider")',
+            data: { storeID: stID, productID: tID },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                r = result;
+                $("#UnitAmount").val('0.0');
+                $("#TaxAmount").val('0.0');
+                $("#TotalAmount").val('0.0');
+                if (r != 0) {
+                    var s = r.split(/_/);
+                    $("#StockBalance").val(s[0]);
+                    $("#CalculatedCost").val(s[1]);
+                    $("#StockBalanceReserved").val(s[2]);
+                } else {
+                    $("#StockBalance").val('0.0');
+                    $("#CalculatedCost").val('0.0');
+                    $("#StockBalanceReserved").val('0.0');
+                }
+            }
+
+        });
+    }
+    function GetPriceParameter() {
+        var id = masterDataItem.ThingID;
+        return {
+            productID: id
+        };
+    }
+
+
+    function UpdatePriceChange() {
+
+        var priceTagDetail = $("#PriceTagDetail").data("kendoDropDownList");
+        var priceTag = $("#PriceTag").data("kendoDropDownList");
+        var product = $("#ThingID").data("kendoDropDownList");
+        //var priceCode = priceObject.value();
+
+        $.ajax({
+            url: '@Url.Action("GetPriceValue", "CRMDataProvider")',
+
+            data: { priceTagID: priceTag.value(), priceTagDetailID: priceTagDetail.value(), productID: product.value() },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                if (result == "") {
+                    result = 0;
+                }
+                else {
+                    $("#UnitAmount").val(parseFloat(result));
+                }
+
+            }, error: function () {
+                $("#UnitAmount").val("0");
+            }
+
+        });
+
+    }
+
+    function GetPriceTagDetailParameter() {
+        var pt = $("#PriceTag").data("kendoDropDownList");
+        return {
+            priceTag: pt.value()
+        };
+    }
+
+
+    function GetTaxValue() {
+
+        var taxObject = $("#Tax").data("kendoDropDownList");
+        var taxID = taxObject.value();
+        var unitAmountValue = $("#UnitAmount").val();
+        var quantityValue = $("#Quantity").val();
+        var InsuranceCost = $("#InsuranceCost").val();
+        var FreightCost = $("#FreightCost").val();
+        var OtherCost = $("#OtherCost").val();
+        var GrowthValue = parseInt(quantityValue);// + parseInt(InsuranceCost) + parseInt(FreightCost) + parseInt(OtherCost);
+
+
+        $.ajax({
+            url: '@Url.Action("GetTaxValue", "CRMDataProvider")',
+            data: { taxID: taxID },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                r = result;
+                var calculatedTax = (r / 100) * parseInt(quantityValue) * unitAmountValue;
+                var calculatedTotalAmount = (quantityValue * unitAmountValue) + calculatedTax ;
+                calculatedTax = parseFloat(Math.round(calculatedTax)).toFixed(2);
+                calculatedTotalAmount = parseFloat(Math.round(calculatedTotalAmount)).toFixed(2);
+                $("#TaxAmount").val(calculatedTax);
+                $("#TotalAmount").val(calculatedTotalAmount);
+            }
+
+        });
+    }
+
+
+
+</script>
+<script>
+    var id;
+    var masterId;
+    var gridName;
+    var thingId;
+
+
+    function BindNonTransaction() {
+
+
+
+        $.ajax({
+            url: '@Url.Action("GetInvoiceDetail", "CRMDataProvider")',
+            data: { InvoiceID: masterId },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                r = result;
+                console.error(r);
+                if (r != 0) {
+                    var s = r.split(/_/);
+                    $("#Consignee").val(s[0]);
+                    $("#ReceiveMethod").val(s[1]);
+
+                } else {
+                    $("#Consignee").val('Not Defined');
+                    $("#ReceiveMethod").val('Not Defined');
+
+                }
+            }
+
+        });
+    }
+
+    function onDataBound(e) {
+        var grid = this;
+        var LineitemGrid = $("#LineItems").data("kendoGrid");
+
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+
+         if (  dataItem.LastObjectState == "Forwarded" || dataItem.LastObjectState == "PaymentReceived" || dataItem.LastObjectState == "Product_Issued") {
+                $(this).find(".reject").remove();
+                $(this).find(".k-grid-edit").remove();
+                $(this).find(".k-grid-delete").remove();
+                $(this).find(".k-grid-Reject").remove();
+             $(this).addClass("k-state-Issued");
+            }
+
+
+            if (dataItem.IsSendForApproval == false) {
+                $(this).find(".reject").remove();
+                $(this).find(".k-grid-delete").remove();
+                $(this).find(".k-grid-Reject").remove();
+            }
+            if (dataItem.References == "Manual") {
+
+                $(this).find(".k-grid-Reject").remove();
+            }
+        });
+    }
+    function onDetailExpand(e) {
+        var masterRow = e.masterRow;
+        //var masterGrid = $("#grid").data("kendoGrid");
+        var masterGrid = $("#CashSalesInvoice").data("kendoGrid");
+
+        var masterDataItem = masterGrid.dataItem(masterRow);
+        masterId = masterDataItem.CashSalesInvoiceID;
+
+        gridName = "#LineItems_" + masterId;
+
+
+    }
+    function GetThingId(e) {
+        var masterRow = this.wrapper.closest("tr.k-detail-row").prev(".k-master-row");
+        var masterGrid = $(gridName).data("kendoGrid");
+        var masterDataItem = masterGrid.dataItem(masterRow);
+        id = masterDataItem.ThingID;
+    }
+    function GetThingIdValue() {
+        return { thingId: id }
+    }
+    function DisplayReferenceInformation() {
+        var salesOrderVoucherObject = $("#SalesOrderVoucherReference").data("kendoComboBox");
+        var salesOrderVoucherID = salesOrderVoucherObject.value();
+        $.ajax({
+            url: '@Url.Action("PopulateSalseOrderVoucherForReference", "CashSalesInvoice")',
+            data: { salesOrderVoucherID: salesOrderVoucherID },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                if (result != "") {
+
+                    alert(result);
+                }
+            }
+
+        });
+    }
+    function filterPayment() {
+        return {
+            customerId: $("#Consignee").val()
+        };
+    }
+    function filterThing() {
+        return {
+            StoreID: $("#StoreID").val()
+        };
+    }
+
+
+    function filterVariety() {
+        return {
+            ThingID: $("#ThingID").val()
+        };
+    }
+    function filterclass() {
+        return {
+            ProductName: $("#ThingID").val()
+        };
+    }
+</script>
+<script>
+    function GetStockBalance() {
+
+        var storeobj = $("#StoreID").data("kendoDropDownList");
+        var stID = storeobj.value();
+        var thingobj = $("#ThingID").data("kendoDropDownList");
+
+        var tID = thingobj.value();
+        var varityobj = $("#Variety").data("kendoDropDownList");
+        var vid = varityobj.value();
+        var classobj = $("#Class").data("kendoDropDownList");
+        var cid = classobj.value();
+        //   var stID = selectedStoreID = $("#Store").data("kendoDropDownList");
+        $.ajax({
+            url: '@Url.Action("GetStockBalance", "CRMDataProvider")',
+            data: { storeID: stID, productID: tID, VarietyID: vid, Class: cid },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                r = result;
+                if (r != 0) {
+                    var s = r.split(/_/);
+                    $("#StockBalance").val(s[0]);
+                    $("#CalculatedCost").val(s[1]);
+                    $("#StockBalanceReserved").val(s[2]);
+                } else {
+                    $("#StockBalance").val('0.0');
+                    $("#CalculatedCost").val('0.0');
+                    $("#StockBalanceReserved").val('0.0');
+                }
+            }
+
+        });
+    }
+
+
+</script>
+
+<script>
+
+    function GetPriceParameter() {
+        var id = masterDataItem.ThingID;
+        return {
+            productID: id
+        };
+    }
+    function UpdatePriceChange() {
+
+        var priceTagDetail = $("#PriceTagDetail").data("kendoDropDownList");
+        var ptdID = priceTagDetail.value();
+        var priceTag = $("#PriceTag").data("kendoDropDownList");
+        var ptID = priceTag.value();
+        var product = $("#ThingID").data("kendoDropDownList");
+        var pID = product.value();
+        var Varietyobj = $("#Variety").data("kendoDropDownList");
+        var vID = Varietyobj.value();
+        var Classobj = $("#Class").data("kendoDropDownList");
+        var cID = Classobj.value();
+
+        $.ajax({
+            url: '@Url.Action("GetPriceValue", "CRMDataProvider")',
+
+            data: { priceTagID: ptID, priceTagDetailID: ptdID, productID: product.value(), VarietyID: vID, ClassID: cID },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                r = result;
+                $("#UnitAmount").val(r);
+
+
+            }
+
+        });
+
+    }
+
+    function GetPriceTagDetailParameter() {
+        var pt = $("#PriceTag").data("kendoDropDownList");
+        return {
+            priceTag: pt.value()
+        };
+    }
+
+
+    function GetTaxValue() {
+
+        var taxObject = $("#Tax").data("kendoDropDownList");
+        var taxID = taxObject.value();
+        var unitAmountValue = $("#UnitAmount").val();
+        var quantityValue = $("#Quantity").val();
+        var InsuranceCost = $("#InsuranceCost").val();
+        var FreightCost = $("#FreightCost").val();
+        var OtherCost = $("#OtherCost").val();
+        quantityValue = parseInt(quantityValue);// +  parseInt(InsuranceCost) +  parseInt(FreightCost) +  parseInt(OtherCost);
+
+        $.ajax({
+            url: '@Url.Action("GetTaxValue", "CRMDataProvider")',
+            data: { taxID: taxID },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                r = result;
+
+                var calculatedTax = (r / 100) * unitAmountValue * quantityValue;
+                var calculatedTotalAmount = quantityValue * unitAmountValue + calculatedTax;
+                $("#TaxAmount").val(calculatedTax);
+                $("#TotalAmount").val(calculatedTotalAmount);
+            }
+
+        });
+    }
+
+</script>
+
+
+<script>
+
+
+
+
+    function onDetailExpandUser(e) {
+        var masterRow = e.masterRow;
+
+        var masterGrid = $("#CashSalesInvoice").data("kendoGrid");
+
+        var masterDataItem = masterGrid.dataItem(masterRow);
+
+        masterId = masterDataItem.CashSalesInvoiceID;
+        var linegridName = "#LineItems_" + masterId;
+        $.ajax({
+            url: '@Url.Action("GetStatus", "CashSalesInvoice")',
+
+            data: { Id: masterId },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                r = result;
+                if (masterDataItem.IsSendForApproval == true || r == "Forwarded" || r == "PaymentReceived" || r == "Product_Issued") {
+                    $(linegridName).find(".k-toolbar").hide(); //hide toolbar
+                    $(".k-grid-top", linegridName).hide();
+                    $(".k-grid-edit", linegridName).hide();
+                    $(".k-grid-delete", linegridName).hide();
+                }
+
+                else {
+                    $(linegridName).find(".k-toolbar").show(); //hide toolbar
+                    $(".k-grid-top", linegridName).show();
+                }
+
+            }
+
+        });
+
+    }
+
+    var index = 0;
+    var PopUpMode = "";
+    function AddCostItemInit(e) {
+
+
+        if (e.model.isNew()) {
+            $('#lineForm').attr('action', '@Url.Action("CreditLineItems_Create", "LineItem")');
+            $('#linesave').val("Create");
+        }
+        else {
+            $('#lineForm').attr('action', '@Url.Action("CreditLineItems_Update", "LineItem")');
+            $('#linesave').val("Update");
+        }
+        $('#Voucher').val(masterId);
+        $('#VoucherDefinitionId').val('2');
+        var html = "";
+        var optionId = "option" + index;
+
+        $('.k-edit-buttons').css('display', 'none');
+
+        $.ajax({
+            url: "@Url.Action("GetLineAdditionalCost", "CRMDataProvider")",
+            type: 'GET',
+            traditional: true,
+            data: { Id: $("#LineItemID").val() },
+            success: function (data) {
+
+
+
+                $.each(data, function (index, optiondata) {
+                    html += "  <div class='col-sm-12 form-row form-control ' id='otherline" + index + "' style='padding:5px;'> <div class='col-sm-6 form-row'> <div class='col-sm-3'> </div> <select class='col-sm-5' name=AdditionalCostItem[" + index + "][Id] id='" + optionId + "' data-bind='value:AdditionalCostItem[" + index + "][Id]' ><option selected value='" + optiondata.AdditionalCostId + "'>" + optiondata.Name + "</option></select></div>  <div class='col-sm-3'> Value: <input type='number' name=AdditionalCostItem[" + index + "][Name] data-bind='value:AdditionalCostItem[" + index + "][Name]' min='0' value= '" + optiondata.Value + "' /> <button id='remove" + index + "' class='k-button k-primary btn-danger ' onclick=' return RemoveCostItem(otherline" + index + ");'>Remove  </button> </div> </div>";
+
+                });
+                $("#CostItem").append(html);
+
+                kendo.init("#CostItem");
+                index++;
+            }
+
+        });
+
+        return false;
+    };
+    function RemoveCostItem(e) {
+
+        $('#' + e).remove();
+        return false;
+    }
+    var ItemIndex = 0;
+    function AddCostItem() {
+
+
+        var html = "";
+
+        var optionId = "optionAdded" + ItemIndex;
+        var ItemId = "ItemAdded" + ItemIndex;
+        $('.k-edit-buttons').css('display', 'none');
+        $('.form-bottom').css('display', 'block');
+        html += "  <div class='col-sm-12 form-row form-control' id='" + ItemId + "' style='padding:5px;'> <div class='col-sm-6 form-row'> <div class='col-sm-3'> </div> <select class='col-sm-5' name=AdditionalCostItem[" + ItemIndex + "][Id] id='" + optionId + "' data-bind='value:AdditionalCostItem[" + ItemIndex + "][Id]' ><option selected disabled > Select Cost Type </option></select></div>  <div class='col-sm-4'> Value: <input type='number' name=AdditionalCostItem[" + ItemIndex + "][Name] data-bind='value:AdditionalCostItem[" + ItemIndex + "][Name]' min='0' value= '0' />  <button id='" + generate + "' class='k-button k-primary btn-danger ' onclick=' return RemoveCostItem('" + ItemId + "');'>Remove  </button></div> </div>";
+        $.ajax({
+            url: "@Url.Action("GetAdditionalCost", "CRMDataProvider")",
+            type: 'GET',
+            traditional: true,
+            success: function (data) {
+
+
+
+                $.each(data, function (index, optiondata) {
+
+                    $("#" + optionId).append("<option value='" + optiondata.AdditionalCostId + "'>" + optiondata.Name + "</option>");
+                });
+
+            }
+
+        });
+        $("#CostItem").append(html);
+
+        kendo.init("#CostItem");
+        ItemIndex++;
+        return false;
+    };
+
+
+
+
+</script>
+<script>
+    function ClearValMsg() {
+        $("#StoreVal").text("");
+        $("#ProductVal").text("");
+        $("#TaxVal").text("");
+        $("#PriceTagVal").text("");
+        $("#PriceTagDetailVal").text("");
+        $("#QuantityVal").text("");
+        return false;
+    }
+    function ValidateInput() {
+        var ValidationCount = 0;
+        var StoreObject = $("#StoreID").data("kendoDropDownList");
+        var StoreId = StoreObject.value();
+        if (StoreId == "" || StoreId == null) {
+            $("#StoreVal").text("Required");
+            ValidationCount = ValidationCount + 1;
+
+        }
+        var ProductObject = $("#ThingID").data("kendoDropDownList");
+        var ProductId = ProductObject.value();
+        if (ProductId == "" || ProductId == null) {
+            $("#ProductVal").text("Required");
+            ValidationCount = ValidationCount + 1;
+
+        }
+        var TaxObject = $("#Tax").data("kendoDropDownList");
+        var TaxId = TaxObject.value();
+        if (TaxId == "" || TaxId == null) {
+            $("#TaxVal").text("Required");
+            ValidationCount = ValidationCount + 1;
+
+        }
+
+        var PriceTagObject = $("#PriceTag").data("kendoDropDownList");
+        var PriceTagId = PriceTagObject.value();
+        if (PriceTagId == "" || PriceTagId == null) {
+            $("#PriceTagVal").text("Required");
+            ValidationCount = ValidationCount + 1;
+
+        }
+        var PriceTagDetailObject = $("#PriceTagDetail").data("kendoDropDownList");
+        var PriceTagDetailId = PriceTagDetailObject.value();
+        if (PriceTagDetailId == "" || PriceTagDetailId == null) {
+            $("#PriceTagDetailVal").text("Required");
+            ValidationCount = ValidationCount + 1;
+
+        }
+
+        var AmountId = $("#Quantity").val();
+        if (AmountId == "0" || AmountId == "" || AmountId == null) {
+            $("#QuantityVal").text("Amount Can't Be 0 ");
+            ValidationCount = ValidationCount + 1;
+        }
+        var AmountId = $("#Quantity").val();
+        var StockBaalance = $("#StockBalance").val();
+        if (parseFloat(AmountId) > parseFloat(StockBaalance)) {
+            alert("Quantity Greater Than Stock Balance");
+            ValidationCount = ValidationCount + 1;
+        }
+        if (ValidationCount > 0) {
+            return false;
+        }
+
+    }
+</script>

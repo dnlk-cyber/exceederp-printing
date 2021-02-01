@@ -1,0 +1,29 @@
+﻿<legend>Account Requirement</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.AccountRequirement>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.ControlAccountID);
+        columns.Bound(c => c.Type);
+        columns.Bound(c => c.IsMandatory);
+        columns.Bound(c => c.Remark);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.AccountRequirementID))
+                    .Events(ev => ev
+                                                                .Error("error_handler(\"grid\")")
+                                                                .RequestStart("onRequestStart(\"grid\")")
+                                                                .RequestEnd("onRequestEnd(\"grid\")"))
+          .Read(read => read.Action("AccountRequirements_Read", "AccountRequirement"))
+          .Create(create => create.Action("AccountRequirements_Create", "AccountRequirement"))
+          .Update(update => update.Action("AccountRequirements_Update", "AccountRequirement"))
+          .Destroy(destroy => destroy.Action("AccountRequirements_Destroy", "AccountRequirement"))
+      )
+)

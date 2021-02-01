@@ -1,0 +1,24 @@
+﻿@using ExceedERP.Core.Domain.Inventory
+@using Kendo.Mvc.UI
+
+@(Html.Kendo().Grid<StoreRequisitionPropertyValidation>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Status);
+          columns.Bound(c => c.Remark);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.StoreRequisitionPropertyValidationID))
+          .Read(read => read.Action("StoreRequisitionPropertyValidations_Read", "StoreRequisitionPropertyValidation"))
+          .Create(create => create.Action("StoreRequisitionPropertyValidations_Create", "StoreRequisitionPropertyValidation"))
+          .Update(update => update.Action("StoreRequisitionPropertyValidations_Update", "StoreRequisitionPropertyValidation"))
+          .Destroy(destroy => destroy.Action("StoreRequisitionPropertyValidations_Destroy", "StoreRequisitionPropertyValidation"))
+      ))

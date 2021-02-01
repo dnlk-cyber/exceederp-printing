@@ -1,0 +1,126 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.Inventory
+@using Kendo.Mvc.UI
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Update Store Transaction from Beginning </legend>
+
+@(Html.Kendo().Grid<StoreItemAssignment>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.ForeignKey(p => p.StoreCode, (IEnumerable)ViewData["Stores"], "StoreCode", "Name").Title("Store").EditorTemplateName("StoresSelector").Width(200);
+          columns.ForeignKey(p => p.ItemCategoryCode, (IEnumerable)ViewData["Category"], "ItemCategoryCode", "Name").Title("Category").EditorTemplateName("ItemCategorySelector").Width(200);
+          columns.Bound(c => c.ItemCode).Width(130);
+          columns.Bound(c => c.ItemName).Width(130);
+          columns.Bound(c => c.Balance).Width(130);
+          columns.Bound(c => c.AvgPrice).Width(130);
+          columns.Bound(c => c.StoreItemAssignmentID).Width(120).Title("").ClientTemplate(@Html.ActionLink("Run Update", "RunUpdate", new { ID = "#=StoreItemAssignmentID#" }).ToHtmlString());
+          //columns.Command(command =>
+          //{
+          //    //command.Custom("✅").Click("RunUpdate");
+          //});
+
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Template(@<text>
+                               <div class="toolbar">
+
+                                   <table>
+                                       <tr>
+                                           <td>
+                                               <i>Stores:</i>
+                                               @(Html.Kendo().ComboBoxFor(m => m)
+                                                     .Name("StoreList")
+                                                     .Placeholder("Select Store")
+                                                     .DataTextField("Name")
+                                                     .DataValueField("StoreCode")
+                                                     .HtmlAttributes(new { style = "width: 300px;" })
+                                                     .ValuePrimitive(true)
+                                                     .DataSource(dataSource =>
+                                                     {
+                                                         dataSource.Read(read => read.Action("GetStore", "DataProvider", new { area = "Inventory" }))
+                                                             .ServerFiltering(false);
+                                                     }))
+                                           </td>
+                       
+                                           <td>
+                                               @(Html.Kendo().Button()
+                                                     .Name("btnSearch")
+                                                     .HtmlAttributes(new { type = "search", @class = "k-primary" })
+                                                     .Events(e => e.Click("loadItems"))
+                                                     .Content("Get Items"))
+                                           </td>
+                                       </tr>
+                                   </table>
+
+                               </div>
+                            </text>);
+      })
+            
+      .HtmlAttributes(new { style = "height: 550px;" })
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(20))
+      .Scrollable()
+
+      .Filterable()
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Groupable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.StoreItemAssignmentID))
+          .Events(ev => ev
+              .Error("error_handler(\"grid\")")
+              .RequestStart("onRequestStart(\"grid\")")
+              .RequestEnd("onRequestEnd(\"grid\")"))
+          .Read(read => read.Action("StoreItemAssignments_Read", "UpdateBinCard").Data("passSearchData"))
+      ))
+
+<script>
+    
+    function loadItems() {
+        var searchObject = $("#StoreList").data("kendoComboBox");
+        var value = searchObject.value();
+
+        if (value != null) {
+            $("#grid").data("kendoGrid").dataSource.read();
+        } else {
+            alert("Please select a Store.");
+        }
+    }
+    
+    function passSearchData() {
+        var searchObject = $("#StoreList").data("kendoComboBox");
+        var value = searchObject.value();
+        return {
+            storecode: value
+        };
+    }
+    function RunUpdate(e) {
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        $.ajax({
+            type: "POST",
+            data: dataItem.StoreItemAssignmentID, 
+            url: '@Url.Action("RunUpdate", "UpdateBinCard")/' + dataItem.StoreItemAssignmentIDs
+
+        });
+
+        //$('#grid').data('kendoGrid').dataSource.read();
+        //$('#grid').data('kendoGrid').refresh();
+        //location.reload();
+    };
+</script>

@@ -1,0 +1,15 @@
+﻿@using ExceedERP.Core.Domain.Finance.GL
+@using ExceedERP.Helpers.Common
+@using ExceedERP.Helpers.Common
+@model ExceedERP.Core.Domain.Finance.GL.GlCostCenterTypes
+
+@(
+ Html.Kendo().DropDownListFor(m => m)
+        .DataTextField("Text")
+        .DataValueField("Value")
+             .BindTo(EnumExtension.EnumToSelectList(typeof(GlCostCenterTypes)))
+)
+
+
+
+

@@ -1,0 +1,12 @@
+﻿@model ExceedERP.Core.Domain.FleetManagement.FleetRegistration.InsuranceType
+
+@(
+ Html.Kendo().DropDownListFor(m => m)
+        .DataTextField("Text")
+        .DataValueField("Value")
+             .BindTo(EnumExtension.EnumToSelectList(typeof(InsuranceType)))
+)
+
+
+
+

@@ -1,0 +1,16 @@
+﻿@using Kendo.Mvc.UI
+
+@(Html.Kendo().DropDownListFor(m => m)
+                      .AutoBind(false)
+                      .OptionLabel("Gl Cost Center")
+                          .DataTextField("Name")
+                          .DataValueField("code")
+                      .DataSource(dataSource =>
+                      {
+                          dataSource.Read(read => read.Action("MapCostCenter", "DataProvider"))
+                                    .ServerFiltering(true);
+                      })
+
+)
+@Html.ValidationMessageFor(m => m)
+

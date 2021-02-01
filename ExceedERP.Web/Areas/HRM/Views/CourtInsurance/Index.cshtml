@@ -1,0 +1,328 @@
+﻿@using ExceedERP.Core.Domain.Common.HRM
+@using ExceedERP.Core.Domain.HRM.HealthAndInsurance
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>@Resources.NavigatorHealthAndInsurance_EmployeeInsurance</legend>
+@(Html.Kendo().Grid<Person_Employee>()
+          .Name("Person_Employeegrid")
+         .Columns(columns =>
+        {
+            columns.Bound(c => c.EmployeeCode).ClientTemplate(
+                          @"<div class='Employee-photo'
+                        style='background-image: url(" + Url.Content("~/Content/Images/") + "#:data.EmployeeId#-Photo/" + "#:data.EmployeeId#.jpg" + ");'></div>" +
+                      "<div class='Employee-name'>#:EmployeeCode#</div>").Width(150);
+            columns.Bound(c => c.Title).EditorTemplateName("Enum").Width(100).Visible(false);
+            columns.Bound(c => c.FirstName).Width(120);
+            columns.Bound(c => c.MiddleName).Width(120);
+            columns.Bound(c => c.LastName).Width(120);
+            //columns.Bound(c => c.MothersFullName).Width(100);
+            columns.Bound(c => c.Gender).EditorTemplateName("Enum").Width(90);
+            columns.Bound(c => c.DateOfBirth).Width(115).Format("{0:yyyy-MM-dd}");
+            //  columns.Bound(c => c.BirthPlace).Width(120);
+            columns.Bound(c => c.Region).EditorTemplateName("Enum").Width(100).Visible(false);
+            columns.Bound(c => c.Religion).EditorTemplateName("Enum").Width(100).Visible(false);
+           // columns.ForeignKey(c => c.Nation, (IEnumerable)ViewData["NationList"], "LookupId", "Description").EditorTemplateName("Nation").Width(100).Visible(false);
+            // columns.ForeignKey(c => c.Nationality, (IEnumerable)ViewData["Nationalites"], "CountryId", "Nationality").EditorTemplateName("NationalityList").Width(100);
+            columns.Bound(c => c.MartialStatus).EditorTemplateName("Enum").Width(120);
+            //columns.Bound(c => c.IsActive).ClientTemplate("<input type='checkbox' disabled = 'true' \\#= Status ? checked='checked' :'' \\# />").Width(100);
+            //columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit); command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+        })
+      .ToolBar(toolbar =>
+      {
+         // toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+                  .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("PersonEmployee").Window(window => { window.Title("Maintain Employee"); window.Scrollable(false); }))
+      .Scrollable(h => h.Height(500))
+         .Groupable()
+                  .Sortable(sortable =>
+                  {
+                      sortable.SortMode(GridSortMode.SingleColumn);
+                  })
+      .Filterable()
+         .Pageable(pageable => pageable
+                                    .Input(true)
+                                    .Numeric(false)
+                                    .Refresh(true)
+                                    .PageSizes(true)
+                                    .ButtonCount(5))
+
+
+      .DataSource(dataSource => dataSource
+          .Ajax()
+               .Events(events =>
+{
+events.Error("error_handler(\"Person_Employeegrid\")");
+events.RequestStart("onRequestStart(\"Person_Employeegrid\")");
+events.RequestEnd("onRequestEnd(\"Person_Employeegrid\")");
+ })
+                       
+
+          .Model(model => model.Id(p => p.EmployeeId))
+          .Read(read => read.Action("Person_Employee_Read", "EmployeeProfile"))
+          .Create(create => create.Action("Person_Employee_Create", "EmployeeProfile"))
+          .Update(update => update.Action("Person_Employee_Update", "EmployeeProfile"))
+          .Destroy(destroy => destroy.Action("Person_Employee_Destroy", "EmployeeProfile"))
+
+          ).ClientDetailTemplateId("template")
+
+)
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                  .Name("tabstrip_#=EmployeeId#")
+          .SelectedIndex(0)
+          .Items(items =>
+          {
+              items.Add().Text(Resources.Details).Content(
+                @<text>
+                    @(Html.Kendo().Grid<CourtInsurance>()
+          .Name("CourtInsurance_#=EmployeeId#")
+      .Columns(columns =>
+      {
+         
+        columns.Bound(c => c.DateInsuAmhairc).EditorTemplateName ("Calander").Width (200);
+       // columns.ForeignKey(c => c.AssociationId, (System.Collections.IEnumerable)ViewData["Association"], "AssociationId", "Name").EditorTemplateName("Association");
+        columns.Bound(c => c.Reason);
+        columns.Bound(c => c.InsuranceAmount);
+        columns.Bound(c => c.Remark);
+      
+        columns.Command(command =>
+        {
+            if (HttpContext.Current.User.IsInRole("Insurance_User"))
+            {
+                command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+            }
+            if (HttpContext.Current.User.IsInRole("Insurance_Admin"))
+            {
+                command.Destroy().Text(Resources.ActionButton_Cancel);
+            }
+        }).Width(200);
+      })
+      .ToolBar(toolbar => {
+          if (HttpContext.Current.User.IsInRole("Insurance_User"))
+          {
+              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+          }
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+          .Scrollable(h => h.Height(500))
+                     .Groupable()
+                              .Events(e =>
+                                               {
+                                                   e.Save("GetDate");
+                                                   e.Edit("GetDate");
+                                               })
+                              .Sortable(sortable =>
+                              {
+                                  sortable.SortMode(GridSortMode.SingleColumn);
+                              })
+                  .Filterable()
+                     .Pageable(pageable => pageable
+                                                .Input(true)
+                                                .Numeric(false)
+                                                .Refresh(true)
+                                                .PageSizes(true)
+                                                .ButtonCount(5))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+                                 .Events(events =>
+        {
+            events.Error("error_handler(\"CourtInsurance_#=EmployeeId#\")");
+            events.RequestStart("onRequestStart(\"CourtInsurance_#=EmployeeId#\")");
+            events.RequestEnd("onRequestEnd(\"CourtInsurance_#=EmployeeId#\")");
+        })
+                              
+                  .Model(model => { model.Id(p => p.CourtInsuranceId);
+                  model.Field(p => p.InsuranceAmount).Editable (false );
+                  })
+                                  .Read(read => read.Action("CourtInsurance_Read", "CourtInsurance", new { id = "#=EmployeeId#", type = "det" }))
+                                  .Create(create => create.Action("CourtInsurance_Create", "CourtInsurance", new { idTwo = "#=EmployeeId#", typeTwo = "det" }))
+          .Update(update => update.Action("CourtInsurance_Update", "CourtInsurance" ,new {  typeThree = "det" }))
+          .Destroy(destroy => destroy.Action("CourtInsurance_Destroy", "CourtInsurance"))
+      ).ToClientTemplate ()
+                    )
+</text>
+
+
+                  );
+              items.Add().Text(Resources.HR_HealthAndInsurance_CourtInsurance_Association).Content(
+                @<text>
+                    @(Html.Kendo().Grid<CourtInsurance>()
+          .Name("CourtInsurance2_#=EmployeeId#")
+      .Columns(columns =>
+      {
+          //columns.ForeignKey(c => c.EmployeeId, (System.Collections.IEnumerable)ViewData["EmployeeList"], "PersonId", "FullNameWithOutCode").EditorTemplateName("ListOfEmployee").Width(120);
+          columns.Bound(c => c.DateAssocAmharic).Width (200).EditorTemplateName ("Calander");
+          columns.ForeignKey(c => c.AssociationId, (System.Collections.IEnumerable)ViewData["Association"], "AssociationId", "Name").EditorTemplateName("Association");
+          columns.Bound(c => c.Reason);
+          columns.Bound(c => c.InsuranceAmount);
+          columns.Bound(c => c.Remark);
+          //columns.Bound(c => c.OrgBranchName);
+          //columns.Bound(c => c.DateCreated);
+          //columns.Bound(c => c.LastModified);
+          //columns.Bound(c => c.CreatedBy);
+          //columns.Bound(c => c.ModifiedBy);
+          columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit); command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+          .Scrollable(h => h.Height(500))
+                     .Groupable()
+                              .Sortable(sortable =>
+                              {
+                                  sortable.SortMode(GridSortMode.SingleColumn);
+                              })
+                  .Filterable()
+                           .Events(e =>
+                                                       {
+                                                           e.Save("GetDate");
+                                                           e.Edit("GetDate");
+                                                       })
+                     .Pageable(pageable => pageable
+                                                .Input(true)
+                                                .Numeric(false)
+                                                .Refresh(true)
+                                                .PageSizes(true)
+                                                .ButtonCount(5))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+       .Events(events =>
+                {
+                    events.Error("error_handler(\"CourtInsurance2_#=EmployeeId#\")");
+                    events.RequestStart("onRequestStart(\"CourtInsurance2_#=EmployeeId#\")");
+                    events.RequestEnd("onRequestEnd(\"CourtInsurance2_#=EmployeeId#\")");
+                })
+                               
+                  .Model(model =>
+                  {
+                      model.Id(p => p.CourtInsuranceId);
+                      model.Field(p => p.InsuranceAmount).Editable(false);
+                  })
+                          .Read(read => read.Action("CourtInsurance_Read", "CourtInsurance", new { id = "#=EmployeeId#", type = "aso" }))
+                           .Create(create => create.Action("CourtInsurance_Create", "CourtInsurance", new { idTwo = "#=EmployeeId#", typeTwo = "aso" }))
+                          .Update(update => update.Action("CourtInsurance_Update", "CourtInsurance", new { typeThree = "aso" }))
+          .Destroy(destroy => destroy.Action("CourtInsurance_Destroy", "CourtInsurance"))
+      ).ToClientTemplate()
+                    )
+                </text>
+
+
+                  );
+          }).ToClientTemplate())
+                </script>
+<script>
+    //function error_handler(e) {
+    //    if (e.errors) {
+    //        var message = "Errors:\n";
+    //        $.each(e.errors, function(key, value) {
+    //            if ('errors' in value) {
+    //                $.each(value.errors, function() {
+    //                    message += this + "\n";
+    //                });
+    //            }
+    //        });
+    //        alert(message);
+
+    //    }
+
+    //}
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+</script>
+<style>
+    .Employee-photo {
+        display: inline-block;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background-size: 32px 35px;
+        background-position: center center;
+        vertical-align: middle;
+        line-height: 32px;
+        box-shadow: inset 0 0 1px #4b0082, inset 0 0 10px rgba(0, 0, 0, .2);
+        margin-left: 5px;
+    }
+
+    .EmployeeDetail-photo {
+        display: inline-block;
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        background-size: 100px 100px;
+        background-position: center center;
+        vertical-align: middle;
+        line-height: 32px;
+        box-shadow: inset 0 0 1px #4b0082, inset 0 0 10px rgba(0, 0, 0, .2);
+        margin-left: 5px;
+    }
+
+    .Employee-name {
+        display: inline-block;
+        vertical-align: middle;
+        line-height: 32px;
+        padding-left: 3px;
+    }
+
+    .k-detail-cell .k-tabstrip .k-content {
+        padding: 0.2em;
+    }
+
+    .employee-details ul {
+        list-style: none;
+        font-style: italic;
+        margin: 15px;
+        padding: 0;
+    }
+
+        .employee-details ul li {
+            margin: 0;
+            line-height: 1.7em;
+        }
+
+    .employee-details label {
+        display: inline-block;
+        width: 120px;
+        padding-right: 10px;
+        text-align: right;
+        font-style: normal;
+        font-weight: bold;
+    }
+</style>
+>
+<script>
+    function GetDate() {
+
+        var x = AssignDate();
+        var y = x;
+        $("#DateInsuAmhairc").trigger("change");
+        $("#DateAssocAmharic").trigger("change");
+        for (var o in y) {
+            $.ajax({
+                contentType: "application/json; charset=utf-8",
+                url: '@Url.Action("SetDate", "CourtInsurance")',
+                data: { name: y[o].id, value: y[o].date },
+                type: 'GET',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                }
+
+            });
+        }
+    }
+
+</script>
+<script>
+    function AssignDate() {
+        var list = AssignDates();
+        return list;
+    }
+
+</script>

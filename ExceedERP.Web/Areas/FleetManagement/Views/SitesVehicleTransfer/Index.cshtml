@@ -1,0 +1,569 @@
+﻿@model ExceedERP.Core.Domain.FleetManagement.FleetResource.SitesVehicleTransfer
+
+<legend> Sites Vehicle Transfer</legend>
+
+<style>
+    .lbl {
+        position: relative;
+        display: block;
+        height: 40px;
+        width: 64px;
+        background: #898989;
+        border-radius: 100px;
+        cursor: pointer;
+        transition: all 0.3s ease;
+    }
+
+        .lbl:after {
+            position: absolute;
+            left: -2px;
+            top: -3px;
+            display: block;
+            height: 40px;
+            width: 54px;
+            border-radius: 100px;
+            background: #fff;
+            box-shadow: 0px 3px 3px rgba(243, 245, 247, 0.05);
+            content: '';
+            transition: all 0.3s ease;
+        }
+
+        .lbl:active:after {
+            transform: scale(1.15, 0.85);
+        }
+
+    .cbx:checked ~ label {
+        background: #32a6f3;
+    }
+
+        .cbx:checked ~ label:after {
+            left: 20px;
+            background: #5a666e;
+        }
+
+    .cbx:disabled ~ label {
+        background: #d5d5d5;
+        pointer-events: none;
+    }
+
+        .cbx:disabled ~ label:after {
+            background: #bcbdbc;
+        }
+
+    .container {
+        position: absolute;
+        top: 250px;
+        left: 50%;
+        transform: translate(-50%, -50%);
+    }
+
+    .demo {
+        margin-bottom: 40px;
+    }
+
+    .hidden {
+        display: none;
+    }
+</style>
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetResource.SitesVehicleTransfer>()
+    .Name("grid")
+    .Columns(columns =>
+    {
+        columns.Bound(e => e.Remark).Title("Equipment Name").Width(140);
+        columns.Bound(e => e.InitialSite).Width(120);
+        columns.Bound(e => e.DestinationSite).Width(120);
+        columns.Bound(e => e.StartingDate).Width(120);
+        columns.Bound(e => e.ToDate).Format(("{0:d}")).Width(120);
+        columns.Bound(e => e.Status).Width(100);
+   
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
+
+
+    })
+                                          .ToolBar(commands => commands.Create())
+  .Editable(editable =>
+      {
+          editable.Window(w => w.Title("Site Transfer"));
+          editable.Mode(GridEditMode.PopUp).TemplateName("SitesVehicleTransferEditor");
+          editable.DisplayDeleteConfirmation("Are You Sure To Remove Sites Vehicle Transfer ");
+      })
+         .HtmlAttributes(new { style = "height: 520px;" })
+                          .Pageable(pageable => pageable
+                                            .Input(true)
+                                            .Numeric(false)
+                                            .Refresh(true)
+                                            .PageSizes(true)
+                                            .ButtonCount(5))
+
+                                .Scrollable()
+                                .Sortable()
+                                .Filterable()
+                                 .Scrollable(h => h.Height(500))
+                                              .ClientDetailTemplateId("template").Groupable().Events(ev => ev.DetailExpand("RejectPopUp"))
+    .DataSource(dataSource => dataSource
+        .Ajax()
+        .ServerOperation(false)
+                       .Model(model =>
+              {
+                  model.Id(p => p.SitesVehicleTransferID);
+               
+              }).Events(ev => ev
+                                                            .Error("error_handler(\"grid\")")
+                                                            .RequestStart("onRequestStart(\"grid\")")
+                                                            .RequestEnd("onRequestEnd(\"grid\")")) 
+                .Create(update => update.Action("SitesVehicleTransfer_Create", "SitesVehicleTransfer"))
+                .Read(read => read.Action("SitesVehicleTransfer_Read", "SitesVehicleTransfer"))
+                .Update(update => update.Action("SitesVehicleTransfer_Update", "SitesVehicleTransfer"))
+                .Destroy(update => update.Action("SitesVehicleTransfer_Destroy", "SitesVehicleTransfer"))
+  )
+     .Events(events => events.DataBound("onDataBound"))
+)
+
+
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                                            .Name("tabStrip_#=SitesVehicleTransferID#")
+            .SelectedIndex(0)
+            .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+            .Items(items =>
+            {
+                
+                  items.Add().Text("Detail").Content(
+                        @<text>
+                            <legend>Detail</legend>
+
+                            <div class="box">
+
+                                <div class="box-col">
+                                    <a href='@Url.Action("SiteVehicleTransfer", "FleetPrint")/?Id=#=SitesVehicleTransferID#' title="Print"><i class="fa fa-print fa-2x"></i></a>
+
+                                    # if (IsSendForApproval == false || IsSendForApproval == "false")
+                                    {#
+
+                                    <a href='@Url.Action("SiteVehicle_SendForOnlineApproval", "SiteVehicleApproval")/?EId=#=SitesVehicleTransferID#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                                    # }#
+                                
+                                </div>
+                            </div> 
+                            <div class="demo-section k-header export-app">
+                                <div class="demo-section content-wrapper">
+
+                                    <form>
+
+                                       
+
+                                        <div class="row">
+                                            <div class="col-md-1">
+                                            </div>
+                                            <div class="col-md-2">
+                                                <div class="form-group">
+                                                    <div class="label">
+                                                        @Html.LabelFor(model => model.CreatedBy)
+                                                    </div>
+                                                    <div>
+                                                        #=CreatedBy#
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <div class="form-group">
+                                                    <div class="label">
+                                                        @Html.LabelFor(model => model.DateCreated)
+                                                    </div>
+                                                    <div>
+                                                        #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                       
+                                            <div class="col-md-2">
+                                                <div class="form-group">
+                                                    <div class="label">
+                                                        @Html.LabelFor(model => model.ModifiedBy)
+                                                    </div>
+                                                    <div>
+
+                                                        #=ModifiedBy#
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                       
+                                                    <div class="col-md-2">
+                                                <div class="form-group">
+                                                    <div class="label">
+                                                        @Html.LabelFor(model => model.LastModified)
+                                                    </div>
+                                                    <div>
+                                                        #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                          
+                                        </div>
+
+                                    </form>
+
+                                </div>
+                            </div>
+
+
+
+                        </text>
+
+
+            );
+                  items.Add().Text(" Check List ").Content(@<text>
+
+
+
+               <div class="form-group" >
+        # if (IsSendForApproval == true || IsOnlineApproved == true)
+        {#
+
+                   <div style=" padding:10px" id="approvedlines#=SitesVehicleTransferID#"></div>
+        # }
+
+        else if (IsSendForApproval == false)
+        {#
+                   <form action="/CheckListLog/SiteTransferCheckList" method="post">
+
+                       <div style=" padding:30px" id="lines#=SitesVehicleTransferID#"></div>
+                       <input type="hidden" name="Id" value="#= SitesVehicleTransferID#">
+                       <input type="submit" class="k-primary  form-control " value=" Inspect " />
+
+                   </form>
+        # }#
+    </div>
+  
+                        </text>
+
+
+            );
+              
+                  items.Add().Text(" Parts ").Content(@<text>
+
+                @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetResource.SiteVechicleTransferDetail>()
+                                                                                                                        .Name("PartsGrid_#=SitesVehicleTransferID#")
+                        .Columns(columns =>
+                        {
+
+                            columns.Bound(o => o.Type).EditorTemplateName("RequiredEditor").Width(126);
+                            columns.Bound(o => o.SerialNo).Width(126);
+                            columns.Bound(o => o.Quantity).EditorTemplateName("OptionalNumEditor").Width(126);
+                            columns.Bound(o => o.Description).Width(120);
+                            columns.Bound(o => o.MissingParts).Width(120);
+                            columns.Bound(o => o.DamagedParts).Width(120);
+                            columns.Bound(c => c.CreatedBy).Width(120);
+                            columns.Bound(c => c.DateCreated).Format("{0:yyyy-MM-dd}").Width(150);
+                            columns.Command(command => { command.Edit(); }).Width(250);
+
+                        })
+                        .ToolBar(t=> t.Create())
+                                .Events(ev =>
+                                {
+                                    ev.DataBound("lineonDataBound");
+                                })
+                             .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                       .DataSource(dataSource => dataSource
+                            .Ajax()
+                            .PageSize(5)
+                                                      .Model(model =>
+                              {
+                                  model.Id(p => p.SiteVechicleTransferDetailId);
+                                  model.Field(p => p.CreatedBy).Editable(false);
+                                  model.Field(p => p.DateCreated).Editable(false);
+                              })
+                                                                            //    .Events(ev => ev
+                                                                    //.Error("error_handler(\"PartsGrid_#=SitesVehicleTransferID#\")")
+                                                                    //        .RequestStart("onRequestStart(\"PartsGrid_#=SitesVehicleTransferID#\")")
+                                                                    //        .RequestEnd("onRequestEnd(\"PartsGrid_#=SitesVehicleTransferID#\")"))
+                                                                                                                                           .Create(update => update.Action("SiteVechicleTransferDetail_Create", "SiteVechicleTransferDetail", new { Id = "#=SitesVehicleTransferID#" }))
+                                                                                                                                     .Read(read => read.Action("SiteVechicleTransferDetail_Read", "SiteVechicleTransferDetail", new { Id = "#=SitesVehicleTransferID#" }))
+                                                                                                                                   .Update(update => update.Action("SiteVechicleTransferDetail_Update", "SiteVechicleTransferDetail"))
+
+
+                                                      )
+                                               .ToClientTemplate())
+                </text>
+                );
+
+
+                  items.Add().Text(" Tyre ").Content(@<text>
+
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetResource.SiteVechicleTransferTyreDetail>()
+                                                                                                                                                .Name("TyresGrid_#=SitesVehicleTransferID#")
+                        .Columns(columns =>
+                        {
+                            columns.Bound(o => o.Type).Width(120);
+                            columns.Bound(o => o.SerialNo).Width(120);
+                            columns.Bound(o => o.Description).Width(126);
+                            columns.Bound(c => c.CreatedBy).Width(150);
+                            columns.Bound(c => c.DateCreated).Format("{0:yyyy-MM-dd}").Width(150);
+                           
+                        })
+                                 .Events(ev =>
+                                {
+                                    ev.DataBound("lineonDataBound");
+                                })
+                             .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                       .DataSource(dataSource => dataSource
+                            .Ajax()
+                            .PageSize(5)
+                                                      .Model(model =>
+                              {
+                                  model.Id(p => p.SiteVechicleTransferTyreDetailId);
+                                  model.Field(p => p.CreatedBy).Editable(false);
+                                  model.Field(p => p.DateCreated).Editable(false);
+                              })
+                                                       .Events(ev => ev
+                                                           .Error("error_handler(\"TyresGrid_#=SitesVehicleTransferID#\")")
+                                                                   .RequestStart("onRequestStart(\"TyresGrid_#=SitesVehicleTransferID#\")")
+                                                                   .RequestEnd("onRequestEnd(\"TyresGrid_#=SitesVehicleTransferID#\")"))
+                                                                                                                                           .Create(update => update.Action("SiteVechicleTransferDetail_Create", "SiteVechicleTransferDetail", new { Id = "#=SitesVehicleTransferID#" }))
+                                                                                                                                                     .Read(read => read.Action("SiteVechicleTransferTyre_Read", "SiteVechicleTransferTyre", new { Id = "#=SitesVehicleTransferID#" }))
+                                                                                                                                           .Update(update => update.Action("SiteVechicleTransferDetail_Update", "SiteVechicleTransferTyre"))
+
+
+                                                      )
+                                               .ToClientTemplate())
+                </text>
+                );
+                  items.Add().Text(" Approval").Content(@<text>
+                 
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetResource.SiteVehicleApproval>()
+                                                                                                        .Name("SitesVehicleTransfer#=SitesVehicleTransferID#")
+                        .Columns(columns =>
+                        {
+                            columns.Bound(o => o.Status).EditorTemplateName("ApprovalEditor").Width(126);
+
+                            columns.Bound(o => o.Remark).Width(200);
+                            columns.Bound(c => c.CreatedBy).Width(150);
+                            columns.Bound(c => c.DateCreated).Format("{0:yyyy-MM-dd}").Width(150);
+                            columns.Command(command => { command.Edit(); }).Width(250);
+
+                        }).Events(ev =>
+                        {
+                            ev.DataBound("approveonDataBound");
+                        })
+                             .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                       .DataSource(dataSource => dataSource
+                            .Ajax()
+                            .PageSize(5)
+                                                      .Model(model =>
+                              {
+                                  model.Id(p => p.SiteVehicleApprovalID);
+                                  model.Field(p => p.CreatedBy).Editable(false);
+                                  model.Field(p => p.DateCreated).Editable(false);
+                              })
+                                                                                .Events(ev => ev
+                                                            .Error("error_handler(\"SitesVehicleTransfer#=SitesVehicleTransferID#\")")
+                                                            .RequestStart("onRequestStart(\"SitesVehicleTransfer#=SitesVehicleTransferID#\")")
+                                                            .RequestEnd("onRequestEnd(\"SitesVehicleTransfer#=SitesVehicleTransferID#\")"))
+                                                                                                                           .Create(update => update.Action("SiteVehicle_Approve", "SiteVehicleApproval", new { EId = "#=SitesVehicleTransferID#" }))
+                                                                                                                     .Read(read => read.Action("SiteVehicleApproval_Read", "SiteVehicleApproval", new { EId = "#=SitesVehicleTransferID#" }))
+                                                                                                                   .Update(update => update.Action("SiteVehicle_Approve", "SiteVehicleApproval"))
+
+
+                                                      )
+                                               .ToClientTemplate())
+                </text>
+                );
+            })
+                                                                                                                                                                                                                                                                                                                                                                                                            .ToClientTemplate())
+</script>
+
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 700px;
+    }
+</style>
+<script type="text/javascript">
+    var masterId;
+    var fleetPlate;
+    var IsApproved;
+    var IsSendForApproval;
+    var PlateNo;
+    function RejectPopUp(e) {
+        var masterRow = e.masterRow;
+
+        var masterGrid = $("#grid").data("kendoGrid");
+
+        var dataItem = masterGrid.dataItem(masterRow);
+        masterId = dataItem.SitesVehicleTransferID;
+        fleetPlate = dataItem.VoidBy;
+        IsApproved = dataItem.IsOnlineApproved;
+        IsSendForApproval = dataItem.IsSendForApproval;
+        PlateNo = dataItem.PlateNo;
+        var PartGrid = "#PartsGrid_" + masterId;
+        if (IsApproved == true || IsSendForApproved == true) {
+            $(".k-grid-top", PartGrid).hide();
+
+        }
+        var category = "";
+        var lineitem = "";
+        var index = 0;
+      
+        if (IsSendForApproval == false) {
+            $.ajax({
+                url: '@Url.Action("CheckListLog_Read", "CheckListLog")',
+
+                data: { Id: masterId, PlateNumber: PlateNo },
+                type: 'POST',
+                cache: false,
+                success: function (list) {
+                    for (var i = 0 ; i < list.length; i++) {
+
+                        lineitem += "    <div class='col-sm-12 form-group'>";
+                        if (category != list[i].CategoryName) {
+
+                            lineitem += "       <div class='col-sm-12'><h2 style='background-color:greenyellow'>" + list[i].CategoryName + " </h2></div>";
+                            category = list[i].CategoryName;
+                        }
+                       
+                        lineitem += "<div class='col-sm-3'  >  <input type='hidden' name=model.CheckListViewModel[" + index + "].InspectionId  value=" + masterId + ">   <input type='hidden' name=model.CheckListViewModel[" + index + "].LineName  value=" + list[i].LineName + " '>     <input type='hidden' name=model.CheckListViewModel[" + index + "].LineCode  value=" + list[i].LineCode + " '>    <input type='hidden' name=model.CheckListViewModel[" + index + "].CategoryName  value=" + list[i].CategoryName + " '>  <label class='k-label' ><h4> " + list[i].LineName + "</h4></label>   <input type='checkbox' id='checked" + i + "' class='cbx hidden' checked    name='model.CheckListViewModel[" + i + "].IsActive'   >   <label for='checked" + i + "' class='lbl'></label>            </div>  ";
+
+                        lineitem += "  <input type='text' name='model.CheckListViewModel[" + i + "].Remark' value='' class=' form-control'   style='padding: 5px;'>";
+
+                        index++;
+
+                        lineitem += "</div> </div>";
+                    } try {
+                        document.getElementById("lines" + masterId).innerHTML = lineitem;
+                    } catch (err) {
+                       
+                    }
+                }
+
+            });
+        }
+        if (IsSendForApproval == true) {
+            $.ajax({
+                url: '@Url.Action("AnnualInspectionlogLast_Read", "AnnualEquipmentInventoryInspection")',
+
+                data: { Id: masterId, PlateNumber: PlateNo },
+                type: 'POST',
+                cache: false,
+                success: function (list) {
+                    for (var i = 0 ; i < list.length; i++) {
+
+
+                        lineitem += "    <div class='col-sm-12'>";
+                        if (category != list[i].CategoryName) {
+
+                            lineitem += "       <div class='col-sm-12'><h2 style='background-color:greenyellow'>" + list[i].CategoryName + " </h2></div>";
+                            category = list[i].CategoryName;
+                        }
+                        lineitem += "<div class='row form-control' ><label   >  * " + list[i].LineName + "   </label> <p>" + list[i].Remark + " </p>   </div>";
+                        index++;
+
+                        lineitem += " </div>";
+                    }
+                    try {
+                        document.getElementById("approvedlines" + masterId).innerHTML = lineitem;
+                    }
+                    catch (Err)
+                    { }
+                }
+
+            });
+        }
+    }
+    function BindIntialSite() {
+
+        var Fleetsobj = $("#FleetsID").data("kendoDropDownList");
+        var fleetID = Fleetsobj.value();
+        $.ajax({
+            url: '@Url.Action("FleetsDetailDDBind", "EquipmentRegistration")',
+            data: { FleetsID: fleetID },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                r = result;
+                if (r != 0) {
+                    var s = r.split(/_/);
+                    if (s[4] == "" || s[4] == null)
+                    {
+                        $("#InitialSite").val("Not Assigned");
+                    }
+                    else
+                    {
+
+                    $("#Odometer").val(s[3]);
+                    $("#InitialSite").val(s[4]);
+                }
+                  
+                } else {
+                    $("#InitialSite").val('UnAssigned');
+                  
+                }
+            }
+
+        });
+
+    }
+    var IsApproved;
+    var IsSendForApproved;
+    function onDetailExpand(e) {
+        var masterRow = e.masterRow;
+
+        var masterGrid = $("#grid").data("kendoGrid");
+
+        var masterDataItem = masterGrid.dataItem(masterRow);
+        IsApproved = masterDataItem.IsOnlineApproved;
+        var masterId = masterDataItem.SitesVehicleTransferID;
+        IsSendForApproved = masterDataItem.IsSendForApproval;
+        var PartGrid = "#PartsGrid_" + masterId;
+        if (IsApproved == true || IsSendForApproved == true)
+        {
+            $(".k-grid-top", PartGrid).hide();
+           
+        }
+    }
+    function onDataBound(e) {
+        var grid = this;
+
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+            if (dataItem.IsSendForApproval == true || dataItem.IsOnlineApproved == true) {
+               
+                $(this).find(".k-grid-edit").remove();
+                $(this).find(".k-grid-delete").remove();
+            }
+
+            if (dataItem.IsOnlineApproved == true) {
+                $(this).addClass("k-state-FleetApproved");
+            }
+        });
+    }
+
+    function lineonDataBound(e) {
+        var grid = this;
+
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+            if (IsApproved == true || IsSendForApproved == true) {
+
+                $(this).find(".k-grid-edit").remove();
+                $(this).find(".k-grid-delete").remove();
+            }
+        });
+    }
+    function approveonDataBound(e) {
+        var grid = this;
+
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+            if (dataItem.Status == "Approve" || IsApproved == true) {
+             
+                $(this).find(".k-grid-edit").remove();
+                $(this).find(".k-grid-delete").remove();
+            }
+        });
+    }
+
+</script>

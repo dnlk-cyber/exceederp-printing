@@ -1,0 +1,67 @@
+﻿@using ExceedERP.Core.Domain.Finance.GL
+<legend>Journal Sources</legend>
+@(Html.Kendo().Grid<GLJournalSources>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Sources);
+          columns.Bound(c => c.Description);
+          columns.Bound(c => c.JournalRefernces).Width(120).Title("JournalRefernces").ClientTemplate(
+              "<input type='checkbox' disabled = 'true' value='#= JournalRefernces #' " +
+              "# if (JournalRefernces) { #" +
+              "checked='checked'" +
+              "# } #" +
+              "/>"
+              );
+          columns.Bound(c => c.JournalApproval).Width(120).Title("JournalApproval").ClientTemplate(
+              "<input type='checkbox' disabled = 'true' value='#= JournalApproval #' " +
+              "# if (JournalApproval) { #" +
+              "checked='checked'" +
+              "# } #" +
+              "/>"
+              );
+          columns.Bound(c => c.FreezJournal).Width(120).Title("FreezJournal").ClientTemplate(
+              "<input type='checkbox' disabled = 'true' value='#= FreezJournal #' " +
+              "# if (FreezJournal) { #" +
+              "checked='checked'" +
+              "# } #" +
+              "/>"
+              );
+         
+         
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+                             // toolbar.Excel();
+                              // toolbar.Pdf();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .HtmlAttributes(new { style = "height: 550px;" })
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(5))
+
+      .Scrollable()
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Filterable()
+      .Groupable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.GLJournalSourcesID))
+          .Read(read => read.Action("GLJournalSources_Read", "GlJournalSources"))
+          .Create(create => create.Action("GLJournalSources_Create", "GlJournalSources"))
+          .Update(update => update.Action("GLJournalSources_Update", "GlJournalSources"))
+          .Destroy(destroy => destroy.Action("GLJournalSources_Destroy", "GlJournalSources"))
+      ))

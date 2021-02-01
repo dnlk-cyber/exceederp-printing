@@ -1,0 +1,41 @@
+﻿<legend>Registration Number Prefix Set up</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.CMS.RegistrationNumberPrefix>()
+          .Name("grid")
+          .Columns(columns =>
+          {
+              columns.Bound(c => c.PrefixValue);
+              columns.Bound(c => c.Description);
+              columns.Bound(c => c.IsDefault).ClientTemplate("<input type='checkbox'" + " # if (IsDefault) { #" + "checked='checked'" + "# } #" + " />");
+
+              columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+          })
+          .ToolBar(toolbar =>
+          {
+              toolbar.Create();
+              toolbar.Excel();
+              toolbar.Pdf();
+          })
+          .Editable(editable => editable.Mode(GridEditMode.InLine))
+          .Pageable()
+          .Navigatable()
+          .Sortable(sortable =>
+          {
+              sortable.SortMode(GridSortMode.SingleColumn);
+          })
+          .Filterable()
+          .Scrollable(s => s.Height(700))
+          .DataSource(dataSource => dataSource
+              .Ajax()
+              .Model(model => model.Id(p => p.RegistrationNumberPrefixId))
+
+              .Events(ev => ev
+                        .Error("error_handler(\"grid\")")
+                        .RequestStart("onRequestStart(\"grid\")")
+                        .RequestEnd("onRequestEnd(\"grid\")"))
+
+              .Read(read => read.Action("RegistrationNumberPrefixs_Read", "RegistrationNumberPrefix"))
+              .Create(create => create.Action("RegistrationNumberPrefixs_Create", "RegistrationNumberPrefix"))
+              .Update(update => update.Action("RegistrationNumberPrefixs_Update", "RegistrationNumberPrefix"))
+              .Destroy(destroy => destroy.Action("RegistrationNumberPrefixs_Destroy", "RegistrationNumberPrefix"))
+          )
+)

@@ -1,0 +1,128 @@
+﻿@model ExceedERP.Core.Domain.FleetManagement.FleetEquipmentRent.RentInternalProject
+
+
+
+
+<script>
+    function filterEquipmentIdentity() {
+        return {
+            Name: $("#EquipmentIdentity").val()
+        };
+    }
+</script>
+<div class="demo-section k-content">
+    <form>
+
+
+        <div class="row">
+            <div class="col-md-1">
+            </div>
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+
+                        @Html.LabelFor(model => model.EquipmentType)
+                    </div>
+                    @(Html.Kendo().DropDownListFor(model => model.EquipmentType).Name("EquipmentIdentity")
+                                          .DataTextField("EquipmentCategoryName")
+                                                                  .DataValueField("EquipmentCategoryName").OptionLabel("Select").HtmlAttributes(new { style = "width:100%" })
+                                          .DataSource(d => d.Read(r => r.Action("EquipmentIdentityDDBind", "EquipmentCategory"))))
+
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+
+
+                        @Html.LabelFor(model => model.EquipmentIdentity)
+                    </div>
+                    @(Html.Kendo().DropDownListFor(model => model.EquipmentIdentity).Name("EquipmentType")
+                    .DataTextField("EquipmentTypeName")
+                            .DataValueField("EquipmentTypeName").OptionLabel("Select")
+                    .HtmlAttributes(new { style = "width:100%" })
+                    .DataSource(d =>
+                    {
+                        d.Read(r =>
+                        {
+                            r.Action("EquipmentTypeByNameDDBind", "EquipmentType").Data("filterEquipmentIdentity");
+                        })
+                      .ServerFiltering(true);
+                    })
+              .Enable(false)
+              .AutoBind(false)
+                       .CascadeFrom("EquipmentIdentity")
+                    )
+
+
+
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.RequestQuantity)
+                    </div>
+                    <div>
+                        @Html.Kendo().NumericTextBoxFor(model => model.RequestQuantity).Min(0)
+                        @Html.ValidationMessageFor(model => model.RequestQuantity)
+                    </div>
+
+                </div>
+            </div>
+                  </div>
+
+
+        <div class="row">
+            <div class="col-md-1">
+            </div>
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.StartingDate)
+                    </div>
+                    <div>
+                        @Html.Kendo().DatePickerFor(model => model.StartingDate)
+                        @Html.ValidationMessageFor(model => model.StartingDate)
+                    </div>
+
+                </div>
+            </div>
+
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.ToDate)
+                    </div>
+                    <div>
+                        @Html.Kendo().DatePickerFor(model => model.ToDate)
+                        @Html.ValidationMessageFor(model => model.ToDate)
+                    </div>
+
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                       <label>Equipment Owner</label> 
+                        </div>
+                        @(Html.Kendo().DropDownListFor(m => m.EquipmentOwner).Name("EquipmentOwner")
+        .DataTextField("Text")
+.DataValueField("Text").OptionLabel(" Select Equipment Owner ")
+.BindTo(EnumHelper.GetSelectList(typeof(ExceedERP.Core.Domain.FleetManagement.FleetEquipmentRent.RentInternalProject.EquipmentOwnerenum))))
+                    </div>
+
+                </div>
+            </div>
+
+
+       
+      
+  
+        </form> 
+</div>

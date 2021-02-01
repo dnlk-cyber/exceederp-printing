@@ -1,0 +1,27 @@
+﻿@using ExceedERP.Core.Localization
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.ProjectEquipmentPerformance>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+       
+        columns.Bound(c => c.Date);
+        columns.Bound(c => c.EquipmentType);
+        columns.Bound(c => c.PreviousPerformance);
+        columns.Bound(c => c.CurrentPeriodPerformance);
+        columns.Bound(c => c.ToDatePerformance);
+        columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.ProjectEquipmentPerformanceId))
+          .Read(read => read.Action("EquipmentPerformance_Read", "ProjectEquipmentPerformance"))
+          .Create(create => create.Action("EquipmentPerformance_Create", "ProjectEquipmentPerformance"))
+          .Update(update => update.Action("EquipmentPerformance_Update", "ProjectEquipmentPerformance"))
+          .Destroy(destroy => destroy.Action("EquipmentPerformance_Destroy", "ProjectEquipmentPerformance"))
+      )
+)

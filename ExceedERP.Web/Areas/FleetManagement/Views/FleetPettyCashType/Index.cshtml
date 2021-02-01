@@ -1,0 +1,48 @@
+﻿<legend> Petty Cash Type</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetRegistration.FleetPettyCashType>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Name);
+          columns.Bound(c => c.Description);
+
+          columns.Bound(c => c.DateCreated).Format("{0:dd/MM/yyyy}");
+
+
+        columns.Bound(c => c.CreatedBy);
+
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+          toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+          .HtmlAttributes(new { style = "height: 520px;" })
+                          .Pageable(pageable => pageable
+                                            .Input(true)
+                                            .Numeric(false)
+                                            .Refresh(true)
+                                            .PageSizes(true)
+                                            .ButtonCount(5))
+
+                                .Scrollable()
+                                .Sortable()
+                                .Filterable()
+                                .Scrollable(h => h.Height(500)).DataSource(dataSource => dataSource
+          .Ajax()
+              .Model(model =>
+              {
+                  model.Id(p => p.FleetPettyCashTypeId);
+                  model.Field(x=>x.DateCreated).Editable(false);
+                  model.Field(x=>x.CreatedBy).Editable(false);
+              })
+                                   .Events(ev => ev
+                                    .Error("error_handler(\"grid\")")
+                                    .RequestStart("onRequestStart(\"grid\")")
+                                    .RequestEnd("onRequestEnd(\"grid\")"))
+          .Read(read => read.Action("FleetPettyCashTypes_Read", "FleetPettyCashType"))
+          .Create(create => create.Action("FleetPettyCashTypes_Create", "FleetPettyCashType"))
+          .Update(update => update.Action("FleetPettyCashTypes_Update", "FleetPettyCashType"))
+          .Destroy(destroy => destroy.Action("FleetPettyCashTypes_Destroy", "FleetPettyCashType"))
+      )
+)

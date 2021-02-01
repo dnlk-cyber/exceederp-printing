@@ -1,0 +1,15 @@
+﻿@using Kendo.Mvc.UI
+
+@(Html.Kendo().DropDownListFor(m => m)
+                      .AutoBind(false)
+                      .OptionLabel("Select PurchaseOrder...")
+                          .DataTextField("PurchaseOrderID")
+                          .DataValueField("PurchaseOrderID")
+                      .DataSource(dataSource =>
+                      {
+                          dataSource.Read(read => read.Action("GetPurchaseOrder", "DataProvider"))
+                                    .ServerFiltering(true);
+                      })
+
+)
+@Html.ValidationMessageFor(m => m)

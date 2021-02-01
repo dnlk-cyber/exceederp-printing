@@ -1,0 +1,14 @@
+﻿@(Html.Kendo().DropDownListFor(m => m)
+                  .ValuePrimitive(true)
+                  .OptionLabel("Select Store...")
+                      .DataTextField("NameWithCode")
+                              .DataValueField("DrugStoreId")
+                              .Filter("contains")
+                               .DataSource(dataSource =>
+                              {
+                                  dataSource.Read(read => read.Action("GetDrugStores", "APTSDataProvider", new { area = "APTS" }))
+                                            .ServerFiltering(false);
+                              })
+                             
+)
+@Html.ValidationMessageFor(m => m)

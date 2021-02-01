@@ -1,0 +1,37 @@
+﻿@using ExceedERP.Core.Domain.Finance.AP
+@(Html.Kendo().Grid<APSupplierType>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.Supplier);
+        columns.Bound(c => c.Description);
+        columns.Bound(c => c.DateCreated);
+        columns.Bound(c => c.LastModified);
+        columns.Bound(c => c.CreatedBy);
+        columns.Bound(c => c.ModifiedBy);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Pageable()
+           .Selectable(selectable =>
+                        {
+                            selectable.Mode(GridSelectionMode.Single);
+                            selectable.Type(GridSelectionType.Row);
+                        })
+                    .Sortable(sortable =>
+                    {
+                        sortable.SortMode(GridSortMode.SingleColumn);
+                    })
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.APSupplierTypeID))
+          .Read(read => read.Action("APSupplierTypes_Read", "APSupplierType"))
+          .Create(create => create.Action("APSupplierTypes_Create", "APSupplierType"))
+          .Update(update => update.Action("APSupplierTypes_Update", "APSupplierType"))
+          .Destroy(destroy => destroy.Action("APSupplierTypes_Destroy", "APSupplierType"))
+      )
+)

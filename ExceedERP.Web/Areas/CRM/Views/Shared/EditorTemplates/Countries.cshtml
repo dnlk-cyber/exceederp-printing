@@ -1,0 +1,13 @@
+﻿@(Html.Kendo().DropDownListFor(m => m)
+                  .AutoBind(false)
+                  .OptionLabel("--Select Country--")
+                  .DataTextField("Name")
+                  .DataValueField("CountryID")
+                  .DataSource(dataSource =>
+                  {
+                      dataSource.Read(read => read.Action("GetCountry", "CRMDataProvider"))
+                                .ServerFiltering(true);
+                  })
+
+)
+@Html.ValidationMessageFor(m => m)

@@ -1,0 +1,40 @@
+﻿@using ExceedERP.Core.Domain.FixedAsset.Setting
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Fixed Asset Clearing Account Setup</legend>
+@(Html.Kendo().Grid<FixedAssetClearingAccountSetup>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.AccountCode).Width(200);
+
+          columns.Bound(c => c.DateCreated).Width(200);
+          columns.Bound(c => c.LastModified).Width(200);
+          columns.Bound(c => c.CreatedBy).Width(200);
+          columns.Bound(c => c.ModifiedBy).Width(200);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Pageable()
+      .Scrollable()
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.FixedAssetClearingAccountSetupID))
+          .Read(read => read.Action("FixedAssetClearingAccountSetups_Read", "FixedAssetClearingAccountSetup"))
+          .Create(create => create.Action("FixedAssetClearingAccountSetups_Create", "FixedAssetClearingAccountSetup"))
+          .Update(update => update.Action("FixedAssetClearingAccountSetups_Update", "FixedAssetClearingAccountSetup"))
+          .Destroy(destroy => destroy.Action("FixedAssetClearingAccountSetups_Destroy", "FixedAssetClearingAccountSetup"))
+      ))

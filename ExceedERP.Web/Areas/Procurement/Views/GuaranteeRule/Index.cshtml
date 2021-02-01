@@ -1,0 +1,68 @@
+﻿@using ExceedERP.Core.Domain.Procurement.Guarantee
+@using ExceedERP.Core.Domain.Procurement.Settings
+<legend>Guarantee Rules</legend>
+@(Html.Kendo().Grid<GuaranteeRule>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.ProcurementCategory).EditorTemplateName("ProcurementCategorys").Width(200);
+          columns.Bound(c => c.GuaranteeType).EditorTemplateName("GuaranteeTypes").Width(200);
+          columns.Bound(c => c.GuaranteeMode).EditorTemplateName("GuaranteeModes").Width(200);
+          columns.Bound(c => c.DateCreated).Hidden();
+          columns.Bound(c => c.LastModified).Hidden();
+          columns.Bound(c => c.CreatedBy).Hidden();
+          columns.Bound(c => c.ModifiedBy).Hidden();
+          columns.Command(command =>
+          {
+              command.Edit(); 
+              command.Destroy();
+          }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .HtmlAttributes(new { style = "height: 550px;" })
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(5))
+
+      .Scrollable()
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Filterable()
+      .Groupable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Events(ev => ev
+              .Error("error_handler(\"grid\")")
+              .RequestStart("onRequestStart(\"grid\")")
+              .RequestEnd("onRequestEnd(\"grid\")"))
+          .Model(
+              model =>
+              {
+                  model.Id(p => p.GuaranteeMode);
+                  model.Field(p => p.CreatedBy).Editable(false);
+                  model.Field(p => p.ModifiedBy).Editable(false);
+                  model.Field(p => p.LastModified).Editable(false);
+                  model.Field(p => p.DateCreated).Editable(false);
+
+              })
+             
+          .Read(read => read.Action("GuaranteeRules_Read", "GuaranteeRule"))
+          .Create(create => create.Action("GuaranteeRules_Create", "GuaranteeRule"))
+          .Update(update => update.Action("GuaranteeRules_Update", "GuaranteeRule"))
+          .Destroy(destroy => destroy.Action("GuaranteeRules_Destroy", "GuaranteeRule"))
+      )
+      .Events(events => events
+          .DataBound("onDataBoundMaster")))

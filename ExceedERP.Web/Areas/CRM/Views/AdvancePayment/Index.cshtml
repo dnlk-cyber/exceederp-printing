@@ -1,0 +1,109 @@
+﻿<legend>Advance Payment</legend>  
+<hr />
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.AdvancePayment>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.AdvancePaymentId).Title("#").Width(100);
+
+          columns.ForeignKey(c => c.Customer, (System.Collections.IEnumerable)ViewData["OrganizationCustomer"], "OrganizationCustomerID", "TradeName").Title("Customer").EditorTemplateName("OrgCustomerEditor").Width(160);
+           
+            columns.Bound(c => c.GrandTotal).Width(120);
+            columns.Bound(c => c.DateCreated).Format("{0:yyyy-MM-dd}").Width(120);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+        .HtmlAttributes(new { style = "height: 520px;" })
+                                                  .Pageable(pageable => pageable
+                                                                    .Input(true)
+                                                                    .Numeric(false)
+                                                                    .Refresh(true)
+                                                                    .PageSizes(true)
+                                                                    .ButtonCount(5))
+
+                                                        .Scrollable()
+                                                        .Sortable()
+                                                        .Filterable()
+                                                        .Groupable()
+                                                        .Scrollable(h => h.Height(500))
+                                                       // .ClientDetailTemplateId("template")
+      .DataSource(dataSource => dataSource
+          .Ajax()
+                               .Model(model =>
+                                                  {
+                                                      model.Id(p => p.AdvancePaymentId);
+                                                      model.Field(v => v.GrandTotal).Editable(false);
+                                                      model.Field(v => v.DateCreated).Editable(false);
+                                                      model.Field(v => v.AdvancePaymentId).Editable(false);
+                                                  })    .Events(ev => ev
+                                                                                                        .Error("error_handler(\"grid\")")
+                                                                                                        .RequestStart("onRequestStart(\"grid\")")
+                                                                                                        .RequestEnd("onRequestEnd(\"grid\")"))
+                
+          .Read(read => read.Action("AdvancePayments_Read", "AdvancePayment"))
+          .Create(create => create.Action("AdvancePayments_Create", "AdvancePayment"))
+          .Update(update => update.Action("AdvancePayments_Update", "AdvancePayment"))
+          .Destroy(destroy => destroy.Action("AdvancePayments_Destroy", "AdvancePayment"))
+          ).ClientDetailTemplateId("template")
+)
+
+
+
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                    .Name("tabstrip_#=AdvancePaymentId#")
+    .SelectedIndex(0)
+    .Items(items =>
+                {
+
+
+                    /***********************************************Advance Payment Line **************************************************/
+                    items.Add().Text(" ").Content(
+                        @<text>
+                            <legend>  Payment List </legend>
+                            @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.AdvancePaymentLine>()
+              .Name("AdvancePaymentLineGrid_#=AdvancePaymentId#")
+      .Columns(columns =>
+      {
+          columns.Bound(cp => cp.AdvancePaymentLineId).Title("Id").Width(80);
+          columns.ForeignKey(c => c.RecieveMethod, (System.Collections.IEnumerable)ViewData["PaymentMethod"], "PaymentMethodID", "Method").Title("Recieve Method").EditorTemplateName("GetReceiveMethod").Width(120);
+             columns.Bound(cp => cp.Value).EditorTemplateName("NumEditor").Width(120);
+           columns.Bound(cp => cp.DateCreated).Format("{0:yyyy-MM-dd}").Width(100);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()                                              .Model(model =>
+                                              {
+                                                  model.Id(p => p.AdvancePaymentLineId);
+ 
+                                                  model.Field(v => v.DateCreated).Editable(false);
+                                                  model.Field(v => v.AdvancePaymentLineId).Editable(false);
+                                              })
+                   .Events(ev => ev
+                                                                                                        .Error("error_handler(\"AdvancePaymentLineGrid_#=AdvancePaymentId#\")")
+                                                                                                        .RequestStart("onRequestStart(\"AdvancePaymentLineGrid_#=AdvancePaymentId#\")")
+                                                                                                        .RequestEnd("onRequestEnd(\"AdvancePaymentLineGrid_#=AdvancePaymentId#\")"))
+                  .Read(read => read.Action("AdvancePaymentLines_Read", "AdvancePaymentLine", new { Id = "#=AdvancePaymentId#" }))
+                  .Create(create => create.Action("AdvancePaymentLines_Create", "AdvancePaymentLine", new { Id = "#=AdvancePaymentId#" }))
+          .Update(update => update.Action("AdvancePaymentLines_Update", "AdvancePaymentLine"))
+          .Destroy(destroy => destroy.Action("AdvancePaymentLines_Destroy", "AdvancePaymentLine"))
+       ).ToClientTemplate()
+
+                            )
+                        </text>
+
+         );
+                }).ToClientTemplate()
+
+    )
+</script>

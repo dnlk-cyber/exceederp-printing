@@ -1,0 +1,27 @@
+﻿@using ExceedERP.Core.Domain.Procurement.Proforma
+
+@(Html.Kendo().Grid<ProformaItem>()
+      .Name("proformaItemgrid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.ItemCategory);
+          columns.Bound(c => c.InventoryItem);
+          columns.Bound(c => c.UOM);
+          columns.Bound(c => c.Quantity);
+          columns.Bound(c => c.Description);
+        
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.ProformaItemID))
+          .Read(read => read.Action("ProformaItems_Read", "ProformaItem", new { id = "#= ProformaPurchaseID #" }))
+          .Create(create => create.Action("ProformaItems_Create", "ProformaItem" ,new { id = "#= ProformaPurchaseID #" }))
+          .Update(update => update.Action("ProformaItems_Update", "ProformaItem"))
+          .Destroy(destroy => destroy.Action("ProformaItems_Destroy", "ProformaItem"))
+      ))

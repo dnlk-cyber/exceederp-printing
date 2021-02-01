@@ -1,0 +1,278 @@
+﻿@{
+    ViewBag.Title = "Vehicle Distribution";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend> Equipment Return </legend>
+
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetResource.VehicleDistribution>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+
+             columns.Bound(e => e.Type).Width(100);
+          columns.Bound(e => e.FromBranchName).Width(100);
+          columns.Bound(e => e.FromStructureName).Width(100);
+          columns.Bound(o => o.RequestNumber).Width(80);
+
+
+  
+      })
+      .Editable(editable =>
+          {
+                editable.DisplayDeleteConfirmation("Are You Sure You Recieved All Requested Equipment");
+          })
+           .HtmlAttributes(new { style = "height: 520px;" })
+                      .Pageable(pageable => pageable
+                                        .Input(true)
+                                        .Numeric(false)
+                                        .Refresh(true)
+                                        .PageSizes(true)
+                                        .ButtonCount(5))
+
+                            .Scrollable()
+                            .Sortable()
+                            .Filterable()
+                            .Groupable()
+                            .Scrollable(h => h.Height(500))
+      .ClientDetailTemplateId("template")
+
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .ServerOperation(false)
+                    .Sort(x => x.Add(s => s.RequestNumber).Descending())
+          .Model(model =>
+              {
+                  model.Id(p => p.VehicleDistributionID);
+
+              })
+                                     .Events(ev => ev
+                                    .Error("error_handler(\"grid\")")
+                                    .RequestStart("onRequestStart(\"grid\")")
+                                    .RequestEnd("onRequestEnd(\"grid\")"))
+          .Create(update => update.Action("VehicleDistribution_Create", "EquipmentDistribution"))
+              .Read(read => read.Action("VehicleReturn_Read", "EquipmentDistribution"))
+          .Update(update => update.Action("VehicleDistribution_Update", "EquipmentDistribution"))
+          .Destroy(update => update.Action("VehicleDistribution_Destroy", "EquipmentDistribution"))
+      )
+      .Events(events => events.DataBound("dataBound")))
+
+
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                                            .Name("tabStrip_#=VehicleDistributionID#")
+            .SelectedIndex(0)
+            .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+            .Items(items =>
+            {
+
+        
+                items.Add().Text("Assigned List").Content(@<text>
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetResource.AssignedEquipment>()
+                                                                .Name("AssignedConfirmedEquipmentgrid_#=RequestID#")
+                        .Columns(columns =>
+                        {
+                            columns.Bound(o => o.EquipmentName).EditorTemplateName("AssignEquipment").Width(100);
+                         
+                            columns.Command(command => { command.Destroy().Text(" Accept Equipment "); }).Width(50);
+
+                        })  .Editable(editable =>
+          {
+                editable.DisplayDeleteConfirmation("Are You Sure Returning Equipment");
+          })
+                        .Events(e=>e.DataBound("acceptdataBound"))
+                              .DataSource(dataSource => dataSource
+                            .Ajax()
+                                                    .PageSize(5)
+                                 .Model(model =>
+                      {
+                          model.Id(p => p.AssignedEquipmentID);
+                          model.Field(p => p.EquipmentName).Editable(true);
+                      })                   .Events(ev => ev
+                                        .Error("error_handler(\"AssignedConfirmedEquipmentgrid_#=RequestID#\")")
+                                        .RequestStart("onRequestStart(\"AssignedConfirmedEquipmentgrid_#=RequestID#\")")
+                                        .RequestEnd("onRequestEnd(\"AssignedConfirmedEquipmentgrid_#=RequestID#\")"))
+                                                       .Create(update => update.Action("AssignedEquipment_Create", "AssignedEquipment", new { createRequestNumber = "#=RequestID#", createType = "R" }))
+                            .Update(update => update.Action("AssignEquipment", "AssignedEquipment"))
+                                                               .Read(read => read.Action("ArrivedEquipment", "AssignedEquipment", new { readRequestNumber = "#=RequestID#", type = "R" }))
+                                                                                                                                     .Destroy(update => update.Action("AcceptEquipment", "AssignedEquipment", new { acceptId = "#=RequestID#", type = "R" })))
+  
+                        .Sortable()
+                        .ToClientTemplate())
+                </text>
+                );
+
+
+    @*
+                items.Add().Text(" Approval").Content(@<text>
+                    # if (IsSendForApproval == false || IsSendForApproval == "false")
+                    {#
+
+                    <a href='@Url.Action("VehicleReturn_SendForOnlineApproval", "VehicleReturnApproval")/?EId=#=VehicleDistributionID#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                    # }#
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetResource.VehicleReturnApproval>()
+                                                                                                                .Name("VehicleDistributionApproval#=VehicleDistributionID#")
+                        .Columns(columns =>
+                        {
+                            columns.Bound(o => o.Status).EditorTemplateName("ApprovalEditor").Width(126);
+
+                            columns.Bound(o => o.Remark).Width(200);
+                            columns.Command(command => { command.Edit(); }).Width(250);
+
+                        }).Events(ev =>
+                        {
+                            ev.DataBound("approveonDataBound");
+                        })
+                             .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                       .DataSource(dataSource => dataSource
+                            .Ajax()
+                            .PageSize(5)
+                                              .Model(model => model.Id(p => p.VehicleReturnId))
+                                                                                .Events(ev => ev
+                                                            .Error("error_handler(\"VehicleDistributionApproval#=VehicleDistributionID#\")")
+                                                            .RequestStart("onRequestStart(\"VehicleDistributionApproval#=VehicleDistributionID#\")")
+                                                            .RequestEnd("onRequestEnd(\"VehicleDistributionApproval#=VehicleDistributionID#\")"))
+                                                                                                                                   .Create(update => update.Action("VehicleReturn_Approve", "VehicleReturnApproval", new { EId = "#=VehicleDistributionID#" }))
+                                                                                                                                             .Read(read => read.Action("VehicleReturnApproval_Read", "VehicleReturnApproval", new { EId = "#=VehicleDistributionID#" }))
+                                                                                                                                           .Update(update => update.Action("VehicleReturn_Approve", "VehicleReturnApproval"))
+
+
+                                                      )
+                                               .ToClientTemplate())
+                </text>
+                );
+        *@
+            }).ToClientTemplate())
+</script>
+
+<script>
+  
+</script>
+
+<script type="text/javascript">
+  
+    var masterId;
+    var IsApproved;
+    var IsSendForApproved;
+    function dataBound() {
+        this.expandRow(this.tbody.find("tr.k-master-row").first());
+
+        var grid = this;
+
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+            var linegridName = "#AssignedConfirmedEquipmentgrid_" + masterId;
+
+
+            if (dataItem.ReturnStatus == "Finished") {
+                console.log("Forwarded");
+                $(this).find(".k-grid-delete").remove();
+                $(".k-grid-top", linegridName).hide();
+                $(".k-grid-edit", linegridName).hide();
+                $(".k-grid-delete", linegridName).hide();
+            }
+        });
+    }
+
+
+    function acceptdataBound() {
+         this.expandRow(this.tbody.find("tr.k-master-row").first());
+
+        var grid = this;
+
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+            console.log("stat " + dataItem.IsAssigned);
+            if (dataItem.IsAssigned == false) {
+                console.log("Forwarded");
+                $(this).find(".k-grid-delete").remove();
+
+            }
+        });
+    }
+
+    function onDetailExpandUser(e) {
+        var masterRow = e.masterRow;
+
+        var masterGrid = $("#grid").data("kendoGrid");
+
+        var masterDataItem = masterGrid.dataItem(masterRow);
+        var r = masterDataItem.ReturnStatus;
+        masterId = masterDataItem.JobOrderID;
+        IsApproved = masterDataItem.IsOnlineApproved;
+        IsSendForApproved = masterDataItem.IsSendForApproval;
+
+        var linegridName = "#JobOrderDetailgrid_" + masterId;
+        var firstValidationgridName = "#gridd_" + masterId;
+        var SecondValidationgridName = "#JobOrderAdmingrid_" + masterId;
+        console.error(" status " + r);
+                if (r == "Waiting Technical Approval") {
+                    $(linegridName).find(".k-toolbar").hide(); //hide toolbar
+                    $(".k-grid-top", linegridName).hide();
+                    $(".k-grid-edit", linegridName).hide();
+                    $(".k-grid-delete", linegridName).hide();
+                }
+                else if (r == "Waiting Administrative Approval") {
+                    $(linegridName).find(".k-toolbar").hide(); //hide toolbar
+                    $(".k-grid-top", linegridName).hide();
+                    $(".k-grid-edit", linegridName).hide();
+                    $(".k-grid-delete", linegridName).hide();
+
+                    $(".k-grid-top", firstValidationgridName).hide();
+                    $(".k-grid-edit", firstValidationgridName).hide();
+                    $(".k-grid-delete", firstValidationgridName).hide();
+                }
+                else if (r == "Closed") {
+                    $(linegridName).find(".k-toolbar").hide(); //hide toolbar
+                    $(".k-grid-top", linegridName).hide();
+                    $(".k-grid-edit", linegridName).hide();
+                    $(".k-grid-delete", linegridName).hide();
+
+
+                    $(".k-grid-top", firstValidationgridName).hide();
+                    $(".k-grid-edit", firstValidationgridName).hide();
+                    $(".k-grid-delete", firstValidationgridName).hide();
+                    $(".k-grid-top", SecondValidationgridName).hide();
+                    $(".k-grid-edit", SecondValidationgridName).hide();
+                    $(".k-grid-delete", SecondValidationgridName).hide();
+                }
+                else if (r == "Closed") {
+                    $(linegridName).find(".k-toolbar").hide(); //hide toolbar
+                    $(".k-grid-top", linegridName).hide();
+                    $(".k-grid-edit", linegridName).hide();
+                    $(".k-grid-delete", linegridName).hide();
+
+                    $(".k-grid-top", firstValidationgridName).hide();
+                    $(".k-grid-edit", firstValidationgridName).hide();
+                    $(".k-grid-delete", firstValidationgridName).hide();
+
+                    $(".k-grid-top", SecondValidationgridName).hide();
+                    $(".k-grid-edit", SecondValidationgridName).hide();
+                    $(".k-grid-delete", SecondValidationgridName).hide();
+                }
+                else {
+                    $(linegridName).find(".k-toolbar").show(); //hide toolbar
+                    $(".k-grid-top", linegridName).show();
+                }
+
+            }
+    function approveonDataBound(e) {
+        var grid = this;
+
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+            if (dataItem.Status == "Approve" || IsApproved == true) {
+                console.log("Approved");
+                $(this).find(".k-grid-edit").remove();
+                $(this).find(".k-grid-delete").remove();
+            }
+        });
+    }
+
+
+</script>
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 700px;
+    }
+</style>    

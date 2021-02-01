@@ -1,0 +1,83 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@using Kendo.Mvc.UI
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>  Setting | Crops </legend>
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Production.CropViewModel>()
+                          .Name("cropGrid")
+                          .Columns(columns =>
+                          {
+                              columns.ForeignKey(c => c.ItemCategoryCode, (IEnumerable)ViewData["ItemCategorys"], "ItemCategoryCode", "Name").EditorTemplateName("ItemCategory");
+                              columns.ForeignKey(c => c.ItemCode, (IEnumerable)ViewData["Items"], "ItemCode", "Name").EditorTemplateName("Item");
+                              columns.Bound(c => c.UoM);
+                              columns.Bound(c => c.Description);
+                              //columns.Bound(c => c.Remark);
+
+                              columns.Command(command =>
+                              {
+                                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                  command.Destroy().Text(Resources.ActionButton_Cancel);
+                              }).Width(200);
+
+                          })
+                          .ToolBar(toolbar =>
+                          {
+                              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                          })
+                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                          .Selectable(selectable =>
+                          {
+                              selectable.Mode(GridSelectionMode.Single);
+                              selectable.Type(GridSelectionType.Row);
+                          })
+                          .Scrollable(h => h.Height(500))
+                          .Sortable(sortable =>
+                          {
+                              sortable.SortMode(GridSortMode.SingleColumn);
+                          })
+                          .Filterable()
+                          .Pageable(pageable => pageable
+                              .Input(true)
+                              .Numeric(false)
+                              .Refresh(true)
+                              .PageSizes(true)
+                              .ButtonCount(5))
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+
+                              .Events(events =>
+                              {
+                                  events.Error("error_handler(\"cropGrid\")");
+                                  events.RequestStart("onRequestStart(\"cropGrid\")");
+                                  events.RequestEnd("onRequestEnd(\"cropGrid\")");
+                              })
+                              .Model(model =>
+                              {
+                                  model.Id(f => f.CropId);
+                                  model.Field(f => f.Name).Editable(false);
+                                  model.Field(f => f.UoM).Editable(false);
+                              })
+
+                              .Read(read => read.Action("Crops_Read", "Crop"))
+                              .Create(create => create.Action("Crop_Create", "Crop"))
+                              .Update(update => update.Action("Crop_Update", "Crop"))
+                              .Destroy(destroy => destroy.Action("Crop_Destroy", "Crop"))
+                          )
+)
+
+
+<script>
+    function filterCategories() {
+        //
+        // summary:
+        //      send the filtering text along with the parent widget's value
+        var dropdownlist = $("#ItemCode").data("kendoDropDownList");
+        var filterInput = dropdownlist.filterInput;
+        return {
+            ItemCategoryCode: $("#ItemCategoryCode").val(), filterString: filterInput.val()
+        };
+    }
+</script>

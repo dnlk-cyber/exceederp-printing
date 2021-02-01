@@ -1,0 +1,8 @@
+﻿@model ExceedERP.Web.Areas.FleetManagement.Models.MaintainceDueViewModel
+
+
+<div class="form-control">
+  Are U Sure to Dispatch @(Html.Kendo().TextBoxFor(model=>model.PlateNumber))
+    >@Html.ActionLink("Dispatch Due", "Dispatch_Due", "Due", new { area = "FleetManagement" },  new { fleetID = Model.AssetId})
+
+</div>

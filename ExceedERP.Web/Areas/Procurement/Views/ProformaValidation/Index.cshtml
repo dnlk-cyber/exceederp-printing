@@ -1,0 +1,25 @@
+﻿@using ExceedERP.Core.Domain.Procurement.Proforma
+
+@(Html.Kendo().Grid<PurchaseValidation>()
+      .Name("proformaValidationgrid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Status);
+          columns.Bound(c => c.Remark);
+        
+        
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.PurchaseValidationID))
+          .Read(read => read.Action("PurchaseValidations_Read", "ProformaValidation"))
+          .Create(create => create.Action("PurchaseValidations_Create", "ProformaValidation"))
+          .Update(update => update.Action("PurchaseValidations_Update", "ProformaValidation"))
+          .Destroy(destroy => destroy.Action("PurchaseValidations_Destroy", "ProformaValidation"))
+      ))

@@ -1,0 +1,58 @@
+﻿<legend>Priority </legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.InfoDesk.Support.PriorityType_HelpDesk>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.PriorityType_HelpDeskId);
+          columns.Bound(c => c.Name);
+          columns.Bound(c => c.ColorHolder).EditorTemplateName("ColorPicker").HtmlAttributes(new { style = "background-color:#:Color#;" });
+          columns.Bound(c => c.Description);
+          columns.Bound(c => c.Remark);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create();
+      })
+         .Editable(editable => editable.Mode(GridEditMode.InLine))
+                        .HtmlAttributes(new { style = "height: 520px;" })
+                                          .Pageable(pageable => pageable
+                                                            .Input(true)
+                                                            .Numeric(false)
+                                                            .Refresh(true)
+                                                            .PageSizes(true)
+                                                            .ButtonCount(5))
+
+                                                .Scrollable()
+                                                .Sortable()
+                                                .Filterable()
+                                                .Groupable()
+                                                .Scrollable(h => h.Height(500)).DataSource(dataSource => dataSource
+          .Ajax()
+              .Model(model =>
+              { model.Id(p => p.PriorityType_HelpDeskId);
+                  model.Field(p => p.Color).DefaultValue("#ffffff");
+                  model.Field(p => p.LastModified).Editable(false);
+
+                  model.Field(p => p.ModifiedBy).Editable(false);
+                  model.Field(p => p.DateCreated).Editable(false);
+                  model.Field(p => p.CreatedBy).Editable(false);
+
+                  model.Field(p => p.PriorityType_HelpDeskId).Editable(false);
+              })
+
+                    .Events(ev => ev
+                                                                .Error("error_handler(\"grid\")")
+                                                                .RequestStart("onRequestStart(\"grid\")")
+                                                                .RequestEnd("onRequestEnd(\"grid\")"))
+          .Read(read => read.Action("PriorityTypes_Read", "PriorityType"))
+          .Create(create => create.Action("PriorityTypes_Create", "PriorityType"))
+          .Update(update => update.Action("PriorityTypes_Update", "PriorityType"))
+          .Destroy(destroy => destroy.Action("PriorityTypes_Destroy", "PriorityType"))
+      )
+)
+<script>
+    function preview(e) {
+        $("#background").css("background-color", e.value);
+    }
+</script>

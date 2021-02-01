@@ -1,0 +1,43 @@
+﻿
+<legend> Holiday </legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.CRMHoliday>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.ForeignKey(c => c.HolidayDefinitionID, (System.Collections.IEnumerable)ViewData["HolidayDefinitionList"], "HolidayDefinitionID", "Description").EditorTemplateName("HolidayDefinitionList").Width(300);
+          columns.ForeignKey(c => c.PeriodID, (System.Collections.IEnumerable)ViewData["PeriodList"], "PeriodID", "PeriodName").EditorTemplateName("Period").Title(" Parent");
+          columns.Bound(c => c.Remark);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+       .HtmlAttributes(new { style = "height: 520px;" })
+                                                  .Pageable(pageable => pageable
+                                                                    .Input(true)
+                                                                    .Numeric(false)
+                                                                    .Refresh(true)
+                                                                    .PageSizes(true)
+                                                                    .ButtonCount(5))
+
+                                                        .Scrollable()
+                                                        .Sortable()
+                                                        .Filterable()
+                                                        .Groupable()
+                                                        .Scrollable(h => h.Height(500))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.CRMHolidayID))
+                   .Events(ev => ev
+                                                                                .Error("error_handler(\"grid\")")
+                                                                                .RequestStart("onRequestStart(\"grid\")")
+                                                                                .RequestEnd("onRequestEnd(\"grid\")"))
+
+          .Read(read => read.Action("Holidays_Read", "Holiday"))
+          .Create(create => create.Action("Holidays_Create", "Holiday"))
+          .Update(update => update.Action("Holidays_Update", "Holiday"))
+          .Destroy(destroy => destroy.Action("Holidays_Destroy", "Holiday"))
+      )
+)

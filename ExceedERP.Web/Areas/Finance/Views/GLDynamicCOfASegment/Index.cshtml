@@ -1,0 +1,104 @@
+﻿@using ExceedERP.Core.Domain.Finance.GL.Dynamic
+<legend>Chart of account Segment Values</legend>
+@(Html.Kendo().Grid<GLChartOfAccountSegment>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.ForeignKey(p => p.GLSegmentSetupId, (System.Collections.IEnumerable)ViewData["SetupSegments"], "GLSegmentSetupId", "Name").Width(130).Title("Type").Width(120).EditorTemplateName("SegmentTypeSelector");
+          columns.Bound(c => c.Values).Width(80);
+          columns.Bound(c => c.Description).Width(140);
+          columns.Bound(c => c.HasParent).Width(100);
+          columns.Bound(c => c.Enable).Width(100).Title("Enable").ClientTemplate(
+              "<input type='checkbox' disabled = 'true' value='#= Values #' " +
+              "# if (Enable) { #" +
+              "checked='checked'" +
+              "# } #" +
+              "/>"
+              );
+          columns.Bound(c => c.Parent).Width(100).Title("Is Parent?").ClientTemplate(
+              "<input type='checkbox' disabled = 'true' value='#= Values #' " +
+              "# if (Parent) { #" +
+              "checked='checked'" +
+              "# } #" +
+              "/>"
+              );
+
+          columns.Bound(c => c.AllowBudgeting).Width(130).ClientTemplate(
+              "<input type='checkbox' disabled = 'true' value='#= Values #' " +
+              "# if (AllowBudgeting) { #" +
+              "checked='checked'" +
+              "# } #" +
+              "/>"
+              );
+          columns.Bound(c => c.AllowPosting).Width(140).ClientTemplate(
+              "<input type='checkbox' disabled = 'true' value='#= Values #' " +
+              "# if (AllowPosting) { #" +
+              "checked='checked'" +
+              "# } #" +
+              "/>"
+              );
+
+          columns.Command(command => { command.Edit(); /*command.Destroy();*/  command.Custom("En").Click("Enable"); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+          toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .HtmlAttributes(new { style = "height: 550px;" })
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(20))
+      .Scrollable()
+      .Sortable()
+      .Filterable()
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Events(ev => ev
+              .Error("error_handler(\"grid\")")
+              .RequestStart("onRequestStart(\"grid\")")
+              .RequestEnd("onRequestEnd(\"grid\")"))
+          .Model(model => model.Id(p => p.GLChartOfAccountSegmentId))
+          .Read(read => read.Action("GlChartOfAccountSegments_Read", "GlDynamicCofASegment"))
+          .Create(create => create.Action("GlChartOfAccountSegments_Create", "GlDynamicCofASegment"))
+          .Update(update => update.Action("GlChartOfAccountSegments_Update", "GlDynamicCofASegment"))
+          .Destroy(destroy => destroy.Action("GlChartOfAccountSegments_Destroy", "GlDynamicCofASegment"))
+      ))
+<script>
+
+
+    function Enable(e) {
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        var id = dataItem.GLChartOfAccountSegmentId;
+        $.ajax({
+
+            type: "GET",
+            data: dataItem.GLChartOfAccountSegmentId, //I obtained the id properly
+            url: '@Url.Action("Enable_Disable", "GlDynamicCofASegment")/' + dataItem.GLChartOfAccountSegmentId,
+            success: function (result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                location.reload(true);
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+
+        });
+
+        $('#grid').data('kendoGrid').dataSource.read();
+        $('#grid').data('kendoGrid').refresh();
+        location.reload();
+    };
+</script>

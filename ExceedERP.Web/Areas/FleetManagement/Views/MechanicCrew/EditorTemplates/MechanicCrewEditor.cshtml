@@ -1,0 +1,125 @@
+﻿@model ExceedERP.Core.Domain.FleetManagement.FleetMaintenance.MechanicCrew
+
+
+
+<div class = "demo-section k-content">
+    <form>
+
+    <div class = "row">
+        <div class = "col-md-1">
+        </div>
+        <div class = "col-md-3">
+            <div class = "form-group">
+                <div class = "k-label">
+                    @Html.LabelFor(model => model.EmployeeId)
+                </div>
+                <div>
+
+                    @(Html.Kendo().DropDownListFor(model => model.EmployeeId).Name("EmployeeId")
+            .DataTextField("Name")
+                                    .DataValueField("Value").OptionLabel(" Select ").Events(x => x.Change("GetJobTitle")).Filter(FilterType.Contains).HtmlAttributes(new { style = "width:100%" })
+                                            .DataSource(d => d.Read(r => r.Action("MechanicDDBind", "FleetDataProvider"))))
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.JobTitle)
+                </div>
+                <div>
+                    @Html.Kendo().TextBoxFor(model => model.JobTitle).Enable(false)
+
+                </div>
+            </div>
+        </div>
+
+
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.Postion)
+                    @(Html.Kendo().DropDownListFor(model => model.Postion).Name("Postion")
+                    .DataTextField("Name").Filter(FilterType.Contains)
+                            .DataValueField("Name").OptionLabel("Select Postion").HtmlAttributes(new { style = "width:100%" })
+                                    .DataSource(d => d.Read(r => r.Action("OperatorPositionDDBind", "OperatorPosition")).ServerFiltering(false)))
+                </div>
+            </div>
+        </div>
+    </div>
+
+        <div class="row">
+            <div class="col-md-1">
+            </div>
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.SupervisorName)
+                    </div>
+                    <div>
+                        @(Html.Kendo().DropDownListFor(model => model.EmployeeId).Name("SupervisorName")
+            .DataTextField("Name")
+                                    .DataValueField("Value").OptionLabel(" Select ").Filter(FilterType.Contains).HtmlAttributes(new { style = "width:100%" })
+                                            .DataSource(d => d.Read(r => r.Action("MechanicDDBind", "FleetDataProvider"))))
+                      
+                    </div>
+
+                </div>
+            </div>
+
+
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.HourlyWage)
+                    </div>
+                    <div>
+                        @Html.Kendo().NumericTextBoxFor(model => model.HourlyWage)
+                        @Html.ValidationMessageFor(model => model.HourlyWage)
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.SectionId)
+                    </div>
+                    <div>
+                     @(Html.Kendo().DropDownListFor(model => model.SectionId).HtmlAttributes(new { @class = "form-control", @required = "required" })
+                                .DataTextField("Name")
+                                                .DataValueField("WorkUnitSectionId").OptionLabel(" Select  ").Filter(FilterType.Contains)
+                                                .DataSource(d => d.Read(r => r.Action("SectionDDBind", "WorkUnitSection")).ServerFiltering(false)).ValuePrimitive(true))
+
+
+                    </div>
+                </div>
+            </div>
+      </div>
+                
+
+        <div class="row">
+            <div class="col-md-1">
+            </div>
+
+
+
+
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.DateHired)
+                    </div>
+                    <div>
+                        @Html.Kendo().DatePickerFor(model => model.DateHired)
+                        @Html.ValidationMessageFor(model => model.DateHired)
+                    </div>
+                </div>
+            </div>
+ </div>
+
+          </form>
+</div>

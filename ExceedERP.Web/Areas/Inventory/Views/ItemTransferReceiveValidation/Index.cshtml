@@ -1,0 +1,26 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Inventory.ItemTransferReceiveValidation>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Status);
+          columns.Bound(c => c.Remark);
+          columns.Bound(c => c.DateCreated);
+          columns.Bound(c => c.LastModified);
+          columns.Bound(c => c.CreatedBy);
+          columns.Bound(c => c.ModifiedBy);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable(scrollable => scrollable.Enabled(false))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.ItemTransferReceiveValidationID))
+          .Read(read => read.Action("ItemTransferReceiveValidations_Read", "ItemTransferReceiveValidation"))
+          .Create(create => create.Action("ItemTransferReceiveValidations_Create", "ItemTransferReceiveValidation"))
+          .Update(update => update.Action("ItemTransferReceiveValidations_Update", "ItemTransferReceiveValidation"))
+          .Destroy(destroy => destroy.Action("ItemTransferReceiveValidations_Destroy", "ItemTransferReceiveValidation"))
+      ))

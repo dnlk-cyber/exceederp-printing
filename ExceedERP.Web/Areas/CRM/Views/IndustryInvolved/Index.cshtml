@@ -1,0 +1,28 @@
+﻿<legend>Industry Involved</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.IndustryInvolved>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.Index);
+        columns.Bound(c => c.Reference);
+        columns.Bound(c => c.Industry);
+        columns.Bound(c => c.Remark);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+              .Model(model => model.Id(p => p.IndustryInvolvedID)).Events(ev => ev
+                                                                        .Error("error_handler(\"grid\")")
+                                                                        .RequestStart("onRequestStart(\"grid\")")
+                                                                        .RequestEnd("onRequestEnd(\"grid\")"))
+          .Read(read => read.Action("IndustryInvolveds_Read", "IndustryInvolved"))
+          .Create(create => create.Action("IndustryInvolveds_Create", "IndustryInvolved"))
+          .Update(update => update.Action("IndustryInvolveds_Update", "IndustryInvolved"))
+          .Destroy(destroy => destroy.Action("IndustryInvolveds_Destroy", "IndustryInvolved"))
+      )
+)

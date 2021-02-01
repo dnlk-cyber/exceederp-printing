@@ -1,0 +1,142 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Project Estimation Raw Data</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.ProjectEstimationRawData>()
+      .Name("ProjectEstimationRawData")
+      .Columns(columns =>
+      {
+          columns.ForeignKey(c => c.Category, (IEnumerable)ViewData["RowDataCategory"], "LookupId", "Description").EditorTemplateName("RowDataCategory").Width(150);
+          columns.Bound(c => c.ItemNo).Width(150);
+          columns.Bound(c => c.Description).Width( 200);
+          columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["UOM"], "LookupId", "Description").EditorTemplateName("UOM").Width(150);
+          columns.Bound(c => c.Amount).Width( 150);
+          columns.Bound(c => c.Remark).Width( 150);
+          columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+      })
+      .ToolBar(toolbar =>
+      {
+          /*toolbar.Template(@<text>
+                               <div class="toolbar">
+                                   <label class="category-label" for="Category">Select Row Data Category:</label>
+                                   @(Html.Kendo().ComboBox()
+                                         .Name("Category")
+                                         .Placeholder("Row Data Category")
+                                         .DataTextField("Description")
+                                         .BindTo((IEnumerable) ViewData["RowDataCategory"])
+                                         .DataValueField("LookupId")
+                                         .AutoBind(false)
+                                         .Events(e => e.Change("RowData"))
+                                         .HtmlAttributes(new {style = "width: 300px;"})
+
+                                         )
+                                   @(Html.Kendo().Button()
+                      .Name("btnAdd")
+                      .HtmlAttributes(new { type = "button", @class = "k-primary" })
+                              .Events(e => e.Click("Save"))
+                              .Content("Add new record"))
+                               </div>
+                            </text>);*/
+          toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable(h => h.Height(500))
+      .Groupable()
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Filterable()
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(5))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Events(events => events.Error("error_handler(\"ProjectEstimationRawData\")"))
+          .Model(model => model.Id(p => p.ProjectEstimationRawDataId))
+          .Read(read => read.Action("ProjectEstimationRawData_Read", "ProjectEstimationRawData"))
+          .Create(create => create.Action("ProjectEstimationRawData_Create", "ProjectEstimationRawData"))
+          .Update(update => update.Action("ProjectEstimationRawData_Update", "ProjectEstimationRawData"))
+          .Destroy(destroy => destroy.Action("ProjectEstimationRawData_Destroy", "ProjectEstimationRawData"))
+      ))
+<script>
+                    function error_handler(e) {
+                        if (e.errors) {
+                            var message = "Errors:\n";
+                            $.each(e.errors, function (key, value) {
+                                if ('errors' in value) {
+                                    $.each(value.errors, function () {
+                                        message += this + "\n";
+                                    });
+                                }
+                            });
+                            alert(message);
+
+                        }
+
+                    }
+
+                    function sync_handler(e) {
+                        this.read();
+
+                    }
+                </script>
+<script>
+    function RowData() {
+
+
+        var value = this.value(),
+            grid = $("#ProjectEstimationRawData").data("kendoGrid");
+
+        if (value) {
+            grid.dataSource.filter({ field: "Category", operator: "eq", value: parseInt(value) });
+        } else {
+            grid.dataSource.filter({});
+        }
+
+    }
+    function Save()
+    {
+       
+
+           
+            var  grid = $("#ProjectEstimationRawData").data("kendoGrid");
+           
+            //$("#run").on("click", function (eve) {
+            $.ajax({
+                url: '@Url.Action("ProjectEstimationRawData_Create", "ProjectEstimationRawData")',
+                //contentType: "application/json; charset=utf-8",
+                data: { grid: grid },
+                type: 'POST',
+                cache: false,
+                success: function (result) {
+                    // r = result;
+                }
+
+
+            });
+
+
+
+    }
+</script>
+<style>
+    .demo-section p {
+        margin: 0 0 30px;
+        line-height: 50px;
+    }
+
+        .demo-section p .k-button {
+            margin: 0 10px 0 0;
+        }
+
+    .k-primary {
+        min-width: 150px;
+    }
+</style>

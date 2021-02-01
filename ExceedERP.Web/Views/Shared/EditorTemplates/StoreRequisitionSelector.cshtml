@@ -1,0 +1,20 @@
+﻿@using Kendo.Mvc.UI
+
+@(Html.Kendo().DropDownListFor(m => m)
+                  .AutoBind(false)
+                       .Filter("contains")
+                  .OptionLabel("Select SR...")
+                          .DataTextField("Remark")
+                          .DataValueField("StoreRequisitionID")
+                  .DataSource(dataSource =>
+                  {
+                      dataSource.Read(read => read.Action("GetStoreRequisitionId", "DataProvider", new { area = "Inventory" }))
+                                .ServerFiltering(false);
+                       
+                  })
+                       .Events(e =>
+                                        {
+                                            e.Select("onSelectStoreRequisitionID");
+                                        })
+)
+@Html.ValidationMessageFor(m => m)

@@ -1,0 +1,200 @@
+﻿@using ExceedERP.Helpers.Common
+@model ExceedERP.Core.Domain.CMS.CmsTrainee
+
+<form method="post">
+    <div class="k-edit-form-container">
+        <div id="trainee-profile-container" style="width:100%; background-color:#4dcfff; padding-top:5px; padding-bottom:5px; margin-top:-15px; margin-bottom:15px;">
+            <div class="editor-label">
+
+            </div>
+            <div class="editor-field" style="width:100%; width:150px; height:150px;">
+                <img class="circular-profile-img"
+                     src='@Url.Action("ShowProfilePhoto", "Trainees", new {area="CMS", id = "${CmsTraineeId}" }, @Request.Url.Scheme)' />
+            </div>
+        </div>
+        <div class="editor-label">
+            @Html.LabelFor(model => model.RegistrationDate)
+        </div>
+        <div class="editor-field">
+            @(Html.Kendo().DatePickerFor(m => m.RegistrationDate).HtmlAttributes(new { @class = "full-width-custom-input-box" }))
+        </div>
+
+        <div id="registrationNumberContainer">
+            <div class="editor-label">
+                @Html.LabelFor(model => model.RegistrationNumber)
+            </div>
+            <div class="editor-field">
+                @Html.TextAreaFor(m => m.RegistrationNumber, 3, 2, htmlAttributes: new { @readonly = true, @class = "full-width-custom-input-box" })
+            </div>
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.CMSProgramId)
+        </div>
+        <div class="editor-field">
+            @(Html.Kendo().DropDownListFor(m => m.CMSProgramId)
+                            .ValuePrimitive(true)
+                            .HtmlAttributes(new { @class = "full-width-custom-input-box" })
+                            .Name("CMSProgramId")
+                            .OptionLabel("Select Program...")
+                            .DataTextField("Name")
+                            .DataValueField("CMSProgramId")
+                            .Filter("contains")
+                            .DataSource(dataSource =>
+                            {
+                                dataSource.Read(read => read.Action("GetPrograms", "CMSDataProvider", new { area = "CMS" }))
+                                .ServerFiltering(true);
+                            })
+                    //.Events(ev =>
+                    //{
+                    //    ev.Change("referencedInvoiceSelectorChange");
+                    //})
+                    //.CascadeFrom("Source")
+                    //.Enable(false)
+                    //.AutoBind(false)
+
+            )
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.CMSCourseId)
+        </div>
+        <div class="editor-field">
+            @(Html.Kendo().DropDownListFor(m => m.CMSCourseId)
+                        .Name("CMSCourseId")
+                        .ValuePrimitive(true)
+                        .HtmlAttributes(new { @class = "full-width-custom-input-box" })
+                        .OptionLabel("Select Course...")
+                        .DataTextField("Name")
+                        .DataValueField("CMSCourseId")
+                        .Filter("contains")
+                        .DataSource(dataSource =>
+                        {
+                            dataSource.Read(read => read.Action("GetCourses", "CMSDataProvider", new { area = "CMS" }))
+                            .ServerFiltering(true);
+                        })
+                    //.Events(ev =>
+                    //{
+                    //    ev.Change("referencedSalesOrderSelectorChange");
+                    //})
+                    //.CascadeFrom("Source")
+                    //.Enable(false)
+                    //.AutoBind(false)
+
+            )
+        </div>
+
+        @*<div class="editor-label">
+            @Html.LabelFor(model => model.FirstName)
+        </div>
+        <div class="editor-field">
+            @(Html.Kendo().TextBoxFor(model => model.FirstName))
+        </div>
+        <div class="editor-label">
+            @Html.LabelFor(model => model.MiddleName)
+        </div>
+        <div class="editor-field">
+            @(Html.Kendo().TextBoxFor(model => model.MiddleName))
+
+        </div>*@
+        <div class="editor-label">
+            @Html.LabelFor(model => model.CompanyName)
+        </div>
+        <div class="editor-field">
+            @(Html.Kendo().TextBoxFor(model => model.CompanyName).HtmlAttributes(new { @class = "full-width-custom-input-box" }))
+        </div>
+        @*<div class="editor-label">
+            @Html.LabelFor(model => model.Nationality)
+        </div>
+        <div class="editor-field">
+            @(Html.Kendo().TextBoxFor(m => m.Nationality))
+        </div>*@
+        <div class="editor-label">
+            @Html.LabelFor(model => model.Region)
+        </div>
+        <div class="editor-field">
+            @(Html.Kendo().DropDownListFor(model => model.Region)
+                        .Name("Region")
+                        .HtmlAttributes(new { @class = "full-width-custom-input-box" })
+                        .OptionLabel("Select Region...")
+                        .DataTextField("Text")
+                        .DataValueField("Value")
+                        .ValuePrimitive(true)
+                        .Filter("contains")
+
+                        .BindTo(EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.Common.Region))))
+
+        </div>
+        <div class="editor-label">
+            @Html.LabelFor(model => model.Address)
+        </div>
+        <div class="editor-field">
+            @(Html.Kendo().TextBoxFor(m => m.Address).HtmlAttributes(new { @class = "full-width-custom-input-box" }))
+        </div>
+        <div class="editor-label">
+            @Html.LabelFor(model => model.CityId)
+        </div>
+        <div class="editor-field">
+            @(Html.Kendo().DropDownListFor(m => m.CityId)
+                            .Name("CityId")
+                            .ValuePrimitive(true)
+                            .HtmlAttributes(new { @class = "full-width-custom-input-box" })
+                            .OptionLabel("Select City...")
+                            .DataTextField("Name")
+                            .DataValueField("CityId")
+                            .Filter("contains")
+                            .DataSource(dataSource =>
+                            {
+                                dataSource.Read(read => read.Action("GetCities", "CMSDataProvider", new { area = "CMS" }).Data("getSelectedRegion"))
+                                .ServerFiltering(true);
+                            })
+                            //.Events(ev =>
+                            //{
+                            //    ev.Change("referencedSalesOrderSelectorChange");
+                            //})
+                            .CascadeFrom("Region")
+                            .Enable(false)
+                            .AutoBind(false)
+
+            )
+        </div>
+        @*<div class="editor-label">
+            @Html.LabelFor(model => model.DateOfBirth)
+        </div>
+        <div class="editor-field">
+            @(Html.Kendo().DatePickerFor(m => m.DateOfBirth))
+        </div>*@
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.PhoneNumber)
+        </div>
+        <div class="editor-field">
+            @(Html.Kendo().TextBoxFor(m => m.PhoneNumber).HtmlAttributes(new { @class = "full-width-custom-input-box" }))
+        </div>
+        <div class="editor-label">
+            @Html.LabelFor(model => model.MobilePhoneNumber)
+        </div>
+        <div class="editor-field">
+            @(Html.Kendo().TextBoxFor(m => m.MobilePhoneNumber).HtmlAttributes(new { @class = "full-width-custom-input-box" }))
+        </div>
+        <div class="editor-label">
+            @Html.LabelFor(model => model.Email)
+        </div>
+        <div class="editor-field">
+            @(Html.Kendo().TextBoxFor(m => m.Email).HtmlAttributes(new { @class = "full-width-custom-input-box" }))
+        </div>
+        <div class="editor-label">
+            @Html.LabelFor(model => model.PreferedDate)
+        </div>
+        <div class="editor-field">
+            @(Html.Kendo().DatePickerFor(m => m.PreferedDate).HtmlAttributes(new { @class = "full-width-custom-input-box" }))
+        </div>
+        <div class="editor-label">
+            @Html.LabelFor(model => model.TrainingVenue)
+        </div>
+        <div class="editor-field">
+            @(Html.Kendo().TextBoxFor(m => m.TrainingVenue).HtmlAttributes(new { @class = "full-width-custom-input-box" }))
+        </div>
+    </div>
+</form>
+

@@ -1,0 +1,39 @@
+﻿@using ExceedERP.Core.Domain.Finance.AR
+@(Html.Kendo().Grid<ArStandardCollectionLines>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.IsPrepayment);
+        columns.Bound(c => c.InvoiceNumber);
+        columns.Bound(c => c.InstallementNo);
+        columns.Bound(c => c.ApplyAmount);
+        columns.Bound(c => c.BalanceDue);
+        columns.Bound(c => c.ApplyDate);
+        columns.Bound(c => c.OrgBranchName);
+        columns.Bound(c => c.DateCreated);
+        columns.Bound(c => c.LastModified);
+        columns.Bound(c => c.CreatedBy);
+        columns.Bound(c => c.ModifiedBy);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+            toolbar.Excel();
+           // toolbar.Pdf();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Pageable()
+      .Sortable(sortable => {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Filterable()
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.ArStandardCollectionLinesId))
+          .Read(read => read.Action("ARStandardCollectionLines_Read", "ARStandardCollectionLines"))
+          .Create(create => create.Action("ARStandardCollectionLines_Create", "ARStandardCollectionLines"))
+          .Update(update => update.Action("ARStandardCollectionLines_Update", "ARStandardCollectionLines"))
+          .Destroy(destroy => destroy.Action("ARStandardCollectionLines_Destroy", "ARStandardCollectionLines"))
+      )
+)

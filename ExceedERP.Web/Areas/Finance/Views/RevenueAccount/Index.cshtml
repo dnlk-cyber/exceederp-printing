@@ -1,0 +1,80 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Finance.RevenueAccount>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Name).Width(120);
+          columns.Bound(c => c.ApplyToAr).Width(80).ClientTemplate(
+              "<input type='checkbox' disabled = 'true' value='#= ApplyToAr#' " +
+              "# if (ApplyToAr) { #" +
+              "checked='checked'" +
+              "# } #" +
+              "/>"
+              );
+          columns.Bound(c => c.ArAccountCode).EditorTemplateName("AccountCode").Width(220);
+          columns.Bound(c => c.ApplyToAp).Width(80).ClientTemplate(
+              "<input type='checkbox' disabled = 'true' value='#= ApplyToAp#' " +
+              "# if (ApplyToAp) { #" +
+              "checked='checked'" +
+              "# } #" +
+              "/>"
+              );
+          columns.Bound(c => c.ApAccountCode).EditorTemplateName("AccountCode").Width(220);
+          columns.Bound(c => c.ApplyToInventory).Width(120).ClientTemplate(
+              "<input type='checkbox' disabled = 'true' value='#= ApplyToInventory#' " +
+              "# if (ApplyToInventory) { #" +
+              "checked='checked'" +
+              "# } #" +
+              "/>"
+              );
+          columns.Bound(c => c.InventoryAccountCode).EditorTemplateName("AccountCode").Width(220);
+          columns.Bound(c => c.Enable).Width(100).ClientTemplate(
+              "<input type='checkbox' disabled = 'true' value='#= Enable#' " +
+              "# if (Enable) { #" +
+              "checked='checked'" +
+              "# } #" +
+              "/>"
+              );
+
+          columns.Bound(c => c.OrgBranchName).Width(100).Hidden(true);
+          columns.Bound(c => c.DateCreated).Width(150).Format("{0:dd/MM/yyyy}").Hidden(true);
+          columns.Bound(c => c.LastModified).Width(150).Format("{0:dd/MM/yyyy}").Hidden(true);
+          columns.Bound(c => c.CreatedBy).Width(100).Hidden(true);
+          columns.Bound(c => c.ModifiedBy).Width(100).Hidden(true);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .HtmlAttributes(new { style = "height: 550px;" })
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(5))
+
+      .Scrollable()
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Filterable()
+      .Groupable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Events(events => events
+              .Error("error_handler_one")
+              .Sync("sync_handler"))
+          .Model(model => model.Id(p => p.RevenueAccountId))
+          .Read(read => read.Action("RevenueAccounts_Read", "RevenueAccount"))
+          .Create(create => create.Action("RevenueAccounts_Create", "RevenueAccount"))
+          .Update(update => update.Action("RevenueAccounts_Update", "RevenueAccount"))
+          .Destroy(destroy => destroy.Action("RevenueAccounts_Destroy", "RevenueAccount"))
+      ))

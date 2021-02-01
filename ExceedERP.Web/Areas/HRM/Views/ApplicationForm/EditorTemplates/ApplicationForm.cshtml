@@ -1,0 +1,200 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@using ExceedERP.Helpers.Common
+@using Kendo.Mvc.UI
+@using ExceedERP.Core.Localization
+@model ExceedERP.Core.Domain.HRM.SelfCare.ApplicantionForm
+
+
+<form>
+    <div class="row">
+        <div class="col-md-1">
+
+        </div>
+        <div class="col-md-3">
+            <div>
+                @Html.LabelFor(model => model.IsForOther, htmlAttributes: new { @class = "control-label col-md-8" })
+            </div>
+            <div class="form-group">
+                @(Html.CheckBoxFor(m => m.IsForOther, htmlAttributes: new { @onchange="SetEmployee(this)" })
+                        
+                      )
+                @Html.ValidationMessageFor(model => model.IsForOther, "", new { @class = "text-danger" })
+            </div>
+            
+           
+          
+        </div>
+      
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-md-1">
+
+        </div>
+        <div>
+            
+            
+        </div>
+        
+        <div class="col-md-3">
+            
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.EmployeeId, htmlAttributes: new { @class = "control-label col-md-8" })
+
+                </div>
+                <div>
+
+                    @(Html.Kendo().DropDownListFor(model => model.EmployeeId)
+                      
+                      .DataValueField("PersonId")
+                      .DataTextField("FullName")
+                      .OptionLabel(Resources.Select)
+                      .Filter("contains")
+                      .MinLength(2)
+                      .CascadeFrom("IsForOther")
+                      .HtmlAttributes(new { style = "width:200px" })
+                      .Virtual(v => v.ValueMapper("valueMapper").ItemHeight(26))
+                      
+                      .DataSource(source =>
+                      {
+                          source.Read(read =>
+                          {
+                              read.Action("GetEmployeesAskForOther", "HRMDataProvider");
+                              //.Data("IsforOthers");
+                          })
+                              .ServerFiltering(false);
+                      })
+                      .Enable(false)
+
+                      .ValuePrimitive(true)
+
+
+                      .Height(400)
+                      .HeaderTemplate("<div class=\"dropdown-header k-widget k-header\">" +
+                                      "<span>Photo</span>" +
+                                      "<span>Full Name</span>" +
+                                      "</div>")
+                      .Template(@"<div class='Employee-photo' style='background-image: url(" + Url.Content("~/Content/Images/") + "#:data.PersonId#-Photo/" + "#:data.PersonId#.jpg" + ");'></div>" +
+                                "<div class='Employee-name'>#:FullName#</div>")
+                    )
+
+
+
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-3">
+            <div>
+                @Html.LabelFor(model => model.VacancyId, htmlAttributes: new { @class = "control-label col-md-8" })
+            </div>
+            <div class="form-group">
+                @(Html.Kendo().DropDownListFor(model => model.MediaVacancyCode)
+                                  .ValuePrimitive(true)
+                          .OptionLabel(Resources.Select)
+                          .DataTextField("MediaVacancyCode")
+                           .DataValueField("MediaVacancyCode")
+                      .Filter("contains")
+                      .DataSource(dataSource =>
+                      {
+                          dataSource.Read(read => read.Action("GetMediaVacancyCodeForInternal", "HRMDataProvider", new { area = "HRM" }))
+                              .ServerFiltering(false);
+                      })
+                )
+            </div>
+        </div>
+      
+    
+        <div class="col-md-3">
+            <div>
+                @Html.LabelFor(model => model.OrgStructureId, htmlAttributes: new { @class = "control-label col-md-8" })
+            </div>
+            <div class="form-group">
+
+                @(Html.Kendo().DropDownListFor(model => model.OrgStructureId)
+                                   .ValuePrimitive(true)
+
+                          .OptionLabel(Resources.Select)
+                      .CascadeFrom("MediaVacancyCode")
+                           .DataTextField("Name")
+                            .DataValueField("OrgStructureId")
+
+                                                   .DataSource(source =>
+                                                   {
+                                                       source.Read(read =>
+                                                       {
+                                                           read.Action("GetWorkUnitFromVacancy", "HRMDataProvider").Data("filterworkunit");
+                                                       })
+                                                       .ServerFiltering(true);
+                                                   })
+
+
+                )
+                @Html.ValidationMessageFor(model => model.OrgStructureId, "", new { @class = "text-danger" })
+            </div>
+
+                
+        </div>
+       
+
+
+    </div>
+
+
+<br/>
+
+
+
+
+    <div class="row">
+    <div class="col-md-1">
+
+    </div>
+        <div class="col-md-3">
+            <div>
+                @Html.LabelFor(model => model.IDAndTitle, htmlAttributes: new { @class = "control-label col-md-8" })
+            </div>
+            <div class="form-group">
+
+                @(Html.Kendo().DropDownListFor(model => model.IDAndTitle)
+                      .ValuePrimitive(true)
+                      .OptionLabel(Resources.Select)
+                      .DataTextField("Description")
+                      .DataValueField("LookupId")
+                      .CascadeFrom("OrgStructureId")
+                      .DataSource(source =>
+                      {
+                          source.Read(read =>
+                          {
+                              read.Action("GetJobTitleFromVacancy", "HRMDataProvider")
+                                  .Data("filterCategories");
+                          })
+                              .ServerFiltering(true);
+                      })
+
+              
+                      )
+                @Html.ValidationMessageFor(model => model.IDAndTitle, "", new { @class = "text-danger" })
+            </div>
+
+                
+        </div>
+    <div class="col-md-3">
+        <div>
+            @Html.LabelFor(model => model.Remark, htmlAttributes: new { @class = "control-label col-md-8" })
+        </div>
+        <div class="form-group">
+
+            @(Html.TextBoxFor(model => model.Remark)
+                          )
+            @Html.ValidationMessageFor(model => model.Remark, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    </div>
+
+
+</form>

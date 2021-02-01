@@ -1,0 +1,16 @@
+﻿<legend>Tax Transaction</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.TaxTransaction>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.Voucher);
+        columns.Bound(c => c.TaxType);
+        columns.Bound(c => c.TaxableAmount);
+        columns.Bound(c => c.TaxAmount);
+      })
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Read(read => read.Action("TaxTransactions_Read", "TaxTransaction"))
+      )
+)

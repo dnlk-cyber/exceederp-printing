@@ -1,0 +1,45 @@
+﻿
+<li class="">
+    <a href="#" class="dropdown-toggle">
+        <i class="menu-icon fa fa-medkit"></i>
+        <span class="menu-text">
+            @ExceedERP.Core.Localization.Resources.NavigatorHealthInsurance_Insurance
+        </span>
+
+        <b class="arrow fa fa-angle-down"></b>
+    </a>
+    <b class="arrow"></b>
+
+    <ul class="submenu">
+
+
+        @if (HttpContext.Current.User.IsInRole("Insurance_User") || HttpContext.Current.User.IsInRole("Insurance_Admin"))
+        {
+
+           
+
+                    if (HttpContext.Current.User.IsInRole("Insurance_User") || HttpContext.Current.User.IsInRole("Insurance_Admin"))
+                    {
+
+
+
+                        <li id="hrm1189" class="actionlinlk">@Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorHealthAndInsurance_EmployeeInsurance, "Index", "CourtInsurance", new { area = "HRM" }, null)<b class="arrow"></b></li>
+
+                    }
+                    if (HttpContext.Current.User.IsInRole("Insurance_Admin"))
+                    {
+
+                        <li id="hrm118" class="actionlinlk">@Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorHealthAndInsurance_InsuranceSettings, "Index", "CourtInsuranceSetting", new { area = "HRM" }, null)<b class="arrow"></b></li>
+
+
+                    }
+
+
+              
+
+        }
+
+
+    </ul>
+
+</li>

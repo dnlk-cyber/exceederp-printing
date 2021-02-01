@@ -1,0 +1,112 @@
+﻿@{
+ 
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<script>
+
+    function filterEquipmentIdentity() {
+        return {
+            EquipmentIdentityID: $("#EquipmentIdentityId").val()
+        };
+    }
+
+</script>
+<legend> Check List   </legend>
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.EquipmentInspection.CheckList>()
+    .Name("grid")
+    .Columns(columns =>
+    {
+        columns.Bound(e => e.Code).Width(100);
+         columns.Bound(e => e.Type).EditorTemplateName("CheckListTypeEditor").Width(120);
+        columns.Bound(e => e.Description).Width(120);
+        columns.Bound(e => e.Remark).Width(120);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
+
+    })
+              .ToolBar(commands => commands.Create())
+         .Editable(editable =>
+         {
+             editable.Mode(GridEditMode.InLine);
+             editable.DisplayDeleteConfirmation("Are You Sure To Remove CheckList");
+         })  .HtmlAttributes(new { style = "height: 520px;" })
+                      .Pageable(pageable => pageable
+                                        .Input(true)
+                                        .Numeric(false)
+                                        .Refresh(true)
+                                        .PageSizes(true)
+                                        .ButtonCount(5))
+
+                            .Scrollable()
+                            .Sortable()
+                            .Filterable()
+                            .Groupable()
+                            .Scrollable(h => h.Height(500))
+                                             .ClientDetailTemplateId("template")  
+    .DataSource(dataSource => dataSource
+        .Ajax()
+        .ServerOperation(false)
+        .Model(model =>
+              {
+                  model.Id(p => p.CheckListId);
+                  model.Field(p => p.Code).Editable(false);
+                  model.Field(p => p.CheckListId).Editable(false);
+
+              })                          .Events(ev => ev
+                                    .Error("error_handler(\"grid\")")
+                                    .RequestStart("onRequestStart(\"grid\")")
+                                    .RequestEnd("onRequestEnd(\"grid\")"))
+                            .Create(update => update.Action("CheckList_Create", "ServiceCheckList"))
+                            .Read(read => read.Action("CheckList_Read", "ServiceCheckList"))
+                            .Update(update => update.Action("CheckList_Update", "ServiceCheckList"))
+                            .Destroy(update => update.Action("CheckList_Destroy", "ServiceCheckList"))
+  )
+)
+
+
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                                                    .Name("tabStrip_#=CheckListId#")
+            .SelectedIndex(0)
+            .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+            .Items(items =>
+            {
+                items.Add().Text(" Line  ").Content(@<text>
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.EquipmentInspection.LineCheckList>()
+                                                                                                .Name("linechecklistgrid_#=CheckListId#")
+                        .Columns(columns =>
+                        {
+                            columns.Bound(o => o.Code).Width(120);
+                            columns.Bound(o => o.Name).Width(120);
+                            columns.Bound(o => o.Description).Width(120);
+
+                            columns.Command(command => { command.Edit(); }).Width(250);
+
+                        })
+
+                                .ToolBar(t => { t.Create();})
+                             .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                       .DataSource(dataSource => dataSource
+                            .Ajax()
+                                    .PageSize(5) 
+                                    .Model(model =>
+              {
+                  model.Id(p => p.CheckListId);
+                  model.Field(p => p.Code).Editable(false);
+              })
+         .Events(ev => ev
+                                                                                .Error("error_handler(\"linechecklistgrid_#=CheckListId#\")")
+                                                                                .RequestStart("onRequestStart(\"linechecklistgrid_#=CheckListId#\")")
+                                                                                .RequestEnd("onRequestEnd(\"linechecklistgrid_#=CheckListId#\")"))
+                                                                                                   .Create(update => update.Action("LineCheckList_Create", "LineLineCheckList", new { CId = "#=CheckListId#" }))
+                                                                                     .Read(read => read.Action("LineCheckList_Read", "LineLineCheckList", new { Id = "#=CheckListId#" }))
+                                                                   .Update(update => update.Action("LineCheckList_Update", "LineLineCheckList"))
+
+
+                                                      )
+                                               .ToClientTemplate())
+                </text>
+                );
+            })
+                                                                                                                                                                                                                                                                                    .ToClientTemplate())
+</script>

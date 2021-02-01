@@ -1,0 +1,66 @@
+﻿@using ExceedERP.Core.Domain.HRM.Letters
+
+@(Html.Kendo().Grid<OutgoingStatus>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.OutgoingId);
+        columns.Bound(c => c.NoOfAttachment);
+        columns.Bound(c => c.Subject);
+        columns.Bound(c => c.Destination);
+        columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Selectable(selectable => {
+            selectable.Mode(GridSelectionMode.Single);
+            selectable.Type(GridSelectionType.Row);
+      })
+         .Scrollable(h => h.Height(500))
+             .Groupable()
+                      .Sortable(sortable =>
+                      {
+                          sortable.SortMode(GridSortMode.SingleColumn);
+                      })
+          .Filterable()
+             .Pageable(pageable => pageable
+                                        .Input(true)
+                                        .Numeric(false)
+                                        .Refresh(true)
+                                        .PageSizes(true)
+                                        .ButtonCount(5))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+               .Events(events => events.Error("error_handler")
+                          .Sync("sync_handler"))
+          .Model(model => model.Id(p => p.StatusId))
+          .Read(read => read.Action("OutgoingStatus_Read", "OutgoingStatus"))
+          .Create(create => create.Action("OutgoingStatus_Create", "OutgoingStatus"))
+          .Update(update => update.Action("OutgoingStatus_Update", "OutgoingStatus"))
+          .Destroy(destroy => destroy.Action("OutgoingStatus_Destroy", "OutgoingStatus"))
+      )
+)
+<script>
+    function error_handler(e) {
+        if (e.errors) {
+            var message = "Errors:\n";
+            $.each(e.errors, function(key, value) {
+                if ('errors' in value) {
+                    $.each(value.errors, function() {
+                        message += this + "\n";
+                    });
+                }
+            });
+            alert(message);
+
+        }
+
+    }
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+</script>

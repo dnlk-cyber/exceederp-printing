@@ -1,0 +1,344 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.APTS
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Patient Register</legend>
+@(Html.Kendo().Grid<PatientRegister>()
+                      .Name("PatientRegistergrid")
+                  .Columns(columns =>
+                  {
+                      //columns.Bound(c => c.PatientName).Width(200);
+                      columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["employees"], "EmployeeId", "FullNameaEnglish").EditorTemplateName("EmployeeLists").Width(200).Title("Patient Name");
+                      columns.Bound(c => c.CardNumber).Width(150);
+                      columns.Bound(c => c.Sex).Width(100);
+                      columns.Bound(c => c.Age).Width(80);
+                      columns.Bound(c => c.NameOfOrg).Width(120);
+                      columns.Bound(c => c.RegisterDateAmh).EditorTemplateName("Calander").Width(150).Title("Register Date");
+                      columns.Bound(c => c.IsCredit).ClientTemplate("<input type='checkbox' disabled = 'true' #=IsCredit ? checked='checked' :'' # >").Width(100);
+                      columns.Bound(c => c.IsDone).ClientTemplate("<input type='checkbox' disabled = 'true' #=IsDone ? checked='checked' :'' # >").Width(100).Visible(false);
+
+
+                      columns.Command(command =>
+                      {
+                          //command.Custom("").Text("Approve").Click("approve");
+                          command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                          command.Custom("l").Click("Done").Text("&nbsp;").IconClass("fa fa-check fa-2x").HtmlAttributes(new { @class = "btn btn-success", @title = "Confirm patient registration for taking drug", @id = "done" }); 
+                          //command.Custom("Copy").Click("done").HtmlAttributes(new { @class = "k-copy-icon" });
+                          command.Destroy().Text(Resources.ActionButton_Cancel);
+                      }).Width(300);
+                  })
+                  .ToolBar(toolbar =>
+                  {
+                      toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                  })
+                  .Editable(editable => editable.Mode(GridEditMode.InLine))
+            .Scrollable(h => h.Height(500))
+
+
+                             .Groupable()
+                                      .Sortable(sortable =>
+                                      {
+                                          sortable.SortMode(GridSortMode.SingleColumn);
+                                      })
+                          .Filterable()
+                              .Events(x =>
+                              {
+                                  x.DataBound("onDataBound");
+                                  x.Edit("GetDate");
+                                  x.Save("GetDate");
+                              })
+                             .Pageable(pageable => pageable
+                                                        .Input(true)
+                                                        .Numeric(false)
+                                                        .Refresh(true)
+                                                        .PageSizes(true)
+                                                        .ButtonCount(5))
+          .DataSource(dataSource => dataSource
+              .Ajax()
+              .Sort(sort => sort.Add("PatientRegisterId").Descending())
+                     .Events(events =>
+                     {
+                         events.Error("error_handler(\"PatientRegistergrid\")");
+                         events.RequestStart("onRequestStart(\"PatientRegistergrid\")");
+                         events.RequestEnd("onRequestEnd(\"PatientRegistergrid\")");
+                     }
+                  )
+
+                  .Model(model =>
+                  {
+                      model.Id(p => p.PatientRegisterId);
+                      model.Field(p => p.Age).Editable(false);
+                      model.Field(p => p.Sex).Editable(false);
+                  })
+              .Read(read => read.Action("PatientRegister_Read", "PatientRegister"))
+              .Create(create => create.Action("PatientRegister_Create", "PatientRegister"))
+              .Update(update => update.Action("PatientRegister_Update", "PatientRegister"))
+              .Destroy(destroy => destroy.Action("PatientRegister_Destroy", "PatientRegister"))
+          ).ClientDetailTemplateId("template")
+)
+
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                                                        .Name("tabstrip_#=PatientRegisterId#")
+                                  .SelectedIndex(0)
+                                  .Items(items =>
+                                  {
+
+                                  items.Add().Text("Patient Result Detail").Content(
+                            @<text>
+
+                                @(Html.Kendo().Grid<PatientRegisterDetail>()
+                                                                        .Name("PatientRegisterDetail_#=PatientRegisterId#")
+                                                        .Columns(columns =>
+                                                        {
+                                                            columns.ForeignKey(c => c.DrugListsId, (IEnumerable)ViewData["drugList"], "DrugListsId", "Description").EditorTemplateName("DrugLists").Width(150).Title("Drug Name");
+                                                            columns.ForeignKey(c => c.DrugUnitId, (IEnumerable)ViewData["Units"], "DrugUnitId", "UoMName").EditorTemplateName("DrugUnits").Width(150).Title("Unit");
+                                                            columns.Bound(c => c.TotalQty).Width(100).Title("Quantity");
+                                                            columns.Bound(c => c.RetailPrice).Width(100).Title("Unit Price");
+                                                            columns.Bound(c => c.TotalRetailPrice).Width(150).Title("Total Price");
+                                                            columns.Bound(c => c.IsUpdated).Width(150).Visible(false);
+                                                            columns.Command(command =>
+                                                            {
+
+                                                                command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+
+
+                                                                //#if (IsUpdated)
+                                                                //   {#
+                                                                //command.Custom("Done").Click("updateBalance").IconClass("fa fa-check");
+                                                                //command.Custom("Done").SendDataKeys(true).Click("updateBalance").IconClass("fa fa-check");
+                                                                //# } #
+
+                                                                command.Destroy().Text(Resources.ActionButton_Cancel);
+
+                                                            }).Width(200);
+                                                        })
+                                            .ToolBar(toolbar =>
+                                            {
+
+                                                toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                                                //toolbar.Custom().Action("SendToDespensary", "PatientResult", new { id = "#=PatientResultId#" }).Text("Send For Despensary");
+
+                                            })
+                                            .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                            .Scrollable(h => h.Height(500))
+                                            .Events(e =>
+                                            {
+                                                e.DataBound("onDataBoundDetail");
+                                            })
+                                            .DataSource(dataSource => dataSource
+                                                .Ajax()
+                                                        //.Events().Update()
+                                                        .Events(events =>
+                                                        {
+                                                            events.Error("error_handler(\"PatientRegisterDetail_#=PatientRegisterId#\")");
+                                                            events.RequestStart("onRequestStart(\"PatientRegisterDetail_#=PatientRegisterId#\")");
+                                                            events.RequestEnd("onRequestEnd(\"PatientRegisterDetail_#=PatientRegisterId#\")");
+                                                        })
+
+                                                .Model(model =>
+                                                {
+                                                    model.Id(p => p.PatientRegisterDetailId);
+                                                    model.Field(p=>p.TotalRetailPrice).Editable(false);
+                                                })
+
+                                                        .Read(read => read.Action("PatientRegisterDetail_Read", "PatientRegisterDetail", new { id = "#=PatientRegisterId#" }))
+                                                        .Create(create => create.Action("PatientRegisterDetail_Create", "PatientRegisterDetail", new { id = "#=PatientRegisterId#" }))
+                                                .Update(update => update.Action("PatientRegisterDetail_Update", "PatientRegisterDetail"))
+                                                .Destroy(destroy => destroy.Action("PatientRegisterDetail_Destroy", "PatientRegisterDetail"))
+                                            ).ToClientTemplate()
+                                )
+
+                            </text>
+                                                                              );
+
+                                                              }).ToClientTemplate())
+</script>
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 800px;
+    }
+</style>
+<script>
+
+    function sync_handler(e) {
+        this.read();
+</script>
+
+<script>
+        function approve(e) {
+
+
+        var row = $(e.target).closest("tr");
+        var grid = $("#PatientRegistergrid").data("kendoGrid");
+        var dataItem = grid.dataItem(row);
+        var id = dataItem.RequisitionModel20Id;
+
+
+        if (id.length !== 0 )
+        {
+
+            $.ajax({
+                url: '@Url.Action("Approve", "RequisitionModel20")',
+
+                data: { id: id},
+                type: 'POST',
+                cache: false,
+                success: function (result) {
+                    r = result;
+
+
+                   // $("#OrgStructureId").val(r).trigger("change");;
+
+
+                }
+
+
+
+            });
+
+        }
+    }
+</script>
+<script>
+    function GetDate() {
+
+        $("#RegisterDateAmh").trigger("change");
+
+    }
+
+</script>
+<script>
+        function Done(e) {
+
+        var row = $(e.target).closest("tr");
+            var grid = $("#PatientRegistergrid").data("kendoGrid");
+        var dataItem = grid.dataItem(row);
+            var id = dataItem.PatientRegisterId;
+
+        if (id.length !== 0 )
+        {
+            $('#loading-image').show();
+
+            $.ajax({
+                url: '@Url.Action("Done", "PatientRegister")',
+
+                data: { id: id},
+                type: 'POST',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                    alert(r.Message);
+                    $('#loading-image').hide();
+                    grid.dataSource.read();
+                }
+            });
+
+        }
+    }
+</script>
+
+<script>
+
+    // function onDataBound(e) {
+    //    var grid = this;
+    //    var gridRows = grid.tbody.find("tr");
+    //    for (var i = 0; i < gridRows.length; i++) {
+    //        var row = $(gridRows[i]);
+    //        var dataItem = grid.dataItem(row);
+    //        //perform your custom check
+    //        if (dataItem.IsDone === false) {
+    //           // row.find(".k-grid-Done").hide();
+    //            //row.find(".k-grid-Done").text('ይከፈት');
+    //        } else {
+
+    //            row.find(".k-grid-Done").hide();
+    //            //row.find(".k-grid-customAction").text('ይዘጋ');
+    //        }
+
+    //    }
+    //}
+
+</script>
+@*<script>
+        function updateBalance(e) {
+
+
+        var row = $(e.target).closest("tr");
+            //var grid = $("PatientRegisterDetail_#=PatientRegisterId#").data("kendoGrid");
+        var dataItem = dataItem(row);
+            var id = dataItem.PatientRegisterDetailId;
+
+
+        if (id.length !== 0 )
+        {
+
+
+            $.ajax({
+                url: '@Url.Action("Update", "PatientRegister")',
+
+                data: { id: id},
+                type: 'POST',
+                cache: false,
+                success: function (result) {
+                    r = result;
+
+                }
+
+
+
+            });
+
+        }
+    }
+</script>*@
+<script>
+
+    function onDataBound(e) {
+        
+
+        var grid = this;
+        var gridRows = grid.tbody.find("tr");
+        for (var i = 0; i < gridRows.length; i++) {
+            var row = $(gridRows[i]);
+            var dataItem = grid.dataItem(row);
+            //perform your custom check
+            if (dataItem.IsDone === true && dataItem.IsAllDeducted === true) {
+
+                row.find(".k-grid-edit").hide();
+                row.find(".k-grid-delete").hide();
+                row.find("#done").hide();
+                // row.find(".k-grid-Done").hide();.IconClass("fa fa-check")
+                //row.find(".k-grid-Done").text('ይከፈት');
+                // row.find(".k-grid-Done").text("");
+            } else {
+
+                row.css("background-color", "yellow");
+            }
+        }
+    }
+
+</script>
+<script>
+        function onDataBoundDetail(e) {
+            var rows = e.sender.tbody.children();
+
+            for (var j = 0; j < rows.length; j++) {
+                var row = $(rows[j]);
+                var dataItem = e.sender.dataItem(row);
+                if (dataItem.IsUpdated === false) {
+
+                    row.css("background-color", "yellow");
+
+                }
+                else {
+                    row.css("background-color", "gray");
+                    row.find(".k-grid-edit").hide();
+                    row.find(".k-grid-delete").hide();
+                }
+
+            }
+        }
+</script>

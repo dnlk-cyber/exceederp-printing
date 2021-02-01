@@ -1,0 +1,11 @@
+﻿@model ExceedERP.Core.Domain.FleetManagement.FleetResource.AssignedEquipment
+
+@(Html.Kendo().DropDownListFor(model => model.EquipmentName).HtmlAttributes(new { @class = "form-control" }).Name("EquipmentName")
+      .DataTextField("EquipmentName")
+      .DataValueField("PlateNumber").OptionLabel("Select")
+             .DataSource(dataSource =>
+                          {
+                              dataSource.Read(read => read.Action("AssignDDBind", "EquipmentRegistration").Data("filterEquipment"))
+                                        .ServerFiltering(true);
+                          }).CascadeFrom("CategoryRef").Filter(FilterType.Contains).AutoBind(true))
+          

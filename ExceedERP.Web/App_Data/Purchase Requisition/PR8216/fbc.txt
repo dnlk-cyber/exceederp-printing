@@ -1,0 +1,69 @@
+taking time
+
+-no consistency
+-no integrity
+
+-endegena masgebat
+
+<--->no endegena masgebat
+	beginning data was not entered,mistakes
+	beginning aging data
+
+-peachtree is better
+=======================
+-13 points ,
+	-journal vat and withholding--was corrected
+	-100%--
+	-aging..miscelaneous...
+	-aging..Gl difference
+	-GL format... summary
+	-GL double posting
+	-sales journal by branch aykeftem
+	-additional reference
+	-sistekakel lela yibelashal
+	-aging by month not working but works by All	
+bank
+	-reference not showing in report
+	-begining comes as deposit in transit-->
+	-sequence is by date but should be by amount..printable
+	-ending balance does not show the month..printable
+	-status ...it displays amount in reconciled
+payable
+	-ledger balance not have reference
+	-payroll radio,tv
+	-sub account 
+	-payroll reverse 
+	-staff mapping
+	-posting withholding and vat
+	-Financial report not matching with ledger
+	-Sub account + GL
+	-balance daily..end of month only
+	-Reference
+	-VAT manual
+cost
+	-Reference double..grn,issue
+	-could not reconcile
+	-category ..sub category...sequence
+	-asset report..asset registration ---ours is by category
+	-purchase report detail report.grn reference not available
+	
+	-sefi yebalance chiger alen
+	-stock balance vs finance balance
+	-requisition ...plate number..work unit,branch..dessie and HO
+
+	-fixed asset..we don't keep stock..==>Direct PR
+	-requester,user menor neberebet
+	-void is not should be deleted	
+redwan
+	-balancesheet..why difference ifrs and gaap
+	-sales
+	-cashflow
+	-schedule...not working
+	-bank reconciliation 5
+	-budget not done..2 hrs training only	-
+HR
+	-they are checking with melat,with sample data
+	-insurance part not done--add button not available?
+
+
+

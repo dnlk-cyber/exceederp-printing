@@ -1,0 +1,486 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.FixedAsset.Transfers
+
+<legend>Machinery And Vehicle Transfer</legend>
+@(Html.Kendo().Grid<MachineryAndVehicleTransfer>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.RequestNumber).Title("#").Width(120).ClientTemplate("#=appendZeros(MachineryAndVehicleTransferId)#");
+          columns.Bound(c => c.RequestNumber).Title("Req. No.").Width(90);
+          columns.ForeignKey(p => p.FixedAssetCategoryID, (IEnumerable)ViewData["Category"], "FixedAssetCategoryID", "CategoryName").Title("Category").EditorTemplateName("FixedAssetCategorySelector").Width(120);
+          columns.ForeignKey(p => p.FixedAssetSubCategoryID, (IEnumerable)ViewData["SubCategory"], "FixedAssetSubCategoryID", "SubCategoryName").Title("Sub Category").EditorTemplateName("FixedAssetSubCategorySelector").Width(120);
+          columns.ForeignKey(p => p.AssetRegistrationId, (IEnumerable)ViewData["FixedAsset"], "AssetRegistrationId", "Name").Title("Item").EditorTemplateName("FixedAssetIssueSelector").Width(120);
+          columns.Bound(c => c.TransferDate).Width(90);
+          columns.Bound(c => c.UsageDays).Width(90);
+          columns.Bound(c => c.TransferDesc).Width(120);
+          columns.ForeignKey(p => p.CustodianBeforeTransfer, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Width(110).EditorTemplateName("EmployeeSelector");
+          columns.Bound(c => c.LocationBeforeTransfer).Width(110);
+          columns.ForeignKey(p => p.TransferTo, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Width(110).EditorTemplateName("EmployeeSelector");
+          columns.ForeignKey(p => p.FromStoreCode, (IEnumerable)ViewData["stores"], "StoreCode", "Name").Width(110).EditorTemplateName("StoreReadOnly");
+          columns.ForeignKey(p => p.ToStoreCode, (IEnumerable)ViewData["stores"], "StoreCode", "Name").Width(110).EditorTemplateName("StoreReadOnly");
+          columns.Bound(c => c.TransferReason).Width(110);
+          columns.Bound(c => c.TransferBy).Width(110);
+          columns.Bound(c => c.DriverName).Width(110);
+          columns.Bound(c => c.TransferPlateNo).Width(90);
+          //columns.Bound(c => c.Manufacturer).Hidden();
+          //columns.Bound(c => c.ModelNo).Hidden();
+          //columns.Bound(c => c.ChassisNo).Hidden();
+          //columns.Bound(c => c.SerialNo).Hidden();
+          //columns.Bound(c => c.PlateNo).Hidden();
+          //columns.Bound(c => c.EngineNo).Hidden();
+          //columns.Bound(c => c.TagNo).Hidden();
+          //columns.Bound(c => c.BarCodeNo).Hidden();
+          //columns.Bound(c => c.KmHourReading).Hidden();
+          //columns.Bound(c => c.FuelVolume).Hidden();
+          //columns.Bound(c => c.HydraulicOilVolume).Hidden();
+          //columns.Bound(c => c.BatteryAmpere).Hidden();
+          //columns.Bound(c => c.BatteryStatus).Hidden();
+          //columns.Bound(c => c.BatteryQuantity).Hidden();
+
+          columns.Bound(c => c.Remark).Width(80);
+          columns.Bound(c => c.Status).Width(80);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(120);
+      })
+      .ToolBar(toolbar => {
+          toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("FixedAssetMachineTransfer").Window(w => w.Title("Machinery and Vehicle Transfer")))
+      .Events(ev => ev.DetailExpand("detailExpand"))
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Filterable()
+      .Groupable()
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(5))
+
+      .Scrollable(height => height.Height(500))
+      .Events(x => x.DataBound("onDataBoundMaster"))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Sort(sort => sort.Add("MachineryAndVehicleTransferId").Descending())
+          .Events(ev => ev
+              .Error("error_handler(\"grid\")")
+              .RequestStart("onRequestStart(\"grid\")")
+              .RequestEnd("onRequestEnd(\"grid\")"))
+          .Model(model =>
+          {
+              model.Id(p => p.MachineryAndVehicleTransferId);
+              model.Field(p => p.Status).Editable(false);
+
+          })
+          .Read(read => read.Action("MachineryAndVehicleTransfers_Read", "MachineryAndVehicleTransfer"))
+          .Create(create => create.Action("MachineryAndVehicleTransfers_Create", "MachineryAndVehicleTransfer"))
+          .Update(update => update.Action("MachineryAndVehicleTransfers_Update", "MachineryAndVehicleTransfer"))
+          .Destroy(destroy => destroy.Action("MachineryAndVehicleTransfers_Destroy", "MachineryAndVehicleTransfer"))
+      )
+      .ClientDetailTemplateId("Itemtransfertemplate"))
+
+<script id="Itemtransfertemplate" type="text/Kendo-tmpl">
+    @(Html.Kendo().TabStrip().SelectedIndex(0).Name("tabStrip_#=MachineryAndVehicleTransferId#").Items(items =>
+      {
+          items.Add().Text("Detail").Content(
+              @<text>
+
+    
+                    # if (!IsOnlineApproved&&!IsSendForApproval)
+                    {#
+                    <a onclick='return sendForApproval("#=MachineryAndVehicleTransferId#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                    <br />
+                    # } #
+
+                    # if (IsOnlineApproved)
+                    {#
+                      <a href='@Url.Action("MachineryAndVehicleTransfer", "FixedAssetPrint")/#=MachineryAndVehicleTransferId#' title="Print"><i class="fa fa-print fa-2x"></i></a>
+                    <br />
+                    # } #
+               
+                <div>
+                    <hr>
+                    @*<dl class="dl-horizontal">
+                        <dt>
+                            Requisition Ref No.
+                        </dt>
+                        <dd>
+                            #= StoreRequisitionID #
+                        </dd>
+                        <dt>
+                            Transfer Date
+                        </dt>
+                        <dd>
+
+                            #=kendo.toString(kendo.parseDate(TransferDate), 'dd/MM/yyyy') #
+                        </dd>
+                        <dt>
+                            Ship From
+                        </dt>
+                        <dd>
+                            #=FromStore #
+                        </dd>
+                        <dt>
+                            Ship To
+                        </dt>
+                        <dd>
+                            #=ToStore #
+                        </dd>
+                        <dt>
+                            Deliverer Name
+                        </dt>
+                        <dd>
+                            #= DeliveredBy #
+                        </dd>
+                        <dt>
+                            Deliverer Type
+                        </dt>
+                        <dd>
+                            #= DriverType #
+                        </dd>
+                        <dt>
+                            Vehicle Plate No
+                        </dt>
+                        <dd>
+                            #= PlateNo #
+                        </dd>
+                        <dt>
+                            Status
+                        </dt>
+                        <dd>
+                            #= Status #
+                        </dd>
+                        <dt>
+                            CreatedOn
+                        </dt>
+                        <dd>
+                            #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+
+                        </dd>
+                        <dt>
+                            CreatedBy
+                        </dt>
+                        <dd>
+                            #= CreatedBy #
+                        </dd>
+                        <dt>
+                            Modified By
+                        </dt>
+                        <dd>
+                            #= ModifiedBy #s
+                        </dd>
+                        <dt>
+                            Modified Date
+                        </dt>
+                        <dd>
+                            #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+                        </dd>
+                    </dl>*@
+                </div>
+    
+                     # if (IsOnlineApproved&&!IsVoid)
+                        {#
+                        @if (HttpContext.Current.User.IsInRole("FixedAsset_Void"))
+                        {
+                            <a onclick='return voidRecord("#=MachineryAndVehicleTransferId#")' href='\#' title='Void Record'><i class='fa  fa-bolt fa-2x' style='color:red'></i></a>
+                        }
+                        /**/
+
+                        # } #
+
+            </text>
+              );
+
+          items.Add().Text("Damaged Part").Content(
+              @<text>
+                @(Html.Kendo().Grid<DamagedPart>()
+                      .Name("DamagedPart_#=MachineryAndVehicleTransferId#")
+                      .Columns(columns =>
+                      {
+                          columns.Bound(c => c.DamagePart).Width(250);
+
+                          columns.Command(command =>
+                          {
+                              command.Edit();
+                              command.Destroy();
+                          });
+                      })
+                      .ToolBar(toolbar =>
+                      {
+                          toolbar.Create();
+                      })
+                      .Events(x => x.DataBound("onDataBoundLines"))
+                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                      .Scrollable()
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+                          .Events(ev => ev
+                              .Error("error_handler(\"DamagedPart_#=MachineryAndVehicleTransferId#\")")
+                              .RequestStart("onRequestStart(\"DamagedPart_#=MachineryAndVehicleTransferId#\")")
+                              .RequestEnd("onRequestEnd(\"DamagedPart_#=MachineryAndVehicleTransferId#\")"))
+                          .Model(model =>
+                          {
+                              model.Id(p => p.DamagedPartId);
+                              model.Field(p => p.DateCreated).Editable(false);
+                              model.Field(p => p.CreatedBy).Editable(false);
+                              model.Field(p => p.LastModified).Editable(false);
+                              model.Field(p => p.ModifiedBy).Editable(false);
+
+                          })
+                          .Read(read => read.Action("DamagedParts_Read", "DamagedPart", new { id = "#=MachineryAndVehicleTransferId#" }))
+                          .Create(create => create.Action("DamagedParts_Create", "DamagedPart", new { id = "#=MachineryAndVehicleTransferId#" }))
+                          .Update(update => update.Action("DamagedParts_Update", "DamagedPart", new { id = "#=MachineryAndVehicleTransferId#" }))
+                          .Destroy(destroy => destroy.Action("DamagedParts_Destroy", "DamagedPart"))
+                      ).ToClientTemplate())
+
+            </text>
+              );
+
+          items.Add().Text("Missed Part").Content(
+            @<text>
+                @(Html.Kendo().Grid<MissedPart>()
+                      .Name("MissedPart_#=MachineryAndVehicleTransferId#")
+                      .Columns(columns =>
+                      {
+                          columns.Bound(c => c.MissingPart).Width(200);
+
+                          columns.Command(command =>
+                          {
+                              command.Edit();
+                              command.Destroy();
+                          });
+                      })
+                      .ToolBar(toolbar =>
+                      {
+                          toolbar.Create();
+                      })
+                      .Events(x => x.DataBound("onDataBoundLines"))
+                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                      .Scrollable()
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+                          .Events(ev => ev
+                              .Error("error_handler(\"MissedPart_#=MachineryAndVehicleTransferId#\")")
+                              .RequestStart("onRequestStart(\"MissedPart_#=MachineryAndVehicleTransferId#\")")
+                              .RequestEnd("onRequestEnd(\"MissedPart_#=MachineryAndVehicleTransferId#\")"))
+                          .Model(model =>
+                          {
+                              model.Id(p => p.MissedPartId);
+                              model.Field(p => p.DateCreated).Editable(false);
+                              model.Field(p => p.CreatedBy).Editable(false);
+                              model.Field(p => p.LastModified).Editable(false);
+                              model.Field(p => p.ModifiedBy).Editable(false);
+
+                          })
+                          .Read(read => read.Action("MissedParts_Read", "MissedPart", new { id = "#=MachineryAndVehicleTransferId#" }))
+                          .Create(create => create.Action("MissedParts_Create", "MissedPart", new { id = "#=MachineryAndVehicleTransferId#" }))
+                          .Update(update => update.Action("MissedParts_Update", "MissedPart", new { id = "#=MachineryAndVehicleTransferId#" }))
+                          .Destroy(destroy => destroy.Action("MissedParts_Destroy", "MissedPart"))
+                      ).ToClientTemplate())
+
+            </text>
+              );
+
+          items.Add().Text("Accessories").Content(
+              @<text>
+                @(Html.Kendo().Grid<Accessory>()
+                      .Name("Accessory_#=MachineryAndVehicleTransferId#")
+                      .Columns(columns =>
+                      {
+                          columns.Bound(c => c.Description).Width(200);
+                          columns.Bound(c => c.Quantity).Width(150);
+                          columns.Bound(c => c.SerialNo).Width(150);
+                          columns.Command(command =>
+                          {
+                              command.Edit();
+                              command.Destroy();
+                          });
+                      })
+                      .ToolBar(toolbar =>
+                      {
+                          toolbar.Create();
+                      })
+                      
+                      .Events(x => x.DataBound("onDataBoundLines"))
+                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                      
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+                          .Events(ev => ev
+                              .Error("error_handler(\"Accessory_#=MachineryAndVehicleTransferId#\")")
+                              .RequestStart("onRequestStart(\"Accessory_#=MachineryAndVehicleTransferId#\")")
+                              .RequestEnd("onRequestEnd(\"Accessory_#=MachineryAndVehicleTransferId#\")"))
+                          .Model(model =>
+                          {
+                              model.Id(p => p.AccessoryId);
+                              model.Field(p => p.DateCreated).Editable(false);
+                              model.Field(p => p.CreatedBy).Editable(false);
+                              model.Field(p => p.LastModified).Editable(false);
+                              model.Field(p => p.ModifiedBy).Editable(false);
+
+                          })
+                          .Read(read => read.Action("Accessories_Read", "Accessory", new { id = "#=MachineryAndVehicleTransferId#" }))
+                          .Create(create => create.Action("Accessories_Create", "Accessory", new { id = "#=MachineryAndVehicleTransferId#" }))
+                          .Update(update => update.Action("Accessories_Update", "Accessory", new { id = "#=MachineryAndVehicleTransferId#" }))
+                          .Destroy(destroy => destroy.Action("Accessories_Destroy", "Accessory"))
+                      ).ToClientTemplate())
+
+            </text>
+              );
+
+          items.Add().Text("Validation").Content(
+            @<text>
+                @(Html.Kendo().Grid<MachineryAndVehicleTransferValidation>()
+                      .Name("MachineryAndVehicleTransferValidation_#=MachineryAndVehicleTransferId#")
+                      .Columns(columns =>
+                      {
+                          columns.Bound(c => c.Status).Width(170).EditorTemplateName("ApprovalStatus");
+                          columns.Bound(c => c.Remark).Width(170);
+                          columns.Command(command =>
+                          {
+                              command.Edit();
+                              //command.Destroy();
+                          });
+                      })
+                      .ToolBar(toolbar =>
+                      {
+                          toolbar.Create();
+                      })
+                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                      .Scrollable()
+                      .Events(x => x.DataBound("onDataBoundFisrtValidation"))
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+                          .Events(ev => ev
+                              .Error("error_handler(\"MachineryAndVehicleTransferValidation_#=MachineryAndVehicleTransferId#\")")
+                              .RequestStart("onRequestStart(\"MachineryAndVehicleTransferValidation_#=MachineryAndVehicleTransferId#\")")
+                              .RequestEnd("onRequestEnd(\"MachineryAndVehicleTransferValidation_#=MachineryAndVehicleTransferId#\")"))
+                
+                          .Model(model => model.Id(p => p.MachineryAndVehicleTransferValidationId))
+                          .Read(read => read.Action("MachineryAndVehicleTransferValidations_Read", "MachineryAndVehicleTransferValidation", new { id = "#=MachineryAndVehicleTransferId#" }))
+                          .Create(create => create.Action("MachineryAndVehicleTransferValidations_Create", "MachineryAndVehicleTransferValidation", new { id = "#=MachineryAndVehicleTransferId#" }))
+                          .Update(update => update.Action("MachineryAndVehicleTransferValidations_Update", "MachineryAndVehicleTransferValidation"))
+                          .Destroy(destroy => destroy.Action("MachineryAndVehicleTransferValidations_Destroy", "MachineryAndVehicleTransferValidation"))
+                      ).ToClientTemplate())
+
+            </text>
+                  );
+
+
+      }).ToClientTemplate())
+    
+
+</script>
+
+<style>
+    .k-detail-cell .k-tabstrip .k-content {
+        padding: 0.2em;
+    }
+
+    .registration-details ul {
+        list-style: none;
+        font-style: italic;
+        margin: 15px;
+        padding: 0;
+    }
+
+        .registration-details ul li {
+            margin: 0;
+            line-height: 1.7em;
+        }
+
+    .registration-details label {
+        display: inline-block;
+        width: 90px;
+        padding-right: 10px;
+        text-align: right;
+        font-style: normal;
+        font-weight: bold;
+    }
+
+    .table-borderless tbody tr td, .table-borderless tbody tr th, .table-borderless thead tr th {
+        border: none;
+    }
+
+    .table-borderless th {
+        text-align: right;
+    }
+
+
+
+    div.k-edit-form-container {
+        width: 800px;
+        height: auto;
+    }
+
+    div.k-content {
+        overflow: hidden;
+        height: auto;
+    }
+</style>
+
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 700px;
+    }
+</style>
+
+<script>
+
+    function sendForApproval(id) {
+        var recordStatus = "";
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("SendForApproval", "MachineryAndVehicleTransfer", new { area = "FixedAsset" })',
+            data: { id: id },
+            success: function (result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                recordStatus = result.Status;
+                location.reload(true);
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+
+
+    function voidRecord(id) {
+        var recordStatus = "";
+        var conf = confirm("Are you sure you want to void this record number: " + id + " ?");
+        if (conf === true) {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("Void", "MachineryAndVehicleTransfer", new { area = "FixedAsset" })',
+                data: { id: id },
+                success: function (result) {
+                    // toastr.warnning(result.Message);
+                    alert(result.Message);
+                    recordStatus = result.Status;
+                    location.reload(true);
+                }, //end succ
+                error: function (result) {
+                    alert(result);
+                }
+            });
+        }
+    }
+
+
+    function filterAssetsForTransfer() {
+
+        return {
+            subCategoryCode: $("#FixedAssetSubCategoryID").data("kendoDropDownList").value()
+        };
+    }
+</script>

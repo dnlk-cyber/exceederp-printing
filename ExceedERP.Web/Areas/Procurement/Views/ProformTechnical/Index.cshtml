@@ -1,0 +1,23 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Procurement.Proforma.ProformTechnical>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.SupplierId);
+          columns.Bound(c => c.ItemCode);
+          columns.Bound(c => c.Result);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.ProformTechnicalId))
+          .Read(read => read.Action("ProformTechnicals_Read", "ProformTechnical"))
+          .Create(create => create.Action("ProformTechnicals_Create", "ProformTechnical"))
+          .Update(update => update.Action("ProformTechnicals_Update", "ProformTechnical"))
+          .Destroy(destroy => destroy.Action("ProformTechnicals_Destroy", "ProformTechnical"))
+      ))

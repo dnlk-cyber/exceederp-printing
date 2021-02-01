@@ -1,0 +1,110 @@
+﻿@using ExceedERP.Core.Domain.Procurement.Plan
+@using ExceedERP.Core.Domain.Procurement.Tender
+@model ExceedERP.Core.Domain.Procurement.Tender.Tender
+<div class="form">
+    <div class="row">
+        <div class="col-md-1">
+
+        </div>
+        <div class="col-md-3">
+            @Html.LabelFor(model => model.TenderReference)
+
+        </div>
+        <div class="col-md-2">
+            @Html.Kendo().TextBoxFor(model => model.TenderReference)
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-1">
+
+        </div>
+        <div class="col-md-3">
+            @Html.LabelFor(model => model.TenderType)
+
+        </div>
+        <div class="col-md-2">
+            @(
+    Html.Kendo().DropDownListFor(m => m.TenderType)
+
+        .DataTextField("Text")
+        .DataValueField("Value")
+        .BindTo(EnumExtension.EnumToSelectList(typeof(ProcurementMethod)))
+                  )
+        </div>
+    </div>
+   
+    <div class="row">
+        <div class="col-md-1">
+
+        </div>
+        <div class="col-md-3">
+            @Html.LabelFor(model => model.TenderType)
+
+        </div>
+        <div class="col-md-2">
+           @( Html.Kendo().DropDownListFor(m => m.ProcurementCategory)
+            .DataTextField("Text")
+            .DataValueField("Value")
+            .BindTo(EnumExtension.EnumToSelectList(typeof(ProcurementMethod)))
+            )
+
+        </div>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-md-1"></div>
+        <div class="col-md-3">
+            @Html.LabelFor(model => model.FloatDate)
+
+
+        </div>
+        <div class="col-md-2">
+            @Html.Kendo().DateTimePickerFor(model => model.FloatDate)
+        </div>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-md-1"></div>
+
+        <div class="col-md-3">
+            @Html.LabelFor(model => model.ClosingDate)
+
+
+        </div>
+        <div class="col-md-2">
+            @Html.Kendo().DateTimePickerFor(model => model.ClosingDate)
+        </div>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-md-1"></div>
+        <div class="col-md-3">
+            @Html.LabelFor(model => model.OpenigDate)
+
+        </div>
+        <div class="col-md-2">
+            @Html.Kendo().DateTimePickerFor(model => model.OpenigDate)
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-1"></div>
+        <div class="col-md-3">
+            @Html.LabelFor(model => model.Description)
+
+
+        </div>
+        <div class="col-md-2">
+            @Html.Kendo().TextBoxFor(model => model.Description)
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-md-1"></div>
+        <div class="col-md-3">
+            @Html.LabelFor(model => model.IsICB)
+
+        </div>
+        <div class="col-md-2">
+            @Html.Kendo().CheckBoxFor(model => model.IsICB)
+        </div>
+    </div>
+</div>

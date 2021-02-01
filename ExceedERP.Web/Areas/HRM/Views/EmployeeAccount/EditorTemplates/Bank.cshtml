@@ -1,0 +1,14 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@using ExceedERP.Core.Domain.HRM
+@(Html.Kendo().DropDownListFor(m => m)
+.OptionLabel(Resources.Select)
+                 .DataTextField("Name")
+                        .DataValueField("BankId")
+      .DataSource(dataSource =>
+      {
+          dataSource.Read(read => read.Action("GetBankLists", "HRMDataProvider", new { area = "HRM" }))
+              .ServerFiltering(false);
+      })
+                         .ValuePrimitive(true)
+)

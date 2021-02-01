@@ -1,0 +1,137 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.HRM.Allowance
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend >@Resources.NavigatorBenefit_AllowanceDefination</legend>
+@(Html.Kendo().Grid<AllowanceDefination>()
+          .Name("AllowanceDefinationgrid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.AllowanceType).EditorTemplateName("Enum").Width (200);
+          columns.Bound(c => c.AllowanceName).Width(150);
+         // columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["jobTitles"], "LookupId", "Description").EditorTemplateName("JobTitle").Width(150);
+          columns.Bound(c => c.AmtPercent).EditorTemplateName("Enum").Width(200);
+          columns.Bound(c => c.Amount).Width(150);
+          columns.Bound(c => c.Remark).Width(150);
+        columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+          .HtmlAttributes(new { style = "height: 550px;" })
+                   .Groupable()
+                  .Sortable(sortable =>
+                  {
+                      sortable.SortMode(GridSortMode.SingleColumn);
+                  })
+                   .Filterable()
+                  .Scrollable()
+              .Pageable(pageable => pageable
+                                    .Input(true)
+                                    .Numeric(false)
+                                    .Refresh(true)
+                                    .PageSizes(true)
+                                    .ButtonCount(5))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+              .Events(events =>
+                                                                  {
+                                                                      events.Error("error_handler(\"AllowanceDefinationgrid\")");
+                                                                      events.RequestStart("onRequestStart(\"AllowanceDefinationgrid\")");
+                                                                      events.RequestEnd("onRequestEnd(\"AllowanceDefinationgrid\")");
+                                                                  }
+                                                                  )
+                        
+          .Model(model => model.Id(p => p.AllowanceDefinationId))
+          .Read(read => read.Action("AllowanceDefinations_Read", "Allowance"))
+          .Create(create => create.Action("AllowanceDefinations_Create", "Allowance"))
+          .Update(update => update.Action("AllowanceDefinations_Update", "Allowance"))
+          .Destroy(destroy => destroy.Action("AllowanceDefinations_Destroy", "Allowance"))
+      ).ClientDetailTemplateId ("template")
+)
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                                  .Name("tabstrip_#=AllowanceDefinationId#")
+          .SelectedIndex(0)
+          .Items(items =>
+          {
+              items.Add().Text(Resources.HR_AllowanceMapping).Content(
+                @<text>
+                     @(Html.Kendo().Grid<CourtAllowanceMapping>()
+                                                  .Name("AllowanceMapping_#=AllowanceDefinationId#")
+                          .Columns(columns =>
+                          {
+                              columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "AmharicName").EditorTemplateName("BranchSelector").Width(300);
+                              columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["jobTitles"], "LookupId", "Description").EditorTemplateName("JobTitle").Width(300);
+                             
+                              columns.Bound(c => c.Remark).Width(250);
+                              columns.Command(command =>
+                              {
+                                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                  command.Destroy().Text(Resources.ActionButton_Cancel);
+                              });
+                          })
+                          .ToolBar(toolbar =>
+                          {
+                              toolbar.Create().Text( Resources.ActionButton_AddNewRecord);
+                                
+                             // toolbar.Custom().Action("SendForApproval", "LeaveRequest").Text(Resources.HR_Send_For_Approval);
+                          })
+
+                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                          .Scrollable()
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+                                        .Events(events =>
+                                                                          {
+                                                                              events.Error("error_handler(\"AllowanceMapping_#=AllowanceDefinationId#\")");
+                                                                              events.RequestStart("onRequestStart(\"AllowanceMapping_#=AllowanceDefinationId#\")");
+                                                                              events.RequestEnd("onRequestEnd(\"AllowanceMapping_#=AllowanceDefinationId#\")");
+                                                                          }
+                                                                          )
+                                                      
+           .Model(model =>
+                                              {
+                                                  model.Id(p => p.AllowanceMappingId);
+                                                  
+                                              })
+                                                                              .Read(read => read.Action("AllowanceMappings_Read", "AllowanceMappingCourt", new { id = "#=AllowanceDefinationId#" }))
+                                                                                                                          .Create(create => create.Action("AllowanceMappings_Create", "AllowanceMappingCourt", new { idTwo = "#=AllowanceDefinationId#" }))
+                                                          .Update(update => update.Action("AllowanceMappings_Update", "AllowanceMappingCourt"))
+                                                          .Destroy(destroy => destroy.Action("AllowanceMappings_Destroy", "AllowanceMappingCourt"))
+                          ).ToClientTemplate()
+                    )
+
+
+                </text>
+                  );
+              //*****************************************************************************************************//
+
+          }).ToClientTemplate())
+</script>
+
+<script>
+    //function error_handler(e) {
+    //    if (e.errors) {
+    //        var message = "Errors:\n";
+    //        $.each(e.errors, function(key, value) {
+    //            if ('errors' in value) {
+    //                $.each(value.errors, function() {
+    //                    message += this + "\n";
+    //                });
+    //            }
+    //        });
+    //        alert(message);
+
+    //    }
+
+    //}
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+</script>

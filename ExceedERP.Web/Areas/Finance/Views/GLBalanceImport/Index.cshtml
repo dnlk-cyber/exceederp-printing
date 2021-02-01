@@ -1,0 +1,85 @@
+﻿
+@{
+    ViewBag.Title = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<legend>Import Begining</legend>
+
+<div class="row">
+             
+    <div class="col-md-2">
+        
+        @(Html.Kendo().DropDownList()
+              .OptionLabel("Select Year")
+              .Name("yearSelector")
+              .AutoBind(false)
+              .DataValueField("GlFiscalYearId")
+              .DataTextField("Name")
+              .DataSource(dataSource =>
+              {
+                  dataSource.Read(read => read.Action("GetYears", "GlobalDataProvider", new { area = "Common" }))
+                      .ServerFiltering(false);
+              }))
+    </div>
+    <div class="col-md-8">
+
+        @(Html.Kendo().Upload()
+              .Name("file")
+              .Async(a => a.Save("Import", "GlBalanceImport"))
+              .Events(e => e.Complete("onUploadSuccess").Upload("checkFileType"))
+              .ShowFileList(false)
+              .Events(events => events
+                  .Upload("getFiscalyearId")
+                   .Error("onError"))
+
+              )
+    </div>
+    <div class="pull-right">
+        @Html.Kendo().Button().Name("downloadTemplate").Content("Get Template").Events(events => events.Click("downloadTemplateClicked")).HtmlAttributes(new { @class = "btn btn-primary" })
+    </div>
+</div>
+
+
+<script>
+    
+    function onError(e) {
+        var err = e.XMLHttpRequest.responseText;
+        alert(err);
+    };
+
+    function onUploadSuccess(e) {
+
+    }
+
+    function checkFileType(e) {
+        var files = e.files;
+
+        $.each(files, function () {
+
+            if (this.extension.toLowerCase() === ".xls" || this.extension.toLowerCase() === ".xlsx" || this.extension.toLowerCase() === ".xlsm") {
+
+            } else {
+                alert("Only .xls, .xlsx, .xlsm files can be uploaded!");
+                e.preventDefault();
+            }
+
+        });
+    }
+
+    function getFiscalyearId(e) {
+       
+        return e.data = { id: $("#yearSelector").data("kendoDropDownList").value() };
+
+    }
+
+    function downloadTemplateClicked(e) {
+        window.location = '@Url.Action("DownloadTemplate", "GlBalanceImport")';
+    }
+
+    $(document).ready(function () {
+        $("#file").closest(".k-upload").find("span").text("Import");
+    });
+
+</script>
+

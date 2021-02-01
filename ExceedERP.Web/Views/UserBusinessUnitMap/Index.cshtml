@@ -1,0 +1,53 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.Global
+@using Kendo.Mvc.UI
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Business Unit User Mapping</legend>
+
+@(Html.Kendo().Grid<UserBusinessUnitMap>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.ForeignKey(p => p.BusinessUnitId, (IEnumerable)ViewData["businessUnit"], "BusinessUnitId", "Name").Title("Business Unit").Width(250).EditorTemplateName("BusinessUnitSelector");
+          columns.ForeignKey(p => p.UserId, (IEnumerable)ViewData["users"], "Code", "Name").Title("User").Width(250).EditorTemplateName("UserSelector");
+
+          columns.Command(command =>
+          {
+              command.Edit();
+              command.Destroy();
+          });
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .HtmlAttributes(new { style = "height: 550px;" })
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(20))
+      .Scrollable()
+      .Sortable()
+      .Filterable()
+      .Groupable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(
+              model =>
+              {
+                  model.Id(p => p.UserBusinessUnitMapId);
+                  model.Field(p => p.UserBusinessUnitMapId).Editable(false);
+              })
+          .Events(ev => ev
+              .Error("error_handler(\"grid\")")
+              .RequestStart("onRequestStart(\"grid\")")
+              .RequestEnd("onRequestEnd(\"grid\")"))
+          .Read(read => read.Action("UserBusinessUnitMaps_Read", "UserBusinessUnitMap"))
+          .Create(create => create.Action("UserBusinessUnitMaps_Create", "UserBusinessUnitMap"))
+          .Update(update => update.Action("UserBusinessUnitMaps_Update", "UserBusinessUnitMap"))
+          .Destroy(destroy => destroy.Action("UserBusinessUnitMaps_Destroy", "UserBusinessUnitMap"))
+      ))

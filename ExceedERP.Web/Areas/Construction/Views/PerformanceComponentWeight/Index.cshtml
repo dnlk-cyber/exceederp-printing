@@ -1,0 +1,83 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Setting | Performance Evaluation | Component Weight</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.PerformanceEvaluationComponentWeight>()
+        .Name("attributeGrid")
+        .Columns(columns =>
+        {
+            columns.Bound(c => c.ComponentName).EditorTemplateName("AttributeNames");
+            columns.Group(gr =>
+            {
+                gr.Title("Max Points (%)").HeaderHtmlAttributes(new { style = "text-align: center; font-weight: bold;" });
+                gr.Columns(innerColumns =>
+                {
+                    innerColumns.Bound(c => c.Value).ClientTemplate("#=Value#%").Title("Building");
+                    innerColumns.Bound(c => c.ValueForRoadProjects).ClientTemplate("#=ValueForRoadProjects#%").Title("Road");
+                });
+            });
+            //columns.Bound(c => c.Value).ClientTemplate("#=Value#%");
+            //columns.Bound(c => c.ValueForRoadProjects).ClientTemplate("#=ValueForRoadProjects#%");
+
+            columns.Command(command =>
+            {
+                command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                command.Destroy().Text(Resources.ActionButton_Cancel);
+            }).Width(200);
+        })
+        .ToolBar(toolbar =>
+        {
+            toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+        })
+        .Editable(editable => editable.Mode(GridEditMode.InLine))
+        .Selectable(selectable =>
+        {
+            selectable.Mode(GridSelectionMode.Single);
+            selectable.Type(GridSelectionType.Row);
+        })
+        .Scrollable(h => h.Height(700))
+        .Sortable(sortable =>
+        {
+            sortable.SortMode(GridSortMode.SingleColumn);
+        })
+        .Filterable()
+        .Pageable(pageable => pageable
+                        .Input(true)
+                        .Numeric(false)
+                        .Refresh(true)
+                        .PageSizes(true)
+                        .ButtonCount(5))
+        .DataSource(dataSource => dataSource
+        .Ajax()
+        .PageSize(20)
+        .Aggregates(ag => {
+            ag.Add(c => c.Value).Sum();
+            ag.Add(c => c.ValueForRoadProjects).Sum();
+        })
+        .Events(events =>
+        {
+            events.Error("error_handler(\"attributeGrid\")");
+            events.RequestStart("onRequestStart(\"attributeGrid\")");
+            events.RequestEnd("onRequestEnd(\"attributeGrid\")");
+
+        })
+        .Model(model => model.Id(p => p.PerformanceEvaluationComponentWeightId))
+        .Read(read => read.Action("PerformanceComponentWeight_Read", "PerformanceComponentWeight"))
+        .Create(create => create.Action("PerformanceComponentWeight_Create", "PerformanceComponentWeight"))
+        .Update(update => update.Action("PerformanceComponentWeight_Update", "PerformanceComponentWeight"))
+        .Destroy(destroy => destroy.Action("PerformanceComponentWeight_Destroy", "PerformanceComponentWeight"))
+    )
+)
+
+
+
+
+<script>
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+</script>

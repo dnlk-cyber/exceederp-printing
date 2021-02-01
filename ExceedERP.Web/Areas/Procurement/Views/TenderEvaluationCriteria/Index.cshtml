@@ -1,0 +1,26 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Procurement.Tender.TenderEvaluationCriteria>()
+      .Name("tenderEvaluationCriteriagrid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.CriteriaName);
+          columns.Bound(c => c.Weight);
+          columns.Bound(c => c.Description);
+        
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+                              toolbar.Excel();
+                              // toolbar.Pdf();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.TenderEvaluationCriteriaID))
+          .Read(read => read.Action("TenderEvaluationCriterias_Read", "TenderEvaluationCriteria"))
+          .Create(create => create.Action("TenderEvaluationCriterias_Create", "TenderEvaluationCriteria"))
+          .Update(update => update.Action("TenderEvaluationCriterias_Update", "TenderEvaluationCriteria"))
+          .Destroy(destroy => destroy.Action("TenderEvaluationCriterias_Destroy", "TenderEvaluationCriteria"))
+      ))

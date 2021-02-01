@@ -1,0 +1,153 @@
+﻿@using System.Collections
+@using Kendo.Mvc.UI
+@using ExceedERP.Core.Localization
+@model ExceedERP.Core.Domain.HRM.EmployeeDetail.Committee
+
+
+<div class="form">
+    <div class="row fullrow">
+        <div class="col-md-3 ro1">
+            <div class="form-group">
+
+
+                @Html.LabelFor(model => model.Description, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+
+                    @Html.Kendo().TextBoxFor(model=>model.Description)
+                    @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.CommitteeType, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-3">
+                    @(Html.EnumDropDownListFor(m => m.CommitteeType, htmlAttributes: new { @class = "k-dropdown-wrap k-state-default", @style = "width: 140px", onchange = "Change(this)" })
+
+                    )
+                    @Html.ValidationMessageFor(model => model.CommitteeType, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 ro1">
+            <div class="form-group">
+                @Html.LabelFor(model => model.VaccancyCode, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-3">
+                    @(Html.Kendo().DropDownListFor(model => model.VaccancyCode)
+
+                                                       //.CascadeFrom("CommitteeType")
+                                                       .DataSource(source =>
+                                                       {
+                                                           source.Read(read =>
+                                                           {
+                                                               read.Action("GetVacancyGeneratedCode", "HRMDataProvider");
+                                                               //.Data("filterCategories");
+                                                           })
+                                                           .ServerFiltering(true);
+                                                       })
+                                                   .ValuePrimitive(true)
+                          .OptionLabel(Resources.Select)
+                                                                 .DataTextField("MediaVacancyCode")
+                                                                .DataValueField("MediaVacancyCode")
+                                              .Enable(false)
+                    )
+                </div>
+            </div>
+            <div class="row"></div><br/>
+            @*<div class="form-group">
+
+                @Html.LabelFor(model => model.Role, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-3">
+                    @Html.TextAreaFor(model => model.Role)
+                        @Html.ValidationMessageFor(model => model.Role, "", new { @class = "text-danger" })
+                </div>
+            </div>*@
+      
+       
+            <div class="form-group">
+                @*  @Html.LabelFor(model => model.IsActive, htmlAttributes: new { @class = "control-label col-md-8" })*@
+                <div class="col-md-6">
+
+                    @Html.Kendo().CheckBoxFor(model => model.IsActive)
+                    @Html.ValidationMessageFor(model => model.IsActive, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 ro1">
+            <div class="form-group">
+                @Html.LabelFor(model => model.Remark, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-3">
+
+
+                    @Html.Kendo().TextBoxFor(model=>model.Remark)
+                    @Html.ValidationMessageFor(model => model.Remark, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div> 
+<style>
+    .dropdown-header {
+        border-width: 0 0 1px 0;
+        text-transform: uppercase;
+    }
+
+        .dropdown-header > span {
+            display: inline-block;
+            padding: 10px;
+        }
+
+            .dropdown-header > span:first-child {
+                width: 50px;
+            }
+
+    #customers-list .k-item {
+        line-height: 1em;
+        min-width: 300px;
+    }
+
+    /* Material Theme padding adjustment*/
+
+    .k-material #customers-list .k-item,
+    .k-material #customers-list .k-item.k-state-hover,
+    .k-materialblack #customers-list .k-item,
+    .k-materialblack #customers-list .k-item.k-state-hover {
+        padding-left: 5px;
+        border-left: 0;
+    }
+
+    #customers-list .k-item > span {
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+        display: inline-block;
+        vertical-align: top;
+        margin: 20px 10px 10px 5px;
+    }
+
+        #customers-list .k-item > span:first-child {
+            -moz-box-shadow: inset 0 0 30px rgba(0, 0, 0, .3);
+            -webkit-box-shadow: inset 0 0 30px rgba(0, 0, 0, .3);
+            box-shadow: inset 0 0 30px rgba(0, 0, 0, .3);
+            margin: 10px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-size: 100%;
+            background-repeat: no-repeat;
+        }
+
+    #customers-list h3 {
+        font-size: 1.2em;
+        font-weight: normal;
+        margin: 0 0 1px 0;
+        padding: 0;
+    }
+
+    #customers-list p {
+        margin: 0;
+        padding: 0;
+        font-size: .8em;
+    }
+</style>

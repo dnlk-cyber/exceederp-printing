@@ -1,0 +1,2227 @@
+﻿@using System.Collections
+@using System.Globalization
+@using ExceedERP.Core.Domain.Procurement.Tender
+@using ExceedERP.Core.Domain.Procurement.Tender.Lot
+@using ExceedERP.Web.Areas.Procurement.Models
+
+<legend>Tender</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Procurement.Tender.Tender>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.TenderID).Title("#").Width(120).ClientTemplate("#=appendZeros(TenderID)#");
+          columns.Bound(c => c.TenderReference).Width(130);
+          columns.Bound(c => c.Description).Width(150);
+          columns.Bound(c => c.ProcurementCategory).Width(130).EditorTemplateName("ProcurementCategorys");
+          columns.Bound(c => c.TenderType).Width(130).EditorTemplateName("TenderType");
+          columns.Bound(c => c.PurchaseCategory).Width(130).EditorTemplateName("PurchaseCategory");
+          columns.Bound(c => c.FloatDate).Width(140);
+          columns.Bound(c => c.ClosingDate).Width(140);
+          columns.Bound(c => c.OpenigDate).Width(140);
+          //columns.Bound(c => c.TechnicalOpenigDate).Width(140);
+          columns.Bound(c => c.FinancialOpenigDate).Width(140);
+          columns.ForeignKey(p => p.ProcurementOfficer, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Title("Purchaser").Width(130).EditorTemplateName("PurchaserSelector");
+          columns.Bound(c => c.IsCancelled).Width(85).Title("Cancelled ?").ClientTemplate(
+              "<input type='checkbox' disabled = 'true' value='#= IsCancelled #' " +
+              "# if (IsCancelled) { #" +
+              "checked='checked'" +
+              "# } #" +
+              "/>"
+              );
+          columns.Bound(c => c.PurchaseStatus).Width(130);
+          columns.Bound(c => c.Status).Width(90);
+
+
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create();
+          toolbar.Custom().Name("Templates").Action("Index", "TenderTemplate").HtmlAttributes(new { @class = "btn btn-primary" });
+      })
+
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .HtmlAttributes(new { style = "height: 700px;" })
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(20))
+      .Scrollable()
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Filterable()
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Filterable()
+      .Events(ev => ev.DetailExpand("detailExpand")
+          .DataBound("onDataBoundTender"))
+      .Scrollable(height => height.Height(500))
+      .ClientDetailTemplateId("tenderdetail")
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Sort(sort => sort.Add("TenderID").Descending())
+          .Model(model =>
+          {
+              model.Id(p => p.TenderID);
+              model.Field(p => p.ProcurementOfficer).Editable(false);
+              model.Field(p => p.Status).Editable(false);
+              model.Field(p => p.IsCancelled).Editable(false);
+          })
+          .Events(ev => ev
+              .Error("error_handler(\"grid\")")
+              .RequestStart("onRequestStart(\"grid\")")
+              .RequestEnd("onRequestEnd(\"grid\")"))
+          .Read(read => read.Action("Tenders_Read", "Tender"))
+          .Create(create => create.Action("Tenders_Create", "Tender"))
+          .Update(update => update.Action("Tenders_Update", "Tender"))
+          .Destroy(destroy => destroy.Action("Tenders_Destroy", "Tender"))
+      ))
+
+<script type="text/kendo" id="tenderdetail">
+    @(Html.Kendo().TabStrip().Name("tenderTabstrip_#=TenderID#").SelectedIndex(0).Items(itemn =>
+              {
+
+    @*======================================================================== Tender Detail ========================================================*@
+
+                  itemn.Add().Text("Tender").Content(@<text>
+                    @*   @Html.Kendo().Button().Content("Send For Evaluation").Name("evv").Events(events => events.Click("OnIndexCall")).ToClientTemplate()*@
+                    @*@Html.ActionLink("Send for Evaluation", null, null, null, new { @onclick = "OnIndexCall(this)" })*@
+                    <br />
+                    # if (!IsOnlineApproved&&!IsSendForApproval)
+                    {#
+                    <a onclick='return sendForApproval("#=TenderID#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+
+                    # } #
+
+                ` # if (IsOnlineApproved)
+                    {#
+                    <a onclick='return sendToContract("#=TenderID#")' href=' \#' title="Send To Contract"><i class="fa fa-share-square fa-2x"></i></a>
+
+                    # } #
+
+                    <a target="_new" href='@Url.Action("TenderCancellation", "ProcurementPrint")/#=TenderID#'>Cancel Letter</a> |
+                    <a target="_new" href='@Url.Action("TenderFinancialOpening", "ProcurementPrint")/#=TenderID#'> Financial Opening  </a> |
+                    <a target="_new" href='@Url.Action("TenderTechnicalOpening", "ProcurementPrint")/#=TenderID#'> Technical Opening  </a> |
+                    <br />
+                    <div>
+                        <dl class="dl-horizontal">
+                            <dt>
+                                Tender ID
+                            </dt>
+                            <dd>
+                                #= TenderID #
+                            </dd>
+                            <dt>
+                                Tender Reference
+                            </dt>
+                            <dd>
+                                #= TenderReference #
+                            </dd>
+                            <dt>
+                                Description
+                            </dt>
+                            <dd>
+                                #= Description #
+                            </dd>
+                            <dt>
+                                Float Date
+                            </dt>
+                            <dd>
+
+                                #=kendo.toString(kendo.parseDate(FloatDate), 'dd/MM/yyyy') #
+
+                            </dd>
+                            <dt>
+                                Closing Date
+                            </dt>
+                            <dd>
+
+                                #=kendo.toString(kendo.parseDate(ClosingDate), 'dd/MM/yyyy') #
+
+                            </dd>
+                            <dt>
+                                Opeining Date
+                            </dt>
+                            <dd>
+
+                                #=kendo.toString(kendo.parseDate(OpenigDate), 'dd/MM/yyyy') #
+
+                            </dd>
+                            <dt>
+                                Status
+                            </dt>
+                            <dd>
+                                #= Status #
+                            </dd>
+                            <dt>
+                                CreatedOn
+                            </dt>
+                            <dd>
+                                #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+
+                            </dd>
+                            <dt>
+                                CreatedBy
+                            </dt>
+                            <dd>
+                                #= CreatedBy #
+                            </dd>
+                        </dl>
+
+                    </div>
+
+
+
+                    # if (IsOnlineApproved && !IsVoid)
+                    {#
+                    <hr>
+                    @if (HttpContext.Current.User.IsInRole("Procurement_Void"))
+                                {
+                        <a onclick='return voidRecord("#=TenderID#")' href='\#' title='Void Record'><i class='fa  fa-bolt fa-2x' style='color:red'></i></a>
+                                }
+                    /**/
+                    # } #
+
+
+
+                </text>);
+
+            @*======================================================================== Tender Bid Document ========================================================*@
+
+                        itemn.Add().Text("Bid Document").Content(@<text>
+
+                            @FilUploaderBid()
+
+                        </text>);
+                    @*======================================================================== Tender Minute Of Meeting ========================================================*@
+
+                                itemn.Add().Text("Minutes").Content(@<text>
+
+                                    @FileUpload()
+
+                                </text>);
+                            @*========================================================================== Tender Message ================================================================================*@
+
+
+                                        itemn.Add().Text("Message").Content(@<text>
+                                            @(Html.Kendo().Grid<ExceedERP.Core.Domain.Procurement.Tender.TenderMessages>()
+                                                  .Name("tenderMessage_#=TenderID#")
+                                                  .Columns(columns =>
+                                                  {
+
+                                                      columns.Bound(c => c.FileName).ClientTemplate("<a href='/TenderMessage/FileDwonload?id=\\#=TenderMessagesId \\#'>\\#=FileName \\#</a>").Width(150);
+                                                      columns.Bound(c => c.Sender).Width(150);
+                                                      columns.Bound(c => c.Receiver).Width(100);
+                                                      columns.Bound(c => c.Message).Width(100);
+                                                      columns.Bound(c => c.MessageStatus).Width(100);
+                                                      columns.Command(command => { command.Edit(); command.Destroy(); }).Width(480);
+                                                  })
+                                                  .ToolBar(toolbar =>
+                                                  {
+                                                      toolbar.Create();
+                                                  })
+                                                  .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("TenderMessages").Window(window =>
+                                                  {
+                                                      window.Width(800);
+                                                      window.Title("Tender Message");
+                                                  })).Scrollable()
+                                                  .HtmlAttributes(new { style = "height: 150px;" })
+                                                  .Events(x => x.DataBound("onDataBoundTenderLines"))
+                                                  .DataSource(dataSource => dataSource
+                                                      .Ajax()
+                                                      .Events(ev => ev
+                                                          .Error("error_handler(\"tenderMessage_#=TenderID#\")")
+                                                          .RequestStart("onRequestStart(\"tenderMessage_#=TenderID#\")")
+                                                          .RequestEnd("onRequestEnd(\"tenderMessage_#=TenderID#\")"))
+                                                      .Model(model => model.Id(p => p.TenderMessagesId))
+                                                      .Read(read => read.Action("TenderMessages_Read", "TenderMessage", new { id = "#=TenderID #" }))
+                                                      .Create(create => create.Action("TenderMessages_Create", "TenderMessage", new { id = "#=TenderID #" }))
+                                                      .Update(update => update.Action("TenderMessages_Update", "TenderMessage"))
+                                                      .Destroy(destroy => destroy.Action("TenderMessages_Destroy", "TenderMessage"))
+                                                  ).ToClientTemplate())
+
+
+
+
+                                        </text>);
+                                    @*======================================================================== Tender Lot ========================================================*@
+
+                                                itemn.Add().Text("Lots").Content(@<text>
+                                                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Procurement.Tender.Lot.Lot>()
+                                                          .Name("lotgrid_#=TenderID#")
+                                                          .Columns(columns =>
+                                                          {
+                                                              //columns.Bound(c => c.PurchaseRequisitionID).Width(200).EditorTemplateName("PurchaseRequistionForTender");
+                                                              columns.Bound(c => c.LotNumber).Width(70);
+                                                              columns.Bound(c => c.Description).Width(100);
+                                                              columns.Bound(c => c.EvaluateTotalFinance).Width(180).ClientTemplate("<input type='checkbox' disabled = 'true' \\#= EvaluateTotalFinance ? checked='checked' :'' \\# />");
+
+                                                              columns.Command(command => { command.Edit(); command.Destroy(); }).Width(780);
+                                                          })
+                                                          .ToolBar(toolbar =>
+                                                          {
+                                                              toolbar.Create();
+
+                                                          })
+                                                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                          .HtmlAttributes(new { style = "height: 600px;" })
+                                                          .Events(ev => ev.DetailExpand("lotDetailExpand").Edit("lotEdit"))
+                                                          .Selectable(selectable =>
+                                                          {
+                                                              selectable.Mode(GridSelectionMode.Single);
+                                                              selectable.Type(GridSelectionType.Row);
+                                                          })
+                                                          .Sortable(sortable =>
+                                                          {
+                                                              sortable.SortMode(GridSortMode.SingleColumn);
+                                                          })
+
+                                                          .Filterable()
+                                                          .Scrollable(height => height.Height(300))
+                                                          .Events(x => x.DataBound("onDataBoundTenderLines"))
+                                                          .ClientDetailTemplateId("lotsDetail")
+                                                          .DataSource(dataSource => dataSource
+                                                              .Ajax()
+                                                              .Events(ev => ev
+                                                                  .Error("error_handler(\"lotgrid_#=TenderID#\")")
+                                                                  .RequestStart("onRequestStart(\"lotgrid_#=TenderID#\")")
+                                                                  .RequestEnd("onRequestEnd(\"lotgrid_#=TenderID#\")"))
+                                                              .Model(model => model.Id(p => p.LotID))
+                                                              .Read(read => read.Action("Lots_Read", "Lots", new { id = "#=TenderID #" }))
+                                                              .Create(create => create.Action("Lots_Create", "Lots", new { id = "#=TenderID #" }))
+                                                              .Update(update => update.Action("Lots_Update", "Lots"))
+                                                              .Destroy(destroy => destroy.Action("Lots_Destroy", "Lots"))
+                                                          ).ToClientTemplate())
+
+
+                                                </text>);
+                                            @*======================================================================== Tender Validation ========================================================*@
+
+                                                        itemn.Add().Text("Validation").Content(@<text>
+                                                            @(Html.Kendo().Grid<ExceedERP.Core.Domain.Procurement.Tender.TenderValidation>()
+                                                                  .Name("tenderValidationgrid_#=TenderID#")
+                                                                  .Columns(columns =>
+                                                                  {
+                                                                      columns.Bound(c => c.Status).Width(100).EditorTemplateName("ValidationStatus");
+                                                                      columns.Bound(c => c.Remark).Width(100);
+
+                                                                      columns.Command(command => { command.Edit(); command.Destroy(); }).Width(480);
+                                                                  })
+                                                                  .ToolBar(toolbar =>
+                                                                  {
+                                                                      toolbar.Create().Text("Add New Validation");
+
+                                                                  })
+                                                                  .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                  .HtmlAttributes(new { style = "height: 150px;" })
+
+                                                                  .Sortable(sortable =>
+                                                                  {
+                                                                      sortable.SortMode(GridSortMode.SingleColumn);
+                                                                  })
+
+                                                                  .Scrollable()
+                                                                  .Events(x => x.DataBound("onDataBoundTenderValidation"))
+                                                                  .DataSource(dataSource => dataSource
+                                                                      .Ajax()
+                                                                      .Events(ev => ev
+                                                                          .Error("error_handler(\"tenderValidationgrid_#=TenderID#\")")
+                                                                          .RequestStart("onRequestStart(\"tenderValidationgrid_#=TenderID#\")")
+                                                                          .RequestEnd("onRequestEnd(\"tenderValidationgrid_#=TenderID#\")"))
+                                                                      .Model(model => model.Id(p => p.TenderValidationID))
+                                                                      .Read(read => read.Action("TenderValidations_Read", "TenderValidation", new { id = "#=TenderID #" }))
+                                                                      .Create(create => create.Action("TenderValidations_Create", "TenderValidation", new { id = "#=TenderID #" }))
+                                                                      .Update(update => update.Action("TenderValidations_Update", "TenderValidation"))
+                                                                      .Destroy(destroy => destroy.Action("TenderValidations_Destroy", "TenderValidation"))
+                                                                  ).ToClientTemplate())
+
+
+                                                        </text>);
+
+                                                    @*======================================================================== Tender Cancellation ========================================================*@
+
+                                                                itemn.Add().Text("Cancellation").Content(@<text>
+                                                                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Procurement.Tender.TenderCancellation>()
+                                                                          .Name("TenderCancellation#=TenderID#")
+                                                                          .Columns(columns =>
+                                                                          {
+
+                                                                              columns.Bound(c => c.Date).Width(130);
+                                                                              columns.Bound(c => c.Description).Width(150);
+                                                                              columns.Bound(c => c.CreatedBy).Width(130);
+                                                                              columns.Command(command => { command.Edit(); command.Destroy(); }).Width(480);
+                                                                          })
+                                                                          .ToolBar(toolbar =>
+                                                                          {
+                                                                              //if (ViewBag.Count==0)
+                                                                              toolbar.Create();
+                                                                          })
+
+                                                                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                          .HtmlAttributes(new { style = "height: 150px;" })
+                                                                          .Selectable(selectable =>
+                                                                          {
+                                                                              selectable.Mode(GridSelectionMode.Single);
+                                                                              selectable.Type(GridSelectionType.Row);
+                                                                          })
+                                                                          .Sortable(sortable =>
+                                                                          {
+                                                                              sortable.SortMode(GridSortMode.SingleColumn);
+                                                                          })
+                                                                          .ClientDetailTemplateId("cancelDetail")
+                                                                          .Events(ev => ev.DetailExpand("cancellationDetailExpand"))
+                                                                          .Events(x => x.DataBound("onDataBoundTenderLines"))
+                                                                          .DataSource(dataSource => dataSource
+                                                                              .Ajax()
+                                                                              .Events(ev => ev
+                                                                                  .Error("error_handler(\"TenderCancellation#=TenderID#\")")
+                                                                                  .RequestStart("onRequestStart(\"TenderCancellation#=TenderID#\")")
+                                                                                  .RequestEnd("onRequestEnd(\"TenderCancellation#=TenderID#\")"))
+                                                                              .Model(model => model.Id(p => p.TenderCancellationId))
+                                                                              .Read(read => read.Action("TenderCancellations_Read", "BidCancellation", new { id = "#=TenderID #" }))
+                                                                              .Create(create => create.Action("TenderCancellations_Create", "BidCancellation", new { id = "#=TenderID #" }))
+                                                                              .Update(update => update.Action("TenderCancellations_Update", "BidCancellation"))
+                                                                              .Destroy(destroy => destroy.Action("TenderCancellations_Destroy", "BidCancellation"))
+                                                                          ).ToClientTemplate())
+
+                                                                </text>);
+
+                   @*======================================================================== Tender Cancellation ========================================================*@
+
+                                                                itemn.Add().Text("Extension").Content(@<text>
+                                                                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Procurement.Tender.TenderExtension>()
+                                                                          .Name("TenderExtension#=TenderID#")
+                                                                          .Columns(columns =>
+                                                                          {
+                                                                              columns.Bound(c => c.ClosingDate).Width(140);
+                                                                              columns.Bound(c => c.OpenigDate).Width(140);
+                                                                              columns.Bound(c => c.FinancialOpenigDate).Width(140);
+                                                                              columns.Bound(c => c.Remark).Width(130);
+                                                                              columns.Command(command => { command.Edit(); command.Destroy(); }).Width(580);
+                                                                          })
+                                                                          .ToolBar(toolbar =>
+                                                                          {
+                                                                                    
+                                                                              toolbar.Create();
+                                                                          })
+
+                                                                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                          .HtmlAttributes(new { style = "height: 150px;" })
+                                                                          .Selectable(selectable =>
+                                                                          {
+                                                                              selectable.Mode(GridSelectionMode.Single);
+                                                                              selectable.Type(GridSelectionType.Row);
+                                                                          })
+                                                                          .Sortable(sortable =>
+                                                                          {
+                                                                              sortable.SortMode(GridSortMode.SingleColumn);
+                                                                          })
+                                                                                  
+                                                                                  
+                                                                          .Events(x => x.DataBound("onDataBoundTenderLines"))
+                                                                          .DataSource(dataSource => dataSource
+                                                                              .Ajax()
+                                                                              .Events(ev => ev
+                                                                                  .Error("error_handler(\"TenderExtension#=TenderID#\")")
+                                                                                  .RequestStart("onRequestStart(\"TenderExtension#=TenderID#\")")
+                                                                                  .RequestEnd("onRequestEnd(\"TenderExtension#=TenderID#\")"))
+                                                                              .Model(model => model.Id(p => p.TenderExtensionId))
+                                                                              .Read(read => read.Action("TenderExtension_Read", "TenderExtension", new { id = "#=TenderID #" }))
+                                                                              .Create(create => create.Action("TenderExtension_Create", "TenderExtension", new { id = "#=TenderID #" }))
+                                                                              .Update(update => update.Action("TenderExtension_Update", "TenderExtension"))
+                                                                              .Destroy(destroy => destroy.Action("TenderExtension_Destroy", "TenderExtension"))
+                                                                          ).ToClientTemplate())
+
+                                                                </text>);
+
+                                                 itemn.Add().Text("GRN Info").Content(@<text>
+                                                    @(Html.Kendo().Grid<GrnViewModel>()
+                                                          .Name("GRNInfo#=TenderID#")
+                                                          .Columns(columns =>
+                                                          {
+                                                          columns.Bound(p => p.GrnType).Width(130);
+                                                          columns.Bound(c => c.GrnId).Width(90).Title("\\#").ClientTemplate(
+                                                                "\\#if(GrnType=='0'){\\#"+
+                                                                    "<a href='/Inventory/InventoryPrint/Goodreceive/\\#GrnId\\#'> \\#:GrnId\\#</a>"+
+                                                                    "\\#}else if(GrnType=='1'){\\#"+
+                                                                "<a href='/FixedAsset/FixedAssetPrint/FixedAssetReceive/\\#GrnId\\#'> \\#:GrnId\\#</a>"+
+                                                                        "\\#}\\#"
+                                                                );
+                                                            columns.ForeignKey(p => p.ReceiveTypeId, (IEnumerable)ViewData["ReeceiveType"], "ReceiveTypeId", "Name").EditorTemplateName("ReceiveTypeSelector").Width(150);
+                                                            columns.Bound(p => p.ReceiveRef).Width(150);//until data entry.EditorTemplateName("ReceiveReferenceSelector");
+                                                            columns.Bound(p => p.Reference).Width(130);
+                                                            columns.ForeignKey(p => p.StoreCode, (IEnumerable)ViewData["stores"], "StoreCode", "Name").Width(150).EditorTemplateName("StoreSelectorByKeeper");
+                                                            columns.Bound(p => p.SupplierId).Width(90);
+                                                            columns.Bound(p => p.SupplierName).Width(150);//upto data entry.EditorTemplateName("ReceiveSupplierSelector");
+                                                            columns.Bound(c => c.SupplierInvoiceNo).Title("Supplier Invoice").Width(150);
+                                                            columns.ForeignKey(p => p.GLPeriodId, (IEnumerable)ViewData["inventoryPeriods"], "GLPeriodId", "Name").Width(130).Title("Period").EditorTemplateName("InventoryPeriodSelector");
+                                                            columns.Bound(c => c.ReceiveDate).Title("Receive Date").Width(130);
+
+                                                            columns.ForeignKey(p => p.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("BranchSelector").Width(150);
+                                                            columns.Bound(c => c.Status).Width(80);
+
+                                                          })
+
+                                                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                          .Scrollable()
+                                                         .ClientDetailTemplateId("grntemplates")
+                                                          .DataSource(dataSource => dataSource
+                                                              .Ajax()
+                                                              .Events(ev => ev
+                                                                  .Error("error_handler(\"GRNInfo#=TenderID#\")")
+                                                                  .RequestStart("onRequestStart(\"GRNInfo#=TenderID#\")")
+                                                                  .RequestEnd("onRequestEnd(\"GRNInfo#=TenderID#\")"))
+                                                              .Model(model =>
+                                                              {
+                                                                  model.Id(p => p.GrnId);
+                                                              }
+                                                              )
+                                                              .Read(read => read.Action("GrnHeader_Read", "Tender", new { id = "#=TenderID#" }))
+                                                          )
+                                                          .ToClientTemplate())
+                                                </text>
+              );
+
+                                        }).ToClientTemplate())
+
+
+
+    @*<h6>Lots</h6>*@
+
+
+    @*======================================================================== Tender Lots ========================================================*@
+
+
+    @*@(Html.Kendo().Grid<Lot>()
+                  .Name("lotgrid_#=TenderID#")
+                  .Columns(columns =>
+                  {
+          //columns.Bound(c => c.PurchaseRequisitionID).Width(200).EditorTemplateName("PurchaseRequistionForTender");
+          columns.Bound(c => c.LotNumber).Width(120);
+                      columns.Bound(c => c.Description).Width(150);
+
+                      columns.Command(command =>
+                      {
+                          command.Edit();
+                          command.Destroy();
+                      });
+                  })
+                  .ToolBar(toolbar =>
+                  {
+                      toolbar.Create().Text("Add New Lot");
+          //toolbar.Excel();
+          ////toolbar.Pdf();
+      })
+                  .Editable(editable => editable.Mode(GridEditMode.InLine))
+                  .HtmlAttributes(new { style = "height: 600px;" })
+                  .Events(ev => ev.DetailExpand("lotDetailExpand").Edit("lotEdit"))
+                  .Selectable(selectable =>
+                  {
+                      selectable.Mode(GridSelectionMode.Single);
+                      selectable.Type(GridSelectionType.Row);
+                  })
+                  .Sortable(sortable =>
+                  {
+                      sortable.SortMode(GridSortMode.SingleColumn);
+                  })
+
+                  .Filterable()
+                  .Scrollable(height => height.Height(300))
+                  .Events(x => x.DataBound("onDataBoundTenderLines"))
+                  .DataSource(dataSource => dataSource
+                      .Ajax()
+                      .Events(ev => ev
+                          .Error("error_handler(\"lotgrid_#=TenderID#\")")
+                          .RequestStart("onRequestStart(\"lotgrid_#=TenderID#\")")
+                          .RequestEnd("onRequestEnd(\"lotgrid_#=TenderID#\")"))
+                      .Model(model => model.Id(p => p.LotID))
+                      .Read(read => read.Action("Lots_Read", "Lots", new { id = "#=TenderID #" }))
+                      .Create(create => create.Action("Lots_Create", "Lots", new { id = "#=TenderID #" }))
+                      .Update(update => update.Action("Lots_Update", "Lots"))
+                      .Destroy(destroy => destroy.Action("Lots_Destroy", "Lots"))
+                  ).ClientDetailTemplateId("lotsDetail")
+                  .ToClientTemplate()
+    )*@
+
+    @*@(Html.Kendo().Window().Name("evaluationForm")
+                  .Title("Evaluation")
+                   .Draggable()
+                   .AutoFocus(true)
+                   .Position(pos => pos.Left(120))
+          .Content(@<text>
+                    Department  @Html.Kendo().TextBox().Name("Department").ToClientTemplate()
+                    <br />
+                    Employee        @(Html.Kendo().DropDownListFor(m => m)
+                           .AutoBind(false)
+                                           .Name("employee")
+                                           .DataValueField("code")
+                                           .DataTextField("Name")
+                                           .DataSource(datasource => datasource.Read(read => read.Action("GetEmployees", "DataProvider", new { area = "Inventory" })).ServerFiltering(true))
+                                           .ToClientTemplate()
+                    )
+
+                    <br />
+                    Description @Html.Kendo().Editor().Resizable(false).Name("desc").ToClientTemplate()
+                    <br />
+                    @Html.Kendo().Button().Name("sendforEvaluation").Content("Send").Events(ev => ev.Click("sendClicked")).ToClientTemplate()
+        </text>).ToClientTemplate()*@
+
+
+</script>
+
+<script id="cancelDetail" type="text/Kendo">
+    @(Html.Kendo().TabStrip()
+          .SelectedIndex(0)
+          .Name("tabStrip_#=TenderCancellationId#").Items(items =>
+          {
+            @*==============================================================================   cancel upload =====================================================================*@
+              items.Add().Text("Cancellation Document").Content(@<text>
+
+                                        @BidCancellationDocumentUpload()
+
+                                    </text>);
+          }).ToClientTemplate()
+
+          )
+   
+
+</script>
+
+<script type="text/kendo" id="lotsDetail">
+    @(Html.Kendo().TabStrip().Name("LotsTabstrip_#=LotID#").SelectedIndex(0).Items(itemm =>
+                              {
+                    @*======================================================================== Lots Detail ========================================================*@
+
+                                itemm.Add().Text("Lot").Content(@<text>
+
+    <a href='@Url.Action("InvitationLetter", "ProcurementPrint")/#=LotID#' title="Print invitation letter"><i class="fa fa-print fa-2x"></i>Invitation Letter</a>
+                                    <div>
+                                        <hr>
+                                        <dl class="dl-horizontal">
+                                            <dt>
+                                                Tender Reference
+                                            </dt>
+                                            <dd>
+                                                #= TenderID #
+                                            </dd>
+                                            <dt>
+                                                Lot Number
+                                            </dt>
+                                            <dd>
+                                                #=  LotNumber #
+                                            </dd>
+                                            <dt>
+                                                Description
+                                            </dt>
+                                            <dd>
+                                                #= Description #
+                                            </dd>
+                                        </dl>
+                                    </div>
+                                    <hr />
+                                    @*<a target="_new" href='@Url.Action("ProformaResultAm", "ProcurementPrint")/#=LotID#'>Result Summary (AM)</a> |*@
+                                    <a target="_new" href='@Url.Action("LotResultEn", "ProcurementPrint")/#=LotID#'>Result Summary (EN) </a> |
+
+                                </text>);
+
+                            @*========================================================================purchase requisitions ========================================================*@
+
+                                        itemm.Add().Text("PR").Content(@<text>
+                                            @(Html.Kendo().Grid<LotPurchaseRequisition>()
+                                                                          .Name("lotpr_#=LotID#")
+                                                                          .Columns(columns =>
+                                                                          {
+                                                                                            columns.Bound(c => c.PurchaseRequisitionAssignmentId).Width(200).Title("Assignment").EditorTemplateName("PurchaseRequistionForTender");
+                                                                                            columns.Bound(c => c.PurchaseRequisitionID).Title("PR").Width(200);//.EditorTemplateName("PurchaseRequistionForTender");
+                                                                                columns.Bound(c => c.StoreRequisitionID).Width(120).Title("SR");
+                                                                                            columns.Command(command =>
+                                                                    {
+                                                                                                  command.Edit();
+                                                                                                  command.Destroy();
+                                                                                              }).Width(780);
+                                                                                        })
+                                                                          .ToolBar(toolbar =>
+                                                                          {
+                                                                                            toolbar.Create();
+
+                                                                                        })
+
+                                                                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                          .Pageable()
+                                                                          .Navigatable()
+
+                                                                          .Sortable(sortable =>
+                                                                          {
+                                                                                            sortable.SortMode(GridSortMode.SingleColumn);
+                                                                                        })
+                                                                          .Filterable()
+                                                                          .Scrollable()
+                                                                          .Events(x => x.DataBound("onDataBoundTenderLines"))
+                                                                          .DataSource(dataSource => dataSource
+                                                                              .Ajax()
+                                                                              .Events(ev => ev
+                                                                                  .Error("error_handler(\"lotpr_#=LotID#\")")
+                                                                                  .RequestStart("onRequestStart(\"lotpr_#=LotID#\")")
+                                                                                  .RequestEnd("onRequestEnd(\"lotpr_#=LotID#\")"))
+                                                                              .Model(model =>
+                                                                              {
+                                                                                                model.Id(p => p.LotPurchaseRequisitionId);
+                                                                                                model.Field(p => p.PurchaseRequisitionID).Editable(false);
+                                                                                                model.Field(p => p.StoreRequisitionID).Editable(false);
+                                                                                            })
+                                                                              .Read(read => read.Action("LotPurchaseRequisitions_Read", "LotPurchaseRequisition", new { id = "#= LotID #" }))
+                                                                              .Create(create => create.Action("LotPurchaseRequisitions_Create", "LotPurchaseRequisition", new { id = "#= LotID #" }))
+                                                                              .Update(update => update.Action("LotPurchaseRequisitions_Update", "LotPurchaseRequisition"))
+                                                                              .Destroy(destroy => destroy.Action("LotPurchaseRequisitions_Destroy", "LotPurchaseRequisition"))
+                                                                          ).ToClientTemplate())
+
+
+                                        </text>);
+
+                                    @*======================================================================== Lots Item ========================================================*@
+
+                                                itemm.Add().Text("Lot Item").Content(@<text>
+                                                    @(Html.Kendo().Grid<LotItems>()
+                                                                                  .Name("lotitemgrid_#=LotID#")
+                                                                                  .Columns(columns =>
+                                                                                  {
+                                                                                      columns.ForeignKey(p => p.CatCode, (IEnumerable)ViewData["Category"], "CatCode", "Name").Title("Category");
+                                                                                      columns.ForeignKey(p => p.ItmCode, (IEnumerable)ViewData["Items"], "ItmCode", "Name").Title("Items");
+                                                                                      columns.Bound(c => c.Name).Width(100);
+                                                                                      columns.Bound(c => c.ModelNo).Width(100);
+                                                                                      columns.Bound(c => c.UoM).Width(100);
+                                                                                      columns.Bound(c => c.Quantity).Width(100);
+                                                                                      columns.Bound(c => c.ItemSpecification).Width(200);
+
+                                                                                      columns.Command(command =>
+                                                                                      {
+                                                                                          command.Edit();
+                                                                                          command.Destroy();
+                                                                                      }).Width(580);
+                                                                                  })
+                                                                                  .ToolBar(toolbar =>
+                                                                                  {
+                                                                                      //toolbar.Create();
+                                                                                      // toolbar.Excel();
+                                                                                      //toolbar.Pdf();
+                                                                                  })
+                                                                                  .Events(events => events.Edit("lotItemEdit"))
+                                                                                  .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                                  .HtmlAttributes(new { style = "height: 450px;" })
+                                                                                  .Sortable(sortable =>
+                                                                                  {
+                                                                                      sortable.SortMode(GridSortMode.SingleColumn);
+                                                                                  })
+
+                                                                                  .Pageable()
+                                                                                  .Navigatable()
+
+                                                                                  .Sortable(sortable =>
+                                                                                  {
+                                                                                      sortable.SortMode(GridSortMode.SingleColumn);
+                                                                                  })
+                                                                                  //.Filterable()
+                                                                                  .Scrollable()
+                                                                                  .Events(x => x.DataBound("onDataBoundTenderLines"))
+                                                                                  .DataSource(dataSource => dataSource
+                                                                                      .Ajax()
+                                                                                      .Events(ev => ev
+                                                                                          .Error("error_handler(\"lotitemgrid_#=LotID#\")")
+                                                                                          .RequestStart("onRequestStart(\"lotitemgrid_#=LotID#\")")
+                                                                                          .RequestEnd("onRequestEnd(\"lotitemgrid_#=LotID#\")"))
+                                                                                      .Model(model =>
+                                                                                      {
+                                                                                          model.Id(p => p.LotItemsID);
+                                                                                          model.Field(p => p.UoM).Editable(false);
+                                                                                          model.Field(p => p.CatCode).Editable(false);
+                                                                                          model.Field(p => p.ItmCode).Editable(false);
+                                                                                          model.Field(p => p.Name).Editable(false);
+                                                                                          model.Field(p => p.ModelNo).Editable(false);
+                                                                                          model.Field(p => p.Quantity).Editable(false);
+                                                                                      })
+                                                                                      .Read(read => read.Action("LotItems_Read", "LotItem", new { id = "#= LotID #" }))
+                                                                                      .Create(create => create.Action("LotItems_Create", "LotItem", new { id = "#= LotID #" }))
+                                                                                      .Update(update => update.Action("LotItems_Update", "LotItem"))
+                                                                                      .Destroy(destroy => destroy.Action("LotItems_Destroy", "LotItem"))
+                                                                                  ).ToClientTemplate())
+
+
+                                                </text>);
+                                            @*======================================================================== Lots Bid Purchase ========================================================*@
+
+                                                        itemm.Add().Text("Bid Purchase").Content(@<text>
+                                                            @(Html.Kendo().Grid<BidPurchasingSuppliers>()
+                                                                                          .Name("bidPurchasingSuppliergrid_#=LotID#")
+                                                                                          .Columns(columns =>
+                                                                                          {
+                                                                                                                            columns.Bound(c => c.SupplierId).Width(120).EditorTemplateName("SupplierSelector");
+                                                                                                                            columns.Bound(c => c.IsNewSupplier).Width(90).ClientTemplate("<input type='checkbox' disabled = 'true' \\#= IsNewSupplier ? checked='checked' :'' \\# />");
+                                                                                                                            columns.Bound(c => c.SupplierName).Width(100);
+                                                                                                                            columns.Bound(c => c.Representative).Width(100);
+                                                                                                                            columns.Bound(c => c.Address).Width(100);
+                                                                                                                            columns.Bound(c => c.Telephone).Width(80);
+                                                                                                                            columns.Bound(c => c.PurchaseDate).Width(100);
+                                                                                                                            columns.Bound(c => c.ReceiptNo).Width(80);
+                                                                                                                            columns.Bound(c => c.ReceiptNotRequired).Width(90).ClientTemplate("<input type='checkbox' disabled = 'true' \\#= ReceiptNotRequired ? checked='checked' :'' \\# />");
+                                                                                                                            columns.Bound(c => c.Remark).Width(80);
+
+                                                                                                                            columns.Command(command =>
+                                                                                                    {
+                                                                                                                                                  command.Edit();
+                                                                                                                                                  command.Destroy();
+                                                                                                                                              }).Width(280);
+                                                                                                                        })
+                                                                                          .ToolBar(toolbar =>
+                                                                                          {
+                                                                                                                            toolbar.Create();
+                                                                                                                // toolbar.Excel();
+                                                                                                                //toolbar.Pdf();
+                                                                                                            })
+                                                                                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                                          .Scrollable()
+                                                                          .Pageable()
+                                                                                          .Sortable(sortable =>
+                                                                                          {
+                                                                                                                            sortable.SortMode(GridSortMode.SingleColumn);
+                                                                                                                        })
+                                                                                          .Events(x => x.DataBound("onDataBoundTenderLines"))
+                                                                                          .DataSource(dataSource => dataSource
+                                                                                              .Ajax()
+                                                                                              .Events(ev => ev
+                                                                                                  .Error("error_handler(\"bidPurchasingSuppliergrid_#=LotID#\")")
+                                                                                                  .RequestStart("onRequestStart(\"bidPurchasingSuppliergrid_#=LotID#\")")
+                                                                                                  .RequestEnd("onRequestEnd(\"bidPurchasingSuppliergrid_#=LotID#\")"))
+                                                                                              .Model(model => model.Id(p => p.BidPurchasingSuppliersID))
+                                                                                              .Read(read => read.Action("BidPurchasingSupplierses_Read", "BidPurchase", new { id = "#= LotID #" }))
+                                                                                              .Create(create => create.Action("BidPurchasingSupplierses_Create", "BidPurchase", new { id = "#= LotID #" }))
+                                                                                              .Update(update => update.Action("BidPurchasingSupplierses_Update", "BidPurchase"))
+                                                                                              .Destroy(destroy => destroy.Action("BidPurchasingSupplierses_Destroy", "BidPurchase"))
+                                                                                          ).ToClientTemplate())
+
+
+                                                        </text>);
+
+
+                                                    @*======================================================================== Lots BidParticipatingSuppliers ========================================================*@
+
+                                                                itemm.Add().Text("Bid Participant").Content(@<text>
+                                                                    @(Html.Kendo().Grid<BidPParticipatingSuppliers>()
+                                                                                                  .Name("bidParticipantSupplier_#=LotID#")
+                                                                                                  .Columns(columns =>
+                                                                                                  {
+                                                                                                                                            columns.Bound(c => c.SupplierName).EditorTemplateName("BidPurchase").Width(130);
+                                                                                                                                            columns.Bound(c => c.Representative).Width(150);
+                                                                                                                                            columns.Bound(c => c.Address).Width(145);
+                                                                                                                                            columns.Bound(c => c.Telephone).Width(100);
+                                                                                                                                            columns.Bound(c => c.BidSubmissionDate).Width(130);
+                                                                                                                                            columns.Bound(c => c.BidSubmissionTime).Width(130);
+                                                                                                                                            columns.Bound(c => c.NumberOfDocument).Title("No. of Doc.").Width(100);
+                                                                                                                                            columns.Bound(c => c.Remark).Width(80);
+                                                                                                                                            columns.Bound(c => c.IsQualified).EditorTemplateName("Qualification").Width(100);
+
+                                                                                                                                            columns.Command(command =>
+                                                                                                                    {
+                                                                                                                                                                          command.Edit();
+                                                                                                                                                                          command.Destroy();
+                                                                                                                                                                      }).Width(280);
+                                                                                                                                        })
+                                                                                                  .ToolBar(toolbar =>
+                                                                                                  {
+                                                                                                                                            toolbar.Create().Text("Add New Bid Participant");
+                                                                                                                                // toolbar.Excel();
+                                                                                                                                //toolbar.Pdf();
+                                                                                                                            })
+                                                                                                  .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                                                  .Scrollable()
+                                                                                  .Pageable()
+                                                                                                  .Sortable(sortable =>
+                                                                                                  {
+                                                                                                                                            sortable.SortMode(GridSortMode.SingleColumn);
+                                                                                                                                        })
+                                                                                                  .Events(x => x.DataBound("onDataBoundTenderLines"))
+                                                                                                  .DataSource(dataSource => dataSource
+                                                                                                      .Ajax()
+                                                                                                      .Events(ev => ev
+                                                                                                          .Error("error_handler(\"bidParticipantSupplier_#=LotID#\")")
+                                                                                                          .RequestStart("onRequestStart(\"bidParticipantSupplier_#=LotID#\")")
+                                                                                                          .RequestEnd("onRequestEnd(\"bidParticipantSupplier_#=LotID#\")"))
+                                                                                                      .Model(model => model.Id(p => p.BidPParticipatingSuppliersID))
+                                                                                                      .Read(read => read.Action("BidPParticipatingSupplierses_Read", "BidParticipant", new { id = "#= LotID #" }))
+                                                                                                      .Create(create => create.Action("BidPParticipatingSupplierses_Create", "BidParticipant", new { id = "#= LotID #" }))
+                                                                                                      .Update(update => update.Action("BidPParticipatingSupplierses_Update", "BidParticipant"))
+                                                                                                      .Destroy(destroy => destroy.Action("BidPParticipatingSupplierses_Destroy", "BidParticipant"))
+                                                                                                  ).ToClientTemplate())
+
+
+                                                                </text>);
+                                                            @*======================================================================== Lots BidParticipatingSuppliers ========================================================*@
+
+                                                                        itemm.Add().Text("Evaluation by Document").Content(@<text>
+                                                                            @(Html.Kendo().Grid<LotEvaluationByDocument>()
+                                                                                                          .Name("LotEvaluationByDocument_#=LotID#")
+                                                                                                          .Columns(columns =>
+                                                                                                          {
+                                                                                                                                                            columns.Bound(c => c.SupplierName).EditorTemplateName("BidParticipant").Width(130);
+                                                                                                                                                            columns.Bound(c => c.Document).Width(140);
+                                                                                                                                                            columns.Bound(c => c.IsAvailable).Width(90).ClientTemplate("<input type='checkbox' disabled = 'true' \\#= IsAvailable ? checked='checked' :'' \\# />");
+                                                                                                                                                            columns.Bound(c => c.Remark).Width(80);
+                                                                                                                                                            columns.Command(command =>
+                                                                                                                                    {
+                                                                                                                                                                                                  command.Edit();
+                                                                                                                                                                                                  command.Destroy();
+                                                                                                                                                                                              }).Width(580);
+                                                                                                                                                        })
+                                                                                                          .ToolBar(toolbar =>
+                                                                                                          {
+                                                                                                                                                            toolbar.Create();
+                                                                                                                                                        })
+                                                                                                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                                                          .Scrollable()
+                                                                                                          .Sortable(sortable =>
+                                                                                                          {
+                                                                                                                                                            sortable.SortMode(GridSortMode.SingleColumn);
+                                                                                                                                                        })
+                                                                                                          .Events(x => x.DataBound("onDataBoundTenderLines"))
+                                                                                                          .DataSource(dataSource => dataSource
+                                                                                                              .Ajax()
+                                                                                                              .Events(ev => ev
+                                                                                                                  .Error("error_handler(\"LotEvaluationByDocument_#=LotID#\")")
+                                                                                                                  .RequestStart("onRequestStart(\"LotEvaluationByDocument_#=LotID#\")")
+                                                                                                                  .RequestEnd("onRequestEnd(\"LotEvaluationByDocument_#=LotID#\")"))
+                                                                                                              .Model(model => model.Id(p => p.LotEvaluationByDocumentId))
+                                                                                                              .Read(read => read.Action("LotEvaluationByDocuments_Read", "LotEvaluationByDocument", new { id = "#= LotID #" }))
+                                                                                                              .Create(create => create.Action("LotEvaluationByDocuments_Create", "LotEvaluationByDocument", new { id = "#= LotID #" }))
+                                                                                                              .Update(update => update.Action("LotEvaluationByDocuments_Update", "LotEvaluationByDocument"))
+                                                                                                              .Destroy(destroy => destroy.Action("LotEvaluationByDocuments_Destroy", "LotEvaluationByDocument"))
+                                                                                                          ).ToClientTemplate())
+
+
+                                                                        </text>);
+                                                                    @*======================================================================== Lots Tender Evaluation Criteria ========================================================*@
+
+                                                                                itemm.Add().Text("Criteria").Content(@<text>
+                                                                                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Procurement.Tender.TenderEvaluationCriteria>()
+                                                                                                                  .Name("tenderEvaluationCriteriagrid_#=LotID#")
+                                                                                                                  .Columns(columns =>
+                                                                                                                  {
+                                                                                                                                                                            columns.Bound(c => c.Type).Width(120).EditorTemplateName("CriteriaType");
+                                                                                                                                                                            columns.Bound(c => c.Weight).Width(90);
+                                                                                                                                                                            columns.Bound(c => c.Description).Width(100);
+
+                                                                                                                                                                            columns.Command(command =>
+                                                                                                                                                    {
+                                                                                                                                                                                                                          command.Edit();
+                                                                                                                                                                                                                          command.Destroy();
+                                                                                                                                                                                                                      }).Width(580);
+                                                                                                                                                                        })
+                                                                                                                  .ToolBar(toolbar =>
+                                                                                                                  {
+                                                                                                                                                                            toolbar.Create();
+                                                                                                                                                                // toolbar.Excel();
+                                                                                                                                                                //toolbar.Pdf();
+                                                                                                                                                            })
+
+                                                                                                                  .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                                                                  .Scrollable()
+                                                                                                                  .Sortable(sortable =>
+                                                                                                                  {
+                                                                                                                                                                            sortable.SortMode(GridSortMode.SingleColumn);
+                                                                                                                                                                        })
+                                                                                                                  .Events(x => x.DataBound("onDataBoundTenderLines"))
+                                                                                                                  .DataSource(dataSource => dataSource
+                                                                                                                      .Ajax()
+                                                                                                                      .Events(ev => ev
+                                                                                                                          .Error("error_handler(\"tenderEvaluationCriteriagrid_#=LotID#\")")
+                                                                                                                          .RequestStart("onRequestStart(\"tenderEvaluationCriteriagrid_#=LotID#\")")
+                                                                                                                          .RequestEnd("onRequestEnd(\"tenderEvaluationCriteriagrid_#=LotID#\")"))
+                                                                                                                      .Model(model => model.Id(p => p.TenderEvaluationCriteriaID))
+                                                                                                                      .Read(read => read.Action("TenderEvaluationCriterias_Read", "TenderEvaluationCriteria", new { id = "#= LotID #" }))
+                                                                                                                      .Create(create => create.Action("TenderEvaluationCriterias_Create", "TenderEvaluationCriteria", new { id = "#= LotID #" }))
+                                                                                                                      .Update(update => update.Action("TenderEvaluationCriterias_Update", "TenderEvaluationCriteria"))
+                                                                                                                      .Destroy(destroy => destroy.Action("TenderEvaluationCriterias_Destroy", "TenderEvaluationCriteria"))
+                                                                                                                  ).ToClientTemplate())
+
+
+                                                                                </text>);
+
+                                                                            @*======================================================================== Lots Tender Technical Result ========================================================*@
+
+
+                                                                                        itemm.Add().Text("Technical").Content(@<text>
+
+                                                                                            <a target="_new" href='@Url.Action("TechnicalResult", "ProcurementPrint")/#=LotID#'>  Result Notification </a> |
+                                                                                            <a target="_new" href='@Url.Action("TechnicalResultAm", "ProcurementPrint")/#=LotID#'> Result Notification (AM) </a>
+
+                                                                                            @(Html.Kendo().Grid<ExceedERP.Core.Domain.Procurement.Tender.TenderTechnical>()
+                                                                                                                          .Name("tenderTechnical#=LotID#")
+                                                                                                                          .Columns(columns =>
+                                                                                                                          {
+                                                                                                                              columns.Bound(c => c.SupplierName).EditorTemplateName("BidDocumentEvaluated").Width(120);
+                                                                                                                              columns.ForeignKey(p => p.LotItemID, (IEnumerable)ViewData["LotItems"], "LotItemID", "Name").Title("Item").EditorTemplateName("LotItemSelector").Width(120);
+                                                                                                                              columns.ForeignKey(p => p.ItmCode, (IEnumerable)ViewData["Items"], "ItmCode", "Name").Title("Item Name").Width(120);//.EditorTemplateName("BidItem");
+                                                                                                                              columns.Bound(c => c.Name).Width(100);
+                                                                                                                              columns.Bound(c => c.ModelNo).Width(100);
+                                                                                                                              columns.Bound(c => c.Result).Width(120);
+                                                                                                                              columns.Command(command =>
+                                                                                                                              {
+                                                                                                                                  command.Edit();
+                                                                                                                                  command.Destroy();
+                                                                                                                              }).Width(580);
+                                                                                                                          })
+                                                                                                         .ToolBar(toolbar =>
+                                                                                                         {
+                                                                                                             toolbar.Create();
+                                                                                                         })
+                                                                                                                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                                                                          .Pageable()
+                                                                                                                          .Sortable(sortable =>
+                                                                                                                          {
+                                                                                                                              sortable.SortMode(GridSortMode.SingleColumn);
+                                                                                                                          })
+                                                                                                                          .Scrollable()
+                                                                                                                          .Events(x => x.DataBound("onDataBoundTenderLines").Edit("onPassFaileResultEdit"))
+                                                                                                                          .DataSource(dataSource => dataSource
+                                                                                                                              .Ajax()
+                                                                                                                              .Events(ev => ev
+                                                                                                                                  .Error("error_handler(\"tenderTechnical#=LotID#\")")
+                                                                                                                                  .RequestStart("onRequestStart(\"tenderTechnical#=LotID#\")")
+                                                                                                                                  .RequestEnd("onRequestEnd(\"tenderTechnical#=LotID#\")"))
+                                                                                                                              .Model(model =>
+                                                                                                                              {
+                                                                                                                                  model.Id(p => p.TenderTechnicalId);
+                                                                                                                                  model.Field(p => p.ItmCode).Editable(false);
+                                                                                                                                  model.Field(p => p.ItemName).Editable(false);
+                                                                                                                                  model.Field(p => p.CatCode).Editable(false);
+                                                                                                                                  model.Field(p => p.CategoryName).Editable(false);
+                                                                                                                                  model.Field(p => p.Name).Editable(false);
+                                                                                                                                  model.Field(p => p.ModelNo).Editable(false);
+                                                                                                                              })
+                                                                                                                              .Read(read => read.Action("TenderTechnicals_Read", "TenderTechnical", new { id = "#= LotID #" }))
+                                                                                                                              .Create(create => create.Action("TenderTechnicals_Create", "TenderTechnical", new { id = "#= LotID #" }))
+                                                                                                                              .Update(update => update.Action("TenderTechnicals_Update", "TenderTechnical"))
+                                                                                                                              .Destroy(destroy => destroy.Action("TenderTechnicals_Destroy", "TenderTechnical"))
+                                                                                                                          ).ToClientTemplate())
+
+
+                                                                                        </text>);
+
+
+
+
+
+                                                                                    @*======================================================================== Lots Financial Offer ========================================================*@
+
+                                                                                    @*itemm.Add().Text("EvaluationResult").Content(@<text>
+                                                                                        @(Html.Kendo().Grid<ExceedERP.Core.Domain.Procurement.Tender.LotFinancialOffer>()
+                                                                                              .Name("lotFinancialOffergrid_#=LotID#")
+                                                                                              .Columns(columns =>
+                                                                                                  {
+                                                                                                      columns.Bound(c => c.Supplier).EditorTemplateName("BidParticipant");
+                                                                                                      columns.Bound(c => c.Price);
+                                                                                                      columns.Bound(c => c.Description);
+
+                                                                                                      columns.Command(command =>
+                                                                                                          {
+                                                                                                              command.Edit();
+                                                                                                              command.Destroy();
+                                                                                                          }).Width(180);
+                                                                                                  })
+                                                                                              .ToolBar(toolbar =>
+                                                                                                  {
+                                                                                                      toolbar.Create().Text("Add New Financial Offer");
+                                                                                                     // toolbar.Excel();
+                                                                                                      //toolbar.Pdf();
+                                                                                                  })
+                                                                                              .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                                              .Scrollable()
+                                                                                              .DataSource(dataSource => dataSource
+                                                                                                  .Ajax()
+                                                                                                  .Events(ev => ev .Error("error_handler_one").Sync("sync_handler"))
+                                                                                                  .Model(model => model.Id(p => p.LotFinancialOfferID))
+                                                                                                  .Read(read => read.Action("LotFinancialOffers_Read", "FinancialOffer", new { id = "#= LotID #" }))
+                                                                                                  .Create(create => create.Action("LotFinancialOffers_Create", "FinancialOffer", new { id = "#= LotID #" }))
+                                                                                                  .Update(update => update.Action("LotFinancialOffers_Update", "FinancialOffer"))
+                                                                                                  .Destroy(destroy => destroy.Action("LotFinancialOffers_Destroy", "FinancialOffer"))
+                                                                                              ).ToClientTemplate()
+                                                                                        )
+
+
+                                                                                        </text>);*@
+
+                                                                                                itemm.Add().Text("Pass Fail").Content(@<text>
+                                                                                                    <a target="_new" href='@Url.Action("TechnicalPassFailResult", "ProcurementPrint")/#=LotID#'>  Result Notification </a> |
+                                                                                                    <a target="_new" href='@Url.Action("TechnicalPassFailResultAm", "ProcurementPrint")/#=LotID#'> Result Notification (AM) </a>
+                                                                                                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Procurement.Tender.PassFailResult>()
+                                                                                                                                  .Name("tenderpassFailgrid_#=LotID#")
+                                                                                                                                  .Columns(columns =>
+                                                                                                                                  {
+                                                                                                                                      columns.Bound(c => c.SupplierName).EditorTemplateName("BidDocumentEvaluated").Width(120);
+                                                                                                                                      columns.ForeignKey(p => p.LotItemID, (IEnumerable)ViewData["LotItems"], "LotItemID", "Name").Title("Item").EditorTemplateName("LotItemSelector").Width(120);
+                                                                                                                                      columns.ForeignKey(p => p.ItmCode, (IEnumerable)ViewData["Items"], "ItmCode", "Name").Title("Item").Width(130);//.EditorTemplateName("BidItem");
+                                                                                                                                      columns.Bound(c => c.Name).Width(90);
+                                                                                                                                      columns.Bound(c => c.ModelNo).Width(90);
+                                                                                                                                      columns.Bound(c => c.Result).Width(120).EditorTemplateName("PassFailCriteria");
+                                                                                                                                      columns.Bound(c => c.Remark).Width(120);
+                                                                                                                                      columns.Command(command =>
+                                                                                                                                      {
+                                                                                                                                          command.Edit();
+                                                                                                                                          command.Destroy();
+                                                                                                                                      }).Width(580);
+                                                                                                                                  })
+                                                                                                                                  .ToolBar(toolbar =>
+                                                                                                                                  {
+                                                                                                                                      toolbar.Create();
+                                                                                                                                  })
+                                                                                                                                  .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                                                                                  .Sortable(sortable =>
+                                                                                                                                  {
+                                                                                                                                      sortable.SortMode(GridSortMode.SingleColumn);
+                                                                                                                                  })
+                                                                                                                                  .Scrollable()
+                                                                                                                                  .Events(x => x.DataBound("onDataBoundTenderLines").Edit("onPassFaileResultEdit"))
+                                                                                                                                  .DataSource(dataSource => dataSource
+                                                                                                                                      .Ajax()
+                                                                                                                                      .Model(model =>
+                                                                                                                                      {
+                                                                                                                                          model.Id(p => p.PassFailResultId);
+                                                                                                                                          //model.Field(p => p.SupplierName).Editable(false);
+                                                                                                                                          //model.Field(p => p.SupplierId).Editable(false);
+                                                                                                                                          model.Field(p => p.IsNewSupplier).Editable(false);
+                                                                                                                                          model.Field(p => p.Name).Editable(false);
+                                                                                                                                          model.Field(p => p.ModelNo).Editable(false);
+                                                                                                                                          model.Field(p => p.ItmCode).Editable(false);
+                                                                                                                                          model.Field(p => p.ItemName).Editable(false);
+                                                                                                                                          model.Field(p => p.CatCode).Editable(false);
+                                                                                                                                          model.Field(p => p.CategoryName).Editable(false);
+
+                                                                                                                                          model.Field(p => p.LotID).Editable(false);
+                                                                                                                                      })
+                                                                                                                                      .Events(ev => ev
+                                                                                                                                          .Error("error_handler(\"tenderpassFailgrid_#=LotID#\")")
+                                                                                                                                          .RequestStart("onRequestStart(\"tenderpassFailgrid_#=LotID#\")")
+                                                                                                                                          .RequestEnd("onRequestEnd(\"tenderpassFailgrid_#=LotID#\")"))
+                                                                                                                                      .Read(read => read.Action("TenderPassFailResult_Read", "TenderPassFailResult", new { id = "#= LotID #" }))
+                                                                                                                                      .Create(create => create.Action("TenderPassFailResult_Create", "TenderPassFailResult", new { id = "#= LotID #" }))
+                                                                                                                                      .Update(update => update.Action("TenderPassFailResult_Update", "TenderPassFailResult"))
+                                                                                                                                      .Destroy(destroy => destroy.Action("TenderPassFailResult_Destroy", "TenderPassFailResult"))
+                                                                                                                                  ).ToClientTemplate())
+                                                                                                </text>);
+
+                                                                                            @*======================================================================== Lots Bid Participant Item ========================================================*@
+
+                                                                                                        itemm.Add().Text("Price").Content(@<text>
+
+                                                                                                            @ParticipantItems()
+
+                                                                                                        </text>);
+
+                                                                                                    @*======================================================================== Lots Tender Evaluation Result ========================================================*@
+
+                                                                                                                itemm.Add().Text("Evaluation Result").Content(@<text>
+
+                                                                                                                    @EvaluationResult()
+
+                                                                                                                </text>);
+                                                                                                            @*======================================================================== Lots Bid Awarded Supplier ========================================================*@
+
+                                                                                                                        itemm.Add().Text("Award").Content(@<text>
+
+                                                                                                                            
+                                                                                                                            <a target="_new" href='@Url.Action("Award", "ProcurementPrint")/#=LotID#'>Award Letter (En)  </a> |
+
+                                                                                                                            <a target="_new" href='@Url.Action("AwardAmharic", "ProcurementPrint")/#=LotID#'>Award Letter (Am)  </a> |
+
+                                                                                                                            @BidAwardedSuplier()
+
+
+                                                                                                                        </text>);
+                                                                                                                            }).ToClientTemplate())
+
+    @(Html.Kendo().Window()
+                                  .Name("PurchaseOrderDetailWindow")
+                                  .Title("Participant Supplier Item")
+                                  .Draggable()
+                                  .Visible(false)
+                                  .Iframe(true)
+                                  .Width(800)
+                                  .Height(400)
+                                  .Modal(true)
+                                  .LoadContentFrom("Index", "BodyTemplate", new { id = "#= LotID #" })
+                                  .Actions(actions => actions.Minimize().Maximize().Close())
+                                  .Events(e => e.Close("WindowClosed")).ToClientTemplate()
+    )
+</script>
+
+<script id="resultDetail" type="text/Kendo-tmpl">
+    @(Html.Kendo().TabStrip().Name("tabStrip_#=TenderEvaluationResultID#").SelectedIndex(0).Items(itemn =>
+      {
+          itemn.Add().Text("Result Items").Content(
+
+              @<text>
+
+                    @(Html.Kendo().Grid<TenderEvaluationItemResult>()
+                          .Name("TenderEvaluationItemResult#=TenderEvaluationResultID#")
+                          .Columns(columns =>
+                          {
+                              columns.ForeignKey(p => p.LotItemID, (IEnumerable)ViewData["LotItems"], "LotItemID", "Name").Title("Item").EditorTemplateName("LotItemSelector").Width(180);
+                              columns.ForeignKey(p => p.ItmCode, (IEnumerable) ViewData["Items"], "ItmCode", "Name").Title("Items").Width(150);
+                              columns.Bound(c => c.Name).Width(100);
+                              columns.Bound(c => c.ModelNo).Width(100);
+                              columns.Bound(c => c.Financial).Format("{0:n}").Width(100);
+                              columns.Bound(c => c.Technical).Width(100);
+                              columns.Bound(c => c.Pass).Width(100);
+                              columns.Bound(c => c.Total).Format("{0:n}").Width(100);
+                              columns.Command(command =>
+                              {
+                                  command.Edit();
+                                  //command.Destroy();
+                              });
+                          })
+                          .ToolBar(toolbar =>
+                          {
+                              // toolbar.Create();
+                          })
+                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                          .Scrollable()
+                          .Events(x => x.DataBound("onDataBoundTenderLines"))
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+                              .Events(ev => ev
+                                  .Error("error_handler(\"TenderEvaluationItemResult#=TenderEvaluationResultID#\")")
+                                  .RequestStart("onRequestStart(\"TenderEvaluationItemResult#=TenderEvaluationResultID#\")")
+                                  .RequestEnd("onRequestEnd(\"TenderEvaluationItemResult#=TenderEvaluationResultID#\")"))
+                              .Model(model =>
+                              {
+                                  model.Id(p => p.TenderEvaluationItemResultId);
+                                  model.Field(p => p.LotItemID).Editable(false);
+                                  model.Field(p => p.CatCode).Editable(false);
+                                  model.Field(p => p.CategoryName).Editable(false);
+                                  model.Field(p => p.ItmCode).Editable(false);
+                                  model.Field(p => p.ItemName).Editable(false);
+                                  model.Field(p => p.Name).Editable(false);
+                                  model.Field(p => p.ModelNo).Editable(false);
+                                  model.Field(p => p.Financial).Editable(false);
+                                  model.Field(p => p.Technical).Editable(false);
+                                  model.Field(p => p.Pass).Editable(false);
+                                  model.Field(p => p.Total).Editable(false);
+                              })
+                              .Read(read => read.Action("TenderEvaluationItemResults_Read", "TenderEvaluationItemResult", new { id = "#=TenderEvaluationResultID#" }))
+                              .Create(create => create.Action("TenderEvaluationItemResults_Create", "TenderEvaluationItemResult", new { id = "#=TenderEvaluationResultID#" }))
+                              .Update(update => update.Action("TenderEvaluationItemResults_Update", "TenderEvaluationItemResult", new { id = "#=TenderEvaluationResultID#" }))
+                              .Destroy(destroy => destroy.Action("TenderEvaluationItemResults_Destroy", "TenderEvaluationItemResult", new { id = "#=TenderEvaluationResultID#" }))
+                          ).ToClientTemplate())
+
+
+                                                                </text>);
+
+                                                                     
+      }).ToClientTemplate())
+</script>
+
+<script id="awardDetail" type="text/Kendo-tmpl">
+    @(Html.Kendo().TabStrip().Name("tabStrip_#=BidAwardedSupplierID#").SelectedIndex(0).Items(itemn =>
+      {
+          itemn.Add().Text("Award Items").Content(
+
+              @<text>
+
+                    @(Html.Kendo().Grid<BidAwardedSupplierItem>()
+                          .Name("BidAwardedSupplierItem#=BidAwardedSupplierID#")
+                          .Columns(columns =>
+                          {
+                              columns.ForeignKey(p => p.LotItemID, (IEnumerable)ViewData["LotItems"], "LotItemID", "Name").Title("Item").EditorTemplateName("LotResultItemSelector").Width(180);
+                              columns.ForeignKey(p => p.CatCode, (IEnumerable)ViewData["Category"], "CatCode", "Name").Title("Category").EditorTemplateName("ItemCategoryProformaSelector").Width(180);
+                              columns.ForeignKey(p => p.ItmCode, (IEnumerable)ViewData["Items"], "ItmCode", "Name").Title("Items").EditorTemplateName("ItemProformaSelector").Width(180);
+                              columns.Bound(c => c.Name).Width(90);
+                              columns.Bound(c => c.ModelNo).Width(90);
+                              columns.Bound(c => c.UoM).Width(90);
+                              columns.Bound(c => c.Quanity).Width(90);
+                              columns.Bound(c => c.UPrice).Width(90);
+                              columns.Bound(c => c.Discount).Width(90);
+                              columns.Bound(c => c.FinalUPrice).Width(90);
+                              columns.ForeignKey(p => p.GLTaxRateID, (IEnumerable)ViewData["tax"], "GLTaxRateID", "TaxName").Width(100);//.Title("Tax Name").EditorTemplateName("TaxSelector").Width(180);
+                              columns.Bound(c => c.TaxAmount).Width(90);
+                              columns.Bound(c => c.TPrice).Width(90);
+                              columns.Command(command =>
+                              {
+                                  command.Edit();
+                                  command.Destroy();
+                              });
+                          })
+                          .ToolBar(toolbar =>
+                          {
+                              toolbar.Create();
+                          })
+                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                          .Scrollable()
+                          .Events(x => x.DataBound("onDataBoundTenderLines"))
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+                              .Events(ev => ev
+                                  .Error("error_handler(\"BidAwardedSupplierItem#=BidAwardedSupplierID#\")")
+                                  .RequestStart("onRequestStart(\"BidAwardedSupplierItem#=BidAwardedSupplierID#\")")
+                                  .RequestEnd("onRequestEnd(\"BidAwardedSupplierItem#=BidAwardedSupplierID#\")"))
+                              .Model(model =>
+                              {
+                                  model.Id(p => p.BidAwardedSupplierItemId);
+                                  model.Field(p => p.ItemType).Editable(false);
+                                  model.Field(p => p.UoM).Editable(false);
+                                  model.Field(p => p.CatCode).Editable(false);
+                                  model.Field(p => p.ItmCode).Editable(false);
+                                  model.Field(p => p.Name).Editable(false);
+                                  model.Field(p => p.ModelNo).Editable(false);
+                                  model.Field(p => p.Quanity).Editable(false);
+                                  model.Field(p => p.GLTaxRateID).Editable(false);
+                                  model.Field(p => p.TaxAmount).Editable(false);
+                                  model.Field(p => p.UPrice).Editable(false);
+                                  model.Field(p => p.TPrice).Editable(false);
+                              })
+                              .Read(read => read.Action("BidAwardedSupplierItems_Read", "TenderAwardItem", new { id = "#=BidAwardedSupplierID#" }))
+                              .Create(create => create.Action("BidAwardedSupplierItems_Create", "TenderAwardItem", new { id = "#=BidAwardedSupplierID#" }))
+                              .Update(update => update.Action("BidAwardedSupplierItems_Update", "TenderAwardItem", new { id = "#=BidAwardedSupplierID#" }))
+                              .Destroy(destroy => destroy.Action("BidAwardedSupplierItems_Destroy", "TenderAwardItem", new { id = "#=BidAwardedSupplierID#" }))
+                          ).ToClientTemplate())
+
+
+                                                                </text>);
+
+                                                                     
+      }).ToClientTemplate())
+</script>
+
+<script id="grntemplates" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                .Name("tabStrip#=GrnId#")
+                .SelectedIndex(0)
+                .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+                .Items(items =>
+                {
+                                                           
+                        items.Add().Text("Items").Content(@<text>
+                            @(Html.Kendo().Grid<GrnViewModelItem>()
+                                                                .Name("GrnViewModelItem#=GrnId#")
+                                                                .Columns(columns =>
+                                                                {
+                                                                    columns.Bound(c => c.Category).Width(70);
+                                                                    columns.Bound(c => c.SubCategory).Width(70);
+                                                                    columns.Bound(c => c.Item).Width(70);
+                                                                    columns.Bound(c => c.UOM).Width(70);
+                                                                    columns.Bound(c => c.Quantity).Width(70);
+                                                                    columns.Bound(c => c.UnitPrice).Width(90);
+                                                                    columns.ForeignKey(p => p.GLTaxRateID, (IEnumerable)ViewData["tax"], "GLTaxRateID", "TaxName").Title("Tax Name").EditorTemplateName("TaxSelector").Width(120);
+                                                                    columns.Bound(c => c.SubTotal).Width(90);
+                                                                    columns.Bound(c => c.TaxAmount).Width(90);
+                                                                    columns.Bound(c => c.Total).Width(90);
+                                                                    columns.Bound(c => c.Specification).Width(110).Hidden();
+                                                                    columns.Command(command =>
+                                                                    {
+                                                                    }).Width(380);
+
+                                                                })
+
+                                                            .Scrollable()
+                                                            .Selectable()
+                                                            .DataSource(dataSource => dataSource
+                                                                .Ajax()
+                                                                .Events(ev => ev
+                                                                    .Error("error_handler(\"GrnViewModelItem#=GrnId#\")")
+                                                                    .RequestStart("onRequestStart(\"GrnViewModelItem#=GrnId#\")")
+                                                                    .RequestEnd("onRequestEnd(\"GrnViewModelItem#=GrnId#\")"))
+                                                                .Model(model =>
+                                                                {
+
+                                                                    model.Field(p => p.CreatedBy).Editable(false);
+                                                                    model.Field(p => p.DateCreated).Editable(false);
+                                                                    model.Field(p => p.ModifiedBy).Editable(false);
+                                                                    model.Field(p => p.LastModified).Editable(false);
+
+                                                                })
+                                                                    .Read(read => read.Action("GrnItem_Read", "Tender", new { id = "#=GrnId#", type = "#=GrnType#" }))
+                                                                    )
+                                                                        .ToClientTemplate()
+                                                )
+
+                        </text>
+                                        );
+                                                                        
+                                                items.Add().Text("Validation").Content(
+                                                                                        @<text>
+                                                                                            @(Html.Kendo().Grid<GrnViewModelValidation>()
+                                .Name("GrnViewModelValidation#=GrnId#")
+                                        .Columns(columns =>
+                                        {
+                                            columns.Bound(c => c.Status).EditorTemplateName("ApprovalStatus").Width(150);
+                                            columns.Bound(c => c.Remark).Width(200);
+
+                                            columns.Bound(c => c.DateCreated).Width(200).Title("Time").Format("{0:dd/MM/yyyy}");
+                                            columns.Bound(c => c.LastModified).Hidden(true);
+                                            columns.Bound(c => c.CreatedBy).Width(200).Title("User");
+                                            columns.Bound(c => c.ModifiedBy).Hidden(true);
+
+
+                                        })
+
+                                        .Editable(editable => editable.Mode(GridEditMode.InLine))
+
+
+                                        .Sortable(sortable =>
+                                        {
+                                            sortable.SortMode(GridSortMode.SingleColumn);
+                                        })
+                                                                                                                                                                                                    
+                                        .Scrollable()
+                                        .DataSource(dataSource => dataSource
+                                            .Ajax()
+                                            .Model(
+                                                model =>
+                                                {
+                                                    model.Id(p => p.GrnViewModelValidationID);
+                                                    model.Field(p => p.OrgBranchName).Editable(false);
+                                                    model.Field(p => p.CreatedBy).Editable(false);
+                                                    model.Field(p => p.ModifiedBy).Editable(false);
+                                                    model.Field(p => p.LastModified).Editable(false);
+                                                    model.Field(p => p.DateCreated).Editable(false);
+                                                })
+                                            .Events(ev => ev
+                                                .Error("error_handler(\"GrnViewModelValidation#=GrnId#\")")
+                                                .RequestStart("onRequestStart(\"GrnViewModelValidation#=GrnId#\")")
+                                                .RequestEnd("onRequestEnd(\"GrnViewModelValidation#=GrnId#\")"))
+                                            .Read(read => read.Action("GrnValidation_Read", "Tender", new { id = "#=GrnId#", type = "#=GrnType#" }))
+
+                                        )
+                                        .ToClientTemplate())
+
+</text>);
+
+
+})
+
+                                                                                                                                                                                                            .ToClientTemplate()
+    )
+
+</script>
+
+@helper BidCancellationDocumentUpload()
+{
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Procurement.Tender.TenderCancellationUploadDbModel>()
+          .Name("TenderCancellationUploadDbModel#=TenderCancellationId#")
+          .Columns(columns =>
+          {
+              columns.Bound(c => c.FileName).ClientTemplate("<a href='/BidCancellationDocumentUpload/FileDwonload?id=\\#=TenderCancellationUploadDbModelId \\#'>\\#=FileName \\#</a>").Width(200);
+              columns.Command(command => { command.Edit(); command.Destroy(); }).Width(580);
+          })
+          .ToolBar(t => t.Template(
+              @<text>
+                  @(Html.Kendo().Upload()
+                        .Name("bidCancellationDocuments")
+                        .Async(a => a.Save("TenderCancellationUploadDbModels_Create", "BidCancellationDocumentUpload", new { id = "#=TenderCancellationId #" }))
+                        .Events(e => e.Complete("bidCancellationSuccess"))
+                        .ShowFileList(false)
+                        .ToClientTemplate())
+               </text>
+              ))
+
+          .Editable(editable => editable.Mode(GridEditMode.InLine))
+          .Scrollable()
+          .Events(x => x.DataBound("onDataBoundTenderLines"))
+          .DataSource(dataSource => dataSource
+              .Ajax()
+              .Events(ev => ev
+                  .Error("error_handler(\"TenderCancellationUploadDbModel#=TenderCancellationId#\")")
+                  .RequestStart("onRequestStart(\"TenderCancellationUploadDbModel#=TenderCancellationId#\")")
+                  .RequestEnd("onRequestEnd(\"TenderCancellationUploadDbModel#=TenderCancellationId#\")"))
+              .Model(model => model.Id(p => p.TenderCancellationUploadDbModelId))
+              .Read(read => read.Action("TenderCancellationUploadDbModels_Read", "BidCancellationDocumentUpload", new { id = "#= TenderCancellationId #" }))
+              .Create(create => create.Action("TenderCancellationUploadDbModels_Create", "BidCancellationDocumentUpload", new { id = "#=TenderCancellationId #" }))
+              .Update(update => update.Action("TenderCancellationUploadDbModels_Update", "BidCancellationDocumentUpload"))
+              .Destroy(destroy => destroy.Action("TenderCancellationUploadDbModels_Destroy", "BidCancellationDocumentUpload"))
+          ).ToClientTemplate())
+}
+
+@helper FilUploaderBid()
+{
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Procurement.Tender.TenderBidDocument>()
+          .Name("tenderbiddocument_#=TenderID#")
+          .Columns(columns =>
+          {
+              columns.Bound(c => c.FileName).ClientTemplate("<a href='/BidDocument/FileDwonload?id=\\#=TenderBidDocumentId \\#'>\\#=FileName \\#</a>").Width(200);
+              columns.Command(command => { command.Edit(); command.Destroy(); }).Width(580);
+          })
+          .ToolBar(t => t.Template(
+              @<text>
+                  @(Html.Kendo().Upload()
+                        .Name("bidDocuments")
+                        .Async(a => a.Save("TenderBidDocuments_Create", "BidDocument", new { id = "#=TenderID #" }))
+                        .Events(e => e.Complete("bidSuccess"))
+                        .ShowFileList(false)
+                        .ToClientTemplate())
+               </text>
+              ))
+
+          .Editable(editable => editable.Mode(GridEditMode.InLine))
+          .HtmlAttributes(new { style = "height: 350px;" })
+          .Scrollable()
+          .Events(x => x.DataBound("onDataBoundTenderLines"))
+          .DataSource(dataSource => dataSource
+              .Ajax()
+              .Events(ev => ev
+                  .Error("error_handler(\"tenderbiddocument_#=TenderID#\")")
+                  .RequestStart("onRequestStart(\"tenderbiddocument_#=TenderID#\")")
+                  .RequestEnd("onRequestEnd(\"tenderbiddocument_#=TenderID#\")"))
+              .Model(model => model.Id(p => p.TenderBidDocumentId))
+              .Read(read => read.Action("TenderBidDocuments_Read", "BidDocument", new { id = "#= TenderID #" }))
+              .Create(create => create.Action("TenderBidDocuments_Create", "BidDocument", new { id = "#=TenderID #" }))
+              .Update(update => update.Action("TenderMinuteUploads_Update", "BidDocument" ))
+              .Destroy(destroy => destroy.Action("TenderBidDocuments_Destroy", "BidDocument"))
+          ).ToClientTemplate())
+}
+
+
+
+@helper ParticipantItems()
+{
+    @(Html.Kendo().Grid<ParticipantsItem>()
+          .Name("biditemofParticipant_#=LotID#")
+          .Columns(columns =>
+          {
+              columns.Bound(c => c.SupplierName).EditorTemplateName("BidDocumentEvaluated").Width(100);
+              columns.ForeignKey(p => p.LotItemID, (IEnumerable)ViewData["LotItems"], "LotItemID", "Name").Title("Item").EditorTemplateName("LotItemSelector").Width(150);
+              columns.ForeignKey(p => p.ItmCode, (IEnumerable)ViewData["Items"], "ItmCode", "Name").Title("Item").Width(100).EditorTemplateName("BidItem");
+              columns.Bound(c => c.Name).Width(60);
+              columns.Bound(c => c.ItemSpecification).Width(80).Title("Item Spec.");
+              columns.Bound(c => c.ModelNo).Width(60);
+              columns.Bound(c => c.UoM).Width(60);
+              columns.Bound(c => c.UnitPrice).Width(60);
+              columns.ForeignKey(p => p.GLTaxRateID, (IEnumerable)ViewData["tax"], "GLTaxRateID", "TaxName").Title("Tax Name").EditorTemplateName("TaxSelector").Width(70);
+              columns.Bound(c => c.Quantity).Width(60);
+              columns.Bound(c => c.TaxAmount).Width(60);
+              columns.Bound(c => c.Total).Width(70);
+              columns.Bound(c => c.DiscountAmount).Width(70);
+
+              columns.Command(command => { command.Edit(); command.Destroy(); })
+                  .Width(380);
+          })
+          .ToolBar(toolbar =>
+          {
+          //toolbar.Create();
+          toolbar.Template(@<text>
+                                   @Html.Kendo().Button().Content("Get Items").Name("GetSuppliersItem").Events(events => events.Click("GetSuppliersClicked")).ToClientTemplate()
+
+
+                                </text>);
+
+
+          })
+          .Editable(editable => editable.Mode(GridEditMode.InLine))
+            .HtmlAttributes(new { style = "height: 550px;" })
+          .Sortable(sortable =>
+          {
+              sortable.SortMode(GridSortMode.SingleColumn);
+          })
+          .Scrollable()
+          .Events(x => x.DataBound("onDataBoundTenderLines"))
+          .DataSource(dataSource => dataSource
+              .Ajax()
+              .Events(ev => ev
+                  .Error("error_handler(\"biditemofParticipant_#=LotID#\")")
+                  .RequestStart("onRequestStart(\"biditemofParticipant_#=LotID#\")")
+                  .RequestEnd("onRequestEnd(\"biditemofParticipant_#=LotID#\")"))
+              .Model(model =>
+              {
+                  model.Id(p => p.ParticipantsItemId);
+                  model.Field(p => p.LotItemID).Editable(false);
+                  model.Field(p => p.UoM).Editable(false);
+                  model.Field(p => p.ItmCode).Editable(false);
+                  model.Field(p => p.ItemName).Editable(false);
+                  model.Field(p => p.ItemSpecification).Editable(false);
+                  model.Field(p => p.CatCode).Editable(false);
+                  model.Field(p => p.CategoryName).Editable(false);
+                  model.Field(p => p.Name).Editable(false);
+                  model.Field(p => p.ModelNo).Editable(false);
+                  model.Field(p => p.SubTotal).Editable(false);
+                  model.Field(p => p.TaxAmount).Editable(false);
+                  model.Field(p => p.Total).Editable(false);
+                  model.Field(p => p.Quantity).Editable(false);
+
+                  model.Field(p => p.SupplierName).Editable(false);
+              })
+              .Read(read => read.Action("ParticipantsItems_Read", "TenderParticipantItems", new { id = "#= LotID #" }))
+              .Create(create => create.Action("ParticipantsItems_Create", "TenderParticipantItems", new { id = "#= LotID #" }))
+              .Update(update => update.Action("ParticipantsItems_Update", "TenderParticipantItems"))
+              .Destroy(destroy => destroy.Action("ParticipantsItems_Destroy", "TenderParticipantItems"))
+          ).ToClientTemplate())
+}
+@helper EvaluationResult()
+{
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Procurement.Tender.TenderEvaluationResult>()
+                  .Name("tenderEvaluationResultGrid_#=LotID#")
+                  .Columns(columns =>
+                  {
+                      columns.Bound(c => c.SupplierName).EditorTemplateName("BidDocumentEvaluated").Width(120);
+                      columns.Bound(c => c.Financial).Format("{0:n}").Width(100);
+                      columns.Bound(c => c.Technical).Width(100);
+                      columns.Bound(c => c.Pass).Width(100);
+                      columns.Bound(c => c.Total).Format("{0:n}").Width(100);
+
+                      columns.Command(command =>
+                          {
+                              //command.Edit();
+                              //command.Destroy();
+                          }).Width(380);
+                  })
+                  .ToolBar(toolbar =>
+                      {
+
+                          toolbar.Template(@<text>
+                            @Html.Kendo().Button().Content("Calculate Result").Name("GetCriteria").Events(events => events.Click("GetResult")).ToClientTemplate()
+                        </text>);
+                      })
+                        .Editable(editable => editable.Mode(GridEditMode.InLine))
+                       .HtmlAttributes(new { style = "height: 550px;" })
+                        .Scrollable()
+          .Sortable(sortable =>
+          {
+              sortable.SortMode(GridSortMode.SingleColumn);
+          })
+          .Events(x => x.DataBound("onDataBoundTenderLines"))
+          .ClientDetailTemplateId("resultDetail")
+                        .DataSource(dataSource => dataSource
+                            .Ajax()
+                            .Events(ev => ev
+                             .Error("error_handler(\"tenderEvaluationResultGrid_#=LotID#\")")
+                             .RequestStart("onRequestStart(\"tenderEvaluationResultGrid_#=LotID#\")")
+                             .RequestEnd("onRequestEnd(\"tenderEvaluationResultGrid_#=LotID#\")"))
+                            .Model(model =>
+                            {
+                                model.Id(p => p.TenderEvaluationResultID);
+                                model.Field(p => p.SupplierName).Editable(false);
+                                model.Field(p => p.Financial).Editable(false);
+                                model.Field(p => p.Total).Editable(false);
+                                model.Field(p => p.Pass).Editable(false);
+                            })
+                            .Read(read => read.Action("TenderEvaluationResults_Read", "TenderEvaluationResult", new { id = "#= LotID #" }))
+                            .Create(create => create.Action("TenderEvaluationResults_Create", "TenderEvaluationResult", new { id = "#= LotID #" }))
+                            .Update(update => update.Action("TenderEvaluationResults_Update", "TenderEvaluationResult"))
+                            .Destroy(destroy => destroy.Action("TenderEvaluationResults_Destroy", "TenderEvaluationResult"))
+                        ).ToClientTemplate()
+    )
+
+}
+
+@helper FileUpload()
+{
+    <text>
+        @(Html.Kendo().Grid<ExceedERP.Core.Domain.Procurement.Tender.TenderMinuteUploadDBModel>
+                ()
+                .Name("tenderminuteuploadgrid_#=TenderID#")
+                .Columns(columns =>
+                    {
+                        columns.Bound(x => x.TenderMinuteUploadDBModelId).Hidden(true);
+                        columns.Bound(c => c.FileName).ClientTemplate("<a href='/TenderMinutesOfMeeting/FileDwonload?id=\\#=TenderMinuteUploadDBModelId \\#'>\\#=FileName \\#</a>").Width(200);
+
+                        columns.Command(command =>
+                            {
+                                command.Edit();
+                                command.Destroy();
+                            }).Width(580);
+                    })
+                .ToolBar(t => t.Template(
+                    @<text>
+                        @(Html.Kendo().Upload()
+                          .Name("tenderMinuteUploadDBModel")
+                          .Async(a => a.Save("TenderMinuteUploads_Create", "TenderMinutesOfMeeting", new { id = "#=TenderID #" }))
+                          .Events(e => e.Complete("onUploadSuccess"))
+                          .ShowFileList(false)
+                          .ToClientTemplate()
+                        )
+                    </text>
+                                                            ))
+                                                            .Editable(editable => editable.Mode(GridEditMode.InLine))
+              .HtmlAttributes(new { style = "height: 350px;" })
+              .Sortable(sortable =>
+              {
+                  sortable.SortMode(GridSortMode.SingleColumn);
+              })
+                                                            .Scrollable()
+              .Events(x => x.DataBound("onDataBoundTenderLines"))
+                                                            .DataSource(dataSource => dataSource
+                                                                .Ajax()
+                                                                .Events(ev => ev
+                                                                    .Error("error_handler(\"tenderminuteuploadgrid_#=TenderID#\")")
+                                                                    .RequestStart("onRequestStart(\"tenderminuteuploadgrid_#=TenderID#\")")
+                                                                    .RequestEnd("onRequestEnd(\"tenderminuteuploadgrid_#=TenderID#\")"))
+                                                                 .Model(model => model.Id(p => p.TenderMinuteUploadDBModelId))
+                                                                .Read(read => read.Action("TenderMinuteUploads_Read", "TenderMinutesOfMeeting", new { id = "#=TenderID #" }))
+                                                                .Create(create => create.Action("TenderMinuteUploads_Create", "TenderMinutesOfMeeting", new { id = "#=TenderID #" }))
+                                                                .Update(update => update.Action("TenderMinuteUploads_Update", "TenderMinutesOfMeeting"))
+                                                                .Destroy(destroy => destroy.Action("TenderMinuteUploads_Destroy", "TenderMinutesOfMeeting"))
+                                                    ).ToClientTemplate())
+    </text>
+}
+@helper BidAwardedSuplier()
+{
+    @(Html.Kendo().Grid<BidAwardedSupplier>()
+          .Name("bidAwardedSuppliergrid_#=LotID#")
+          .Columns(columns =>
+          {
+              columns.Bound(c => c.BidAwardedSupplierID).Title("Award No.").Width(90);
+              columns.Bound(c => c.SupplierName).Width(120).EditorTemplateName("BidResultSuppliers");//.EditorTemplateName("BidDocumentEvaluated");
+              columns.Bound(c => c.DeliveryDate).Width(100);
+              columns.Bound(c => c.AwardDate).Width(130);
+              columns.Bound(c => c.AwardGiven).Width(90).ClientTemplate("<input type='checkbox' disabled = 'false' \\#= AwardGiven ? checked='checked' :'' \\# />");
+              columns.Bound(c => c.IsTransferredToContract).Width(90).ClientTemplate("<input type='checkbox' disabled = 'false' \\#= IsTransferredToContract ? checked='checked' :'' \\# />");
+              columns.Bound(c => c.Remark).Width(150);
+              columns.Command(command =>
+              {
+                  command.Edit();
+              }).Width(380);
+          })
+          .ToolBar(toolbar =>
+          {
+              toolbar.Template(@<text>
+
+                                   @Html.Kendo().Button().Name("getfromSystem").Content("Calculate Winner").Events(events => events.Click("GetWinner")).ToClientTemplate()
+                                </text>);
+
+          })
+          .Editable(editable => editable.Mode(GridEditMode.InLine))
+          .HtmlAttributes(new { style = "height: 400px;" })
+          .Scrollable()
+          .Sortable(sortable =>
+          {
+              sortable.SortMode(GridSortMode.SingleColumn);
+          })
+          .Events(x => x.DataBound("onDataBoundTenderLines").DetailExpand("awardDetailExpand"))
+          .ClientDetailTemplateId("awardDetail")
+          .DataSource(dataSource => dataSource
+              .Ajax()
+              .Events(ev => ev
+                  .Error("error_handler(\"bidAwardedSuppliergrid_#=LotID#\")")
+                  .RequestStart("onRequestStart(\"bidAwardedSuppliergrid_#=LotID#\")")
+                  .RequestEnd("onRequestEnd(\"bidAwardedSuppliergrid_#=LotID#\")"))
+              .Model(model =>
+              {
+                  model.Id(p => p.BidAwardedSupplierID);
+                  model.Field(p => p.IsTransferredToContract).Editable(false);
+                  model.Field(p => p.TenderReference).Editable(false);
+                  model.Field(p => p.IsNewSupplier).Editable(false);
+              })
+              .Read(read => read.Action("BidAwardedSuppliers_Read", "TenderAward", new { id = "#= LotID #" }))
+              .Create(create => create.Action("BidAwardedSuppliers_Create", "TenderAward", new { id = "#= LotID #" }))
+              .Update(update => update.Action("BidAwardedSuppliers_Update", "TenderAward"))
+              .Destroy(destroy => destroy.Action("BidAwardedSuppliers_Destroy", "TenderAward"))
+          ).ToClientTemplate())
+}
+
+<script>
+    
+
+    function sendToContract(id) {
+        var recordStatus = "";
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("SendToContract", "Tender", new { area = "Procurement" })',
+            data: { id: id },
+            success: function (result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                recordStatus = result.Status;
+                location.reload(true);
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+
+
+    function sendForApproval(id) {
+        var recordStatus = "";
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("SendForApproval", "Tender", new { area = "Procurement" })',
+            data: { id: id },
+            success: function (result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                recordStatus = result.Status;
+                location.reload(true);
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+
+    function voidRecord(id) {
+        var recordStatus = "";
+        var conf = confirm("Are you sure you want to void this record number: " + id + " ?");
+        if (conf === true) {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("Void", "Tender", new {area = "Procurement"})',
+                data: { id: id },
+                success: function (result) {
+                    // toastr.warnning(result.Message);
+                    alert(result.Message);
+                    recordStatus = result.Status;
+                    location.reload(true);
+                }, //end succ
+                error: function (result) {
+                    alert(result);
+                }
+            });
+        }
+    }
+
+    function onPassFaileResultEdit(e) {
+
+        if (e.model.isNew() === false) {
+            //$("#UnitPrice").attr("readonly", true);
+            $("#SupplierName").kendoDropDownList({
+                enable: false
+            });
+            $("#ItmCode").kendoDropDownList({
+                enable: false
+            });
+
+        }
+    }
+
+    function onEditCriteria(e) {
+
+        var item = $("#Type").data("kendoDropDownList").value();
+        //var dataItem = this.dataItem(e.item);
+        //var item = dataItem.Type;
+        alert(item);
+        //begin
+
+        if (item === "2") {
+            $("#Weight").val("0").trigger("change");
+            $("#Weight").attr("readonly", true);
+        } else {
+            $("#Weight").attr("readonly", false);
+        }
+        //end
+    }
+
+    var popup;
+    var aCode;
+    function SelectItemCode() {
+
+        popup = window.open('/Inventory/DataProvider/ItemFilterCat', 'WindowPopup', 'top=100, left=400, width=400, height=320,resizable=no,');
+        popup.focus();
+        return false;
+    }
+
+    function setLang(itemCode) {
+        aCode = itemCode;
+        $("#ItmCode").val(aCode).trigger("change");
+    }
+
+
+    var masterRow;
+    var masterGrid;
+    var masterDataItem;
+    var codeid;
+    var isapproved;
+    var issecondapproved;
+    var isSendForApproval;
+    var isOnlineTransferred;
+
+    var tenderType;
+    var purchaseType;
+    function detailExpand(e) {
+        masterRow = e.masterRow;
+        masterGrid = $("#grid").data("kendoGrid");
+        masterDataItem = masterGrid.dataItem(masterRow);
+        codeid = masterDataItem.TenderID;
+        isapproved = masterDataItem.IsOnlineApproved;
+        isSendForApproval = masterDataItem.IsSendForApproval;
+        isOnlineTransferred = masterDataItem.IsOnlineTransferred;
+
+        tenderType = masterDataItem.TenderType;
+        purchaseType = masterDataItem.PurchaseCategory;
+        var lotgd;
+        if (tenderType === 1) {
+            $('#Supplier').attr('disabled', 'disabled');
+        }
+        else {
+            // $('#PurchaseRequisitionID').attr('required', 'required');
+        }
+
+        if (purchaseType !== 0) {
+            lotgd = "#lotgrid_" + codeid;
+            var lotgrid = $(lotgd).data("kendoGrid");
+            lotgrid.hideColumn(0);
+
+        } else {
+            $('#PurchaseRequisitionID').attr('required', 'required');
+        }
+    }
+
+    function onDataBoundTender(e) {
+        //this.expandRow(this.tbody.find("tr.k-master-row").first());
+
+        //approved
+        var grid = $("#grid").data("kendoGrid");
+        var gridData = grid.dataSource.view();
+
+        for (var i = 0; i < gridData.length; i++) {
+            var currentUid = gridData[i].uid;
+            if (gridData[i].IsOnlineApproved || gridData[i].IsSendForApproval) {
+                var currenRow = grid.table.find("tr[data-uid='" + currentUid + "']");
+                var editButton = $(currenRow).find(".k-grid-edit");
+                var deleteButton = $(currenRow).find(".k-grid-delete");
+                editButton.hide();
+                deleteButton.hide();
+            }
+        }
+
+        //changing colors
+        var rows = e.sender.tbody.children();
+        for (var j = 0; j < rows.length; j++) {
+            var row = $(rows[j]);
+            var dataItem = e.sender.dataItem(row);
+            if (dataItem.IsSendForApproval && !dataItem.IsOnlineApproved) {
+                row.css("background-color", "lightgreen");
+            }
+            if (!dataItem.IsSendForApproval && !dataItem.IsOnlineApproved) {
+                row.css("background-color", "lightskyblue");
+            }
+        }
+    }
+    function onDataBoundTenderLines(e) {
+
+        var detailGrid = "#" + e.sender.element[0].id;// "#StoreRequisitionItem_" + codeid;
+        if (isapproved || isSendForApproval) {
+
+            $(".k-grid-add", detailGrid).hide();
+            $(".k-grid-delete", detailGrid).hide();
+            $(".k-grid-edit", detailGrid).hide();
+        }
+    }
+    function onDataBoundTenderValidation(e) {
+
+        var detailGrid = "#" + e.sender.element[0].id;// "#StoreRequisitionValidation_" + codeid;
+
+        if (isapproved || !isSendForApproval) {
+
+            $(".k-grid-add", detailGrid).hide();
+            $(".k-grid-delete", detailGrid).hide();
+            $(".k-grid-edit", detailGrid).hide();
+        }
+   
+        this.table.find(".k-grid-edit").hide();
+    }
+
+
+
+    function onUploadSuccess(e) {
+        var gridname = "#tenderminuteuploadgrid_" + codeid;
+        $(gridname).data("kendoGrid").dataSource.read();
+    }
+    function bidSuccess(e) {
+        var gridname = "#tenderbiddocument_" + codeid;
+        $(gridname).data("kendoGrid").dataSource.read();
+    }
+
+    function bidCancellationSuccess(e) {
+        //var gridname = "#TenderCancellationUploadDbModel" + cancelid;
+        //$(gridname).data("kendoGrid").dataSource.read();
+    }
+
+    var lotid;
+    function lotDetailExpand(e) {
+        var lotrow = e.masterRow;
+        var gridName = "#lotgrid_" + codeid;
+        var lotgrid = $(gridName).data("kendoGrid");
+        var lotDataItem = lotgrid.dataItem(lotrow);
+        lotid = lotDataItem.LotID;
+
+        if (tenderType === 0) {
+            var lotitemgrid = "#lotitemgrid_" + lotid;
+            $(".k-grid-add", lotitemgrid).hide();
+
+        }
+        var tabname = "#LotsTabstrip_" + lotid;
+        var lottab = $(tabname).data("kendoTabStrip");
+        $.ajax({
+            type: "GET",
+            dataType: 'json',
+            contentType: "application/json;charset=utf-8",
+            url: "/Tender/GetCriteriaType",
+            data: { id: lotid },
+            success: function (result) {
+               // debugger;
+
+                //if (result === "Technical") {
+                //    $(lottab.items()[7]).attr("style", "display:none");
+
+                //}
+                //if (result === "PassFail") {
+
+                //    $(lottab.items()[8]).attr("style", "display:none");
+
+                //}
+                //if (result === "None") {
+
+                //    $(lottab.items()[7]).attr("style", "display:none");
+                //    $(lottab.items()[8]).attr("style", "display:none");
+
+                //}
+
+            },
+            error: function (response) {
+               // debugger;
+                alert('eror');
+            }
+        });
+
+
+
+    }
+
+    var awardid;
+    function awardDetailExpand(e) {
+        var awardrow = e.masterRow;
+        var gridName = "#bidAwardedSuppliergrid_" + lotid;
+        var awardgrid = $(gridName).data("kendoGrid");
+        var awardDataItem = awardgrid.dataItem(awardrow);
+        awardid = awardDataItem.BidAwardedSupplierID;
+
+      
+    }
+
+    var cancelid = "";
+
+    function cancellationDetailExpand(e) {
+        var cancelrow = e.masterRow;
+        var gridName = "#TenderCancellation" + codeid;
+        var lotgrid = $(gridName).data("kendoGrid");
+        var cancelDataItem = lotgrid.dataItem(cancelrow);
+        cancelid = cancelDataItem.LotID;
+        
+    }
+
+    function getLotId() {
+        return { id: lotid }
+
+    }
+
+    function getLotAndAwardId() {
+        return {
+            lot: lotid,
+            award: awardid
+        }
+
+    }
+
+    function getMainTenderId() {
+        return {
+            id: codeid,
+            text: $("#PurchaseRequisitionAssignmentId").data("kendoDropDownList").filterInput.val()
+        }
+    }
+    function GetResult(e) {
+
+
+        $.ajax({
+            url: '@Url.Action("GenerateResult", "Tender")',
+            type: 'POST',
+            dataType: 'json',
+            data: JSON.stringify({ "id": lotid }),
+            contentType: "application/json; charset=utf-8",
+            success: function (result) {
+                // toastr.warnning(result.Message);
+                var resultgritn = "#tenderEvaluationResultGrid_" + lotid;
+                $(resultgritn).data('kendoGrid').dataSource.read();
+                $(resultgritn).data('kendoGrid').refresh();
+                alert(result.Message);
+                
+            }, //end s
+            error: function (result) {
+                alert(result);
+            }
+        });
+       
+    }
+
+    function GetSuppliersClicked(e) {
+        $.ajax({
+            url: '@Url.Action("GetParticipantItem", "Tender")',
+            type: 'POST',
+            dataType: 'json',
+            data: JSON.stringify({ "id": lotid }),
+            contentType: "application/json; charset=utf-8",
+            success: function (result) {
+
+                var resultgritn = "#biditemofParticipant_" + lotid;
+                $(resultgritn).data('kendoGrid').dataSource.read();
+                $(resultgritn).data('kendoGrid').refresh();
+                alert(result.Message);
+            }, //end s
+            error: function (result) {
+                alert(result);
+            }
+        });
+      
+    }
+    function resultBinding(e) {
+
+    }
+
+    function OnIndexCall(e) {
+        var wnd = $("#evaluationForm").data("kendoWindow");
+        wnd.center().open();
+    }
+    function sendClicked(e) {
+
+        var window = $("#evaluationForm").data("kendoWindow");
+
+        window.close();
+
+    }
+    function onUpload(e) {
+        e.data = { id: codeid };
+
+    }
+
+    function OnIndexCall(elem) {
+        var a = codeid;
+        $(elem).attr('href', $(elem).attr('href') + '?id=' + a);
+    }
+    function lotEdit(e) {
+        if (tenderType === 0) {
+            $('#PurchaseRequisitionID').attr('required', 'required');
+        }
+    }
+
+    function lotItemEdit(e) {
+        if (tenderType === 0) {
+
+            $("#InventoryItem").attr("readonly", true);
+            $("#ItemCode").attr("readonly", true);
+
+            $('[name="InventoryItem"]').attr("readonly", true);
+            $('[name="ItemCode"]').attr("readonly", true);
+        }
+
+    }
+    @*function assignParticipantClicked(e) {
+
+        $.ajax({
+            type: "GET",
+
+            dataType: 'json',
+
+
+            contentType: "application/json;charset=utf-8",
+            //url: '@Url.Action("PopulateLotParticipant", "Tender")',
+            data: { id: lotid },
+            success: function (result) {
+                debugger;
+
+
+
+                var wnd = $("#PurchaseOrderDetailWindow").data("kendoWindow");
+                wnd.center().open();
+
+            },
+            error: function (response) {
+                debugger;
+                var wnd = $("#PurchaseOrderDetailWindow").data("kendoWindow");
+                wnd.center().open();
+            }
+        });
+
+
+    }*@
+
+    function lotDataBound(e) {
+        if (tenderType === 1) {
+
+        }
+        //var tabname = "#LotsTabstrip_" + lotid;
+        //var lottab = $(tabname).data("kendoTabStrip");
+        //$(lottab.items()["Award"]).attr("style", "display:none");
+    }
+
+    function getItemCode(e) {
+
+        return {
+            itemCode: $("#ItmCode").data("kendoDropDownList").value()
+        }
+    }
+
+    function WindowClosed(e) {
+
+    }
+
+   
+
+    function GetWinner(e) {
+        $.ajax({
+            url: '@Url.Action("GenerateWinner", "Tender")',
+            type: 'POST',
+            dataType: 'json',
+            data: JSON.stringify({ "id": lotid }),
+            contentType: "application/json; charset=utf-8",
+            success: function (result) {
+                // toastr.warnning(result.Message);
+                var resultgritn = "#bidAwardedSuppliergrid_" + lotid;
+                $(resultgritn).data('kendoGrid').dataSource.read();
+                $(resultgritn).data('kendoGrid').refresh();
+                alert(result.Message);
+            }, //end s
+            error: function (result) {
+                alert(result);
+            }
+        });
+       
+    }
+
+</script>
+<style>
+    .k-window .row, .k-window .row * {
+        box-sizing: border-box;
+    }
+
+
+</style>
+
+
+
+<script>
+    var supplierTextBox;
+    var popup;
+    var supplier;
+    function SelectSupplier(e) {
+
+        supplierTextBox = $(e).prev('input').attr('id');
+        popup = window.open('/Procurement/ProcurementDataProvider/SupplierShortListSelector', 'WindowPopup', 'top=100, left=400, width=300, height=220,resizable=no,');
+        popup.focus();
+        return false;
+    }
+
+   
+    function setChoice(supplierName) {
+        supplier = supplierName;
+        $("#" + supplierTextBox).val(supplier).trigger("change");
+    }
+
+
+</script>

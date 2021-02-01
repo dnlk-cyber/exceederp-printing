@@ -1,0 +1,34 @@
+﻿@using ExceedERP.Core.Domain.HRM.PerformanceManagment
+@using ExceedERP.Core.Localization
+
+@(Html.Kendo().Grid<EmployeeMeasurementDefinition>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.MeasurementDefinitionId);
+       // columns.Bound(c => c.EmployeePerformanceId);
+        columns.Bound(c => c.EmpPercentageofWeight);
+        columns.Bound(c => c.Result);
+        columns.Bound(c => c.Remark);
+        columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+                            .Events(events =>
+                                                                        {
+                                                                            events.Error("error_handler(\"grid\")");
+                                                                            events.RequestStart("onRequestStart(\"grid\")");
+                                                                            events.RequestEnd("onRequestEnd(\"grid\")");
+                                                                        })
+          .Model(model => model.Id(p => p.EmpMeasurementDefinitionId))
+          .Read(read => read.Action("EmployeeMeasurementDefinition_Read", "EmployeeMeasurementDefination"))
+          .Create(create => create.Action("EmployeeMeasurementDefinition_Create", "EmployeeMeasurementDefination"))
+          .Update(update => update.Action("EmployeeMeasurementDefinition_Update", "EmployeeMeasurementDefination"))
+          .Destroy(destroy => destroy.Action("EmployeeMeasurementDefinition_Destroy", "EmployeeMeasurementDefination"))
+      )
+)

@@ -1,0 +1,59 @@
+﻿<legend>Templates</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Procurement.Tender.TenderTemplateFiles>()
+      .Name("filesGrid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.FileName).ClientTemplate("<a href='TenderTemplate/FileDwonload?id=#=TenderTemplateFilesId#'>#=FileName#</a>"); ;
+          columns.Bound(c => c.Description);
+         
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(t => t.Template(
+          @<text>
+              @(Html.Kendo().Upload()
+                    .Name("file")
+                    .Async(a => a.Save("TenderTemplateFiles_Create", "TenderTemplate"))
+                    .Events(e => e.Complete("onUploadSuccess"))
+                    .ShowFileList(false))
+           </text>
+          ))
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+
+      .HtmlAttributes(new { style = "height: 550px;" })
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(20))
+      .Scrollable()
+      .Sortable()
+      .Filterable()
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Groupable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model =>
+          {
+              model.Id(p => p.TenderTemplateFilesId);
+              model.Field(p => p.FileName).Editable(false);
+          })
+          .Read(read => read.Action("TenderTemplateFiles_Read", "TenderTemplate"))
+          .Create(create => create.Action("TenderTemplateFiles_Create", "TenderTemplate"))
+          .Update(update => update.Action("TenderTemplateFiles_Update", "TenderTemplate"))
+          .Destroy(destroy => destroy.Action("TenderTemplateFiles_Destroy", "TenderTemplate"))
+      ))
+<script>
+    function onUploadSuccess(e) {
+        // Force the rebinding of the Grid on successful upload
+        $("#filesGrid").data("kendoGrid").dataSource.read();
+    }
+</script>

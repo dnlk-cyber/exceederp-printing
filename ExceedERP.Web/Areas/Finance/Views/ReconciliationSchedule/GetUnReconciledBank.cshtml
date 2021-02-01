@@ -1,0 +1,119 @@
+﻿@model IEnumerable<ExceedERP.Core.Domain.Finance.Bank.ReconciliationBankAccount>
+<p align="right"> <b>@ViewBag.UnreconciledBank ETB </b></p>
+
+<table class="table table-striped table-bordered table-condensed table-hover">
+    <tr>
+       
+        <th>
+            Reference
+        </th>
+        <th>
+            Debit
+        </th>
+        <th>
+            Credit
+        </th>
+        <th>
+            Date
+        </th>
+        <th>
+            
+        </th>
+
+    </tr>
+
+    @foreach (var item in Model)
+    {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.Reference)
+            </td>
+            <td>
+                @*Html.DisplayFor(modelItem => item.Debit)*@
+				@Convert.ToDecimal(item.Debit).ToString("#,##0.00")
+            </td>
+            <td>
+                @*Html.DisplayFor(modelItem => item.Credit)*@
+				@Convert.ToDecimal(item.Credit).ToString("#,##0.00")
+            </td>
+            <td>
+                @item.Date.ToShortDateString()
+            </td>
+            <td>
+                <div class="hidden-sm hidden-xs btn-group">
+                    <a href='@Url.Action("DeleteUnReconciledBank", new { id = item.ReconciliationBankAccountId })' class="delete-link1 btn btn-xs btn-danger" title="Delete">
+                        <i class="ace-icon fa fa-trash-o bigger-120"></i>
+                    </a>
+                </div>
+           </td>
+
+        </tr>
+    }
+
+</table>
+
+
+
+<script src="~/Scripts/jquery-1.10.2.min.js"></script>
+<script>
+    $(document).ready(function () {
+       
+   
+        // delete Link
+        $('.delete-link1').click(function (event) {
+           
+            event.preventDefault();
+            var deleteLinkObj = $(this);  //for future use
+
+            var conf = confirm('Are you sure to delete?');
+            if (conf) {
+                 
+                $.post(deleteLinkObj[0].href, function (status) {  //Post to action
+                    if (status == 'TRUE') {
+                        //deleted
+                        deleteLinkObj.closest("tr").remove();
+                    }
+                    else {
+                        //not deleted
+                    }
+                });
+                
+
+            } else {
+                
+            }
+
+
+            //$("#delete-dialog1").dialog({
+            //    title: "Confirmation",
+            //    buttons: {
+            //        Continue: function () {
+            //            $.post(deleteLinkObj[0].href, function (status) {  //Post to action
+            //                if (status == 'TRUE') {
+            //                    //deleted
+            //                    deleteLinkObj.parent().parent().remove();        
+            //                }
+            //                else {
+            //                    //not deleted
+            //                }
+            //            });
+            //            $(this).dialog('close');
+            //        },
+            //        Close: function () {
+            //            $(this).dialog('close');
+            //        }
+            //    },
+            //    dialogClass: 'dialog_css',
+            //    width: 400,
+            //    closeOnEscape: false,
+            //    draggable: false,
+            //    resizable: false,
+            //    modal: true
+            //});
+           
+
+        });
+
+
+    });
+</script>

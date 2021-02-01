@@ -1,0 +1,14 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@(Html.Kendo().DropDownListFor(m => m)
+    .OptionLabel(Resources.Select)
+            .DataTextField("Name")
+            .DataValueField("ProductionPeriodId")
+            .DataSource(dataSource =>
+            {
+                dataSource.Read(read => read.Action("GetProductionPeriodsForRawItemPurchase", "ProductionDataProvider", new { area = "Production" , itemId = "#=RawProductPurchaseItemId#" }));
+            })
+            .Filter("contains")
+            .MinLength(2)
+            .ValuePrimitive(true)
+)

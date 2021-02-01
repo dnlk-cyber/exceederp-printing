@@ -1,0 +1,29 @@
+﻿<legend>Line Item</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.LineItem>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.Voucher);
+        columns.Bound(c => c.UnitAmount);
+        columns.Bound(c => c.Quantity);
+        columns.Bound(c => c.TotalAmount);
+        columns.Bound(c => c.Tax);
+        columns.Bound(c => c.TaxAmount);
+        columns.Bound(c => c.CalculatedCost);
+        columns.Bound(c => c.Remark);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.LineItemID))
+          .Read(read => read.Action("LineItems_Read", "LineItem"))
+          .Create(create => create.Action("LineItems_Create", "LineItem"))
+          .Update(update => update.Action("LineItems_Update", "LineItem"))
+          .Destroy(destroy => destroy.Action("LineItems_Destroy", "LineItem"))
+      )
+)

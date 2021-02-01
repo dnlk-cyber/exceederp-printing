@@ -1,0 +1,250 @@
+﻿
+<legend>Due</legend>
+@(Html.Kendo().Grid<ExceedERP.Web.Areas.FleetManagement.Models.MaintainceDueViewModel>()
+    .Name("grid")
+    .Columns(columns =>
+    {
+       
+        columns.Bound(e => e.Type).Width(140);
+        columns.Bound(e => e.DetailType).Width(200);
+        columns.Bound(e => e.LastMaintained).Format("{0:d}").Width(200);
+        columns.Command(command => { command.Destroy().Text("Dispatch Order"); }).Width(250);
+
+
+
+
+    }).Editable(editable =>
+          {
+              editable.Mode(GridEditMode.PopUp).TemplateName("DueEditor");
+
+          })
+        .HtmlAttributes(new { style = "height: 520px;" })
+                      .Pageable(pageable => pageable
+                                        .Input(true)
+                                        .Numeric(false)
+                                        .Refresh(true)
+                                        .PageSizes(true)
+                                        .ButtonCount(5))
+
+                            .Scrollable()
+                            .Sortable()
+                            .Filterable()
+                            .Groupable()
+                            .Scrollable(h => h.Height(500))
+    .Events(ev => ev.DetailExpand("onDetailExpand"))
+    .DataSource(dataSource => dataSource
+        .Ajax()
+               .ServerOperation(false)
+
+        .Model(model =>
+              {
+                  model.Id(p => p.MaintenaceServiceId);
+
+              })
+                              .Events(ev => ev
+                                    .Error("error_handler(\"grid\")")
+                                    .RequestStart("onRequestStart(\"grid\")")
+                                    .RequestEnd("onRequestEnd(\"grid\")"))
+                    .Read(read => read.Action("Due_Read", "Due"))
+                                    .Update(update => update.Action("Due_Destroy", "Due", new { fleetID = "#=AssetId#" }))
+                                                .Destroy(delete => delete.Action("Due_Destroy", "Due"))
+
+      ).ClientDetailTemplateId("template")
+)
+)
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                            .Name("tabstrip_#=AssetId#")
+    .SelectedIndex(0)
+    .Items(items =>
+                {
+                    items.Add().Text("Services").Content(
+                        @<text>
+                            <legend>Service</legend>
+                            @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetMaintenance.Service>()
+                          .Name("Service_#=AssetId#")
+          .Columns(columns =>
+              {
+                  columns.Bound(e => e.ServiceName).Width(140);
+                  columns.Bound(e => e.DateIntervalType).Width(200);
+                  columns.Bound(e => e.DateInterval).Width(140);
+                  columns.Bound(e => e.MileageInterval).Width(200);
+
+
+
+
+              })
+                .Scrollable(s => s.Height(500))
+             .ClientDetailTemplateId("lineItemTemplate")
+                                         .HtmlAttributes(new { style = "height:350px;" })
+          .DataSource(dataSource => dataSource
+              .Ajax()
+              .ServerOperation(false)
+              .Model(model =>
+                  {
+                      model.Id(p => p.ServiceID);
+                      model.Field(p => p.ServiceID).Editable(false);
+                  })
+                        .Events(ev => ev
+                                                .Error("error_handler(\"Service_#=AssetId#\")")
+                                                .RequestStart("onRequestStart(\"Service_#=AssetId#\")")
+                                                .RequestEnd("onRequestEnd(\"Service_#=AssetId#\")"))
+                                     .Read(read => read.Action("DueService_Read", "Due", new { fleetID = "#=AssetId#" }))
+
+
+      ).ToClientTemplate()
+
+                            )
+                        </text>
+
+
+            );
+
+                }).ToClientTemplate()
+
+    )
+
+</script>
+<script id="lineItemTemplate" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                        .Name("tabStrip_#=ServiceID#")
+                .SelectedIndex(0)
+                .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+                .Items(items =>
+                {
+                    items.Add().Text("Service Tool").Content(@<text>
+                        @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetMaintenance.ServiceTool>()
+                                            .Name("ServiceToolgrid_#=ServiceID#")
+                            .Columns(columns =>
+                                {
+                                    columns.Bound(o => o.ServiceName).Title("Tool Name").EditorTemplateName("ToolEditor").Width(80);
+                                    columns.Bound(o => o.Date).Width(50);
+
+                                })
+
+                            .DataSource(dataSource => dataSource
+                                .Ajax()
+                        
+                                .PageSize(5)
+                                 .Model(model => model.Id(p => p.ServiceToolID))
+                                                          .Events(ev => ev
+                                                    .Error("error_handler(\"ServiceToolgrid_#=ServiceID#\")")
+                                                    .RequestStart("onRequestStart(\"ServiceToolgrid_#=ServiceID#\")")
+                                                    .RequestEnd("onRequestEnd(\"ServiceToolgrid_#=ServiceID#\")"))
+                                         .Read(read => read.Action("ServiceToolByService", "ServiceTool", new { tserviceID = "#=ServiceID#" }))
+                                                                  .Create(update => update.Action("ServiceTool_Create", "ServiceTool", new { tserviceID = "#=ServiceID#" }))
+                                                                          .Update(destroy => destroy.Action("ServiceTool_Update", "ServiceTool", new { tserviceID = "#=ServiceID#" }))
+                                                          .Destroy(destroy => destroy.Action("ServiceTool_Destroy", "ServiceTool"))
+                                 )
+                            .Pageable()
+                           .ToClientTemplate())
+                    </text>);
+                    items.Add().Text("Crew").Content(@<text>
+            @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetMaintenance.ServiceCrew>()
+                                            .Name("ServiceCrewgrid_#=ServiceID#")
+                            .Columns(columns =>
+                            {
+                                columns.Bound(o => o.ServiceName).Title("Crew Name").EditorTemplateName("CrewEditor").Width(80);
+                                columns.Bound(o => o.DateCreated).Width(50);
+
+
+
+                            })
+
+                             .DataSource(dataSource => dataSource
+                                .Ajax()
+                                                                     .PageSize(5)
+                                 .Model(model => model.Id(p => p.ServiceCrewID))
+                                            .Events(ev => ev
+                                                                                    .Error("error_handler(\"ServiceCrewgrid_#=ServiceID#\")")
+                                                                                    .RequestStart("onRequestStart(\"ServiceCrewgrid_#=ServiceID#\")")
+                                                                                    .RequestEnd("onRequestEnd(\"ServiceCrewgrid_#=ServiceID#\")"))
+                                                                                     .Read(read => read.Action("ServiceCrewByService", "ServiceCrew", new { cserviceID = "#=ServiceID#" }))
+                                                                                    )
+                                  .Pageable()
+                            .ToClientTemplate())
+                    </text>);
+                    items.Add().Text(" Spare Part ").Content(@<text>
+            @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetMaintenance.ServiceSpare>()
+                                                    .Name("ServiceSparegrid_#=ServiceID#")
+                            .Columns(columns =>
+                            {
+                                columns.Bound(o => o.ServiceName).Title("SparePart Name").EditorTemplateName("SpareEditor").Width(60);
+
+                                columns.Bound(o => o.Date).Width(50);
+
+
+
+                            })
+
+                              .DataSource(dataSource => dataSource
+                                .Ajax()
+                                .PageSize(5)
+                                 .Model(model => model.Id(p => p.ServiceSpareID))
+                                                .Events(ev => ev
+                                                                    .Error("error_handler(\"ServiceSparegrid_#=ServiceID#\")")
+                                                                    .RequestStart("onRequestStart(\"ServiceSparegrid_#=ServiceID#\")")
+                                                                    .RequestEnd("onRequestEnd(\"ServiceSparegrid_#=ServiceID#\")"))
+                                                                                                        .Read(read => read.Action("ServiceSpareByService", "ServiceSpare", new { sserviceID = "#=ServiceID#" }))
+                                                                                                      )
+                            .Pageable()
+                            .ToClientTemplate())
+                    </text>
+                    );
+                }).ToClientTemplate()
+
+    )
+</script>
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 700px;
+    }
+</style>
+
+<script>
+    var id;
+    var masterId;
+    var gridName;
+    var thingId;
+
+    function onDetailExpand(e) {
+        var masterRow = e.masterRow;
+        //var masterGrid = $("#grid").data("kendoGrid");
+        var masterGrid = $("#grid").data("kendoGrid");
+
+        var masterDataItem = masterGrid.dataItem(masterRow);
+        masterId = masterDataItem.AssetId;
+        gridName = "#Service_" + masterId;
+    }
+    function onDetailServiceExpand(e) {
+        var masterRow = e.masterRow;
+        //var masterGrid = $("#grid").data("kendoGrid");
+        var masterGrid = $("#grid").data("kendoGrid");
+
+        var masterDataItem = masterGrid.dataItem(masterRow);
+        masterId = masterDataItem.ServiceID;
+        gridName = "#ServiceToolgrid_" + masterId;
+    }
+    function GetThingId(e) {
+        var masterRow = this.wrapper.closest("tr.k-detail-row").prev(".k-master-row");
+        var masterGrid = $(gridName).data("kendoGrid");
+        var masterDataItem = masterGrid.dataItem(masterRow);
+        id = masterDataItem.ThingID;
+    }
+    function GetThingIdValue() {
+        return { thingId: id }
+    }
+    function DisplayReferenceInformation() {
+        var salesOrderVoucherObject = $("#SalesOrderVoucherReference").data("kendoComboBox");
+        var salesOrderVoucherID = salesOrderVoucherObject.value();
+        $.ajax({
+            url: '@Url.Action("PopulateSalseOrderVoucherForReference", "CashSalesInvoice")',
+            data: { salesOrderVoucherID: salesOrderVoucherID },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+            }
+
+        });
+    }
+</script>

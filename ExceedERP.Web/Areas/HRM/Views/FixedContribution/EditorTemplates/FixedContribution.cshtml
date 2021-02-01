@@ -1,0 +1,272 @@
+﻿@using System.Collections
+@using Kendo.Mvc.UI
+@model ExceedERP.Core.Domain.HRM.Payroll .FixedContribution  
+@using ExceedERP.Core.Localization
+
+<form>
+
+<div class="row">
+    <div class="col-md-1">
+
+    </div>
+    <div class="col-md-3">
+        <div class="form-group">
+            <div class="k-label">
+                @Html.LabelFor(model => model.EmployeeId, htmlAttributes: new { @class = "control-label col-md-8" })
+
+            </div>
+            <div>
+
+                @(Html.Kendo().DropDownListFor(model => model.EmployeeId )
+                   //  .Name("EmployeeId")
+                                              .DataValueField("PersonId")
+                        .DataTextField("FullName")
+                           .OptionLabel("Select Employee..")
+                            .Filter("contains")
+                            .MinLength(2)
+                            .HtmlAttributes(new { style = "width:260px" })
+                                              .DataSource(source =>
+                                                                                {
+                                                                                    source.Read(read => read.Action("GetPayrollPlacmentEmployees", "HRMDataProvider"));
+
+
+                                                                                }) 
+                                                                           .ValuePrimitive(true)
+
+
+                                                                                                  .Height(400)
+                                                                                                          .HeaderTemplate("<div class=\"dropdown-header k-widget k-header\">" +
+                                                                                        "<span>Photo</span>" +
+                                                                                        "<span>Full Name</span>" +
+                                                                                    "</div>")
+                                                                                                                                                                       .Template(@"<div class='Employee-photo' style='background-image: url(" + Url.Content("~/Content/Images/") + "#:data.PersonId#-Photo/" + "#:data.PersonId#.jpg" + ");'></div>" +
+                                                                                            "<div class='Employee-name'>#:FullName#</div>")
+
+
+
+                )
+
+
+
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="form-group">
+            <div class="k-label">
+                @Html.LabelFor(model => model.GLPeriodId, htmlAttributes: new { @class = "control-label col-md-8" })
+
+            </div>
+            <div>
+
+                @(Html.Kendo().DropDownListFor(model => model.GLPeriodId)
+                  .AutoBind(false)
+                  .OptionLabel(Resources.Select)
+                          .DataTextField("Name")
+                                  .DataValueField("GLPeriodId")
+                                   .ValuePrimitive(true)
+                                       .DataSource(dataSource =>
+                                          {
+                                              dataSource.Read(read => read.Action("GetPeriod", "HRMDataProvider", new { area = "HRM" }))
+                                                                    .ServerFiltering(false);
+                                          }))
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div>
+            @Html.LabelFor(model => model.ContributionTypeId, htmlAttributes: new { @class = "control-label col-md-8" })
+        </div>
+        <div class="form-group">
+          @(Html.Kendo().DropDownListFor(model => model.ContributionTypeId)
+
+                  .OptionLabel(Resources.Select)
+                          .DataTextField("Description")
+                                  .DataValueField("ContributionTypeId")
+                                   .ValuePrimitive(true)
+                 .BindTo((IEnumerable)ViewData["Contribution"]))
+            @Html.ValidationMessageFor(model => model.ContributionTypeId, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+
+</div>
+
+<br/>
+
+
+
+    <div class="row">
+        <div class="col-md-1">
+
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.AmtPercnet, htmlAttributes: new { @class = "control-label col-md-8" })
+
+                </div>
+                <div>
+                    @(Html.EnumDropDownListFor(m => m.AmtPercnet, htmlAttributes: new { @class = "k-dropdown-wrap k-state-default k-state-disabled", @style = "width: 140px", onchange = "Change(this)" }))
+                    @Html.ValidationMessageFor(model => model.AmtPercnet, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div>
+                @Html.LabelFor(model => model.AmountPercent, htmlAttributes: new { @class = "control-label col-md-8" })
+            </div>
+            <div class="form-group">
+
+                @(Html.Kendo().TextBoxFor(model => model.AmountPercent).Enable (false))
+                @Html.ValidationMessageFor(model => model.AmountPercent, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div>
+                @Html.LabelFor(model => model.NetGross, htmlAttributes: new { @class = "control-label col-md-8" })
+            </div>
+            <div class="form-group">
+
+                @(Html.EnumDropDownListFor(m => m.NetGross, htmlAttributes: new { @class = "k-dropdown-wrap k-state-default", @style = "width: 140px" })
+)
+                @Html.ValidationMessageFor(model => model.NetGross, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+
+
+
+    </div>
+    <br />
+
+    <div class="row">
+        <div class="col-md-1">
+
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.Amount, htmlAttributes: new { @class = "control-label col-md-8" })
+
+                </div>
+                <div>
+                   @Html.Kendo().TextBoxFor(model => model.Amount)
+ 
+                    @Html.ValidationMessageFor(model => model.Amount, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div>
+               @Html.LabelFor(model => model.Months, htmlAttributes: new { @class = "control-label col-md-8" })
+            </div>
+            <div class="form-group">
+
+                @Html.Kendo().TextBoxFor(model => model.Months)
+                @Html.ValidationMessageFor(model => model.Months, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.MonthlyAmount, htmlAttributes: new { @class = "control-label col-md-8" })
+
+                </div>
+                <div>
+                    @(Html.Kendo().TextBoxFor(model => model.MonthlyAmount)
+        .Enable(false))
+                    @Html.ValidationMessageFor(model => model.MonthlyAmount, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+      
+
+
+
+    </div> 
+<br/>
+    <div class="row">
+        <div class="col-md-1">
+
+        </div>
+    
+
+        <div class="col-md-3">
+            <div>
+                @Html.LabelFor(model => model.Balance, htmlAttributes: new { @class = "control-label col-md-8" })
+            </div>
+            <div class="form-group">
+
+                @(Html.Kendo().TextBoxFor(model => model.Balance)
+         .Enable(false))
+                @Html.ValidationMessageFor(model => model.Balance, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div>
+            @*//    @Html.LabelFor(model => model.ApplyToAll, htmlAttributes: new { @class = "control-label col-md-8" })*@
+            </div>
+            <div class="form-group">
+
+                @Html.Kendo().CheckBoxFor(model => model.ApplyToAll)
+                @Html.ValidationMessageFor(model => model.ApplyToAll, "", new { @class = "text-danger" })
+            </div>
+        </div>
+       
+
+
+
+    </div> 
+    <br />
+
+
+    <div class="row">
+        <div class="col-md-1">
+
+        </div>
+        <div class="col-md-3">
+            @*<div>
+                @Html.LabelFor(model => model.IsActive, htmlAttributes: new { @class = "control-label col-md-8" })
+            </div>*@
+            <div class="form-group">
+
+                @Html.Kendo().CheckBoxFor(model => model.IsActive)
+                @Html.ValidationMessageFor(model => model.IsActive, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div>
+                @Html.LabelFor(model => model.Remark, htmlAttributes: new { @class = "control-label col-md-8" })
+            </div>
+            <div class="form-group">
+
+                @Html.TextAreaFor(model => model.Remark)
+                @Html.ValidationMessageFor(model => model.Remark, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+    </div>
+</form>
+<style type="text/css">
+   .Employee-photo {
+        display: inline-block;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background-size: 32px 35px;
+        background-position: center center;
+        vertical-align: middle;
+        line-height: 32px;
+        box-shadow: inset 0 0 1px #999, inset 0 0 10px rgba(0,0,0,.2);
+        margin-left: 5px;
+    }
+
+    .Employee-name {
+        display: inline-block;
+        vertical-align: middle;
+        line-height: 32px;
+        padding-left: 3px;
+    }
+</style>

@@ -1,0 +1,55 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Finance.GL.GlRuleValue>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.NumberOfSegment).Width(100);
+          columns.Bound(c => c.DynamicCoA).Width(90).Title("Is Dynamic ?").ClientTemplate(
+              "<input type='checkbox' disabled = 'true' value='#= DynamicCoA #' " +
+              "# if (DynamicCoA) { #" +
+              "checked='checked'" +
+              "# } #" +
+              "/>"
+              );
+          columns.Bound(c => c.CalculateProfitTax).Width(90).Title("Calculate Profit Tax ?").ClientTemplate(
+              "<input type='checkbox' disabled = 'true' value='#= CalculateProfitTax #' " +
+              "# if (CalculateProfitTax) { #" +
+              "checked='checked'" +
+              "# } #" +
+              "/>"
+              );
+         
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(280);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .HtmlAttributes(new { style = "height: 550px;" })
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(5))
+
+      .Scrollable()
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Filterable()
+      .Groupable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.GlRuleValueId))
+          .Read(read => read.Action("GlRuleValues_Read", "GlRuleValue"))
+          .Create(create => create.Action("GlRuleValues_Create", "GlRuleValue"))
+          .Update(update => update.Action("GlRuleValues_Update", "GlRuleValue"))
+          .Destroy(destroy => destroy.Action("GlRuleValues_Destroy", "GlRuleValue"))
+      ))

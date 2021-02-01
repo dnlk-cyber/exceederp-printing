@@ -1,0 +1,39 @@
+﻿<legend>Sub Country</legend>
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.SubCountry>()
+      .Name("SubCountryGrid")
+      .Columns(columns =>
+      {
+          columns.ForeignKey(c => c.CountryID, (System.Collections.IEnumerable)ViewData["CountryList"], "CountryID", "Name").EditorTemplateName("Countries").Width(300);
+          columns.Bound(c => c.Name);
+          columns.Bound(c => c.AlternativeName);
+          columns.ForeignKey(c => c.Parent, (System.Collections.IEnumerable)ViewData["SubCountryList"], "SubCountryID", "Name").EditorTemplateName("SubCountries").Width(300);
+          columns.Bound(c => c.Remark);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+          toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+       .HtmlAttributes(new { style = "height: 520px;" })
+                                                  .Pageable(pageable => pageable
+                                                                    .Input(true)
+                                                                    .Numeric(false)
+                                                                    .Refresh(true)
+                                                                    .PageSizes(true)
+                                                                    .ButtonCount(5))
+
+                                                        .Scrollable()
+                                                        .Sortable()
+                                                        .Filterable()
+                                                        .Groupable()
+                                                        .Scrollable(h => h.Height(500))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.SubCountryID))
+          .Read(read => read.Action("SubCountries_Read", "SubCountry"))
+          .Create(create => create.Action("SubCountries_Create", "SubCountry"))
+          .Update(update => update.Action("SubCountries_Update", "SubCountry"))
+          .Destroy(destroy => destroy.Action("SubCountries_Destroy", "SubCountry"))
+      )
+)

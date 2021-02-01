@@ -1,0 +1,294 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.Common.HRM
+@using ExceedERP.Core.Domain.HRM.ArchiveManagement
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Letter Attachment</legend>
+@(Html.Kendo().Grid<RecivedLetters>()
+          .Name("RecivedLetters")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.RecivedDate).Title("Date");
+          columns.Bound(c => c.InstnPerson);
+          columns.Bound(c => c.Receiver);
+          columns.Bound(c => c.Sender);
+          columns.Bound(c => c.Description);
+          columns.Bound(c => c.FileName);
+           columns.Bound(c => c.LetterStatus);
+          //columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+      })
+      .ToolBar(toolbar =>
+      {
+          @*toolbar.Template(@<text>
+            <div class="toolbar">
+               
+                @(Html.Kendo().Button()
+        .Name("btnAnswer")
+                .HtmlAttributes(new { type = "button", @class = "k-primary", width = "200px" })
+                        .Events(e => e.Click("Answer"))
+                      .Content("Answer"))
+                @(Html.Kendo().Button()
+        .Name("btnTransfer")
+        .HtmlAttributes(new { type = "button", @class = "k-primary" ,width="200px" })
+                        .Events(e => e.Click("Transfer"))
+                              .Content("Transfer"))
+
+</div>
+</text>);*@
+          //  toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+          .Events(ev => ev.DataBound("onDataBound"))
+        .Scrollable(h => h.Height(500))
+                     .Groupable()
+                              .Sortable(sortable =>
+                              {
+                                  sortable.SortMode(GridSortMode.SingleColumn);
+                              })
+                  .Filterable()
+                     .Pageable(pageable => pageable
+                                                .Input(true)
+                                                .Numeric(false)
+                                                .Refresh(true)
+                                                .PageSizes(true)
+                                                .ButtonCount(5))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+               .Events(events =>
+                            {
+                                events.Error("error_handler(\"RecivedLetters\")");
+                                events.RequestStart("onRequestStart(\"RecivedLetters\")");
+                                events.RequestEnd("onRequestEnd(\"RecivedLetters\")");
+                            })
+                            
+          .Model(model => model.Id(p => p.RecivedLetterId))
+              .Read(read => read.Action("RecivedLetters_Read", "AttachLetter"))
+              .Create(create => create.Action("RecivedLetters_Create", "AttachLetter"))
+              .Update(update => update.Action("RecivedLetters_Update", "AttachLetter"))
+              .Destroy(destroy => destroy.Action("RecivedLetters_Destroy", "AttachLetter"))
+                          ).ClientDetailTemplateId("template")
+      )
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                            .Name("tabstrip_#=RecivedLetterId#")
+    .SelectedIndex(0)
+    .Items(items =>
+     {
+         items.Add().Text("Attachment").Content(
+            @<text>
+                @(Html.Kendo().Grid<Attachment>()
+                      .Name("AttachmentGrid_#=RecivedLetterId#")
+      .Columns(columns =>
+      {
+
+          columns.Bound(c => c.Description); //.Title("File Name").ClientTemplate((@Html.ActionLink("#=Description#", "DownloadFile", "DownloadDocument", new { filename = "#=Description#" }, null).ToHtmlString()));
+        //  columns.Bound(c => c.FileType).ClientTemplate(Html.ActionLink("DownLoad", "DownloadFile", new { filename = "#=RecivedLetterId#" }).ToHtmlString()).Title("Download");
+
+          columns.Command(command =>
+          {
+             command.Destroy().Text(Resources.ActionButton_Cancel);
+              // command.Custom("Download").Click("DownloadAttachmnets");
+          }).Width(300);
+
+      })
+                   .Events(e =>
+                   {
+                      e.Change("onChange");
+                       e.Edit("onGridEdit");
+                   })
+
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+              .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("Upload").Window(window =>
+              {
+                  window.Scrollable(false);
+                  window.Title(Resources .HR_Upload_File);
+              }))
+      .Scrollable()
+               .Selectable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+                  .Events(events =>
+                                    {
+                                        events.Error("error_handler(\"AttachmentGrid_#=RecivedLetterId#\")");
+                                        events.RequestStart("onRequestStart(\"AttachmentGrid_#=RecivedLetterId#\")");
+                                        events.RequestEnd("onRequestEnd(\"AttachmentGrid_#=RecivedLetterId#\")");
+                                    })
+                                 
+
+          .Model(model => model.Id(p => p.AttachmentId))
+                                                                                  .Read(read => read.Action("Attachments_Read", "Attachment", new { Area = "Common", attachmentReferenceType = "Letter", id = "#=RecivedLetterId#", fileOwner = "#=RecivedLetterId#" }))
+                                                                                         .Create(create => create.Action("Attachments_Create", "Attachment", new { Area = "Common", attachmentReferenceType = "Letter", id = "#=RecivedLetterId#", fileOwner = "#=RecivedLetterId#" }))
+          // .Update(update => update.Action("Attachments_Update", "Attachment"))
+                          .Destroy(destroy => destroy.Action("Attachments_Destroy", "AttachLetter"))
+
+          ).ToClientTemplate()
+                )
+
+            </text>
+    );
+
+    @*items.Add().Text("Letter Status").Content(
+                @<text>
+
+                 @(Html.Kendo().Grid<ExceedERP.Core.Domain.HRM.LetterStatus>()
+                      .Name("LetterStatusGrid_#=LetterSenderId#")
+          .Columns(columns =>
+          {
+             // columns.Bound(c => c.LetterSenderId);
+              columns.Bound(c => c.Decision );
+              columns.Bound(c => c.Location);
+              columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+          })
+          .ToolBar(toolbar =>
+          {
+              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+          })
+                    .Scrollable()
+                           .Selectable()
+          .Editable(editable => editable.Mode(GridEditMode.InLine))
+              .DataSource(dataSource => dataSource
+              .Ajax()
+                     .Events(events => events.Error("error_handler")
+                                  .Sync("sync_handler"))
+              .Model(model => model.Id(p => p.LetterStatusId))
+                      .Read(read => read.Action("LetterStatus_Read", "LetterStatus", new { id = "#=LetterSenderId#" }))
+                      .Create(create => create.Action("LetterStatus_Create", "LetterStatus", new { id = "#=LetterSenderId#" }))
+              .Update(update => update.Action("LetterStatus_Update", "LetterStatus"))
+              .Destroy(destroy => destroy.Action("LetterStatus_Destroy", "LetterStatus"))
+          ).ToClientTemplate()
+                )
+                </text>
+        );*@
+
+
+
+     }).ToClientTemplate())
+</script>
+<script>
+    //function error_handler(e) {
+    //    if (e.errors) {
+    //        var message = "Errors:\n";
+    //        $.each(e.errors, function(key, value) {
+    //            if ('errors' in value) {
+    //                $.each(value.errors, function() {
+    //                    message += this + "\n";
+    //                });
+    //            }
+    //        });
+    //        alert(message);
+
+    //    }
+
+    //}
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+    function onGridEdit(e) {
+        e.container.find(".k-button.k-grid-update").hide();
+        e.container.find(".k-button.k-grid-cancel").hide();
+
+    }
+    function onChange(e) {
+        var grid = e.sender;
+        var selectedRows = this.select();
+        var rowData = this.dataItem(selectedRows[0]);
+        var id = rowData.AttachmentID;
+        $.ajax({
+            contentType: "application/json; charset=utf-8",
+            url: '@Url.Action("Download", "AttachLetter")',
+            data: { 'id': id },
+            type: 'GET',
+            cache: false,
+            success: function (result) {
+                r = result;
+            }
+
+        });
+
+    }
+</script>
+
+<script>
+    function onDataBound(e) {
+        var rows = e.sender.tbody.children();
+
+        for (var j = 0; j < rows.length; j++) {
+            var row = $(rows[j]);
+            var dataItem = e.sender.dataItem(row);
+            if (dataItem.Status === 0) {
+
+
+                row.css("background-color", "green");
+
+            } else {
+                row.css("background-color", "gray");
+            }
+
+        }
+
+    }
+
+</script>
+<script>
+    function Answer() {
+        try{
+        var grid = $("#RecivedLetters").data("kendoGrid");
+
+        var dataItem = grid.dataItem(grid.select());
+
+        var id = dataItem.RecivedLetterId;
+        $.ajax({
+            url: '@Url.Action("SetAnswer", "RecivedLetter")',
+            //contentType: "application/json; charset=utf-8",
+            data: { id: id },
+            type: 'POST',
+            cache: false,
+            success: function(result) {
+                // r = result;
+            }
+
+
+        });
+    } catch (e) {
+        alert("Please select the row!!");
+    }
+
+    }
+</script>
+<script>
+    function Transfer() {
+        try{
+        var grid = $("#RecivedLetters").data("kendoGrid");
+
+        var dataItem = grid.dataItem(grid.select());
+
+        var id = dataItem.RecivedLetterId;
+
+
+        $.ajax({
+            url: '@Url.Action("SetTransfer", "RecivedLetter")',
+            //contentType: "application/json; charset=utf-8",
+            data: { id: id },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                // r = result;
+            }
+
+
+        });
+
+    } catch (e) {
+        alert("Please select the row!!");
+    }
+
+
+    }
+</script>

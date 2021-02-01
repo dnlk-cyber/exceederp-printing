@@ -1,0 +1,555 @@
+﻿@using ExceedERP.Core.Domain.Finance.AP
+<legend>Direct Payment</legend>
+@(Html.Kendo().Grid<ApDirectPayment>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.ApDirectPaymentId).Title("ID").Width(100).ClientTemplate("#=appendZeros(ApDirectPaymentId)#");
+          //columns.Bound(c => c.IsDirectPayment).Width(110).Title("Direct Payment").ClientTemplate(
+          //  "<input type='checkbox' disabled = 'true' value='#= IsDirectPayment #' " +
+          //  "# if (IsDirectPayment) { #" +
+          //  "checked='checked'" +
+          //  "# } #" +
+          //  "/>"
+          // );
+          columns.Bound(c => c.SourceId).Width(150).Title("Source");
+          columns.Bound(c => c.SupplierId).Width(110);
+          columns.Bound(c => c.IsNewSupplier).Width(120).Title("New Supplier").ClientTemplate(
+              "<input type='checkbox' disabled = 'true' value='#= IsNewSupplier #' " +
+              "# if (IsNewSupplier) { #" +
+              "checked='checked'" +
+              "# } #" +
+              "/>"
+              );
+          columns.Bound(c => c.SupplierName).Width(130);
+          columns.Bound(c => c.PaymentDate).Width(130).Format("{0:dd/MM/yyyy}");
+          columns.Bound(c => c.Grn).Width(130);
+          columns.Bound(c => c.Po).Width(120);
+          columns.Bound(c => c.PaymentMethod).EditorTemplateName("PaymentMethods").Width(150);
+          columns.Bound(c => c.PaymentReference).Width(160);
+          columns.Bound(c => c.Remark).Width(120);
+          columns.Bound(c => c.Status).Width(130);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+
+          toolbar.Template(
+                   @<text>
+
+                    <a class="k-button k-button-icontext k-grid-add" href='\#'><span class="k-icon k-i-add"></span> Add new record</a>
+                    <button class="k-button k-button-icontext k-grid-excel" href='\#'> <span class="k-icon k-i-excel"></span>Export to Excel</button>
+
+                    @(Html.Kendo().CheckBox()
+                                    .Name("checktransfferable")
+                                    .Label("Show Transferrable Only")
+                                    .HtmlAttributes(new { onchange = "isNotTransferredCheck(this)" })
+                    )
+
+
+
+                </text>);
+      })
+
+      .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("ApDirectPaymnet").Window(w => w.Title("Direct Payment")))
+      .Groupable()
+      .Events(ev => ev.DetailExpand("detailExpand"))
+      .Scrollable(h => h.Height(500))
+      .Events(x => x.DataBound("onDataBoundMaster"))
+
+      .HtmlAttributes(new { style = "height: 550px;" })
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(5))
+
+      .Scrollable()
+      .Sortable()
+      .Filterable()
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Groupable()
+      
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Sort(sort => sort.Add("ApDirectPaymentId").Descending())
+          .Model(
+              model =>
+              {
+                  model.Id(p => p.ApDirectPaymentId);
+                  model.Field(p => p.ApDirectPaymentId).Editable(false);
+
+                  model.Field(p => p.IsPostedToSecondLedger).Editable(false);
+
+                  model.Field(p => p.VoidTime).Editable(false);
+                  model.Field(p => p.VoidBy).Editable(false);
+                  model.Field(p => p.IsVoid).Editable(false);
+
+                  model.Field(p => p.OnlineApprovedTime).Editable(false);
+                  model.Field(p => p.OnlineApprovedBy).Editable(false);
+                  model.Field(p => p.IsOnlineApproved).Editable(false);
+                  model.Field(p => p.Status).Editable(false);
+
+                  model.Field(p => p.IsSendForApproval).Editable(false);
+                  model.Field(p => p.IsOnlineTransferred).Editable(false);
+                  model.Field(p => p.IsOnlineTransferredBy).Editable(false);
+                  model.Field(p => p.OnlineTransferredTime).Editable(false);
+
+                  model.Field(p => p.OrgBranchName).Editable(false);
+                  model.Field(p => p.CreatedBy).Editable(false);
+                  model.Field(p => p.ModifiedBy).Editable(false);
+                  model.Field(p => p.LastModified).Editable(false);
+                  model.Field(p => p.DateCreated).Editable(false);
+
+
+              })
+          .Events(ev => ev
+              .Error("error_handler(\"grid\")")
+              .RequestStart("onRequestStart(\"grid\")")
+              .RequestEnd("onRequestEnd(\"grid\")"))
+          .Read(read => read.Action("APDirectPayments_Read", "ApDirectPayments").Data("passReadData"))
+          .Create(create => create.Action("APDirectPayments_Create", "ApDirectPayments"))
+          .Update(update => update.Action("APDirectPayments_Update", "ApDirectPayments"))
+          .Destroy(destroy => destroy.Action("APDirectPayments_Destroy", "ApDirectPayments"))
+      )
+      .ClientDetailTemplateId("templates"))
+
+
+<script id="templates" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                  .Name("tabStrip#=ApDirectPaymentId#")
+                  .SelectedIndex(0)
+                  .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+                  .Items(items =>
+                  {
+                      items.Add().Text("Payment Detail").Content(@<text>
+
+    <div>
+        <p><b>Record Status :#= Status #</b></p>
+
+        # if (!IsSendForApproval&&!IsOnlineApproved)
+        {#
+
+        <a onclick='return sendForApproval("#=ApDirectPaymentId#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+        # } #
+
+        # if (IsOnlineApproved)
+        {#
+        <a target="new" href='@Url.Action("ApDirectPayment", "FinancePrint")/#=ApDirectPaymentId#'><i class="fa fa-print fa-2x"></i></a>
+        <br />
+        # } #
+
+
+        # if (IsOnlineApproved && !IsOnlineTransferred )
+        {#
+        <a onclick='return transferToGl("#=ApDirectPaymentId#")' href=' \#' title="Transfer to GL"><i class="fa fa-paper-plane fa-2x"></i></a>
+        # } #
+
+
+
+    </div>
+                        <div>
+                            <hr>
+                            <dl class="dl-horizontal">
+
+
+                                <dt>
+                                    Created On
+                                </dt>
+                                <dd>
+                                    #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+
+                                </dd>
+                                <dt>
+                                    Created By
+                                </dt>
+                                <dd>
+                                    #= CreatedBy #
+                                </dd>
+                                <dt>
+                                    Modified By
+                                </dt>
+                                <dd>
+                                    #= ModifiedBy #
+                                </dd>
+                                <dt>
+                                    Modified Date
+                                </dt>
+                                <dd>
+                                    #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+                                </dd>
+                            </dl>
+
+
+                        </div>
+                        <hr>
+
+                        # if (IsOnlineApproved && !IsVoid&& !IsOnlineTransferred)
+                        {#
+                        @if (HttpContext.Current.User.IsInRole("Account_Payable_Void"))
+                                    {
+                            <a onclick='return voidRecord("#=ApDirectPaymentId#")' href='\#' title='Void Record'><i class='fa  fa-bolt fa-2x' style='color:red'></i></a>
+                                    }
+                        # } #
+
+                    </text>);
+
+                            items.Add().Text("Payment Lines").Content(
+                            @<text>
+                                @(Html.Kendo().Grid<ApDirectPaymentLine>()
+                                              .Name("ApDirectPaymentLine#=ApDirectPaymentId#")
+                                              .Columns(columns =>
+                                              {
+                                                  columns.Bound(c => c.Purpose).Width(140);
+                                                  columns.Bound(c => c.ForexAmount).Width(90);
+                                                  columns.Bound(c => c.Currency).Width(90).EditorTemplateName("CurrencySelector");
+                                                  columns.Bound(c => c.ExchangeRate).Width(70);
+                                                  columns.Bound(c => c.Amount).Width(90);
+                                                   columns.Bound(c => c.AccountCode).EditorTemplateName("AccountCode").Width(180);
+                                                  columns.ForeignKey(p => p.GLTaxRateID, (System.Collections.IEnumerable)ViewData["taxes"], "GLTaxRateID", "TaxName").Title("Tax Name").EditorTemplateName("TaxSelectorAP").Width(80);
+                                                  columns.Bound(c => c.TaxAmount).Width(90);
+                                                  columns.Bound(c => c.TotalAmount).Width(90);
+                                                  columns.ForeignKey(p => p.WithholdingType, (System.Collections.IEnumerable)ViewData["taxes"], "GLTaxRateID", "TaxName").Title("Withholding Type").Width(90).EditorTemplateName("TaxSelectorWithholding");
+                                                  columns.Bound(c => c.WithholdingAmount).Width(90);
+                                                  columns.Bound(c => c.WithholdTax).Width(90).ClientTemplate("<input type='checkbox' disabled = 'true' \\#= WithholdTax ? checked='checked' :'' \\# />");
+                                                  columns.Bound(c => c.NetPayable).Width(90);
+                                                  columns.Bound(c => c.DeductAmount).Width(90);
+
+                                                  columns.Command(command =>
+                                                  {
+
+                                                      command.Edit();
+                                                      command.Destroy();
+
+                                                  }).Width(280);
+
+                                              })
+                                              .ToolBar(toolbar =>
+                                              {
+                                                  toolbar.Create();
+                                              })
+                                              .Editable(editable => editable.Mode(GridEditMode.InLine))
+
+                                              .Sortable(sortable =>
+                                              {
+                                                  sortable.SortMode(GridSortMode.SingleColumn);
+                                              })
+                                            
+                                              .Scrollable()
+                                             .Events(x => x.DataBound("onDataBoundLines"))
+                                              .DataSource(dataSource => dataSource
+                                                  .Ajax()
+                                                  .Aggregates(aggregates =>
+                                                  {
+                                                      aggregates.Add(p => p.NetPayable).Sum();
+                                                  })
+                                                  .Model(
+                                                      model =>
+                                                      {
+                                                          model.Id(p => p.ApDirectPaymentLineId);
+                                                          model.Field(p => p.Purpose).Editable(false);
+                                                          model.Field(p => p.Amount).Editable(false);
+                                                          model.Field(p => p.WithholdTaxAmount).Editable(false);
+                                                          model.Field(p => p.WithholdingAmount).Editable(false);
+                                                          model.Field(p => p.TaxAmount).Editable(false);
+                                                          model.Field(p => p.TotalAmount).Editable(false);
+                                                          model.Field(p => p.NetPayable).Editable(false);
+                                                          model.Field(p => p.CreatedBy).Editable(false);
+                                                          model.Field(p => p.ModifiedBy).Editable(false);
+                                                          model.Field(p => p.LastModified).Editable(false);
+                                                          model.Field(p => p.DateCreated).Editable(false);
+                                                      })
+                                                  .Events(ev => ev
+                                                      .Error("error_handler(\"ApDirectPaymentLine#=ApDirectPaymentId#\")")
+                                                      .RequestStart("onRequestStart(\"ApDirectPaymentLine#=ApDirectPaymentId#\")")
+                                                      .RequestEnd("onRequestEnd(\"ApDirectPaymentLine#=ApDirectPaymentId#\")"))
+                                                  .Read(read => read.Action("ApDirectPaymentLines_Read", "ApDirectPaymentLine", new { id = "#=ApDirectPaymentId#" }))
+                                                  .Create(create => create.Action("ApDirectPaymentLines_Create", "ApDirectPaymentLine", new { id = "#=ApDirectPaymentId#" }))
+                                                  .Update(update => update.Action("ApDirectPaymentLines_Update", "ApDirectPaymentLine", new { id = "#=ApDirectPaymentId#" }))
+                                                  .Destroy(destroy => destroy.Action("ApDirectPaymentLines_Destroy", "ApDirectPaymentLine"))
+                                              )
+                                              .ToClientTemplate())
+
+                            </text>);
+
+
+                                  items.Add().Text("Distribution").Content(
+                                    @<text>
+                                        @(Html.Kendo().Grid<ApDirectPaymentDistribution>()
+                                                      .Name("ApDirectPaymentDistribution#=ApDirectPaymentId#")
+                                                      .Columns(columns =>
+                                                      {
+                                                                  columns.Bound(c => c.ApDirectPaymentDistributionId).Hidden(true);
+                                                                   columns.Bound(c => c.AccountCode).EditorTemplateName("AccountCode").Width(220);
+                                                                  columns.Bound(c => c.AccountDesc).Title("Account Description").Width(230);
+                                                                  columns.Bound(c => c.AdditionalDescription).Title("Additional Description").Width(200);
+                                                                  columns.Bound(c => c.Debit).Width(120).Format("{0:n}").ClientFooterTemplate("\\#=kendo.toString(sum, 'n')\\# ");
+                                                                  columns.Bound(c => c.Credit).Width(120).Format("{0:n}").ClientFooterTemplate("\\#=kendo.toString(sum, 'n')\\# ");
+                                                                  columns.Bound(c => c.DateCreated).Hidden(true).Width(100).Title("Time").Format("{0:dd/MM/yyyy}");
+                                                                  columns.Bound(c => c.LastModified).Hidden(true);
+                                                                  columns.Bound(c => c.CreatedBy).Width(80).Title("User").Hidden(true);
+                                                                  columns.Bound(c => c.ModifiedBy).Hidden(true);
+                                                                  columns.Command(command =>
+                                                                  {
+
+                                                                      command.Edit();
+                                                                      command.Destroy();
+
+                                                                  }).ClientFooterTemplate("Difference: \\#=Debit.sum-Credit.sum\\# ");
+
+                                                              })
+                                                      .ToolBar(toolbar =>
+                                                      {
+                                                                  toolbar.Create();
+                                                              })
+                                                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+
+                                                      .Sortable(sortable =>
+                                                      {
+                                                                  sortable.SortMode(GridSortMode.SingleColumn);
+                                                              })
+                                                      .Filterable()
+                                                      .Scrollable()
+                                                      .Events(x => x.DataBound("onDataBoundDistribution"))
+                                                      .DataSource(dataSource => dataSource
+                                                          .Ajax()
+                                                          .Aggregates(aggregates =>
+                                                          {
+                                                                      aggregates.Add(p => p.Debit).Sum();
+                                                                      aggregates.Add(p => p.Credit).Sum();
+                                                                  })
+                                                          .Model(
+                                                              model =>
+                                                              {
+                                                                          model.Id(p => p.ApDirectPaymentId);
+                                                                          model.Field(p => p.AccountDesc).Editable(false);
+                                                                          model.Field(p => p.OrgBranchName).Editable(false);
+                                                                          model.Field(p => p.CreatedBy).Editable(false);
+                                                                          model.Field(p => p.ModifiedBy).Editable(false);
+                                                                          model.Field(p => p.LastModified).Editable(false);
+                                                                          model.Field(p => p.DateCreated).Editable(false);
+                                                                      })
+                                                          .Events(ev => ev
+                                                              .Error("error_handler(\"ApDirectPaymentDistribution#=ApDirectPaymentId#\")")
+                                                              .RequestStart("onRequestStart(\"ApDirectPaymentDistribution#=ApDirectPaymentId#\")")
+                                                              .RequestEnd("onRequestEnd(\"ApDirectPaymentDistribution#=ApDirectPaymentId#\")"))
+                                                          .Read(read => read.Action("ApDirectPaymentDistributions_Read", "ApDirectPaymentDistribution", new { id = "#=ApDirectPaymentId#" }))
+                                                          .Create(create => create.Action("ApDirectPaymentDistributions_Create", "ApDirectPaymentDistribution", new { id = "#=ApDirectPaymentId#" }))
+                                                          .Update(update => update.Action("ApDirectPaymentDistributions_Update", "ApDirectPaymentDistribution", new { id = "#=ApDirectPaymentId#" }))
+                                                          .Destroy(destroy => destroy.Action("ApDirectPaymentDistributions_Destroy", "ApDirectPaymentDistribution"))
+                                                      )
+                                                      .ToClientTemplate())
+
+                                    </text>);
+
+                                          items.Add().Text("Validation").Content(
+                                            @<text>
+                                                @(Html.Kendo().Grid<ApDirectPaymentValidation>()
+                                                              .Name("ApDirectPaymentValidation#=ApDirectPaymentId#")
+                                                              .Columns(columns =>
+                                                              {
+                                                                          columns.Bound(c => c.ApDirectPaymentValidationId).Hidden(true);
+                                                                          columns.Bound(c => c.Status).EditorTemplateName("ApprovalStatus").Width(150);
+                                                                          columns.Bound(c => c.Remark).Width(200);
+                                                                          columns.Bound(c => c.DateCreated).Width(200).Title("Time").Format("{0:dd/MM/yyyy}");
+                                                                          columns.Bound(c => c.LastModified).Hidden(true);
+                                                                          columns.Bound(c => c.CreatedBy).Width(200).Title("User");
+                                                                          columns.Bound(c => c.ModifiedBy).Hidden(true);
+                                                                          columns.Command(command =>
+                                                                          {
+                                                                              command.Edit();
+
+                                                                          });
+
+                                                                      })
+                                                              .ToolBar(toolbar =>
+                                                              {
+                                                                          toolbar.Create();
+                                                                      })
+                                                              .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                              .Events(x => x.DataBound("onDataBoundFisrtValidation"))
+
+                                                              .Sortable(sortable =>
+                                                              {
+                                                                          sortable.SortMode(GridSortMode.SingleColumn);
+                                                                      })
+                                                              .Filterable()
+                                                              .Scrollable()
+                                                              .DataSource(dataSource => dataSource
+                                                                  .Ajax()
+                                                                  .Model(
+                                                                      model =>
+                                                                      {
+                                                                                  model.Id(p => p.ApDirectPaymentValidationId);
+                                                                                  model.Field(p => p.OrgBranchName).Editable(false);
+                                                                                  model.Field(p => p.CreatedBy).Editable(false);
+                                                                                  model.Field(p => p.ModifiedBy).Editable(false);
+                                                                                  model.Field(p => p.LastModified).Editable(false);
+                                                                                  model.Field(p => p.DateCreated).Editable(false);
+                                                                              })
+                                                                  .Events(ev => ev
+                                                                      .Error("error_handler(\"ApDirectPaymentValidation#=ApDirectPaymentId#\")")
+                                                                      .RequestStart("onRequestStart(\"ApDirectPaymentValidation#=ApDirectPaymentId#\")")
+                                                                      .RequestEnd("onRequestEnd(\"ApDirectPaymentValidation#=ApDirectPaymentId#\")"))
+                                                                  .Read(read => read.Action("ApDirectPaymentValidations_Read", "ApDirectPaymentValidation", new { id = "#=ApDirectPaymentId#" }))
+                                                                  .Create(create => create.Action("ApDirectPaymentValidations_Create", "ApDirectPaymentValidation", new { id = "#=ApDirectPaymentId#" }))
+                                                                  .Update(update => update.Action("ApDirectPaymentValidations_Update", "ApDirectPaymentValidation", new { id = "#=ApDirectPaymentId#" }))
+                                                                  .Destroy(destroy => destroy.Action("ApDirectPaymentValidations_Destroy", "ApDirectPaymentValidation"))
+                                                              )
+                                                              .ToClientTemplate())
+
+                                            </text>);
+                                              })
+
+                                                                                              .ToClientTemplate()
+    )
+
+</script>
+
+<script>
+
+    function voidRecord(id) {
+        var recordStatus = "";
+        var conf = confirm("Are you sure you want to void this record number: " + id + " ?");
+        if (conf === true) {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("Void", "ApDirectPayments", new {area = "Finance"})',
+                data: { id: id },
+                success: function (result) {
+                    // toastr.warnning(result.Message);
+                    alert(result.Message);
+                    recordStatus = result.Status;
+                    location.reload(true);
+                }, //end succ
+                error: function (result) {
+                    alert(result);
+                }
+            });
+        }
+    }
+
+    function transferToGl(id) {
+        var desc = prompt("Please enter transaction description:");
+        if (desc != null) {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("TransferDistribution", "ApDirectPayments", new { area = "Finance" })',
+                data: {
+                    id: id,
+                    description: desc
+                },
+                success: function (result) {
+                    // toastr.warnning(result.Message);
+                    alert(result.Message);
+                    location.reload(true);
+                }, //end succ
+                error: function (result) {
+                    alert(result);
+                }
+            });
+        }
+    }
+
+    function sendForApproval(id) {
+        var recordStatus = "";
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("SendforApproval", "ApDirectPayments", new { area = "Finance" })',
+            data: { id: id },
+            success: function (result) {
+                //toastr.success(result.Message);
+                alert(result.Message);
+                recordStatus = result.Status;
+                location.reload(true);
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+
+
+    function isNewSupplier(obj) {
+        if ($(obj).is(":checked")) {
+            $("#suppliernameDiv").show();
+
+        } else {
+            $("#suppliernameDiv").hide();
+
+        }
+
+    }
+
+    //var popup;
+    //var aCode;
+
+    //function SelectAccCode() {
+    //    popup = window.open('/Finance/AccountCode/GLAccountSelector', 'WindowPopup', 'top=100, left=400, width=300, height=320,resizable=no,');
+    //    popup.focus();
+    //    return false;
+    //}
+
+    //function setLang(accCode) {
+    //    aCode = accCode;
+    //    $("#AccountCode").val(aCode).trigger("change");
+    //}
+</script>
+
+<script type="text/javascript">
+
+    function dataBound() {
+        this.expandRow(this.tbody.find("tr.k-master-row").first());
+
+        //approved
+        var grid = $("#grid").data("kendoGrid");
+        var gridData = grid.dataSource.view();
+
+        for (var i = 0; i < gridData.length; i++) {
+            var currentUid = gridData[i].uid;
+            if (gridData[i].IsOnlineApproved) {
+                var currenRow = grid.table.find("tr[data-uid='" + currentUid + "']");
+                var editButton = $(currenRow).find(".k-grid-edit");
+                var deleteButton = $(currenRow).find(".k-grid-delete");
+                editButton.hide();
+                deleteButton.hide();
+            }
+        }
+    }
+
+    function dataBoundLines() {
+
+
+    }
+
+    var isNotTransffered = false;
+
+    function isNotTransferredCheck(obj) {
+        if ($(obj).is(":checked")) {
+            isNotTransffered = true;
+            $("#grid").data("kendoGrid").dataSource.read();
+
+        } else {
+            isNotTransffered = false;
+            $("#grid").data("kendoGrid").dataSource.read();
+
+        }
+
+    }
+
+    function passReadData() {
+        return {
+            isNotTransffered: isNotTransffered
+        };
+    }
+
+</script>

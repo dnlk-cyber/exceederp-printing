@@ -1,0 +1,13 @@
+﻿@using System.Collections
+@(Html.Kendo().DropDownList()
+.BindTo((IEnumerable)ViewData["StoreList"])
+    .OptionLabel("--Select Parent--")
+                .DataValueField("StoreID")
+                .DataTextField("Description")
+                 .Name("StoreID")
+                     .ValuePrimitive(true)
+
+)
+
+
+

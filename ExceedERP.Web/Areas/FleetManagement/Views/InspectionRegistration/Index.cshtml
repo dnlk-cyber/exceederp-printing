@@ -1,0 +1,158 @@
+﻿@{
+    ViewBag.Title = "Inspection Registration";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Inspection Registration</legend>
+
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetMaintenance.Service>()
+      .Name("grid")
+      .Columns(columns =>
+          {
+          columns.Bound(e => e.ServiceName).Width(140);
+          columns.ForeignKey(c => c.SectionId, (System.Collections.IEnumerable)ViewData["Sections"], "WorkUnitSectionId", "Name").Width(120);
+     
+          columns.Bound(e => e.DateIntervalType).Width(200);
+          columns.Bound(e => e.DateInterval).Width(140);
+          columns.Bound(e => e.MileageInterval).Width(200);
+
+
+
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
+
+
+          })
+          .ToolBar(commands =>
+                  {
+                      commands.Create(); commands.Excel();
+                      commands.Pdf();
+                  }).Editable(editable =>
+          {
+              editable.Mode(GridEditMode.PopUp).TemplateName("ServiceEditor").Window(x => x.Title("Inspection Registration"));
+          editable.DisplayDeleteConfirmation("Are You Sure To Remove Inspection");
+          })
+          .ClientDetailTemplateId("template")
+          .HtmlAttributes(new { style = "height: 520px;" })
+                          .Pageable(pageable => pageable
+                                            .Input(true)
+                                            .Numeric(false)
+                                            .Refresh(true)
+                                            .PageSizes(true)
+                                            .ButtonCount(5))
+
+                                .Scrollable()
+                                .Sortable()
+                                .Filterable()
+                                .Scrollable(h => h.Height(500))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .ServerOperation(false)
+              .Model(model =>
+              {
+              model.Id(p => p.ServiceID);
+              model.Field(p => p.ServiceID).Editable(false);
+              })                       .Events(ev => ev
+                                    .Error("error_handler(\"grid\")")
+                                    .RequestStart("onRequestStart(\"grid\")")
+                                    .RequestEnd("onRequestEnd(\"grid\")"))
+          .Create(update => update.Action("Service_Create", "InspectionRegistration"))
+          .Read(read => read.Action("Service_Read", "InspectionRegistration"))
+          .Update(update => update.Action("Service_Update", "InspectionRegistration"))
+          .Destroy(update => update.Action("Service_Destroy", "InspectionRegistration"))
+      )
+      .Events(events => events.DataBound("dataBound")))
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                    .Name("tabStrip_#=ServiceID#")
+            .SelectedIndex(0)
+            .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+            .Items(items =>
+            { 
+                items.Add().Text("Mechanic Crews").Content(@<text>
+            @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetMaintenance.ServiceCrew>()
+                                        .Name("ServiceCrewgrid_#=ServiceID#")
+                        .Columns(columns =>
+                        {
+                            columns.Bound(o => o.ServiceName).Title("Crew Name").EditorTemplateName("CrewEditor").Width(140);
+                            columns.Bound(o => o.DateCreated).Format("{0:d}").Width(100);
+
+                            columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
+
+                        })
+                                               .ToolBar(commands => commands.Create())
+                                           .Editable(editable =>
+                {
+                    editable.Mode(GridEditMode.InLine);
+                    editable.DisplayDeleteConfirmation("Are You Sure To Remove Crew");
+                })
+                         .DataSource(dataSource => dataSource
+                            .Ajax()
+                                     .PageSize(5)
+                                     .Model(model => { model.Id(p => p.ServiceCrewID);
+                                     model.Field(p => p.DateCreated).Editable(false);
+                                     })
+                                                     .Events(ev => ev
+                                                                    .Error("error_handler(\"ServiceCrewgrid_#=ServiceID#\")")
+                                                                    .RequestStart("onRequestStart(\"ServiceCrewgrid_#=ServiceID#\")")
+                                                                    .RequestEnd("onRequestEnd(\"ServiceCrewgrid_#=ServiceID#\")"))
+                                                                            .Create(update => update.Action("ServiceCrew_Create", "ServiceCrew", new { cserviceID = "#=ServiceID#" }))
+                                                                                            .Read(read => read.Action("ServiceCrewByService_Read", "ServiceCrew", new { Id = "#=ServiceID#" }))
+                                                                                                                       .Update(destroy => destroy.Action("ServiceCrew_Update", "ServiceCrew", new { cserviceID = "#=ServiceID#" }))
+                                                                            .Destroy(destroy => destroy.Action("ServiceCrew_Destroy", "ServiceCrew"))
+                        )
+                           .Sortable()
+                        .ToClientTemplate())
+                </text>);
+               
+            })
+                                                                    .ToClientTemplate())
+</script>
+
+<script>
+    function dataBound() {
+        this.expandRow(this.tbody.find("tr.k-master-row").first());
+    }
+</script>
+
+
+<style>
+    .k-detail-cell .k-tabstrip .k-content {
+        padding: 0.2em;
+    }
+
+    .employee-details ul {
+        list-style: none;
+        font-style: italic;
+        margin: 15px;
+        padding: 0;
+    }
+
+    .employee-details ul li {
+        margin: 0;
+        line-height: 1.7em;
+    }
+
+    .employee-details label {
+        display: inline-block;
+        width: 90px;
+        padding-right: 10px;
+        text-align: right;
+        font-style: normal;
+        font-weight: bold;
+    }
+</style>
+
+
+
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 700px;
+    }
+</style>
+<script type="text/javascript">
+    
+    function onClick() {
+        $("#grid").data("kendoGrid").addRow();
+    }
+</script>
+

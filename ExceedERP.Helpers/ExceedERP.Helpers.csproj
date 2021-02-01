@@ -1,0 +1,242 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{482D53F3-F12E-4BAF-9E6D-69B4DE563586}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>ExceedERP.Helpers</RootNamespace>
+    <AssemblyName>ExceedERP.Helpers</AssemblyName>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="DocumentFormat.OpenXml, Version=2.5.5631.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\ExceedERP.Web\Bin\DocumentFormat.OpenXml.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework">
+      <HintPath>..\packages\EntityFramework.6.1.1\lib\net45\EntityFramework.dll</HintPath>
+    </Reference>
+    <Reference Include="EntityFramework.SqlServer">
+      <HintPath>..\packages\EntityFramework.6.1.1\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+    </Reference>
+    <Reference Include="Kendo.Mvc, Version=2018.3.911.545, Culture=neutral, PublicKeyToken=121fae78165ba3d4, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\lib\KENDOUIMVC\2018.3.911.545\Kendo.Mvc.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+      <HintPath>..\packages\NLog.4.5.11\lib\net45\NLog.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.IO.Compression" />
+    <Reference Include="System.Runtime.Caching">
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.Helpers.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Mvc, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Mvc.5.2.3\lib\net45\System.Web.Mvc.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.Razor.3.2.3\lib\net45\System.Web.Razor.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+    <Reference Include="WindowsBase" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Budget\BudgetCreateExcelFile.cs" />
+    <Compile Include="Budget\BudgetDynamicGenerationHelper.cs" />
+    <Compile Include="Budget\BudgetGenerationHelper.cs" />
+    <Compile Include="Budget\BudgetGenericHelper.cs" />
+    <Compile Include="Budget\BudgetGLJournalHelper.cs" />
+    <Compile Include="Budget\BudgetRatioHelper.cs" />
+    <Compile Include="Budget\BudgetReportHelper.cs" />
+    <Compile Include="Budget\BudgetRequestHelper.cs" />
+    <Compile Include="Budget\BudgetStaticGenerationHelper.cs" />
+    <Compile Include="BugetGAAP\BudgetPlanHelper.cs" />
+    <Compile Include="BugetGAAP\BugetGAAPGenericHelper.cs" />
+    <Compile Include="CMS\CMSGenericHelper.cs" />
+    <Compile Include="Common\DocApprovalHelper.cs" />
+    <Compile Include="Common\EmployeeHelper.cs" />
+    <Compile Include="Common\EnumExtension.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Common\CacheHelper.cs" />
+    <Compile Include="Common\ExtenstionHelper.cs" />
+    <Compile Include="Common\GlobalHelper.cs" />
+    <Compile Include="Common\Logger.cs" />
+    <Compile Include="Common\Security.cs" />
+    <Compile Include="Construction\BillingHelper.cs" />
+    <Compile Include="Construction\ConsSettingHelper.cs" />
+    <Compile Include="Construction\ConstructionDashboardHelper.cs" />
+    <Compile Include="Construction\ConstructionDistributionHelper.cs" />
+    <Compile Include="Construction\ConstructionInputs.cs" />
+    <Compile Include="Construction\ConstructionInputsHelper.cs" />
+    <Compile Include="Construction\ContractMgmtHelper.cs" />
+    <Compile Include="Construction\DelayAnalysisHelper.cs" />
+    <Compile Include="Construction\EarnedValueManagementHelper.cs" />
+    <Compile Include="Construction\Extensions\ArrayExtension.cs" />
+    <Compile Include="Construction\Extensions\StringExtension.cs" />
+    <Compile Include="Construction\FleetsHelper.cs" />
+    <Compile Include="Construction\GenericHelper.cs" />
+    <Compile Include="Construction\PerformanceEvnHelper.cs" />
+    <Compile Include="Construction\ProjectEstimationHelper.cs" />
+    <Compile Include="Construction\ProjectInformationHelper.cs" />
+    <Compile Include="Construction\ProjectProgressHelper.cs" />
+    <Compile Include="Construction\ResourceUtilizationHelper.cs" />
+    <Compile Include="Construction\SchedulingHelper.cs" />
+    <Compile Include="CRM\CRMDistributionHelper.cs" />
+    <Compile Include="CRM\CRMDynamicDistributionHelper.cs" />
+    <Compile Include="CRM\CRMGenericHelper.cs" />
+    <Compile Include="CRM\CRMPaymentDistibutionHelper.cs" />
+    <Compile Include="CRM\CRMPOSHelper.cs" />
+    <Compile Include="CRM\CRMSalesHelper.cs" />
+    <Compile Include="CRM\CRMStaticDistributionHelper.cs" />
+    <Compile Include="Finance\FinanceDistributionHelper.cs" />
+    <Compile Include="Finance\DynamicAccountHelper.cs" />
+    <Compile Include="Finance\Encrypt.cs" />
+    <Compile Include="Finance\ClosingHelper.cs" />
+    <Compile Include="Finance\FinanceGlobalStaticValues.cs" />
+    <Compile Include="Finance\FinanceHelperRawSQL.cs" />
+    <Compile Include="Finance\FinanceTransferHelper.cs" />
+    <Compile Include="Finance\MiscHelper.cs" />
+    <Compile Include="Finance\FinanceTransactionHelper.cs" />
+    <Compile Include="Finance\ReportHelperWithAllSegment.cs" />
+    <Compile Include="Finance\SecondLedgerHelper.cs" />
+    <Compile Include="FixedAsset\DistributionHelper.cs" />
+    <Compile Include="FixedAsset\FixedAssetTransferHelper.cs" />
+    <Compile Include="Fleet\FleetBindingHelper.cs" />
+    <Compile Include="Fleet\FleetCostHelper.cs" />
+    <Compile Include="Fleet\FleetDevLogHelper.cs" />
+    <Compile Include="Fleet\FleetGenericHelper.cs" />
+    <Compile Include="Fleet\FleetInventoryHelper.cs" />
+    <Compile Include="Fleet\FleetMaintenaceHelper.cs" />
+    <Compile Include="Fleet\FleetReportHelper.cs" />
+    <Compile Include="HR\HRHelper.cs" />
+    <Compile Include="Inventory\AccountCustomExtension.cs" />
+    <Compile Include="Inventory\InventoryBalanceHelper.cs" />
+    <Compile Include="Inventory\InventoryConfigurationHelper.cs" />
+    <Compile Include="Inventory\InventoryValidationHelper.cs" />
+    <Compile Include="Inventory\StaticDistributionHelper.cs" />
+    <Compile Include="Inventory\DynamicDistributionHelper.cs" />
+    <Compile Include="Inventory\DistributionHelper.cs" />
+    <Compile Include="Inventory\InventoryHelper.cs" />
+    <Compile Include="Common\DashboardHelper.cs" />
+    <Compile Include="Common\LambdaHelper.cs" />
+    <Compile Include="Common\TaxHelper.cs" />
+    <Compile Include="Common\UserHelper.cs" />
+    <Compile Include="EnumExtension.cs" />
+    <Compile Include="Finance\AccountHelper.cs" />
+    <Compile Include="Finance\FinanceHelper.cs" />
+    <Compile Include="Finance\FiscalYearHelper.cs" />
+    <Compile Include="Finance\ReportHelper.cs" />
+    <Compile Include="FixedAsset\FixedAssetHelper.cs" />
+    <Compile Include="Inventory\InventoryTransferHelper.cs" />
+    <Compile Include="Inventory\TransactionHelper.cs" />
+    <Compile Include="Procurement\GuaranteeHelper.cs" />
+    <Compile Include="Procurement\ItemHelper.cs" />
+    <Compile Include="Procurement\ProcurementTransactionHelper.cs" />
+    <Compile Include="Production\CleanedProductsSellingPriceHelper.cs" />
+    <Compile Include="Production\CostTrackingHelper.cs" />
+    <Compile Include="Production\ProcessingOrderHelper.cs" />
+    <Compile Include="Production\ProductionBudgetAndCashFlowHelper.cs" />
+    <Compile Include="Production\ProductionDistributionHelper.cs" />
+    <Compile Include="Production\ProductionDynamicDistributionHelper.cs" />
+    <Compile Include="Production\ProductionOrderHelper.cs" />
+    <Compile Include="Production\ProductionReportsHelper.cs" />
+    <Compile Include="Production\ProductionSettingHelper.cs" />
+    <Compile Include="Production\ProductionStaticDistributionHelper.cs" />
+    <Compile Include="Production\ProductionStoreHelper.cs" />
+    <Compile Include="Production\StoreHelper.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ExceedERP.ApplicationServices\ExceedERP.ApplicationServices.csproj">
+      <Project>{66d8f8a8-48ca-4577-995d-f272f503351c}</Project>
+      <Name>ExceedERP.ApplicationServices</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ExceedERP.Core\ExceedERP.Core.csproj">
+      <Project>{534bb567-a6c4-4750-94be-357d96033bb1}</Project>
+      <Name>ExceedERP.Core</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\ExceedERP.DataAccess\ExceedERP.DataAccess.csproj">
+      <Project>{53f3f01c-6956-4bc4-a772-89847397a93b}</Project>
+      <Name>ExceedERP.DataAccess</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\XAPI\XAPI.csproj">
+      <Project>{898ae86e-4a36-4ade-94c4-7cfe1dd2a8b9}</Project>
+      <Name>XAPI</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
+    <Content Include="NLog.config">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <None Include="NLog.xsd">
+      <SubType>Designer</SubType>
+    </None>
+    <None Include="packages.config" />
+  </ItemGroup>
+  <ItemGroup />
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

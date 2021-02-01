@@ -1,0 +1,27 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetMaintenance.LogisticPlanDetail>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.LogisticPlanId);
+        columns.Bound(c => c.Weeks);
+        columns.Bound(c => c.Service);
+        columns.Bound(c => c.Status);
+        columns.Bound(c => c.Remark);
+        
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.LogisticPlanDetailId))
+          .Read(read => read.Action("LogisticPlanDetails_Read", "LogisticPlanDetail"))
+          .Create(create => create.Action("LogisticPlanDetails_Create", "LogisticPlanDetail"))
+          .Update(update => update.Action("LogisticPlanDetails_Update", "LogisticPlanDetail"))
+          .Destroy(destroy => destroy.Action("LogisticPlanDetails_Destroy", "LogisticPlanDetail"))
+      )
+)

@@ -1,0 +1,149 @@
+﻿@using ExceedERP.Core.Domain.Finance
+@using ExceedERP.Core.Domain.Finance.GL
+<legend>Journal Categories</legend>
+@(Html.Kendo().Grid<GLJournalCategoriers>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Category).Width(150);
+          columns.Bound(c => c.Description).Width(150);
+          columns.Bound(c => c.Enable).Width(90).Title("Enable").ClientTemplate(
+              "<input type='checkbox' disabled = 'true' value='#= Enable #' " +
+              "# if (Enable) { #" +
+              "checked='checked'" +
+              "# } #" +
+              "/>"
+              );
+         
+          columns.Command(command =>
+          {
+              command.Edit(); 
+             
+              command.Custom("En").Click("Enable");
+          }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+                              //toolbar.Excel();
+                              //toolbar.Pdf();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .HtmlAttributes(new { style = "height: 550px;" })
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(5))
+
+      .Scrollable()
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Filterable()
+      .Groupable()
+      .ClientDetailTemplateId("sourcetemplate")
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.GLJournalCategoriersID))
+          .Model(
+              model =>
+              {
+                  model.Id(p => p.GLJournalCategoriersID);
+                  model.Field(p => p.CreatedBy).Editable(false);
+                  model.Field(p => p.ModifiedBy).Editable(false);
+                  model.Field(p => p.LastModified).Editable(false);
+                  model.Field(p => p.DateCreated).Editable(false);
+
+              })
+          .Events(events => events .Error("error_handler_one"))
+          .Read(read => read.Action("GLJournalCategoriers_Read", "GlJournalCategoriers"))
+          .Create(create => create.Action("GLJournalCategoriers_Create", "GlJournalCategoriers"))
+          .Update(update => update.Action("GLJournalCategoriers_Update", "GlJournalCategoriers"))
+          .Destroy(destroy => destroy.Action("GLJournalCategoriers_Destroy", "GlJournalCategoriers"))
+      ))
+
+
+<script id="sourcetemplate" type="text/Kendo-tmpl">
+    @(Html.Kendo().TabStrip().Name("tabStrip_#=GLJournalCategoriersID#").SelectedIndex(0).Items(items =>
+{
+    items.Add().Text("Sources").Content(
+                        @<text>
+
+                            @(Html.Kendo().Grid<JournalSourceMap>()
+                                .Name("JournalSourceMap#=GLJournalCategoriersID#")
+                                .Columns(columns =>
+                                {
+                                    columns.Bound(c => c.Source).Width(150);
+                                    columns.Bound(c => c.Remark).Width(150);
+                                    columns.Command(command =>
+                                    {
+                                        command.Edit();
+                                        command.Destroy();
+                                    }).Width(480);
+                                })
+                          .ToolBar(toolbar =>
+                          {
+                              toolbar.Create();
+
+                          })
+
+                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                          .Scrollable()
+                          .Selectable()
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+                                    .Events(ev => ev
+                                        .Error("error_handler(\"JournalSourceMap#=GLJournalCategoriersID#\")")
+                                        .RequestStart("onRequestStart(\"JournalSourceMap#=GLJournalCategoriersID#\")")
+                                                .RequestEnd("onRequestEnd(\"JournalSourceMap#=GLJournalCategoriersID#\")"))
+                              .Model(model =>
+                              {
+                                  model.Id(p => p.JournalSourceMapId);
+                                  model.Field(p => p.JournalSourceMapId).Editable(false);
+
+
+                                  model.Field(p => p.CreatedBy).Editable(false);
+                                  model.Field(p => p.DateCreated).Editable(false);
+                                  model.Field(p => p.ModifiedBy).Editable(false);
+                                  model.Field(p => p.LastModified).Editable(false);
+
+                              })
+                                              .Read(read => read.Action("JournalSourceMaps_Read", "JournalSourceMap", new { id = "#=GLJournalCategoriersID#" }))
+                                              .Create(create => create.Action("JournalSourceMaps_Create", "JournalSourceMap", new { id = "#=GLJournalCategoriersID#" }))
+                                              .Update(update => update.Action("JournalSourceMaps_Update", "JournalSourceMap", new { id = "#=GLJournalCategoriersID#" }))
+                                              .Destroy(destroy => destroy.Action("JournalSourceMaps_Destroy", "JournalSourceMap"))
+                                          ).ToClientTemplate()
+                            )
+
+                        </text>
+                                  );
+
+                              
+
+                                  }).ToClientTemplate()
+
+    )
+  
+</script>
+<script type="text/javascript">
+    function Enable(e) {
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        $.ajax({
+            type: "GET",
+            data: dataItem.GLJournalCategoriersID,
+            url: '@Url.Action("Enable_Disable", "GlJournalCategoriers")/' + dataItem.GLJournalCategoriersID
+
+        });
+
+        $('#grid').data('kendoGrid').dataSource.read();
+        $('#grid').data('kendoGrid').refresh();
+        location.reload();
+    };
+</script>

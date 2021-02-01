@@ -1,0 +1,8 @@
+﻿@using System.Collections
+@(Html.Kendo().DropDownList().BindTo((IEnumerable)ViewData["OrganizationCustomers"])
+.OptionLabel("--Select Customer--")
+                    .DataTextField("TradeName")
+                .DataValueField("OrganizationCustomerID")
+                .Name("OrganizationCustomerID")
+                .ValuePrimitive(true)
+)

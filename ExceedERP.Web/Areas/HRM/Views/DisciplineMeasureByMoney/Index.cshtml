@@ -1,0 +1,59 @@
+﻿@using ExceedERP.Core.Domain.HRM.Discipline
+@using ExceedERP.Core.Localization
+
+@(Html.Kendo().Grid<DisciplineMeasuerByMoney>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.DisciplinaryCaseId);
+        columns.Bound(c => c.Amount);
+        columns.Bound(c => c.Months);
+        columns.Bound(c => c.MonthlyAmount);
+        columns.Bound(c => c.Balance);
+        columns.Bound(c => c.Remark);
+        columns.Bound(c => c.OrgBranchName);
+        columns.Bound(c => c.DateCreated);
+        columns.Bound(c => c.LastModified);
+        columns.Bound(c => c.CreatedBy);
+        columns.Bound(c => c.ModifiedBy);
+        columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel);  }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Pageable()
+      .Selectable(selectable => {
+            selectable.Mode(GridSelectionMode.Single);
+            selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable => {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Filterable()
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+               .Events(events =>
+                            {
+                                events.Error("error_handler(\"grid\")");
+                                events.RequestStart("onRequestStart(\"grid\")");
+                                events.RequestEnd("onRequestEnd(\"grid\")");
+                            })
+            
+
+          .Model(model => model.Id(p => p.DisciplineMeasuerByMoneyId))
+          .Read(read => read.Action("DisciplineMeasuerByMoney_Read", "DisciplineMeasureByMoney"))
+          .Create(create => create.Action("DisciplineMeasuerByMoney_Create", "DisciplineMeasureByMoney"))
+          .Update(update => update.Action("DisciplineMeasuerByMoney_Update", "DisciplineMeasureByMoney"))
+          .Destroy(destroy => destroy.Action("DisciplineMeasuerByMoney_Destroy", "DisciplineMeasureByMoney"))
+      )
+)
+<script>
+  
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+</script>

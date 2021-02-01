@@ -1,0 +1,61 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.Inventory
+@using Kendo.Mvc.UI
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Store Keeper Assignment</legend>
+
+@(Html.Kendo().Grid<StoreKeeperAssignment>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.ForeignKey(p => p.StoreCode, (IEnumerable)ViewData["storesInCompany"], "StoreCode", "Name").Title("Store").Width(250).EditorTemplateName("StoresSelector");
+          columns.ForeignKey(p => p.StoreKeeper, (IEnumerable)ViewData["users"], "Code", "Name").Title("Store Clerk").Width(250).EditorTemplateName("StoreKeeperSelector");
+
+          columns.Command(command =>
+          {
+              command.Edit();
+              command.Destroy();
+          });
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .HtmlAttributes(new { style = "height: 550px;" })
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(20))
+      .Scrollable()
+      .Sortable()
+      .Filterable()
+      .Groupable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(
+              model =>
+              {
+                  model.Id(p => p.StoreKeeperAssignmentID);
+                  model.Field(p => p.StoreKeeperAssignmentID).Editable(false);
+              })
+          .Events(ev => ev
+              .Error("error_handler(\"grid\")")
+              .RequestStart("onRequestStart(\"grid\")")
+              .RequestEnd("onRequestEnd(\"grid\")"))
+          .Read(read => read.Action("StoreKeeperAssignments_Read", "StoreKeeperAssignment"))
+          .Create(create => create.Action("StoreKeeperAssignments_Create", "StoreKeeperAssignment"))
+          .Update(update => update.Action("StoreKeeperAssignments_Update", "StoreKeeperAssignment"))
+          .Destroy(destroy => destroy.Action("StoreKeeperAssignments_Destroy", "StoreKeeperAssignment"))
+      ))
+<script>
+    function filterEmployees() {
+
+        return {
+            storeCode: $("#StoreCode").data("kendoDropDownList").value()
+        };
+    }
+</script>

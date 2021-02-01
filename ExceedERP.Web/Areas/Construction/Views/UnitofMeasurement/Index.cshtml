@@ -1,0 +1,54 @@
+﻿@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Setting | Units of  Measurement</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.UnitOfMeasurement>()
+      .Name("UnitOfMeasurement")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.Name).Width( 220);
+        columns.Bound(c => c.Abbreviation).Width( 100);
+        //columns.Bound(c => c.TakeOffSheetType).EditorTemplateName("Enum").Width(200);
+        columns.Bound(c => c.Remark).Width( 150);
+        columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+      .Filterable()
+      .Sortable()
+      //.Pageable()
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable(h=> h.Height( 500))
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .DataSource(dataSource => dataSource
+          .Ajax()
+
+               .Events(events =>
+                {
+                    events.Error("error_handler(\"UnitOfMeasurement\")");
+                    events.RequestStart("onRequestStart(\"UnitOfMeasurement\")");
+                    events.RequestEnd("onRequestEnd(\"UnitOfMeasurement\")");
+                })
+                      
+              .Model(model => model.Id(p => p.UnitOfMeasurementId))
+          .Read(read => read.Action("UnitOfMeasurement_Read", "UnitOfMeasurement"))
+          .Create(create => create.Action("UnitOfMeasurement_Create", "UnitOfMeasurement"))
+          .Update(update => update.Action("UnitOfMeasurement_Update", "UnitOfMeasurement"))
+          .Destroy(destroy => destroy.Action("UnitOfMeasurement_Destroy", "UnitOfMeasurement"))
+      )
+)
+
+<script>
+
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+</script>

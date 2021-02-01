@@ -1,0 +1,1214 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.Finance.AR
+@using ExceedERP.Core.Domain.Finance.AR.SalesOrder
+<legend>Sales Orders</legend>
+@(Html.Kendo().Grid<ArSalesOrder>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.ArSalesOrderId).Title("ID").Width(100).ClientTemplate("#=appendZeros(ArSalesOrderId)#");
+          columns.Bound(c => c.OrderType).Width(120).EditorTemplateName("SalesorderTypeSelector");
+          columns.Bound(c => c.CustomerId).Width(130);
+          columns.Bound(c => c.IsNewCustomer).Width(100).Title("New Customer").ClientTemplate(
+              "<input type='checkbox' disabled = 'true' value='#= IsNewCustomer #' " +
+              "# if (IsNewCustomer) { #" +
+              "checked='checked'" +
+              "# } #" +
+              "/>"
+              );
+          columns.Bound(c => c.CustomerName).Width(130);
+          columns.Bound(c => c.OrderDate).Width(130);
+          columns.Bound(c => c.Station).Width(120);
+          columns.ForeignKey(c => c.SalesPersonId, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Width(150);
+          columns.ForeignKey(c => c.PartnerId, (IEnumerable)ViewData["Partners"], "Code", "Name").Width(150);
+          columns.ForeignKey(c => c.PaymentTerm, (IEnumerable)ViewData["terms"], "PaymentTermsDays", "PaymentTermsDays").Width(140).EditorTemplateName("PaymentTermsSelector");
+          columns.Bound(c => c.OrderReference).Width(160);
+          columns.Bound(c => c.OrderStatus).EditorTemplateName("OrderStatusSelector").Width(120);
+          columns.Bound(c => c.Product).Width(100);
+          columns.Bound(c => c.Length).Width(100);
+          columns.Bound(c => c.Repeatition).Width(100);
+          columns.Bound(c => c.CreatedBy).Width(80);
+          columns.Bound(c => c.Status).Width(100);
+
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create();
+          toolbar.Excel();
+      })
+      .Events(events => events.DetailExpand("detailExpandSalesOrder"))
+      .Events(events => events.DataBound("onDataBoundMaster"))
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .HtmlAttributes(new { style = "height: 550px;" })
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(5))
+
+      .Scrollable()
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Filterable()
+      .Groupable()
+      .ClientDetailTemplateId("templates")
+      .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("Order").Window(w => w.Title("Sales Order Registration")))
+      .Scrollable(h => h.Height(500))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Sort(sort => sort.Add("ArSalesOrderId").Descending())
+          .Model(
+              model =>
+              {
+                  model.Id(p => p.ArSalesOrderId);
+                  model.Field(p => p.ArSalesOrderId).Editable(false);
+                  model.Field(p => p.IsPostedToSecondLedger).Editable(false);
+                  model.Field(p => p.VoidTime).Editable(false);
+                  model.Field(p => p.VoidBy).Editable(false);
+                  model.Field(p => p.isVoid).Editable(false);
+                  model.Field(p => p.OnlineApprovedTime).Editable(false);
+                  model.Field(p => p.OnlineApprovedBy).Editable(false);
+                  model.Field(p => p.IsOnlineApproved).Editable(false);
+                  model.Field(p => p.Status).Editable(false);
+                  model.Field(p => p.IsSendForApproval).Editable(false);
+                  model.Field(p => p.OrgBranchName).Editable(false);
+                  model.Field(p => p.CreatedBy).Editable(false);
+                  model.Field(p => p.ModifiedBy).Editable(false);
+                  model.Field(p => p.LastModified).Editable(false);
+                  model.Field(p => p.DateCreated).Editable(false);
+
+
+              })
+          .Events(events => events
+              .Error("error_handler(\"grid\")")
+              .RequestStart("onRequestStart(\"grid\")")
+              .RequestEnd("onRequestEnd(\"grid\")"))
+          .Read(read => read.Action("ArSalesOrders_Read", "ArSalesOrder"))
+          .Create(create => create.Action("ArSalesOrders_Create", "ArSalesOrder"))
+          .Update(update => update.Action("ArSalesOrders_Update", "ArSalesOrder"))
+          .Destroy(destroy => destroy.Action("ArSalesOrders_Destroy", "ArSalesOrder"))
+      ))
+
+<script id="templates" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+          .Name("tabStrip#=ArSalesOrderId#")
+          .SelectedIndex(0)
+          .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+          .Items(items =>
+          {
+              items.Add().Text("Order Detail").Content(@<text>
+
+                                                        <div>
+                                                            <p><b>Record Status :#= Status #</b></p>
+
+                                                            # if (!IsSendForApproval&&!IsOnlineApproved)
+                                                            {#
+                                                            <a onclick='return sendForApproval("#=ArSalesOrderId#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                                                            # } #                                                          
+                                                                                                            
+                                                          
+
+                                                            # if (IsOnlineApproved)
+                                                            {#
+                                                            <a title="Print" target="new" href='@Url.Action("ArSalesOrder", "FinancePrint")/#=ArSalesOrderId#'><i class="fa fa-print fa-2x"></i></a>
+                                                            <a title="Invoice Print" target="new" href='@Url.Action("ArSalesOrderInvoice", "FinancePrint")/#=ArSalesOrderId#'><i class="fa fa-print fa-2x"></i></a>
+                                                            <br />
+                                                            # } #
+                                                            
+                                                           
+                                                            @*# if (IsOnlineApproved && !IsOnlineTransferred )
+                                                            {#
+                                                            <a onclick='return transferToGl("#=ArSalesOrderId#")' href=' \#' title="Transfer to GL"><i class="fa fa-paper-plane fa-2x"></i></a>
+                                                            # } #*@
+                                                        </div>
+                                                        <div>
+                                                            <hr>
+                                                            <dl class="dl-horizontal">
+
+
+                                                                <dt>
+                                                                    Created On
+                                                                </dt>
+                                                                <dd>
+                                                                    #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+
+                                                                </dd>
+                                                                <dt>
+                                                                    Created By
+                                                                </dt>
+                                                                <dd>
+                                                                    #= CreatedBy #
+                                                                </dd>
+                                                                <dt>
+                                                                    Modified By
+                                                                </dt>
+                                                                <dd>
+                                                                    #= ModifiedBy #
+                                                                </dd>
+                                                                <dt>
+                                                                    Modified Date
+                                                                </dt>
+                                                                <dd>
+                                                                    #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+                                                                </dd>
+                                                            </dl>
+                                                        </div>
+                                                          # if (IsOnlineApproved&&!IsReceiptPrinted&&OrderType==0)
+                                                            {#
+                                                             @if (HttpContext.Current.User.IsInRole("AR_SalesOrder_Receipt"))
+                                                             {
+                                                                 <a onclick='return printCashReceipt("#=ArSalesOrderId#")' href=' \#' title="Cash Receipt Print"><i class="fa fa-check fa-2x"></i></a>
+                                                             }
+                                                            # } #
+    
+                                                     # if (IsOnlineApproved&&!isVoid&&!IsReceiptPrinted&&!IsOnlineTransferred)
+                                                        {#
+                                                        @if (HttpContext.Current.User.IsInRole("AR_SalesOrder_Void"))
+                                                        {
+                                                            <a onclick='return voidRecord("#=ArSalesOrderId#")' href='\#' title='Void Record'><i class='fa  fa-bolt fa-2x' style='color:red'></i></a>
+                                                        }
+                                                        # } #
+                                                          <hr>
+                                                         <p>Downloads</p>
+                                           
+                                                <a target="_new" href="~/App_Data/SalesOrder/Downloads/Advance payment request form.xlsx">Advance payment request form.xlsx</a> 
+                                                <a target="_new" href="~/App_Data/SalesOrder/Downloads/Credit Advice Letter FBC.docx">Credit Advice Letter FBC.docx</a>
+
+
+                                                    </text>
+                                                  );
+
+                                              items.Add().Text("Order Lines").Content(@<text>
+                                                                @(Html.Kendo().Grid<ArSalesOrderLine>()
+                                                                      .Name("ARSalesOderLines#=ArSalesOrderId#")
+                                                                      .Columns(columns =>
+                                                                      {
+                                                                          columns.ForeignKey(c => c.ItemName, (IEnumerable)ViewData["productorServices"], "ARSetupProductServiceAccountID", "Product").EditorTemplateName("ProductAndServiceCategory").Width(150);
+                                                                          columns.ForeignKey(c => c.SubItem, (IEnumerable)ViewData["productorServicesItems"], "ArProductServiceId", "ItemName").EditorTemplateName("ProductAndServiceItem").Width(150);
+                                                                          columns.Bound(c => c.AccountCode).EditorTemplateName("AccountCode").Width(220);
+                                                                          columns.Bound(c => c.AccountDesc).Hidden(true).Title("Account Description").Width(170);
+                                                                          columns.ForeignKey(p => p.UoM, (IEnumerable)ViewData["Units"], "UoMName", "UoMName").Width(130).EditorTemplateName("Unit");//.EditorTemplateName("SellingPriceDisplay");
+                                                                          columns.Bound(c => c.Quantity).Width(90);
+                                                                          columns.Bound(c => c.UnitPrice).Width(90);//.EditorTemplateName("SellingPriceDisplay");
+                                                                          columns.Bound(c => c.SalesPrice).Width(90).ClientFooterTemplate(" \\#=sum\\# ");
+                                                                          columns.Bound(c => c.Discount).Width(90);
+                                                                          columns.Bound(c => c.Commission).Width(120);
+                                                                          columns.Bound(c => c.SubTotal).Width(80).ClientFooterTemplate(" \\#=sum\\# ");
+                                                                          columns.ForeignKey(p => p.GLTaxRateID, (IEnumerable)ViewData["taxes"], "GLTaxRateID", "Name").Width(90).Title("Tax Name").EditorTemplateName("TaxSelectorAR");
+                                                                          columns.Bound(c => c.TaxAmount).Width(90).ClientFooterTemplate(" \\#=sum\\# ");
+                                                                          columns.Bound(c => c.TotalAmount).Width(100).ClientFooterTemplate(" \\#=sum\\# ");
+                                                                          columns.Bound(c => c.Remark).Width(120);
+                                                                          columns.Command(command =>
+                                                                          {
+
+                                                                              command.Edit();
+                                                                              command.Destroy();
+
+                                                                          }).Width(180);
+                                                                      })
+                                                                      .ToolBar(toolbar =>
+                                                                      {
+                                                                          toolbar.Create();
+                                                                      })
+
+                                                                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                      .Events(x => x.DataBound("onDataBoundLinesSalesOrder"))
+                                                                      .Scrollable()
+                                                                      .Sortable()
+                                                                      .DataSource(dataSource => dataSource
+                                                                          .Ajax()
+                                                                          .Aggregates(aggregates =>
+                                                                          {
+                                                                              aggregates.Add(p => p.SalesPrice).Sum();
+                                                                              aggregates.Add(p => p.SubTotal).Sum();
+                                                                              aggregates.Add(p => p.TaxAmount).Sum();
+                                                                              aggregates.Add(p => p.TotalAmount).Sum();
+                                                                          })
+                                                                          .Model(
+                                                                              model =>
+                                                                              {
+                                                                                  model.Id(p => p.ArSalesOrderLineId);
+                                                                                  model.Field(p => p.SalesPrice).Editable(false);
+                                                                                  model.Field(p => p.SubTotal).Editable(false);
+                                                                                  model.Field(p => p.TaxAmount).Editable(false);
+                                                                                  model.Field(p => p.TotalAmount).Editable(false);
+                                                                                  model.Field(p => p.OrgBranchName).Editable(false);
+                                                                                  model.Field(p => p.CreatedBy).Editable(false);
+                                                                                  model.Field(p => p.ModifiedBy).Editable(false);
+                                                                                  model.Field(p => p.LastModified).Editable(false);
+                                                                                  model.Field(p => p.DateCreated).Editable(false);
+                                                                              })
+                                                                          .Events(events => events
+                                                                              .Error("error_handler(\"ARSalesOderLines#=ArSalesOrderId#\")")
+                                                                              .RequestStart("onRequestStart(\"ARSalesOderLines#=ArSalesOrderId#\")")
+                                                                              .RequestEnd("onRequestEnd(\"ARSalesOderLines#=ArSalesOrderId#\")"))
+                                                                          .Read(read => read.Action("ArSalesOrderLines_Read", "ArSalesOrderLine", new { id = "#=ArSalesOrderId#" }))
+                                                                          .Create(create => create.Action("ArSalesOrderLines_Create", "ArSalesOrderLine", new { id = "#=ArSalesOrderId#" }))
+                                                                          .Update(update => update.Action("ArSalesOrderLines_Update", "ArSalesOrderLine", new { id = "#=ArSalesOrderId#" }))
+                                                                          .Destroy(destroy => destroy.Action("ArSalesOrderLines_Destroy", "ArSalesOrderLine"))
+                                                                      )
+
+                                                                      .ToClientTemplate())
+                                                            </text>);
+
+              
+              items.Add().Text("Payment Schedule").Content(
+                  @<text>
+                                                                                                                    @(Html.Kendo().Grid<ArSalesOrderPaymentSchedule>()
+                                                                                                                          .Name("ArSalesOrderPaymentSchedule#=ArSalesOrderId#")
+                                                                                                                          .Columns(columns =>
+                                                                                                                          {
+                                                                                                                              columns.Bound(c => c.ArSalesOrderPaymentScheduleId).Hidden(true);
+                                                                                                                              columns.Bound(c => c.Date).Width(150);
+                                                                                                                              columns.Bound(c => c.Description).Width(200);
+                                                                                                                              columns.Bound(c => c.Amount).Width(120);
+                                                                                                                              columns.Bound(c => c.Remark).Width(150);
+
+                                                                                                                              columns.Command(command =>
+                                                                                                                              {
+                                                                                                                                  command.Edit();
+
+                                                                                                                              });
+
+                                                                                                                          })
+                                                                                                                          .ToolBar(toolbar =>
+                                                                                                                          {
+                                                                                                                              toolbar.Create();
+                                                                                                                          })
+                                                                                                                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                                                                          .Events(events => events.DataBound("onDataBoundLinesSalesOrder"))
+                                                                                                                          .Sortable(sortable =>
+                                                                                                                          {
+                                                                                                                              sortable.SortMode(GridSortMode.SingleColumn);
+                                                                                                                          })
+                                                                                                                          .Scrollable()
+                                                                                                                          .DataSource(dataSource => dataSource
+                                                                                                                              .Ajax()
+                                                                                                                              .Model(
+                                                                                                                                  model =>
+                                                                                                                                  {
+                                                                                                                                      model.Id(p => p.ArSalesOrderPaymentScheduleId);
+                                                                                                                                      model.Field(p => p.OrgBranchName).Editable(false);
+                                                                                                                                      model.Field(p => p.CreatedBy).Editable(false);
+                                                                                                                                      model.Field(p => p.ModifiedBy).Editable(false);
+                                                                                                                                      model.Field(p => p.LastModified).Editable(false);
+                                                                                                                                      model.Field(p => p.DateCreated).Editable(false);
+                                                                                                                                  })
+                                                                                                                              .Events(events => events
+                                                                                                                                  .Error("error_handler(\"ArSalesOrderPaymentSchedule#=ArSalesOrderId#\")")
+                                                                                                                                  .RequestStart("onRequestStart(\"ArSalesOrderPaymentSchedule#=ArSalesOrderId#\")")
+                                                                                                                                  .RequestEnd("onRequestEnd(\"ArSalesOrderPaymentSchedule#=ArSalesOrderId#\")"))
+                                                                                                                              .Read(read => read.Action("ArSalesOrderPaymentSchedules_Read", "ArSalesOrderPaymentSchedule", new { id = "#=ArSalesOrderId#" }))
+                                                                                                                              .Create(create => create.Action("ArSalesOrderPaymentSchedules_Create", "ArSalesOrderPaymentSchedule", new { id = "#=ArSalesOrderId#" }))
+                                                                                                                              .Update(update => update.Action("ArSalesOrderPaymentSchedules_Update", "ArSalesOrderPaymentSchedule", new { id = "#=ArSalesOrderId#" }))
+                                                                                                                              .Destroy(destroy => destroy.Action("ArSalesOrderPaymentSchedules_Destroy", "ArSalesOrderPaymentSchedule"))
+                                                                                                                          )
+
+                                                                                                                          .ToClientTemplate())
+
+                                                                                                                    </text>);
+              items.Add().Text("Contract Document").Content(
+                  @<text>
+                                                                                                                               @FileUpload()
+
+                                                                                                                                    </text>);
+
+              items.Add().Text("Validation").Content(
+                  @<text>
+                                                                                                                                                    @(Html.Kendo().Grid<ArSalesOrderValidation>()
+                                                                                                                                                          .Name("ArSalesOrderValidation#=ArSalesOrderId#")
+                                                                                                                                                          .Columns(columns =>
+                                                                                                                                                          {
+                                                                                                                                                              columns.Bound(c => c.ArSalesOrderValidationId).Hidden(true);
+                                                                                                                                                              columns.Bound(c => c.Status).EditorTemplateName("ApprovalStatus").Width(150);
+                                                                                                                                                              columns.Bound(c => c.Remark).Width(200);
+                                                                                                                                                              columns.Bound(c => c.DateCreated).Width(200).Title("Time").Format("{0:dd/MM/yyyy}");
+                                                                                                                                                              columns.Bound(c => c.CreatedBy).Width(200).Title("User");
+                                                                                                                                                              columns.Command(command =>
+                                                                                                                                                              {
+                                                                                                                                                                  command.Edit();
+
+                                                                                                                                                              });
+
+                                                                                                                                                          })
+                                                                                                                                                          .ToolBar(toolbar =>
+                                                                                                                                                          {
+                                                                                                                                                              toolbar.Create();
+                                                                                                                                                          })
+                                                                                                                                                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                                                                                                          .Events(events => events.DataBound("onDataBoundSalesOrderValidation"))
+                                                                                                                                                          .Sortable(sortable =>
+                                                                                                                                                          {
+                                                                                                                                                              sortable.SortMode(GridSortMode.SingleColumn);
+                                                                                                                                                          })
+                                                                                                                                                         
+                                                                                                                                                          .Scrollable()
+                                                                                                                                                          .DataSource(dataSource => dataSource
+                                                                                                                                                              .Ajax()
+                                                                                                                                                              .Model(
+                                                                                                                                                                  model =>
+                                                                                                                                                                  {
+                                                                                                                                                                      model.Id(p => p.ArSalesOrderValidationId);
+                                                                                                                                                                      model.Field(p => p.OrgBranchName).Editable(false);
+                                                                                                                                                                      model.Field(p => p.CreatedBy).Editable(false);
+                                                                                                                                                                      model.Field(p => p.ModifiedBy).Editable(false);
+                                                                                                                                                                      model.Field(p => p.LastModified).Editable(false);
+                                                                                                                                                                      model.Field(p => p.DateCreated).Editable(false);
+                                                                                                                                                                  })
+                                                                                                                                                              .Events(events => events
+                                                                                                                                                                  .Error("error_handler(\"ArSalesOrderValidation#=ArSalesOrderId#\")")
+                                                                                                                                                                  .RequestStart("onRequestStart(\"ArSalesOrderValidation#=ArSalesOrderId#\")")
+                                                                                                                                                                  .RequestEnd("onRequestEnd(\"ArSalesOrderValidation#=ArSalesOrderId#\")"))
+                                                                                                                                                              .Read(read => read.Action("ArSalesOrderValidations_Read", "ArSalesOrderValidation", new { id = "#=ArSalesOrderId#" }))
+                                                                                                                                                              .Create(create => create.Action("ArSalesOrderValidations_Create", "ArSalesOrderValidation", new { id = "#=ArSalesOrderId#" }))
+                                                                                                                                                              .Update(update => update.Action("ArSalesOrderValidations_Update", "ArSalesOrderValidation", new { id = "#=ArSalesOrderId#" }))
+                                                                                                                                                              .Destroy(destroy => destroy.Action("ArSalesOrderValidations_Destroy", "ArSalesOrderValidation"))
+                                                                                                                                                          )
+
+                                                                                                                                                          .ToClientTemplate())
+
+                                                                                                                                                </text>);
+              items.Add().Text("Order Status").Content(
+                  @<text>
+                                              @(Html.Kendo().Grid<ArSalesOrderStatus>()
+                                                    .Name("ArSalesOrderStatus#=ArSalesOrderId#")
+                                                    .Columns(columns =>
+                                                    {
+                                                        columns.Bound(c => c.ArSalesOrderStatusId).Hidden(true);
+                                                        columns.Bound(c => c.Date).Width(200);
+                                                        columns.Bound(c => c.OrderStatus).EditorTemplateName("OrderStatusSelector").Width(150);
+
+                                                        columns.Command(command =>
+                                                        {
+                                                            command.Edit();
+
+                                                        });
+
+                                                    })
+                                                    .ToolBar(toolbar =>
+                                                    {
+                                                        toolbar.Create();
+                                                    })
+                                                    .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                    // .Events(events => events.DataBound("onDataBoundLinesSalesOrder"))
+                                                    .Sortable(sortable =>
+                                                    {
+                                                        sortable.SortMode(GridSortMode.SingleColumn);
+                                                    })
+                                                           
+                                                    .Scrollable()
+                                                    .DataSource(dataSource => dataSource
+                                                        .Ajax()
+                                                        .Model(
+                                                            model =>
+                                                            {
+                                                                model.Id(p => p.ArSalesOrderStatusId);
+                                                                model.Field(p => p.OrgBranchName).Editable(false);
+                                                                model.Field(p => p.CreatedBy).Editable(false);
+                                                                model.Field(p => p.ModifiedBy).Editable(false);
+                                                                model.Field(p => p.LastModified).Editable(false);
+                                                                model.Field(p => p.DateCreated).Editable(false);
+                                                            })
+                                                        .Events(events => events
+                                                            .Error("error_handler(\"ArSalesOrderStatus#=ArSalesOrderId#\")")
+                                                            .RequestStart("onRequestStart(\"ArSalesOrderStatus#=ArSalesOrderId#\")")
+                                                            .RequestEnd("onRequestEnd(\"ArSalesOrderStatus#=ArSalesOrderId#\")"))
+                                                        .Read(read => read.Action("ArSalesOrderStatus_Read", "ArSalesOrderStatus", new { id = "#=ArSalesOrderId#" }))
+                                                        .Create(create => create.Action("ArSalesOrderStatus_Create", "ArSalesOrderStatus", new { id = "#=ArSalesOrderId#" }))
+                                                        .Update(update => update.Action("ArSalesOrderStatus_Update", "ArSalesOrderStatus", new { id = "#=ArSalesOrderId#" }))
+                                                        .Destroy(destroy => destroy.Action("ArSalesOrderStatus_Destroy", "ArSalesOrderStatus"))
+                                                    )
+
+                                                    .ToClientTemplate())
+
+                                                                                    </text>);
+
+              items.Add().Text("Broadcate Date and Time").Content(
+                  @<text>
+@(Html.Kendo().Grid<ArSalesOrderBroadcastTime>()
+      .Name("ArSalesOrderBroadcastTime#=ArSalesOrderId#")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.ArSalesOrderBroadcastTimeId).Hidden(true);
+          columns.Bound(c => c.BroadcastDateTime).Width(200);
+          columns.Bound(c => c.Remark).Width(150);
+
+          columns.Command(command =>
+          {
+              command.Edit();
+
+          });
+
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      // .Events(events => events.DataBound("onDataBoundLinesSalesOrder"))
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+       
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(
+              model =>
+              {
+                  model.Id(p => p.ArSalesOrderBroadcastTimeId);
+                  model.Field(p => p.OrgBranchName).Editable(false);
+                  model.Field(p => p.CreatedBy).Editable(false);
+                  model.Field(p => p.ModifiedBy).Editable(false);
+                  model.Field(p => p.LastModified).Editable(false);
+                  model.Field(p => p.DateCreated).Editable(false);
+              })
+          .Events(events => events
+              .Error("error_handler(\"ArSalesOrderBroadcastTime#=ArSalesOrderId#\")")
+              .RequestStart("onRequestStart(\"ArSalesOrderBroadcastTime#=ArSalesOrderId#\")")
+              .RequestEnd("onRequestEnd(\"ArSalesOrderBroadcastTime#=ArSalesOrderId#\")"))
+          .Read(read => read.Action("ArSalesOrderBroadcastTimes_Read", "ArSalesOrderBroadcastTime", new { id = "#=ArSalesOrderId#" }))
+          .Create(create => create.Action("ArSalesOrderBroadcastTimes_Create", "ArSalesOrderBroadcastTime", new { id = "#=ArSalesOrderId#" }))
+          .Update(update => update.Action("ArSalesOrderBroadcastTimes_Update", "ArSalesOrderBroadcastTime", new { id = "#=ArSalesOrderId#" }))
+          .Destroy(destroy => destroy.Action("ArSalesOrderBroadcastTimes_Destroy", "ArSalesOrderBroadcastTime"))
+      )
+
+      .ToClientTemplate())
+
+</text>);
+
+              items.Add().Text("Distribution").Content(
+                  @<text>
+            @(Html.Kendo().Grid<ArSalesOrderDistribution>()
+                  .Name("ArSalesOrderDistribution#=ArSalesOrderId#")
+                  .Columns(columns =>
+                  {
+                      columns.Bound(c => c.AccountCode).EditorTemplateName("AccountCode").Width(150);
+                      columns.Bound(c => c.AccountDesc).Title("Account Description").Width(200);
+                      columns.Bound(c => c.Debit).Width(110).ClientFooterTemplate("Total Debit: \\#=sum\\# ");
+                      columns.Bound(c => c.Credit).Width(110).ClientFooterTemplate("Total Credit: \\#=sum\\# ");
+                      columns.Bound(c => c.DateCreated).Hidden(true).Width(200).Title("Time").Format("{0:dd/MM/yyyy}");
+                      columns.Bound(c => c.LastModified).Hidden(true);
+                      columns.Bound(c => c.CreatedBy).Width(200).Title("User").Hidden(true);
+                      columns.Bound(c => c.ModifiedBy).Hidden(true);
+                      columns.Command(command =>
+                      {
+
+                          command.Edit();
+                          command.Destroy();
+
+                      }).Width(480).ClientFooterTemplate("Difference: \\#=Debit.sum-Credit.sum\\# ");
+
+                  })
+                  .ToolBar(toolbar =>
+                  {
+                      toolbar.Create();
+                  })
+                  .Editable(editable => editable.Mode(GridEditMode.InLine))
+
+                  .Sortable(sortable =>
+                  {
+                      sortable.SortMode(GridSortMode.SingleColumn);
+                  })
+                                                                                                                                                                                                                  
+                  .Scrollable()
+                  .DataSource(dataSource => dataSource
+                      .Ajax()
+                      .Aggregates(aggregates =>
+                      {
+                          aggregates.Add(p => p.Debit).Sum();
+                          aggregates.Add(p => p.Credit).Sum();
+                      })
+                      .Model(
+                          model =>
+                          {
+                              model.Id(p => p.ArSalesOrderId);
+                              model.Field(p => p.AccountDesc).Editable(false);
+                              model.Field(p => p.OrgBranchName).Editable(false);
+                              model.Field(p => p.CreatedBy).Editable(false);
+                              model.Field(p => p.ModifiedBy).Editable(false);
+                              model.Field(p => p.LastModified).Editable(false);
+                              model.Field(p => p.DateCreated).Editable(false);
+                          })
+                      .Events(events => events
+                          .Error("error_handler(\"ArSalesOrderDistribution#=ArSalesOrderId#\")")
+                          .RequestStart("onRequestStart(\"ArSalesOrderDistribution#=ArSalesOrderId#\")")
+                          .RequestEnd("onRequestEnd(\"ArSalesOrderDistribution#=ArSalesOrderId#\")"))
+                      .Read(read => read.Action("ArSalesOrderDistributions_Read", "ArSalesOrderDistribution", new { id = "#=ArSalesOrderId#" }))
+                      .Create(create => create.Action("ArSalesOrderDistributions_Create", "ArSalesOrderDistribution", new { id = "#=ArSalesOrderId#" }))
+                      .Update(update => update.Action("ArSalesOrderDistributions_Update", "ArSalesOrderDistribution", new { id = "#=ArSalesOrderId#" }))
+                      .Destroy(destroy => destroy.Action("ArSalesOrderDistributions_Destroy", "ArSalesOrderDistribution"))
+                  )
+                  .Events(events => events.DataBound("onDataBoundSalesOrderDistribution"))
+                  .ToClientTemplate())
+
+        </text>);
+
+              items.Add().Text("Partial Print").Content(@<text>
+                                                                @(Html.Kendo().Grid<ArSalesOrderPartialPrint>()
+                                                                      .Name("ArSalesOrderPartialPrint#=ArSalesOrderId#")
+                                                                      .Columns(columns =>
+                                                                      {
+                                                                          columns.Bound(c => c.Date).Width(70);
+                                                                          columns.Bound(c => c.Description).Width(70);
+                                                                         
+                                                                          columns.Command(command =>
+                                                                          {
+
+                                                                              command.Edit();
+                                                                              command.Destroy();
+
+                                                                          }).Width(580);
+                                                                      })
+                                                                      .ToolBar(toolbar =>
+                                                                      {
+                                                                          toolbar.Create();
+                                                                      })
+
+                                                                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                      .Scrollable()
+                                                                      .Sortable()
+                                                                      .ClientDetailTemplateId("partialPrintDetail")
+                                                                      .Events(events => events.DetailExpand("detailExpandSalesOrderPartial"))
+                                                                      .Events(events => events.DataBound("onDataBoundMasterPartial"))
+                                                                      .DataSource(dataSource => dataSource
+                                                                          .Ajax()
+                                                                          .Model(
+                                                                              model =>
+                                                                              {
+                                                                                  model.Id(p => p.ArSalesOrderPartialPrintId);
+                                                                                  model.Field(p => p.OrgBranchName).Editable(false);
+                                                                                  model.Field(p => p.CreatedBy).Editable(false);
+                                                                                  model.Field(p => p.ModifiedBy).Editable(false);
+                                                                                  model.Field(p => p.LastModified).Editable(false);
+                                                                                  model.Field(p => p.DateCreated).Editable(false);
+                                                                              })
+                                                                          .Events(events => events
+                                                                              .Error("error_handler(\"ArSalesOrderPartialPrint#=ArSalesOrderId#\")")
+                                                                              .RequestStart("onRequestStart(\"ArSalesOrderPartialPrint#=ArSalesOrderId#\")")
+                                                                              .RequestEnd("onRequestEnd(\"ArSalesOrderPartialPrint#=ArSalesOrderId#\")"))
+                                                                          .Read(read => read.Action("ArSalesOrderPartialPrints_Read", "ArSalesOrderPartialPrint", new { id = "#=ArSalesOrderId#" }))
+                                                                          .Create(create => create.Action("ArSalesOrderPartialPrints_Create", "ArSalesOrderPartialPrint", new { id = "#=ArSalesOrderId#" }))
+                                                                          .Update(update => update.Action("ArSalesOrderPartialPrints_Update", "ArSalesOrderPartialPrint", new { id = "#=ArSalesOrderId#" }))
+                                                                          .Destroy(destroy => destroy.Action("ArSalesOrderPartialPrints_Destroy", "ArSalesOrderPartialPrint"))
+                                                                      )
+
+                                                                      .ToClientTemplate())
+                                                           </text>);
+          })
+
+          .ToClientTemplate()
+          )
+
+</script>
+
+<script id="partialPrintDetail" type="text/Kendo-tmpl">
+    @(Html.Kendo().TabStrip().Name("tabStrip_#=ArSalesOrderPartialPrintId#").SelectedIndex(0).Items(itemn =>
+      {
+          itemn.Add().Text("Partial Detail").Content(@<text>
+
+                                                        <div>
+                                                            <p><b>Record Status :#= Status #</b></p>
+
+                                                            # if (!IsSendForApproval&&!IsOnlineApproved)
+                                                            {#
+                                                            <a onclick='return sendForApprovalPartial("#=ArSalesOrderPartialPrintId#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                                                            # } #                                                          
+                                                              
+                                                             # if (IsOnlineApproved&&!IsReceiptPrinted)
+                                                            {#
+                                                             @if (HttpContext.Current.User.IsInRole("AR_SalesOrder_Receipt"))
+                                                             {
+                                                                 <a onclick='return printCreditReceipt("#=ArSalesOrderPartialPrintId#")' href=' \#' title="Credit Receipt Print"><i class="fa fa-check fa-2x"></i></a>
+                                                             }
+                                                            # } #
+                                                          
+
+                                                        </div>
+                                                        <div>
+                                                            <hr>
+                                                            <dl class="dl-horizontal">
+
+
+                                                                <dt>
+                                                                    Created On
+                                                                </dt>
+                                                                <dd>
+                                                                    #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+
+                                                                </dd>
+                                                                <dt>
+                                                                    Created By
+                                                                </dt>
+                                                                <dd>
+                                                                    #= CreatedBy #
+                                                                </dd>
+                                                                <dt>
+                                                                    Modified By
+                                                                </dt>
+                                                                <dd>
+                                                                    #= ModifiedBy #
+                                                                </dd>
+                                                                <dt>
+                                                                    Modified Date
+                                                                </dt>
+                                                                <dd>
+                                                                    #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+                                                                </dd>
+                                                            </dl>
+                                                        </div>
+                                                         
+
+
+                                                    </text>
+                  );
+                         itemn.Add().Text("Partial Items").Content(
+
+                @<text>
+
+               @(Html.Kendo().Grid<ArSalesOrderPartial>()
+                     .Name("ArSalesOrderPartial#=ArSalesOrderPartialPrintId#")
+                     .Columns(columns =>
+                     {
+                         // columns.ForeignKey(c => c.ItemName, (IEnumerable)ViewData["productorServices"], "ARSetupProductServiceAccountID", "Product").EditorTemplateName("ProductAndServiceCategory").Width(150);
+                         columns.ForeignKey(c => c.SubItem, (IEnumerable)ViewData["productorServicesItems"], "ArProductServiceId", "ItemName").EditorTemplateName("ProductAndServicePartialPrint").Width(150);
+                         columns.Bound(c => c.AccountCode).EditorTemplateName("AccountCode").Width(150);
+                         columns.Bound(c => c.UoM).Width(120).EditorTemplateName("SellingPriceDisplay");
+                         columns.Bound(c => c.Quantity).Width(90);
+                         columns.Bound(c => c.UnitPrice).Width(90);//.EditorTemplateName("SellingPriceDisplay");
+                         columns.Bound(c => c.SalesPrice).Width(90).ClientFooterTemplate(" \\#=sum\\# ");
+                         columns.Bound(c => c.Discount).Width(90);
+                         columns.Bound(c => c.Commission).Width(120);
+                         columns.Bound(c => c.SubTotal).Width(80).ClientFooterTemplate(" \\#=sum\\# ");
+                         columns.ForeignKey(p => p.GLTaxRateID, (IEnumerable)ViewData["taxes"], "GLTaxRateID", "Name").Width(90).Title("Tax Name").EditorTemplateName("TaxSelectorAR");
+                         columns.Bound(c => c.TaxAmount).Width(90).ClientFooterTemplate(" \\#=sum\\# ");
+                         columns.Bound(c => c.TotalAmount).Width(100).ClientFooterTemplate(" \\#=sum\\# ");
+                                                                          
+                         columns.Command(command =>
+                         {
+
+                             command.Edit();
+                             command.Destroy();
+
+                         }).Width(180);
+                     })
+                     .ToolBar(toolbar =>
+                     {
+                         toolbar.Create();
+                     })
+
+                     .Editable(editable => editable.Mode(GridEditMode.InLine))
+                     .Events(x => x.DataBound("onDataBoundLinesSalesOrderPartial"))
+                     .Scrollable()
+                     .Sortable()
+                     .DataSource(dataSource => dataSource
+                         .Ajax()
+                         .Aggregates(aggregates =>
+                         {
+                             aggregates.Add(p => p.SalesPrice).Sum();
+                             aggregates.Add(p => p.SubTotal).Sum();
+                             aggregates.Add(p => p.TaxAmount).Sum();
+                             aggregates.Add(p => p.TotalAmount).Sum();
+                         })
+                         .Model(
+                             model =>
+                             {
+                                 model.Id(p => p.ArSalesOrderPartialId);
+                                 model.Field(p => p.ItemName).Editable(false);
+                                 model.Field(p => p.SubItem).Editable(false);
+                                 model.Field(p => p.SalesPrice).Editable(false);
+                                 model.Field(p => p.UnitPrice).Editable(false);
+                                 model.Field(p => p.SubTotal).Editable(false);
+                                 model.Field(p => p.AccountCode).Editable(false);
+                                 model.Field(p => p.AccountDesc).Editable(false);
+                                 model.Field(p => p.GLTaxRateID).Editable(false);
+                                 model.Field(p => p.TaxAmount).Editable(false);
+                                 model.Field(p => p.TotalAmount).Editable(false);
+                                 model.Field(p => p.OrgBranchName).Editable(false);
+                                 model.Field(p => p.CreatedBy).Editable(false);
+                                 model.Field(p => p.ModifiedBy).Editable(false);
+                                 model.Field(p => p.LastModified).Editable(false);
+                                 model.Field(p => p.DateCreated).Editable(false);
+                             })
+                         .Events(events => events
+                             .Error("error_handler(\"ArSalesOrderPartial#=ArSalesOrderPartialPrintId#\")")
+                             .RequestStart("onRequestStart(\"ArSalesOrderPartial#=ArSalesOrderPartialPrintId#\")")
+                             .RequestEnd("onRequestEnd(\"ArSalesOrderPartial#=ArSalesOrderPartialPrintId#\")"))
+                         .Read(read => read.Action("ArSalesOrderPartials_Read", "ArSalesOrderPartial", new { id = "#=ArSalesOrderPartialPrintId#" }))
+                         .Create(create => create.Action("ArSalesOrderPartials_Create", "ArSalesOrderPartial", new { id = "#=ArSalesOrderPartialPrintId#" }))
+                         .Update(update => update.Action("ArSalesOrderPartials_Update", "ArSalesOrderPartial", new { id = "#=ArSalesOrderPartialPrintId#" }))
+                         .Destroy(destroy => destroy.Action("ArSalesOrderPartials_Destroy", "ArSalesOrderPartial"))
+                     )
+
+                     .ToClientTemplate())
+
+                                                                </text>);
+
+                                                   itemn.Add().Text("Validation").Content(
+                                @<text>
+                                    @(Html.Kendo().Grid<ArSalesOrderPartialPrintValidation>()
+                                          .Name("ArSalesOrderPartialPrintValidation#=ArSalesOrderPartialPrintId#")
+                                          .Columns(columns =>
+                                          {
+                                              columns.Bound(c => c.Status).Width(170).EditorTemplateName("ApprovalStatus");
+                                              columns.Bound(c => c.Remark).Width(170);
+                                              columns.Bound(c => c.DateCreated).Width(200).Title("Time").Format("{0:dd/MM/yyyy}");
+                                              columns.Bound(c => c.LastModified).Hidden(true);
+                                              columns.Bound(c => c.CreatedBy).Width(200).Title("User");
+                                              columns.Bound(c => c.ModifiedBy).Hidden(true);
+                                              columns.Command(command =>
+                                              {
+                                                  command.Edit();
+                                                  //command.Destroy();
+                                              });
+                                          })
+                                          .ToolBar(toolbar =>
+                                          {
+                                              toolbar.Create();
+                                          })
+                                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                          .Scrollable()
+                                          .Events(x => x.DataBound("onDataBoundSalesOrderPartialValidation"))
+                                          .DataSource(dataSource => dataSource
+                                              .Ajax()
+                                              .Events(ev => ev
+                                                  .Error("error_handler(\"ArSalesOrderPartialPrintValidation#=ArSalesOrderPartialPrintId#\")")
+                                                  .RequestStart("onRequestStart(\"ArSalesOrderPartialPrintValidation#=ArSalesOrderPartialPrintId#\")")
+                                                  .RequestEnd("onRequestEnd(\"ArSalesOrderPartialPrintValidation#=ArSalesOrderPartialPrintId#\")"))
+
+                                              .Model(model =>
+                                              {
+                                                  model.Id(p => p.ArSalesOrderPartialPrintValidationId);
+                                                  model.Field(p => p.CreatedBy).Editable(false);
+                                                  model.Field(p => p.DateCreated).Editable(false);
+                                                  model.Field(p => p.ModifiedBy).Editable(false);
+                                                  model.Field(p => p.LastModified).Editable(false);
+                                              }
+                                              )
+                                              .Read(read => read.Action("ArSalesOrderPartialPrintValidations_Read", "ArSalesOrderPartialPrintValidation", new { id = "#=ArSalesOrderPartialPrintId#" }))
+                                              .Create(create => create.Action("ArSalesOrderPartialPrintValidations_Create", "ArSalesOrderPartialPrintValidation", new { id = "#=ArSalesOrderPartialPrintId#" }))
+                                              .Update(update => update.Action("ArSalesOrderPartialPrintValidations_Update", "ArSalesOrderPartialPrintValidation"))
+                                              .Destroy(destroy => destroy.Action("ArSalesOrderPartialPrintValidations_Destroy", "ArSalesOrderPartialPrintValidation"))
+                                          ).ToClientTemplate())
+
+
+                                </text>
+
+                                          );
+
+                                                                     
+                       }).ToClientTemplate())
+</script>
+
+@helper FileUpload()
+{
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Finance.AR.SalesOrder.ArSalesOrderContract>
+          ()
+          .Name("ArSalesOrderContract#=ArSalesOrderId#")
+          .Columns(columns =>
+          {
+              columns.Bound(x => x.ArSalesOrderContractId).Hidden(true);
+              columns.Bound(c => c.FileName).ClientTemplate("<a href='/ArSalesOrderContract/FileDwonload?id=\\#=ArSalesOrderContractId \\#'>\\#=FileName \\#</a>").Width(200);
+
+              columns.Command(command =>
+              {
+                  // command.Edit();
+                  command.Destroy();
+              }).Width(580);
+          })
+          .ToolBar(t => t.Template(
+              @<text>
+                  @(Html.Kendo().Upload()
+                        .Name("contractupload")
+                        .Async(a => a.Save("ArSalesOrderContracts_Create", "ArSalesOrderContract", new { id = "#=ArSalesOrderId #" }))
+                        .Events(e => e.Complete("onUploadSuccess"))
+                        .ShowFileList(false)
+                        .ToClientTemplate())
+               </text>
+              ))
+          .Editable(editable => editable.Mode(GridEditMode.InLine))
+          .Sortable(sortable =>
+          {
+              sortable.SortMode(GridSortMode.SingleColumn);
+          })
+          .Scrollable()
+          .DataSource(dataSource => dataSource
+              .Ajax()
+              .Events(ev => ev
+                  .Error("error_handler(\"ArSalesOrderContract#=ArSalesOrderId#\")")
+                  .RequestStart("onRequestStart(\"ArSalesOrderContract#=ArSalesOrderId#\")")
+                  .RequestEnd("onRequestEnd(\"ArSalesOrderContract#=ArSalesOrderId#\")"))
+              .Model(model => model.Id(p => p.ArSalesOrderContractId))
+              .Read(read => read.Action("ArSalesOrderContracts_Read", "ArSalesOrderContract", new { id = "#=ArSalesOrderId #" }))
+              .Create(create => create.Action("ArSalesOrderContracts_Create", "ArSalesOrderContract", new { id = "#=ArSalesOrderId #" }))
+              .Update(update => update.Action("ArSalesOrderContracts_Update", "ArSalesOrderContract"))
+              .Destroy(destroy => destroy.Action("ArSalesOrderContracts_Destroy", "ArSalesOrderContract"))
+          ).ToClientTemplate())
+}
+
+<script>
+
+
+    function printCashReceipt(id) {
+        var print = confirm("Are you sure you want to generate receipt?");
+
+        if (print) {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("GenerateCashXml", "ArSalesOrder", new {area = "Finance"})',
+            data: {id: id},
+            success: function (result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                location.reload(true);
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+            });
+         }
+    }
+
+    function printCreditReceipt(id) {
+        var print = confirm("Are you sure you want to generate receipt?");
+
+        if (print) {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("GenerateCreditXml", "ArSalesOrder", new {area = "Finance"})',
+                data: {id: id},
+                success: function (result) {
+                    // toastr.warnning(result.Message);
+                    alert(result.Message);
+                    location.reload(true);
+                }, //end succ
+                error: function (result) {
+                    alert(result);
+                }
+            });
+        }
+    }
+
+
+    function transferToGl(id) {
+        var desc = prompt("Please enter transaction description:");
+        if (desc != null) {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("TransferDistribution", "ArSalesOrder", new { area = "Finance" })',
+                data: {
+                    id: id,
+                    description: desc
+                },
+                success: function (result) {
+                    // toastr.warnning(result.Message);
+                    alert(result.Message);
+                    location.reload(true);
+                }, //end succ
+                error: function (result) {
+                    alert(result);
+                }
+            });
+        }
+    }
+
+    
+    function sendForApproval(id) {
+        var recordStatus = "";
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("SendForApproval", "ArSalesOrder", new { area = "Finance" })',
+            data: { id: id },
+            success: function (result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                recordStatus = result.Status;
+                location.reload(true);
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+
+    
+    function voidRecord(id) {
+        var recordStatus = "";
+        var conf = confirm("Are you sure you want to void this record number: " + id + " ?");
+        if (conf === true) {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("Void", "ArSalesOrder", new {area = "Finance"})',
+                data: { id: id },
+                success: function (result) {
+                    // toastr.warnning(result.Message);
+                    alert(result.Message);
+                    recordStatus = result.Status;
+                    location.reload(true);
+                }, //end succ
+                error: function (result) {
+                    alert(result);
+                }
+            });
+        }
+    }
+
+    function sendForApprovalPartial(id) {
+        var recordStatus = "";
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("SendForApproval", "ArSalesOrderPartialPrint", new { area = "Finance" })',
+            data: { id: id },
+            success: function (result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                recordStatus = result.Status;
+                location.reload(true);
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+
+    function onSelect(e) {
+        //alert("change");
+        var dataItem = this.dataItem(e.item);
+        //begin
+        var item = dataItem.Code;
+        $.ajax({
+            url: '/Finance/FinanceDataProvider/GetProductAccount',
+            type: 'POST',
+            data: { id: item },
+            success: function (result) {
+                if (result.length > 0) {
+                    for (var i = 0; i < result.length; i++) {
+                        $("#AccountCode").val(result[i].AccountCode).trigger("change");
+                    }
+                }
+               
+
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        }); //end post
+        //end
+    }
+
+    function onSelectProductItem(e) {
+        //alert("change");
+        var dataItem = this.dataItem(e.item);
+        //begin
+        var item = dataItem.Code;
+    
+
+        
+        $.ajax({
+            url: '/Finance/FinanceDataProvider/GetProductItemPrice',
+            type: 'POST',
+            data: { id: item },
+            success: function (result) {
+                if (result.length > 0) {
+                    for (var i = 0; i < result.length; i++) {
+                        $("#UnitPrice").val(result[i].Price).trigger("change");
+                        $("#UoM").val(result[i].Unit).trigger("change");
+                    }
+                }
+
+
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+            }); //end post
+            
+        //end
+    }
+
+    function onUploadSuccess(e) {
+        alert(codeid);
+        var gridname = "#ArSalesOrderContract" + codeid;
+        $(gridname).data("kendoGrid").dataSource.read();
+    }
+
+    function isNewCustomer(obj) {
+        if ($(obj).is(":checked")) {
+            $("#customernameDiv").show();
+
+        } else {
+            $("#customernameDiv").hide();
+
+        }
+
+    }
+
+    
+
+    function filterProductItems() {
+
+        return {
+            productid: $("#ItemName").data("kendoDropDownList").value(),
+            text: $("#SubItem").data("kendoDropDownList").filterInput.val()
+        };
+    }
+
+    function filterProductItemsPrint() {
+
+        return {
+            id: codeid
+        };
+    }
+
+
+    var masterRow;
+    var masterGrid;
+    var masterDataItem;
+    var codeid;
+    var isapproved;
+    var issecondapproved;
+    var isSendForApproval;
+    var isOnlineTransferred;
+    function detailExpandSalesOrder(e) {
+        masterRow = e.masterRow;
+        masterGrid = $("#grid").data("kendoGrid");
+        masterDataItem = masterGrid.dataItem(masterRow);
+        codeid = masterDataItem.ArSalesOrderId;
+        isapproved = masterDataItem.IsOnlineApproved;
+        isSendForApproval = masterDataItem.IsSendForApproval;
+        isOnlineTransferred = masterDataItem.IsOnlineTransferred;
+        issecondapproved = masterDataItem.IsSecondOnlineApproved;
+       
+    }
+
+
+   
+
+    function onDataBoundLinesSalesOrder(e) {
+
+        var detailGrid = "#" + e.sender.element[0].id;
+        if (isapproved || isSendForApproval) {
+
+            $(".k-grid-add", detailGrid).hide();
+            $(".k-grid-delete", detailGrid).hide();
+            $(".k-grid-edit", detailGrid).hide();
+        }
+    }
+
+
+    function onDataBoundSalesOrderValidation(e) {
+
+        var detailGrid = "#" + e.sender.element[0].id;
+
+        if (isapproved || !isSendForApproval) {
+
+            $(".k-grid-add", detailGrid).hide();
+            $(".k-grid-delete", detailGrid).hide();
+            $(".k-grid-edit", detailGrid).hide();
+        }
+   
+        this.table.find(".k-grid-edit").hide();
+    }
+    function onDataBoundSalesOrderDistribution(e) {
+
+        var detailGrid = "#" + e.sender.element[0].id;
+
+        if (isOnlineTransferred) {
+
+            $(".k-grid-add", detailGrid).hide();
+            $(".k-grid-delete", detailGrid).hide();
+            $(".k-grid-edit", detailGrid).hide();
+        }
+
+        //alert(isOnlineTransferred);
+    }
+
+
+    //partial grid
+
+    var isapprovedPartial;
+    var isSendForApprovalPartial;
+
+    function onDataBoundMasterPartial(e) {
+        //this.expandRow(this.tbody.find("tr.k-master-row").first());
+
+        //approved
+        var grid =$("#" + e.sender.element[0].id).data("kendoGrid");
+        var gridData = grid.dataSource.view();
+
+        for (var i = 0; i < gridData.length; i++) {
+            var currentUid = gridData[i].uid;
+            if (gridData[i].IsOnlineApproved || gridData[i].IsSendForApproval) {
+                var currenRow = grid.table.find("tr[data-uid='" + currentUid + "']");
+                var editButton = $(currenRow).find(".k-grid-edit");
+                var deleteButton = $(currenRow).find(".k-grid-delete");
+                editButton.hide();
+                deleteButton.hide();
+            }
+        }
+
+        //changing colors
+        var rows = e.sender.tbody.children();
+        for (var j = 0; j < rows.length; j++) {
+            var row = $(rows[j]);
+            var dataItem = e.sender.dataItem(row);
+            if (dataItem.IsSendForApproval && !dataItem.IsOnlineApproved) {
+                row.css("background-color", "lightgreen");
+            }
+            if (!dataItem.IsSendForApproval && !dataItem.IsOnlineApproved) {
+                row.css("background-color", "lightskyblue");
+            }
+        }
+    }
+
+    function detailExpandSalesOrderPartial(e) {
+        masterRow = e.masterRow;
+        masterGrid = $("#" + e.sender.element[0].id).data("kendoGrid");
+        var masterDataItemPartial = masterGrid.dataItem(masterRow);
+        //codeid = masterDataItem.ArSalesOrderId;
+        isapprovedPartial = masterDataItemPartial.IsOnlineApproved;
+        isSendForApprovalPartial = masterDataItemPartial.IsSendForApproval;
+    }
+
+    function onDataBoundLinesSalesOrderPartial(e) {
+
+        var detailGrid = "#" + e.sender.element[0].id;
+        if (isapprovedPartial || isSendForApprovalPartial) {
+
+            $(".k-grid-add", detailGrid).hide();
+            $(".k-grid-delete", detailGrid).hide();
+            $(".k-grid-edit", detailGrid).hide();
+        }
+    }
+
+    function onDataBoundSalesOrderPartialValidation(e) {
+
+        var detailGrid = "#" + e.sender.element[0].id;
+
+        if (isapprovedPartial || !isSendForApprovalPartial) {
+
+            $(".k-grid-add", detailGrid).hide();
+            $(".k-grid-delete", detailGrid).hide();
+            $(".k-grid-edit", detailGrid).hide();
+        }
+   
+        this.table.find(".k-grid-edit").hide();
+    }
+
+
+</script>
+
+
+

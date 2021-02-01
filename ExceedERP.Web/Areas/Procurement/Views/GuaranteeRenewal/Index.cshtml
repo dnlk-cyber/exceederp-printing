@@ -1,0 +1,30 @@
+﻿@using ExceedERP.Core.Domain.Procurement.Guarantee
+
+@(Html.Kendo().Grid<GuaranteeRenewal>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Date);
+          columns.Bound(c => c.ValidityPeriod);
+          columns.Bound(c => c.GuaranteeRefNo);
+          columns.Bound(c => c.Remark);
+          columns.Bound(c => c.OrgBranchName);
+          columns.Bound(c => c.DateCreated);
+          columns.Bound(c => c.LastModified);
+          columns.Bound(c => c.CreatedBy);
+          columns.Bound(c => c.ModifiedBy);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.GuaranteeRenewalId))
+          .Read(read => read.Action("GuaranteeRenewals_Read", "GuaranteeRenewal"))
+          .Create(create => create.Action("GuaranteeRenewals_Create", "GuaranteeRenewal"))
+          .Update(update => update.Action("GuaranteeRenewals_Update", "GuaranteeRenewal"))
+          .Destroy(destroy => destroy.Action("GuaranteeRenewals_Destroy", "GuaranteeRenewal"))
+      ))

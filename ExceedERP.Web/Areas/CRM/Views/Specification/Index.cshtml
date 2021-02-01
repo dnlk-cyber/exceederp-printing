@@ -1,0 +1,28 @@
+﻿<legend>Specification</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.Specification>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.ThingID);
+        columns.Bound(c => c.IsKey);
+        columns.Bound(c => c.Category);
+        columns.Bound(c => c.Index);
+        columns.Bound(c => c.Attribute);
+        columns.Bound(c => c.Value);
+         columns.Bound(c => c.Remark);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.SpecificationID))
+          .Read(read => read.Action("Specifications_Read", "Specification"))
+          .Create(create => create.Action("Specifications_Create", "Specification"))
+          .Update(update => update.Action("Specifications_Update", "Specification"))
+          .Destroy(destroy => destroy.Action("Specifications_Destroy", "Specification"))
+      )
+)

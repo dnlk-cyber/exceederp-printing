@@ -1,0 +1,9 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.HRM
+@(Html.Kendo().DropDownListFor(m => m)
+.OptionLabel("Select..")
+             .DataTextField("Description")
+                    .DataValueField("LookupID")
+                               .BindTo((IEnumerable)ViewData["Benefits"])
+                         .ValuePrimitive(true)
+)

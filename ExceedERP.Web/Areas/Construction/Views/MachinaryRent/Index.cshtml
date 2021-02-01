@@ -1,0 +1,77 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>External Equipment  Rent</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.MachinaryRent>()
+          .Name("MachinaryRentgrid")
+      .Columns(columns =>
+      {
+          columns.ForeignKey(c => c.RentOtherSuppliersID, (IEnumerable)ViewData["Items"], "ItemCode", "Name").EditorTemplateName("Item").Width(200);
+       // columns.Bound(c => c.Model).Width( 100);
+      //  columns.Bound(c => c.YearManufacture).Width( 200);
+        columns.Bound(c => c.Rental).Width( 170);
+        columns.Bound(c => c.FuelPerHour).Width( 300);
+        columns.Bound(c => c.BirrPerLitter).Width( 300);
+        columns.Bound(c => c.FuelCostPerHr).Width(300);
+        columns.Bound(c => c.RentalWithFuel).Width(300);
+        columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+            .Scrollable(h => h.Height(500))
+                                                                                             .Groupable()
+                                                                                                      .Sortable(sortable =>
+                                                                                                      {
+                                                                                                          sortable.SortMode(GridSortMode.SingleColumn);
+                                                                                                      })
+                                                                                          .Filterable()
+                                                                                             .Pageable(pageable => pageable
+                                                                                                                        .Input(true)
+                                                                                                                        .Numeric(false)
+                                                                                                                        .Refresh(true)
+                                                                                                                        .PageSizes(true)
+                                                                                                                        .ButtonCount(5))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+                       .Events(events => events.Error("error_handler(\"MachinaryRentgrid\")")
+
+                                                                  //.Sync("sync_handler")
+                                                                  )
+          .Model(model =>
+          {
+              model.Id(p => p.MachinaryRentId);
+              model.Field(p => p.RentalWithFuel).Editable( false );
+              model.Field(p => p.FuelCostPerHr).Editable(false);
+          })
+          .Read(read => read.Action("MachinaryRent_Read", "MachinaryRent"))
+          .Create(create => create.Action("MachinaryRent_Create", "MachinaryRent"))
+          .Update(update => update.Action("MachinaryRent_Update", "MachinaryRent"))
+          .Destroy(destroy => destroy.Action("MachinaryRent_Destroy", "MachinaryRent"))
+      )
+)
+<script>
+    function error_handler(e) {
+        if (e.errors) {
+            var message = "Errors:\n";
+            $.each(e.errors, function(key, value) {
+                if ('errors' in value) {
+                    $.each(value.errors, function() {
+                        message += this + "\n";
+                    });
+                }
+            });
+            alert(message);
+
+        }
+
+    }
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+</script>

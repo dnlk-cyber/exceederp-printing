@@ -1,0 +1,108 @@
+﻿@using ExceedERP.Core.Domain.Common.HRM
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>@Resources.Navigator_Company_MaintainStructure</legend>
+
+   
+
+   
+@(Html.Kendo().Grid<Structure>()
+          .Name("Structuregrid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.Name);
+      //  columns.Bound(c => c.IsDepartment);
+        columns.Bound(c => c.Remark);
+        columns.Command(command =>
+        {
+            if (HttpContext.Current.User.IsInRole("HR_Company_User"))
+
+            {
+                command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+            }
+            if (HttpContext.Current.User.IsInRole("HR_Admin") || HttpContext.Current.User.IsInRole("HR_Company_Admin"))
+
+            {
+                 command.Destroy().Text(Resources.ActionButton_Cancel);//
+            }
+        }).Width(200);
+      })
+      .ToolBar(toolbar => {
+                              if (HttpContext.Current.User.IsInRole("HR_Company_User"))
+
+                              {
+                                  toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                              }
+                              if (HttpContext.Current.User.IsInRole("HR_Admin") || HttpContext.Current.User.IsInRole("HR_Company_Admin"))
+                              {
+                                  toolbar.Excel().Text(Resources.ActionButton_ExportExcel).HtmlAttributes(new { @class = "btn btn-primary btn-xs pull-right" });
+                                  toolbar.Pdf().Text(Resources.ActionButton_ExportPDF).HtmlAttributes(new { @class = "btn btn-primary btn-xs pull-right" });
+                              }
+      })
+          .Excel(excel => excel
+                            .FileName(Resources.Navigator_Company_MaintainStructure+".xlsx")
+                        .Filterable(true)
+                                    .ProxyURL(Url.Action("Excel_Export_Save", "Structure"))
+                    )
+                         .Pdf(pdf => pdf
+                        .AllPages()
+                            .Title(Resources.Navigator_Company_MaintainStructure)
+                                .FileName(Resources.Navigator_Company_MaintainStructure + ".pdf")
+                                    .ProxyURL(Url.Action("Pdf_Export_Save", "Structure"))
+                    )
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+          .Editable(editable => editable.Mode(GridEditMode.InLine))
+             .Scrollable(h => h.Height(500))
+                 .Groupable()
+                          .Sortable(sortable =>
+                          {
+                              sortable.SortMode(GridSortMode.SingleColumn);
+                          })
+              .Filterable()
+                 .Pageable(pageable => pageable
+                                            .Input(true)
+                                            .Numeric(false)
+                                            .Refresh(true)
+                                            .PageSizes(true)
+                                            .ButtonCount(5))
+    
+      .DataSource(dataSource => dataSource
+          .Ajax()
+               .Events(events =>
+                                                     {
+                                                         events.Error("error_handler(\"Structuregrid\")");
+                                                         events.RequestStart("onRequestStart(\"Structuregrid\")");
+                                                         events.RequestEnd("onRequestEnd(\"Structuregrid\")");
+                                                     })
+                      
+          .Model(model => model.Id(p => p.StructureId))
+          .Read(read => read.Action("Structure_Read", "Structure"))
+          .Create(create => create.Action("Structure_Create", "Structure"))
+          .Update(update => update.Action("Structure_Update", "Structure"))
+          .Destroy(destroy => destroy.Action("Structure_Destroy", "Structure"))
+      )
+)
+<script>
+    //function error_handler(e) {
+    //    if (e.errors) {
+    //        var message = "Errors:\n";
+    //        $.each(e.errors, function(key, value) {
+    //            if ('errors' in value) {
+    //                $.each(value.errors, function() {
+    //                    message += this + "\n";
+    //                });
+    //            }
+    //        });
+    //        alert(message);
+
+    //    }
+
+    //}
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+</script>

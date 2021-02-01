@@ -1,0 +1,31 @@
+﻿@using ExceedERP.Core.Domain.Procurement.Proforma
+
+@(Html.Kendo().Grid<WinningSupplier>()
+      .Name("winningSuppliergrid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.InventoryItem);
+          columns.Bound(c => c.Quanity);
+          columns.Bound(c => c.UPrice);
+          columns.Bound(c => c.TPrice);
+          columns.Bound(c => c.Supplier);
+          columns.Bound(c => c.DeliveryDate);
+          columns.Bound(c => c.GRNNo);
+          columns.Bound(c => c.Remark);
+        
+        
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.WinningSupplierID))
+          .Read(read => read.Action("WinningSuppliers_Read", "ProformaWinningSuppliers", new { id = "#= ProformaPurchaseID #" }))
+          .Create(create => create.Action("WinningSuppliers_Create", "ProformaWinningSuppliers", new { id = "#= ProformaPurchaseID #" }))
+          .Update(update => update.Action("WinningSuppliers_Update", "ProformaWinningSuppliers"))
+          .Destroy(destroy => destroy.Action("WinningSuppliers_Destroy", "ProformaWinningSuppliers"))
+      ))

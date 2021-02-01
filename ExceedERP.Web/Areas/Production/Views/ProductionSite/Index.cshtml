@@ -1,0 +1,66 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Production Sites</legend>
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Production.ProductionSite>()
+                              .Name("sites")
+                            .Columns(columns =>
+                            {
+                                columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("Branches");
+                                columns.Bound(c => c.Name);
+
+                                columns.Command(command =>
+                                {
+                                    command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                    command.Destroy().Text(Resources.ActionButton_Cancel);
+                                }).Width(200);
+                            })
+                            .ToolBar(toolbar =>
+                            {
+                                toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                            })
+                              .Scrollable(h => h.Height(700))
+                              .Sortable(sortable =>
+                              {
+                                  sortable.SortMode(GridSortMode.SingleColumn);
+                              })
+                              .Filterable()
+                              .Selectable(selectable =>
+                              {
+                                  selectable.Mode(GridSelectionMode.Single);
+                                  selectable.Type(GridSelectionType.Row);
+                              })
+                              .Pageable(pageable => pageable
+                                  .Input(true)
+                                  .Numeric(false)
+                                  .Refresh(true)
+                                  .PageSizes(true)
+                                  .ButtonCount(5))
+                              .DataSource(dataSource => dataSource
+                                  .Ajax()
+                                  //.Group(gr => {
+                                  //    gr.Add(f => f.BranchId);
+                                  //})
+                                  .PageSize(20)
+                                  .Events(events =>
+                                  {
+                                      events.Error("error_handler(\"sites\")");
+                                      events.RequestStart("onRequestStart(\"sites\")");
+                                      events.RequestEnd("onRequestEnd(\"sites\")");
+
+                                  })
+                                .Model(model =>
+                                {
+                                    model.Id(p => p.ProductionSiteId);
+
+                                })
+                                .Read(read => read.Action("ProductionSites_Read", "ProductionSite"))
+                                .Create(create => create.Action("ProductionSite_Create", "ProductionSite"))
+                                .Update(update => update.Action("ProductionSite_Update", "ProductionSite"))
+                                .Destroy(destroy => destroy.Action("ProductionSite_Destroy", "ProductionSite"))
+                                )
+)
+

@@ -1,0 +1,16 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@using ExceedERP.Core.Domain.HRM
+@(Html.Kendo().DropDownListFor(m => m)
+        .OptionLabel(  Resources.Select)
+        .DataTextField("EquipmentName")
+        .DataValueField("FleetsID")
+         //.BindTo((IEnumerable)ViewData["InternalItems"])
+         .DataSource(dataSource =>
+         {
+             dataSource.Read(read => read.Action("GetInternalEquipments", "DataProvider"));
+         })
+        .Filter("contains")
+        .MinLength(2)
+        .ValuePrimitive(true)
+)

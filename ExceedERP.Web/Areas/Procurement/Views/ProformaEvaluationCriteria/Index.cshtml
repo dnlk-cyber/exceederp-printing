@@ -1,0 +1,25 @@
+﻿@using ExceedERP.Core.Domain.Procurement.Proforma
+
+@(Html.Kendo().Grid<ProformaEvaluationCriteria>()
+      .Name("proformaevaluationcriteriagrid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.CriteriaName);
+          columns.Bound(c => c.Weight);
+          columns.Bound(c => c.Description);
+        
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.ProformaEvaluationCriteriaID))
+          .Read(read => read.Action("ProformaEvaluationCriterias_Read", "ProformaEvaluationCriteria", new { id = "#= ProformaPurchaseID #" }))
+          .Create(create => create.Action("ProformaEvaluationCriterias_Create", "ProformaEvaluationCriteria", new { id = "#= ProformaPurchaseID #" }))
+          .Update(update => update.Action("ProformaEvaluationCriterias_Update", "ProformaEvaluationCriteria"))
+          .Destroy(destroy => destroy.Action("ProformaEvaluationCriterias_Destroy", "ProformaEvaluationCriteria"))
+      ))

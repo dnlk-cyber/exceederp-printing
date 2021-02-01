@@ -1,0 +1,15 @@
+﻿@(Html.Kendo().DropDownListFor(m => m)
+                  .AutoBind(false)
+                  .OptionLabel("Select Reference...")
+                  .DataTextField("Description")
+                  .DataValueField("Code")
+                  .Name("ReferenceCode")
+                  .DataSource(dataSource =>
+                  {
+                      dataSource.Read(read => read.Action("GetPriceReference", "CRMDataProvider").Data("filterReference"))
+                                .ServerFiltering(true);
+                  })
+                  .CascadeFrom("PriceTypeID")
+                                     //     .Events(e => e.Change("UpdatePriceChange"))
+)
+

@@ -1,0 +1,15 @@
+﻿@(Html.Kendo().DropDownListFor(m => m)
+                  .ValuePrimitive(true)
+                  .OptionLabel("Select Store...")
+                      .DataTextField("Name")
+                              .DataValueField("StoreCode")
+                              .CascadeFrom("BranchId")
+                              .Filter("contains")
+                               .DataSource(dataSource =>
+                              {
+                                  dataSource.Read(read => read.Action("GetAllStoresByBranch", "DataProvider", new { area = "Inventory" }).Data("filterStore"))
+                                            .ServerFiltering(true);
+                              })
+                             
+)
+@Html.ValidationMessageFor(m => m)

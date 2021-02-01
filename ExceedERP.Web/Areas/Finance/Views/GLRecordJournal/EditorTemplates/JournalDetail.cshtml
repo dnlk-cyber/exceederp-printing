@@ -1,0 +1,78 @@
+﻿
+@model  ExceedERP.Core.Domain.Finance.GL.GLRecordJournalDetail
+          
+
+@Html.HiddenFor(model => model.GlRecordJournalDetailId)
+<div class="form">
+    <div class="row fullrow">
+        
+        <div class="col-md-3 ro1">
+            <div class="form-group">
+                @Html.LabelFor(model => model.AccountCode, htmlAttributes: new { @class = "control-label col-md-6" })
+                <div class="col-md-6">
+                    @Html.TextBoxFor(model => model.AccountCode)
+                    @Html.ValidationMessageFor(model => model.AccountCode, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+            <div>
+                <img src="~/Content/Images/search.png" onclick="SelectAccCode()" />
+            </div>
+        </div>
+
+        <div class="col-md-3 ro1">
+            <div class="form-group">
+                @Html.LabelFor(model => model.AccountDesc, htmlAttributes: new { @class = "control-label col-md-6" })
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(m => m.AccountDesc)
+                    @Html.ValidationMessageFor(model => model.AccountDesc, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+        </div>
+
+        <div class="col-md-3 ro1">
+            <div class="form-group">
+                @Html.LabelFor(model => model.Debit, htmlAttributes: new { @class = "control-label col-md-6" })
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(model => model.Debit)
+                    @Html.ValidationMessageFor(model => model.Debit, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.Credit, htmlAttributes: new { @class = "control-label col-md-6" })
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(model => model.Credit)
+                    @Html.ValidationMessageFor(model => model.Credit, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+        </div>
+    </div>
+</div>
+
+<script type="text/javascript">
+    var popup;
+
+    function SelectAccCode() {
+        popup = window.open('/Finance/AccountCode/GLAccountSelector', 'WindowPopup', 'top=100, left=400, width=300, height=320,resizable=no,');
+        popup.focus();
+        return false;
+    }
+</script>
+
+
+
+@*<script type="text/javascript">
+    $(function () {
+        $('#ClickMe').click(function () {
+            window.open('/EditorTemplates/Create/', 'account', 'height=' + (window.screen.height - 100) + ',width=200,left=' + (window.screen.width - 250) + ',top=10,status=no,toolbar=no,resizable=yes,scrollbars=yes');
+        });
+    });
+</script>*@
+
+
+
+
+

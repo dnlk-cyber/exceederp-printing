@@ -1,0 +1,122 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@using ExceedERP.Core.Domain.HRM.Payroll
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<legend>@Resources.NavigatorPayroll_Addition</legend>
+@(Html.Kendo().Grid<Addition>()
+          .Name("Additiongrid")
+      .Columns(columns =>
+      {
+          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "PersonId", "FullNameWithOutCode").EditorTemplateName("PayrollListOfEmployee").Width(260);
+          columns.ForeignKey(c => c.GLPeriodId, (IEnumerable)ViewData["PeriodList"], "GLPeriodId", "Name").EditorTemplateName("GLPeriod").Width(120);
+          columns.Bound(c => c.AdditionTaxType).EditorTemplateName ("Enum").Width(200);
+          columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["AdditionTypeList"], "LookupId", "Description").EditorTemplateName("AdditionTypes").Width(150);
+          columns.Bound(c => c.Amount).Width(200);
+          columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+      })
+      .ToolBar(toolbar => {
+          toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                              toolbar.Excel().Text(Resources.ActionButton_ExportExcel).HtmlAttributes(new { @class = "btn btn-primary btn-xs pull-right" });
+                              toolbar.Pdf().Text(Resources.ActionButton_ExportPDF).HtmlAttributes(new { @class = "btn btn-primary btn-xs pull-right" });
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Excel(excel => excel
+          .FileName(Resources.NavigatorPayroll_Addition + ".xlsx")
+          .Filterable(true)
+          .AllPages(true)
+          .ProxyURL(Url.Action("Excel_Export_Save", "Addition"))
+      )
+      .Pdf(pdf => pdf
+          .AllPages()
+          .FileName(Resources.NavigatorPayroll_Addition + ".pdf")
+          .ProxyURL(Url.Action("Pdf_Export_Save", "Addition"))
+      )
+          .Scrollable(h => h.Height(500))
+             .Groupable()
+                      .Sortable(sortable =>
+                      {
+                          sortable.SortMode(GridSortMode.SingleColumn);
+                      })
+          .Filterable()
+             .Pageable(pageable => pageable
+                                        .Input(true)
+                                        .Numeric(false)
+                                        .Refresh(true)
+                                        .PageSizes(true)
+                                        .ButtonCount(5))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+              .Events(events =>
+              {
+                  events.Error("error_handler(\"Additiongrid\")");
+                  events.RequestStart("onRequestStart(\"Additiongrid\")");
+                  events.RequestEnd("onRequestEnd(\"Additiongrid\")");
+              }
+                                              )
+
+
+          .Model(model => model.Id(p => p.AdditionId))
+          .Read(read => read.Action("Additions_Read", "Addition"))
+          .Create(create => create.Action("Additions_Create", "Addition"))
+          .Update(update => update.Action("Additions_Update", "Addition"))
+          .Destroy(destroy => destroy.Action("Additions_Destroy", "Addition"))
+      )
+)
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 700px;
+    }
+</style>
+<script>
+    //function error_handler(e) {
+    //    if (e.errors) {
+    //        var message = "Errors:\n";
+    //        $.each(e.errors, function(key, value) {
+    //            if ('errors' in value) {
+    //                $.each(value.errors, function() {
+    //                    message += this + "\n";
+    //                });
+    //            }
+    //        });
+    //        alert(message);
+
+    //    }
+
+    //}
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+</script>
+<script type="text/kendo-template" id="message">
+    <div class="k-widget k-tooltip k-tooltip-validation k-invalid-msg field-validation-error" style="margin: 0.5em; display: block; " data-for="#=field#" data-valmsg-for="#=field#" id="#=field#_validationMessage">
+        <span class="k-icon k-warning"> </span>#=message#<div class="k-callout k-callout-n"></div>
+    </div>
+</script>
+
+@*<script type="text/javascript">
+    
+
+    function error_handler(gridName) {
+        return function (args) {
+            if (args.errors) {
+              
+                var grid = $("#" + gridName).data("kendoGrid");
+                grid.one("dataBinding", function (e) {
+                    e.preventDefault();   // cancel grid rebind if error occurs
+
+                    for (var error in args.errors) {
+                        alert(args.errors[error].errors[0]);
+                        //showMessage(grid.editable.element, error, args.errors[error].errors);
+                    }
+                });
+            }
+        }
+    }
+
+    
+</script>*@

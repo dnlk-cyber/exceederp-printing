@@ -1,0 +1,9 @@
+﻿@model ExceedERP.Core.Domain.FleetManagement.FleetMaintenance.ServiceTool
+
+ 
+    @(Html.Kendo().DropDownListFor(model => model.ServiceName).Name("ServiceName")
+                                        .DataTextField("ToolsName")
+                                                            .DataValueField("ToolsName").OptionLabel("Select Tool").Filter(FilterType.Contains)
+                                                    .DataSource(d => d.Read(r => r.Action("MaintenanceToolDDBind", "MaintenanceTool")).ServerFiltering(false)))
+
+

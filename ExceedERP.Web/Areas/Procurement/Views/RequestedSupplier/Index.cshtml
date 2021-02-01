@@ -1,0 +1,35 @@
+﻿@using ExceedERP.Core.Domain.Procurement.Proforma
+
+@(Html.Kendo().Grid<RequestedSupplier>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.InventoryItem).Width(200);
+          columns.Bound(c => c.Supplier).Width(200);
+          columns.Bound(c => c.Remark).Width(200);
+          
+          columns.Bound(c => c.OrgBranchName).Width(200);
+          columns.Bound(c => c.DateCreated).Width(200);
+          columns.Bound(c => c.LastModified).Width(200);
+          columns.Bound(c => c.CreatedBy).Width(200);
+          columns.Bound(c => c.ModifiedBy).Width(200);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+            toolbar.Excel();
+           // toolbar.Pdf();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Pageable()
+      .Filterable()
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.RequestedSupplierID))
+          .Read(read => read.Action("RequestedSuppliers_Read", "RequestedSupplier"))
+          .Create(create => create.Action("RequestedSuppliers_Create", "RequestedSupplier"))
+          .Update(update => update.Action("RequestedSuppliers_Update", "RequestedSupplier"))
+          .Destroy(destroy => destroy.Action("RequestedSuppliers_Destroy", "RequestedSupplier"))
+      )
+)

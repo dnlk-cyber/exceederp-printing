@@ -1,0 +1,73 @@
+﻿@model ExceedERP.Core.Domain.Procurement.Tender.TenderMessages
+
+@Html.HiddenFor(c => c.TenderMessagesId)
+<div class="form">
+    <div class="row fullrow">
+
+        <div class="col-md-12 ro1">
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.ReceiverDepartment, htmlAttributes: new { @class = "control-label col-md-4" })
+                <div class="col-md-6">
+                    @(Html.Kendo().DropDownListFor(model => model.ReceiverDepartment)
+                        .ValuePrimitive(true)
+                        .OptionLabel("Select Department...")
+                          .DataTextField("Name")
+                          .DataValueField("Code")
+                          .Filter("contains")
+                          .DataSource(dataSource =>
+                          {
+                              dataSource.Read(read => read.Action("GetWorkUnitCostCenters", "DataProvider", new { area = "Inventory" }))
+                                  .ServerFiltering(true);
+                          }))
+                     @Html.ValidationMessageFor(model => model.ReceiverDepartment, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+            <br/>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.Receiver, htmlAttributes: new { @class = "control-label col-md-4" })
+                <div class="col-md-6">
+                    @(Html.Kendo().DropDownListFor(model => model.Receiver)
+                          .ValuePrimitive(true)
+                          .OptionLabel("Select Receiver...")
+                          .DataValueField("code")
+                            .DataTextField("Name")
+                            .Filter(FilterType.Contains)
+                            .DataSource(datasource => datasource.Read(read => read.Action("GetEmployees", "DataProvider" , new {area ="Inventory"}))))
+
+                    @Html.ValidationMessageFor(model => model.Receiver, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+            <br />
+            
+            <div class="form-group">
+                @Html.LabelFor(model => model.Message, htmlAttributes: new { @class = "control-label col-md-4" })
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(model => model.Message)
+                    @Html.ValidationMessageFor(model => model.Message, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+            <br />
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.FileName, htmlAttributes: new { @class = "control-label col-md-4" })
+                <div class="col-md-6">
+                    @(Html.Kendo().Upload()
+                          .Name("tenderdocument")
+                          .Async(a => a.Save("UploadDocument", "TenderMessage" ))
+                          .Events(e => e.Complete("bidSuccess").Upload("onUpload"))
+                          .ShowFileList(false)
+                          )
+                    @Html.ValidationMessageFor(model => model.FileName, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+           
+        </div>
+       
+    </div>
+</div>

@@ -1,0 +1,623 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.Construction
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Project Schedules and Schedule Revision</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.ScheduleRevisionProjectViewModel>()
+      .Name("ProjectInformationgrid")
+      .Columns(columns =>
+      {
+          //columns.Bound(c => c.ProjectInformationId).Title("Id");
+          columns.Bound(c => c.Name);
+          columns.Bound(c => c.Code);
+          //columns.Bound(c => c.Category).Width(200);
+          //columns.Bound(c => c.BranchId).Width(150);
+          columns.Bound(c => c.ContractAmount).ClientTemplate(
+                          "# if (ContractAmount === 0) { #" +
+                                                      " -----" +
+                                                      "# } else {#" +
+                                                      "#: kendo.toString( ContractAmount, 'N2') #" +
+                                                      "# } #"
+                          );
+          columns.Bound(c => c.Client);
+      })
+       
+      .Scrollable(h => h.Height(700))
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Filterable()
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Pageable(pageable => pageable
+                            .Input(true)
+                            .Numeric(false)
+                            .Refresh(true)
+                            .PageSizes(true)
+                            .ButtonCount(10))
+      .DataSource(dataSource => dataSource
+              .Ajax()
+              .PageSize(20)
+              .Events(events => events.Error("error_handler(\"ProjectInformationgrid\")"))
+              .Model(model => model.Id(p => p.ProjectInformationId))
+              .Read(read => read.Action("ProjectInformation_Read", "ProjectSchedules"))
+              //.Create(create => create.Action("ProjectInformation_Create", "ProjectInformation"))
+              //.Update(update => update.Action("ProjectInformation_Update", "ProjectInformation"))
+              //.Destroy(destroy => destroy.Action("ProjectInformation_Destroy", "ProjectInformation"))
+          ).ClientDetailTemplateId("template_detail")
+)
+
+<script id="template_detail" type="text/kendo-tmpl">
+    #if(!PreviousVersionNotApproved){#
+        @(Html.Kendo().TabStrip()
+                      .Name("tabstrip_1_#=ProjectInformationId#")
+                      .SelectedIndex(0)
+                      .Items(items =>
+                      {
+                      items.Add().Text("Project Schedules").Content(
+                        @<text>
+                            @(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.ScheduleRevision>()
+                                    .Name("revision_#=ProjectInformationId#")
+                                    .Columns(columns =>
+                                    {
+                                        columns.Bound(c => c.Version).ClientTemplate(
+                                            "\\# if (Version === 0) { \\#" +
+                                                " " +
+                                                "\\# } else {\\#" +
+                                                "V. \\#: Version\\#.00" +
+                                                "\\# } \\#"
+                                            );
+                                        columns.Bound(c => c.ScheduleStatus);
+                                        columns.Bound(c => c.OnlineApprovedTime).Title("Approval Time").Format("{0:yyyy-MM-dd}");
+
+                                        columns.Command(command => {
+                                            command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                            command.Destroy().Text(Resources.ActionButton_Cancel);
+                                            //command.Custom("CustomCommand").Text("Detail");
+                                        }).Width(200);
+                                    })
+                                    .Events(evnt => {
+                                        evnt.DataBound("onDataBound");
+                                    })
+                                    .ToolBar(toolbar =>
+                                    {
+                                        //toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                                        toolbar.Create().Text("Add New Version");
+
+                                    })
+                                    //.ClientDetailTemplateId("templateOne")
+                                    .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                    .Selectable(selectable =>
+                                    {
+                                        selectable.Mode(GridSelectionMode.Single);
+                                        selectable.Type(GridSelectionType.Row);
+                                    })
+                                    .Scrollable(h => h.Height(500))
+                                    //.Groupable()
+                                    .Sortable(sortable =>
+                                    {
+                                        sortable.SortMode(GridSortMode.SingleColumn);
+                                    })
+                                    .Filterable()
+                                    .Pageable(pageable => pageable
+                                                            .Input(true)
+                                                            .Numeric(false)
+                                                            .Refresh(true)
+                                                            .PageSizes(true)
+                                                            .ButtonCount(5))
+                                    .DataSource(dataSource => dataSource
+                                        .Ajax()
+                                        .Events(events =>
+                                        {
+                                            events.Error("error_handler(\"revision_#=ProjectInformationId#\")");
+                                            events.RequestStart("onRequestStart(\"revision_#=ProjectInformationId#\")");
+                                            events.RequestEnd("onRequestEnd(\"revision_#=ProjectInformationId#\")");
+
+                                        })
+                                        .Model(model =>
+                                        {
+                                            model.Id(f => f.ScheduleRevisionId);
+                                            model.Field(f => f.ScheduleStatus).Editable(false);
+                                            model.Field(f => f.Version).Editable(false);
+                                            model.Field(f => f.OnlineApprovedTime).Editable(false);
+                                        })
+
+                                        .Read(read => read.Action("ScheduleRevision_Read", "ScheduleRevision", new { projectIdRead = "#=ProjectInformationId#" }))
+                                        .Create(create => create.Action("ScheduleRevision_Create", "ScheduleRevision", new { projectIdCreate = "#=ProjectInformationId#" }))
+                                        .Update(update => update.Action("ScheduleRevision_Update", "ScheduleRevision"))
+                                        .Destroy(destroy => destroy.Action("ScheduleRevision_Destroy", "ScheduleRevision"))
+                                        ).ClientDetailTemplateId("schedule_charts")
+                                        .ToClientTemplate()
+                            )
+                        </text>
+                      );
+                      }).ToClientTemplate())
+    #}else {#
+    @(Html.Kendo().TabStrip()
+                      .Name("tabstrip_1_#=ProjectInformationId#")
+                      .SelectedIndex(0)
+                      .Items(items =>
+                      {
+                      items.Add().Text("Project Schedules").Content(
+                        @<text>
+                            @(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.ScheduleRevision>()
+                                    .Name("revision_#=ProjectInformationId#")
+                                    .Columns(columns =>
+                                    {
+                                        columns.Bound(c => c.Version).ClientTemplate(
+                                            "\\# if (Version === 0) { \\#" +
+                                                " " +
+                                                "\\# } else {\\#" +
+                                                "V. \\#: Version\\#.00" +
+                                                "\\# } \\#"
+                                            );
+                                        columns.Bound(c => c.Status);
+                                        columns.Bound(c => c.OnlineApprovedTime).Title("Approval Time").Format("{0:yyyy-MM-dd}");
+
+                                        columns.Command(command =>
+                                        {
+                                            command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                            command.Destroy().Text(Resources.ActionButton_Cancel);
+                                            //command.Custom("CustomCommand").Text("Detail");
+                                        }).Width(200);
+                                    })
+                                    .Events(evnt =>
+                                    {
+                                        evnt.DataBound("onDataBound");
+                                    })
+                                    //.ToolBar(toolbar =>
+                                    //{
+                                    //    //toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                                    //    toolbar.Create().Text("Add New Version");
+
+                                    //})
+                                    //.ClientDetailTemplateId("templateOne")
+                                    .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                    .Selectable(selectable =>
+                                    {
+                                        selectable.Mode(GridSelectionMode.Single);
+                                        selectable.Type(GridSelectionType.Row);
+                                    })
+                                    .Scrollable(h => h.Height(500))
+                                    //.Groupable()
+                                    .Sortable(sortable =>
+                                    {
+                                        sortable.SortMode(GridSortMode.SingleColumn);
+                                    })
+                                    .Filterable()
+                                    .Pageable(pageable => pageable
+                                                            .Input(true)
+                                                            .Numeric(false)
+                                                            .Refresh(true)
+                                                            .PageSizes(true)
+                                                            .ButtonCount(5))
+                                    .DataSource(dataSource => dataSource
+                                        .Ajax()
+                                        .Events(events =>
+                                        {
+                                            events.Error("error_handler(\"revision_#=ProjectInformationId#\")");
+                                            events.RequestStart("onRequestStart(\"revision_#=ProjectInformationId#\")");
+                                            events.RequestEnd("onRequestEnd(\"revision_#=ProjectInformationId#\")");
+
+                                        })
+                                        .Model(model =>
+                                        {
+                                            model.Id(f => f.ScheduleRevisionId);
+                                            model.Field(f => f.ScheduleStatus).Editable(false);
+                                            model.Field(f => f.Version).Editable(false);
+                                            model.Field(f => f.OnlineApprovedTime).Editable(false);
+                                        })
+
+                                        .Read(read => read.Action("ScheduleRevision_Read", "ScheduleRevision", new { projectIdRead = "#=ProjectInformationId#" }))
+                                        .Create(create => create.Action("ScheduleRevision_Create", "ScheduleRevision", new { projectIdCreate = "#=ProjectInformationId#" }))
+                                        .Update(update => update.Action("ScheduleRevision_Update", "ScheduleRevision"))
+                                        .Destroy(destroy => destroy.Action("ScheduleRevision_Destroy", "ScheduleRevision"))
+                                        ).ClientDetailTemplateId("schedule_charts")
+                                        .ToClientTemplate()
+                            )
+                        </text>
+                      );
+                      }).ToClientTemplate())
+    #}#
+</script>
+
+<script id="schedule_charts" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                  .Name("tab__#=ScheduleRevisionId#")
+                  .SelectedIndex(0)
+                  .Items(items =>
+                  {
+                      
+                  items.Add().Text("Schedule Chart").Content(
+                    @<text>
+                        @(Html.Kendo().Gantt<TaskViewModel, DependencyViewModel>()
+                            .Name("gantt_chart_#=ScheduleRevisionId#")
+                            .Columns(columns =>
+                            {
+                                //columns.Bound(c => c.TaskID).Title("ID").Width(50);
+                                columns.Bound(c => c.ProjectSpecificId).Title("ID").Width(50);
+                                columns.Bound("title").Title("Task Name").Width(150).Editable(true).Title("Name");
+                                columns.Bound("start").Width(80).Sortable(true).Editable(true);
+                                columns.Bound("end").Width(80).Sortable(true).Editable(true);
+                                //columns.Bound(c => c.ProjectInformationId).Title("Project Id").Width(100);
+                                //columns.Bound(c => c.ProjectWorkBreakDownId).Title("PWB ID").Width(80);
+                                columns.Bound(c => c.BudgetCost).Width(80).Title("Budgeted Cost").Format("{0:N2}");
+                                //columns.Bound("orderId").Title("Order").Width(80).Editable(true);
+                                //.Bound("percentComplete").Title("Schedule % Complete").Width(80);
+                                //columns.Resources("resources").Editable(true).Title("Resources").Width(100);
+
+                                //columns.Bound(c => c.ProjectWorkBreakDownCode).Title("WBS Code").Width(90);
+                                //columns.Bound(c => c.EstimatedDuration).Title("Estimated Duration (days)").Width(50);
+                                columns.Bound(c => c.ActualDuration).Title("Actual Duration (days)").Width(50);
+                                columns.Bound(c => c.TotalQuantityOfWork).Title("Total Qty").Width(50);
+                                columns.Bound(c => c.ExecutedQuantityTillPrevVersion).Width(50);
+                                columns.Bound(c => c.ExecutedQuantityThisVersion).Width(50);
+                                columns.Bound(c => c.ExecutedQuantityToDate).Width(50);
+                                columns.Bound(c => c.ExecutedAmountTillPrevVersion).Width(70);
+                                columns.Bound(c => c.ExecutedAmountThisVersion).Width(70);
+                                columns.Bound(c => c.ExecutedAmountToDate).Width(70);
+
+                            })
+                            //.Toolbar(toolbar =>
+                            //{
+
+                            //    toolbar.Add().Name("custom").TemplateId("toolbar_template");
+                            //})
+                            .Views(views =>
+                            {
+                                views.DayView();
+                                views.WeekView();
+                                views.MonthView(monthView => monthView.Selected(true));
+                                views.YearView();
+                            })
+                            //.Height(700)
+                            .ShowWorkHours(false)
+                            .ShowWorkDays(false)
+                            .Snap(false)
+                            .Resizable(true)
+                            //.Editable(edit =>
+                            //{
+                            //    edit.TemplateId("editor_template");
+                            //})
+                            .Editable(false)
+                            .Navigatable(true)
+                            .Selectable(true)
+                            .DataSource(d => d
+                                .Model(m =>
+                                {
+                                    m.Id(f => f.TaskID);
+                                    m.ParentId(f => f.ParentID);
+                                    m.OrderId(f => f.OrderId);
+                                    m.Field(f => f.Expanded).DefaultValue(true);
+                                    m.Field(f => f.Summary);
+                                    m.Field(f => f.Predecessors);
+                                    m.Field(f => f.PercentComplete);
+
+                                    //m.Field(f => f.Title).Editable(false);
+                                })
+                                .Read("ReadTasks", "ProjectSchedules", new { revisionId = "#=ScheduleRevisionId#" })
+                                //.Create("CreateTask", "Scheduler")
+                                .Create(create =>
+                                {
+                                    create.Action("CreateTask", "Scheduler");
+                                    //.Data("getSelectedTaskData");
+                                })
+                                .Destroy("DestroyTask", "Scheduler")
+                                .Update("UpdateTask", "Scheduler")
+                            )
+                            .DependenciesDataSource(d => d
+                                .Model(m =>
+                                {
+                                    m.Id(f => f.DependencyID);
+                                    m.PredecessorId(f => f.PredecessorID);
+                                    m.SuccessorId(f => f.SuccessorID);
+                                    m.Type(f => f.Type);
+                                })
+                                .Read("ReadDependencies", "Scheduler")
+                                .Create("CreateDependency", "Scheduler")
+                                .Destroy("DestroyDependency", "Scheduler")
+                                .Update("UpdateDependency", "Scheduler")
+                            )
+                        .Messages(msg =>
+                        {
+                            msg.Actions(action =>
+                            {
+                                action.Append("Add New Task");
+                                action.AddChild("Add Sub-task");
+                                action.InsertAfter("Add Below the Selected Task");
+                                action.InsertBefore("Add Above the Selected Task");
+                            });
+                        })
+                        .Resources(r => r
+                            .Field("resources")
+                            .DataColorField("Color")
+                            .DataTextField("Name")
+                            .DataSource(d => d
+                                .Custom()
+                                .Schema(s => s
+                                    .Model(m => m.Id("ID"))
+                                    .Data("Data")
+                                )
+                                .Transport(t =>
+                                {
+                                    t.Read("ReadResources", "Scheduler");
+                                })
+                            )
+                        )
+                        .Assignments<ResourceAssignmentViewModel>(a => a
+                            .DataTaskIdField("TaskID")
+                            .DataResourceIdField("ResourceID")
+                            .DataValueField("Units")
+                            .DataSource(d => d
+                                .Model(m =>
+                                {
+                                    m.Id(f => f.ID);
+                                })
+                                .Read("ReadAssignments", "Scheduler")
+                                .Create("CreateAssignment", "Scheduler")
+                                .Destroy("DestroyAssignment", "Scheduler")
+                                .Update("UpdateAssignment", "Scheduler")
+                            )
+                        )
+                        //.Events(evnt =>
+                        //{
+                        //    evnt.Edit("editTask");
+                        //    evnt.Save("saveTaskChanges");
+
+                        //})
+                        .ToClientTemplate()
+
+                        )
+                    </text>
+                  );
+                      items.Add().Text("Detail").Content(
+                        @<text>
+
+                            # if (!IsOnlineApproved&&!IsSendForApproval)
+                            {#
+                            <a onclick='return sendForApproval("#=ScheduleRevisionId#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                            <br />
+                            # } #
+                            @(Html.Kendo().PanelBar()
+                          .Name("panelbar_#=ScheduleRevisionId#")
+                          .ExpandMode(PanelBarExpandMode.Single)
+                          .Items(panelbar =>
+                          {
+                              panelbar.Add()
+                                  .Expanded(true)
+                                  .Content(
+                                      "<div class='Schedule-details'>" +
+                                      "<ul>" +
+                                      "<li> <label> Status: </label> <strong> #=Status# </strong> </li>" +
+                                      "<li> <label> Created by: </label> <strong> #=CreatedBy# </strong> </li>" +
+                                      "<li> <label> Created on: </label> #= kendo.toString(DateCreated, 'dd/MM/yyyy H:mm:ss')# </li>" +
+                                      "<li> <label> Modified by :</label> #= ModifiedBy# </li>" +
+                                      "<li> <label> Last Modified :</label> #= kendo.toString(LastModified, 'dd/MM/yyyy H:mm:ss')# </li>" +
+                                      "</ul>" +
+                                      "</div>"
+
+                                  );
+                          }).ToClientTemplate()
+                            )
+
+                        </text>
+                  );
+
+                      items.Add().Text("Validation").Content(
+                        @<text>
+                            @(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.ScheduleRevisionValidation>()
+                          .Name("validation_#=ScheduleRevisionId#")
+                          .Columns(columns =>
+                          {
+
+                              columns.Bound(c => c.Status);
+                              columns.Bound(c => c.Remark);
+
+                              columns.Command(command =>
+                              {
+                                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                  command.Destroy().Text(Resources.ActionButton_Cancel);
+                              }).Width(200);
+                          })
+
+                          .ToolBar(toolbar =>
+                          {
+                              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                          })
+                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                          .Selectable(selectable =>
+                          {
+                              selectable.Mode(GridSelectionMode.Single);
+                              selectable.Type(GridSelectionType.Row);
+                          })
+                          .Scrollable(h => h.Height(500))
+                          .Sortable(sortable =>
+                          {
+                              sortable.SortMode(GridSortMode.SingleColumn);
+                          })
+                          //.Filterable()
+                          .Pageable(pageable => pageable
+                              .Input(true)
+                              .Numeric(false)
+                              .Refresh(true)
+                              .PageSizes(true)
+                              .ButtonCount(5))
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+
+                              .Events(events =>
+                              {
+                                  events.Error("error_handler(\"validation_#=ScheduleRevisionId#\")");
+                                  events.RequestStart("onRequestStart(\"validation_#=ScheduleRevisionId#\")");
+                                  events.RequestEnd("onRequestEnd(\"validation_#=ScheduleRevisionId#\")");
+                              })
+                              .Model(model =>
+                              {
+                                  model.Id(f => f.ScheduleRevisionValidationId);
+
+                              })
+
+                              .Read(read => read.Action("Validations_Read", "ScheduleRevisionValidation", new { id = "#=ScheduleRevisionId#" }))
+                              .Create(create => create.Action("Validation_Create", "ScheduleRevisionValidation", new { id = "#=ScheduleRevisionId#" }))
+                              .Update(update => update.Action("Validation_Update", "ScheduleRevisionValidation"))
+                              .Destroy(destroy => destroy.Action("Validation_Destroy", "ScheduleRevisionValidation"))
+                          ) //.ClientDetailTemplateId("template_wip_detail")
+                          .ToClientTemplate()
+                            )
+                        </text>
+                  );
+                      items.Add().Text("Tabular View").Content(
+                        @<text>
+                            @(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.TaskViewModel>()
+                          .Name("task_pp_#=ScheduleRevisionId#")
+                          .Columns(columns =>
+                          {
+
+                              columns.Bound(c => c.SubProjectTypeName).Hidden(true)
+                              .ClientGroupHeaderTemplate(
+                                  "\\#=value\\#"
+                                  );
+                              columns.Bound(c => c.BlockName).Hidden(true).ClientGroupHeaderTemplate(
+                                  "\\#=value\\#"
+                                  );
+                              columns.Bound(c => c.StructureyType).Hidden(true).ClientGroupHeaderTemplate(
+                                  "\\#=value\\#"
+                                  );
+                              columns.Bound(c => c.WorkCategory).Hidden(true).ClientGroupHeaderTemplate(
+                                  "\\#=value\\#"
+                                  );
+                              //columns.Bound(c => c.TaskID).Title("ID").Width(50);
+                              columns.Bound(c => c.ProjectSpecificId).Title("ID").Width(50);
+                              //columns.Bound(c => c.TaskCode).Title("Code").Width(100);
+                              //columns.ForeignKey(c => c.WorkItemDurationId, (IEnumerable)ViewData["WorkItemDurations"], "WorkItemDurationId", "WorkDescription").EditorTemplateName("WorkItems").Width(120).Title("Work Item");
+                              columns.Bound("Title").Title("Title/Description").Width(220);
+                              columns.Bound(c => c.TotalQuantityOfWork).Title("Qty of Work").Width(80);
+                              columns.Bound(c => c.Start).Width(100).Sortable(true);
+                              columns.Bound(c => c.ActualDuration).Title("Duration (days)").Width(50);
+                              columns.Bound(c => c.TotalQuantityOfWork).Title("Total Qty").Width(50);
+                              columns.Bound(c => c.ExecutedQuantityTillPrevVersion).Width(50);
+                              columns.Bound(c => c.ExecutedQuantityThisVersion).Width(50);
+                              columns.Bound(c => c.ExecutedQuantityToDate).Width(50);
+                              columns.Bound(c => c.ExecutedAmountTillPrevVersion).Width(70);
+                              columns.Bound(c => c.ExecutedAmountThisVersion).Width(70);
+                              columns.Bound(c => c.ExecutedAmountToDate).Width(70);
+                          })
+
+                          .Scrollable(s => s.Enabled(true).Height("auto"))
+                          .Selectable(selectable =>
+                          {
+                              selectable.Mode(GridSelectionMode.Single);
+                              selectable.Type(GridSelectionType.Row);
+                          })
+                          .Pageable(pageable => pageable
+                              .Input(true)
+                              .Numeric(false)
+                              .Refresh(true)
+                              .PageSizes(true)
+                              .ButtonCount(5))
+                          //.Events(evnt =>
+                          //{
+                          //    evnt.DataBound("TaskGridDataBound");
+                          //})
+                          //.Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("ProjectTasks").Window(window => { window.Title("Work Item / Task"); window.Scrollable(false); }))
+                          //.Events(events =>
+                          //{
+                          //    events.Edit("editTaskPerwbs");
+                          //})
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+                              .PageSize(40)
+                              .Sort(srt => {
+                                  srt.Add(f => f.ProjectSpecificId);
+                              })
+                              .Group(g =>
+                              {
+                                  //g.Add(f => f.Version);
+                                  g.Add(f => f.SubProjectTypeName);
+                                  g.Add(f => f.BlockName);
+                                  g.Add(f => f.StructureyType);
+                                  g.Add(f => f.WorkCategory);
+
+                              })
+                               .Model(model =>
+                               {
+                                   model.Id(t => t.TaskID);
+                                   model.Field(t => t.TaskID).Editable(false);
+                                   model.Field(f => f.End).Editable(false);
+                               })
+                              //.Events(events => {
+                              //    events.Ed
+                              //})
+                              .Read(read => read.Action("ReadTasksPerProjectAndVersion", "Scheduler", new { projectId = "#=ProjectInformationId#", versionNo = "#=Version#" }))
+                          //.Create(create => create.Action("CreateTaskPerProjectBd", "Scheduler", new { pwbIdCreate = "#=ProjectInformationId#" }))
+                          //.Update(update => update.Action("UpdateTask", "Scheduler"))
+                          //.Destroy(destroy => destroy.Action("DestroyTask", "Scheduler"))
+                          )//.ClientDetailTemplateId("template_dependecy")
+                          .ToClientTemplate()
+                            )
+                        </text>
+                );
+                  }).ToClientTemplate())
+</script>
+<script>
+    function sendForApproval(id) {
+        var recordStatus = "";
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("SendForApproval", "ScheduleRevision", new { area = "Construction" })',
+            data: { id: id },
+            success: function (result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                recordStatus = result.Status;
+                location.reload(true);
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+    function onDataBound() {
+        $(".k-grid-CustomCommand").find("span").addClass("k-icon k-pdf");
+
+        var grid = this;
+        var gridRows = grid.tbody.find("tr");
+        //Selects all edit buttons
+
+
+        for (var i = 0; i < gridRows.length; i++) {
+            var row = $(gridRows[i]);
+            var dataItem = grid.dataItem(row);
+            //perform your custom check
+            if (dataItem.IsOnlineApproved === true) {
+                //hide buttons using jQuery
+                row.find(".k-grid-edit").hide();
+                row.find(".k-grid-delete").hide();
+                //row.find(".k-grid-customAction").text('ይከፈት');
+            } else {
+
+                row.find(".k-grid-edit").show();
+                row.find(".k-grid-delete").show();
+            }
+            //if (dataItem.ConstructionInvoiceStatus === 2) {
+            //    //answer.hide(true);
+            //    //transfer.hide(true);
+            //    //row.css("background-color", "lightgreen");
+            //    row.addClass("highlighted-row");
+
+            //} else {
+            //    //answer.show(true);
+            //    //transfer.show(true);
+            //    //row.css("background-color", "grey");
+
+            //}
+        }
+    }
+</script>

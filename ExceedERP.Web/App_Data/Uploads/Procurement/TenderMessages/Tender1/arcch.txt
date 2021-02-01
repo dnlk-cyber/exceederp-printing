@@ -1,0 +1,43 @@
+30MB reasons
+maximum data pack.... item registration [video element] what is the estimate video ..max data transfer...
+precise 
+server 2 purpose [db,app]
+architecture should come here
+rack --- we have enough
+
+merge environment and hardware
+
+
+
+for users hard disk..
+
+[software requirement]
+
+number of user... for windows and database server [back-up]
+
+How to access youtube....[free]..., procurement
+
+Licensed ...who should buy
+
+end user training [does it include region,national]
+
+database and os version 2016 or 2014 ...
+this system needs this much bandwidth to run due to video element
+
+QoS describe
+
+server specification [annex]
+name='enterprise user'...then defined
+name of application ,administration of the ystem
+IT service management (ITIL)
+
+----------------------------------------------------
+existing infrastructure and facility to see the gap
+network design,ip address,topology
+estimated number of users from zelalem
+videos only for internal ... can be in server...public videos can use youtube.
+
+
+
+
+

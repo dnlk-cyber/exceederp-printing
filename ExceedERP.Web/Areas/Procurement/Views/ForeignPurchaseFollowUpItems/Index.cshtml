@@ -1,0 +1,29 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Procurement.ForeignPurchase.ForeignPurchaseFollowUpItems>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.CatCode);
+          columns.Bound(c => c.CategoryName);
+          columns.Bound(c => c.ItmCode);
+          columns.Bound(c => c.ItemName);
+          columns.Bound(c => c.ItemType);
+          columns.Bound(c => c.PartNo);
+          columns.Bound(c => c.Quantity);
+          columns.Bound(c => c.ItemSpecification);
+          columns.Bound(c => c.UoM);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.ForeignPurchaseFollowUpItemsID))
+          .Read(read => read.Action("ForeignPurchaseFollowUpItems_Read", "ForeignPurchaseFollowUpItems"))
+          .Create(create => create.Action("ForeignPurchaseFollowUpItems_Create", "ForeignPurchaseFollowUpItems"))
+          .Update(update => update.Action("ForeignPurchaseFollowUpItems_Update", "ForeignPurchaseFollowUpItems"))
+          .Destroy(destroy => destroy.Action("ForeignPurchaseFollowUpItems_Destroy", "ForeignPurchaseFollowUpItems"))
+      ))

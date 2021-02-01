@@ -1,0 +1,156 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.Common
+@using ExceedERP.Core.Domain.Finance
+@using ExceedERP.Core.Domain.Finance.AP
+@using ExceedERP.Helpers
+@model ExceedERP.Core.Domain.Finance.AP.ApMiscellaneousPayment
+
+@Html.HiddenFor(model => model.ApMiscellaneousPaymentId)
+
+<div class="form">
+    <div class="row fullrow">
+
+        <div class="col-md-3 ro1">
+            <div class="form-group">
+                @Html.LabelFor(model => model.SupplierId, "Supplier", htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @(Html.Kendo().DropDownListFor(model => model.SupplierId)
+                          .ValuePrimitive(true)
+                          .OptionLabel("Select Supplier...")
+                          .DataTextField("Name")
+                          .DataValueField("Code")
+                          .Filter("contains")
+                          .DataSource(dataSource =>
+                          {
+                              dataSource.Read(read => read.Action("GetActiveSuppliers", "FinanceDataProvider", new { area = "Finance" }))
+                                  .ServerFiltering(false);
+                          })
+                          )
+                    @Html.ValidationMessageFor(model => model.SupplierId, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+            
+            <div class="form-group">
+                @Html.LabelFor(model => model.IsNewSupplier, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @Html.Kendo().CheckBoxFor(model => model.IsNewSupplier).HtmlAttributes(new { onchange = "isNewSupplier(this)" })
+                    @Html.ValidationMessageFor(model => model.IsNewSupplier, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+            
+            <div class="form-group" id="suppliernameDiv" style="display: none">
+                @Html.LabelFor(model => model.SupplierName, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(model => model.SupplierName)
+                    @Html.ValidationMessageFor(model => model.SupplierName, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+            
+            <div class="form-group">
+                @Html.LabelFor(model => model.PaymentDate, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @Html.Kendo().DatePickerFor(model => model.PaymentDate)
+                    @Html.ValidationMessageFor(model => model.PaymentDate, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+
+        </div>
+        
+
+        <div class="col-md-3 ro1">
+            
+            <div class="form-group">
+                @*@Html.LabelFor(model => model.IsDirectPayment, htmlAttributes: new { @class = "control-label col-md-8" })*@
+                <div class="col-md-8">
+                    @Html.Kendo().CheckBoxFor(model => model.IsDirectPayment)
+                    @Html.ValidationMessageFor(model => model.IsDirectPayment, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+            <br/>
+            <div class="form-group">
+                @Html.LabelFor(model => model.PaymentMethod, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @(Html.Kendo().DropDownListFor(model => model.PaymentMethod)
+                          .ValuePrimitive(true)
+                          .OptionLabel("Payment Method")
+                                  .DataTextField("Method")
+                                  .DataValueField("Method")
+                          .DataSource(dataSource =>
+                          {
+                              dataSource.Read(read => read.Action("GetApPaymentMethods", "FinanceDataProvider", new { area = "Finance" }))
+                                  .ServerFiltering(false);
+                          })
+                          )
+                    @Html.ValidationMessageFor(model => model.PaymentMethod, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+            
+            <div class="form-group">
+                @Html.LabelFor(model => model.PaymentType, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @(Html.Kendo().DropDownListFor(m => m.PaymentType)
+                          .DataTextField("Text")
+                          .DataValueField("Value")
+                          .ValuePrimitive(true)
+                          .BindTo(EnumExtension.EnumToSelectList(typeof(PaymentDocType)))
+ 
+                          )
+                    @Html.ValidationMessageFor(model => model.PaymentType, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+            
+            <div class="form-group">
+                @Html.LabelFor(model => model.PaymentReference, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(model => model.PaymentReference)
+                    @Html.ValidationMessageFor(model => model.PaymentReference, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>        
+           
+
+
+        </div>
+
+        <div class="col-md-3 ro1">
+           
+            
+            <div class="form-group">
+                @Html.LabelFor(model => model.Grn, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(model => model.Grn)
+                    @Html.ValidationMessageFor(model => model.Grn, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+            
+            <div class="form-group">
+                @Html.LabelFor(model => model.Po, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(model => model.Po)
+                    @Html.ValidationMessageFor(model => model.Po, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.Remark, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(model => model.Remark)
+                    @Html.ValidationMessageFor(model => model.Remark, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+
+            
+
+        </div>
+    </div>
+</div>

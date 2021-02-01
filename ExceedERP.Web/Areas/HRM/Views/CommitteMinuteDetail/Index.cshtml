@@ -1,0 +1,218 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.Common.HRM
+@using ExceedERP.Core.Domain.HRM.EmployeeDetail
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>@Resources.Navigator_Company_CommitteeMinute</legend>
+@(Html.Kendo().Grid<CommitteMinute>()
+          .Name("CommitteMinute")
+      .Columns(columns =>
+      {
+          columns.ForeignKey(p => p.CommitteeId, (IEnumerable)ViewData["Committees"], "CommitteeId", "Role").Title("Committee").EditorTemplateName("CommitteeSelector").Width(150);
+          columns.Bound(c => c.FileNo);
+          columns.Bound(c => c.DateAmharic).Width(200).EditorTemplateName("Calander");
+          columns.Bound(c => c.Agenda);
+          columns.Bound(c => c.PlaceOfMetting);
+          // columns.Bound(c => c.Remark);
+          //columns.Bound(c => c.OrgBranchName);
+          //columns.Bound(c => c.DateCreated);
+          //columns.Bound(c => c.LastModified);
+          //columns.Bound(c => c.CreatedBy);
+          //columns.Bound(c => c.ModifiedBy);
+          columns.Command(command =>
+          {
+              if (HttpContext.Current.User.IsInRole("HR_Company_User")||HttpContext.Current.User.IsInRole("HR_Discipline_User"))
+              {
+                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+              }
+              if (HttpContext.Current.User.IsInRole("HR_Admin") || HttpContext.Current.User.IsInRole("HR_Company_Admin"))
+              {
+                  command.Destroy().Text(Resources.ActionButton_Cancel);
+              }
+          }).Width(200);
+      })
+      .ToolBar(toolbar =>
+      {
+          if (HttpContext.Current.User.IsInRole("HR_Company_User") || HttpContext.Current.User.IsInRole("HR_Discipline_User"))
+          {
+              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+          }
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+           .Scrollable(h => h.Height(500))
+                     .Groupable()
+                              .Sortable(sortable =>
+                              {
+                                  sortable.SortMode(GridSortMode.SingleColumn);
+                              })
+                  .Filterable()
+                     .Events(x => x.Edit("GetDate"))
+                         .Events(x => x.Save("GetDate"))
+                     .Pageable(pageable => pageable
+                                                .Input(true)
+                                                .Numeric(false)
+                                                .Refresh(true)
+                                                .PageSizes(true)
+                                                .ButtonCount(5))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+               .Events(events =>
+ {
+ events.Error("error_handler(\"CommitteMinute\")");
+ events.RequestStart("onRequestStart(\"CommitteMinute\")");
+ events.RequestEnd("onRequestEnd(\"CommitteMinute\")");
+ })
+                       
+          .Model(model => model.Id(p => p.CommitteMinuteId))
+              .Read(read => read.Action("CommitteMinute_Read", "CommitteMinuteDetail", new { type =""}))
+              .Create(create => create.Action("CommitteMinute_Create", "CommitteMinuteDetail",new { type =""}))
+                  .Update(update => update.Action("CommitteMinute_Update", "CommitteMinuteDetail"))
+              .Destroy(destroy => destroy.Action("CommitteMinute_Destroy", "CommitteMinuteDetail"))
+          ).ClientDetailTemplateId("template")
+)
+
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                            .Name("tabstrip_#=CommitteMinuteId#")
+    .SelectedIndex(0)
+    .Items(items =>
+     {
+
+         //*****************************************************************************************************//
+
+         //*********************************Attachment***********************************************************//
+         items.Add().Text(Resources.HR_File).Content(
+            @<text>
+
+               @(Html.Kendo().Grid<Attachment>()
+                      .Name("Attachment_#=CommitteMinuteId#")
+      .Columns(columns =>
+      {
+          // columns.Bound(c => c.Remark).Title("Description");
+          columns.Bound(c => c.Description).ClientTemplate(Html.ActionLink("DownLoad", "DownloadFile", new { filename = "#=CommitteMinuteId#" }).ToHtmlString());
+          //  columns.Bound(c => c.FileType);
+
+          columns.Command(command =>
+          {
+              command.Destroy().Text(Resources.ActionButton_Cancel);
+              //  command.Custom("Download").Click("DownloadAttachmnets");
+
+          }).Width(300);
+
+      })
+                        .Events(e =>
+                  {
+                      e.Change("DownloadAttachmnets");
+                      e.Edit("onGridEdit");
+                  })
+                       .ToolBar(toolbar =>
+              {
+                  toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+              })
+                      .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("Upload").Window(window =>
+                      {
+                          window.Scrollable(false);
+                          window.Title(Resources.Navigator_Company_CommitteeMinute);
+                      }))
+
+        .Selectable(selectable =>
+        {
+            selectable.Mode(GridSelectionMode.Single);
+            selectable.Type(GridSelectionType.Row);
+        })
+             .Scrollable(h => h.Height(500))
+               
+      .DataSource(dataSource => dataSource
+          .Ajax()
+                                 .Events(events =>
+         {
+             events.Error("error_handler(\"Attachment_#=CommitteMinuteId#\")");
+             events.RequestStart("onRequestStart(\"Attachment_#=CommitteMinuteId#\")");
+             events.RequestEnd("onRequestEnd(\"Attachment_#=CommitteMinuteId#\")");
+         })
+                              
+          .Model(model => model.Id(p => p.AttachmentId))
+
+                                  .Read(read => read.Action("Attachments_Read", "Attachment", new { Area = "Common", attachmentReferenceType = "MINUTE", id = "#=CommitteMinuteId#", fileOwner = "#=CommitteMinuteId#" }))
+                                                     .Create(create => create.Action("Attachments_Create", "Attachment", new { Area = "Common", attachmentReferenceType = "MINUTE", id = "#=CommitteMinuteId#", fileOwner = "#=CommitteMinuteId#" }))
+                                  .Destroy(destroy => destroy.Action("Attachments_Destroy", "CommitteMinuteDetail"))
+      ).ToClientTemplate ()
+            )
+            </text>
+    );
+         //*****************************************************************************************************//
+
+     }).ToClientTemplate())
+</script>
+
+<script>
+    //function error_handler(e) {
+    //    if (e.errors) {
+    //        var message = "Errors:\n";
+    //        $.each(e.errors, function(key, value) {
+    //            if ('errors' in value) {
+    //                $.each(value.errors, function() {
+    //                    message += this + "\n";
+    //                });
+    //            }
+    //        });
+    //        alert(message);
+
+    //    }
+
+    //}
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+
+    function onGridEdit(e) {
+        e.container.find(".k-button.k-grid-update").hide();
+        e.container.find(".k-button.k-grid-cancel").hide();
+
+    }
+</script>
+
+<script>
+    function DownloadAttachmnets(e) {
+
+        var grid = e.sender;
+        var selectedRows = this.select();
+        var rowData = this.dataItem(selectedRows[0]);
+        var id = rowData.AttachmentID;
+        $.ajax({
+            contentType: "application/json; charset=utf-8",
+            url: '@Url.Action("Download", "CommitteMinuteDetail")',
+            data: { 'id': id },
+            type: 'GET',
+            cache: false,
+            success: function (result) {
+                r = result;
+            }
+
+        });
+
+    }
+    function GetDate() {
+
+        var x = AssignDate();
+        var y = x;
+        $("#DateAmharic").trigger("change");
+        for (var o in y) {
+            $.ajax({
+                contentType: "application/json; charset=utf-8",
+                url: '@Url.Action("SetDate", "CommitteMinuteDetail")',
+                data: { name: y[o].id, value: y[o].date },
+                type: 'GET',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                }
+
+            });
+        }
+    }
+</script>

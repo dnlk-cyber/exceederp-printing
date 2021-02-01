@@ -1,0 +1,514 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.Construction
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Schedule Summary</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.ProjectInformation>()
+      .Name("ProjectInformationgrid")
+      .Columns(columns =>
+      {
+          //columns.Bound(c => c.ProjectInformationId).Title("Id");
+          columns.Bound(c => c.Name);
+          columns.Bound(c => c.Code);
+          //columns.Bound(c => c.Category).Width(200);
+          //columns.Bound(c => c.BranchId).Width(150);
+          columns.Bound(c => c.ContractAmount).ClientTemplate(
+                          "# if (ContractAmount === 0) { #" +
+                                                      " -----" +
+                                                      "# } else {#" +
+                                                      "#: kendo.toString( ContractAmount, 'N2') #" +
+                                                      "# } #"
+                          );
+          columns.Bound(c => c.Client);
+      })
+
+      .Scrollable(h => h.Height(500))
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Filterable()
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Pageable(pageable => pageable
+                            .Input(true)
+                            .Numeric(false)
+                            .Refresh(true)
+                            .PageSizes(true)
+                            .ButtonCount(10))
+      .DataSource(dataSource => dataSource
+              .Ajax()
+              .PageSize(20)
+              .Events(events => events.Error("error_handler(\"ProjectInformationgrid\")"))
+              .Model(model => model.Id(p => p.ProjectInformationId))
+              .Read(read => read.Action("ReadAllProjects", "Scheduler"))
+          //.Create(create => create.Action("ProjectInformation_Create", "ProjectInformation"))
+          //.Update(update => update.Action("ProjectInformation_Update", "ProjectInformation"))
+          //.Destroy(destroy => destroy.Action("ProjectInformation_Destroy", "ProjectInformation"))
+          ).ClientDetailTemplateId("template_detail")
+)
+
+<script id="template_detail" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                  .Name("tabstrip_1_#=ProjectInformationId#")
+                  .SelectedIndex(0)
+                  .Items(items =>
+                  {
+                  items.Add().Text("Project Schedules").Content(
+                    @<text>
+                        @(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.ScheduleRevision>()
+                                .Name("revision_#=ProjectInformationId#")
+                                .Columns(columns =>
+                                {
+                                    columns.Bound(c => c.Version).ClientTemplate(
+                                        "\\# if (Version === 0) { \\#" +
+                                            " " +
+                                            "\\# } else {\\#" +
+                                            "V. \\#: Version\\#.00" +
+                                            "\\# } \\#"
+                                        );
+                                    columns.Bound(c => c.Status);
+                                    columns.Bound(c => c.DateOfApproval);
+
+                                    //columns.Command(command =>
+                                    //{
+                                    //    command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                    //    command.Destroy().Text(Resources.ActionButton_Cancel);
+                                    //    command.Custom("CustomCommand").Text("Detail");
+                                    //}).Width(250);
+                                })
+                                //.Events(evnt =>
+                                //{
+                                //    evnt.DataBound("onDataBound");
+                                //})
+                                //.ToolBar(toolbar =>
+                                //{
+                                //    //toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                                //    toolbar.Create().Text("Add New Version");
+
+                                //})
+                                //.ClientDetailTemplateId("templateOne")
+                                //.Editable(editable => editable.Mode(GridEditMode.InLine))
+                                .Selectable(selectable =>
+                                {
+                                    selectable.Mode(GridSelectionMode.Single);
+                                    selectable.Type(GridSelectionType.Row);
+                                })
+                                .Scrollable(h => h.Height(500))
+                                .Groupable()
+                                .Sortable(sortable =>
+                                {
+                                    sortable.SortMode(GridSortMode.SingleColumn);
+                                })
+                                .Filterable()
+                                .Pageable(pageable => pageable
+                                                        .Input(true)
+                                                        .Numeric(false)
+                                                        .Refresh(true)
+                                                        .PageSizes(true)
+                                                        .ButtonCount(5))
+                                .DataSource(dataSource => dataSource
+                                    .Ajax()
+                                    .Events(events =>
+                                    {
+                                        events.Error("error_handler(\"revision_#=ProjectInformationId#\")");
+                                        events.RequestStart("onRequestStart(\"revision_#=ProjectInformationId#\")");
+                                        events.RequestEnd("onRequestEnd(\"revision_#=ProjectInformationId#\")");
+
+                                    })
+                                    .Model(model =>
+                                    {
+                                        model.Id(f => f.ScheduleRevisionId);
+                                        model.Field(f => f.Status).Editable(false);
+                                        model.Field(f => f.Version).Editable(false);
+                                        model.Field(f => f.DateOfApproval).Editable(false);
+                                    })
+
+                                    .Read(read => read.Action("ScheduleRevision_Read", "ScheduleRevision", new { projectIdRead = "#=ProjectInformationId#" }))
+                                    .Create(create => create.Action("ScheduleRevision_Create", "ScheduleRevision", new { projectIdCreate = "#=ProjectInformationId#" }))
+                                    .Update(update => update.Action("ScheduleRevision_Update", "ScheduleRevision"))
+                                    .Destroy(destroy => destroy.Action("ScheduleRevision_Destroy", "ScheduleRevision"))
+                                    ).ClientDetailTemplateId("template_diagrams")
+                                    .ToClientTemplate()
+                        )
+                    </text>
+                  );
+                  }).ToClientTemplate())
+</script>
+
+<script>
+    function visualTemplate(options) {
+        var dataviz = kendo.dataviz;
+        var g = new dataviz.diagram.Group();
+        var dataItem = options.dataItem;
+
+        g.append(new dataviz.diagram.Rectangle({
+            width: 300,
+            height: 130,
+            stroke: {
+                width: 1,
+                color: "red"
+            },
+            fill: {
+                gradient: {
+                    type: "linear",
+                    stops: [{
+                        color: "#1696d3",
+                        offset: 1,
+                        opacity: 1
+                    }, {
+                        color: "#1696d3",
+                        offset: 0,
+                        opacity: 0.5
+                    }]
+                }
+            }
+        }));
+
+        g.append(new dataviz.diagram.TextBlock({
+            text: dataItem.Title,
+            fontSize: 18,
+            x: 10,
+            y: 20,
+            color: "#fff"
+        }));
+        g.append(new dataviz.diagram.Line({
+            stroke: {
+                color: "#fff",
+                width: 0.75
+            },
+            from: {
+                x: 0,
+                y: 43
+            },
+            to: {
+                x: 300,
+                y: 43
+            }
+        }));
+        g.append(new dataviz.diagram.TextBlock({
+            text: "Start: " + dataItem.Start,
+            x: 10,
+            y: 50,
+            color: "#fff"
+        }));
+        g.append(new dataviz.diagram.TextBlock({
+            text: "End:  " + " " + dataItem.End,
+            x: 10,
+            y: 70,
+            color: "#fff"
+        }));
+
+        g.append(new dataviz.diagram.TextBlock({
+            text: "ID: " + dataItem.ProjectSpecificId,
+            x: 150,
+            y: 50,
+            color: "#fff"
+        }));
+
+        g.append(new dataviz.diagram.TextBlock({
+            text: "Duration: " + dataItem.Duration + " days",
+            x: 150,
+            y: 70,
+            color: "#fff"
+        }));
+
+        g.append(new dataviz.diagram.Line({
+            stroke: {
+                color: "#fff",
+                width: 0.75
+            },
+            from: {
+                x: 0,
+                y: 95
+            },
+            to: {
+                x: 130,
+                y: 95
+            }
+        }));
+        g.append(new dataviz.diagram.Line({
+            stroke: {
+                color: "#fff",
+                width: 0.75
+            },
+            from: {
+                x: 150,
+                y: 95
+            },
+            to: {
+                x: 300,
+                y: 95
+            }
+        }));
+
+        g.append(new dataviz.diagram.TextBlock({
+            text: "Resources: " + dataItem.Resources,
+            x: 10,
+            y: 100,
+            color: "#fff"
+        }));
+        return g;
+    }
+
+    function onDataBound() {
+        this.bringIntoView(this.shapes);
+    }
+</script>
+
+<script id="template_diagrams" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                  .Name("tab__#=ScheduleRevisionId#")
+                  .SelectedIndex(0)
+                  .Items(items =>
+                  {
+                  items.Add().Text("Schedule Summary ").Content(
+                    @<text>
+                       @(Html.Kendo().Diagram()
+                          .Name("taskDiagram__#=ScheduleRevisionId#")
+                          .DataSource(dataSource => dataSource
+                              .Read(read => read
+                                  .Action("ReadDiagramTasks", "Diagram", new { revisionId = "#=ScheduleRevisionId#" })
+                              )
+                          .Model(m =>
+                          {
+                              m.Children("Successors");
+
+                          })
+                          )
+                          .Editable(false)
+                          .Layout(l =>
+                          {
+                              l.Type(DiagramLayoutType.Layered);
+                              l.Subtype(DiagramLayoutSubtype.Right);
+
+                          })
+                          .ShapeDefaults(sd => sd
+                              .Visual("visualTemplate")
+                          )
+                          .ConnectionDefaults(cd => cd
+                              .Stroke(s => s
+                                  .Color("\\#979797")
+                                  .Width(2)
+                              )
+                              .EndCap(ec =>
+                              {
+                                  ec.Type("ArrowEnd");
+                                  ec.Stroke(s =>
+                                  {
+                                      //s.Width(10);
+                                  });
+                                  ec.Fill(f =>
+                                  {
+                                      f.Color("red");
+                                  });
+                              }
+                              )
+                          )
+                          .Events(events => events.DataBound("onDataBound"))
+                          .ToClientTemplate()
+                    )
+                    </text>
+                  );
+                  }).ToClientTemplate())
+</script>
+
+
+
+
+
+
+
+
+
+
+<div class="toolbar row">
+    <div class="col-md-1">
+        <strong>Project &nbsp;</strong>
+    </div>
+    
+    @*<div class="col-md-2" style="margin-bottom:5px;">
+        @(Html.Kendo().ComboBox()
+              .Name("projectInformationList")
+              .DataTextField("Name")
+              .DataValueField("ProjectInformationId")
+              //.HtmlAttributes(new { style = "width:100%" })
+              .Filter("contains")
+              //.SelectedIndex(1)
+              //.OptionLabel("Select Project ")
+              .Placeholder("Select Project ...")
+              .DataSource(source =>
+              {
+                  source.Read(read =>
+                  {
+                      read.Action("GetAllProjectNames", "DataProvider");
+                  })
+                  .ServerFiltering(false);
+              })
+            .Events(e =>
+            {
+                e.Select("onProjectSelect");
+            })
+            .HtmlAttributes(new { style = "width:250px;"})
+        )
+    </div>*@
+
+    @*<div class="col-md-2">
+            @(Html.Kendo().DropDownList()
+              .Name("wb_structures")
+              .DataTextField("Description")
+              .DataValueField("ProjectWorkBreakDownId")
+              //.HtmlAttributes(new { style = "width:100%" })
+              .Filter("contains")
+              .OptionLabel(".... Select a Wb Structure ....")
+              .DataSource(source =>
+              {
+                  source.Read(read =>
+                  {
+                      //read.Action("GetProjectWorkBreakDown", "ProjectWorkBreakDown", new { idThree = 1 });
+                      read.Action("GetProjectWorkBreakDown", "ProjectWorkBreakDown")
+                      .Data("filterWorkBreakdowns");
+                  })
+                  .ServerFiltering(true);
+              })
+            .CascadeFrom("projectInformationList")
+            .AutoBind(false)
+            .Enable(false)
+            .Events(e =>
+            {
+                e.Select("onWbsSelect");
+            })
+            )
+        </div>*@
+</div>
+
+<div id="tDiagram">
+
+</div>
+
+@*@(Html.Kendo().Diagram()
+      .Name("taskDiagram")
+      .DataSource(dataSource => dataSource
+          .Read(read => read
+              .Action("ReadDiagramTasks", "Diagram")
+          )
+      .Model(m =>
+      {
+          m.Children("Successors");
+
+      })
+      )
+      .Editable(false)
+      .Layout(l =>
+      {
+          l.Type(DiagramLayoutType.Layered);
+          l.Subtype(DiagramLayoutSubtype.Right);
+
+      })
+      .ShapeDefaults(sd => sd
+          .Visual("visualTemplate")
+      )
+      .ConnectionDefaults(cd => cd
+          .Stroke(s => s
+              .Color("#979797")
+              .Width(2)
+          )
+          .EndCap(ec =>
+          {
+              ec.Type("ArrowEnd");
+              ec.Stroke(s =>
+              {
+                  //s.Width(10);
+              });
+              ec.Fill(f =>
+              {
+                  f.Color("red");
+              });
+          }
+          )
+      )
+      .Events(events => events.DataBound("onDataBound"))
+)*@
+<script type="text/javascript">
+    //$(document).ready(function () {
+    //    var diagram = $("#taskDiagram").kendoDiagram().data("kendoDiagram");
+    //    diagram.orientation = "vertical";
+    //});
+
+    //$(document).ready(function () {
+    //    //$("#tDiagram").kendoDiagram();
+    //    var diagram = $("#tDiagram").kendoDiagram({
+    //        dataSource: {
+    //            transport: {
+    //                type: "json",
+    //                //serverFiltering: true,
+    //                read: {
+    //                    //type: "odata",
+    //                    url: '/Diagram/ReadDiagramTasks/'
+    //                }
+    //            },
+    //            schema: {
+    //                model: {
+    //                    children: "Successors"
+    //                }
+    //            }
+    //        },
+    //        shapeDefaults: {
+    //            visual: visualTemplate
+    //        },
+    //        layout: {
+    //            type: "layered",
+    //            //orientation: "vertical",
+    //            subtype: "right"
+    //        },
+    //        connectionDefaults: {
+    //            stroke: {
+    //                color: "#979797",
+    //                width: 2
+    //            }
+    //        },
+    //        bind: "onDataBound"
+    //    }).data("kendoDiagram");
+    //    //diagram.layout({ type: "ForceDirected" });
+    //});
+
+    //$(document).ready(function () {
+    //    var diagram = $("#taskDiagram").getKendoDiagram();
+    //    diagram.dataSource.filter({ field: "ProjectInformationId", operator: "eq", value: parseInt(-1) });
+    //});
+</script>
+<script type="text/javascript">
+    function onProjectSelect(e) {
+        if (e.item) {
+            var dataItem = this.dataItem(e.item);
+            selectedProjectId = dataItem.ProjectInformationId;
+            var dm = $("#taskDiagram").getKendoDiagram();
+            dm.dataSource.filter({ field: "ProjectInformationId", operator: "eq", value: parseInt(selectedProjectId) });
+
+        } else {
+            alert("Error");
+        }
+    }
+
+    function onWbsSelect(e) {
+        if (e.item) {
+            var dataItem = this.dataItem(e.item);
+            selectedWbsId = dataItem.ProjectWorkBreakDownId;
+            var dm = $("#taskDiagram").getKendoDiagram();
+            dm.dataSource.filter({ field: "ProjectWorkBreakDownId", operator: "eq", value: parseInt(selectedWbsId) });
+        } else {
+            alert("Error");
+        }
+
+    }
+    function filterWorkBreakdowns() {
+        return {
+            idThree: $("#projectInformationList").val()
+        };
+    }
+</script>

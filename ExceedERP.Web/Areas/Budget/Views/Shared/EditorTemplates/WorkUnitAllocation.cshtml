@@ -1,0 +1,15 @@
+﻿
+@(Html.Kendo().DropDownListFor(model => model).HtmlAttributes(new { @class = "form-control" })
+                        .DataTextField("Text")
+                                    .DataValueField("Value").OptionLabel(" Select ").Filter(FilterType.Contains)
+                    .HtmlAttributes(new { style = "width:100%" })
+                    .DataSource(d =>
+                    {
+                        d.Read(r =>
+                        {
+                            r.Action("WorkUnitDDBind", "BudgetDataProvider").Data("filterWorkUnit");
+                        })
+                      .ServerFiltering(true);
+                    })
+                       .AutoBind(false) 
+                                   .CascadeFrom("AccountCode"))

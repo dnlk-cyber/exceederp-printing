@@ -1,0 +1,73 @@
+﻿<li class="">
+    <a href="#" class="dropdown-toggle">
+        <i class="menu-icon fa fa-info-circle"></i>
+        <span class="menu-text">
+         Help Desk
+        </span>
+        <b class="arrow fa fa-angle-down"></b>
+    </a>
+    <b class="arrow"></b>
+    <ul class="submenu">
+
+        <li class="">
+            <a href="#" class="dropdown-toggle">
+                <i class="menu-icon fa fa-caret-right"></i>
+                Support
+                <b class="arrow fa fa-angle-down"></b>
+            </a>
+
+            <b class="arrow"></b>
+
+            <ul class="submenu">
+                <li id="InfoDesk0289" class="actionlinlk">@Html.ActionLink("Open Ticket", "Index", "CustomerTicket", new { area = "InfoDesk" }, null)<b class="arrow"></b></li>
+                <li id="InfoDesk02409" class="actionlinlk">@Html.ActionLink("Assign Ticket", "Index", "AssignTicket", new { area = "InfoDesk" }, null)<b class="arrow"></b></li>
+                <li id="InfoDesk02439" class="actionlinlk">@Html.ActionLink("Ticket Status", "TicketStatus", "CustomerTicket", new { area = "InfoDesk" }, null)<b class="arrow"></b></li>
+                <li id="InfoDesk02439" class="actionlinlk">@Html.ActionLink("Ticket Handler", "Index", "Handler", new { area = "InfoDesk" }, null)<b class="arrow"></b></li>
+
+            </ul>
+        </li>
+        <li class="">
+            <a href="#" class="dropdown-toggle">
+                <i class="menu-icon fa fa-caret-right"></i>
+                Setting
+                <b class="arrow fa fa-angle-down"></b>
+            </a>
+
+            <b class="arrow"></b>
+
+            <ul class="submenu">
+
+                <li id="InfoDesk0g10" class="actionlinlk">@Html.ActionLink("Ticket Types", "Index", "TicketType", new { area = "InfoDesk" }, null)<b class="arrow"></b></li>
+
+                <li id="InfoDesk0g10" class="actionlinlk">@Html.ActionLink("Groups", "Index", "SupportGroup", new { area = "InfoDesk" }, null)<b class="arrow"></b></li>
+                @* <li id="InfoDesk0s11" class="actionlinlk">@Html.ActionLink("Status ", "Index", "StatusType", new { area = "InfoDesk" }, null)<b class="arrow"></b></li>
+                *@
+                <li id="InfoDesk0p12" class="actionlinlk">@Html.ActionLink("Priority", "Index", "PriorityType", new { area = "InfoDesk" }, null)<b class="arrow"></b></li>
+
+
+
+
+            </ul>
+        </li>
+        @*
+        <li class="">
+            <a href="#" class="dropdown-toggle">
+                <i class="menu-icon fa fa-caret-right"></i>
+              Report
+                <b class="arrow fa fa-angle-down"></b>
+            </a>
+
+            <b class="arrow"></b>
+
+            <ul class="submenu">
+
+
+                <li id="InfoDesk010" class="actionlinlk">@Html.ActionLink("Ticket Frequency", "RepTicketFrequency", "InfoDeskReport", new { area = "InfoDesk" }, null)<b class="arrow"></b></li>
+
+                
+
+            </ul>
+        </li>
+*@
+    </ul>
+</li>

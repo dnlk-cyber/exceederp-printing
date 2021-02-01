@@ -1,0 +1,260 @@
+﻿@model ExceedERP.Core.Domain.FleetManagement.FleetRegistration.TimeSheet
+
+<div class="demo-section k-content">
+    <form>
+
+                    <div class="row">
+                        <div class="col-md-1">
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <div class="k-label">
+                                   Plate/Serial No 
+                                </div>
+                                @(Html.Kendo().DropDownListFor(model => model.FleetsID).Name("FleetsID")
+                                      .DataTextField("PlateNumber")
+                                      .DataValueField("FleetsID")
+                                              .OptionLabel("Select ").Filter(FilterType.Contains)
+                                                      .DataSource(d => d.Read(r => r.Action("OnRentFleetDDBind", "EquipmentRegistration")).ServerFiltering(false)).Events(e => e.Change("BindFleetDetail")))
+
+
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <div class="k-label">
+                                    @Html.LabelFor(model => model.CustomerName)
+                                </div>
+                                <div>
+                                    @Html.Kendo().TextBoxFor(model => model.CustomerName).Enable(false)
+                                    @Html.ValidationMessageFor(model => model.CustomerName)
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <div class="k-label">
+                                    @Html.LabelFor(model => model.EquipmentAdministratorName)
+                                </div>
+                                <div>
+                                    @Html.Kendo().TextBoxFor(model => model.EquipmentAdministratorName)
+                                    @Html.ValidationMessageFor(model => model.EquipmentAdministratorName)
+                                </div>
+                            </div>
+                        </div>
+
+                     
+                    </div>
+                    <div class="row">
+                        <div class="col-md-1">
+                        </div>
+                      
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <div class="k-label">
+                                    @Html.LabelFor(model => model.TypeofWork)
+                                </div>
+                                <div>
+                                    @Html.Kendo().TextBoxFor(model => model.TypeofWork)
+                                    @Html.ValidationMessageFor(model => model.TypeofWork)
+                                </div>
+                            </div>
+                        </div>
+
+
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <div class="k-label">
+                                    @Html.LabelFor(model => model.KMHrReading)
+                                </div>
+                                <div>
+                                    @Html.Kendo().NumericTextBoxFor(model => model.KMHrReading).Min(0)
+                                    @Html.ValidationMessageFor(model => model.KMHrReading)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <div class="k-label">
+                                    @Html.LabelFor(model => model.FinalKMHrReading)
+                                </div>
+                                <div>
+                                    @Html.Kendo().NumericTextBoxFor(model => model.FinalKMHrReading).Min(0)
+                                    @Html.ValidationMessageFor(model => model.FinalKMHrReading)
+                                </div>
+                            </div>
+                        </div>
+                       </div>
+
+                    <div class="row">
+                        <div class="col-md-1">
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <div class="k-label">
+                                    @Html.LabelFor(model => model.WorkingHoursMorningFrom)
+                                </div>
+                                <div>
+                                    @Html.Kendo().TimePickerFor(model => model.WorkingHoursMorningFrom)
+                                    @Html.ValidationMessageFor(model => model.WorkingHoursMorningFrom)
+                                </div>
+                            </div>
+                        </div>
+
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <div class="k-label">
+                                    @Html.LabelFor(model => model.WorkingHoursMorningto)
+                                </div>
+                                <div>
+                                    @Html.Kendo().TimePickerFor(model => model.WorkingHoursMorningto)
+                                    @Html.ValidationMessageFor(model => model.WorkingHoursMorningto)
+                                </div>
+                            </div>
+                        </div>
+
+        
+
+
+                    </div>
+                    <div class="row">
+                        <div class="col-md-1">
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <div class="k-label">
+                                    @Html.LabelFor(model => model.WorkingHoursAfternoonFrom)
+                                </div>
+                                <div>
+                                    @Html.Kendo().TimePickerFor(model => model.WorkingHoursAfternoonFrom)
+                                    @Html.ValidationMessageFor(model => model.WorkingHoursAfternoonFrom)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <div class="k-label">
+                                    @Html.LabelFor(model => model.WorkingHoursAfternoonTo)
+                                </div>
+                                <div>
+                                    @Html.Kendo().TimePickerFor(model => model.WorkingHoursAfternoonTo)
+                                    @Html.ValidationMessageFor(model => model.WorkingHoursAfternoonTo)
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <div class="k-label">
+                                    @Html.LabelFor(model => model.Date)
+                                </div>
+                                <div>
+                                    @Html.Kendo().DatePickerFor(model => model.DateCreated)
+                                    @Html.ValidationMessageFor(model => model.DateCreated)
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-1">
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <div class="k-label">
+                                    @Html.LabelFor(model => model.IdleTime)
+                                </div>
+                                <div>
+                                    @Html.Kendo().NumericTextBoxFor(model => model.IdleTime).Min(0)
+                                    @Html.ValidationMessageFor(model => model.IdleTime)
+                                </div>
+
+                            </div>
+                        </div>
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <div class="k-label">
+                                    @Html.LabelFor(model => model.DownTime)
+                                </div>
+                                <div>
+                                    @Html.Kendo().NumericTextBoxFor(model => model.DownTime).Min(0)
+                                    @Html.ValidationMessageFor(model => model.DownTime)
+                                </div>
+
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <div class="k-label">
+                                    @Html.LabelFor(model => model.BreakDownTime)
+                                </div>
+                                <div>
+                                    @Html.Kendo().NumericTextBoxFor(model => model.BreakDownTime).Min(0)
+                                    @Html.ValidationMessageFor(model => model.BreakDownTime)
+                                </div>
+
+                            </div>
+                        </div>
+
+            
+
+                    </div>
+
+
+        <div class="row">
+            <div class="col-md-1">
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.ReasonType)
+                    </div>
+                    <div>
+                        @(Html.Kendo().DropDownListFor(model => model.ReasonType).Name("ReasonType")
+                                              .DataTextField("Name")
+                                      .DataValueField("Name")
+                                      .OptionLabel("Select ")
+                                                                      .DataSource(d => d.Read(r => r.Action("IdealTypeDDBind", "FleetDataProvider"))).Events(e => e.Change("BindFleetDetail")))
+
+
+
+                    </div>
+
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.RentalRate)
+                    </div>
+                    <div>
+                        @Html.Kendo().TextBoxFor(model => model.RentalRate).Name("RentalRate").Enable(true)
+                        @Html.ValidationMessageFor(model => model.RentalRate)
+                    </div>
+
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.IdealRentalRate)
+                    </div>
+                    <div>
+                        @Html.Kendo().TextBoxFor(model => model.IdealRentalRate).Name("IdealRentalRate").Enable(true)
+                        @Html.ValidationMessageFor(model => model.IdealRentalRate)
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
+    </form>
+</div>
+
+
+

@@ -1,0 +1,199 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.Inventory
+@using Kendo.Mvc.UI
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Item</legend>
+
+@(Html.Kendo().Grid<InventoryItem>()
+          .Name("grid")
+          .Columns(columns =>
+          {
+              columns.ForeignKey(p => p.ItemCategoryCode, (IEnumerable)ViewData["categories"], "ItemCategoryCode", "Name").Title("Category").Width(130).EditorTemplateName("ItemCategory");
+              columns.ForeignKey(p => p.SubCategoryCode, (IEnumerable)ViewData["categories"], "ItemCategoryCode", "Name").Title("Sub Category").Width(100).EditorTemplateName("ItemSubCategory");
+              columns.Bound(c => c.ItemCode).Width(90);
+              columns.Bound(c => c.Name).Width(250);
+              columns.Bound(c => c.PartNo).Width(90);
+              columns.Bound(c => c.UoMName).Width(80).EditorTemplateName("Unit");
+              columns.Bound(c => c.Balance).Width(70);
+              //columns.Bound(c => c.TotalPrice).Width(90);|
+              columns.Bound(c => c.Enable).Width(90).Title("Enable").ClientTemplate(
+                  "<input type='checkbox' disabled = 'true' value='#= Enable #' " +
+                  "# if (Enable) { #" +
+                  "checked='checked'" +
+                  "# } #" +
+                  "/>"
+                  );
+
+              columns.Command(
+                  command =>
+                  {
+                      command.Edit();
+
+                      //command.Custom("En").Click("Enable");
+           command.Destroy();
+      }).Width(280);
+          })
+          .ToolBar(toolbar =>
+          {
+              toolbar.Template(@<text>
+<div class="toolbar row">
+    <div class="col-md-4">
+        <a class="k-button k-button-icontext k-grid-add" href='\#'><span class="k-icon k-i-add"></span> Add new record</a>
+        <button class="k-button k-button-icontext k-grid-excel" href='\#'> <span class="k-icon k-i-excel"></span>Export to Excel</button>
+        @Html.Kendo().Button().Name("UpdateBalance").HtmlAttributes(new { type = "button", @class = "k-primary" }).Content("Update Balance").Events(ev => ev.Click("UpdateBalances"))
+    </div>
+  
+    <div class="col-md-2 pull-right">
+        @(Html.Kendo().Upload()
+                              .Name("files")
+                              .Messages(m => m.Select("Select an excel file to upload items."))
+                              .Async(a => a
+                                  .Save("Items_Import", "Item")
+                                  //.Remove("Remove", "Upload")
+                                  .AutoUpload(true)
+                              )
+
+        )
+        <a style="color:blue" href="~/Content/Downloads/Templates/Inventory/Inventory_Item_Import.xlsx">Click to download excel template</a>
+
+    </div>
+
+
+
+</div>
+
+            </text>);
+          })
+                .Excel(excel => excel
+                    .FileName("Items.xlsx")
+                    .Filterable(true)
+                    .AllPages(true)
+                )
+
+                .Editable(editable => editable.Mode(GridEditMode.InLine))
+                .HtmlAttributes(new { style = "height: 550px;" })
+                .Pageable(pageable => pageable
+                    .Input(true)
+                    .Numeric(false)
+                    .Refresh(true)
+                    .PageSizes(true)
+                    .ButtonCount(20))
+                .Scrollable()
+                .Sortable()
+                .Filterable()
+                .Selectable(selectable =>
+                {
+                    selectable.Mode(GridSelectionMode.Single);
+                    selectable.Type(GridSelectionType.Row);
+                })
+                .Sortable(sortable =>
+                {
+                    sortable.SortMode(GridSortMode.SingleColumn);
+                })
+
+                .Events(events => events.Edit("edit"))
+                .DataSource(dataSource => dataSource
+                    .Ajax()
+                    .Sort(sort => sort.Add("DateCreated").Descending())
+                    .Model(model =>
+                    {
+                        model.Id(p => p.ItemCode);
+                        model.Field(p => p.DateCreated).Editable(false);
+                        model.Field(p => p.Balance).Editable(false);
+                        model.Field(p => p.Enable).Editable(false);
+                        //model.Field(p => p.ItemCode).Editable(false);
+                    })
+                    .Events(ev => ev
+                        .Error("error_handler(\"grid\")")
+                        .RequestStart("onRequestStart(\"grid\")")
+                        .RequestEnd("onRequestEnd(\"grid\")"))
+                    .Read(read => read.Action("Items_Read", "Item"))
+                    .Create(create => create.Action("Items_Create", "Item"))
+                    .Update(update => update.Action("Items_Update", "Item"))
+                .Destroy(destroy => destroy.Action("Items_Destroy", "Item"))
+                ))
+
+
+
+
+<script type="text/javascript">
+
+ 
+
+
+    function UpdateBalances(e) {
+
+       
+        $('#loading-image').show();
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("UpdateBalance", "Item")',
+            contentType: "application/json; charset=utf-8",            
+            dataType: "json",
+            success: function (result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                $('#loading-image').hide();
+                location.reload(true);
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+
+        });
+    }
+
+    function Enable(e) {
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        $.ajax({
+            type: "GET",
+            data: dataItem.Values,
+            url: '@Url.Action("Enable_Disable", "Item")/' + dataItem.ItemCode
+
+        });
+
+        $('#grid').data('kendoGrid').dataSource.read();
+        $('#grid').data('kendoGrid').refresh();
+        location.reload();
+    };
+
+
+    function edit(e) {
+        if (e.model.isNew() === false) {
+            var grid = $("#grid").data("kendoGrid");
+
+            $("#ItemCode").attr("readonly", true);
+            var itemCategoryCode = $("#ItemCategoryCode").data("kendoDropDownList");
+            itemCategoryCode.readonly(true);
+
+            var subCategoryCode = $("#SubCategoryCode").data("kendoDropDownList");
+            subCategoryCode.readonly(true);
+
+          
+        }
+    }
+
+    function itemTypeChanged(e) {
+        var itemType = $("#Type").data("kendoDropDownList").value();
+        var grid = $("#grid").data("kendoGrid");
+        if (itemType === 0) {
+
+            grid.showColumn("Abbrevation");
+
+        } else {
+            grid.hideColumn("Abbrevation");
+
+        }
+    }
+
+
+
+    function filterSubcategories() {
+
+        return {
+            catcode: $("#ItemCategoryCode").data("kendoDropDownList").value()
+        };
+    }
+</script>

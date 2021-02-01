@@ -1,0 +1,21 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@(Html.Kendo().DropDownListFor(m => m)
+        .OptionLabel(Resources.Select)
+        .Name("ProjectPaymentCertificateId")
+        .DataTextField("PaymentNumber")
+        .DataValueField("ProjectPaymentCertificateId")
+        //    .BindTo((IEnumerable)ViewData["Items"])
+        .DataSource(dataSource =>
+        {
+            dataSource.Read(read => read.Action("GetPaymentCerificates", "DataProvider", new { projectId = "#=ProjectInformationId#" }));
+        })
+        //.Events(ev =>
+        //{
+        //    ev.Change("workItemDropDownChanged");
+
+        //})
+        .Filter("contains")
+        .MinLength(2)
+        .ValuePrimitive(true)
+)

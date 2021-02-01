@@ -1,0 +1,63 @@
+﻿<legend>Supplier List Minutes of Meeting</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Procurement.Supplier.SupplierListMinuteFile>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.FileName).ClientTemplate("<a href='SupplierListMinuteFile/FileDwonload?id=#=SupplierListMinuteFileId#'>#=FileName#</a>"); ;
+          columns.Bound(c => c.Description);
+        
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(t => t.Template(
+          @<text>
+              @(Html.Kendo().Upload()
+                    .Name("file")
+                    .Async(a => a.Save("SupplierListMinuteFiles_Create", "SupplierListMinuteFile"))
+                    .Events(e => e.Complete("onUploadSuccess"))
+                    .ShowFileList(false))
+           </text>
+          ))
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .HtmlAttributes(new { style = "height: 550px;" })
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(20))
+      .Scrollable()
+      .Sortable()
+      .Filterable()
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Groupable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Events(ev => ev
+              .Error("error_handler(\"grid\")")
+              .RequestStart("onRequestStart(\"grid\")")
+              .RequestEnd("onRequestEnd(\"grid\")"))
+          .Model(model =>
+          {
+              model.Id(p => p.SupplierListMinuteFileId);
+              model.Field(p => p.FileName).Editable(false);
+          })
+          .Read(read => read.Action("SupplierListMinuteFiles_Read", "SupplierListMinuteFile"))
+          .Create(create => create.Action("SupplierListMinuteFiles_Create", "SupplierListMinuteFile"))
+          .Update(update => update.Action("SupplierListMinuteFiles_Update", "SupplierListMinuteFile"))
+          .Destroy(destroy => destroy.Action("SupplierListMinuteFiles_Destroy", "SupplierListMinuteFile"))
+      ))
+
+<script>
+    function onUploadSuccess(e) {
+        // Force the rebinding of the Grid on successful upload
+        $("#grid").data("kendoGrid").dataSource.read();
+    }
+</script>

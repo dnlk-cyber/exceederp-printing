@@ -1,0 +1,144 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<Legend>@Resources.NavigatorPayroll_Loan</Legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.HRM.Payroll.Loan>()
+          .Name("Loangrid")
+      .Columns(columns =>
+      {
+          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "PersonId", "FullNameWithOutCode").EditorTemplateName("ListOfEmployee").Width(150);
+          columns.ForeignKey(c => c.GLPeriodId, (IEnumerable)ViewData["PeriodList"], "GLPeriodId", "Name").EditorTemplateName("GLPeriodSelector").Width(120);
+          columns.Bound(c => c.LoanAmount).Width (110);
+          columns.Bound(c => c.Months).Width (100);
+          columns.Bound(c => c.MonthlyAmount).Width(120);
+          columns.Bound(c => c.Balance ).Width (100);
+          columns.Bound(c => c.Description).Visible(false);
+          columns.Bound(c => c.JumpHoliday).ClientTemplate("<input type='checkbox'  disabled='true' value='#=JumpHoliday #' " + " # if (JumpHoliday) { #" + "checked='checked'" + "# } #" + " />").Width(130);
+          columns.Bound(c => c.IsActive).ClientTemplate("<input type='checkbox'  disabled='true' value='#=IsActive #' " + " # if (IsActive) { #" + "checked='checked'" + "# } #" + " />").Width(130);
+          columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+      })
+      .ToolBar(toolbar => {
+          toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+          toolbar.Excel().Text(Resources.ActionButton_ExportExcel).HtmlAttributes(new { @class = "btn btn-primary btn-xs pull-right" });
+          toolbar.Pdf().Text(Resources.ActionButton_ExportPDF).HtmlAttributes(new { @class = "btn btn-primary btn-xs pull-right" });
+
+      })
+              .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("Loan").Window(window => { window.Title(Resources.NavigatorPayroll_Loan); window.Scrollable(false); }))
+               .Excel(excel => excel
+          .FileName(Resources.NavigatorPayroll_Loan + ".xlsx")
+          .Filterable(true)
+          .AllPages(true)
+          .ProxyURL(Url.Action("Excel_Export_Save", "Loan"))
+      )
+      .Pdf(pdf => pdf
+          .AllPages()
+          .FileName(Resources.NavigatorPayroll_Loan + ".pdf")
+          .ProxyURL(Url.Action("Pdf_Export_Save", "Loan"))
+      )
+          .Scrollable(h => h.Height(500))
+             .Groupable()
+                      .Sortable(sortable =>
+                      {
+                          sortable.SortMode(GridSortMode.SingleColumn);
+                      })
+          .Filterable()
+             .Pageable(pageable => pageable
+                                        .Input(true)
+                                        .Numeric(false)
+                                        .Refresh(true)
+                                        .PageSizes(true)
+                                        .ButtonCount(5))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+               .Events(events =>
+               {
+                   events.Error("error_handler(\"Loangrid\")");
+                   events.RequestStart("onRequestStart(\"Loangrid\")");
+                   events.RequestEnd("onRequestEnd(\"Loangrid\")");
+               })
+
+          .Model(model =>
+          {
+              model.Id(p => p.LoanId);
+              model.Field(p => p.MonthlyAmount).Editable(false);
+              model.Field(p => p.Balance).Editable(false);
+          })
+          .Read(read => read.Action("Loans_Read", "Loan"))
+          .Create(create => create.Action("Loans_Create", "Loan"))
+          .Update(update => update.Action("Loans_Update", "Loan"))
+          .Destroy(destroy => destroy.Action("Loans_Destroy", "Loan"))
+      )
+)
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 1000px;
+    }
+    /*.Employee-photo {
+        display: inline-block;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background-size: 32px 35px;
+        background-position: center center;
+        vertical-align: middle;
+        line-height: 32px;
+        box-shadow: inset 0 0 1px #999, inset 0 0 10px rgba(0, 0, 0, .2);
+        margin-left: 5px;
+    }
+
+    .Employee-name {
+        display: inline-block;
+        vertical-align: middle;
+        line-height: 32px;
+        padding-left: 3px;
+    }*/
+</style>
+<script>
+    //function error_handler(e) {
+    //    if (e.errors) {
+    //        var message = "Errors:\n";
+    //        $.each(e.errors, function(key, value) {
+    //            if ('errors' in value) {
+    //                $.each(value.errors, function() {
+    //                    message += this + "\n";
+    //                });
+    //            }
+    //        });
+    //        alert(message);
+
+    //    }
+
+    //}
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+    function valueMapper(options) {
+        $.ajax({
+            url: "/HRM/Loan/Employee_ValueMapper/",
+            data: {
+                value: options.value || 0,
+                status: 1,
+                excludeId: -1
+            },
+            success: function (data) {
+                options.success(data);
+            }
+        });
+    }
+
+    function convertValues(value) {
+        var data = {};
+
+        value = $.isArray(value) ? value : [value];
+
+        for (var idx = 0; idx < value.length; idx++) {
+            data["values[" + idx + "]"] = value[idx];
+        }
+
+        return data;
+    }
+</script>

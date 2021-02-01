@@ -1,0 +1,26 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Common.DocumentApproval.ApprovalGroupRule>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.RuleObject);
+        columns.Bound(c => c.Type);
+        columns.Bound(c => c.AmountLimit);
+        columns.Bound(c => c.LowValue);
+        columns.Bound(c => c.HighValue);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.ApprovalGroupRuleId))
+          .Read(read => read.Action("ApprovalGroupRules_Read", "ApprovalGroupRule"))
+          .Create(create => create.Action("ApprovalGroupRules_Create", "ApprovalGroupRule"))
+          .Update(update => update.Action("ApprovalGroupRules_Update", "ApprovalGroupRule"))
+          .Destroy(destroy => destroy.Action("ApprovalGroupRules_Destroy", "ApprovalGroupRule"))
+      )
+)

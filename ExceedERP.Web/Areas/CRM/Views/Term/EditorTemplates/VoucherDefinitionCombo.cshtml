@@ -1,0 +1,11 @@
+﻿@using System.Collections
+@(Html.Kendo().DropDownList()
+.BindTo((IEnumerable)ViewData["VoucherDefinitionList"])
+    .OptionLabel("--Select Voucher Definition--")
+                  .DataTextField("Name")
+                  .DataValueField("VoucherDefinitionID")
+                 .Name("VoucherDefinitionID")
+                    .ValuePrimitive(true)
+
+)
+

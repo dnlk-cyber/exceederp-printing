@@ -1,0 +1,52 @@
+﻿
+<legend>Average Price Level</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Inventory.AveragePriceSetting>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Level).EditorTemplateName("PriceaverageLevels").Width(150);
+       
+          columns.Command(command =>
+          {
+              command.Edit();
+              command.Destroy();
+          });
+      })
+      .ToolBar(toolbar => {
+                              if (ViewBag.Count < 1)
+                              {
+                                  toolbar.Create();
+                              }
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .HtmlAttributes(new { style = "height: 550px;" })
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(20))
+      .Scrollable()
+      .Sortable()
+      .Filterable()
+      .Groupable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Events(ev => ev
+              .Error("error_handler(\"grid\")")
+              .RequestStart("onRequestStart(\"grid\")")
+              .RequestEnd("onRequestEnd(\"grid\")"))
+          .Model(
+              model =>
+              {
+                  model.Id(p => p.AveragePriceSettingId);
+                  model.Field(p => p.CreatedBy).Editable(false);
+                  model.Field(p => p.ModifiedBy).Editable(false);
+                  model.Field(p => p.LastModified).Editable(false);
+                  model.Field(p => p.DateCreated).Editable(false);
+              })
+          .Read(read => read.Action("AveragePriceSettings_Read", "AveragePriceSetting"))
+          .Create(create => create.Action("AveragePriceSettings_Create", "AveragePriceSetting"))
+          .Update(update => update.Action("AveragePriceSettings_Update", "AveragePriceSetting"))
+          .Destroy(destroy => destroy.Action("AveragePriceSettings_Destroy", "AveragePriceSetting"))
+      ))

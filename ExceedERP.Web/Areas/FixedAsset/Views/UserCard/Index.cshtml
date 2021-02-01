@@ -1,0 +1,78 @@
+﻿<legend>User Card</legend>
+
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.FixedAsset.UserCard.UserCardItems>()
+          .Name("grid_#=UserCardID#")
+          .Columns(columns =>
+          {
+              columns.Bound(c => c.ItemDesc).Width(200);
+              columns.Bound(c => c.UOM).Width(200);
+              columns.Bound(c => c.Quanity).Width(200);
+              columns.Bound(c => c.UnitPrice).Width(200);
+              columns.Bound(c => c.TagNumber).Width(200);
+              columns.Bound(c => c.SerialPartNo).Width(200);
+              columns.Bound(c => c.IssueDate).Width(200).Format("{0:dd/MM/yyyy}");
+              columns.Bound(c => c.SIVNo).Width(200);
+              columns.Bound(c => c.ReturnDate).Width(200).Format("{0:dd/MM/yyyy}");
+              columns.Bound(c => c.SRNNo).Width(200);
+              columns.Bound(c => c.Remark).Width(200);
+              columns.Bound(c => c.OrgBranchName).Width(200);
+              columns.Bound(c => c.DateCreated).Width(200).Format("{0:dd/MM/yyyy}");
+              columns.Bound(c => c.LastModified).Width(200).Format("{0:dd/MM/yyyy}");
+              columns.Bound(c => c.CreatedBy).Width(200);
+              columns.Bound(c => c.ModifiedBy).Width(200);
+              columns.Command(command =>
+              {
+                  command.Edit();
+                  //command.Destroy();
+              }).Width(180);
+          })
+          .HtmlAttributes(new {style = "height: 550px;"})
+          .ToolBar(toolbar =>
+          {
+              toolbar.Create();
+          })
+          .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("UserCardInventoryItems").Window(w => w.Title("User Card InventoryItems AssetRegistration")))        
+          //.Editable(editable => editable.Mode(GridEditMode.InLine))
+          .Pageable(pageable => pageable
+              .Input(true)
+              .Numeric(false)
+              .Refresh(true)
+              .PageSizes(true)
+              .ButtonCount(5))
+          .Filterable()
+          .Scrollable()
+          .Sortable()
+         
+          .DataSource(dataSource => dataSource
+              .Ajax()
+              .Model(
+                  model =>
+                  {
+                      model.Id(p => p.UserCardItemsID);
+                      model.Field(p => p.OrgBranchName).Editable(false);
+                      model.Field(p => p.CreatedBy).Editable(false);
+                      model.Field(p => p.ModifiedBy).Editable(false);
+                      model.Field(p => p.LastModified).Editable(false);
+                      model.Field(p => p.DateCreated).Editable(false);
+                  })
+              .Read(read => read.Action("UserCardInventoryItems_Read", "UserCardInventoryItems", new { id = "#=UserCardID#" }))
+              .Create(create => create.Action("UserCardInventoryItems_Create", "UserCardInventoryItems", new { id = "#=UserCardID#" }))
+              .Update(update => update.Action("UserCardInventoryItems_Update", "UserCardInventoryItems"))
+              .Destroy(destroy => destroy.Action("UserCardInventoryItems_Destroy", "UserCardInventoryItems"))
+          )
+            
+          )
+
+@*</script>
+
+<script>
+    function dataBound() {
+        this.expandRow(this.tbody.find("tr.k-master-row").first());
+    }
+</script>*@
+
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 700px;
+    }
+</style>

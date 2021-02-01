@@ -1,0 +1,117 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using ExceedERP.Core.Domain.Common;
+using ExceedERP.Core.Domain.HRM.RecruitmentManagment;
+using ExceedERP.DataAccess.Context;
+using ExceedERP.Reporting.HRM.HRM.HRMViewModel;
+
+namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
+{
+   
+
+    [DataObject]
+    public class VacancyIdInternalObjectDataSource : List<Vacancy>
+    {
+        private ExceedDbContext db = new ExceedDbContext();
+
+        [DataObjectMethod(DataObjectMethodType.Select)]
+        public List<Vacancy> GetVacancyId(string vacancyCod)
+        {
+            List<Vacancy> list = new List<Vacancy> { };
+           // Vacancy vacancy = new Vacancy();
+            if(vacancyCod!=null)
+            {
+                var recruitmentVacancy = db.RecruitmentVacancy.Where(x => x.MediaVacancyCode == vacancyCod).ToList();
+                if (recruitmentVacancy != null)
+                {
+                    foreach (var recruitment in recruitmentVacancy)
+                    {
+                        var vacant = db.VaccancyPlans.FirstOrDefault(x => x.VacancyId == recruitment.VacancyId && x.RecruSource==RecruitmentSource.INTERNAL && !x.IsComplete);
+                        if (vacant != null)
+                        {
+
+                            list.Add(vacant);
+                        }
+                    }
+                }
+            }
+           
+
+
+            return list;
+        }
+    }
+
+
+
+    [DataObject]
+    public class VacancyIdExternalObjectDataSource : List<Vacancy>
+    {
+        private ExceedDbContext db = new ExceedDbContext();
+
+        [DataObjectMethod(DataObjectMethodType.Select)]
+        public List<Vacancy> GetVacancyId(string vacancyCod)
+        {
+            List<Vacancy> list = new List<Vacancy> { };
+            
+            if (vacancyCod != null)
+            {
+                var recruitmentVacancy = db.RecruitmentVacancy.Where(x => x.MediaVacancyCode == vacancyCod).ToList();
+                if (recruitmentVacancy.Any())
+                {
+                    foreach (var recruitment in recruitmentVacancy)
+                    {
+                        var vacant = db.VaccancyPlans.FirstOrDefault(x => x.VacancyId == recruitment.VacancyId && x.RecruSource == RecruitmentSource.EXTERNAL && !x.IsComplete);
+                        if (vacant != null)
+                        {
+
+                            list.Add(vacant);
+                        }
+                    }
+                }
+            }
+
+
+
+            return list;
+        }
+    }
+
+
+    [DataObject]
+    public class VacancyIdRecruitmentSummaryObjectDataSource : List<Vacancy>
+    {
+        private ExceedDbContext db = new ExceedDbContext();
+
+        [DataObjectMethod(DataObjectMethodType.Select)]
+        public List<Vacancy> GetRecruitmentSummaryVacancyId(string vacancyCod)
+        {
+            List<Vacancy> list = new List<Vacancy> { };
+
+            if (vacancyCod != null)
+            {
+                var recruitmentVacancy = db.RecruitmentVacancy.Where(x => x.MediaVacancyCode == vacancyCod).ToList();
+                if (recruitmentVacancy.Any())
+                {
+                    foreach (var recruitment in recruitmentVacancy)
+                    {
+                        var vacant = db.VaccancyPlans.FirstOrDefault(x => x.VacancyId == recruitment.VacancyId );
+                        if (vacant != null)
+                        {
+                            list.Add(vacant);
+                        }
+                    }
+                }
+            }
+
+
+
+            return list;
+        }
+    }
+
+}

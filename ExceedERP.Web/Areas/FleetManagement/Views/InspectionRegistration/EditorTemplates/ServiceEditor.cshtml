@@ -1,0 +1,189 @@
+﻿@model ExceedERP.Core.Domain.FleetManagement.FleetMaintenance.Service
+@using ExceedERP.Web.Areas.FleetManagement.Models;
+
+
+
+<div class = "demo-section k-content">
+    <form>
+ 
+
+    <div class = "row">
+        <div class = "col-md-1">
+        </div>
+        <div class = "col-md-3">
+            <div class = "form-group">
+                <div class="k-label">
+                  @Html.LabelFor(x=>x.RepairTypeID)
+                </div>
+                    @(Html.Kendo().DropDownListFor(model => model.RepairTypeID).Name("RepairTypeID")
+                          .DataTextField("Name").Filter(FilterType.Contains)
+                          .DataValueField("Value").OptionLabel("Select ").HtmlAttributes(new {style = "width:100%"})
+                          .DataSource(d => d.Read(r => r.Action("RepairTypeDDBind", "RepairType")).ServerFiltering(false)))
+                </div>
+           
+        </div>
+
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.IsPm)
+                </div>
+                @( Html.Kendo().DropDownListFor(m => m.IsPm).Name("IsPm")
+                       .DataTextField("Text")
+                       .DataValueField("Text").OptionLabel(" Select ")
+                       .BindTo(EnumHelper.GetSelectList(typeof(ExceedERP.Core.Domain.FleetManagement.FleetMaintenance.Service.IsPmenum))))
+            </div>
+
+        </div>
+
+
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(x => x.PlannerID)
+                </div>
+                <div>
+
+                    @(Html.Kendo().DropDownListFor(model => model.PlannerID).HtmlAttributes(new { @class = "form-control" }).Name("PlannerID").HtmlAttributes(new { style = "width:100%" })
+                                  .DataTextField("PlannerName")
+                                          .DataValueField("PlannerID").OptionLabel(" Select ").Filter(FilterType.Contains)
+                                  .DataSource(d => d.Read(r => r.Action("PlannerDDBind", "Planner")).ServerFiltering(false)))
+                </div>
+
+            </div>
+        </div>
+    
+ 
+    </div>
+    <div class = "row">
+        <div class = "col-md-1">
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.SectionId)
+                </div>
+                <div>
+                    @(Html.Kendo().DropDownListFor(model => model.SectionId).HtmlAttributes(new { @class = "form-control", @required = "required" })
+                                .DataTextField("Name")
+                                                .DataValueField("WorkUnitSectionId").OptionLabel(" Select  ").Filter(FilterType.Contains)
+                                                .DataSource(d => d.Read(r => r.Action("SectionDDBind", "WorkUnitSection")).ServerFiltering(false)).ValuePrimitive(true))
+
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="form-group">
+
+                <div class="k-label">
+                    @Html.LabelFor(model => model.ServiceType)
+                </div>
+                @( Html.Kendo().DropDownListFor(m => m.ServiceType).Name("ServiceType")
+                       .DataTextField("Text")
+                       .DataValueField("Text").OptionLabel(" Select ")
+                       .BindTo(EnumHelper.GetSelectList(typeof(ExceedERP.Core.Domain.FleetManagement.FleetMaintenance.Service.ServiceTypeenum))))
+            </div>
+
+        </div>
+
+
+        <div class = "col-md-3">
+            <div class = "form-group">
+                <div class = "k-label">
+                    <div class = "k-label">
+                        @Html.LabelFor(model => model.DateIntervalType)
+                    </div>
+                    @(Html.Kendo().DropDownListFor(model => model.DateIntervalType)
+                          .OptionLabel(" Select ")
+                          .BindTo(new List<SelectListItem>
+                              ()
+                              {
+                                  new SelectListItem()
+                                      {
+                                          Text = MaintenanceConst.Day,
+                                          Value = MaintenanceConst.Day
+                                      },
+                                  new SelectListItem()
+                                      {
+                                          Text = MaintenanceConst.Week,
+                                          Value = MaintenanceConst.Week
+                                      },
+                                  new SelectListItem()
+                                      {
+                                          Text = MaintenanceConst.Month,
+                                          Value = MaintenanceConst.Month
+                                      },
+                                  new SelectListItem()
+                                      {
+                                          Text = MaintenanceConst.Year,
+                                          Value = MaintenanceConst.Year
+                                      }
+                              }))
+                </div>
+
+            </div>
+        </div>
+
+
+     
+
+    </div>
+
+
+
+
+
+
+        <div class="row">
+            <div class="col-md-1">
+            </div>
+
+      
+        
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.STDTime)
+                    </div>
+                    <div>
+                        @Html.Kendo().NumericTextBoxFor(model => model.STDTime).Min(0)
+                        @Html.ValidationMessageFor(model => model.STDTime)
+                    </div>
+
+                </div>
+            </div>
+
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.MileageInterval)
+                    </div>
+                    <div>
+                        @Html.Kendo().NumericTextBoxFor(model => model.MileageInterval).Min(0)
+                        @Html.ValidationMessageFor(model => model.MileageInterval)
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.DateInterval)
+                    </div>
+                    <div>
+                        @Html.Kendo().NumericTextBoxFor(model => model.DateInterval).Min(0)
+                        @Html.ValidationMessageFor(model => model.DateInterval)
+                    </div>
+
+                </div>
+            </div>
+
+          </div>
+       
+ 
+</form>
+</div>

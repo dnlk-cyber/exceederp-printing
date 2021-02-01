@@ -1,0 +1,117 @@
+﻿
+@using ExceedERP.Core.Domain.Common.HRM
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>@Resources.Navigator_Company_UploadDocument</legend>
+@(Html.Kendo().Grid<Attachment>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+         // columns.Bound(c => c.Remark).Title("Description");
+        columns.Bound(c => c.Description);
+              columns.Bound(c => c.FileType);
+            
+              columns.Command(command =>
+              {
+                 command.Destroy().Text(Resources.ActionButton_Cancel);
+               //   command.Custom("Download").Click("DownloadAttachmnets");
+               
+              }).Width(300);
+
+          })
+                   .Events(e => e.Edit("onGridEdit"))
+                       .ToolBar(toolbar =>
+              {
+                  toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+              })
+                      .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("Upload").Window(window =>
+                      {
+                          window.Scrollable(false);
+                          window.Title(Resources.Navigator_Company_UploadDocument);
+                      }))
+                       
+        .Selectable(selectable =>
+        {
+            selectable.Mode(GridSelectionMode.Single);
+            selectable.Type(GridSelectionType.Row);
+        })
+             .Scrollable(h => h.Height(500))
+                 .Groupable()
+                          .Sortable(sortable =>
+                          {
+                              sortable.SortMode(GridSortMode.SingleColumn);
+                          })
+              .Filterable()
+                 .Pageable(pageable => pageable
+                                            .Input(true)
+                                            .Numeric(false)
+                                            .Refresh(true)
+                                            .PageSizes(true)
+                                            .ButtonCount(5))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+              .Events(events =>
+                                                                 {
+                                                                     events.Error("error_handler(\"grid\")");
+                                                                     events.RequestStart("onRequestStart(\"grid\")");
+                                                                     events.RequestEnd("onRequestEnd(\"grid\")");
+                                                                 })
+               
+          .Model(model => model.Id(p => p.AttachmentId))
+
+                          .Read(read => read.Action("Attachments_Read", "Attachment", new { Area = "Common", attachmentReferenceType = "DOCUMENT", id = "0" }))
+                                     .Create(create => create.Action("Attachments_Create", "Attachment", new { Area = "Common", attachmentReferenceType = "DOCUMENT", id = "0" }))
+                          .Destroy(destroy => destroy.Action("Attachments_Destroy", "UploadDocument"))
+      )
+)
+<script>
+    function error_handler(e) {
+        if (e.errors) {
+            var message = "Errors:\n";
+            $.each(e.errors, function(key, value) {
+                if ('errors' in value) {
+                    $.each(value.errors, function() {
+                        message += this + "\n";
+                    });
+                }
+            });
+            alert(message);
+
+        }
+
+    }
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+
+    function onGridEdit(e) {
+        e.container.find(".k-button.k-grid-update").hide();
+        e.container.find(".k-button.k-grid-cancel").hide();
+
+    }
+</script>
+
+<script>
+    function DownloadAttachmnets(e) {
+
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        var dd = dataItem.Description;
+        var id = dataItem.Reference;
+        $.ajax({
+            url: '@Url.Action("Download", "UploadDocument")',
+            contentType: "application/json; charset=utf-8",
+            data: { 'data': dd, 'id': id },
+            type: 'GET',
+            cache: false,
+            success: function (result) {
+                r = result;
+            }
+
+        });
+
+    }
+</script>

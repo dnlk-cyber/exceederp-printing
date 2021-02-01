@@ -1,0 +1,23 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Procurement.ForeignPurchase.ForeignPurchaseFollowUpSystemStatus>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Date);
+          columns.Bound(c => c.Description);
+          columns.Bound(c => c.User);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.ForeignPurchaseFollowUpSystemStatusId))
+          .Read(read => read.Action("ForeignPurchaseFollowUpSystemStatus_Read", "ForeignPurchaseFollowUpSystemStatus"))
+          .Create(create => create.Action("ForeignPurchaseFollowUpSystemStatus_Create", "ForeignPurchaseFollowUpSystemStatus"))
+          .Update(update => update.Action("ForeignPurchaseFollowUpSystemStatus_Update", "ForeignPurchaseFollowUpSystemStatus"))
+          .Destroy(destroy => destroy.Action("ForeignPurchaseFollowUpSystemStatus_Destroy", "ForeignPurchaseFollowUpSystemStatus"))
+      ))

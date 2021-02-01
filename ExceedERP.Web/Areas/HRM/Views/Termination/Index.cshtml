@@ -1,0 +1,450 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.Common.HRM
+@using ExceedERP.Core.Domain.HRM.EmployeeDetail
+@using ExceedERP.Core.Domain.HRM.LeaveManagment
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<Legend>@Resources.NavigatorTermination_Termination</Legend>
+@(Html.Kendo().Grid<Termination>()
+                      .Name("TerminationGrid")
+                  .Columns(columns =>
+                  {
+
+                      columns.Bound(c => c.EmployeeCode).Width(100);
+                      columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeName"], "EmployeeId", "FullNameAmharic").EditorTemplateName("ListOfEmployee").Width(220);
+                      columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["TerminationTypes"], "LookupId", "Description").EditorTemplateName("TerminationType").Width(150);
+          //columns.Bound(c => c.TerminationLevel).Width(120);
+          columns.Bound(c => c.ApplicationDateAm).EditorTemplateName("Calander").Width(150);
+
+                      columns.Bound(c => c.Reason).Width(120);
+                      columns.Bound(c => c.TerminationDateAm).EditorTemplateName("Calander").Width(150);
+          // columns.Bound(c => c.Remark).Width (120);
+          columns.Command(command =>
+                      {
+                          if (HttpContext.Current.User.IsInRole("HR_Termination_User"))
+                          {
+                              command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                          }
+                          if (HttpContext.Current.User.IsInRole("HR_Admin"))
+                          {
+                              command.Destroy().Text(Resources.ActionButton_Cancel);
+                              command.Custom("terminate").Text("&nbsp;Approve").Click("terminateEmployee").IconClass("fa fa-check").HtmlAttributes(new { @class = "btn btn-success", @title = "Approve termination", @id = "terminate" });
+                          }
+                      }).Width(300);
+                  })
+                  .ToolBar(toolbar =>
+                  {
+                      if (HttpContext.Current.User.IsInRole("HR_Termination_User"))
+                      {
+                          toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                      }
+                  })
+                  .Editable(editable => editable.Mode(GridEditMode.InLine))
+                  .Selectable(selectable =>
+                  {
+                      selectable.Mode(GridSelectionMode.Single);
+                      selectable.Type(GridSelectionType.Row);
+                  })
+
+                  .Scrollable(h => h.Height(500))
+                           .Groupable()
+                                  .Sortable(sortable =>
+                                  {
+                                      sortable.SortMode(GridSortMode.SingleColumn);
+                                  })
+                      .Filterable()
+                          .Events(x =>
+                          {
+                              x.DataBound("onDataBound");
+                              x.Save("GetDate");
+                              x.Edit("GetDate");
+                          })
+                         .Pageable(pageable => pageable
+                                                    .Input(true)
+                                                    .Numeric(false)
+                                                    .Refresh(true)
+                                                    .PageSizes(true)
+                                                    .ButtonCount(5))
+                  .DataSource(dataSource => dataSource
+                      .Ajax()
+                           .Events(events =>
+                           {
+                               events.Error("error_handler(\"TerminationGrid\")");
+                               events.RequestStart("onRequestStart(\"TerminationGrid\")");
+                               events.RequestEnd("onRequestEnd(\"TerminationGrid\")");
+                           })
+
+                      .Model(model =>
+                      {
+                          model.Id(p => p.TerminationId);
+                          model.Field(p => p.EmployeeCode).Editable(false);
+                      })
+                      .Read(read => read.Action("Terminations_Read", "Termination"))
+                      .Create(create => create.Action("Terminations_Create", "Termination"))
+                      .Update(update => update.Action("Terminations_Update", "Termination"))
+                      .Destroy(destroy => destroy.Action("Terminations_Destroy", "Termination"))
+
+                              ).ClientDetailTemplateId("template")
+)
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                                            .Name("tabstrip_#=TerminationId#")
+                                    .SelectedIndex(0)
+                                    .Items(items =>
+                                     {
+
+
+                             //*****************************************************************************************************//
+                             //*********************************Clerance*************************************************//
+                             items.Add().Text(Resources.HR_EmployeeDetail_Clearance_Clearance).Content(
+                                            @<text>
+                                                @*   <legend>Clearance</legend>*@
+
+                                                @(Html.Kendo().Grid<Attachment>()
+                                                                                          .Name("AttachmentGrid_#=TerminationId#")
+                                                                          .Columns(columns =>
+                                                                          {
+
+                                                                                      columns.Bound(c => c.Description);
+                                                                                      columns.Bound(c => c.FileType).ClientTemplate(Html.ActionLink("DownLoad", "DownloadFile", new { filename = "#=TerminationId#" }).ToHtmlString());
+                                                                          //columns.Bound(c => c.FileType).ClientTemplate("<div style=\"text-align:center\"> text=\"Download\"" +
+                                                                          //                                                                  "<a href=\"" + Html.Action("DownloadFile", new { filename = "#=EmployeeId#" }) + "\"><i style=\"padding-right: 8px;\" title=\"Setting\" text=\"DownLoad\"></i></a>" +
+
+                                                                          //                                                                  "</div>").Width(60).Title("Download");
+
+                                                                          columns.Command(command =>
+                                                                                      {
+                                                                                                  command.Destroy().Text(Resources.ActionButton_Cancel);
+                                                                                      //command.Custom("Download").Click("DownloadAttachmnets");
+                                                                                  }).Width(300);
+
+
+                                                                                  })
+                                                                                   .Events(e =>
+                                                                                                           {
+                                                                                                                       e.Edit("onGridEdit");
+                                                                                                                       e.Change("onChange");
+                                                                                                                   })
+                                                                  .ToolBar(toolbar =>
+                                                                  {
+                                                                              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                                                                          })
+                                                                  .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("Upload").Window(window =>
+                                                                  {
+                                                                              window.Scrollable(false);
+                                                                              window.Title(Resources.HR_Upload_File);
+                                                                          }))
+                                                                  .Scrollable()
+                                                                  .Selectable()
+                                                                  .DataSource(dataSource => dataSource
+                                                                      .Ajax()
+                                                                              .Events(events =>
+                                                                                                                                 {
+                                                                                                                                             events.Error("error_handler(\"AttachmentGrid_#=TerminationId#\")");
+                                                                                                                                             events.RequestStart("onRequestStart(\"AttachmentGrid_#=TerminationId#\")");
+                                                                                                                                             events.RequestEnd("onRequestEnd(\"AttachmentGrid_#=TerminationId#\")");
+                                                                                                                                         })
+
+
+                                                                      .Model(model => model.Id(p => p.AttachmentId))
+                                                                                                      .Read(read => read.Action("Attachments_Read", "Attachment", new { Area = "Common", attachmentReferenceType = "Clearance", id = "#=EmployeeId#", fileOwner = "#=TerminationId#" }))
+                                                                                              .Create(create => create.Action("Attachments_Create", "Attachment", new { Area = "Common", attachmentReferenceType = "Clearance", id = "#=EmployeeId#", fileOwner = "#=TerminationId#" }))
+                                                                              .Destroy(destroy => destroy.Action("Attachments_Destroy", "Termination"))
+
+                                                                  ).ToClientTemplate()
+                                                )
+
+                                            </text>
+                                                                                  );
+
+                                                 items.Add().Text(Resources.HR_EmployeeDetail_ExitInterview_ExitInterview).Content(
+                            @<text>
+                                @*<legend>Exit Interview</legend>*@
+                                @(Html.Kendo().Grid<ExitInterview>()
+                                                                             .Name("ExitInterview_#=TerminationId#")
+                                                                 .Columns(columns =>
+                                                                 {
+                                                                 //  columns.Bound(c => c.EmployeeId);
+                                                                 columns.Bound(c => c.ToKeep);
+                                                                             columns.Bound(c => c.ToRemove);
+                                                                             columns.Bound(c => c.Reason);
+                                                                             columns.Bound(c => c.DueToWork);
+                                                                             columns.Bound(c => c.Sicknees);
+                                                                             columns.Bound(c => c.MainReason);
+                                                                             columns.Bound(c => c.OtherReason);
+                                                                             columns.Bound(c => c.Remark);
+                                                                             columns.Command(command =>
+                                         {
+                                                                 if (HttpContext.Current.User.IsInRole("HR_Termination_User"))
+                                                                 {
+                                                                     command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                                                 }
+                                                                 if (HttpContext.Current.User.IsInRole("HR_Admin"))
+                                                                 {
+                                                                     command.Destroy().Text(Resources.ActionButton_Cancel);
+                                                                 }
+                                                             }).Width(200);
+                                                                         })
+                                                                 .ToolBar(toolbar =>
+                                                                 {
+                                                                             if (HttpContext.Current.User.IsInRole("HR_Termination_User"))
+                                                                             {
+                                                                                 toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                                                                             }
+                                                                         })
+                                                                                                 .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("ExitInterview").Window(window => { window.Title(Resources.HR_EmployeeDetail_ExitInterview_ExitInterview); window.Scrollable(false); }))
+                                                                 .Selectable(selectable =>
+                                                                 {
+                                                                             selectable.Mode(GridSelectionMode.Single);
+                                                                             selectable.Type(GridSelectionType.Row);
+                                                                         })
+                                                                 .Scrollable()
+
+                                                                 .DataSource(dataSource => dataSource
+                                                                     .Ajax()
+                                                                              .Events(events =>
+                                                            {
+                                                                        events.Error("error_handler(\"ExitInterview_#=TerminationId#\")");
+                                                                        events.RequestStart("onRequestStart(\"ExitInterview_#=TerminationId#\")");
+                                                                        events.RequestEnd("onRequestEnd(\"ExitInterview_#=TerminationId#\")");
+                                                                    })
+
+                                                                     .Model(model => model.Id(p => p.ExitIntervId))
+                                                                             .Read(read => read.Action("ExitInterviews_Read", "ExitInterview", new { Area = "HRM", id = "#=EmployeeId#" }))
+                                                                             .Create(create => create.Action("ExitInterviews_Create", "ExitInterview", new { Area = "HRM", id = "#=EmployeeId#" }))
+                                                                     .Update(update => update.Action("ExitInterviews_Update", "ExitInterview"))
+                                                                     .Destroy(destroy => destroy.Action("ExitInterviews_Destroy", "ExitInterview"))
+                                                                 ).ToClientTemplate()
+                                )
+
+                            </text>
+);
+
+
+                                         items.Add().Text("Leave").Content(
+                                @<text>
+                                    @*   <legend>Clearance</legend>*@
+
+                                    @(Html.Kendo().Grid<LeaveEntitle>()
+                                                                              .Name("Leave#=TerminationId#")
+                                                              .Columns(columns =>
+                                                              {
+
+                                                                          columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["PeriodList"], "GlFiscalYearId", "Name").Width(150).EditorTemplateName("FiscalYear");//.Filterable(ftb => ftb.Multi(true).Search(true));
+                                                              columns.Bound(c => c.Balance).Width(150);
+
+                                                                          columns.Command(command =>
+                                                              {
+                                                                          // command.Destroy().Text(Resources.ActionButton_Cancel);
+                                                                          command.Custom("Paid").Click("Paid");
+                                                                                  }).Width(300);
+
+
+                                                                      })
+
+                                                      //.ToolBar(toolbar =>
+                                                      //{
+                                                      //    toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                                                      //})
+                                                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                      .Scrollable()
+                                                      .Selectable()
+                                                      .DataSource(dataSource => dataSource
+                                                          .Ajax()
+                                                                  .Events(events =>
+                                                                  {
+                                                                              events.Error("error_handler(\"Leave#=TerminationId#\")");
+                                                                              events.RequestStart("onRequestStart(\"Leave#=TerminationId#\")");
+                                                                              events.RequestEnd("onRequestEnd(\"Leave#=TerminationId#\")");
+                                                                          })
+
+
+                                                           .Model(model =>
+                                                           {
+                                                                       model.Id(p => p.LeaveEntitleId);
+                                                                       model.Field(p => p.GlFiscalYearId).Editable(false);
+                                                                       model.Field(p => p.Balance).Editable(false);
+                                                                   })
+                                                          .Read(read => read.Action("LeaveTermination_Read", "LeaveTermination", new { Area = "HRM", id = "#=EmployeeId#", fileOwner = "#=TerminationId#" }))
+                                                       .Create(create => create.Action("LeaveTermination_Create", "LeaveTermination", new { Area = "HRM", id = "#=EmployeeId#", fileOwner = "#=TerminationId#" }))
+                                                        .Destroy(destroy => destroy.Action("LeaveTermination_Destroy", "LeaveTermination"))
+
+                                                      ).ToClientTemplate()
+                                    )
+
+                                </text>
+                                                         );
+
+
+                                             }).ToClientTemplate())
+</script>
+
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 700px;
+    }
+</style>
+<script>
+    function Paid() {
+
+
+        var Gidd = $("#GlFiscalYearId").data("kendoDropDownList");
+        var gid = Gidd.value();
+        var Idd = $("#EmployeeId").data("kendoDropDownList");
+        var id = Idd.value();
+        if (id !== null && gid !== null) {
+
+        $.ajax({
+            url: '@Url.Action("Paid", "LeaveTermination")',
+            //contentType: "application/json; charset=utf-8",
+            data: { id: id, gid:gid},
+            type: 'GET',
+            cache: false,
+            success: function (result) {
+                r = result;
+
+                if (r === true) {
+
+                    alert("Paid successfully");
+                }
+                if (r === false) {
+                    alert("Paid not successfully");
+                }
+            }
+
+            });
+
+        }
+
+    }
+</script>
+<script>
+    //function error_handler(e) {
+    //    if (e.errors) {
+    //        var message = "Errors:\n";
+    //        $.each(e.errors, function(key, value) {
+    //            if ('errors' in value) {
+    //                $.each(value.errors, function() {
+    //                    message += this + "\n";
+    //                });
+    //            }
+    //        });
+    //        alert(message);
+
+    //    }
+
+    //}
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+    function onGridEdit(e) {
+        e.container.find(".k-button.k-grid-update").hide();
+        e.container.find(".k-button.k-grid-cancel").hide();
+
+    }
+    function onChange(e) {
+        var grid = e.sender;
+        var selectedRows = this.select();
+        var rowData = this.dataItem(selectedRows[0]);
+        var id = rowData.AttachmentID;
+        $.ajax({
+            url: '@Url.Action("Download", "Termination")',
+            contentType: "application/json; charset=utf-8",
+            data: { 'id': id },
+            type: 'GET',
+            cache: false,
+            success: function (result) {
+                r = result;
+            }
+
+        });
+
+    }
+</script>
+<script>
+    function GetDate() {
+
+        var x = AssignDate();
+        var y = x;
+        for (var o in y) {
+            $.ajax({
+                contentType: "application/json; charset=utf-8",
+                url: '@Url.Action("SetDate", "Termination")',
+                data: { name: y[o].id, value: y[o].date },
+                type: 'GET',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                }
+
+            });
+        }
+    }
+
+</script>
+<script>
+    function AssignDate() {
+        var list = AssignDates();
+        return list;
+    }
+
+</script>
+
+<script>
+    function terminateEmployee(e) {
+         var row = $(e.target).closest("tr");
+        var grid = $("#TerminationGrid").data("kendoGrid");
+        var dataItem = grid.dataItem(row);
+        var id = dataItem.TerminationId;
+
+        if (id.length !== 0 )
+        {
+            $('#loading-image').show();
+
+            $.ajax({
+                url: '@Url.Action("TerminateEmployee", "Termination")',
+
+                data: { id: id},
+                type: 'POST',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                    alert(r.Message);
+                    $('#loading-image').hide();
+                    grid.dataSource.read();
+                }
+            });
+
+        }
+    }
+</script>
+
+<script>
+    function onDataBound(e) {
+
+        var grid = this;
+        var gridRows = grid.tbody.find("tr");
+        for (var i = 0; i < gridRows.length; i++) {
+            var row = $(gridRows[i]);
+            var dataItem = grid.dataItem(row);
+            //perform your custom check
+            if (dataItem.IsOnlineApproved === true) {
+
+                row.find(".k-grid-edit").hide();
+                row.find(".k-grid-delete").hide();
+                row.find("#terminate").hide();
+                row.css("background-color", "gray");
+            }
+            if (dataItem.IsDirect === false) {
+                row.find(".k-grid-edit").hide();
+                row.find(".k-grid-delete").hide();
+                row.find("#terminate").hide();
+            }
+        }
+    }
+
+</script>

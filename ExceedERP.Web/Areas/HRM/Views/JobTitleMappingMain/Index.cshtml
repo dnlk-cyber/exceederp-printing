@@ -1,0 +1,30 @@
+﻿@using ExceedERP.Core.Domain.HRM.Company
+@using ExceedERP.Core.Localization
+
+@(Html.Kendo().Grid<JobTitleMappingMainTemp>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.MainFunction);
+        columns.Bound(c => c.Remark);
+        columns.Bound(c => c.OrgBranchName);
+        columns.Bound(c => c.DateCreated);
+        columns.Bound(c => c.LastModified);
+        columns.Bound(c => c.CreatedBy);
+        columns.Bound(c => c.ModifiedBy);
+        columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel);  }).Width(200);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.JobTitleMappingMianId))
+          .Read(read => read.Action("JobTitleMappingMian_Read", "JobTitleMappingMain"))
+          .Create(create => create.Action("JobTitleMappingMian_Create", "JobTitleMappingMain"))
+          .Update(update => update.Action("JobTitleMappingMian_Update", "JobTitleMappingMain"))
+          .Destroy(destroy => destroy.Action("JobTitleMappingMian_Destroy", "JobTitleMappingMain"))
+      )
+)

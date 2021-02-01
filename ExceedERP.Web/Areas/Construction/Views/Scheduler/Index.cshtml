@@ -1,0 +1,1578 @@
+﻿@using ExceedERP.Core.Domain.Construction
+@using Kendo.Mvc.UI
+@using System.Collections
+@using ExceedERP.Core.Localization
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend id="headerText">Schedule | Chart  </legend>
+@(Html.Kendo().Gantt<TaskViewModel, DependencyViewModel>()
+        .Name("tasks_gantt")
+        .Columns(columns =>
+        {
+            //columns.Bound(c => c.TaskID).Title("ID").Width(50);
+            columns.Bound(c => c.ProjectSpecificId).Width(50);
+            columns.Bound("title").Title("Task Name").Width(150).Editable(true).Title("Name");
+            columns.Bound("start").Width(80).Sortable(true).Editable(true);
+            columns.Bound("end").Width(80).Sortable(true).Editable(true);
+            //columns.Bound(c => c.ProjectInformationId).Title("Project Id").Width(100);
+            //columns.Bound(c => c.ProjectWorkBreakDownId).Title("PWB ID").Width(80);
+            columns.Bound(c => c.BudgetCost).Width(80).Title("Budgeted Cost").Format("{0:N2}");
+            columns.Bound(c => c.TotalQuantityOfWork).Title("QTY of Work").Width(90);
+            columns.Bound("orderId").Title("Order").Width(80).Editable(true);
+            columns.Bound("percentComplete").Title("Schedule % Complete").Width(80);
+            columns.Resources("resources").Editable(true).Title("Resources").Width(100);
+
+            columns.Bound(c => c.EstimatedDuration).Title("Estimated Duration (days)").Width(90);
+            columns.Bound(c => c.ActualDuration).Title("Actual Duration (days)").Width(90);
+            //columns.Bound(c => c.RemainingDuration).Title("Remaining (days)").Width(90);
+            columns.Bound(c => c.Predecessors).Title("Predecessors").Width(100);
+
+        })
+        .Toolbar(toolbar =>
+        {
+            toolbar.Add().Name("custom").TemplateId("toolbar_template");
+        })
+        .Views(views =>
+        {
+            views.DayView();
+            views.WeekView();
+            views.MonthView(monthView => monthView.Selected(true));
+            views.YearView();
+        })
+        //.Height(700)
+        .ShowWorkHours(false)
+        .ShowWorkDays(false)
+        .Snap(false)
+        .Resizable(true)
+        .Editable(false)
+        .Editable(edit =>
+        {
+            edit.TemplateId("editor_template");
+        })
+        .Navigatable(true)
+        .Selectable(true)
+        .Pdf(pdf => pdf
+            .FileName("Schedule Export.pdf")
+            .ProxyURL(Url.Action("Pdf_Export_Save", "Scheduler"))
+        )
+        .DataSource(d => d
+            .Model(m =>
+            {
+                m.Id(f => f.TaskID);
+                m.ParentId(f => f.ParentID);
+                m.OrderId(f => f.OrderId);
+                m.Field(f => f.Expanded).DefaultValue(true);
+                m.Field(f => f.Summary);
+                m.Field(f => f.Predecessors);
+                m.Field(f => f.PercentComplete);
+                //m.Field(f => f.ProjectWorkBreakDown);
+                //m.Field(f => f.ProjectWorkBreakDownId);
+                //m.Field(f => f.WorkItemDuration);
+                //m.Field(f => f.WorkItemDurationId);
+                //m.Field(f => f.Title).Editable(false);
+            })
+            .PageSize(100)
+            //.Read("ReadTasks", "Scheduler")
+            .Read(read => {
+                read.Action("ReadFilteredTasks", "Scheduler").Data("changeSelectedProjectAndVersion");
+            })
+            //.Create("CreateTask", "Scheduler")
+            .Create(create =>
+            {
+                create.Action("CreateTask", "Scheduler")
+                .Data("getSelectedTaskData");
+            })
+            .Destroy("DestroyTask", "Scheduler")
+            .Update("UpdateTask", "Scheduler")
+        )
+        .DependenciesDataSource(d => d
+            .Model(m =>
+            {
+                m.Id(f => f.DependencyID);
+                m.PredecessorId(f => f.PredecessorID);
+                m.SuccessorId(f => f.SuccessorID);
+                m.Type(f => f.Type);
+            })
+            .Read("ReadDependencies", "Scheduler")
+            .Create("CreateDependency", "Scheduler")
+            .Destroy("DestroyDependency", "Scheduler")
+            .Update("UpdateDependency", "Scheduler")
+        )
+    .Messages(msg =>
+    {
+        msg.Actions(action =>
+        {
+            action.Append("Add New Task");
+            action.AddChild("Add Sub-task");
+            action.InsertAfter("Add Below the Selected Task");
+            action.InsertBefore("Add Above the Selected Task");
+        });
+        msg.Editor(editor => {
+            editor.EditorTitle("Work Item");
+        });
+    })
+    .Resources(r => r
+        .Field("resources")
+        .DataColorField("Color")
+        .DataTextField("Name")
+        .DataSource(d => d
+            .Custom()
+            .Schema(s => s
+                .Model(m => m.Id("ID"))
+                .Data("Data")
+            )
+            .Transport(t =>
+            {
+                t.Read("ReadResources", "Scheduler");
+            })
+        )
+    )
+    .Assignments<ResourceAssignmentViewModel>(a => a
+        .DataTaskIdField("TaskID")
+        .DataResourceIdField("ResourceID")
+        .DataValueField("Units")
+        .DataSource(d => d
+            .Model(m =>
+            {
+                m.Id(f => f.ID);
+            })
+            .Read("ReadAssignments", "Scheduler")
+            .Create("CreateAssignment", "Scheduler")
+            .Destroy("DestroyAssignment", "Scheduler")
+            .Update("UpdateAssignment", "Scheduler")
+        )
+    )
+    .Events(evnt =>
+    {
+        evnt.Edit("editTask");
+        evnt.Save("saveTaskChanges");
+        evnt.DataBound("ganttDataBound");
+        //evnt.DataBinding("gantDataBinging");
+
+    })
+)
+@(Html.Kendo().Window()
+    .Name("myWindow")
+    .Title("Predecessors")
+    .Content(@<text>
+        @*<div style="height: 100%;">*@
+        @*<div style="overflow: auto; height: calc(100% - 50px)">*@
+        <div>
+            @renderPredecessorEditorWindowGrid();
+
+        </div>
+        @*<div style="width: 100%; height: 50px; border-top: solid #C5C5C5 1px">
+            <div style="float: right; margin: 10px">
+                <a class="k-primary k-button k-gantt-update" href="#" onclick="saveDependencyChanges()">Save</a>
+                <a class="k-button k-gantt-cancel" href="#" onclick="closeDependencyEditor()">Cancel</a>
+            </div>
+        </div>*@
+
+    </text>)
+    .Draggable()
+    .Resizable()
+    .Width(800)
+    .Height(360)
+    .Events(ev => {
+        ev.Close("onDependecyEditorWindowClose");
+    })
+    .Modal(true)
+    .Scrollable(false)
+    .Visible(false)
+)
+@helper renderPredecessorEditorWindowGrid() { 
+        @(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.PredecssorViewModel>()
+            .Name("predecessorEditor")
+            .Columns(column =>
+            {
+                column.Bound(c => c.IsSelected).Width(40).Title("").HtmlAttributes(new { style = "text-align:center; vertical-align:middle;" })
+                .ClientTemplate(
+                "<input type='checkbox' style='' value='#=Id#' class='templateCheckBox' name='predecessorCheckBox'" +
+                    "# if (IsSelected) { #" +
+                        "checked='checked'" +
+                    "# } #" +
+                "/>")
+                .Editable(
+                    @<text>
+                        function(e){ return false; }
+                    </text>
+                    )
+                ;
+                //column.Bound(c => c.Id);
+                column.Bound(c => c.ProjectSpecificId).Width(60);
+                column.Bound(c => c.Name).Title("Description");
+                column.Bound(c => c.Type).Filterable(false).EditorTemplateName("TaskDependecyType").Width(100);
+                column.Bound(c => c.LagTime).Width(80);
+
+                //column.Command(command =>
+                //{
+                //    command.Edit().Text(" ").CancelText(" ").UpdateText(" ");
+                //    //command.Custom("CmdEditPredecessor").Text(" ").Click("editPredecessor").IconClass("fa fa-edit");
+                //}).Width("100px");
+            })
+            .ToolBar(toolBar => {
+                toolBar.Save();
+            })
+            .Pageable(pageable => pageable
+                                .Input(true)
+                                .Numeric(false)
+                                .Refresh(true)
+                                .PageSizes(true)
+                                .ButtonCount(5))
+            //.HtmlAttributes(new { style = "height:0px;"})
+            .Scrollable()
+            .Selectable(selectable =>
+            {
+                selectable.Mode(GridSelectionMode.Single);
+                selectable.Type(GridSelectionType.Row);
+            })
+            .Filterable()
+            .Events(ev => {
+                ev.DataBound("predecessorEditorDataBound");
+                //ev.Edit("onPredecessorEdit");
+                //ev.Change("onPredecessorModelChange");
+            })
+            .Editable(editable => editable.Mode(GridEditMode.InCell))
+            .DataSource(dataSource => dataSource
+                .Ajax()
+                .Batch(true)
+                .Model(model =>
+                {
+                    model.Id(p => p.Id);
+                    model.Field(p => p.Id).Editable(false);
+                    model.Field(p => p.ProjectSpecificId).Editable(false);
+                    model.Field(f => f.Name).Editable(false);
+                    //model.Field(f => f.IsSelected).DefaultValue(true);
+                })
+                //.Read(read => read.Action("ReadPredecessors", "Scheduler"))
+                .Read(read =>
+                {
+                    read.Action("ReadPredecessors", "Scheduler")
+                    .Data("getCurrentTaskId");
+                })
+                .Create(create => create.Action("ReadPredecessors", "Scheduler"))
+                //.Create(create => {
+                //    create.Action("CreateTaskPredecessor", "Scheduler")
+                //    .Data("getTargetTaskId");
+                //})
+                //.Update(update => update.Action("ReadPredecessors", "Scheduler"))
+                .Update(update =>
+                {
+                    update.Action("CreateTaskPredecessor", "Scheduler")
+                    .Data("getTargetTaskId");
+                })
+                .Destroy(destroy => destroy.Action("ReadPredecessors", "Scheduler"))
+            )
+            )
+    }
+@(Html.Kendo().Window()
+    .Name("scheduleBreakDownWindow")
+    .Title("Break Down of Scheduled Costs")
+    .Content(@<text>
+        <div style="overflow: auto; height: calc(100% - 65px)">
+            @renderCostBreakDownEditorWindowGrid();
+        </div>
+        <div style="width: 100%; height: 50px; border-top: solid #C5C5C5 1px">
+            <div style="float: right; margin: 10px">
+                @*<a class="k-primary k-button k-gantt-update" href="#" onclick="saveScheduleBreakDownChanges()">Save Changes</a>*@
+                <a class="k-primary k-button k-gantt-cancel" href="#" onclick="closeScheduleBreakDownEditor()">Close</a>
+            </div>
+        </div>
+
+    </text>)
+    .Draggable()
+    .Resizable()
+    .Width(1000)
+    .Height(400)
+    .Modal(true)
+    .Visible(false)
+)
+
+@*)*@
+
+@(Html.Kendo().Window()
+    .Name("activityBreakDownWindow")
+    .Title("Sub Activities")
+    .Content(@<text>
+        <div style="overflow: auto; height: calc(100% - 65px)">
+            @(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.TaskViewModel>()
+                        .Name("subActivitiesGrid")
+                        .Columns(columns =>
+                        {
+
+                            columns.Bound(c => c.TaskID).Title("ID").Width(50);
+                            columns.Bound(c => c.Title).Width(200);
+                            columns.Bound(c => c.Start).Width(80);
+                            columns.Bound(c => c.ActualDuration).Title("Duration (days)").Width(90);
+                            columns.Bound(c => c.End).Width(80);
+                            //columns.Bound(c => c.ProjectInformationId).Title("Project Id").Width(100);
+                            //columns.Bound(c => c.ProjectWorkBreakDownId).Title("PWB ID").Width(80);
+                            columns.Bound(c => c.BudgetCost).Width(80).Title("Budgeted Cost").Format("{0:N2}");
+                            columns.Bound(c => c.TotalQuantityOfWork).Title("QTY of Work").Width(90);
+                            columns.Bound(c => c.OrderId).Title("Order").Width(80);
+
+                            //columns.Bound(c => c.EstimatedDuration).Title("Estimated Duration (days)").Width(90);
+                            //columns.Bound(c => c.RemainingDuration).Title("Remaining (days)").Width(90);
+
+                            columns.Command(command =>
+                            {
+                                command.Edit().UpdateText("Save").CancelText("Cancel").Text("Edit");
+                                command.Destroy().Text("Delete");
+                            }).Width(180);
+                        })
+                        //.Pageable()
+                        //.Scrollable()
+                        //.Events(ev =>
+                        //{
+                        //    ev.DataBound("taskDetailDataBound");
+                        //})
+                        .Selectable(selectable =>
+                        {
+                            selectable.Mode(GridSelectionMode.Single);
+                            selectable.Type(GridSelectionType.Row);
+                        })
+                        //.Filterable()
+                        .ToolBar(toolbar =>
+                        {
+                            toolbar.Create().Text("Add Sub Activity");
+                        })
+                        .Editable(editable => editable.Mode(GridEditMode.InLine))
+                        .DataSource(dataSource => dataSource
+                            .Ajax()
+                            .Model(model =>
+                            {
+                                model.Id(p => p.TaskID);
+
+                                model.Field(f => f.TaskID).Editable(false);
+                                model.Field(f => f.End).Editable(false);
+                            })
+                            .Events(events =>
+                            {
+                                events.Error("error_handler(\"subActivitiesGrid\")");
+                                events.RequestStart("onRequestStart(\"subActivitiesGrid\")");
+                                events.RequestEnd("onRequestEnd(\"subActivitiesGrid\")");
+                            })
+                            .Read(read =>
+                            {
+                                read.Action("GetChildTasks", "Scheduler")
+                                .Data("getCurrentTaskId");
+                            })
+                            .Create(create =>
+                            {
+                                create.Action("CreateSubActivity", "Scheduler")
+                                .Data("getCurrentTaskId");
+                            })
+                            .Update(update =>
+                            {
+                                update.Action("UpdateTask", "Scheduler");
+                            })
+                            .Destroy(destroy => destroy.Action("DestroyTask", "Scheduler"))
+                        )
+            )
+        </div>
+        <div style="width: 100%; height: 50px; border-top: solid #C5C5C5 1px">
+            <div style="float: right; margin: 10px">
+                @*<a class="k-primary k-button k-gantt-update" href="#" onclick="saveScheduleBreakDownChanges()">Save Changes</a>*@
+                <a class="k-primary k-button k-gantt-cancel" href="#" onclick="closeTaskBreakDownEditor()">Close</a>
+            </div>
+        </div>
+
+    </text>)
+    .Draggable()
+    .Resizable()
+    .Width(1000)
+    .Height(400)
+    .Modal(true)
+    .Visible(false)
+)
+        
+        <div class="k-pager-wrap k-grid-pager k-widget k-floatwrap" data-role="pager">
+            <a aria-label="Go to the first page" class="k-link k-pager-nav k-state-disabled k-pager-first" data-page="1"
+               href="#" title="Go to the first page" tabindex="-1" onclick="goToFirstPageButtonClick()">
+                <span class="k-icon k-i-arrow-end-left"></span>
+            </a>
+            <a aria-label="Go to the previous page" class="k-link k-pager-nav k-state-disabled" data-page="1" href="#"
+               title="Go to the previous page" tabindex="-1" onclick="goToPreviousPageButtonClick()">
+                <span class="k-icon k-i-arrow-60-left"></span>
+            </a>
+            <span class="k-pager-input k-label">
+                Page
+                <input class="k-textbox" aria-label="1" id="gant-page-current-page-display"> of 
+                <span class="k-label" id="gant-page-total-pages-display"></span>
+            </span>
+            <a aria-label="Go to the next page" class="k-link k-pager-nav" data-page="2" href="#" title="Go to the next page"
+               tabindex="-1" onclick="goToNextPageButtonClick()">
+                <span class="k-icon k-i-arrow-60-right"></span>
+            </a>
+            <a aria-label="Go to the last page" class="k-link k-pager-nav k-pager-last" data-page="7" href="#"
+               title="Go to the last page" tabindex="-1" onclick="goToLastPageButtonClick()">
+                <span class="k-icon k-i-arrow-end-right"></span>
+            </a>
+            <span class="k-pager-sizes k-label">
+                <span title="" class="k-widget k-dropdown k-header" unselectable="on"
+                      role="listbox" aria-haspopup="true" aria-expanded="false" tabindex="0" aria-owns="" aria-live="polite"
+                      aria-disabled="false" aria-busy="false" aria-activedescendant="fa90da33-c12c-4477-8d00-9b5c945e826d"
+                      style="width:70px;">
+                    <span unselectable="on" class="k-dropdown-wrap k-state-default">
+                        <span unselectable="on"
+                              class="k-input">100</span><span unselectable="on" class="k-select" aria-label="select">
+                            <span class="k-icon k-i-arrow-60-down"></span>
+                        </span>
+                    </span>
+                    <select id="pageSizeSelectorDropDownList" data-role="dropdownlist" style="display: none;" aria-label="100">
+                        <option value="50">50</option>
+                        <option value="100" selected="selected">100</option>
+                        <option value="200">200</option>
+                        <option value="300">300</option>
+                        <option value="400">400</option>
+                        <option value="500">500</option>
+                        <option value="1000">1000</option>
+                        <option value="2000">2000</option>
+                        <option value="3000">3000</option>
+                        <option value="4000">4000</option>
+                        <option value="5000">5000</option>
+                        <option value="10000">10000</option>
+                        <option value="-1">All</option>
+                    </select>
+                </span>items per page
+            </span>
+            <a aria-label="Refresh" class="k-pager-refresh k-link"
+                      href="#" title="Refresh" onclick="refreshGanttChart()">
+                <span class="k-icon k-i-refresh"></span>
+            </a>
+            <span class="k-pager-info k-label" id="gant-page-total-items-count">No items to Display</span>
+        </div>
+
+
+
+<script>
+    //
+    //  Summary
+    //      functions for dependency editor window
+    function openDependencyEditor() {
+        var editorGrid = $("#predecessorEditor").data("kendoGrid");
+        var wdw = $("#myWindow").data("kendoWindow");
+        wdw.open();
+        wdw.center();
+        editorGrid.dataSource.read();
+    }
+    function closeDependencyEditor() {
+        var window = $("#myWindow").data("kendoWindow");
+        //var gnt = $("#tasks_gantt").getKendoGantt();
+        //gnt.dataSource.read();
+        //gnt.dependencies.read();
+        window.close();
+    }
+    function saveDependencyChanges() {
+        var window = $("#myWindow").data("kendoWindow");
+        var gnt = $("#tasks_gantt").getKendoGantt();
+        gnt.dataSource.read();
+        gnt.dependencies.read();
+        window.close();
+    }
+    function onDependecyEditorWindowClose() {
+        var gnt = $("#tasks_gantt").getKendoGantt();
+        gnt.dataSource.read();
+        gnt.dependencies.read();
+    }
+    //
+    //saveDependencyChanges
+
+    //
+    //  Summary:
+    //      functions for schedule break down window
+    function openScheduleBreakDownEditor() {
+        var editorGrid = $("#scheduledCostsBreakDownEditor").data("kendoGrid");
+        var wdw = $("#scheduleBreakDownWindow").data("kendoWindow");
+        wdw.open();
+        wdw.center();
+        editorGrid.dataSource.read();
+    }
+
+    function closeScheduleBreakDownEditor() {
+        var window = $("#scheduleBreakDownWindow").data("kendoWindow");
+        window.close();
+    }
+    function saveScheduleBreakDownChanges() {
+        var window = $("#scheduleBreakDownWindow").data("kendoWindow");
+        window.close();
+    }
+    function openTaskBreakDownEditor() {
+        var editorGrid = $("#subActivitiesGrid").data("kendoGrid");
+        var wdw = $("#activityBreakDownWindow").data("kendoWindow");
+        wdw.open();
+        wdw.center();
+        editorGrid.dataSource.read();
+    }
+    function closeTaskBreakDownEditor() {
+        var window = $("#activityBreakDownWindow").data("kendoWindow");
+        window.close();
+        var gnt = $("#tasks_gantt").getKendoGantt();
+        gnt.dataSource.read();
+        gnt.dependencies.read();
+    }
+    function predecessorEditorDataBound(e){
+        var grid = this;
+
+        //grid.element.delegate("tbody>tr", "dblclick", function () {
+        //    //var dataItem = grid.dataItem($(this));
+        //    //var id = dataItem.Id;
+
+        //    //var name = 'predecessorCheckBox_' + id;
+        //    //var combinedInputName = 'input[name=' + name + ']';
+        //    //$(combinedInputName).attr('checked', true);
+
+        //    grid.editRow($(this));
+        //});
+
+        var gridRows = grid.tbody.find("tr");
+        for (var i = 0; i < gridRows.length; i++) {
+            var row = $(gridRows[i]);
+            var dataItem = grid.dataItem(row);
+            if (dataItem.IsSelected === true) {
+                row.addClass("highlighted-row");
+
+            } else {
+                //row.find(".k-grid-edit").text("Add");
+                row.find(".k-grid-edit").find("span").addClass("k-icon k-i-plus");
+            }
+        }
+    }
+    function editPredecessor(e) {
+        //var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        //var id = dataItem.Id;
+        //var name = 'predecessorCheckBox_' + id;
+        //var combinedInputName = 'input[name=' + name + ']';
+        //$(combinedInputName).attr('checked', true);
+
+        //$(combinedInputName).attr('checked', true)
+        ////var checked = $("#predecessorCheckBox").is(':checked');
+        //$('input[name=predecessorCheckBox]').attr('checked', true)
+    }
+    function onPredecessorEdit(e) {
+        //var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        //var id = dataItem.Id;
+
+        //var grid = e.select();
+        var selectedRows = this.select();
+        var dataItem = this.dataItem(selectedRows[0]);
+        var id = dataItem.Id;
+        var name = 'predecessorCheckBox_' + id;
+        var combinedInputName = 'input[name=' + name + ']';
+        $(combinedInputName).attr('checked', true);
+
+       
+    }
+    function onPredecessorModelChange(e) {
+        var selectedRows = this.select();
+        var dataItem = this.dataItem(selectedRows[0]);
+        var id = dataItem.Id;
+        var name = 'predecessorCheckBox_' + id;
+        var combinedInputName = 'input[name=' + name + ']';
+        $(combinedInputName).attr('checked', true);
+    }
+</script>
+<script type="text/javascript">
+    var theSelectedProjectId = 0;
+    var currentScheduleVersion = 0;
+
+    var blockTypeId = 0;
+    var blockId = 0;
+    var strTypeId = 0;
+    var workCategoryId = 0;
+    var pageNumber = 1;
+    var pageSize = 100;
+    $(document).ready(function () {
+
+        //  summary:
+        //      change the page number in the gantt chart pager by user manual imput
+        $("#gant-page-current-page-display").keypress(function(evnt){
+            var keyCode = (evnt.keyCode ? event.keyCode : event.which);
+            if (keyCode == '13') {
+                var newPage = parseInt($("#gant-page-current-page-display").val());
+                if (pageNumber != newPage) {
+                    pageNumber = newPage;
+                    refreshGanttChart();
+                }
+        }
+        });
+        // summary:
+        //      create a page size selector for custom gantt-pagger
+        $("#pageSizeSelectorDropDownList").kendoDropDownList({
+            change: function () {
+                var gant = $("#tasks_gantt").getKendoGantt();
+                var ttlItems = gant.dataSource.total();
+
+                //alert("page Size changed!");
+                var selectedValue = parseInt(this.value());
+                if (selectedValue > ttlItems) {
+                    selectedValue = ttlItems;
+                }
+                if (selectedValue == -1) {
+                    selectedValue = ttlItems;
+                }
+                pageSize = selectedValue;
+                gant.dataSource.pageSize(pageSize);
+                pageNumber = 1;
+                refreshGanttChart();
+            }
+        });
+
+        //  summary:
+        //      handle the change event of the checkbox used in editor template
+        $("#predecessorEditor .k-grid-content").on("change", "input.templateCheckBox", function (e) {
+            var grid = $("#predecessorEditor").data("kendoGrid"),
+                dataItem = grid.dataItem($(e.target).closest("tr"));
+            $(e.target).closest("td").prepend("<span class='k-dirty'></span>");
+            dataItem.IsSelected = this.checked;
+            dataItem.dirty = true;
+        });
+        var gnt = $("#tasks_gantt").getKendoGantt();
+        //gnt.dataSource.filter({ field: "ProjectInformationId", operator: "eq", value: parseInt(-1) });
+
+        // projects drop down list
+        var projects = $("#projectDropdown").kendoDropDownList({
+            optionLabel: "Select project ...",
+            filter: "contains",
+            dataTextField: "Name",
+            dataValueField: "ProjectInformationId",
+            dataSource: {
+                //serverFiltering: true,
+                transport: {
+                    read: {
+                        url: '/Construction/DataProvider/GetAllProjectsAllowedForCurrentUser/'
+                    }
+                }
+            },
+            change: function () {
+                var gantt1 = $("#tasks_gantt").getKendoGantt();
+                //gantt1.dataSource.filter({ field: "ProjectInformationId", operator: "eq", value: parseInt(this.value()) });
+                //gantt1.dataSource.filter({ field: "Version", operator: "eq", value: -1 });
+                //gantt1.dataSource.filter({
+                //    logic: "and",
+                //    filters: [
+                //      { field: "ProjectInformationId", operator: "eq", value: parseInt(this.value()) },
+                //      { field: "Version", operator: "eq", value: -1 }
+                //    ]
+                //});
+                var textToBeAdded = "Schedule | Chart | " + this.text();
+                $("#headerText").html(textToBeAdded);
+
+                // get the id of the selected project
+                theSelectedProjectId = parseInt(this.value());
+                currentScheduleVersion = 0;
+                blockTypeId = 0;
+                blockId = 0;
+                strTypeId = 0;
+                workCategoryId = 0;
+                pageNumber = 1;
+                pageSize = 100;
+                resetGanttData();
+            }
+
+        }).data("kendoDropDownList");
+
+        //version drop down
+        var versionsList = $("#scheduleVersion").kendoDropDownList({
+            autoBind: false,
+            cascadeFrom: "projectDropdown",
+            optionLabel: " Version...",
+            dataTextField: "VersionTitle",
+            dataValueField: "Version",
+            dataSource: {
+                serverFiltering: true,
+                transport: {
+                    read: {
+                        url: '/Construction/DataProvider/GetScheduleVersionsOfProject/',
+                        data: function () {
+                            return { currentProjectId: projects.value() };
+                        }
+                    }
+                }
+            },
+            change: function () {                
+                var textToBeAdded = "Schedule | Chart | " + projects.text()+ " (" + this.text() +") ";
+                $("#headerText").html(textToBeAdded);
+
+                currentScheduleVersion = parseInt(this.value());
+                blockTypeId = 0;
+                blockId = 0;
+                strTypeId = 0;
+                workCategoryId = 0;
+                refreshGanttChart();
+                //ganttDataBound();
+            }
+        }).data("kendoDropDownList");
+
+        //  sub-projects ... 
+        var subProjectTypes = $("#subProjectType").kendoDropDownList({
+            autoBind: false,
+            cascadeFrom: "projectDropdown",
+            optionLabel: " sub proj types",
+            dataTextField: "Name",
+            dataValueField: "SubProjectTypeId",
+            dataSource: {
+                serverFiltering: true,
+                transport: {
+                    read: {
+                        url: '/Construction/DataProvider/GetSubProjectTypes/',
+                        data: function () {
+                            return { projectId: projects.value() };
+                        }
+                    }
+                }
+            },
+            change: function () {
+                var chart = $("#tasks_gantt").getKendoGantt();
+                //chart.dataSource.filter({ field: "Version", operator: "eq", value: parseInt(this.value()) });
+                var textToBeAdded = "Schedule | Chart | " + projects.text() + "/" + this.text() + " (" + versionsList.text() + ") ";
+                $("#headerText").html(textToBeAdded);
+
+                //chart.dataSource.filter({
+                //    logic: "and",
+                //    filters: [
+                //      { field: "ProjectInformationId", operator: "eq", value: parseInt(projects.value()) },
+                //      { field: "Version", operator: "eq", value: parseInt(versionsList.value()) },
+                //      { field: "SubProjectTypeId", operator: "eq", value: parseInt(this.value()) }
+                //    ]
+                //});
+                blockTypeId = parseInt(this.value());
+                blockId = 0;
+                strTypeId = 0;
+                workCategoryId = 0;
+                refreshGanttChart();
+
+            }
+        }).data("kendoDropDownList");
+
+        // block, station ..
+        var blocksList = $("#projectBlocks").kendoDropDownList({
+            autoBind: false,
+            cascadeFrom: "subProjectType",
+            optionLabel: " blocks or stations",
+            dataTextField: "Name",
+            dataValueField: "BlockId",
+            dataSource: {
+                serverFiltering: true,
+                transport: {
+                    read: {
+                        url: '/Construction/DataProvider/GetProjectBlocks/',
+                        data: function () {
+                            return { subProjectTypeId: subProjectTypes.value() };
+                        }
+                    }
+                }
+            },
+            change: function () {
+                var chart = $("#tasks_gantt").getKendoGantt();
+                //chart.dataSource.filter({ field: "Version", operator: "eq", value: parseInt(this.value()) });
+                //chart.dataSource.filter({
+                //    logic: "and",
+                //    filters: [
+                //      { field: "ProjectInformationId", operator: "eq", value: parseInt(projects.value()) },
+                //      { field: "Version", operator: "eq", value: parseInt(versionsList.value()) },
+                //      { field: "BlockId", operator: "eq", value: parseInt(this.value()) }
+                //    ]
+                //});
+                blockId = parseInt(this.value());
+                strTypeId = 0;
+                workCategoryId = 0;
+                refreshGanttChart();
+            }
+        }).data("kendoDropDownList");
+
+        // structure drop down
+        var structureList = $("#structureType").kendoDropDownList({
+            autoBind: false,
+            cascadeFrom: "projectBlocks",
+            optionLabel: " Structures ...",
+            dataTextField: "CurrentValue",
+            dataValueField: "ConfigurationId",
+            dataSource: {
+                serverFiltering: true,
+                transport: {
+                    read: {
+                        url: '/Construction/DataProvider/GetStructureTypesUnderBlock/',
+                        data: function () {
+                            return {
+                                //projId: projects.value(),
+                                blockId: blocksList.value()
+                            };
+                        }
+                    }
+                }
+            },
+            change: function () {
+                var gantt1 = $("#tasks_gantt").getKendoGantt();
+                //gantt1.dataSource.filter({
+                //    logic: "and",
+                //    filters: [
+                //        { field: "ProjectInformationId", operator: "eq", value: parseInt(projects.value()) },
+                //        { field: "Version", operator: "eq", value: parseInt(versionsList.value()) },
+                //        { field: "BlockId", operator: "eq", value: parseInt(blocksList.value()) },
+                //        { field: "ConfigurationId", operator: "eq", value: parseInt(this.value()) },
+                //        //{ field: "Version", operator: "eq", value: parseInt(versionsList.value()) }
+                //    ]
+                //});
+                strTypeId = parseInt(this.value());
+                workCategoryId = 0;
+                refreshGanttChart();
+            }
+        }).data("kendoDropDownList");
+
+        // work category list
+        var workCategoryList = $("#workCategory").kendoDropDownList({
+            autoBind: false,
+            cascadeFrom: "structureType",
+            optionLabel: " category ...",
+            dataTextField: "Name",
+            dataValueField: "WorkCategoryId",
+            dataSource: {
+                serverFiltering: true,
+                transport: {
+                    read: {
+                        url: '/Construction/DataProvider/GetWorkCategoryUnderStructure/',
+                        data: function () {
+                            return {
+                                configId: structureList.value(),
+                                blockId: blocksList.value()
+                            };
+                        }
+                    }
+                }
+            },
+            change: function () {
+                var gantt1 = $("#tasks_gantt").getKendoGantt();
+                //gantt1.dataSource.filter({
+                //    logic: "and",
+                //    filters: [
+                //        { field: "ProjectInformationId", operator: "eq", value: parseInt(projects.value()) },
+                //        { field: "Version", operator: "eq", value: parseInt(versionsList.value()) },
+                //        { field: "BlockId", operator: "eq", value: parseInt(blocksList.value()) },
+                //        { field: "ConfigurationId", operator: "eq", value: parseInt(structureList.value()) },
+                //        { field: "WorkCategoryId", operator: "eq", value: parseInt(this.value()) },
+                //    ]
+                //});
+                workCategoryId = parseInt(this.value());
+                refreshGanttChart();
+            }
+        }).data("kendoDropDownList");
+    });
+    var selectedWbsId = 0;
+    var selectedProjectId = 0;
+
+    function changePageNumberByUserInput(e) {
+        //var inputNumber = parseInt($("#gant-page-current-page-display").val());
+        //$("#gant-page-current-page-display").keypress(function(evnt){
+        //    var keyCode = (evnt.keyCode ? event.keyCode : event.which);
+        //    if (keyCode == '13') {
+        //        alert("Enter key pressed!!");
+        //}
+        //});
+        //var keyCode = (e.keyCode ? e.keyCode : e.which);
+        //if (keyCode == '13') {
+        //    alert("Enter pressed")
+        //}
+        //alert("page number :" + inputNumber);
+    }
+    function goToNextPageButtonClick() {
+        var gant = $("#tasks_gantt").data("kendoGantt");
+
+        pageNumber = parseInt(pageNumber) + 1;
+        if (pageNumber > gant.dataSource.totalPages()) {
+            pageNumber = gant.dataSource.totalPages();
+        }
+        $("#gant-page-current-page-display").val(pageNumber);
+        //alert("forward button clicked and page is :" + newPageNumber);
+        refreshGanttChart();
+    }
+    function goToLastPageButtonClick() {
+        var gant = $("#tasks_gantt").data("kendoGantt");
+
+        var totalPages = gant.dataSource.totalPages();
+        if (pageNumber < totalPages) {
+            pageNumber = totalPages;
+            $("#gant-page-current-page-display").val(pageNumber);
+            refreshGanttChart();
+        }
+    }
+    function goToPreviousPageButtonClick() {
+        pageNumber = pageNumber - 1;
+        if (pageNumber <= 0) {
+            pageNumber = 1;
+        }
+        $("#gant-page-current-page-display").val(pageNumber);
+        //alert("forward button clicked and page is :" + newPageNumber);
+        refreshGanttChart();
+    }
+    function goToFirstPageButtonClick() {
+        if (pageNumber > 1) {
+            pageNumber = 1;
+            refreshGanttChart();
+        }
+    }
+    function changeSelectedProjectAndVersion() {
+        return {
+            projectId: theSelectedProjectId,
+            version: currentScheduleVersion,
+            blockTypeId: blockTypeId,
+            blockId: blockId,
+            strTypeId: strTypeId,
+            categoryId: workCategoryId,
+            pageNumber: pageNumber,
+            pageSize: pageSize
+
+        };
+    }
+    function resetCostBreakdown() {
+        var gantt = $("#tasks_gantt").getKendoGantt();
+        var selection = gantt.select();
+        var selectedTaskId;
+        if (!selection.length) {
+            selectedTaskId = -1;
+        } else {
+            var dataItem = gantt.dataItem(selection);
+            selectedTaskId = dataItem.id;
+        }
+        var bsyButton = $("#fetchLoadingIcon");
+        var resetButton = $("#resetCostBreakdownButton");
+        var grid = $("#scheduledCostsBreakDownEditor").data("kendoGrid");
+        resetButton.attr('disabled', true);
+        bsyButton.show();
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("ResetTaskCostBreakDown", "TaskDetail", new { area = "Construction" })',
+            data: { taskId: selectedTaskId},
+            cache: false,
+            success: function (result) {
+                bsyButton.hide();
+                resetButton.attr('disabled', false);
+                alert(result.Message);
+                grid.dataSource.read();
+                //recordStatus = result.Status;
+                //if (recordStatus === "Ok") {
+                //    //location.reload(true);
+                //    grid.dataSource.read();
+                //}
+            }, //end succ
+            error: function (result) {
+                bsyButton.hide();
+                alert(result.Message);
+            }
+        });
+    }
+    //  summary :
+    //      clean the gantt chart and the custom pager from any existing data
+    function resetGanttData() {
+        var gant = $("#tasks_gantt").data("kendoGantt");
+        gant.dataSource.data([]);
+
+        $("#gant-page-current-page-display").val("");
+        $("#gant-page-total-items-count").html("No items to Display");
+        $("#gant-page-total-pages-display").html("");
+
+    }
+    function refreshGanttChart() {
+        //var gant = $("#tasks_gantt").getKendoGantt();
+        var gant = $("#tasks_gantt").data("kendoGantt");
+        gant.dependencies.read();
+        gant.dataSource.read();
+
+        //$("#gant-page-total-items-count").html(gant.dataSource.view().length);
+        //$("#gant-page-total-items-count").html(gant.dataSource.total());
+        //alert(gant.dataSource.total());
+        //setTimeout(ganttDataBound, 5000)
+        //ganttDataBound();
+    }
+    function ganttDataBound() {
+        var gant = $("#tasks_gantt").data("kendoGantt");
+        //gant.dependencies.read();
+        //gant.dataSource.read();
+
+        //$("#gant-page-total-items-count").html(gant.dataSource.view().length);
+        //$("#gant-page-total-items-count").html(gant.dataSource.total());
+        setTimeout(updateCustomPagerComponents, 5000);
+       
+    }
+    function updateCustomPagerComponents() {
+        var gant = $("#tasks_gantt").data("kendoGantt");
+        var ttlPages = gant.dataSource.totalPages();
+        var ttlItems = gant.dataSource.total();
+        //var crntPage = gant.dataSource.page();
+        var initialItems = pageSize * (pageNumber - 1) + 1;
+        var itemsBeingDesplayed = (pageNumber * pageSize);
+        if (itemsBeingDesplayed > ttlItems) {
+            itemsBeingDesplayed = ttlItems;
+        }
+        if (ttlItems > 0) {
+            var displayText = initialItems + " - " + itemsBeingDesplayed + " of " + ttlItems + " items";
+
+            $("#gant-page-total-items-count").html(displayText);
+
+        }
+        $("#gant-page-total-pages-display").html(ttlPages);
+        $("#gant-page-current-page-display").val(pageNumber > ttlPages ? "" : pageNumber);
+        //alert(gant.dataSource.totalPages());
+    }
+    var resoucesdEdited = false;
+    function editTask(e) {
+
+        // create the drop down list of work breakdown structures in
+        // the pop-up task editor
+        $("#wbsList").kendoDropDownList({
+            name: "wb_structures",
+            dataTextField: "Description",
+            dataValueField: "ProjectWorkBreakDownId",
+            dataSource: {
+                serverFiltering: true,
+                transport: {
+                    read: {
+                        url: '/Construction/DataProvider/GetProjectWorkBreakDownStructures/',
+                        data: function () {
+
+                            return { projId: theSelectedProjectId};
+                        }
+                    }
+                }
+            }
+        }).data("kendoDropDownList");
+
+        // drop down list for wok item duration
+        $("#wiDurationList").kendoDropDownList({
+            optionLabel: "Select ",
+            name: "wiDurationList",
+            dataTextField: "WorkDescription",
+            dataValueField: "WorkItemDurationId",
+            dataSource: {
+                serverFiltering: true,
+                transport: {
+                    //type: "json",
+                    read: {
+                        //data: getCascadeWBS(),
+                        //dataType: "json",
+                        url: '/Construction/DataProvider/GetWorkItemDuration/',
+                        data: function () {
+                            return { currentProjectIdR: theSelectedProjectId };
+                        }
+                    }
+                },
+
+            }
+        }).data("kendoDropDownList");
+
+        // filter the tasks in the gantt chart according to the user selection
+        var gantt = e.sender;
+        resoucesdEdited = false;
+        if (e.task) {
+            e.container.on('click', 'div[data-container-for="resources"] > a', function (event) {
+                event.preventDefault();
+                resoucesdEdited = true;
+                gantt._createResourceEditor(e.container.find('div.k-gantt-resources'), e.task);
+            });
+        }
+    }
+    function saveTaskChanges(e) {
+        if (e.task && resoucesdEdited) {
+            this._updateAssignments(e.task.get("id"), e.task.get(this.resources.field));
+        }
+        var gantt = e.sender;
+        //gantt.dataSource.refresh();
+        //gantt.trigger("dataBinding", { action: 1 });
+        //e.preventDefault();
+        //gantt.dataSource.trigger("rebind");
+        //gantt.dependencies.read();
+        //gantt.dataSource.read();
+        //refreshGanttChart();
+    }
+    //function gantDataBinging(e, action) {
+    //    if (action === 1) {
+    //        //e.preventDefault();
+    //        var gnt = $("#tasks_gantt").getKendoGantt();
+    //        gnt.dataSource.read();
+    //        //gnt.dataSource.refresh();
+    //        gnt.dependencies.read();
+    //    }
+    //}
+    function onProjectSelect(e) {
+        if (e.item) {
+            var dataItem = this.dataItem(e.item);
+            selectedProjectId = dataItem.ProjectInformationId;
+            var gantt = $("#tasks_gantt").getKendoGantt();
+            gantt.dataSource.filter({ field: "ProjectInformationId", operator: "eq", value: parseInt(selectedProjectId) });
+
+        } else {
+            alert("Error");
+        }
+    }
+
+    function onWbsSelect(e) {
+        if (e.item) {
+            var dataItem = this.dataItem(e.item);
+            selectedWbsId = dataItem.ProjectWorkBreakDownId;
+            var gantt = $("#tasks_gantt").getKendoGantt();
+            gantt.dataSource.filter({ field: "ProjectWorkBreakDownId", operator: "eq", value: parseInt(selectedWbsId) });
+
+        } else {
+            alert("Error");
+        }
+    }
+
+    function filterWorkBreakdowns() {
+        return {
+            idThree: $("#projectInformationList").val()
+        };
+    }
+
+    // finding the id of the currently highlighted task in the tree list view
+    function getSelectedTaskData() {
+        var gantt = $("#tasks_gantt").getKendoGantt();
+        var selection = gantt.select();
+        var selectedTaskId;
+        if (!selection.length) {
+            selectedTaskId = -1;
+        } else {
+            var dataItem = gantt.dataItem(selection);
+            selectedTaskId = dataItem.id;
+        }
+        return {
+            selectedTask: selectedTaskId
+        };
+
+    }
+    // finding the id of the task which is currently being edited in
+    // the custom pop-up editor
+    function getCurrentTaskId() {
+        var gantt = $("#tasks_gantt").getKendoGantt();
+        var selection = gantt.select();
+        var selectedTaskId;
+        if (!selection.length) {
+            selectedTaskId = -1;
+        } else {
+            var dataItem = gantt.dataItem(selection);
+            selectedTaskId = dataItem.id;
+        }
+        return {
+            theCurrentTaskId: selectedTaskId,
+            activeProjectId: theSelectedProjectId
+        };
+
+    }
+
+    function getTargetTaskId() {
+        var gantt = $("#tasks_gantt").getKendoGantt();
+        var selection = gantt.select();
+        var selectedTaskId;
+        if (!selection.length) {
+            selectedTaskId = -1;
+        } else {
+            var dataItem = gantt.dataItem(selection);
+            selectedTaskId = dataItem.id;
+        }
+        return {
+            targetId: selectedTaskId
+        };
+
+    }
+
+    // handle databound event in task detail grid
+    function taskDetailDataBound(e) {
+        var grid = this;
+        var gridRows = grid.tbody.find("tr");
+
+        for (var i = 0; i < gridRows.length; i++) {
+            var row = $(gridRows[i]);
+            var dataItem = grid.dataItem(row);
+            row.addClass("highlighted-row");
+        }
+    }
+
+    @*function focusOffStartDate() {
+        var inpt = $("#startDate");
+        val = inpt.val().toDate();
+        //var dateValue = kendo.par
+        var drn = Number($("#taskDuration").val());
+        //alert(val + " " + drn);
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("GetTaskEndDate", "Scheduler", new { area = "Construction" })',
+            data: { start: val, duration: drn },
+            cache: false,
+            success: function (result) {
+                $("#taskEndDate").val(result);
+                $("#taskEndDate").trigger("change");
+                alert(result);
+            }, //end succ
+            error: function (result) {
+                //alert(result);
+            }
+        });
+    }*@
+</script>
+
+<script id="toolbar_template" type="text/x-kendo-template">
+    @*<a class="k-button" href="" onclick="return toolbar_click()">Custom</a>*@
+    @*<button class="k-button k-button-icontext k-gantt-create" data-action="add">
+            <span class="k-icon k-i-plus"></span>
+            <span>
+                Add New
+            </span>
+        </button>*@
+
+    @*<text style="margin-left:20px">
+        <strong>Filter &nbsp;</strong>
+    </text>*@
+    <input id="projectDropdown" style="width: 170px;" />
+    <input id="scheduleVersion" disabled="disabled" style="width: 80px;" />
+    <input id="subProjectType" disabled="disabled" style="width: 130px;" />
+    <input id="projectBlocks" disabled="disabled" style="width: 120px;" />
+    <input id="structureType" disabled="disabled" style="width: 120px;" />
+    <input id="workCategory" disabled="disabled" style="width: 140px;" />
+
+    &nbsp;&nbsp;
+    <button title="Export to PDF" class="k-button k-button-icontext k-gantt-pdf k-primary" type="button">
+        <span class="k-icon k-i-pdf"></span>
+        <span>
+            Export
+        </span>
+    </button>
+</script>
+
+<script id="editor_template" type="text/x-kendo-template">
+    <div class="k-edit-form-container">
+        <div class="k-edit-label">
+            <label for="title">Title</label>
+        </div>
+        <div data-container-for="title" class="k-edit-field">
+            <input type="text" class="k-input k-textbox" name="title" data-bind="value:title" disabled="disabled" />
+        </div>
+
+        <div class="k-edit-label">
+            <label for="start">Start</label>
+        </div>
+        <div data-container-for="start" class="k-edit-field">
+            <input data-role="datepicker" name="start" data-bind="value:start" data-parse-formats="yyyy-MM-dd" style="width:195px;"/>
+        </div>
+        <div class="k-edit-label">
+            <label for="ActualDuration">Duration</label>
+        </div>
+        <div data-container-for="ActualDuration" class="k-edit-field" >
+            <span class="k-widget k-numerictextbox" style="">
+                <span class="k-numeric-wrap k-state-default">
+                    <input type="text" class="k-formatted-value k-input" tabindex="0" title="" aria-disabled="false" aria-readonly="false" style="display: inline-block;">
+                    <input type="text" name="ActualDuration" id="taskDuration" required="required" min="0" max="10000000" step="1" data-type="number" data-bind="value:ActualDuration" data-role="numerictextbox" role="spinbutton" class="k-input k-valid" aria-valuemin="0" aria-valuemax="10000000" aria-disabled="false" aria-readonly="false" style="display: none;">
+                </span>
+            </span>
+            <span data-for="ActualDuration" class="k-invalid-msg" style="display: none;">
+            </span>
+        </div>
+        <div class="k-edit-label">
+            <label for="end">End</label>
+        </div>
+        <div data-container-for="end" class="k-edit-field">
+            <input data-role="datepicker" name="end" style="width:195px;" readonly ="readonly" id="taskEndDate"/>
+        </div>
+
+        <div class="k-edit-label">
+            <label for="orderId">Order</label>
+        </div>
+        <div data-container-for="orderId" class="k-edit-field">
+            <span class="k-widget k-numerictextbox" style="">
+                <span class="k-numeric-wrap k-state-default">
+                    <input type="text" class="k-formatted-value k-input" tabindex="0" title="" aria-disabled="false" aria-readonly="false" style="display: inline-block; width:195px;">
+                    <input type="text" name="orderId" required="required" min="0" max="10000000" step="1" data-type="number" data-bind="value:orderId" data-role="numerictextbox" role="spinbutton" class="k-input k-valid" aria-valuemin="0" aria-valuemax="10000000" aria-disabled="false" aria-readonly="false" style="display: none; width:195px;">
+                </span>
+            </span>
+            @*<input type="text" class="k-input k-textbox" name="orderId" data-bind="value:orderId" />*@
+            <span data-for="orderId" class="k-invalid-msg" style="display: none;">
+            </span>
+        </div>
+
+        @*<div class="k-edit-label">
+            <label for="percentComplete">Complete</label>
+        </div>
+        <div data-container-for="percentComplete" class="k-edit-field">
+            <span class="k-widget k-numerictextbox" style="">
+                <span class="k-numeric-wrap k-state-default">
+                    <input type="text" class="k-formatted-value k-input" tabindex="0" title="" aria-disabled="false" aria-readonly="false" style="display: inline-block;">
+                    <input type="text" name="percentComplete" required="required" min="0" max="1" step="0.01" data-type="number" data-bind="value:percentComplete" data-role="numerictextbox" role="spinbutton" class="k-input k-valid" aria-valuemin="0" aria-valuemax="1" aria-valuenow="0.49" aria-disabled="false" aria-readonly="false" style="display: none;">
+                </span>
+            </span>
+            <span data-for="percentComplete" class="k-invalid-msg" style="display: none;">
+            </span>
+        </div>*@
+
+        @*<div class="k-edit-label">
+            <label for="ProjectWorkBreakDown">WBS</label>
+        </div>
+        <div data-container-for="ProjectWorkBreakDown" class="k-edit-field">
+            <input id="wbsList" name="ProjectWorkBreakDownId" style="width:195px;" />
+        </div>*@
+
+        @*<div class="k-edit-label">
+            <label for="WorkItemDuration">Work Item</label>
+        </div>
+        <div data-container-for="WorkItemDuration" class="k-edit-field">
+            <input id="wiDurationList" name="WorkItemDurationId" style="width:195px;" />
+        </div>*@
+
+        <div class="k-edit-label">
+            <label for="Predecessors">Predecessors</label>
+        </div>
+        <div data-container-for="Predecessors" class="k-edit-field">
+            @*<input data-role="datepicker" name="end" />*@
+            <a class='k-button k-primary' href='\\#' style="width:195px;" onclick="openDependencyEditor()">Add</a>
+        </div>
+        @*<div class="k-edit-label">
+            <label for="resources">Resources</label>
+        </div>
+        <div class='k-gantt-resources' style='display: none;'>
+        </div>
+        <div class='k-edit-field' data-container-for='resources'>
+            <a class='k-button k-primary' href='\\#' style="width:195px;">Assign</a>
+        </div>*@
+        <div class="k-edit-label">
+            <label>Cost Break Down</label>
+        </div>
+        <div class="k-edit-field">
+            <a class='k-button k-primary' href='\\#' style="width:195px;" onclick="openScheduleBreakDownEditor()">Add/Edit</a>
+        </div>
+        <div class="k-edit-label">
+            <label>Activity Break Down</label>
+        </div>
+        <div class="k-edit-field">
+            <a class='k-button k-primary' href='\\#' style="width:195px;" onclick="openTaskBreakDownEditor()">Add/Edit</a>
+        </div>
+        @*<div id="window"></div>*@
+    </div>
+</script>
+
+<style type="text/css">
+    .k-gantt-actions .k-button:not(.k-gantt-pdf) {
+        visibility: hidden;
+    }
+
+    div.k-edit-form-container {
+        width: 400px;
+    }
+
+    /* Hide toolbars during export */
+    .k-pdf-export .k-gantt-toolbar {
+        display: none;
+    }
+    /*div.k-window-content k-content{
+        height : 1000px;
+    }
+    div.k-widget k-window{
+        height:800px;
+    }*/
+    div.k-content{
+        height:inherit;
+    }
+
+    .highlighted-row {
+        background-color: #aafeaa;
+    }
+
+        .highlighted-row.k-alt {
+            background-color: #bff1b4;
+        }
+</style>
+<style type="text/css">
+
+</style>
+
+
+<script id="template_sub_detail" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+        .Name("tabstrip_str_#=TaskDetailId#")
+        .SelectedIndex(0)
+        .Items(items =>
+        {
+            items.Add().Text("Detail").Content(
+                @<text>
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.TaskDetailBreakDown>()
+                            .Name("subPeriods__#=TaskDetailId#")
+                            .Columns(column =>
+                            {
+                                column.ForeignKey(c => c.ConstructionSubPeriodId, (IEnumerable)ViewData["SubPeriods"], "ConstructionSubPeriodId", "Name").Width(100).EditorTemplateName("SubPeriods");
+                                //column.Bound(c => c.ConstructionPeriodId);
+                                column.Bound(c => c.PlannedQuantityOfWork).Format("{0:N4}").ClientFooterTemplate("\\#=kendo.toString(sum, 'N4')\\#");
+
+                                column.Bound(c => c.PlannedMaterialCost).Format("{0:N4}").ClientFooterTemplate("\\#=kendo.toString(sum, 'N4')\\#");
+                                column.Bound(c => c.PlannedEquipmentCost).Format("{0:N4}").ClientFooterTemplate("\\#=kendo.toString(sum, 'N4')\\#");
+                                column.Bound(c => c.PlannedLaborCost).Format("{0:N4}").ClientFooterTemplate("\\#=kendo.toString(sum, 'N4')\\#");
+                                column.Bound(c => c.PlannedDirectCost).Format("{0:N4}").ClientFooterTemplate("\\#=kendo.toString(sum, 'N4')\\#");
+                                column.Bound(c => c.PlannedProfitCost).Format("{0:N4}").ClientFooterTemplate("\\#=kendo.toString(sum, 'N4')\\#");
+                                column.Bound(c => c.PlannedOverHeadCost).Format("{0:N4}").ClientFooterTemplate("\\#=kendo.toString(sum, 'N4')\\#");
+                                column.Bound(c => c.TotalCost).Format("{0:N4}").ClientFooterTemplate("\\#=kendo.toString(sum, 'N4')\\#");
+
+                                column.Command(command =>
+                                {
+                                    command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                    command.Destroy().Text(Resources.ActionButton_Cancel);
+                                }).Width(180);
+                            })
+                            .ToolBar(toolbar =>
+                            {
+                                toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                            })
+                            .Editable(editable => editable.Mode(GridEditMode.InLine))
+                            .Scrollable(h => h.Height("auto"))
+                            .Sortable(sortable =>
+                            {
+                                sortable.SortMode(GridSortMode.SingleColumn);
+                            })
+                            //.Groupable()
+                            .Selectable(selectable =>
+                            {
+                                selectable.Mode(GridSelectionMode.Single);
+                                selectable.Type(GridSelectionType.Row);
+                            })
+                            //.Filterable()
+                            .Pageable(pageable => pageable
+                                .Input(true)
+                                .Numeric(false)
+                                .Refresh(true)
+                                .PageSizes(true)
+                                .ButtonCount(5))
+                            //.Events(e => e.DataBound("structureTypeDataBound"))
+                            .DataSource(dataSource => dataSource
+                                .Ajax()
+                                .Aggregates(ag =>
+                                {
+                                    ag.Add(c => c.PlannedQuantityOfWork).Sum();
+                                    ag.Add(c => c.PlannedMaterialCost).Sum();
+                                    ag.Add(c => c.PlannedLaborCost).Sum();
+                                    ag.Add(c => c.PlannedEquipmentCost).Sum();
+                                    ag.Add(c => c.PlannedDirectCost).Sum();
+                                    ag.Add(c => c.PlannedProfitCost).Sum();
+                                    ag.Add(c => c.PlannedOverHeadCost).Sum();
+                                    ag.Add(c => c.TotalCost).Sum();
+                                })
+                                .Events(events =>
+                                {
+                                    events.Error("error_handler(\"subPeriods__#=TaskDetailId#\")");
+                                    events.RequestStart("onRequestStart(\"subPeriods__#=TaskDetailId#\")");
+                                    events.RequestEnd("onRequestEnd(\"subPeriods__#=TaskDetailId#\")");
+                                })
+                                .Model(model =>
+                                {
+                                    model.Id(p => p.TaskDetailBreakDownId);
+
+                                    model.Field(p => p.PlannedMaterialCost).Editable(false);
+                                    model.Field(p => p.PlannedLaborCost).Editable(false);
+                                    model.Field(p => p.PlannedEquipmentCost).Editable(false);
+                                    model.Field(p => p.PlannedProfitCost).Editable(false);
+                                    model.Field(p => p.PlannedOverHeadCost).Editable(false);
+                                    model.Field(p => p.PlannedDirectCost).Editable(false);
+                                    model.Field(p => p.TotalCost).Editable(false);
+                                })
+                                .Read(read => read.Action("Detail_Read", "TaskDetailBreakDown", new { id = "#=TaskDetailId#" }))
+                                .Create(create => create.Action("Detail_Create", "TaskDetailBreakDown", new { id = "#=TaskDetailId#" }))
+                                .Update(update => update.Action("Detail_Update", "TaskDetailBreakDown"))
+                                .Destroy(destroy => destroy.Action("Detail_Destroy", "TaskDetailBreakDown"))
+
+                                ).ToClientTemplate()
+                    )
+                </text>
+            );
+
+
+        }).ToClientTemplate())
+</script>
+
+@helper renderCostBreakDownEditorWindowGrid() { 
+        @(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.TaskDetail>()
+                        .Name("scheduledCostsBreakDownEditor")
+                        .Columns(column =>
+                        {
+
+                            column.ForeignKey(c => c.ConstructionPeriodId, (IEnumerable)ViewData["Periods"], "ConstructionPeriodId", "Name").Width(100).EditorTemplateName("Periods");
+                            //column.Bound(c => c.ConstructionPeriodId);
+                            column.Bound(c => c.PlannedQuantityOfWork).Format("{0:N4}").ClientFooterTemplate("#=kendo.toString(sum, 'N4')#");
+
+                            column.Bound(c => c.PlannedMaterialCost).Format("{0:N4}").ClientFooterTemplate("#=kendo.toString(sum, 'N4')#");
+                            column.Bound(c => c.PlannedEquipmentCost).Format("{0:N4}").ClientFooterTemplate("#=kendo.toString(sum, 'N4')#");
+                            column.Bound(c => c.PlannedLaborCost).Format("{0:N4}").ClientFooterTemplate("#=kendo.toString(sum, 'N4')#");
+                            column.Bound(c => c.PlannedDirectCost).Format("{0:N4}").ClientFooterTemplate("#=kendo.toString(sum, 'N4')#");
+                            column.Bound(c => c.PlannedProfitCost).Format("{0:N4}").ClientFooterTemplate("#=kendo.toString(sum, 'N4')#");
+                            column.Bound(c => c.PlannedOverHeadCost).Format("{0:N4}").ClientFooterTemplate("#=kendo.toString(sum, 'N4')#");
+                            column.Bound(c => c.TotalCost).Format("{0:N4}").ClientFooterTemplate("#=kendo.toString(sum, 'N4')#");
+
+                            column.Command(command =>
+                            {
+                                command.Edit().UpdateText("Save").CancelText("Cancel").Text("Edit");
+                                //command.Destroy().Text("Delete");
+                            });
+                        })
+                        
+                        //.Pageable()
+                        //.Scrollable()
+                        .Events(ev => {
+                            ev.DataBound("taskDetailDataBound");
+                        })
+                        .Selectable(selectable =>
+                        {
+                            selectable.Mode(GridSelectionMode.Single);
+                            selectable.Type(GridSelectionType.Row);
+                        })
+                        //.Filterable()
+                        .ToolBar(toolbar =>
+                          {
+                          toolbar.Template(
+                                            @<text>
+                                                <div class="toolbar row">
+                                                    <a class="k-button k-button-icontext btn btn-primary" id="resetCostBreakdownButton" onclick='return resetCostBreakdown()' href='\\#'><span class="fa fa-refresh"></span>&nbsp;&nbsp;Reset Cost Break Down</a>
+                                                    <a id="fetchLoadingIcon" hidden> <i class="fa fa-spinner fa-spin fa-2x fa-fw"></i></a>                                                   
+                                                </div>
+                                            </text>);
+                          })
+                        .Editable(editable => editable.Mode(GridEditMode.InLine))
+                        .DataSource(dataSource => dataSource
+                            .Ajax()
+                            .Aggregates(ag => {
+                                ag.Add(c => c.PlannedQuantityOfWork).Sum();
+                                ag.Add(c => c.PlannedMaterialCost).Sum();
+                                ag.Add(c => c.PlannedLaborCost).Sum();
+                                ag.Add(c => c.PlannedEquipmentCost).Sum();
+                                ag.Add(c => c.PlannedDirectCost).Sum();
+                                ag.Add(c => c.PlannedProfitCost).Sum();
+                                ag.Add(c => c.PlannedOverHeadCost).Sum();
+                                ag.Add(c => c.TotalCost).Sum();
+                            })
+                            .Model(model =>
+                            {
+                                model.Id(p => p.TaskDetailId);
+                                model.Field(p => p.PlannedMaterialCost).Editable(false);
+                                model.Field(p => p.PlannedLaborCost).Editable(false);
+                                model.Field(p => p.PlannedEquipmentCost).Editable(false);
+                                model.Field(p => p.PlannedProfitCost).Editable(false);
+                                model.Field(p => p.PlannedOverHeadCost).Editable(false);
+                                model.Field(p => p.PlannedDirectCost).Editable(false);
+                                model.Field(p => p.TotalCost).Editable(false);
+                            })
+                            .Read(read =>
+                            {
+                                read.Action("TaskDetail_Read", "TaskDetail")
+                                .Data("getCurrentTaskId");
+                            })
+                            .Create(create =>
+                            {
+                                create.Action("TaskDetail_Create", "TaskDetail")
+                                .Data("getCurrentTaskId");
+                            })
+                            .Update(update =>
+                            {
+                                update.Action("TaskDetail_Update", "TaskDetail");
+                            })
+                            .Destroy(destroy => destroy.Action("TaskDetail_Destroy", "TaskDetail"))
+                        )
+                        .ClientDetailTemplateId("template_sub_detail")
+            )
+    }
+
+
+

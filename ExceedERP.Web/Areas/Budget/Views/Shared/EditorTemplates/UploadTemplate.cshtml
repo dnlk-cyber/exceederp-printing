@@ -1,0 +1,42 @@
+﻿@model ExceedERP.Web.Areas.Budget.Models.AttachmentViewModel
+
+
+@using (Html.BeginForm("DownloadCustomTemplate", "Attachment", FormMethod.Post))
+{
+    <div class="container">
+        <fieldset>
+            <div class="row">
+                @(Html.Kendo().DropDownListFor(model => model.Name).HtmlAttributes(new { @class = "form-control" })
+                                    .DataTextField("Text")
+                                            .DataValueField("Text").OptionLabel("Select Budget Category ")
+                                            .DataSource(d => d.Read(r => r.Action("BudgetGroupDDBind", "BudgetDataProvider"))))
+
+                @(Html.Kendo().DropDownListFor(model => model.FiscalYear).HtmlAttributes(new { @class = "form-control" })
+                            .DataTextField("Text")
+                                    .DataValueField("Text").OptionLabel(" Select Fiscal Year ")
+                                   .DataSource(d =>
+                    {
+                        d.Read(r =>
+                        {
+                            r.Action("PlanYearByGroup", "BudgetDataProvider").Data("filterCategory");
+                        })
+                      .ServerFiltering(true);
+                    })
+                   .AutoBind(false)
+                       .CascadeFrom("BudgetGroup"))
+            </div>
+            <div class="row">
+                @(Html.Kendo().DropDownListFor(model => model.WorkUnitName).HtmlAttributes(new { @class = "form-control" })
+                                    .DataTextField("Text")
+                                            .DataValueField("Value").OptionLabel("Select Work Unit Optional ")
+                                .DataSource(d => d.Read(r => r.Action("WorkUnitDDBind", "BudgetDataProvider"))))
+                <div class="editor-field">
+                    <input type="submit" value="Download Template" class="form-control btn-primary" />
+                </div>
+            </div>
+
+        </fieldset>
+    </div>
+
+
+}

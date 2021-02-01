@@ -1,0 +1,32 @@
+﻿@using ExceedERP.Core.Domain.Finance.AP
+@(Html.Kendo().Grid<APsupplierBlacklist>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Opertion);
+          columns.Bound(c => c.Date);
+          columns.Bound(c => c.Remark);
+          columns.Bound(c => c.OrgBranchName);
+          columns.Bound(c => c.DateCreated);
+          columns.Bound(c => c.LastModified);
+          columns.Bound(c => c.CreatedBy);
+          columns.Bound(c => c.ModifiedBy);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+                              toolbar.Excel();
+                              // toolbar.Pdf();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Pageable()
+      .Filterable()
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.APsupplierBlacklistID))
+          .Read(read => read.Action("APsupplierBlacklists_Read", "APsupplierBlacklist"))
+          .Create(create => create.Action("APsupplierBlacklists_Create", "APsupplierBlacklist"))
+          .Update(update => update.Action("APsupplierBlacklists_Update", "APsupplierBlacklist"))
+          .Destroy(destroy => destroy.Action("APsupplierBlacklists_Destroy", "APsupplierBlacklist"))
+      ))

@@ -1,0 +1,9 @@
+﻿@using ExceedERP.Core.Domain.Common
+@using ExceedERP.Core.Localization
+@(Html.Kendo().DropDownListFor (m => m)
+    .OptionLabel( Resources.Select)
+                        .DataTextField("Name")
+                            .DataValueField("StructureId")
+                   .BindTo((System.Collections.IEnumerable)ViewData["structures"])
+                         .ValuePrimitive(true)
+)

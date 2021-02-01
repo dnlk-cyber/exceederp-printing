@@ -1,0 +1,9 @@
+﻿@using System.Collections
+@(Html.Kendo().DropDownListFor(m => m)
+                  .ValuePrimitive(true)
+                  .OptionLabel("Select Category...")
+                  .DataTextField("Category")
+                  .DataValueField("Category")
+                  .BindTo((IEnumerable)ViewData["categories"])
+)
+@Html.ValidationMessageFor(m => m)

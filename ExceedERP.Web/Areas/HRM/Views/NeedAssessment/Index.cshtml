@@ -1,0 +1,218 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.HRM.TrainingEducation
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<Legend>@Resources.NavigatorTraining_NeedAssessment</Legend>
+
+@(Html.Kendo().Grid<NeedAssessment>()
+          .Name("NeedAssessmentgrid")
+      .Columns(columns =>
+      {
+          @*columns.Bound(c => c.Check).Template(@<text></text>).ClientTemplate("<input type='checkbox' #= Check ? checked='checked':'' # class='chkbx' />")
+                    .HeaderTemplate("<input type='checkbox' id='masterCheckBox' onclick='checkAll(this)'/>").Width(100);*@
+
+          columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["allDepartments"], "OrgStructureId", "Name").EditorTemplateName("Department").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
+          columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["PeriodList"], "GlFiscalYearId", "Name").EditorTemplateName("GLFPeriod").Width(120);
+          columns.Bound(c => c.NoOfStaff).Width(100);
+          columns.ForeignKey(c => c.RequiredTraining, (IEnumerable)ViewData["TargetGroup"], "LookupId", "Description").Width(120);
+        
+          columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["CourseList"], "LookupId", "Description").EditorTemplateName("Course").Width(150);
+          columns.ForeignKey(c => c.Type, (IEnumerable)ViewData["TraTypeList"], "LookupId", "Description").EditorTemplateName("TrainingType").Width(150);
+          // columns.Bound(c => c.MainCompanyId);
+          // columns.Bound(c => c.DevelopmentRequired).ClientTemplate("<input type='checkbox' disabled = 'true' \\#= Status ? checked='checked' :'' \\# />").Width(100);
+          //columns.Bound(c => c.DevelopmentBy);
+          columns.Bound(c => c.Remark).Width(200);
+          columns.Command(command =>
+          {
+              if (HttpContext.Current.User.IsInRole("HR_Training_User"))
+              {
+                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+              }
+              if (HttpContext.Current.User.IsInRole("HR_Admin"))
+              {
+                  command.Destroy().Text(Resources.ActionButton_Cancel);
+              }
+          }).Width(200);
+      })
+      .ToolBar(toolbar =>
+      {
+
+      toolbar.Template(@<text>
+        <div class="toolbar">
+           
+            <label class="category-label">@Resources.HR_RecruitmentManagment_Vacancy_BranchId</label>
+            @(Html.Kendo().ComboBox()
+                                         .Placeholder(Resources.HR_RecruitmentManagment_Vacancy_BranchId)
+                                         .Name("OrgBranchName")
+                                         .BindTo((IEnumerable)ViewData["Branches"])
+                                         .DataTextField("Name")
+                                         .DataValueField("BranchId")
+                                         .Events(x => x.Change("Branch"))
+                                         .AutoBind(false)
+
+                                         .HtmlAttributes(new { style = "width: 200px;" })
+
+            )<br /><br />
+            @if (HttpContext.Current.User.IsInRole("HR_Training_User") || HttpContext.Current.User.IsInRole("HR_Department_Head"))
+            {
+                @item.CreateButton(Resources.ActionButton_AddNewRecord)
+                //@item.SaveButton();
+            }
+            @if (HttpContext.Current.User.IsInRole("HR_Training_User"))
+            {
+               // @item.SaveButton();
+                //toolbar.Save();
+
+                // toolbar.Save().SaveText(Resources.Button_Transfer_To_Plan);
+                //toolbar.Save().CancelText("dd");
+                // <button type="button" id="transferhButton" class="k-primary" style="width:100px">Transfer</button>
+
+            }
+
+
+
+
+            @if (HttpContext.Current.User.IsInRole("HR_Admin"))
+            {
+                @item.CustomCommandToolBarButton("Excel", "<span class='k-icon k-i-excel'></span>" + Resources.ActionButton_ExportExcel, "Excel_Export_Save", "NeedAssessment", "", new { @class = "k-button k-button-icontext k-grid-excel btn btn-primary btn-xs pull-right" });
+                @item.CustomCommandToolBarButton("PDF", "<span class='k-icon k-i-pdf'></span>" + Resources.ActionButton_ExportPDF, "Pdf_Export_Save", "NeedAssessment", "", new { @class = "k-button k-button-icontext k-grid-pdf  btn btn-primary btn-xs pull-right" });
+            }
+        </div>
+        @*@item.Excel()*@
+        </text>);
+
+      })
+            .Excel(excel => excel
+                                 .FileName(Resources.NavigatorTraining_NeedAssessment + ".xlsx")
+                                  .Filterable(true)
+                                        .AllPages(true)
+                                      // .ProxyURL(Url.Action("Excel_Export_Save", "NeedAssessment"))
+                                      )
+                                         .Pdf(pdf => pdf
+                                           .AllPages()
+                                           .FileName(Resources.NavigatorTraining_NeedAssessment + ".pdf")
+                                                // .ProxyURL(Url.Action("Pdf_Export_Save", "NeedAssessment"))
+                                                )
+                      .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("NeedAssessment").Window(window => { window.Title(Resources.NavigatorTraining_NeedAssessment); window.Scrollable(false); })
+                      )
+          .Scrollable(h => h.Height(500))
+             .Groupable()
+                      .Sortable(sortable =>
+                      {
+                          sortable.SortMode(GridSortMode.SingleColumn);
+                      })
+          .Filterable()
+            .Excel(excel => excel
+                .FileName("TrainingNeedAssessment.xlsx")
+            .Filterable(true)
+        //.ProxyURL(Url.Action("Excel_Export_Save", "NeedAssessment"))
+        )
+             .Pageable(pageable => pageable
+                                        .Input(true)
+                                        .Numeric(false)
+                                        .Refresh(true)
+                                        .PageSizes(true)
+                                        .ButtonCount(5))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+
+          .Events(events =>
+          {
+              events.Error("error_handler(\"NeedAssessmentgrid\")");
+              events.RequestStart("onRequestStart(\"NeedAssessmentgrid\")");
+              events.RequestEnd("onRequestEnd(\"NeedAssessmentgrid\")");
+          })
+
+          .Model(model => model.Id(p => p.AssesmentId))
+               .Read(read => read.Action("NeedAssessments_Read", "NeedAssessment"))
+                      .Create(create => create.Action("NeedAssessments_Create", "NeedAssessment"))
+                          .Update(update => update.Action("NeedAssessments_Update", "NeedAssessment"))
+             .Destroy(destroy => destroy.Action("NeedAssessments_Destroy", "NeedAssessment"))
+      )
+)
+<style>
+    div.k-edit-form-container {
+        width: 700px;
+    }
+</style>
+<script>
+    //function error_handler(e) {
+    //    if (e.errors) {
+    //        var message = "Errors:\n";
+    //        $.each(e.errors, function(key, value) {
+    //            if ('errors' in value) {
+    //                $.each(value.errors, function() {
+    //                    message += this + "\n";
+    //                });
+    //            }
+    //        });
+    //        alert(message);
+
+    //    }
+
+    //}
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+</script>
+
+<script>
+    function filterCategories() {
+        return {
+            OrgStructureId: $("#OrgStructureId").val()
+        };
+    }
+</script>
+<script>
+    function Branch() {
+
+
+        var value = this.value(),
+            grid = $("#NeedAssessmentgrid").data("kendoGrid");
+
+        if (value) {
+            grid.dataSource.filter({ field: "OrgBranchName", operator: "eq", value: parseInt(value) });
+        } else {
+            grid.dataSource.filter({});
+        }
+    }
+</script>
+<script type="text/javascript">
+    $(function () {
+        $('#RecruitmentPlanGrid').on('click', '.chkbx', function () {
+            var checked = $(this).is(':checked');
+            var grid = $('#RecruitmentPlanGrid').data().kendoGrid;
+            var dataItem = grid.dataItem($(this).closest('tr'));
+            dataItem.set('Check', checked);
+        })
+    })
+
+
+    function checkAll(ele) {
+        var state = $(ele).is(':checked');
+        var grid = $('#RecruitmentPlanGrid').data().kendoGrid;
+        $.each(grid.dataSource.view(), function () {
+            if (this['Check'] != state)
+                this.dirty = true;
+            this['Check'] = state;
+        });
+        grid.refresh();
+    }
+
+</script>
+
+@*<script>
+        $(function () {
+            var button = $("#transferhButton").kendoButton();
+            button.on('click', '.chkbx', function () {
+                $(this).hide();
+            })
+        });
+
+
+    </script>*@
+

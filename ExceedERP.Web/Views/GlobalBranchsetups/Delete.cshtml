@@ -1,0 +1,74 @@
+﻿@model ExceedERP.Core.Domain.Global.GlobalBranchsetup
+
+@{
+    ViewBag.Title = "Delete";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+
+<h3>Are you sure you want to delete this?</h3>
+<div>
+    <h4>Branchs</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.OrgBranchName)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.OrgBranchName)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.OrgBranchAbbreviation)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.OrgBranchAbbreviation)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.BranchAccountCode)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.BranchAccountCode)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Description)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Description)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CreatedOn)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CreatedOn)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CreatedBy)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CreatedBy)
+        </dd>
+
+
+    </dl>
+
+    @using (Html.BeginForm()) {
+        @Html.AntiForgeryToken()
+
+        <div class="form-actions no-color">
+            <button type="submit" class="saveBtn btn btn-primary"><i class="fa fa-cut"></i> Delete</button> |
+            @Html.ActionLink("Back to List", "Index")
+        </div>
+    }
+</div>

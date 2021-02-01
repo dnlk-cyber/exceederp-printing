@@ -1,0 +1,170 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.HRM.ArchiveManagement
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>@Resources.NavigatorArchiveManagement_InstitutionFolderExplorer</legend>
+@(Html.Kendo().Grid<InstitutionArchiveNo>()
+          .Name("InstitutionArchiveNogrid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.InstitutionName).Width(200);
+          columns.Bound(c => c.FileNo).Width(120);
+          columns.ForeignKey(c => c.InstitutionTypeId, (IEnumerable)ViewData["InstuType"], "InstitutionTypeId", "InstitutionName").EditorTemplateName("Institution").Width(200);
+          
+          //columns.ForeignKey(c => c.ZoneId, (IEnumerable)ViewData["Zones"], "ZoneId", "ZoneName").EditorTemplateName("Zone").Width(120);
+          columns.Bound(c => c.Shelve).Width(120);
+          columns.Bound(c => c.Row).Width(120);
+          columns.Bound(c => c.Folder).Width(150);
+          columns.Bound(c => c.Remark).Width (150);
+          //columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+      })
+      .ToolBar(toolbar =>
+      {
+      toolbar.Template(@<text>
+            <div class="toolbar">
+                <label class="category-label" for="InstitutionTypeId"> @Resources.HR_Archive_SelectInstitutionTypeId</label>
+                @(Html.Kendo().ComboBox()
+                                                                             .Placeholder(Resources.HR_ArchiveManagement_InstitutionType_InstitutionTypeId)
+                                                     .Name("InstitutionTypeId")
+
+                                                           .BindTo((IEnumerable)ViewData["InstuType"])
+
+                                                                  .DataTextField("InstitutionName")
+                                                                          .DataValueField("InstitutionTypeId")
+                                                   .AutoBind(false)
+                                                            .Events(e => e.Change("Zone"))
+                            .HtmlAttributes(new { style = "width: 200px;" })
+
+                )
+                <label class="category-label" for="Folder">@Resources.HR_Archive_SelectFolderNo</label>
+                @(Html.Kendo().ComboBox()
+                                            .Name("Folder")
+                                                    .Placeholder(Resources.HR_ArchiveManagement_InstitutionArchiveNo_Folder)
+                                            .DataTextField("Folder")
+                                            .BindTo((IEnumerable)ViewData["Folders"])
+                                                    .DataValueField("Folder")
+                            .AutoBind(false)
+                                                    .Events(e => e.Change("Folder"))
+                            .HtmlAttributes(new { style = "width: 200px;" })
+                )
+                
+
+            </div>
+        </text>);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+           .Selectable(selectable =>
+           {
+               selectable.Mode(GridSelectionMode.Single);
+               selectable.Type(GridSelectionType.Row);
+           })
+              .Scrollable(h => h.Height(500))
+                 .Groupable()
+                          .Sortable(sortable =>
+                          {
+                              sortable.SortMode(GridSortMode.SingleColumn);
+                          })
+              .Filterable()
+                 .Pageable(pageable => pageable
+                                            .Input(true)
+                                            .Numeric(false)
+                                            .Refresh(true)
+                                            .PageSizes(true)
+                                            .ButtonCount(5))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+                                 .Events(events =>
+                                                                          {
+
+                                                                              events.Error("error_handler(\"InstitutionArchiveNogrid\")");
+                                                                              events.RequestStart("onRequestStart(\"InstitutionArchiveNogrid\")");
+                                                                              events.RequestEnd("onRequestEnd(\"InstitutionArchiveNogrid\")");
+                                                                          })
+                                                      
+          .Model(model => model.Id(p => p.InstiArchiveNoId))
+          .Read(read => read.Action("InstitutionArchiveNo_Read", "InstitutionFolderExplorer"))
+          .Create(create => create.Action("InstitutionArchiveNo_Create", "InstitutionFolderExplorer"))
+          .Update(update => update.Action("InstitutionArchiveNo_Update", "InstitutionFolderExplorer"))
+          .Destroy(destroy => destroy.Action("InstitutionArchiveNo_Destroy", "InstitutionFolderExplorer"))
+      )
+)
+<script>
+    //function error_handler(e) {
+    //    if (e.errors) {
+    //        var message = "Errors:\n";
+    //        $.each(e.errors, function(key, value) {
+    //            if ('errors' in value) {
+    //                $.each(value.errors, function() {
+    //                    message += this + "\n";
+    //                });
+    //            }
+    //        });
+    //        alert(message);
+
+    //    }
+
+    //}
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+</script>
+
+<script>
+    function Zone() {
+        @*var zones = $("#ZoneId").data("kendoComboBox");
+        var zone = zones.value();
+
+        $.ajax({
+            url: '@Url.Action("GetZone", "InstitutionFolderExplorer")',
+            //contentType: "application/json; charset=utf-8",
+            data: { zone: zone },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                r = result;
+            }
+
+        });*@
+        var value = this.value(),
+            grid = $("#InstitutionArchiveNogrid").data("kendoGrid");
+
+        if (value) {
+            grid.dataSource.filter({ field: "InstitutionTypeId", operator: "eq", value: parseInt(value) });
+        } else {
+            grid.dataSource.filter({});
+        }
+    }
+</script>
+
+
+
+<script>
+    function Folder() {
+        var folders = $("#Folder").data("kendoComboBox");
+        var folder = folders.value();
+
+        $.ajax({
+            url: '@Url.Action("GetFolder", "InstitutionFolderExplorer")',
+            //contentType: "application/json; charset=utf-8",
+            data: { folder: folder },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                r = result;
+            }
+
+        });
+        var value = this.value(),
+               grid = $("#InstitutionArchiveNogrid").data("kendoGrid");
+
+        if (value) {
+            grid.dataSource.filter({ field: "Folder", operator: "eq", value: value });
+        } else {
+            grid.dataSource.filter({});
+        }
+    }
+</script>

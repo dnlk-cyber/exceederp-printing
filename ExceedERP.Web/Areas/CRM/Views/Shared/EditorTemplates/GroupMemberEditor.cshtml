@@ -1,0 +1,13 @@
+﻿@using ExceedERP.Core.Domain.CRM     
+  
+        @(Html.Kendo().DropDownListFor(model => model)
+                              .AutoBind(false)
+                              .OptionLabel("Select")
+                              .DataTextField("Name")
+                                              .DataValueField("Value")
+                              .DataSource(dataSource =>
+                              {
+                                  dataSource.Read(read => read.Action("GetMembersByGroup", "CRMDataProvider").Data("MemeberGroup"));
+
+                              }).ValuePrimitive(true))
+ 

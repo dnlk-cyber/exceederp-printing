@@ -1,0 +1,8 @@
+﻿ 
+ 
+@(Html.Kendo().DropDownList().Name("ItemCategory")
+  
+                    .DataValueField("ItemCategoryCode")
+                    .DataTextField("Name")
+                    .OptionLabel("Item Category").DataSource(
+            read => read.Read(re => re.Action("GetItemCategoryForItemDef", "DataProvider"))))

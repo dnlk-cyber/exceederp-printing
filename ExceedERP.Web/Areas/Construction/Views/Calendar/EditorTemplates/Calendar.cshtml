@@ -1,0 +1,131 @@
+﻿@using System.Collections
+@using ExceedERP.Web.Areas.HRM.Controllers
+@using ExceedERP.Core.Domain.Construction
+@using Kendo.Mvc.UI
+@using ExceedERP.Core.Localization
+@model ExceedERP.Core.Domain.Construction.SettingCalendar
+<br />
+<form>
+    <div class="row">
+        <div class="col-md-1">
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.Day, htmlAttributes: new { @class = "control-label col-md-8" })
+
+                </div>
+                <div>
+
+                    @(Html.Kendo().DropDownListFor(model => model.Day)
+                        .OptionLabel(Resources.Select)
+                        .DataTextField("Text")
+                        .DataValueField("Value")
+                        .ValuePrimitive(true)
+                        .BindTo(EnumExtension.EnumToSelectList(typeof(Days))))
+                    @Html.ValidationMessageFor(model => model.Day, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+
+            <div class="form-group">
+                <div>@Html.LabelFor(model => model.FromHour, htmlAttributes: new { @class = "control-label col-md-8" })</div>
+
+                @(Html.Kendo().TimePickerFor(model => model.FromHour)
+                  .Name("fromHor")
+                  //.Value(DateTime.Now)
+                  //.Min("8:00 AM")
+                  //.Max("6:00 PM")
+                  //.Events(e => e.Change("startChange"))
+                  .HtmlAttributes(new { style = "width: 100%" })
+                )
+                @Html.ValidationMessageFor(model => model.FromHour, "", new { @class = "text-danger" })
+            </div>
+
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div>@Html.LabelFor(model => model.ToHour, htmlAttributes: new { @class = "control-label col-md-8" })</div>
+
+                @(Html.Kendo().TimePickerFor(model => model.ToHour)
+                  .Name("toHor")
+                  .Value(DateTime.Now)
+                  //.Min("8:00 AM")
+                  //.Max("6:00 PM")
+                  //.Events(e => e.Change("startChange"))
+                  .HtmlAttributes(new { style = "width: 100%" })
+                )
+                @Html.ValidationMessageFor(model => model.ToHour, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+
+
+
+
+
+    </div>
+
+    <br />
+
+
+
+    @*<div class="row">
+        <div class="col-md-1">
+
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div>@Html.LabelFor(model => model.StepId, htmlAttributes: new { @class = "control-label col-md-8" })</div>
+
+                @(Html.Kendo().DropDownListFor(model => model.StepId)
+                  .OptionLabel(Resources.Select)
+                                  .DataTextField("StepName")
+                                  .DataValueField("StepId")
+                                  .BindTo((IEnumerable)ViewData["StepList"])
+                                           .Events(e => e.Change("GetSalary"))
+                  .ValuePrimitive(true)
+
+                )
+                @Html.ValidationMessageFor(model => model.StepId, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="col-md-3">
+
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.Salary, htmlAttributes: new { @class = "control-label col-md-8" })
+                </div>
+                <div>
+
+                    @(Html.Kendo().TextBoxFor(model => model.Salary).Enable(false))
+                    @Html.ValidationMessageFor(model => model.Salary, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.Remark, htmlAttributes: new { @class = "control-label col-md-8" })
+
+                </div>
+                <div>
+
+                    @Html.TextAreaFor(model => model.Remark)
+                    @Html.ValidationMessageFor(model => model.Remark, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+    </div>*@
+</form>
+
+<style>
+    div.k-edit-form-container {
+        width: 700px;
+    }
+</style>
+
+

@@ -1,0 +1,36 @@
+﻿@using ExceedERP.Core.Domain.HRM.PerformanceManagment
+@using ExceedERP.Core.Localization
+
+@(Html.Kendo().Grid<EmployeeMeasurement>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.MeasurementDefinitionId);
+        columns.Bound(c => c.MeasurementId);
+        columns.Bound(c => c.EmployeeId );
+        columns.Bound(c => c.EmpMesPercentageofWeight);
+        columns.Bound(c => c.Result);
+        columns.Bound(c => c.Remark);
+        columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+              .Events(events =>
+                                                                    {
+                                                                        events.Error("error_handler(\"grid\")");
+                                                                        events.RequestStart("onRequestStart(\"grid\")");
+                                                                        events.RequestEnd("onRequestEnd(\"grid\")");
+                                                                    })
+               
+          .Model(model => model.Id(p => p.EmpMeasurementId))
+          .Read(read => read.Action("EmployeeMeasurement_Read", "EmployeeMeasurement"))
+          .Create(create => create.Action("EmployeeMeasurement_Create", "EmployeeMeasurement"))
+          .Update(update => update.Action("EmployeeMeasurement_Update", "EmployeeMeasurement"))
+          .Destroy(destroy => destroy.Action("EmployeeMeasurement_Destroy", "EmployeeMeasurement"))
+      )
+)

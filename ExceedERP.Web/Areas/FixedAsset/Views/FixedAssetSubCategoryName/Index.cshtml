@@ -1,0 +1,25 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.FixedAsset.Setting.FixedAssetSubCategoryName>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Name);
+          columns.Bound(c => c.DateCreated);
+          columns.Bound(c => c.LastModified);
+          columns.Bound(c => c.CreatedBy);
+          columns.Bound(c => c.ModifiedBy);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.FixedAssetSubCategoryNameId))
+          .Read(read => read.Action("FixedAssetSubCategoryNames_Read", "FixedAssetSubCategoryName"))
+          .Create(create => create.Action("FixedAssetSubCategoryNames_Create", "FixedAssetSubCategoryName"))
+          .Update(update => update.Action("FixedAssetSubCategoryNames_Update", "FixedAssetSubCategoryName"))
+          .Destroy(destroy => destroy.Action("FixedAssetSubCategoryNames_Destroy", "FixedAssetSubCategoryName"))
+      ))

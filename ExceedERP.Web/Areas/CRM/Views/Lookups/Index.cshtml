@@ -1,0 +1,53 @@
+﻿@using System.Collections
+<p >Lookups</p>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Common.HRM.Lookup>()
+      .Name("Lookupgrid")
+      .Columns(columns =>
+      {
+          // columns.Bound(c => c.Code);
+          //columns.Bound(c => c.Category).EditorTemplateName("LookUpCategories").Width(150);
+          //columns.Bound(c => c.Index);
+          columns.Bound(c => c.LookupType).EditorTemplateName("LookUpTypes").Width(200);
+          columns.Bound(c => c.Description);
+          columns.Bound(c => c.IsDefault).ClientTemplate("<input type='checkbox' disabled = 'true' \\#=IsDefault ? checked='checked' :'' \\# />").Width(100);
+          columns.Bound(c => c.IsActive).ClientTemplate("<input type='checkbox' disabled = 'true' \\#=IsActive ? checked='checked' :'' \\# />").Width(100);
+          columns.Bound(c => c.Remark);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))//.TemplateName("Lookup").Window(window => { window.Title("Maintain Lookup"); window.Scrollable(false); }))
+              .HtmlAttributes(new { style = "height: 520px;" })
+                                                  .Pageable(pageable => pageable
+                                                                    .Input(true)
+                                                                    .Numeric(false)
+                                                                    .Refresh(true)
+                                                                    .PageSizes(true)
+                                                                    .ButtonCount(5))
+
+                                                        .Scrollable()
+                                                        .Sortable()
+                                                        .Filterable()
+                                                        .Groupable()
+                                                        .Scrollable(h => h.Height(500))
+      .DataSource(dataSource => dataSource
+          .Ajax() 
+          //.Group(groups => groups.Add(p => p.LookupType))
+              .Model(model => model.Id(p => p.LookupId)).Events(ev => ev
+                                                                                .Error("error_handler(\"Lookupgrid\")")
+                                                                                .RequestStart("onRequestStart(\"Lookupgrid\")")
+                                                                                .RequestEnd("onRequestEnd(\"Lookupgrid\")"))
+          .Read(read => read.Action("Lookups_Read", "Lookups"))
+          .Create(create => create.Action("Lookups_Create", "Lookups"))
+          .Update(update => update.Action("Lookups_Update", "Lookups"))
+          .Destroy(destroy => destroy.Action("Lookups_Destroy", "Lookups"))
+      )
+)
+<style>
+    div.k-edit-form-container {
+        width: 700px;
+    }
+</style>
+ 

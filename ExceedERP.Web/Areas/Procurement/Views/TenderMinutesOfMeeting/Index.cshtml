@@ -1,0 +1,31 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Procurement.Tender.TenderMinuteUploadDBModel>()
+      .Name("tenderminuteuploadgrid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.FilePath);
+          columns.Bound(c => c.FileName);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Pageable()
+      .Selectable(selectable => {
+                                    selectable.Mode(GridSelectionMode.Single);
+                                    selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable => {
+                                sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Filterable()
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.TenderMinuteUploadDBModelId))
+          .Read(read => read.Action("TenderMinuteUploads_Read", "TenderMinutesOfMeeting"))
+          .Create(create => create.Action("TenderMinuteUploads_Create", "TenderMinutesOfMeeting"))
+          .Update(update => update.Action("TenderMinuteUploads_Update", "TenderMinutesOfMeeting"))
+          .Destroy(destroy => destroy.Action("TenderMinuteUploads_Destroy", "TenderMinutesOfMeeting"))
+      ))

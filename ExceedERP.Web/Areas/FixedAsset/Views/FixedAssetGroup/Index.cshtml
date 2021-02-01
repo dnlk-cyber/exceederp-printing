@@ -1,0 +1,59 @@
+﻿@using ExceedERP.Core.Domain.FixedAsset.Setting
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Fixed Asset Group</legend>
+@(Html.Kendo().Grid<FixedAssetGroup>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Name).Width(200);
+          columns.Bound(c => c.Description).Width(150);
+          columns.Bound(c => c.PoolingPercentage).Width(150);
+          columns.Bound(c => c.StraightLinePercentage).Width(150);
+          columns.Bound(c => c.SalvageValue).Width(100);
+        
+          columns.Command(command =>
+          {
+              command.Edit();
+              //command.Destroy();
+          }).Width(380);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .HtmlAttributes(new { style = "height: 550px;" })
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(20))
+      .Scrollable()
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Filterable()
+      .Groupable()
+      .Groupable().Events(ev => ev.DetailExpand("detailExpand"))
+      .Scrollable(h => h.Height(500))
+      //.Events(x => x.DataBound("onDataBoundMaster"))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Events(ev => ev
+              .Error("error_handler(\"grid\")")
+              .RequestStart("onRequestStart(\"grid\")")
+              .RequestEnd("onRequestEnd(\"grid\")"))
+          .Model(model => model.Id(p => p.FixedAssetGroupID))
+          .Read(read => read.Action("FixedAssetGroups_Read", "FixedAssetGroup"))
+          .Create(create => create.Action("FixedAssetGroups_Create", "FixedAssetGroup"))
+          .Update(update => update.Action("FixedAssetGroups_Update", "FixedAssetGroup"))
+          .Destroy(destroy => destroy.Action("FixedAssetGroups_Destroy", "FixedAssetGroup"))
+      ))

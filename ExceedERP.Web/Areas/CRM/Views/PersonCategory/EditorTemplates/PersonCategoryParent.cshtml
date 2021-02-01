@@ -1,0 +1,10 @@
+﻿@using System.Collections
+@(Html.Kendo().DropDownList()
+.BindTo((IEnumerable)ViewData["PersonCategoryList"])
+    .OptionLabel("--Select Parent--")
+                .DataValueField("PersonCategoryID")
+                .DataTextField("Description")
+                .Name("PersonCategoryID")
+
+)
+

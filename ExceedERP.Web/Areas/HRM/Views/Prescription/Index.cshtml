@@ -1,0 +1,253 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization 
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>@Resources.NavigatorHealthAndInsurance_Prescription</legend>
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.HRM.HealthAndInsurance.PatientCard>()
+          .Name("PatientCardgrid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.PatientCardId).Width(120);
+          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "PersonId", "FullNameWithOutCode").EditorTemplateName("ListOfEmployee").Width(200);
+          columns.Bound(c => c.Age).Width (100);
+          columns.Bound(c => c.Sex).Width(100);
+          //columns.Bound(c => c.WorkSpace).Width (150);
+          columns.Bound(c => c.DateAmharic).Width(120);
+
+          columns.Command(command =>
+          {
+              //command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+              //command.Destroy();
+          }).Width(180);
+      })
+      .ToolBar(toolbar =>
+      {
+          // toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+                 .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("PatientCard").Window(window => { window.Title("Patient Card"); window.Scrollable(false); }))
+        .Scrollable(h => h.Height(500))
+                     .Groupable()
+                              .Sortable(sortable =>
+                              {
+                                  sortable.SortMode(GridSortMode.SingleColumn);
+                              })
+                  .Filterable()
+                     .Pageable(pageable => pageable
+                                                .Input(true)
+                                                .Numeric(false)
+                                                .Refresh(true)
+                                                .PageSizes(true)
+                                                .ButtonCount(5))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+               .Events(events =>
+        {
+            events.Error("error_handler(\"PatientCardgrid\")");
+            events.RequestStart("onRequestStart(\"PatientCardgrid\")");
+            events.RequestEnd("onRequestEnd(\"PatientCardgrid\")");
+        })
+
+              .Model(model => model.Id(p => p.PatientId))
+          .Read(read => read.Action("PatientCard_Read", "PatientCard"))
+        // .Create(create => create.Action("PatientCard_Create", "PatientCard"))
+        // .Update(update => update.Action("PatientCard_Update", "PatientCard"))
+        // .Destroy(destroy => destroy.Action("PatientCard_Destroy", "PatientCard"))
+          ).ClientDetailTemplateId("template")
+      )
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                  .Name("tabstrip_#=PatientId#")
+          .SelectedIndex(0)
+          .Items(items =>
+          {
+              items.Add().Text(Resources.NavigatorHealthAndInsurance_Prescription).Content(
+                  @<text>
+                    @*  <legend>Sick Leave</legend>*@
+
+                   @(Html.Kendo().Grid<ExceedERP.Core.Domain.HRM.HealthAndInsurance.Prescription>()
+                                         .Name("Prescriptiongrid_#=PatientId#")
+                         .Columns(columns =>
+                         {
+                             //  columns.Bound(c => c.PatientCardId);
+
+                             columns.Bound(c => c.DateAmharic);
+                             columns.Bound(c => c.Rate);
+                             columns.Bound(c => c.TreatedBy);
+                             columns.Bound(c => c.Remark);
+                             columns.Command(command =>
+                             {
+                                 if (HttpContext.Current.User.IsInRole("Health_User"))
+                                 {
+                                     command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                 }
+                                 if (HttpContext.Current.User.IsInRole("Health_Admin"))
+                                 {
+                                     command.Destroy().Text(Resources.ActionButton_Cancel);
+                                 }
+                             }).Width(180);
+                         })
+                         .ToolBar(toolbar =>
+                         {
+                             if (HttpContext.Current.User.IsInRole("Health_User"))
+                             {
+
+                                 toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                             }
+                         })
+                                 .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName(Resources.NavigatorHealthAndInsurance_Prescription).Window(window =>
+                         {
+                             window.Title("Prescription");
+                             window.Scrollable(false);
+                         }))
+
+                                  .Events(x =>
+                                  {
+                                      x.Save("GetDate");
+                                      x.Edit("GetDate");
+                                  })
+                         .Scrollable(h => h.Height(500))
+                         //   .Groupable()
+                         //            .Sortable(sortable =>
+                         //            {
+                         //                sortable.SortMode(GridSortMode.SingleColumn);
+                         //            })
+                         //.Filterable()
+                         //   .Pageable(pageable => pageable
+                         //                              .Input(true)
+                         //                              .Numeric(false)
+                         //                              .Refresh(true)
+                         //                              .PageSizes(true)
+                         //                              .ButtonCount(5))
+                                          .ClientDetailTemplateId("treatment")
+                         .DataSource(dataSource => dataSource
+                             .Ajax()
+                                     .Events(events =>
+                {
+                    events.Error("error_handler(\"Prescriptiongrid_#=PatientId#\")");
+                    events.RequestStart("onRequestStart(\"Prescriptiongrid_#=PatientId#\")");
+                    events.RequestEnd("onRequestEnd(\"Prescriptiongrid_#=PatientId#\")");
+                })
+                                             
+                             .Model(model => model.Id(p => p.PrescriptionId))
+                                     .Read(read => read.Action("Prescription_Read", "Prescription", new { id = "#=PatientId#" }))
+                                     .Create(create => create.Action("Prescription_Create", "Prescription", new { id = "#=PatientId#" }))
+                             .Update(update => update.Action("Prescription_Update", "Prescription"))
+                             .Destroy(destroy => destroy.Action("Prescription_Destroy", "Prescription"))
+                                 ).ToClientTemplate() 
+                         )
+
+                </text>
+
+
+                  );
+          }).ToClientTemplate())
+</script>
+
+
+<script id="treatment" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                                          .Name("tabstrip_#=PatientId#")
+          .SelectedIndex(0)
+          .Items(items =>
+          {
+              items.Add().Text(Resources.NavigatorHealthAndInsurance_Treatment).Content(
+                @<text>
+                    @*  <legend>Sick Leave</legend>*@
+
+                   @(Html.Kendo().Grid<ExceedERP.Core.Domain.HRM.HealthAndInsurance.Treatment>()
+          .Name("Treatmentgrid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Measure);
+          columns.Bound(c => c.Quntity);
+          columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+                  .Events(events =>
+                        {
+                            events.Error("error_handler(\"Treatmentgrid\")");
+                            events.RequestEnd("onRequestEnd(\"Treatmentgrid\")");
+                        })
+                                
+          .Model(model => model.Id(p => p.TreatmentId))
+                          .Read(read => read.Action("Treatment_Read", "Treatment", new { id = "#=PrescriptionId#" }))
+                          .Create(create => create.Action("Treatment_Create", "Treatment", new { id = "#=PrescriptionId#" }))
+          .Update(update => update.Action("Treatment_Update", "Treatment"))
+          .Destroy(destroy => destroy.Action("Treatment_Destroy", "Treatment"))
+      ).ToClientTemplate() 
+                )
+
+                </text>
+
+
+                  );
+          }).ToClientTemplate())
+</script>
+
+<script>
+    //function error_handler(e) {
+    //    if (e.errors) {
+    //        var message = "Errors:\n";
+    //        $.each(e.errors, function(key, value) {
+    //            if ('errors' in value) {
+    //                $.each(value.errors, function() {
+    //                    message += this + "\n";
+    //                });
+    //            }
+    //        });
+    //        alert(message);
+
+    //    }
+
+    //}
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+</script>
+
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 300px;
+    }
+</style>
+
+<script>
+    function GetDate() {
+
+        var x = AssignDate();
+        var y = x;
+        $("#DateAmharic").trigger("change");
+        for (var o in y) {
+            $.ajax({
+                contentType: "application/json; charset=utf-8",
+                url: '@Url.Action("SetDate", "Prescription")',
+                data: { name: y[o].id, value: y[o].date },
+                type: 'GET',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                }
+
+            });
+        }
+    }
+
+</script>
+<script>
+    function AssignDate() {
+        var list = AssignDates();
+        return list;
+    }
+
+</script>

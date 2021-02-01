@@ -1,0 +1,57 @@
+﻿<legend>Cost Of Service Sold </legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Budget.GAAP.CostOfServiceSold>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Name);
+          columns.ForeignKey(c => c.GlFiscalYearId, (System.Collections.IEnumerable)ViewData["FiscalYear"], "GlFiscalYearId", "Name");
+          columns.Bound(c => c.First).ClientGroupFooterTemplate("#=sum#");
+          columns.Bound(c => c.Second).ClientGroupFooterTemplate("#=sum#");
+          columns.Bound(c => c.Third).ClientGroupFooterTemplate("#=sum#");
+          columns.Bound(c => c.Fourth).ClientGroupFooterTemplate("#=sum#");
+          columns.Bound(c => c.FromAccCode);
+          columns.Bound(c => c.ToAccCode);
+   
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+           .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("PlanEditor"))
+             .HtmlAttributes(new { style = "height: 520px;" })
+                          .Pageable(pageable => pageable
+                                            .Input(true)
+                                            .Numeric(false)
+                                            .Refresh(true)
+                                            .PageSizes(true)
+                                            .ButtonCount(5))
+
+                                .Scrollable()
+                                .Sortable()
+                                .Filterable()
+                                .Groupable()
+                                .Scrollable(h => h.Height(500))
+
+      .DataSource(dataSource => dataSource
+              .Ajax().Aggregates(aggregates =>
+                                    {
+                                        aggregates.Add(c => c.First).Sum();
+                                        aggregates.Add(c => c.Second).Sum();
+                                        aggregates.Add(c => c.Third).Sum();
+                                        aggregates.Add(c => c.Fourth).Sum();
+
+                                    })
+              .Group(x => { x.Add(y => y.GlFiscalYearId); })
+          .Model(model => model.Id(p => p.CostOfServiceSoldId))
+          .Read(read => read.Action("CostOfServiceSolds_Read", "CostOfServiceSold"))
+          .Create(create => create.Action("CostOfServiceSolds_Create", "CostOfServiceSold"))
+          .Update(update => update.Action("CostOfServiceSolds_Update", "CostOfServiceSold"))
+          .Destroy(destroy => destroy.Action("CostOfServiceSolds_Destroy", "CostOfServiceSold"))
+      )
+)
+
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 900px;
+    }
+</style>

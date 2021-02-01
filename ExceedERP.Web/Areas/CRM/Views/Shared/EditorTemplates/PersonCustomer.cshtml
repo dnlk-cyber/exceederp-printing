@@ -1,0 +1,172 @@
+﻿@using Kendo.Mvc.UI
+@model ExceedERP.Core.Domain.CRM.Person_Customer
+
+
+<form>
+
+    <div class="row">
+        <div class="col-md-1">
+
+        </div>
+        <div class="col-md-3">
+
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.FirstName)
+                </div>
+                <div>
+
+                    @Html.Kendo().TextBoxFor(model => model.FirstName)
+                    @Html.ValidationMessageFor(model => model.FirstName)
+                </div>
+            </div>
+
+        </div>
+        <div class="col-md-3">
+
+            <div class="form-group">
+
+                <div class="k-label">
+                    @Html.LabelFor(model => model.MiddleName)
+
+                </div>
+                <div>
+                    @Html.Kendo().TextBoxFor(model => model.MiddleName)
+                    @Html.ValidationMessageFor(model => model.MiddleName)
+
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.LastName)
+
+                </div>
+                <div>
+
+                    @Html.Kendo().TextBoxFor(model => model.LastName)
+                    @Html.ValidationMessageFor(model => model.LastName)
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <br />
+    <div class="row">
+        <div class="col-md-1">
+
+        </div>
+        <div class="col-md-3">
+            <div>
+                @Html.LabelFor(model => model.Nationality)
+            </div>
+            <div class="form-group">
+
+                @(Html.Kendo().DropDownListFor(model => model.Nationality)
+                      .AutoBind(false)
+                              .OptionLabel("Select Nationality...")
+                                          .DataTextField("Nationality")
+                                          .DataValueField("CountryID")
+                      .DataSource(dataSource =>
+                      {
+                          dataSource.Read(read => read.Action("GetNationality", "CRMDataProvider"))
+                                    .ServerFiltering(true);
+                      }))
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div>
+                @Html.LabelFor(model => model.DateOfBirth)
+
+            </div>
+            <div class="form-group">
+
+                @Html.Kendo().DateTimePickerFor(model => model.DateOfBirth)
+                @Html.ValidationMessageFor(model => model.DateOfBirth)
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div>
+                @Html.LabelFor(model => model.Title)
+            </div>
+            <div class="form-group">
+                @(Html.Kendo().DropDownListFor(m => m.Title)
+        .DataTextField("Text")
+                    .DataValueField("Text")
+            .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.CRM.PersonTitle)))
+                )
+                @Html.ValidationMessageFor(model => model.Title)
+            </div>
+        </div>
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-md-1">
+
+        </div>
+        <div class="col-md-3">
+            <div>
+                @Html.LabelFor(model => model.Gender)
+            </div>
+            <div class="form-group">
+                @(Html.Kendo().DropDownListFor(m => m.Gender)
+        .DataTextField("Text")
+                    .DataValueField("Text")
+            .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.CRM.Gender)))
+                )
+                @Html.ValidationMessageFor(model => model.Gender)
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div>
+                @Html.LabelFor(model => model.CategoryID)
+            </div>
+            <div class="form-group">
+
+                @(Html.Kendo().DropDownListFor(model => model.CategoryID)
+                      .AutoBind(false)
+                              .OptionLabel("Select Category...")
+                                                  .DataTextField("Description")
+                                                  .DataValueField("CategoryID")
+                      .DataSource(dataSource =>
+                      {
+                          dataSource.Read(read => read.Action("GetCategory", "CRMDataProvider"))
+                                    .ServerFiltering(true);
+                      }))
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div>
+                @Html.LabelFor(model => model.IsActive)
+
+            </div>
+            <div class="form-group">
+
+                @Html.Kendo().CheckBoxFor(model => model.IsActive)
+                @Html.ValidationMessageFor(model => model.IsActive)
+            </div>
+        </div>
+
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-md-1">
+
+        </div>
+        <div class="col-md-3">
+            <div>
+                @Html.LabelFor(model => model.Remark)
+
+            </div>
+            <div class="form-group">
+
+                @Html.Kendo().TextBoxFor(model => model.Remark)
+                @Html.ValidationMessageFor(model => model.Remark)
+            </div>
+        </div>
+    </div>
+</form>

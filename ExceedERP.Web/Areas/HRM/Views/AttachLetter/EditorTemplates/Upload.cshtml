@@ -1,0 +1,17 @@
+﻿@using ExceedERP.Core.Localization
+@using (Html.BeginForm("Upload", "AttachLetter", FormMethod.Post  ,
+    new { enctype = "multipart/form-data" }))
+{
+
+    @Html.AntiForgeryToken()
+
+    <fieldset>
+        <div class="editor-field">
+            @Html.TextBox("file", "", new { type = "file", accept = ".xlsx,.xls,image/*,.doc, .docx,.ppt, .pptx,.txt,.pdf", onchange = "validateDocFileType()" })
+        </div>
+        <br/>
+        <div class="editor-field">
+            <input id="uploadBut"  type="submit" value="@Resources.HR_ActionButton_Upload" />
+        </div>
+    </fieldset>
+}

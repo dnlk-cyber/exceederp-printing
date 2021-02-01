@@ -1,0 +1,15 @@
+﻿@model ExceedERP.Web.Controllers.DashboardViewModel
+
+@(Html.Kendo().Chart()
+      .Name("Chart")
+      .Series(series =>
+      {
+          foreach (var def in Model.Series)
+          {
+              series.Column(def.Data).Name(def.Name).Stack(def.Stack);
+          }
+      })
+      .CategoryAxis(axis => axis
+         .Categories(Model.Categories)
+      )
+)

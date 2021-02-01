@@ -1,0 +1,277 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.Inventory
+@using Kendo.Mvc.UI
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Temporary Goods Receive</legend>
+@(Html.Kendo().Grid<TempGoodReceive>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.TempGoodReceiveID).Title("Receive No.").Width(120).Width(120).ClientTemplate("#=appendZeros(TempGoodReceiveID)#");
+          columns.ForeignKey(p => p.StoreCode, (IEnumerable)ViewData["stores"], "StoreCode", "Name").Width(150).EditorTemplateName("StoreSelectorByKeeper");
+          columns.Bound(c => c.DeliveredBy).Width(135);
+          columns.Bound(c => c.ReceivedBy).Width(130);
+          columns.Bound(c => c.ReceiveDate).Width(120);
+          columns.Bound(c => c.Remark).Width(120);
+          columns.ForeignKey(p => p.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("BranchSelector").Width(150);
+          columns.Bound(c => c.Status).Width(80);
+
+          columns.Command(command =>
+          {
+              command.Edit(); 
+              command.Destroy();
+          }).Width(180);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("TempGoodReceive").Window(w => w.Title("Temporary Good Receive")))
+      .HtmlAttributes(new { style = "height: 550px;" })
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(20))
+      .Scrollable()
+      .Sortable()
+      .Filterable()
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Groupable().Events(ev => ev.DetailExpand("detailExpand"))
+      .Scrollable(h => h.Height(500))
+      .Events(x => x.DataBound("onDataBoundMaster"))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Sort(sort => sort.Add("TempGoodReceiveID").Descending())
+          .Events(ev => ev
+              .Error("error_handler(\"grid\")")
+              .RequestStart("onRequestStart(\"grid\")")
+              .RequestEnd("onRequestEnd(\"grid\")"))
+          .Model(model =>
+          {
+              model.Id(p => p.TempGoodReceiveID);
+              model.Field(p => p.TempGoodReceiveID).Editable(false);
+              model.Field(p => p.BranchId).Editable(false);
+              model.Field(p => p.Status).Editable(false);
+          })
+          .Read(read => read.Action("TempGoodReceives_Read", "TempGoodReceive"))
+          .Create(create => create.Action("TempGoodReceives_Create", "TempGoodReceive"))
+          .Update(update => update.Action("TempGoodReceives_Update", "TempGoodReceive"))
+          .Destroy(destroy => destroy.Action("TempGoodReceives_Destroy", "TempGoodReceive"))
+      ).ClientDetailTemplateId("tempgoodreceivetemplate"))
+
+<script id="tempgoodreceivetemplate" type="text/Kendo-tmpl">
+    @(Html.Kendo().TabStrip().SelectedIndex(0).Name("tabStrip_#=TempGoodReceiveID#").SelectedIndex(0).Items(items =>
+      {
+          items.Add().Text("Detail").Content(
+              @<text>   
+       
+            # if (!IsOnlineApproved&&!IsSendForApproval)
+            {#
+            
+             <a onclick='return sendForApproval("#=TempGoodReceiveID#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+            <br />
+            # } #
+
+            # if (IsOnlineApproved)
+            {#
+            @*<a href='@Url.Action("Goodreceive", "InventoryPrint")/#=TempGoodReceiveID#' title="Print"><i class="fa fa-print fa-2x"></i></a>*@
+            <br />
+            # } #
+
+         <div>
+        <hr>
+        <dl class="dl-horizontal">
+            <dt>
+                Store
+            </dt>
+            <dd>
+               #=StoreCode #
+            </dd>
+            <dt>
+                Deliverer Name
+            </dt>
+            <dd>
+                #= DeliveredBy #
+            </dd>
+            <dt>
+                Receiver Name
+            </dt>
+            <dd>
+                #= ReceivedBy #
+            </dd>
+            <dt>
+                Receive Date
+            </dt>
+            <dd>
+                #=kendo.toString(kendo.parseDate(ReceiveDate), 'dd/MM/yyyy') #
+
+            </dd>
+            <dt>
+                Remark
+            </dt>
+            <dd>
+                #= Remark #
+            </dd>
+        </dl>
+       
+    </div>
+                   
+            </text>);
+
+          items.Add().Text("Item").Content(
+            @<text>
+                @(Html.Kendo().Grid<TempGoodReceiveItem>()
+                      .Name("TempGoodReceiveItem_#=TempGoodReceiveID#")
+                      .Columns(columns =>
+                      {
+                          columns.ForeignKey(p => p.ItemCategoryCode, (IEnumerable)ViewData["Category"], "ItemCategoryCode", "Name").Title("Category").EditorTemplateName("ItemCategorySelector").Width(180);
+                          columns.ForeignKey(p => p.ItemCode, (IEnumerable)ViewData["Items"], "ItemCode", "Name").Title("Items").EditorTemplateName("ItemSelector").Width(180);
+                          columns.Bound(c => c.Quantity);
+                          columns.Bound(c => c.Remark);
+                          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+                      })
+                      .ToolBar(toolbar =>
+                      {
+                          toolbar.Create();
+                      })
+                      .Events(ev => ev.Edit("onItemEdit"))
+                      .Events(x => x.DataBound("onDataBoundLines"))
+                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                      .Scrollable()
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+                          .Model(model =>
+                          {
+                              model.Id(p => p.TempGoodReceiveItemID);
+                              model.Field(p => p.CreatedBy).Editable(false);
+                              model.Field(p => p.DateCreated).Editable(false);
+                              model.Field(p => p.ModifiedBy).Editable(false);
+                              model.Field(p => p.LastModified).Editable(false);
+
+                          })
+                          .Events(ev => ev
+                              .Error("error_handler(\"TempGoodReceiveItem_#=TempGoodReceiveID#\")")
+                              .RequestStart("onRequestStart(\"TempGoodReceiveItem_#=TempGoodReceiveID#\")")
+                              .RequestEnd("onRequestEnd(\"TempGoodReceiveItem_#=TempGoodReceiveID#\")"))
+                          .Model(model => model.Id(p => p.TempGoodReceiveItemID))
+                          .Read(read => read.Action("TempGoodReceiveItems_Read", "TempGoodReceiveItem", new { id = "#=TempGoodReceiveID#" }))
+                          .Create(create => create.Action("TempGoodReceiveItems_Create", "TempGoodReceiveItem", new { id = "#=TempGoodReceiveID#" }))
+                          .Update(update => update.Action("TempGoodReceiveItems_Update", "TempGoodReceiveItem"))
+                          .Destroy(destroy => destroy.Action("TempGoodReceiveItems_Destroy", "TempGoodReceiveItem"))
+                      ).ToClientTemplate())
+
+            </text>);
+
+          items.Add().Text("Validation").Content(
+            @<text>
+    @(Html.Kendo().Grid<TempGoodReceiveValidation>()
+          .Name("TempGoodReceiveValidation_#=TempGoodReceiveID#")
+          .Columns(columns =>
+          {
+              columns.Bound(c => c.Status).Width(170).EditorTemplateName("ValidationStatus");
+              columns.Bound(c => c.Remark).Width(170);
+              columns.Command(command =>
+              {
+                  command.Edit();
+                  //command.Destroy();
+              });
+          })
+          .ToolBar(toolbar =>
+          {
+              toolbar.Create();
+          })
+          .Editable(editable => editable.Mode(GridEditMode.InLine))
+          .Scrollable()
+          .Events(x => x.DataBound("onDataBoundFisrtValidation"))
+          .DataSource(dataSource => dataSource
+              .Ajax()
+              .Events(ev => ev
+                  .Error("error_handler(\"TempGoodReceiveValidation_#=TempGoodReceiveID#\")")
+                  .RequestStart("onRequestStart(\"TempGoodReceiveValidation_#=TempGoodReceiveID#\")")
+                  .RequestEnd("onRequestEnd(\"TempGoodReceiveValidation_#=TempGoodReceiveID#\")"))
+              .Model(model => model.Id(p => p.TempGoodReceiveValidationID))
+              .Read(read => read.Action("TempGoodReceiveValidations_Read", "TempGoodReceiveValidation", new { id = "#=TempGoodReceiveID#" }))
+              .Create(create => create.Action("TempGoodReceiveValidations_Create", "TempGoodReceiveValidation", new { id = "#=TempGoodReceiveID#" }))
+              .Update(update => update.Action("TempGoodReceiveValidations_Update", "TempGoodReceiveValidation"))
+              .Destroy(destroy => destroy.Action("TempGoodReceiveValidations_Destroy", "TempGoodReceiveValidation"))
+          ).ToClientTemplate())
+
+
+            </text>);
+      }).ToClientTemplate())
+</script>
+<script> 
+
+
+    function sendForApproval(id) {
+        var recordStatus = "";
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("TempGoodReceives_SendForApproval", "TempGoodReceive", new { area = "Inventory" })',
+            data: { id: id },
+            success: function (result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                recordStatus = result.Status;
+
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+
+
+    var popup;
+    var aCode;
+
+
+   
+    var storeCode;
+    var codeid;
+
+    function onItemEdit(e) {
+        var masterRow = this.wrapper.closest("tr.k-detail-row").prev(".k-master-row");
+        var masterGrid = $("#grid").data("kendoGrid");
+
+        var masterDataItem = masterGrid.dataItem(masterRow);
+        storeCode = masterDataItem.StoreCode;
+        //    codeid = masterDataItem.GoodSellingAndLendingID;
+    }
+    //var masterDataItem;
+    //var masterRow;
+    //var masterGrid;
+
+    //function detailExpand(e) {
+
+    //    masterRow = e.masterRow;
+
+    //    masterGrid = $("#grid").data("kendoGrid");
+
+    //    masterDataItem = masterGrid.dataItem(masterRow);
+
+    //    //  var masterDataItem = masterGrid.dataItem();
+    //    codeid = masterDataItem.TempGoodReceiveID;
+    //}
+
+    function OnIndexCall(elem) {
+
+        var a = codeid;
+        $(elem).attr('href', $(elem).attr('href') + '?id=' + a);
+
+
+    }
+</script>

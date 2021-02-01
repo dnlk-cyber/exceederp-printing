@@ -1,0 +1,39 @@
+﻿@using ExceedERP.Core.Domain.Finance.AP
+@(Html.Kendo().Grid<APBusinessType>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.TypeOfBusiness);
+          columns.Bound(c => c.Description);
+          columns.Bound(c => c.DateCreated);
+          columns.Bound(c => c.LastModified);
+          columns.Bound(c => c.CreatedBy);
+          columns.Bound(c => c.ModifiedBy);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+                              toolbar.Excel();
+                              // toolbar.Pdf();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Pageable()
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Filterable()
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.APBusinessTypeID))
+          .Read(read => read.Action("APBusinessTypes_Read", "ApBusinessType"))
+          .Create(create => create.Action("APBusinessTypes_Create", "ApBusinessType"))
+          .Update(update => update.Action("APBusinessTypes_Update", "ApBusinessType"))
+          .Destroy(destroy => destroy.Action("APBusinessTypes_Destroy", "ApBusinessType"))
+      ))

@@ -1,0 +1,14 @@
+﻿@using ExceedERP.Core.Domain.CRM
+<div>
+    @(Html.Kendo().DropDownListFor(model => model)
+                              .AutoBind(false)
+                              .OptionLabel("Select")
+                                      .DataTextField("Description")
+                                              .DataValueField("Description")
+                              .DataSource(dataSource =>
+                              {
+                                  dataSource.Read(read => read.Action("GetTicketDefintion", "CRMDataProvider"));
+
+                              }).ValuePrimitive(true))
+    @Html.ValidationMessageFor(model => model)
+</div>

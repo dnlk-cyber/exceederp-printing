@@ -1,0 +1,40 @@
+﻿@using System.Collections
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Dashboard.InventoryItembalance>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.ForeignKey(p => p.ItemCategoryCode, (IEnumerable)ViewData["Category"], "ItemCategoryCode", "Name").Title("Category").EditorTemplateName("ItemCategorySelector").Width(180);
+          columns.ForeignKey(p => p.ItemCode, (IEnumerable)ViewData["Items"], "ItemCode", "Name").Title("Items").EditorTemplateName("ItemSelector").Width(180);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+      })
+    
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .HtmlAttributes(new { style = "height: 550px;" })
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(20))
+      .Scrollable()
+      .Sortable()
+      .Filterable()
+      .Groupable()
+                
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Sort(sort => sort.Add("InventoryItembalanceId").Descending())
+          .Events(ev => ev
+              .Error("error_handler(\"grid\")")
+              .RequestStart("onRequestStart(\"grid\")")
+              .RequestEnd("onRequestEnd(\"grid\")"))
+          .Model(model => model.Id(p => p.InventoryItembalanceId))
+          .Read(read => read.Action("InventoryItembalances_Read", "DashboardInventoryItembalance"))
+          .Create(create => create.Action("InventoryItembalances_Create", "DashboardInventoryItembalance"))
+          .Update(update => update.Action("InventoryItembalances_Update", "DashboardInventoryItembalance"))
+          .Destroy(destroy => destroy.Action("InventoryItembalances_Destroy", "DashboardInventoryItembalance"))
+      ))

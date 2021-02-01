@@ -1,0 +1,358 @@
+﻿@using System.Web.UI.WebControls
+@using System.Collections.Generic;
+@model ExceedERP.Core.Domain.CRM.CashSalesInvoice
+
+
+
+<link href="~/Scripts/Exceed/dist/css/style.css" rel="stylesheet" />
+<style>
+
+ 
+
+
+    .k-grid table tr.k-state-Issued {
+        background: #b7ff9e;
+        color: #040000;
+    }
+
+
+    .k-grid table tr.k-state-Rejected {
+        background: #fcabab;
+        color: #040000;
+    }
+    .switch {
+        position: relative;
+        display: inline-block;
+        width: 60px;
+        height: 34px;
+    }
+
+        .switch input {
+            display: none;
+        }
+
+    .slider {
+        position: absolute;
+        cursor: pointer;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background-color: #ccc;
+        -webkit-transition: .4s;
+        transition: .4s;
+    }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 26px;
+            left: 4px;
+            bottom: 4px;
+            background-color: white;
+            -webkit-transition: .4s;
+            transition: .4s;
+        }
+
+    input:checked + .slider {
+        background-color: #2196F3;
+    }
+
+    input:focus + .slider {
+        box-shadow: 0 0 1px #2196F3;
+    }
+
+    input:checked + .slider:before {
+        -webkit-transform: translateX(26px);
+        -ms-transform: translateX(26px);
+        transform: translateX(26px);
+    }
+
+    /* Rounded sliders */
+    .slider.round {
+        border-radius: 34px;
+    }
+
+        .slider.round:before {
+            border-radius: 50%;
+        }
+</style>
+
+<script>
+    var masterId;
+</script>
+
+<legend>Sales Inventory</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.CashSalesInvoice>()
+      .Name("grid")
+      .Columns(columns =>
+          {
+              columns.Bound(c => c.CashSalesInvoiceID).Title("Invoice Num").Width(80);
+              columns.ForeignKey(c => c.OrganizationCustomerId, (System.Collections.IEnumerable)ViewData["OrganizationCustomers"], "OrganizationCustomerID", "TradeName").Title("Customer").EditorTemplateName("CashOrgCustomerEditor").Width(100);
+              columns.Bound(c => c.Date).Width(100);
+              columns.Bound(c => c.PaymentMethod).Title("Payment Method").EditorTemplateName("PaymentMethodType").Width(120);
+              columns.ForeignKey(c => c.RecieveMethod, (System.Collections.IEnumerable)ViewData["PaymentMethod"], "PaymentMethodID", "Method").Title("Recieve Method").EditorTemplateName("RecieveMethodType").Width(120);
+            
+              columns.Bound(c => c.GrandTotal).Title(" Remaining ").Format("{0:N0}").Width(100);
+              columns.Command(command =>
+                  {
+                      command.Custom("Issue").Click("RejectPopUp").HtmlAttributes(new { @class = "K-button k-primary" });
+
+                      command.Destroy().Text("Close Issue");
+                  }).Width(180);
+          })
+                                           .Events(ev =>
+                                                 {
+                                                     ev.DataBound("onDataBound");
+                                                 })
+                            .Editable(editable =>
+                                          {
+                                              editable.Mode(GridEditMode.InLine);
+                                              editable.DisplayDeleteConfirmation("Are You Sure To Approve Invoice");
+                                          })
+          .HtmlAttributes(new { style = "height: 520px;" })
+                          .Pageable(pageable => pageable
+                                            .Input(true)
+                                            .Numeric(false)
+                                            .Refresh(true)
+                                            .PageSizes(true)
+                                            .ButtonCount(5))
+
+                                .Scrollable()
+                                .Sortable()
+                                .Filterable()
+                                   .Scrollable(h => h.Height(500))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+  .Sort(x => x.Add(s => s.CashSalesInvoiceID).Descending())
+          .Model(model =>
+              {
+                  model.Id(p => p.CashSalesInvoiceID);
+                  model.Field(p => p.GrandTotal).Editable(false);
+                  model.Field(p => p.CashSalesInvoiceID).Editable(false);
+                  model.Field(p => p.References).Editable(false);
+              }).Events(ev => ev
+                                                                            .Error("error_handler(\"grid\")")
+                                                                            .RequestStart("onRequestStart(\"grid\")")
+                                                                            .RequestEnd("onRequestEnd(\"grid\")"))
+                                                              .Read(read => read.Action("Inventorys_Read", "SalesInventory"))
+          .Create(create => create.Action("CashSalesInvoices_Create", "CashSalesInvoice"))
+          .Update(update => update.Action("CashSalesInvoices_Update", "CashSalesInvoice"))
+                          .Destroy(destroy => destroy.Action("Inventorys_Destroy", "SalesInventory"))
+      ).ClientDetailTemplateId("template")
+)
+
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                    .Name("tabstrip_#=CashSalesInvoiceID#")
+    .SelectedIndex(0)
+    .Items(items =>
+                {
+                    items.Add().Text("Line Invoices ").Content(
+                        @<text>
+
+                            <a href='@Url.Action("SalesInventoryPrint", "Print")/#=CashSalesInvoiceID#' title="Print"><i class="fa fa-print  fa-2x"></i></a>
+
+                            @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.LineItem>()
+                                  .Name("LineItems_#=CashSalesInvoiceID#")
+        .Columns(columns =>
+        {
+            columns.ForeignKey(c => c.StoreID, (System.Collections.IEnumerable)ViewData["SalesStore"], "SalesStoreId", "Description").Title("Store").Width(150);
+            columns.ForeignKey(c => c.ThingID, (System.Collections.IEnumerable)ViewData["Thing"], "ProductID", "Name").Title("Product").Title("Product").Width(100);
+
+            // columns.Bound(c => c.Variety).Width(80);
+            // columns.Bound(c => c.Class).Width(50);
+
+            columns.Bound(c => c.UnitAmount).Title("Price").Format("{0:N0}").Width(80);
+            columns.Bound(c => c.Quantity).Title("QTY").Format("{0:N0}").Width(80);
+            columns.Bound(c => c.CalculatedCost).Title("Sub Total").Format("{0:N0}").Width(80);
+            columns.Bound(c => c.TaxAmount).Format("{0:N0}").Width(80);
+            columns.Bound(c => c.TotalAmount).Title("Total").Format("{0:N0}").Width(80);
+            columns.ForeignKey(c => c.Tax, (System.Collections.IEnumerable)ViewData["Tax"], "GLTaxRateID", "TaxName").Title("Tax Type").Width(80);
+            columns.Bound(c => c.WithholdingType).Width(100);
+            columns.Bound(c => c.WithholdingAmount).Width(100);
+            columns.Bound(c => c.WithholdTax).ClientTemplate("<input type='checkbox'  disabled='true' \\#= WithholdTax? checked='checked': checked='' \\# class='checkbox'  />").Width(80);
+            columns.Bound(c => c.Vat).Format("{0:N0}").Width(60);
+            columns.Bound(c => c.Status).Width(80);
+
+
+        })
+
+   .Scrollable(s => s.Height(500))
+                                .DataSource(dataSource => dataSource
+          .Ajax()
+                   .Model(model =>
+                   {
+                       model.Id(p => p.LineItemID);
+                       model.Field(v => v.TotalAmount).Editable(false);
+                       model.Field(v => v.TaxAmount).Editable(false);
+                       model.Field(v => v.CalculatedCost).Editable(false);
+                       model.Field(v => v.Status).Editable(false);
+                   }
+                  )
+                                       .Events(ev => ev
+                                                                                            .Error("error_handler(\"LineItems_#=CashSalesInvoiceID#\")")
+                                                                                            .RequestStart("onRequestStart(\"LineItems_#=CashSalesInvoiceID#\")")
+                                                                                            .RequestEnd("onRequestEnd(\"LineItems_#=CashSalesInvoiceID#\")"))
+                                                  .Read(read => read.Action("LineItemInventory_Read", "LineItem", new { voucherID = "#=CashSalesInvoiceID#", voucherDefinitionID = "2" }))
+                                          .Create(create => create.Action("LineItems_Create", "LineItem", new { voucherID = "#=CashSalesInvoiceID#", voucherDefinitionIDCreate = "2" }))
+          .Update(update => update.Action("LineItems_Update", "LineItem"))
+          .Destroy(destroy => destroy.Action("LineItems_Destroy", "LineItem"))
+      ).ToClientTemplate()
+
+                            )
+                        </text>
+
+
+
+
+            );
+                    /***********************************************LineItems**************************************************/
+                    items.Add().Text("Issue History").Content(
+                        @<text>
+
+
+
+
+                            @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.IssueHistory>()
+                                  .Name("LineItemHistory_#=CashSalesInvoiceID#")
+        .Columns(columns =>
+        {
+            columns.ForeignKey(c => c.Remark, (System.Collections.IEnumerable)ViewData["Thing"], "ProductID", "Name").Title("Product").Title("Product").Width(100);
+            columns.Bound(c => c.Amount).Format("{0:N0}").Width(80);
+            columns.Bound(c => c.DateCreated).Format("{0:yyyy-MM-dd}").Width(80);
+
+        })
+
+
+      .Scrollable(s => s.Height(500))
+
+
+      .DataSource(dataSource => dataSource
+          .Ajax()
+                   .Model(model =>
+                   {
+                       model.Id(p => p.IssueHistoryId);
+
+                   }
+                  ).Read(read => read.Action("IssueHistory_Read", "SalesInventory", new { InvoiceId = "#=CashSalesInvoiceID#" }))
+
+      ).ToClientTemplate()
+
+                            )
+                        </text>
+
+
+
+
+            );
+
+
+
+                    /***********************************************************************************************************/
+                }).ToClientTemplate()
+
+    )
+
+</script>
+
+
+
+@(Html.Kendo().Window().Name("Details")
+    .Title("Issue Product ")
+    .Visible(false)
+        .Modal(true).Animation(x => x.Open(y => y.SlideIn(SlideDirection.Down)).Close(y => y.SlideIn(SlideDirection.Down)).Enable(true))
+    .Scrollable(true)
+    .Draggable(true)
+    .Width(500)
+)
+
+<script type="text/x-kendo-template" id="Rejectemplate">
+    <div id="details-container">
+
+
+        <div class="form-group" style="padding:5px 5px 5px 5px;">
+            <form action="/SalesInventory/Issue" method="post">
+                <img src="/Content/Images/load.gif" style="display:none;"  id="ProgressIssue" />
+                <div style=" padding:30px;" id="lines"></div>
+                <input type="hidden" name="Id" value="#= CashSalesInvoiceID #">
+                <input type="submit" class="  k-button k-button-icontext btn-block k-primary" value=" Issue " />
+
+            </form>
+        </div>
+    </div>
+
+</script>
+
+
+
+<script>
+    var masterId;
+    var detailsTemplate = kendo.template($("#Rejectemplate").html());
+    function RejectPopUp(e) {
+        e.preventDefault();
+
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        var wnd = $("#Details").data("kendoWindow");
+        masterId = dataItem.CashSalesInvoiceID;
+
+        wnd.content(detailsTemplate(dataItem));
+        wnd.center().open();
+        $("#ProgressIssue").show();
+    
+    var lineitem = "";
+    var index = 0;
+    $.ajax({
+        url: '@Url.Action("GetLineItemByInvoice", "CRMDataProvider")',
+
+        data: { invoiceId: masterId },
+        type: 'POST',
+        cache: false,
+        success: function (list) {
+            $("#ProgressIssue").hide();
+            for (var i = 0 ; i < list.length; i++) {
+
+                var voucher = masterId;
+                lineitem += " <ul class='row'>";
+                if (list[i].VoucherDefinitionID == "2" && list[i].Voucher == voucher) {
+
+                    lineitem += "<div class='row form-group' > <div class='col-sm-4 '><i class='fa fa-briefcase fa-2x'></i> <label style='padding:15px 10px 10px 10px;'   >   " + list[i].Product + "   </label>  <input type='hidden' name=Property[" + index + "][ProductId]  value=" + list[i].ThingID + "  >    <input type='hidden' name=Property[" + index + "][Id]  value=" + list[i].LineItemID + " > </div> <div class='col-sm-3'>  <div class='switch_box box_4'><div class='input_wrapper'>     <input type='checkbox'  name=Property[" + index + "][Checked] checked   class='switch_4'> <svg class='is_checked' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 426.67 426.67'>     <path d='M153.504 366.84c-8.657 0-17.323-3.303-23.927-9.912L9.914 237.265c-13.218-13.218-13.218-34.645 0-47.863 13.218-13.218 34.645-13.218 47.863 0l95.727 95.727 215.39-215.387c13.218-13.214 34.65-13.218 47.86 0 13.22 13.218 13.22 34.65 0 47.863L177.435 356.928c-6.61 6.605-15.27 9.91-23.932 9.91z' />     </svg>       <svg class='is_unchecked' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 212.982 212.982'>       <path d='M131.804 106.49l75.936-75.935c6.99-6.99 6.99-18.323 0-25.312-6.99-6.99-18.322-6.99-25.312 0L106.49 81.18 30.555 5.242c-6.99-6.99-18.322-6.99-25.312 0-6.99 6.99-6.99 18.323 0 25.312L81.18 106.49 5.24 182.427c-6.99 6.99-6.99 18.323 0 25.312 6.99 6.99 18.322 6.99 25.312 0L106.49 131.8l75.938 75.937c6.99 6.99 18.322 6.99 25.312 0 6.99-6.99 6.99-18.323 0-25.313l-75.936-75.936z' fill-rule='evenodd' clip-rule='evenodd' />   </svg>  </div> </div> </div>        <input type='number'  name=Property[" + index + "][Name]    value=" + list[i].Quantity + " min='0' max=" + list[i].Quantity +" step='0.0001'  required style='padding:15px 15px 15px 15px;' /></div>";
+                    index++;
+                }
+                lineitem += " </ul>";
+            }
+            document.getElementById("lines").innerHTML = lineitem;
+
+        }
+
+    });
+
+    }
+</script>
+<script>
+
+    function onDataBound(e) {
+        var grid = this;
+
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+
+
+
+            if (dataItem.GrandTotal <= 0) {
+
+                $(this).find(".k-grid-Issue").remove();
+                $(this).find(".k-grid-delete").remove();
+                $(this).addClass("k-state-Issued");
+            }
+            if (dataItem.GrandTotal > 0) {
+
+                $(this).find(".k-grid-delete").remove();
+
+            }
+
+        });
+    }
+
+</script>

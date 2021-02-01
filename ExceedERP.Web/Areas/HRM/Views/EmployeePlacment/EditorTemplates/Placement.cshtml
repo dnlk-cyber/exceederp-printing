@@ -1,0 +1,474 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@using ExceedERP.Helpers.Common
+@using ExceedERP.Web.Areas.HRM.Controllers
+@using ExceedERP.Web.Areas.HRM.Controllers.Company
+@using Kendo.Mvc.UI
+@model ExceedERP.Core.Domain.HRM.EmployeeDetail.Placement
+
+<form>
+
+    <div class="row">
+        <div class="col-md-1">
+
+        </div>
+      
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.EmployeeId, htmlAttributes: new { @class = "control-label col-md-8" })
+
+                </div>
+                <div>
+
+                    @(Html.Kendo().DropDownListFor(model => model.EmployeeId)
+                            //  .Name("EmployeeId")
+                                              .DataValueField("PersonId")
+                        .DataTextField("FullName")
+                           .OptionLabel("Select Employee..")
+                            .Filter("contains")
+                            .MinLength(2)
+                            .HtmlAttributes(new { style = "width:200px" })
+                           // .Virtual(v => v.ValueMapper("valueMapper").ItemHeight(26))
+                        .DataSource(source =>
+                        {
+                            source.Custom()
+                                  .ServerFiltering(true)
+                                  .ServerPaging(true)
+                                  .Type("aspnetmvc-ajax")
+                                  .Transport(transport => transport.Read(r => r.Action("GetEmployees", "EmployeePlacmentWithOJ")))
+                                  .Schema(schema =>
+                                  {
+                                      schema.Data("Data")
+                                            .Total("Total");
+                                  });
+                        })
+                                       
+                                           .ValuePrimitive(true)
+
+
+                                                                  .Height(400)
+                                                                          .HeaderTemplate("<div class=\"dropdown-header k-widget k-header\">" +
+                                                        "<span>Photo</span>" +
+                                                        "<span>Full Name</span>" +
+                                                    "</div>")
+                                                            .Template(@"<div class='Employee-photo' style='background-image: url(" + Url.Content("~/Content/Images/") + "#:data.PersonId#-Photo/" + "#:data.PersonId#.jpg" + ");'></div>" +
+                                                            "<div class='Employee-name'>#:FullName#</div>")
+                    )
+
+
+
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div>@Html.LabelFor(model => model.OrgStructureId, htmlAttributes: new { @class = "control-label col-md-8" })</div>
+
+                @(Html.Kendo().ComboBoxFor(model => model.OrgStructureId)
+                  .Placeholder(Resources.Select)
+                           .Filter("contains")
+                           .MinLength(2)
+                  .DataTextField("Name")
+                  .DataValueField("OrgStructureId")
+                          .ValuePrimitive(true)
+                      .DataSource(dataSource =>
+                      {
+                          dataSource.Read(read => read.Action("GetDepartments", "HRMDataProvider", new { area = "HRM" }))
+                              .ServerFiltering(false);
+                      }))
+                  
+
+                
+                @Html.ValidationMessageFor(model => model.OrgStructureId, "", new { @class = "text-danger" })
+            </div>
+        </div>
+        <div class="col-md-3">
+
+            <div class="form-group">
+                <div>@Html.LabelFor(model => model.LookupId, htmlAttributes: new { @class = "control-label col-md-8" })</div>
+
+                @(Html.Kendo().ComboBoxFor(m => m.LookupId)
+                              .DataTextField("Description")
+                                    .DataValueField("LookupId")
+                                             .Filter("contains")
+                                                    .MinLength(2)
+                                .DataSource(source =>
+                                {
+                                    source.Read(read =>
+                                    {
+                                        read.Action("GetJobTitle", "HRMDataProvider")
+                                        .Data("filterCategories");
+                                    })
+                                    .ServerFiltering(true);
+                                })
+                                .Events(e => e.Change("GetDepartment"))
+
+
+                                                 .CascadeFrom("OrgStructureId")
+                          .AutoBind(false)
+                        .Enable(false)
+                )
+                @Html.ValidationMessageFor(model => model.LookupId, "", new { @class = "text-danger" })
+            </div>
+
+        </div>
+
+    </div>
+
+    <br />
+
+    <div class="row">
+        <div class="col-md-1">
+        </div>
+
+
+       
+
+
+        <div class="col-md-3">
+
+            <div class="form-group">
+                <div>@Html.LabelFor(model => model.ReportsTo, htmlAttributes: new { @class = "control-label col-md-8" })</div>
+
+                @(Html.Kendo().ComboBoxFor(m => m.ReportsTo)
+                                      .DataTextField("Name")
+                      .Filter("contains")
+                                              .DataValueField("OrgStructureId")
+                                             .HtmlAttributes(new { style = "width:200px" })
+                                                      .ValuePrimitive(true)
+
+                      .DataSource(dataSource =>
+                      {
+                          dataSource.Read(read => read.Action("GetSelectedDepartments", "HRMDataProvider", new { area = "HRM" }))
+                              .ServerFiltering(false);
+                      }))
+
+
+                @Html.ValidationMessageFor(model => model.ReportsTo, "", new { @class = "text-danger" })
+            </div>
+
+        </div>
+
+        <div class="col-md-3">
+
+            <div class="form-group">
+
+
+                <div>
+                    <br /><br />
+                    @Html.Kendo().CheckBoxFor(model => model.IsHead)
+                    @Html.ValidationMessageFor(model => model.IsHead, "", new { @class = "text-danger" })
+
+                </div>
+            </div>
+        </div>
+
+       
+
+        @*<div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.ImmediateSupervisor, htmlAttributes: new { @class = "control-label col-md-8" })
+
+                </div>
+                <div>
+
+                    @(Html.Kendo().DropDownListFor(model => model.ImmediateSupervisor)
+
+                                              .DataValueField("EmployeeId")
+                                                .DataTextField("FirstName")
+                           .OptionLabel("Select Supervisor")
+                            .Filter("contains")
+                            .MinLength(2)
+                            .HtmlAttributes(new { style = "width:200px" })
+                                    .CascadeFrom("OrgStructureId")
+                            .Virtual(v => v.ValueMapper("valueMapper").ItemHeight(26))
+                        .DataSource(source =>
+                        {
+                            source.Custom()
+                                  .ServerFiltering(true)
+                                  .ServerPaging(true)
+                                  .Type("aspnetmvc-ajax")
+                                  .Transport(transport =>
+                                      transport.Read(r =>
+                                      r.Action("GetEmployeesSupervisor", "HRMDataProvider").Data("filterStructure")
+                                      ))
+                                  .Schema(schema =>
+                                  {
+                                      schema.Data("Data")
+                                            .Total("Total");
+                                  });
+                        })
+
+                                           .ValuePrimitive(true)
+
+
+                    //              .Height(400)
+                    //                      .HeaderTemplate("<div class=\"dropdown-header k-widget k-header\">" +
+                    //    "<span>Photo</span>" +
+                    //    "<span>Full Name</span>" +
+                    //"</div>")
+                    //        .Template(@"<div class='Employee-photo' style='background-image: url(" + Url.Content("~/Content/Images/") + "#:data.PersonId#-Photo/" + "#:data.PersonId#.jpg" + ");'></div>" +
+                    //        "<div class='Employee-name'>#:FullName#</div>")
+                    )
+
+
+
+                </div>
+            </div>
+        </div>*@
+
+       
+       
+
+        <div class="col-md-3">
+
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.ResponsibilityLevel, htmlAttributes: new { @class = "control-label col-md-8" })
+
+                </div>
+
+
+
+
+                @(Html.EnumDropDownListFor(model => model.ResponsibilityLevel, htmlAttributes: new { @class = "k-dropdown-wrap k-state-default", @style = "width: 140px" })
+
+                )
+
+            </div>
+        </div>
+
+    </div>
+
+    <br />
+
+
+    <div class="row">
+        <div class="col-md-1">
+
+        </div>
+  
+
+        <div class="col-md-3">
+
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.AssignmentType, htmlAttributes: new { @class = "control-label col-md-8" })
+
+                </div>
+
+
+                @(Html.EnumDropDownListFor(model => model.AssignmentType, htmlAttributes: new { @class = "k-dropdown-wrap k-state-default", @style = "width: 140px" })
+                )
+
+            </div>
+        </div>
+  
+
+        <div class="col-md-3">
+
+            <div class="form-group">
+                <div>@Html.LabelFor(model => model.BranchId, htmlAttributes: new { @class = "control-label col-md-8" })</div>
+
+                @(Html.Kendo().DropDownListFor(m => m.BranchId)
+                                     .DataTextField("Name")
+                                             .DataValueField("BranchId")
+                      .Filter("contains")
+                                                      .ValuePrimitive(true)
+                      .DataSource(dataSource =>
+                      {
+                          dataSource.Read(read => read.Action("GetAllBranch", "HRMDataProvider", new { area = "HRM" }))
+                              .ServerFiltering(false);
+                      }))
+
+
+                @Html.ValidationMessageFor(model => model.BranchId, "", new { @class = "text-danger" })
+            </div>
+
+        </div>
+
+        <div class="col-md-3">
+
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.AssignmentDateAmharic, htmlAttributes: new { @class = "control-label col-md-8" })
+                </div>
+                <div>
+
+                    @Html.TextBoxFor(model => model.AssignmentDateAmharic, htmlAttributes: new { disabled = "disabled", @class = "et-popup-picker" }) <img src="~/Scripts/etp/images/calendar-blue.gif" onclick="SelectDate(this)" />
+                    @Html.ValidationMessageFor(model => model.AssignmentDateAmharic, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+        </div>
+
+
+
+
+
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-md-1">
+
+        </div>
+
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.RankName, htmlAttributes: new { @class = "control-label col-md-8" })
+
+                </div>
+                <div>
+
+
+                    @(Html.Kendo().TextBoxFor(model => model.RankName)
+        .Enable(false))
+                    @Html.ValidationMessageFor(model => model.RankName, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+
+            <div class="form-group">
+
+                <div class="k-label">
+                    @Html.LabelFor(model => model.StepName, htmlAttributes: new { @class = "control-label col-md-8" })
+
+                </div>
+                <div>
+                    @(Html.Kendo().TextBoxFor(model => model.StepName)
+.Enable(false))
+                    @Html.ValidationMessageFor(model => model.StepName, "", new { @class = "text-danger" })
+
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.Salary, htmlAttributes: new { @class = "control-label col-md-8" })
+
+                </div>
+                <div>
+
+                    @(Html.Kendo().TextBoxFor(model => model.Salary)
+              .Enable(false))
+                    @Html.ValidationMessageFor(model => model.Salary, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+     
+        
+    </div>
+    <div class="row">
+        <div class="col-md-1">
+
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.Remark, htmlAttributes: new { @class = "control-label col-md-8" })
+
+                </div>
+                <div>
+
+                    @Html.TextAreaFor(model => model.Remark)
+                    @Html.ValidationMessageFor(model => model.Remark, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+    </div>
+
+</form>
+
+<style>
+    .Employee-photo {
+        display: inline-block;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background-size: 32px 35px;
+        background-position: center center;
+        vertical-align: middle;
+        line-height: 32px;
+        box-shadow: inset 0 0 1px #999, inset 0 0 10px rgba(0,0,0,.2);
+        margin-left: 5px;
+    }
+
+    .Employee-name {
+        display: inline-block;
+        vertical-align: middle;
+        line-height: 32px;
+        padding-left: 3px;
+    }
+</style>
+
+<style>
+    .dropdown-header {
+        border-width: 0 0 1px 0;
+        text-transform: uppercase;
+    }
+
+        .dropdown-header > span {
+            display: inline-block;
+            padding: 10px;
+        }
+
+            .dropdown-header > span:first-child {
+                width: 50px;
+            }
+
+    #customers-list .k-item {
+        line-height: 1em;
+        min-width: 300px;
+    }
+
+    /* Material Theme padding adjustment*/
+
+    .k-material #customers-list .k-item,
+    .k-material #customers-list .k-item.k-state-hover,
+    .k-materialblack #customers-list .k-item,
+    .k-materialblack #customers-list .k-item.k-state-hover {
+        padding-left: 5px;
+        border-left: 0;
+    }
+
+    #customers-list .k-item > span {
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+        display: inline-block;
+        vertical-align: top;
+        margin: 20px 10px 10px 5px;
+    }
+
+        #customers-list .k-item > span:first-child {
+            -moz-box-shadow: inset 0 0 30px rgba(0, 0, 0, .3);
+            -webkit-box-shadow: inset 0 0 30px rgba(0, 0, 0, .3);
+            box-shadow: inset 0 0 30px rgba(0, 0, 0, .3);
+            margin: 10px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-size: 100%;
+            background-repeat: no-repeat;
+        }
+
+    #customers-list h3 {
+        font-size: 1.2em;
+        font-weight: normal;
+        margin: 0 0 1px 0;
+        padding: 0;
+    }
+
+    #customers-list p {
+        margin: 0;
+        padding: 0;
+        font-size: .8em;
+    }
+</style>

@@ -1,0 +1,157 @@
+﻿@model  ExceedERP.Core.Domain.FleetManagement.FleetTireManagement.TireIssue
+
+
+
+<div class="demo-section k-content">
+    <form>
+
+
+        <div class="row">
+            <div class="col-md-1">
+            </div>
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.SerialNo)
+                    </div>
+                    <div>
+                        @(Html.Kendo().DropDownListFor(model => model.SerialNo).Name("SerialNo")
+                                                                 .DataTextField("Text")
+                                                         .DataValueField("Value").OptionLabel(" Select ").Filter(FilterType.Contains)
+                                                                                         .DataSource(d => d.Read(r => r.Action("TyreForIssue", "TyreManagementIssue"))).Events(e => e.Change("BindDetail")))
+
+
+                      
+                    </div>
+                </div>
+            </div>
+
+
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+
+                        @Html.LabelFor(model => model.PlateNumber)
+                        @(Html.Kendo().DropDownListFor(model => model.PlateNumber).Name("PlateNumber")
+                                                         .DataTextField("EquipmentName")
+                                                 .DataValueField("PlateNumber").OptionLabel(" Select ").Filter(FilterType.Contains)
+                                                                         .DataSource(d => d.Read(r => r.Action("FleetsTyreReadingDDBind", "EquipmentRegistration"))))
+                    </div>
+                </div>
+            </div>
+ 
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.Brand)
+                    </div>
+                    <div>
+                        @Html.Kendo().TextBoxFor(model => model.Brand).Enable(false)
+                        
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="row">
+            <div class="col-md-1">
+            </div>
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.TireSize)
+                    </div>
+                    <div>
+                        @Html.Kendo().TextBoxFor(model => model.TireSize).Enable(false)
+                      
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.TireTube)
+                    </div>
+                        @Html.Kendo().TextBoxFor(model => model.TireTube).Enable(false)
+                    </div>
+                </div>
+        
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="form-group">
+                        <div class="k-label">
+                            @Html.LabelFor(model => model.TireType)
+                        </div>
+                        @Html.Kendo().TextBoxFor(model => model.TireType).Enable(false)
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-1">
+            </div>
+       
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.KMReading)
+                    </div>
+                    <div>
+                        @Html.Kendo().TextBoxFor(model => model.KMReading).Enable(false)
+                 
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.UnitPrice)
+                    </div>
+                    <div>
+                        @Html.Kendo().TextBoxFor(model => model.UnitPrice).Enable(false)
+                     
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.InstalledDate)
+                    </div>
+                    <div>
+                        @Html.Kendo().DatePickerFor(model => model.InstalledDate).Enable(false)
+                    
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="row">
+            <div class="col-md-1">
+            </div>
+           
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.DescriptionReason)
+                    </div>
+                    <div>
+                        @Html.Kendo().TextBoxFor(model => model.DescriptionReason)
+                        @Html.ValidationMessageFor(model => model.DescriptionReason)
+                    </div>
+                </div>
+            </div>
+
+
+
+        </div>
+
+
+    </form>
+</div>

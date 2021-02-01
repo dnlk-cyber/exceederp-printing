@@ -1,0 +1,81 @@
+﻿@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Resources</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.ResourceViewModel>()
+      .Name("ResourceTypeGrid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.ID);
+          //columns.Bound(c => c.ResourceTypeId);
+          columns.Bound(c => c.Name);
+          columns.Bound(c => c.ResourceType);
+          columns.Bound(c => c.UnitofMeasure);
+          columns.Bound(c => c.PrimaryRole);
+          columns.Bound(c => c.Color);
+          columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit); command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("Resources").Window(window => { window.Title("Resource"); window.Scrollable(false); }))
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+    .Scrollable(h => h.Height(500))
+    .Groupable()
+    .Sortable(sortable =>
+    {
+        sortable.SortMode(GridSortMode.SingleColumn);
+    })
+    .Filterable()
+    .Pageable(pageable => pageable
+                            .Input(true)
+                            .Numeric(false)
+                            .Refresh(true)
+                            .PageSizes(true)
+                            .ButtonCount(5))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(res => res.ID))
+          .Read(read => read.Action("ReadResources", "Scheduler"))
+          .Create(create => create.Action("CreateResource", "Scheduler"))
+          .Update(update => update.Action("UpdateResource", "Scheduler"))
+          .Destroy(destroy => destroy.Action("DestroyResource", "Scheduler"))
+      )
+)
+
+@(Html.Kendo().Window()
+.Name("myWindow") //The name of the window is mandatory. It specifies the "id" attribute of the widget.
+.Title("Login") //set the title of the window
+.Content(@<text>
+        This is my window.
+</text>)
+.Draggable() //Enable dragging of the window
+.Resizable() //Enable resizing of the window
+.Width(600) //Set width of the window
+.Modal(true)
+.Visible(false)
+)
+
+<button onclick="openWindow()">Open Window</button>
+
+<script>
+  function openWindow(){
+     var wdw = $("#myWindow").data("kendoWindow"); //get the Window widget's instance
+     wdw.open();  //and call its open method
+     wdw.center();
+  }
+
+</script>
+
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 550px;
+        align-content: center;
+    }
+</style>

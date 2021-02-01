@@ -1,0 +1,15 @@
+﻿@(Html.Kendo().DropDownListFor(m => m)
+                          .AutoBind(false)
+                          .OptionLabel("--Select--")
+                          .DataTextField("Description")
+                          .DataValueField("TicketActivityDefinition_HelpDeskId")
+                            .Filter("contains")
+                                .ValuePrimitive(true)
+                          .DataSource(dataSource =>
+                          {
+                              dataSource.Read(read => read.Action("GetTicketDefintion", "InfoDeskDataProvider"))
+                                        .ServerFiltering(false);
+                          })
+
+)
+@Html.ValidationMessageFor(m => m)

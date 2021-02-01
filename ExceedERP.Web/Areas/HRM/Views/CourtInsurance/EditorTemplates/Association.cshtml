@@ -1,0 +1,16 @@
+﻿@using ExceedERP.Core.Domain.Common
+@using ExceedERP.Core.Localization
+@(Html.Kendo().DropDownListFor(m => m)
+    .OptionLabel( Resources.Select)
+                        .DataTextField("Name")
+                                    .DataValueField("AssociationId").DataSource(source =>
+              {
+                  source.Read(read =>
+                  {
+                      read.Action("CalculateAge", "CourtInsurance");
+
+                  });
+                  // .ServerFiltering(true);
+              })
+                         .ValuePrimitive(true)
+)

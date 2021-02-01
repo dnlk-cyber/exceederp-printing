@@ -1,0 +1,55 @@
+﻿@{
+    ViewBag.Title = "Equipment Name";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Equipment Condition</legend>
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetRegistration.FleetCondition>()
+    .Name("grid")
+    .Columns(columns =>
+    {
+
+        columns.Bound(e => e.Name).Width(140);
+        columns.Bound(e => e.Description).Width(140);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
+
+    })
+              .ToolBar(commands => commands.Create())
+         .Editable(editable =>
+         {
+             editable.Mode(GridEditMode.InLine);
+             editable.DisplayDeleteConfirmation("Are You Sure To Remove Equipment Name");
+         })  .HtmlAttributes(new { style = "height: 520px;" })
+                      .Pageable(pageable => pageable
+                                        .Input(true)
+                                        .Numeric(false)
+                                        .Refresh(true)
+                                        .PageSizes(true)
+                                        .ButtonCount(5))
+
+                            .Scrollable()
+                            .Sortable()
+                            .Filterable()
+                            .Groupable()
+                            .Scrollable(h => h.Height(500))
+    .DataSource(dataSource => dataSource
+        .Ajax()
+        .ServerOperation(false)
+
+        .Model(model =>
+              {
+                  model.Id(p => p.FleetConditionId);
+
+                  model.Field(p => p.FleetConditionId).Editable(false);
+
+              })                   .Events(ev => ev
+                                .Error("error_handler(\"grid\")")
+                                .RequestStart("onRequestStart(\"grid\")")
+                                .RequestEnd("onRequestEnd(\"grid\")"))
+                            .Create(update => update.Action("FleetCondition_Create", "EquipmentCondition"))
+                            .Read(read => read.Action("FleetCondition_Read", "EquipmentCondition"))
+                            .Update(update => update.Action("FleetCondition_Update", "EquipmentCondition"))
+                            .Destroy(update => update.Action("FleetCondition_Destroy", "EquipmentCondition"))
+  )
+)
+  

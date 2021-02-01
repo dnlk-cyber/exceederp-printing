@@ -1,0 +1,510 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.FixedAsset.Depreciation
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Monthly Depreciation</legend>
+
+@(Html.Kendo().Grid<MonthlyDepreciation>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.MonthlyDepreciationId).Title("#").Width(50).ClientTemplate("#=appendZeros(MonthlyDepreciationId)#");
+          columns.ForeignKey(p => p.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").Width(200);
+          columns.ForeignKey(p => p.GlFiscalYearId, (IEnumerable)ViewData["Years"], "GlFiscalYearId", "Name").Width(150);
+          columns.ForeignKey(p => p.GLPeriodId, (IEnumerable)ViewData["Periods"], "GLPeriodId", "Name").Width(150);
+          columns.Bound(c => c.Status).Width(130);
+
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Template(@<text>
+
+                               @(Html.Kendo().DropDownList()
+                                     .OptionLabel("Select Branch")
+                                     .Name("branchSelector")
+                                     .AutoBind(false)
+                                     .DataValueField("Code")
+                                     .DataTextField("Name")
+                                     .HtmlAttributes(new { style = "width: 200px;" })
+                                     .DataSource(dataSource =>
+                                     {
+                                         dataSource.Read(read => read.Action("GetBranches", "GlobalDataProvider", new { area = "Common" }))
+                                             .ServerFiltering(false);
+                                     }))
+
+                               @(Html.Kendo().DropDownList()
+                                     .OptionLabel("Select Year")
+                                     .Name("yearSelector")
+                                     .AutoBind(false)
+                                     .DataValueField("GlFiscalYearId")
+                                     .DataTextField("Name")
+                                     .HtmlAttributes(new { style = "width: 200px;" })
+                                     .DataSource(dataSource =>
+                                     {
+                                         dataSource.Read(read => read.Action("GetOpenYears", "GlobalDataProvider", new { area = "Common" }))
+                                             .ServerFiltering(false);
+                                     }))
+
+
+
+
+                               @(Html.Kendo().DropDownList()
+                                     .Name("periodSelector")
+                                     .AutoBind(false)
+                                     .DataValueField("GLPeriodId")
+                                     .DataTextField("Name")
+                                     .HtmlAttributes(new { style = "width: 200px;" })
+                                     .DataSource(dataSource =>
+                                     {
+                                         dataSource.Read(read => read.Action("GetPeriods", "GlobalDataProvider", new { area = "Common" }).Data("getFiscalYear"))
+                                             .ServerFiltering(true);
+                                     })
+                                     .CascadeFrom("yearSelector"))
+
+
+
+                               @Html.Kendo().Button().Name("AnnualDepreciation").HtmlAttributes(new { type = "button", @class = "k-primary" }).Content("Run Depreciation").Events(ev => ev.Click("RunDepreciation"))
+                               @*@Html.Kendo().Button().Name("Reverse").HtmlAttributes(new { type = "button", @class = "k-primary" }).Content("Reverse").Events(ev => ev.Click("reverseClicked"))
+                    @Html.Kendo().Button().Name("Close").HtmlAttributes(new { type = "button", @class = "k-primary" }).Content("Close").Events(ev => ev.Click("closeClicked"))*@
+
+
+                            </text>);
+
+
+
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(20))
+      .Scrollable()
+      .Sortable()
+      .Filterable()
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Groupable()
+      .Scrollable(h => h.Height(500))
+      .Events(ev => ev.DetailExpand("detailExpand"))
+      .Events(x => x.DataBound("onDataBoundMaster"))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Sort(sort => sort.Add("MonthlyDepreciationId").Descending())
+          .Model(model =>
+          {
+              model.Id(p => p.MonthlyDepreciationId);
+
+          })
+
+          .Read(read => read.Action("MonthlyDepreciations_Read", "MonthlyDepreciation"))
+      ).ClientDetailTemplateId("itemstemplate"))
+
+<script id="itemstemplate" type="text/Kendo-tmpl">
+    @(Html.Kendo().TabStrip().Name("tabStrip_#=MonthlyDepreciationId#").SelectedIndex(0).Items(items =>
+                                              {
+                                                  items.Add().Text("Detail").Content(
+                                                    @<text>
+
+                                                        # if (!IsOnlineApproved&&!IsSendForApproval)
+                                                        {#
+                                                        <a onclick='return sendForApproval("#=MonthlyDepreciationId#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                                                        <br />
+                                                        # } #
+                                                        # if (IsOnlineApproved && !IsOnlineTransferred )
+                                                        {#
+                                                        <a onclick='return transferToGl("#=MonthlyDepreciationId#")' href=' \#' title="Transfer to GL"><i class="fa fa-paper-plane fa-2x"></i></a>
+                                                        # } #
+                                                        <div>
+                                                            <hr>
+                                                            <dl class="dl-horizontal">
+
+                                                                <dt>
+                                                                    CreatedOn
+                                                                </dt>
+                                                                <dd>
+                                                                    #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+
+                                                                </dd>
+                                                                <dt>
+                                                                    CreatedBy
+                                                                </dt>
+                                                                <dd>
+                                                                    #= CreatedBy #
+                                                                </dd>
+                                                                <dt>
+                                                                    Modified By
+                                                                </dt>
+                                                                <dd>
+                                                                    #= ModifiedBy #
+                                                                </dd>
+                                                                <dt>
+                                                                    Modified Date
+                                                                </dt>
+                                                                <dd>
+                                                                    #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+                                                                </dd>
+                                                            </dl>
+                                                        </div>
+
+
+                                                    </text>
+                                                                                          );
+
+                                                        items.Add().Text("Items").Content(
+    @<text>
+
+        @(Html.Kendo().Grid<MonthlyDepreciationItem>()
+              .Name("AsstetItems_#=MonthlyDepreciationId#")
+              .Columns(columns =>
+              {
+                  columns.ForeignKey(p => p.AssetRegistrationId, (IEnumerable)ViewData["Assets"], "AssetRegistrationId", "Tag").Width(150);
+                  columns.Bound(c => c.DepreciationAmount).Width(130);
+                  //columns.Bound(c => c.BookValue).Width(130);
+                  columns.Command(command =>
+                  {
+                      //command.Edit();
+                      //command.Destroy();
+                  }).Width(180);
+              })
+              .ToolBar(toolbar =>
+              {
+
+              })
+
+              .Events(x => x.DataBound("onDataBoundLines"))
+              .Editable(editable => editable.Mode(GridEditMode.InLine))
+              .Pageable(pageable => pageable
+                  .Input(true)
+                  .Numeric(false)
+                  .Refresh(true)
+                  .PageSizes(true)
+                  .ButtonCount(20))
+              .Scrollable(h => h.Height(300))
+              .Sortable()
+              .Filterable()
+              .Selectable(selectable =>
+              {
+                  selectable.Mode(GridSelectionMode.Single);
+                  selectable.Type(GridSelectionType.Row);
+              })
+              .DataSource(dataSource => dataSource
+                  .Ajax()
+                  .Events(ev => ev
+                      .Error("error_handler(\"AsstetItems_#=MonthlyDepreciationId#\")")
+                      .RequestStart("onRequestStart(\"AsstetItems_#=MonthlyDepreciationId#\")")
+                      .RequestEnd("onRequestEnd(\"AsstetItems_#=MonthlyDepreciationId#\")"))
+                  .Model(model =>
+                  {
+                      model.Id(p => p.MonthlyDepreciationId);
+                      model.Field(p => p.AssetRegistrationId).Editable(false);
+                      model.Field(p => p.BookValue).Editable(false);
+                      model.Field(p => p.DepreciationAmount).Editable(false);
+
+                      model.Field(p => p.CreatedBy).Editable(false);
+                      model.Field(p => p.DateCreated).Editable(false);
+                      model.Field(p => p.ModifiedBy).Editable(false);
+                      model.Field(p => p.LastModified).Editable(false);
+
+                  })
+                  .Read(read => read.Action("MonthlyDepreciationItems_Read", "MonthlyDepreciation", new { id = "#=MonthlyDepreciationId#" }))
+              //.Create(create => create.Action("IssueItems_Create", "IssueItem", new { id = "#=MonthlyDepreciationId#" }))
+              //.Update(update => update.Action("IssueItems_Update", "IssueItem", new { id = "#=MonthlyDepreciationId#" }))
+              //.Destroy(destroy => destroy.Action("IssueItems_Destroy", "IssueItem"))
+              ).ToClientTemplate())
+
+    </text>
+);
+
+                                          items.Add().Text("Distribution").Content(
+@<text>
+    @(Html.Kendo().Grid<MonthlyDepreciationDistribution>()
+          .Name("MonthlyDepreciationDistribution_#=MonthlyDepreciationId#")
+          .Columns(columns =>
+          {
+              columns.Bound(c => c.AccountCode).EditorTemplateName("AccountCode").Width(200);
+              columns.Bound(c => c.AccountDesc).Width(400);
+              columns.Bound(c => c.Debit).Width(150).Format("{0:n}").ClientFooterTemplate("\\#=kendo.toString(sum, 'n')\\# ");
+              columns.Bound(c => c.Credit).Width(150).Format("{0:n}").ClientFooterTemplate("\\#=kendo.toString(sum, 'n')\\# ");
+              columns.Command(command =>
+              {
+                  command.Edit();
+                  command.Destroy();
+              }).ClientFooterTemplate("Difference: \\#=Debit.sum-Credit.sum\\# ");
+          })
+          .ToolBar(toolbar =>
+          {
+              toolbar.Create();
+          })
+          .Editable(editable => editable.Mode(GridEditMode.InLine))
+          .Scrollable()
+          .Events(x => x.DataBound("onDataBoundDistribution"))
+          .DataSource(dataSource => dataSource
+              .Ajax()
+              .Aggregates(aggregates =>
+              {
+                  aggregates.Add(p => p.Debit).Sum();
+                  aggregates.Add(p => p.Credit).Sum();
+              })
+              .Events(ev => ev
+                  .Error("error_handler(\"MonthlyDepreciationDistribution_#=MonthlyDepreciationId#\")")
+                  .RequestStart("onRequestStart(\"MonthlyDepreciationDistribution_#=MonthlyDepreciationId#\")")
+                  .RequestEnd("onRequestEnd(\"MonthlyDepreciationDistribution_#=MonthlyDepreciationId#\")"))
+
+              .Model(model =>
+              {
+                  model.Id(p => p.MonthlyDepreciationDistributionId);
+                  model.Field(p => p.CreatedBy).Editable(false);
+                  model.Field(p => p.DateCreated).Editable(false);
+                  model.Field(p => p.ModifiedBy).Editable(false);
+                  model.Field(p => p.LastModified).Editable(false);
+              }
+              )
+              .Read(read => read.Action("MonthlyDepreciationDistributions_Read", "MonthlyDepreciationDistribution", new { id = "#=MonthlyDepreciationId#" }))
+              .Create(create => create.Action("MonthlyDepreciationDistributions_Create", "MonthlyDepreciationDistribution", new { id = "#=MonthlyDepreciationId#" }))
+              .Update(update => update.Action("MonthlyDepreciationDistributions_Update", "MonthlyDepreciationDistribution"))
+              .Destroy(destroy => destroy.Action("MonthlyDepreciationDistributions_Destroy", "MonthlyDepreciationDistribution"))
+          ).ToClientTemplate())
+
+
+</text>
+
+);
+
+                                              items.Add().Text("Validation").Content(
+                            @<text>
+                                @(Html.Kendo().Grid<MonthlyDepreciationValidation>()
+                                      .Name("MonthlyDepreciationValidation_#=MonthlyDepreciationId#")
+                                      .Columns(columns =>
+                                      {
+                                          columns.Bound(c => c.Status).Width(170).EditorTemplateName("ValidationStatus");
+                                          columns.Bound(c => c.Remark).Width(170);
+                                          columns.Bound(c => c.DateCreated).Width(200).Title("Time").Format("{0:dd/MM/yyyy}");
+                                          columns.Bound(c => c.LastModified).Hidden(true);
+                                          columns.Bound(c => c.CreatedBy).Width(200).Title("User");
+                                          columns.Bound(c => c.ModifiedBy).Hidden(true);
+                                          columns.Command(command =>
+                                          {
+                                              command.Edit();
+                                              //command.Destroy();
+                                          });
+                                      })
+                                      .ToolBar(toolbar =>
+                                      {
+                                          toolbar.Create();
+                                      })
+                                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                      .Scrollable()
+                                      .Events(x => x.DataBound("onDataBoundFisrtValidation"))
+                                      .DataSource(dataSource => dataSource
+                                          .Ajax()
+                                          .Events(ev => ev
+                                              .Error("error_handler(\"MonthlyDepreciationValidation_#=MonthlyDepreciationId#\")")
+                                              .RequestStart("onRequestStart(\"MonthlyDepreciationValidation_#=MonthlyDepreciationId#\")")
+                                              .RequestEnd("onRequestEnd(\"MonthlyDepreciationValidation_#=MonthlyDepreciationId#\")"))
+
+                                          .Model(model =>
+                                          {
+                                              model.Id(p => p.MonthlyDepreciationValidationId);
+                                              model.Field(p => p.CreatedBy).Editable(false);
+                                              model.Field(p => p.DateCreated).Editable(false);
+                                              model.Field(p => p.ModifiedBy).Editable(false);
+                                              model.Field(p => p.LastModified).Editable(false);
+                                          }
+                                          )
+                                          .Read(read => read.Action("MonthlyDepreciationValidations_Read", "MonthlyDepreciationValidation", new { id = "#=MonthlyDepreciationId#" }))
+                                          .Create(create => create.Action("MonthlyDepreciationValidations_Create", "MonthlyDepreciationValidation", new { id = "#=MonthlyDepreciationId#" }))
+                                          .Update(update => update.Action("MonthlyDepreciationValidations_Update", "MonthlyDepreciationValidation"))
+                                          .Destroy(destroy => destroy.Action("MonthlyDepreciationValidations_Destroy", "MonthlyDepreciationValidation"))
+                                      ).ToClientTemplate())
+
+
+                            </text>
+
+                                              );
+
+                                          }).ToClientTemplate()
+
+    )
+
+
+</script>
+<script>
+
+
+    function sendForApproval(id) {
+        var recordStatus = "";
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("SendforApproval", "MonthlyDepreciation", new { area = "FixedAsset" })',
+            data: { id: id },
+            success: function (result) {
+                //toastr.success(result.Message);
+                alert(result.Message);
+                recordStatus = result.Status;
+                location.reload(true);
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+
+    function transferToGl(id) {
+        var desc = prompt("Please enter transaction description:");
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("TransferDistribution", "MonthlyDepreciation", new { area = "FixedAsset" })',
+            data: {
+                id: id,
+                description: desc
+            },
+            success: function (result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                location.reload(true);
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+
+
+
+
+    var selectedYear;
+    var selectedBranch;
+    var selectedPeriod;
+
+    function RunDepreciation(e) {
+
+        var year = $("#yearSelector").data("kendoDropDownList").value();
+        var branch = $("#branchSelector").data("kendoDropDownList").value();
+        var period = $("#periodSelector").data("kendoDropDownList").value();
+        selectedYear = year;
+        selectedPeriod = period;
+        selectedBranch = branch;
+        $('#loading-image').show();
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("RunDepreciation", "MonthlyDepreciation")',
+            contentType: "application/json; charset=utf-8",
+            data: { fiscalyearid: year ,periodid:selectedPeriod, branchid:selectedBranch},
+            dataType: "json",
+            success: function (result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                $('#loading-image').hide();
+                location.reload(true);
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+
+        });
+    }
+
+
+    function reverseClicked(e) {
+        var year = $("#yearSelector").data("kendoDropDownList").value();
+        var branch = $("#branchSelector").data("kendoDropDownList").value();
+        var period = $("#periodSelector").data("kendoDropDownList").value();
+        selectedYear = year;
+        selectedPeriod = period;
+        selectedBranch = branch;
+
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("ReverseDepreciation", "AnnualDepreciation")',
+            contentType: "application/json; charset=utf-8",
+            data: { year: year, period: period, branch: branch },
+            dataType: "json"
+
+        });
+    }
+    function closeClicked(e) {
+        var year = $("#yearSelector").data("kendoDropDownList").value();
+        var branch = $("#branchSelector").data("kendoDropDownList").value();
+        var period = $("#periodSelector").data("kendoDropDownList").value();
+        selectedYear = year;
+        selectedPeriod = period;
+        selectedBranch = branch;
+
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("CloseDepreciation", "AnnualDepreciation")',
+            contentType: "application/json; charset=utf-8",
+            data: { year: year, period: period, branch: branch },
+            dataType: "json"
+
+        });
+    }
+    function getFiscalYear(){
+        return { year: $("#yearSelector").data("kendoDropDownList").value() }
+    }
+
+    function checkForEvaluation(e) {
+        var year = $("#yearSelector").data("kendoDropDownList").value();
+        var branch = $("#branchSelector").data("kendoDropDownList").value();
+        var period = $("#periodSelector").data("kendoDropDownList").value();
+        selectedYear = year;
+        selectedPeriod = period;
+        selectedBranch = branch;
+        var depreciationBtn = $("#Depreciation").data("kendoButton");
+        var reverseBtn = $("#Reverse").data("kendoButton");
+        var closeBtn = $("#Close").data("kendoButton");
+
+        $.ajax({
+            type: "GET",
+
+            dataType: 'json',
+            contentType: "application/json;charset=utf-8",
+            url: "/AnnualDepreciation/GetAnnualDepreciationState",
+            data:  { year:selectedYear  , period: selectedPeriod , branch: selectedBranch },
+
+            success: function (result) {
+                debugger;
+
+                if (result === "onEdit") {
+                    depreciationBtn.enable(false);
+                    reverseBtn.enable(true);
+                    closeBtn.enable(true);
+                }
+                if (result === "Reversed") {
+                    depreciationBtn.enable(true);
+                    reverseBtn.enable(false);
+                    closeBtn.enable(false);
+
+                }
+                if (result === "depreciation") {
+                    depreciationBtn.enable(true);
+                    reverseBtn.enable(false);
+                    closeBtn.enable(false);
+
+                }
+                if (result === "previous") {
+                    depreciationBtn.enable(false);
+                    reverseBtn.enable(false);
+                    closeBtn.enable(false);
+                }
+
+            },
+            error: function (response) {
+                debugger;
+                alert('Unkown Error');
+            }
+        });
+    }
+</script>

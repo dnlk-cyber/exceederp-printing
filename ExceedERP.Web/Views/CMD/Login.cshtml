@@ -1,0 +1,91 @@
+﻿@using ExceedERP.Web.Controllers.Cmd
+@model SuperLoginViewModel
+@{
+    Layout = null;
+    ViewBag.Title = "Log in";
+}
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>ERP Login</title>
+    <!-- CSS -->
+
+    <link rel="stylesheet" href="~/Content/login/bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="~/Content/login/font-awesome/css/font-awesome.min.css">
+    <link rel="stylesheet" href="~/Content/login/css/form-elements.css">
+    <link rel="stylesheet" href="~/Content/login/css/style.css">
+  
+    <link rel="shortcut icon" href="~/Content/login/ico/favicon.png">
+    <link rel="apple-touch-icon-precomposed" sizes="144x144" href="~/Content/login/ico/apple-touch-icon-144-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="114x114" href="~/Content/login/ico/apple-touch-icon-114-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" sizes="72x72" href="~/Content/login/ico/apple-touch-icon-72-precomposed.png">
+    <link rel="apple-touch-icon-precomposed" href="~/Content/login/ico/apple-touch-icon-57-precomposed.png">
+</head>
+<body>
+    <!-- Top content -->
+    <div class="top-content">
+
+        <div class="inner-bg">
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm-8 col-sm-offset-2 text">
+                        @*<img src="~/Content/Images/logo.jpg" class="img-circle"/>*@
+                    </div>
+                </div>
+                <br /> <br /> <br /> <br />
+                <div class="row">
+                    <div class="col-sm-6 col-sm-offset-3 form-box">
+                        <div class="form-top">
+                            <div class="form-top-left">
+                                <h3>Login to ERP System</h3>
+                                <p>Enter your password to log in:</p>
+                            </div>
+                            <div class="form-top-right">
+                                <i class="fa fa-key"></i>
+                            </div>
+                        </div>
+                       
+                        <div class="form-bottom">
+                            @using (Html.BeginForm("Login", "CMD", new { ReturnUrl = ViewBag.ReturnUrl }, FormMethod.Post, new { @class = "login-form", role = "form" }))
+                            {
+                                @Html.ValidationSummary(false, "", new { @class = "text-danger" })
+                                @Html.AntiForgeryToken()
+                                @Html.ValidationSummary(true, "", new { @class = "text-danger" })
+
+
+                                <div class="form-group">
+                                    <label class="sr-only" for="Password">Password</label>
+                                    @Html.PasswordFor(m => m.Password, new { @class = "form-control", placeholder = "Password" })
+                                    @Html.ValidationMessageFor(m => m.Password, "", new { @class = "text-danger" })
+                                </div>
+                                <button type="submit" class="btn btn-primary">Login</button>
+                            }
+
+                            &copy; EXCEED ERP Systems &reg; 2011 -@DateTime.Today.Year
+
+                        </div>
+
+                    </div>
+                </div>
+               
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Javascript -->
+    <script src="~/Content/login/js/jquery-1.11.1.min.js"></script>
+    <script src="~/Content/login/bootstrap/js/bootstrap.min.js"></script>
+    <script src="~/Content/login/js/jquery.backstretch.min.js"></script>
+    <script src="~/Content/login/js/scripts.js"></script>
+
+    <!--[if lt IE 10]>
+        <script src="~/Content/login/js/placeholder.js"></script>
+    <![endif]-->
+</body>
+</html>

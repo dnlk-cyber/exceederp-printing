@@ -1,0 +1,262 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.Inventory
+@using Kendo.Mvc.UI
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Item Merge</legend>
+
+@(Html.Kendo().Grid<InventoryItem>
+        ()
+        .Name("grid")
+        .Columns(columns =>
+        {
+            columns.ForeignKey(p => p.ItemCategoryCode, (IEnumerable)ViewData["categories"], "ItemCategoryCode", "Name").Title("Category").Width(130).EditorTemplateName("ItemCategory");
+            columns.ForeignKey(p => p.SubCategoryCode, (IEnumerable)ViewData["categories"], "ItemCategoryCode", "Name").Title("Sub Category").Width(120).EditorTemplateName("ItemSubCategory");
+            columns.Bound(c => c.ItemCode).Width(120);
+            columns.Bound(c => c.Name).Width(250);
+            columns.Bound(c => c.PartNo).Width(90);
+            columns.Bound(c => c.UoMName).Width(80).EditorTemplateName("Unit");
+            columns.Bound(c => c.Balance).Width(90);
+            //columns.Bound(c => c.TotalPrice).Width(90);|
+            columns.Bound(c => c.Enable).Width(90).Title("Enable").ClientTemplate(
+            "<input type='checkbox' disabled='true' value='#= Enable #' " +
+                                          " # if (Enable) { #" +
+                    "checked='checked'" +
+                    "# } #" +
+                    "/>"
+                    );
+                        columns.Command(
+            command =>
+            {
+
+
+            command.Custom("←").Click("Select");
+            command.Custom("→").Click("SelectDesti");
+
+        }).Width(280);
+        })
+        .ToolBar(toolbar =>
+         {
+             toolbar.Template(@<text>
+                <div class="toolbar row">
+                    <div class="col-md-4">
+                        @Html.Kendo().Button().Name("Merge").HtmlAttributes(new { type = "button", @class = "k-primary" }).Content("Merge selected items").Events(ev => ev.Click("Merge"))
+                    </div>
+
+                   
+
+
+
+                </div>
+
+            </text>);
+                })
+
+               .Editable(editable => editable.Mode(GridEditMode.InLine))
+               .HtmlAttributes(new { style = "height: 400px;" })
+               .Pageable(pageable => pageable
+               .Input(true)
+               .Numeric(false)
+               .Refresh(true)
+               .PageSizes(true)
+               .ButtonCount(20))
+               .Scrollable()
+               .Sortable()
+               .Filterable()
+               .Selectable(selectable =>
+               {
+                   selectable.Mode(GridSelectionMode.Single);
+                   selectable.Type(GridSelectionType.Row);
+               })
+               .Sortable(sortable =>
+               {
+                   sortable.SortMode(GridSortMode.SingleColumn);
+               })
+
+
+               .DataSource(dataSource => dataSource
+               .Ajax()
+               .Model(model =>
+               {
+                   model.Id(p => p.ItemCode);
+                   model.Field(p => p.DateCreated).Editable(false);
+                   model.Field(p => p.Enable).Editable(false);
+                   model.Field(p => p.ItemCode).Editable(false);
+               })
+               .Events(ev => ev
+               .Error("error_handler(\"grid\")")
+               .RequestStart("onRequestStart(\"grid\")")
+               .RequestEnd("onRequestEnd(\"grid\")"))
+               .Read(read => read.Action("Items_Read", "ItemMerge"))
+
+               ))
+
+<div class="row">
+    <div class="col-md-6">
+        <h5>Items To Merged</h5>
+        <div id="selectiongrid"></div>
+    </div>
+    <div class="col-md-6">
+        <h5>Destination Item</h5>
+        <div id="destinationgrid"></div>
+    </div>
+</div>
+
+
+
+<script type="text/javascript">
+
+    var selectedToMerge = [];
+
+    $(document).ready(function () {
+        $("#selectiongrid").kendoGrid({
+            dataSource: {
+                data: selectedToMerge,
+                schema: {
+                    model: {
+                        fields: {
+                            ItemCode: { type: "string" },
+                            Name: { type: "string" },
+
+                        }
+                    }
+                },
+                pageSize: 20
+            },
+            height: 200,
+
+            columns: [
+
+
+                { field: "ItemCode", title: "Item Code", width: "130px" },
+                { field: "Name", title: "Item Name", width: "130px" },
+
+            ]
+        });
+    });
+
+    var destinationItem = [];
+
+    $(document).ready(function () {
+        $("#destinationgrid").kendoGrid({
+            dataSource: {
+                data: destinationItem,
+                schema: {
+                    model: {
+                        fields: {
+                            ItemCode: { type: "string" },
+                            Name: { type: "string" },
+
+                        }
+                    }
+                },
+                pageSize: 20
+            },
+            height: 200,
+
+            columns: [
+
+
+                { field: "ItemCode", title: "Item Code", width: "130px" },
+                { field: "Name", title: "Item Name", width: "130px" },
+
+            ]
+        });
+    });
+
+    function Select(e) {
+
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        selectedToMerge.push({
+            ItemCode: dataItem.ItemCode,
+            Name: dataItem.Name})
+
+        $.ajax({
+            type: "GET",
+            data: dataItem.Values,
+            //url: '@Url.Action("Enable_Disable", "Item")/' + dataItem.ItemCode
+
+        });
+
+        $('#selectiongrid').data('kendoGrid').dataSource.read();
+        $('#selectiongrid').data('kendoGrid').refresh();
+        //location.reload();
+    };
+
+    function SelectDesti(e) {
+
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+
+        destinationItem.pop();
+        destinationItem.push({
+            ItemCode: dataItem.ItemCode,
+            Name: dataItem.Name})
+
+        $.ajax({
+            type: "GET",
+            data: dataItem.Values,
+            //url: '@Url.Action("Enable_Disable", "Item")/' + dataItem.ItemCode
+
+        });
+
+        $('#destinationgrid').data('kendoGrid').dataSource.read();
+        $('#destinationgrid').data('kendoGrid').refresh();
+        //location.reload();
+    };
+
+
+     function Merge(e) {
+
+         var conf = confirm("Are you sure you want to merge the selected items?")
+         alert(conf);
+         if (conf) {
+
+             if (destinationItem.length == 0)
+                 alert("Please choose destination item")
+
+             if (selectedToMerge.length < 1)
+                 alert("Please choose at least 1 source items")
+            
+             if (selectedToMerge.length > 0 && destinationItem.length > 0) {
+                 
+                 $.ajax({
+                     type: "POST",
+                    contentType: "application/json; charset=utf-8",
+                     url: '@Url.Action("Merge", "ItemMerge", new {area = "Inventory"})',
+                     data: JSON.stringify({ selected: selectedToMerge, destination: destinationItem }),
+                     success: function (result) {
+                            // toastr.warnning(result.Message);
+                            alert(result.Message);
+                            recordStatus = result.Status;
+                            //location.reload(true);
+                     }, //end succ
+                     beforeSend: function () {
+                         // Show image container
+                         $("#loading-image").show();
+                     },
+                     complete: function (data) {
+                         // Hide image container
+                         $("#loading-image").hide();
+                     },
+                     error: function (result) {
+                         alert(result);
+                     }
+
+                 });
+
+             }
+
+         }
+    };
+
+
+
+
+    function filterSubcategories() {
+
+        return {
+            catcode: $("#ItemCategory").data("kendoDropDownList").value()
+        };
+    }
+</script>

@@ -1,0 +1,53 @@
+﻿
+@model ExceedERP.Core.Domain.FleetManagement.FleetMaintenance.Planner
+
+<h3>  </h3>
+<br />
+
+<div class="demo-section k-content">
+  
+                    <div class="row">
+                        <div class="col-md-1">
+                        </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <div class="k-label">
+                                    @Html.LabelFor(model => model.PlannerName)
+                                </div>
+                                <div>
+                                    @Html.Kendo().TextBoxFor(model => model.PlannerName)
+                                    @Html.ValidationMessageFor(model => model.PlannerName)
+                                </div>
+                            </div>
+                        </div>
+                        </div>
+    <div class="row">
+        <div class="col-md-1">
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                </div>
+                <div>
+                    @Html.Kendo().CheckBoxFor(model => model.TrackByDate)
+                    @Html.ValidationMessageFor(model => model.TrackByDate)
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                </div>
+                <div>
+                    @Html.Kendo().CheckBoxFor(model => model.TrackByMileage)
+                    @Html.ValidationMessageFor(model => model.TrackByMileage)
+
+                </div>
+            </div>
+        </div>
+    </div>
+
+                 
+                    
+                    </div>

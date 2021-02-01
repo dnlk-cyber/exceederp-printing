@@ -1,0 +1,27 @@
+﻿@using ExceedERP.Core.Domain.HRM.PerformanceManagment
+
+@(Html.Kendo().Grid<PerformanceAction>()
+          .Name("PerformanceActiongrid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.ActionName);
+        columns.Bound(c => c.AcPercentageofWeight);
+        columns.Bound(c => c.Remark);
+        columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+               .Events(events => events.Error("error_handler")
+                                  .Sync("sync_handler"))
+          .Model(model => model.Id(p => p.ActionId))
+          .Read(read => read.Action("PerformanceActions_Read", "PerformanceAction"))
+          .Create(create => create.Action("PerformanceActions_Create", "PerformanceAction"))
+          .Update(update => update.Action("PerformanceActions_Update", "PerformanceAction"))
+          .Destroy(destroy => destroy.Action("PerformanceActions_Destroy", "PerformanceAction"))
+      )
+)

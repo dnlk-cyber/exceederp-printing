@@ -1,0 +1,26 @@
+﻿<legend>Transaction Reference</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.TransactionReference>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.ReferenceType);
+        columns.Bound(c => c.Referring);
+        columns.Bound(c => c.Referenced);
+        columns.Bound(c => c.Value);
+        columns.Bound(c => c.Remark);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.TransactionReferenceID))
+          .Read(read => read.Action("TransactionReferences_Read", "TransactionReference"))
+          .Create(create => create.Action("TransactionReferences_Create", "TransactionReference"))
+          .Update(update => update.Action("TransactionReferences_Update", "TransactionReference"))
+          .Destroy(destroy => destroy.Action("TransactionReferences_Destroy", "TransactionReference"))
+      )
+)

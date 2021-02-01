@@ -1,0 +1,8 @@
+﻿@using System.Collections
+@(Html.Kendo().DropDownList()
+                .BindTo((IEnumerable)ViewData["Tax"])
+    .OptionLabel("--Select Tax--")
+                    .DataValueField("Description")
+                .DataTextField("Description")
+                .Name("TaxIDah")
+)

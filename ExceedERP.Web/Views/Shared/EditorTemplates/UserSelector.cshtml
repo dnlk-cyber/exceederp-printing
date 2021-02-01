@@ -1,0 +1,15 @@
+﻿ 
+@(Html.Kendo().DropDownListFor(m => m)
+                  .AutoBind(false)
+                      .OptionLabel("Select User")
+                          .DataTextField("Name")
+                          .DataValueField("Code")
+                              .Filter("contains")
+                          .DataSource(dataSource =>
+                          {
+                              dataSource.Read(read => read.Action("GetUsers", "GlobalDataProvider", new { area = "Common" }))
+                                            .ServerFiltering(false);
+                          })
+                                  
+)
+@Html.ValidationMessageFor(m => m)

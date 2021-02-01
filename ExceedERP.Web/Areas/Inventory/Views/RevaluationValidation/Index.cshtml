@@ -1,0 +1,27 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Inventory.RevaluationValidation>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Status);
+          columns.Bound(c => c.Remark);
+          columns.Bound(c => c.OrgBranchName);
+          columns.Bound(c => c.DateCreated);
+          columns.Bound(c => c.LastModified);
+          columns.Bound(c => c.CreatedBy);
+          columns.Bound(c => c.ModifiedBy);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.ReEvaluationValidationId))
+          .Read(read => read.Action("RevaluationValidations_Read", "RevaluationValidation"))
+          .Create(create => create.Action("RevaluationValidations_Create", "RevaluationValidation"))
+          .Update(update => update.Action("RevaluationValidations_Update", "RevaluationValidation"))
+          .Destroy(destroy => destroy.Action("RevaluationValidations_Destroy", "RevaluationValidation"))
+      ))

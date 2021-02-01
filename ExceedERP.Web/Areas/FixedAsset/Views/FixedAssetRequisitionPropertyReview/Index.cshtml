@@ -1,0 +1,527 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.FixedAsset.Requisitions
+@using ExceedERP.Core.Domain.Inventory
+@using Kendo.Mvc.UI
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Asset Requisition Review </legend>
+
+@(Html.Kendo().Grid<FixedAssetRequisition>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.FixedAssetRequisitionId).Title("Request No.").Width(120).ClientTemplate("#=appendZeros(FixedAssetRequisitionId)#");
+          columns.Bound(c => c.Reference).Title("Reference").Width(120);
+          columns.Bound(c => c.RequestDate).Width(130);
+          columns.ForeignKey(p => p.StoreCode, (IEnumerable)ViewData["storesInCompany"], "StoreCode", "Name").Title("Store").Width(160).EditorTemplateName("StoresSelector");
+          columns.Bound(c => c.IsTransfer).EditorTemplateName("IsTransferRequest").ClientTemplate("<input type='checkbox' disabled = 'true'  value='#=IsTransfer #' " + " # if (IsTransfer) { #" + "checked='checked'" + "# } #" + " />").Width(110);
+          columns.ForeignKey(p => p.ToStoreCode, (IEnumerable)ViewData["storesInCompany"], "StoreCode", "Name").Title("To Store").Width(160).EditorTemplateName("StoresSelector");
+          columns.Bound(c => c.Remark).Width(120);
+          columns.ForeignKey(p => p.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("BranchSelector").Width(150);
+          columns.ForeignKey(p => p.OrgStructureId, (IEnumerable)ViewData["costCenters"], "Code", "Name").Title("Work Unit").Width(130).EditorTemplateName("WorkUnitCostCenterSelector");
+          columns.ForeignKey(p => p.EmployeeId, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Title("Requester").Width(130).EditorTemplateName("EmployeeSelector");
+          columns.Bound(c => c.PlateNo).Width(80);
+          columns.Bound(c => c.Status).Width(80);
+          columns.Command(command =>
+          {
+              //command.Edit();
+              //command.Destroy();
+          }).Width(150);
+
+      }).Filterable()
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(5))
+      .ToolBar(toolbar =>
+      {
+
+
+      })
+      .Events(ev => ev.Edit("onMasterEdit"))
+
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .HtmlAttributes(new { style = "height: 550px;" })
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(20))
+      .Scrollable()
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Filterable()
+      .Groupable()
+      .Groupable().Events(ev => ev.DetailExpand("detailExpandProperty"))
+      .Scrollable(h => h.Height(500))
+      .Events(x => x.DataBound("onDataBoundMasterProperty"))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Sort(sort => sort.Add("FixedAssetRequisitionId").Descending())
+          .Events(ev => ev
+              .Error("error_handler(\"grid\")")
+              .RequestStart("onRequestStart(\"grid\")")
+              .RequestEnd("onRequestEnd(\"grid\")"))
+          .PageSize(20)
+          .Model(model =>
+          {
+              model.Id(p => p.FixedAssetRequisitionId);
+              model.Field(p => p.FixedAssetRequisitionId).Editable(false);
+              model.Field(p => p.BranchId).Editable(false);
+              model.Field(p => p.OrgStructureId).Editable(false);
+              model.Field(p => p.EmployeeId).Editable(false);
+              model.Field(p => p.Status).Editable(false);
+              model.Field(p => p.RequestDate).Editable(false);
+          })
+          .Read(read => read.Action("FixedAssetRequisitionPropertyReviews_Read", "FixedAssetRequisitionPropertyReview"))
+          .Create(create => create.Action("FixedAssetRequisitionPropertyReviews_Create", "FixedAssetRequisitionPropertyReview"))
+          .Update(update => update.Action("FixedAssetRequisitionPropertyReviews_Update", "FixedAssetRequisitionPropertyReview"))
+          .Destroy(destroy => destroy.Action("FixedAssetRequisitionPropertyReviews_Destroy", "FixedAssetRequisitionPropertyReview"))
+
+      ).Resizable(resize => resize.Columns(true))
+      .ClientDetailTemplateId("FixedAssetrequisitions"))
+
+<script id="FixedAssetrequisitions" type="text/Kendo-tmpl">
+    @(Html.Kendo().TabStrip().Name("tabStrip_#=FixedAssetRequisitionId#").SelectedIndex(0).Items(items =>
+              {
+                  items.Add().Text("Detail").Content(
+
+                    @<text>
+
+
+                        # if (!IsSecondOnlineApproved&&!IsSecondSendForApproval)
+                        {#
+                        <a onclick='return sendForApproval("#=FixedAssetRequisitionId#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                        <br />
+                        # } #
+
+                        # if (IsSecondOnlineApproved)
+                        {#
+                        <a href='@Url.Action("FixedAssetRequistionPrint", "FixedAssetPrint")/#=FixedAssetRequisitionId#' title="Print"><i class="fa fa-print fa-2x"></i></a>
+                        <br />
+                        # } #
+                        <div>
+                            <hr>
+                            <dl class="dl-horizontal">
+
+                                <dt>
+                                    Request Date
+                                </dt>
+                                <dd>
+                                    #=kendo.toString(kendo.parseDate(RequestDate), 'dd/MM/yyyy') #
+                                </dd>
+                                <dt>
+                                    Status
+                                </dt>
+                                <dd>
+                                    #= Status #
+                                </dd>
+                                <dt>
+                                    Is Transfer
+                                </dt>
+                                <dd>
+                                    #= IsTransfer #
+                                </dd>
+                                <dt>
+                                    Receiver Store
+                                </dt>
+                                <dd>
+                                    #= ToStoreCode #
+                                </dd>
+                                <dt>
+                                    CreatedOn
+                                </dt>
+                                <dd>
+                                    #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+
+                                </dd>
+                                <dt>
+                                    CreatedBy
+                                </dt>
+                                <dd>
+                                    #= CreatedBy #
+                                </dd>
+                                <dt>
+                                    Modified By
+                                </dt>
+                                <dd>
+                                    #= ModifiedBy #s
+                                </dd>
+                                <dt>
+                                    Modified Date
+                                </dt>
+                                <dd>
+                                    #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+                                </dd>
+                            </dl>
+                        </div>
+                    </text>
+                            );
+
+                        items.Add().Text("Items").Content(
+                        @<text>
+                            @(Html.Kendo().Grid<FixedAssetRequisitionItem>()
+                                  .Name("FixedAssetRequisitionItem_#=FixedAssetRequisitionId#")
+                                  .Columns(columns =>
+                                  {
+                                      columns.ForeignKey(p => p.FixedAssetCategoryID, (IEnumerable)ViewData["Category"], "FixedAssetCategoryID", "CategoryName").Title("Category").EditorTemplateName("FixedAssetCategorySelector").Width(180);
+                                      columns.ForeignKey(p => p.FixedAssetSubCategoryID, (IEnumerable)ViewData["SubCategory"], "FixedAssetSubCategoryID", "SubCategoryName").Title("Sub Category").EditorTemplateName("FixedAssetSubCategorySelector").Width(180);
+                                      columns.Bound(c => c.Name).Width(110).EditorTemplateName("FixedAssetSubCategoryNameSelector");
+                                      columns.Bound(c => c.UoM).Width(100).EditorTemplateName("UoMSelector");
+                                      columns.Bound(c => c.RequestedQuantity).Width(110);
+                                      columns.Bound(c => c.ApprovedQuantity).Width(110);
+                                      columns.Bound(c => c.IssuedQuantity).Width(110);
+                                      columns.Bound(c => c.PurchaseQuantity).Width(110);
+                                      columns.Bound(c => c.GeneratePurchaseReq).Width(100).ClientTemplate(
+                                          "<input type='checkbox' disabled = 'true' value='\\#= GeneratePurchaseReq \\#' " +
+                                          "\\# if (GeneratePurchaseReq) { \\#" +
+                                          "checked='checked'" +
+                                          "\\# } \\#" +
+                                          "/>"
+                                          );
+
+                                      columns.Bound(c => c.CreatedBy).Hidden();
+                                      columns.Bound(c => c.DateCreated).Hidden();
+                                      columns.Bound(c => c.ModifiedBy).Hidden();
+                                      columns.Bound(c => c.LastModified).Hidden();
+                                      columns.Command(command =>
+                                      {
+                                          command.Edit();
+                                          //command.Destroy();
+                                      });
+
+                                  })
+                                  .ToolBar(toolbar =>
+                                  {
+                                      //toolbar.Create();
+                                  }).Events(ev => ev.Edit("onItemEdit"))
+                                  .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                  .Scrollable()
+                                  .Events(x => x.DataBound("onDataBoundPropertyLines"))
+                                  .DataSource(dataSource => dataSource
+                                      .Ajax()
+                                      .Events(ev => ev
+                                          .Error("error_handler(\"FixedAssetRequisitionItem_#=FixedAssetRequisitionId#\")")
+                                          .RequestStart("onRequestStart(\"FixedAssetRequisitionItem_#=FixedAssetRequisitionId#\")")
+                                          .RequestEnd("onRequestEnd(\"FixedAssetRequisitionItem_#=FixedAssetRequisitionId#\")"))
+                                      .Model(model =>
+                                      {
+                                          model.Id(p => p.FixedAssetRequisitionItemId);
+
+                                          model.Field(p => p.FixedAssetCategoryID).Editable(false);
+                                          model.Field(p => p.FixedAssetSubCategoryID).Editable(false);
+                                          model.Field(p => p.Name).Editable(false);
+                                          model.Field(p => p.RequestedQuantity).Editable(false);
+                                          model.Field(p => p.ApprovedQuantity).Editable(false);
+                                          model.Field(p => p.CreatedBy).Editable(false);
+                                          model.Field(p => p.DateCreated).Editable(false);
+                                          model.Field(p => p.ModifiedBy).Editable(false);
+                                          model.Field(p => p.LastModified).Editable(false);
+
+                                      })
+                                      .Read(read => read.Action("FixedAssetRequsitionItemPropertyReviews_Read", "FixedAssetRequsitionItemPropertyReview", new { id = "#=FixedAssetRequisitionId#" }))
+                                      .Create(create => create.Action("FixedAssetRequsitionItemPropertyReviews_Create", "FixedAssetRequsitionItemPropertyReview", new { id = "#=FixedAssetRequisitionId#" }))
+                                      .Update(update => update.Action("FixedAssetRequsitionItemPropertyReviews_Update", "FixedAssetRequsitionItemPropertyReview"))
+                                      .Destroy(destroy => destroy.Action("FixedAssetRequsitionItemPropertyReviews_Destroy", "FixedAssetRequsitionItemPropertyReview"))
+                                  ).ToClientTemplate())
+                        </text>
+                                  );
+
+                              items.Add().Text("Validation").Content(@<text>
+                                @(Html.Kendo().Grid<StoreRequisitionPropertyValidation>()
+                                      .Name("FixedAssetRequisitionPropertyValidation_#=FixedAssetRequisitionId#")
+                                      .Columns(columns =>
+                                      {
+                                          columns.Bound(c => c.Status).Width(170).EditorTemplateName("ValidationStatus");
+                                          columns.Bound(c => c.Remark).Width(170);
+                                          columns.Command(command =>
+                                          {
+                                              command.Edit();
+                                              //command.Destroy();
+                                          });
+                                      })
+                                      .ToolBar(toolbar =>
+                                      {
+                                          toolbar.Create();
+                                      })
+                                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                      .Scrollable()
+                                      .Events(x => x.DataBound("onDataBoundPropertyValidation"))
+                                      .DataSource(dataSource => dataSource
+                                          .Ajax()
+                                          .Events(ev => ev
+                                              .Error("error_handler(\"FixedAssetRequisitionPropertyValidation_#=FixedAssetRequisitionId#\")")
+                                              .RequestStart("onRequestStart(\"FixedAssetRequisitionPropertyValidation_#=FixedAssetRequisitionId#\")")
+                                              .RequestEnd("onRequestEnd(\"FixedAssetRequisitionPropertyValidation_#=FixedAssetRequisitionId#\")"))
+                                          .Model(model =>
+                                          {
+                                              model.Id(p => p.StoreRequisitionPropertyValidationID);
+                                              model.Field(p => p.Approver).Editable(false);
+                                          })
+                                          .Read(read => read.Action("FixedAssetRequisitionPropertyValidations_Read", "FixedAssetRequisitionPropertyValidation", new { id = "#=FixedAssetRequisitionId#" }))
+                                          .Create(create => create.Action("FixedAssetRequisitionPropertyValidations_Create", "FixedAssetRequisitionPropertyValidation", new { id = "#=FixedAssetRequisitionId#" }))
+                                          .Update(update => update.Action("FixedAssetRequisitionPropertyValidations_Update", "FixedAssetRequisitionPropertyValidation"))
+                                          .Destroy(destroy => destroy.Action("FixedAssetRequisitionPropertyValidations_Destroy", "FixedAssetRequisitionPropertyValidation"))
+                                      ).ToClientTemplate())
+                            </text>);
+
+                                }).ToClientTemplate())
+
+
+
+
+</script>
+
+
+
+
+
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 700px;
+    }
+
+   div.k-edit-form-container div.editor-field textarea, input.k-textbox {
+            width: auto;
+            max-width: none;
+        }
+    
+
+    div.k-content {
+        height: auto;
+    }
+</style>
+
+
+
+
+<script>
+
+   
+    var storeCode;
+    //var codeid;
+    //var isapproved;
+
+    function sendForApproval(id) {
+        var recordStatus = "";
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("SendForApproval", "FixedAssetRequisitionPropertyReview", new { area = "FixedAsset" })',
+            data: { id: id },
+            success: function (result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                recordStatus = result.Status;
+                location.reload(true);
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+
+    function onItemEdit(e) {
+        var masterRow = this.wrapper.closest("tr.k-detail-row").prev(".k-master-row");
+        var masterGrid = $("#grid").data("kendoGrid");
+
+        var masterDataItem = masterGrid.dataItem(masterRow);
+        storeCode = masterDataItem.StoreCode;
+        codeid = masterDataItem.FixedAssetRequisitionId;
+
+        if (e.model.isNew() === true) {
+            $("#ApprovedQuantity").attr("readonly", true);
+            $("#IssuedQuantity").attr("readonly", true);
+        }
+
+       
+
+      }
+
+
+
+    function getItems() {
+
+        return {
+            StoreCode: storeCode
+        }
+
+    }
+    var masterDataItem;
+    var masterRow;
+    var masterGrid;
+
+    var codeid;
+    var isapproved;
+    var issecondapproved;
+
+    function detailExpandProperty(e) {
+
+        masterRow = e.masterRow;
+        masterGrid = $("#grid").data("kendoGrid");
+        masterDataItem = masterGrid.dataItem(masterRow);
+        codeid = masterDataItem.FixedAssetRequisitionId;
+        isapproved = masterDataItem.IsOnlineApproved;
+        issecondapproved = masterDataItem.IsSecondOnlineApproved;
+
+    }
+    function onDataBoundMasterProperty(e) {
+        //this.expandRow(this.tbody.find("tr.k-master-row").first());
+
+        //approved
+        var grid = $("#grid").data("kendoGrid");
+        var gridData = grid.dataSource.view();
+
+        for (var i = 0; i < gridData.length; i++) {
+            var currentUid = gridData[i].uid;
+            var currenRow = grid.table.find("tr[data-uid='" + currentUid + "']");
+            var deleteButton = $(currenRow).find(".k-grid-delete");
+            deleteButton.hide();
+            if (gridData[i].IsSecondOnlineApproved) {
+                var editButton = $(currenRow).find(".k-grid-edit");
+                editButton.hide();
+            }
+        }
+
+        //changing colors
+        var rows = e.sender.tbody.children();
+        for (var j = 0; j < rows.length; j++) {
+            var row = $(rows[j]);
+            var dataItem = e.sender.dataItem(row);
+            if (dataItem.IsSecondSendForApproval && !dataItem.IsSecondOnlineApproved) {
+                row.css("background-color", "lightgreen");
+            }
+            if (dataItem.IsOnlineApproved && !dataItem.IsSecondSendForApproval) {
+                row.css("background-color", "lightskyblue");
+            }
+        }
+
+        //changing colors
+        //var rows = e.sender.tbody.children();
+        //for (var j = 0; j < rows.length; j++) {
+        //    var row = $(rows[j]); 
+        //    var dataItem = e.sender.dataItem(row);
+
+        //    if (dataItem.IsSendForApproval && !dataItem.IsOnlineApproved) {
+        //        row.css("background-color", "lightpink");
+        //    }
+
+        //    if (dataItem.IsOnlineApproved && !dataItem.IsMiddleSendForApproval) {
+        //        row.css("background-color", "lightblue");
+        //    }
+
+        //    if (dataItem.IsMiddleSendForApproval && !dataItem.IsMiddleOnlineApproved) {
+        //        row.css("background-color", "lightgreen");
+        //    }
+        //    if (dataItem.IsMiddleOnlineApproved && !dataItem.IsSecondSendForApproval) {
+        //        row.css("background-color", "lightskyblue");
+        //    }
+        //}
+
+    }
+    function onDataBoundPropertyLines(e) {
+       
+        var detailGrid = "#" + e.sender.element[0].id;
+        $(".k-grid-add", detailGrid).hide();
+        $(".k-grid-delete", detailGrid).hide();
+        if (issecondapproved) {
+            $(".k-grid-edit", detailGrid).hide();
+        }
+    }
+    function onDataBoundPropertyValidation(e) {
+        var detailGrid = "#" + e.sender.element[0].id;
+        $(".k-grid-delete", detailGrid).hide();
+        if (issecondapproved) {
+            $(".k-grid-add", detailGrid).hide();
+            $(".k-grid-edit", detailGrid).hide();
+        }
+
+        this.table.find(".k-grid-edit").hide();
+    }
+
+    function OnIndexCall(elem) {
+
+        var a = codeid;
+        $(elem).attr('href', $(elem).attr('href') + '?id=' + a);
+
+
+    }
+
+  
+
+</script>
+<script>
+    function onClick(e) {
+
+        var masterRow = this.wrapper.closest("tr.k-detail-row").prev(".k-master-row");
+        var masterGrid = $("#grid").data("kendoGrid");
+        var masterDataItem = masterGrid.dataItem(masterRow);
+        var code = masterDataItem.FixedAssetRequisitionId;
+        var tabstrip = $("#tabStrip_4").data("kendoTabstrip");
+        $.ajax({
+            url: "FixedAssetRequisition/StoreRequisitions_Approval",
+
+            data: { id: code }
+        });
+    }
+    function onUploadSuccess(e) {
+
+    }
+
+    function checkFileType(e) {
+        var files = e.files;
+
+        $.each(files, function () {
+
+            if (this.extension.toLowerCase() === ".xls" || this.extension.toLowerCase() === ".xlsx" || this.extension.toLowerCase() === ".xlsm") {
+
+            } else {
+                alert("Only .xls, .xlsx, .xlsm files can be uploaded!");
+                e.preventDefault();
+            }
+
+        });
+    }
+
+    
+    function checkboxClicked(e) {
+
+        var isChecked = e.checked;
+        var grid = $("#grid").data("kendoGrid");
+        if (isChecked) {
+
+            grid.showColumn("ToStoreCode");
+        } else {
+            grid.hideColumn("ToStoreCode");
+        }
+
+    };
+
+    function onMasterEdit(e) {
+
+        var grid = $("#grid").data("kendoGrid");
+        grid.hideColumn("ToStoreCode");
+
+
+        if (e.model.isNew() === false) {
+           // e.grid.hideColumn("ToStore");
+        }
+    }
+
+
+   
+   
+</script>
+
+

@@ -1,0 +1,9 @@
+﻿@model ExceedERP.Core.Domain.FleetManagement.FleetMaintenance.ServiceCrew
+
+ 
+    @(Html.Kendo().DropDownListFor(model => model.ServiceName).HtmlAttributes(new { @class = "form-control" }).Name("ServiceName")
+                                .DataTextField("FullName")
+                                    .DataValueField("FullName").OptionLabel("Select")
+                                    .DataSource(d => d.Read(r => r.Action("MechanicCrewDDBind", "MechanicCrew"))))
+
+ 

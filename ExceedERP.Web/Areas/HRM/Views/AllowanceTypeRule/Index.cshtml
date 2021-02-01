@@ -1,0 +1,155 @@
+﻿@using ExceedERP.Core.Domain.HRM.Allowance
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>@Resources.NavigatorBenefit_AllowanceTypeRule</legend>
+
+    @(Html.Kendo().Grid<AllowanceTypeRule>()
+          .Name("AllowanceTypeRulegrid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.AllowanceType).EditorTemplateName("Enum");
+          columns.Bound(c => c.TaxTrasholdAmount);
+          columns.Bound(c => c.Percentage);
+          columns.Bound(c => c.Remark);
+          columns.Command(command =>
+          {
+              if (HttpContext.Current.User.IsInRole("HR_Benefit_User"))
+              {
+
+                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+              }
+          }).Width(180);
+      })
+                    .ToolBar(toolbar =>
+                    {
+                        toolbar.Template(@<text ><div class="toolbar">
+    <label class="category-label" for="IsTaxable">@Resources.HR_Benefit_Setting</label>
+    <div data-container-for="IsTaxable" id="is-all-day" class="k-edit-field">
+        <input id="IsTaxable" name="IsTaxable" type="checkbox" data-bind="checked:IsTaxable, events: { change: IsTaxable}" />
+    </div>
+</div>
+<br></text>);
+                    })
+              .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                   .HtmlAttributes(new { style = "height: 550px;" })
+                           .Groupable()
+                          .Sortable(sortable =>
+                          {
+                              sortable.SortMode(GridSortMode.SingleColumn);
+                          })
+                           .Filterable()
+                          .Scrollable()
+                      .Pageable(pageable => pageable
+                                            .Input(true)
+                                            .Numeric(false)
+                                            .Refresh(true)
+                                            .PageSizes(true)
+                                            .ButtonCount(5))
+              .DataSource(dataSource => dataSource
+                  .Ajax()
+                      .Events(events =>
+                                                                                      {
+                                                                                          events.Error("error_handler(\"AllowanceTypeRulegrid\")");
+                                                                                          events.RequestStart("onRequestStart(\"AllowanceTypeRulegrid\")");
+                                                                                          events.RequestEnd("onRequestEnd(\"AllowanceTypeRulegrid\")");
+                                                                                      }
+                                                                                      )
+
+                  .Model(model =>
+                  {
+                      model.Id(p => p.AllowanceTypeRuleId);
+                      model.Field(p => p.AllowanceType).Editable(false);
+                  }
+                  )
+                  .Read(read => read.Action("AllowanceTypeRule_Read", "AllowanceTypeRule"))
+                  .Create(create => create.Action("AllowanceTypeRule_Create", "AllowanceTypeRule"))
+                  .Update(update => update.Action("AllowanceTypeRule_Update", "AllowanceTypeRule"))
+              )
+)
+    <script>
+        //function error_handler(e) {
+        //    if (e.errors) {
+        //        var message = "Errors:\n";
+        //        $.each(e.errors, function(key, value) {
+        //            if ('errors' in value) {
+        //                $.each(value.errors, function() {
+        //                    message += this + "\n";
+        //                });
+        //            }
+        //        });
+        //        alert(message);
+
+        //    }
+
+        //}
+
+        function sync_handler(e) {
+            this.read();
+
+        }
+    </script>
+<script>
+
+    $("#IsTaxable").click(function() {
+        if ($(this).is(':checked')) {
+            if (confirm("Are you sure to change allowance type rule setting to true?")) {
+
+                $.ajax({
+                    url: '@Url.Action("SetSetting", "AllowanceTypeRule")',
+                    //contentType: "application/json; charset=utf-8",
+                    data: { value: true },
+                    type: 'POST',
+                    cache: false,
+                    success: function(result) {
+                        r = result;
+
+                    }
+
+
+                });
+            }
+        } else {
+            if (confirm("Are you sure to change allowance type rule setting to false?")) {
+                $.ajax({
+                    url: '@Url.Action("SetSetting", "AllowanceTypeRule")',
+            //contentType: "application/json; charset=utf-8",
+            data: { value: false },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                r = result;
+
+            }
+
+
+        });
+}
+    }
+});
+
+
+    $(document).ready(function () {
+        $.ajax({
+            url: '@Url.Action("GetSetting", "AllowanceTypeRule")',
+            //contentType: "application/json; charset=utf-8",
+            //data: { value: false },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                r = result;
+                if (r === "True") {
+                    $('#IsTaxable').get(0).checked = true;
+                    //$('.IsTaxable').attr('checked', 'checked');
+                   
+                }
+                else {
+                    $('#IsTaxable').get(0).checked = false;
+                }
+            }
+
+
+        });
+    });
+</script>

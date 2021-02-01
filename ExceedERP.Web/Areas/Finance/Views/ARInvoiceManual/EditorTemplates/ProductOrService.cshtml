@@ -1,0 +1,18 @@
+﻿@using System.Collections
+@(Html.Kendo().DropDownListFor(m => m)
+                  .ValuePrimitive(true)
+                  .OptionLabel("Select product...")
+                          .DataTextField("Product")
+                          .DataValueField("Product")
+                      .BindTo((IEnumerable)ViewData["productorServices"])
+                      .Events(e =>
+                        {
+                            e.Select("onSelect");
+                        })
+                     
+)
+@Html.ValidationMessageFor(m => m)
+
+
+
+

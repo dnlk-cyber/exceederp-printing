@@ -1,0 +1,12 @@
+﻿
+
+@(Html.Kendo().DropDownListFor(model => model)
+                              .AutoBind(false)
+                              .OptionLabel("Select Member---")
+                              .DataTextField("Name")
+                                              .DataValueField("Value")
+                              .DataSource(dataSource =>
+                              {
+                                  dataSource.Read(read => read.Action("getGroupMembers", "InfoDeskDataProvider",new {TicketGroup="#=TicketGroup#" }));
+
+                              }).ValuePrimitive(true))

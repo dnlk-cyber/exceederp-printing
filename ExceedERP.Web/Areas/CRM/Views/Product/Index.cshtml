@@ -1,0 +1,515 @@
+﻿@model  ExceedERP.Core.Domain.CRM.Product
+
+
+
+
+
+<script>
+    function filterItem() {
+        return {
+            Category: $("#CategoryID").val()
+        };
+    }
+    function filterItemCode() {
+        return {
+            Code: $("#ItemCode").val()
+        };
+    }
+</script>
+<legend>Product</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.Product>()
+          .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Name).Width(120);
+          columns.ForeignKey(c => c.CategoryID, (System.Collections.IEnumerable)ViewData["ThingCategory"], "Code", "Description").EditorTemplateName("ThingCategory").Width(120);
+  
+       //   columns.ForeignKey(c => c.ItemCategoryCode, (System.Collections.IEnumerable)ViewData["ItemCategory"], "Code", "Description").EditorTemplateName("ItemCategory").Title("Item Category").Width(150);
+          columns.ForeignKey(c => c.ItemCode, (System.Collections.IEnumerable)ViewData["Item"], "Code", "Description").EditorTemplateName("ItemCode").Width(150);
+
+          columns.Bound(c => c.UOM).EditorTemplateName("UOM").Width(120);
+          columns.Bound(c => c.IsActive).Width(100).ClientTemplate("<input type='checkbox'  disabled='true' value='#=IsActive #' " + " # if (IsActive) { #" + "checked='checked'" + "# } #" + " />").Title("Is Active");
+       
+          columns.Command(command =>
+          {
+              command.Edit();
+              command.Destroy();
+          }).Width(180);
+      })
+              .ToolBar(toolbar =>
+                          {
+                              toolbar.Create();
+                          })
+            .Events(ev => ev.DetailExpand("onDetailExpand"))
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+         .HtmlAttributes(new { style = "height: 520px;" })
+                          .Pageable(pageable => pageable
+                                            .Input(true)
+                                            .Numeric(false)
+                                            .Refresh(true)
+                                            .PageSizes(true)
+                                            .ButtonCount(5))
+
+                                .Scrollable()
+                                .Sortable()
+                                .Filterable()
+                                .Groupable()
+                                .Scrollable(h => h.Height(500))
+      .DataSource(dataSource => dataSource
+          .Ajax() 
+          .Model(model => model.Id(p => p.ProductID))
+              .Read(read => read.Action("Products_Read", "Product")).Events(ev => ev
+                                                                            .Error("error_handler(\"grid\")")
+                                                                            .RequestStart("onRequestStart(\"grid\")")
+                                                                            .RequestEnd("onRequestEnd(\"grid\")"))
+                                                 .Create(create => create.Action("Products_Create", "Product"))
+                                      .Update(update => update.Action("Products_Update", "Product"))
+                                      .Destroy(destroy => destroy.Action("Products_Destroy", "Product"))
+          ).ClientDetailTemplateId("template")
+)
+
+
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+          .Name("tabstrip_#=ProductID#")
+          .SelectedIndex(0)
+          .Items(items =>
+          {
+              @*
+                           items.Add().Text("Beginnings").Content(
+                @<text>
+                    <legend>Beginnings</legend>
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.Beginning>()
+                      .Name("BeginningGrid_#=ProductID#")
+                      .Columns(columns =>
+                      {
+                          columns.ForeignKey(c => c.Period, (System.Collections.IEnumerable)ViewData["PeriodList"], "PeriodId", "PeriodName").EditorTemplateName("Period").Width(150);
+                          columns.Bound(c => c.Value).Width(100);
+
+                          //columns.Bound(c => c.IsProvisional).ClientTemplate("<input type='checkbox'  disabled='true' value='#=IsProvisional #' " + " # if (IsProvisional) { #" + "checked='checked'" + "# } #" + " />").Title("Is Provisional");
+
+                          columns.Command(command =>
+                          {
+                              command.Edit();
+                              command.Destroy();
+                          }).Width(180);
+                      })
+                      .ToolBar(toolbar =>
+                      {
+                          toolbar.Create();
+                      })
+                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                      .Scrollable()
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+                                  .Model(model => model.Id(p => p.BeginningID)).Events(ev => ev
+                                                                                            .Error("error_handler(\"BeginningGrid_#=ProductID#\")")
+                                                                                            .RequestStart("onRequestStart(\"BeginningGrid_#=ProductID#\")")
+                                                                                            .RequestEnd("onRequestEnd(\"BeginningGrid_#=ProductID#\")"))
+                                  .Read(read => read.Action("Beginnings_Read", "Beginning", new { id = "#=ProductID#", beginningReferenceType = "Product" }))
+                                  .Create(create => create.Action("Beginnings_Create", "Beginning", new { id = "#=ProductID#", beginningReferenceType = "Product" }))
+                          .Update(update => update.Action("Beginnings_Update", "Beginning"))
+                          .Destroy(destroy => destroy.Action("Beginnings_Destroy", "Beginning"))
+                      ).ToClientTemplate()
+                    )
+
+                </text>
+                  );
+                  *@
+              //*****************************************************************************************************//
+              //*********************************"Account Map***********************************************************//
+              items.Add().Text("Account Map").Content(
+                @<text>
+                    <legend>Account Map</legend>
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.AccountMap>()
+                      .Name("AccountMapGrid_#=ProductID#")
+                      .Columns(columns =>
+                      {
+                          columns.Bound(c => c.ControlAccountID).EditorTemplateName("AccountRequirementDefinition").Width(120);
+                          columns.Bound(c => c.AccountID).EditorTemplateName("AccountCode");//, (System.Collections.IEnumerable)ViewData["ListOfAccounts"], "AccountsID", "Description").EditorTemplateName("ListOfAccount").Width(100);
+                          columns.Command(command =>
+                          {
+                              command.Edit();
+                              command.Destroy();
+                          }).Width(180);
+                      })
+                      .ToolBar(toolbar =>
+                      {
+                          toolbar.Create();
+                      })
+                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                      .Scrollable()
+                      .DataSource(dataSource => dataSource
+                          .Ajax() 
+                          .Model(model =>
+                          {
+                              model.Id(p => p.AccountMapID);
+                              model.Field(f => f.AccountMapID).Editable(true);
+                          }
+                                  ).Events(ev => ev
+                                                                                            .Error("error_handler(\"AccountMapGrid_#=ProductID#\")")
+                                                                                            .RequestStart("onRequestStart(\"AccountMapGrid_#=ProductID#\")")
+                                                                                            .RequestEnd("onRequestEnd(\"AccountMapGrid_#=ProductID#\")"))
+                          .Read(read => read.Action("AccountMaps_Read", "AccountMap", new { accountMapReferenceType = "Product", id = "#=ProductID#" }))
+                          .Create(create => create.Action("AccountMaps_Create", "AccountMap", new { accountMapReferenceType = "Product", id = "#=ProductID#" }))
+                          .Update(update => update.Action("AccountMaps_Update", "AccountMap"))
+                          .Destroy(destroy => destroy.Action("AccountMaps_Destroy", "AccountMap"))
+                      ).ToClientTemplate()
+                    )
+                </text>
+                  );
+              //*****************************************************************************************************//
+
+              //*********************************"Price***********************************************************//
+              items.Add().Text("Price").Content(
+                @<text>
+                    <legend>Price</legend>
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.Price>()
+                      .Name("PriceGrid_#=ProductID#")
+                      .Columns(columns =>
+                      {
+
+                          columns.Bound(c => c.ReferenceType).Width(120);
+                        //  columns.Bound(c => c.Variety).EditorTemplateName("GetVarietyByProduct").Width(120);
+                          //columns.Bound(c => c.Class).EditorTemplateName("GetClassByProduct").Width(120);
+                          columns.Bound(c => c.Reference).Width(100);
+                          columns.Bound(c => c.Value).Width(100);
+
+                          columns.Bound(c => c.Priority).Width(100);
+                          columns.Command(command =>
+                          {
+                              command.Edit();
+                              command.Destroy();
+                          }).Width(180);
+                      })
+                      .ToolBar(toolbar =>
+                      {
+                          toolbar.Create();
+                      })
+                      .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("PriceEditorTemplate").Window(w =>
+                      {
+                          w.Title("Price");
+                          w.Scrollable(false);
+                          w.Width(900);
+                      }))
+                      .Scrollable()
+                      .DataSource(dataSource => dataSource
+                          .Ajax() 
+                          .Model(model => model.Id(p => p.PriceID))
+                                  .Events(ev => ev
+                                                                                            .Error("error_handler(\"PriceGrid_#=ProductID#\")")
+                                                                                            .RequestStart("onRequestStart(\"PriceGrid_#=ProductID#\")")
+                                                                                            .RequestEnd("onRequestEnd(\"PriceGrid_#=ProductID#\")"))
+                                          .Read(read => read.Action("Prices_Read", "Price", new { thingID = "#=ProductID#", priceThingType = "Product" }))
+                                          .Create(create => create.Action("Prices_Create", "Price", new { thingID = "#=ProductID#", priceThingType = "Product" }))
+                          .Update(update => update.Action("Prices_Update", "Price"))
+                          .Destroy(destroy => destroy.Action("Prices_Destroy", "Price"))
+                      ).ToClientTemplate()
+                    )
+                </text>
+                  );
+
+              //***********************************************************************************************************//
+              //*********************************"Stock Balance**************************************************************//
+              items.Add().Text("Stock Balance").Content(
+                @<text>
+                    <legend>Stock Balance</legend>
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.StockBalance>()
+                      .Name("StockBalanceGrid_#=ProductID#")
+                      .Columns(columns =>
+                      {
+                          columns.Bound(c => c.StockBalanceType).EditorTemplateName("StockBalanceType").Width(100);
+                          columns.ForeignKey(c => c.StoreID, (System.Collections.IEnumerable)ViewData["StoreList"], "StoreCode", "Name").EditorTemplateName("StoreObject").Width(150);
+                          columns.Bound(c => c.Quantity).Width(100);
+             
+                      })
+                      .ToolBar(toolbar =>
+                      {
+                        //  toolbar.Create();
+                      })
+                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                      .Scrollable()
+                      .DataSource(dataSource => dataSource
+                          .Ajax() 
+                          .Model(model => model.Id(p => p.StockBalanceID))
+                                  .Events(ev => ev
+                                                                                            .Error("error_handler(\"StockBalanceGrid_#=ProductID#\")")
+                                                                                            .RequestStart("onRequestStart(\"StockBalanceGrid_#=ProductID#\")")
+                                                                                            .RequestEnd("onRequestEnd(\"StockBalanceGrid_#=ProductID#\")"))
+                                                  .Read(read => read.Action("StockBalances_Read", "StockBalance", new { thingID = "#=ItemCode#", stockBalanceThingType = "Product" }))
+                                          .Create(create => create.Action("StockBalances_Create", "StockBalance", new { thingID = "#=ProductID#", stockBalanceThingType = "Product" }))
+                          .Update(update => update.Action("StockBalances_Update", "StockBalance"))
+                          .Destroy(destroy => destroy.Action("StockBalances_Destroy", "StockBalance"))
+                      ).ToClientTemplate()
+                    )
+
+
+
+
+                </text>
+                  );
+
+              //***********************************************************************************************************//
+              //*********************************"Stock Level**************************************************************//
+              items.Add().Text("Stock Level").Content(
+                @<text>
+                    <legend>Stock Level</legend>
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.StockLevel>()
+                      .Name("StockLevelGrid_#=ProductID#")
+                      .Columns(columns =>
+                      {
+                          columns.ForeignKey(c => c.StoreID, (System.Collections.IEnumerable)ViewData["StoreList"], "StoreCode", "Name").EditorTemplateName("StoreObject").Width(150);
+                          columns.Bound(c => c.MinimumLevel);
+                          columns.Bound(c => c.MaximumLevel);
+                          columns.Bound(c => c.LeadTime);
+                          columns.Bound(c => c.EconomicOrderQuantity);
+                          columns.Command(command =>
+                          {
+                              command.Edit();
+                              command.Destroy();
+                          }).Width(180);
+                      })
+                      .ToolBar(toolbar =>
+                      {
+                          toolbar.Create();
+                      })
+                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                      .Scrollable()
+                      .DataSource(dataSource => dataSource
+                                  .Ajax().Events(ev => ev
+                                                                                    .Error("error_handler(\"StockLevelGrid_#=ProductID#\")")
+                                                                                    .RequestStart("onRequestStart(\"StockLevelGrid_#=ProductID#\")")
+                                                                                    .RequestEnd("onRequestEnd(\"StockLevelGrid_#=ProductID#\")"))
+                              .Model(model => model.Id(p => p.StockLevelID))
+                                          .Read(read => read.Action("StockLevels_Read", "StockLevel", new { thingID = "#=ProductID#", stockLevelThingType = "Product" }))
+                          .Create(create => create.Action("StockLevels_Create", "StockLevel", new { thingID = "#=ProductID#", stockLevelThingType = "Product" }))
+                          .Update(update => update.Action("StockLevels_Update", "StockLevel"))
+                          .Destroy(destroy => destroy.Action("StockLevels_Destroy", "StockLevel"))
+                      ).ToClientTemplate()
+                    )
+
+                </text>
+                  );
+              //*********************************"Object State**************************************************************//
+              items.Add().Text("Object State").Content(
+                @<text>
+                    <legend>Object State</legend>
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.ObjectState>()
+                      .Name("ObjectStateGrid_#=ProductID#")
+                      .Columns(columns =>
+                      {
+                          columns.ForeignKey(c => c.ObjectStateDefinitionID, (System.Collections.IEnumerable)ViewData["ObjectStateDefinitionList"], "ObjectStateDefinitionID", "Description").EditorTemplateName("ObjectStateDefinitionList").Width(250);
+                          columns.Command(command =>
+                           {
+                               command.Edit();
+                               command.Destroy();
+                           }).Width(180);
+                      })
+                      .ToolBar(toolbar =>
+                      {
+                          toolbar.Create();
+                      })
+                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                      .Scrollable()
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+                                  .Model(model => model.Id(p => p.ObjectStateID)).Events(ev => ev
+                                                                                            .Error("error_handler(\"ObjectStateGrid_#=ProductID#\")")
+                                                                                            .RequestStart("onRequestStart(\"ObjectStateGrid_#=ProductID#\")")
+                                                                                            .RequestEnd("onRequestEnd(\"ObjectStateGrid_#=ProductID#\")"))
+                          .Read(read => read.Action("ObjectStates_Read", "ObjectState", new { id = "#=ProductID#" }))
+                          .Create(create => create.Action("ObjectStates_Create", "ObjectState", new { id = "#=ProductID#" }))
+                          .Update(update => update.Action("ObjectStates_Update", "ObjectState"))
+                          .Destroy(destroy => destroy.Action("ObjectStates_Destroy", "ObjectState"))
+                      ).ToClientTemplate()
+                    )
+                </text>
+                  );
+              //***********************************************************************************************************//
+
+              //*********************************"Specification**************************************************************//
+              items.Add().Text("Specification").Content(
+                @<text>
+                    <legend>Specification</legend>
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.Specification>()
+                              .Name("SpecificationGrid_#=ProductID#")
+      .Columns(columns =>
+      {
+          //columns.Bound(c => c.IsKey).ClientTemplate("<input type='checkbox'  disabled='true' value='#=IsKey #' " + " # if (IsKey) { #" + "checked='checked'" + "# } #" + " />").Title("Is Key");
+          columns.ForeignKey(c => c.Category, (System.Collections.IEnumerable)ViewData["SpecificationCategory"], "LookupID", "Description").EditorTemplateName("SpecificationCategoryList").Width(150);
+          columns.Bound(c => c.Index);
+          columns.Bound(c => c.Attribute);
+          columns.Bound(c => c.Value);
+
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+                  .Ajax().Events(ev => ev
+                                                                                            .Error("error_handler(\"SpecificationGrid_#=ProductID#\")")
+                                                                                            .RequestStart("onRequestStart(\"SpecificationGrid_#=ProductID#\")")
+                                                                                            .RequestEnd("onRequestEnd(\"SpecificationGrid_#=ProductID#\")"))
+          .Model(model => model.Id(p => p.SpecificationID))
+                                  .Read(read => read.Action("Specifications_Read", "Specification", new { specificationThingID = "#=ProductID#", specificationThingType = "Product" }))
+                                                          .Create(create => create.Action("Specifications_Create", "Specification", new { specificationThingID = "#=ProductID#", specificationThingType = "Product" }))
+          .Update(update => update.Action("Specifications_Update", "Specification"))
+          .Destroy(destroy => destroy.Action("Specifications_Destroy", "Specification"))
+
+                ).ToClientTemplate()
+                    )
+                </text>
+    );
+
+              //***********************************************************************************************************//
+
+              //*********************************"Serial Definition**************************************************************//
+              items.Add().Text("SerialDefinition").Content(
+                @<text>
+                    <legend>Serial Definition</legend>
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.SerialDefinition>()
+      .Name("SerialDefinitionGrid_#=ProductID#")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Description);
+          //columns.Bound(c => c.IsMandatory).ClientTemplate("<input type='checkbox'  disabled='true' value='#=IsMandatory #' " + " # if (IsMandatory) { #" + "checked='checked'" + "# } #" + " />").Title("Is Mandatory");
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+                  .Model(model => model.Id(p => p.SerialDefinitionID)).Events(ev => ev
+                                                                                            .Error("error_handler(\"SerialDefinitionGrid_#=ProductID#\")")
+                                                                                            .RequestStart("onRequestStart(\"SerialDefinitionGrid_#=ProductID#\")")
+                                                                                            .RequestEnd("onRequestEnd(\"SerialDefinitionGrid_#=ProductID#\")"))
+          .Read(read => read.Action("SerialDefinitions_Read", "SerialDefinition", new { serialDefinitionThingID = "#=ProductID#" }))
+          .Create(create => create.Action("SerialDefinitions_Create", "SerialDefinition", new { serialDefinitionThingID = "#=ProductID#" }))
+          .Update(update => update.Action("SerialDefinitions_Update", "SerialDefinition"))
+          .Destroy(destroy => destroy.Action("SerialDefinitions_Destroy", "SerialDefinition"))
+                  ).ToClientTemplate()
+                    )
+                </text>
+    );
+          }).ToClientTemplate())
+</script>
+
+
+
+<script>
+    var masterDataItem;
+    var masterRow;
+    var masterGrid;
+    var codeid;
+    function detailExpand(e) {
+
+        masterRow = e.masterRow;
+
+        masterGrid = $("#grid").data("kendoGrid");
+
+        masterDataItem = masterGrid.dataItem(masterRow);
+
+
+        //  var masterDataItem = masterGrid.dataItem();
+        codeid = masterDataItem.ProductID;
+    }
+
+  
+</script>
+
+
+<script>
+    var popup;
+    var referenceCode;
+    function SelectReference() {
+        popup = window.open('/CRM/CRMDataProvider/GetReference', 'WindowPopup', 'top=100, left=400, width=300, height=320,resizable=no,');
+        popup.focus();
+        return false;
+    }
+
+    function setReferenceID(referenceID) {
+        referenceCode = referenceID;
+        $("#Reference").val(referenceCode).trigger("change");
+    }
+
+
+    @*function GetPriceTagDetailParameter() {
+
+        var priceTagDetail = $("#PriceTagDetail").data("kendoDropDownList");
+        var priceTag = $("#PriceTag").data("kendoDropDownList");
+        var product = $("#ThingID").data("kendoDropDownList");
+        //var priceCode = priceObject.value();
+
+        $.ajax({
+            url: '@Url.Action("GetPriceValue", "CRMDataProvider")',
+
+            data: { priceTagID: priceTag.value(), priceTagDetailID: priceTagDetail.value(), productID: ThingID },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                r = result;
+                $("#Value").val(r);
+
+
+            }
+
+        });
+
+    }*@
+</script>
+
+<script>
+    var ThingID;
+    function onDetailExpand(e) {
+        var masterRow = e.masterRow;
+        //var masterGrid = $("#grid").data("kendoGrid");
+        var masterGrid = $("#grid").data("kendoGrid");
+        var masterDataItem = masterGrid.dataItem(masterRow);
+        ThingID = masterDataItem.ItemCode;
+ 
+
+    }
+    function getdata() {
+      
+        return { id: ThingID }
+    }
+
+    function filterVariety() {
+       
+ 
+        return { ThingID: ThingID }
+    }
+    function filterclass() {
+      
+ 
+        return { ProductName: ThingID }
+    }
+    function filterReference() {
+        return {
+            priceTag: $("#ReferenceType").data("kendoDropDownList").value()
+        };
+    }
+</script>
+<style>
+    div.k-edit-form-container {
+        width: 700px;
+    }
+
+
+</style>
+<script>
+    
+ 
+
+
+
+  
+</script>

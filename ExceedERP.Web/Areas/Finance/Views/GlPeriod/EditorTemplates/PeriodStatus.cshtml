@@ -1,0 +1,14 @@
+﻿@using ExceedERP.Core.Domain.Finance.GL
+@using ExceedERP.Helpers.Common
+@model ExceedERP.Core.Domain.Finance.GL.FiscalYearStatus
+
+@(
+ Html.Kendo().DropDownListFor(m => m)
+        .DataTextField("Text")
+        .DataValueField("Value")
+         .BindTo(EnumExtension.EnumToSelectList(typeof(FiscalYearStatus)))
+)
+
+
+
+

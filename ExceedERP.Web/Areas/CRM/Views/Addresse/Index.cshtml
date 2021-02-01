@@ -1,0 +1,29 @@
+﻿<legend>Address</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Common.HRM.Address>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.Reference);
+        columns.Bound(c => c.Category);
+        columns.Bound(c => c.Value);
+        columns.Bound(c => c.Remark);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.AddressID))
+                    .Events(ev => ev
+                                                                .Error("error_handler(\"grid\")")
+                                                                .RequestStart("onRequestStart(\"grid\")")
+                                                                .RequestEnd("onRequestEnd(\"grid\")"))
+          .Read(read => read.Action("Addresses_Read", "Addresse"))
+          .Create(create => create.Action("Addresses_Create", "Addresse"))
+          .Update(update => update.Action("Addresses_Update", "Addresse"))
+          .Destroy(destroy => destroy.Action("Addresses_Destroy", "Addresse"))
+      )
+)

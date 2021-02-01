@@ -1,0 +1,265 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Purchase Permissions</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.ProjectInformation>()
+        .Name("ProjectInformationgrid")
+        .Columns(columns =>
+        {
+            columns.Bound(c => c.Name).Width(300);
+            columns.Bound(c => c.Code).Width(150);
+            columns.Bound(c => c.ProjectType).Width(140);
+            columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["Branch"], "BranchId", "Name").EditorTemplateName("Branch").Width(150);
+            columns.Bound(c => c.ContractAmount).Width(150).ClientTemplate(
+                "# if (ContractAmount === 0) { #" +
+                                            " -----" +
+                                            "# } else {#" +
+                                            "#: kendo.toString( ContractAmount, 'N2') #" +
+                                            "# } #"
+                );
+            columns.Bound(c => c.Client).Width(150);
+        })
+        .Scrollable(h => h.Height(700))
+        .Sortable(sortable =>
+        {
+            sortable.SortMode(GridSortMode.SingleColumn);
+        })
+        .Filterable()
+        .Selectable(selectable =>
+        {
+            selectable.Mode(GridSelectionMode.Single);
+            selectable.Type(GridSelectionType.Row);
+        })
+        .Pageable(pageable => pageable
+                                .Input(true)
+                                .Numeric(false)
+                                .Refresh(true)
+                                .PageSizes(true)
+                                .ButtonCount(5))
+        .DataSource(dataSource => dataSource
+            .Ajax()
+            .PageSize(20)
+            .Events(events => events.Error("error_handler(\"ProjectInformationgrid\")")
+                //  .Sync("sync_handler")
+                )
+            .Model(model => model.Id(p => p.ProjectInformationId))
+            .Read(read => read.Action("ProjectInformation_Read", "PurchasePermission"))
+        //.Create(create => create.Action("ProjectInformation_Create", "ProjectInformation"))
+        //.Update(update => update.Action("ProjectInformation_Update", "ProjectInformation"))
+        //.Destroy(destroy => destroy.Action("ProjectInformation_Destroy", "ProjectInformation"))
+        ).ClientDetailTemplateId("purchase-comparison")
+)
+<script id="purchase-comparison" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+          .Name("tabstrip_#=ProjectInformationId#")
+          .SelectedIndex(0)
+          .Items(items =>
+          {
+              items.Add().Text("Price Comparisons").Content(
+                @<text>
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.PurchasePriceComparison>()
+                            .Name("priceComparison__#=ProjectInformationId#")
+                              .Columns(columns =>
+                              {
+                                  columns.Bound(c => c.ItemName);
+                                  columns.ForeignKey(c => c.UnitOfMeasurementId, (IEnumerable)ViewData["uom"], "UnitOfMeasurementId", "Abbreviation");
+                                  columns.Bound(c => c.Quantity);
+                                  columns.Bound(c => c.SelectedPrice).Format("{0:N2}");
+                                  columns.Bound(c => c.SelectedSupplier);
+
+                                  columns.Command(command =>
+                                  {
+                                      command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                      command.Destroy().Text(Resources.ActionButton_Cancel);
+                                  }).Width(200);
+                              })
+                                .ToolBar(toolbar =>
+                                {
+                                    toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                                })
+                              .Editable(editable => editable.Mode(GridEditMode.InLine))
+                              .Scrollable(h => h.Height(500))
+                              .Sortable(sortable =>
+                              {
+                                  sortable.SortMode(GridSortMode.SingleColumn);
+                              })
+                              .Filterable()
+                              .Selectable(selectable =>
+                              {
+                                  selectable.Mode(GridSelectionMode.Single);
+                                  selectable.Type(GridSelectionType.Row);
+                              })
+                              .Pageable(pageable => pageable
+                                  .Input(true)
+                                  .Numeric(false)
+                                  .Refresh(true)
+                                  .PageSizes(true)
+                                  .ButtonCount(5))
+                              //.Events(e => e.Edit("onEdit"))
+                              .DataSource(dataSource => dataSource
+                                  .Ajax()
+                                  .Events(events =>
+                                  {
+                                      events.Error("error_handler(\"priceComparison__#=ProjectInformationId#\")");
+                                      events.RequestStart("onRequestStart(\"priceComparison__#=ProjectInformationId#\")");
+                                      events.RequestEnd("onRequestEnd(\"priceComparison__#=ProjectInformationId#\")");
+                                  })
+                                  .Model(model =>
+                                  {
+                                      model.Id(p => p.PurchasePriceComparisonId);
+
+                                  }
+                                  )
+                                  .Read(read => read.Action("PurchasePriceComparisons_Read", "PurchasePriceComparison", new { id = "#=ProjectInformationId#" }))
+                                  .Create(create => create.Action("PurchasePriceComparison_Create", "PurchasePriceComparison", new { id = "#=ProjectInformationId#" }))
+                                  .Update(update => update.Action("PurchasePriceComparison_Update", "PurchasePriceComparison"))
+                                  .Destroy(destroy => destroy.Action("PurchasePriceComparison_Destroy", "PurchasePriceComparison"))
+                                ).ClientDetailTemplateId("purchase-supplier")
+                                .ToClientTemplate()
+                    )
+                </text>
+                );
+
+          }).ToClientTemplate())
+</script>
+
+<script id="purchase-supplier" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+          .Name("tabstr_#=ProjectInformationId#")
+          .SelectedIndex(0)
+          .Items(items =>
+          {
+              items.Add().Text("Suppliers").Content(
+                @<text>
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.PurchaseSupplier>()
+                            .Name("supllier__#=PurchasePriceComparisonId#")
+                              .Columns(columns =>
+                              {
+                                  columns.Bound(c => c.SupplierName);
+                                  columns.Bound(c => c.UnitPrice).Format("{0:N2}");
+
+                                  columns.Command(command =>
+                                  {
+                                      command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                      command.Destroy().Text(Resources.ActionButton_Cancel);
+                                      command.Custom("CustomCommand").Text("&nbsp;Select").Click("SelectSupplier").IconClass("fa fa-check");
+                                  }).Width(250);
+                              })
+                              .Events(evnt =>
+                              {
+                                  evnt.DataBound("onDataBound");
+                              })
+                            .ToolBar(toolbar =>
+                            {
+                                toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                            })
+                              .Editable(editable => editable.Mode(GridEditMode.InLine))
+                              .Scrollable(h => h.Height(500))
+                              .Sortable(sortable =>
+                              {
+                                  sortable.SortMode(GridSortMode.SingleColumn);
+                              })
+                              .Filterable()
+                              .Selectable(selectable =>
+                              {
+                                  selectable.Mode(GridSelectionMode.Single);
+                                  selectable.Type(GridSelectionType.Row);
+                              })
+                              .Pageable(pageable => pageable
+                                  .Input(true)
+                                  .Numeric(false)
+                                  .Refresh(true)
+                                  .PageSizes(true)
+                                  .ButtonCount(5))
+                              //.Events(e => e.Edit("onEdit"))
+                              .DataSource(dataSource => dataSource
+                                  .Ajax()
+                                  .Events(events =>
+                                  {
+                                      events.Error("error_handler(\"supllier__#=PurchasePriceComparisonId#\")");
+                                      events.RequestStart("onRequestStart(\"supllier__#=PurchasePriceComparisonId#\")");
+                                      events.RequestEnd("onRequestEnd(\"supllier__#=PurchasePriceComparisonId#\")");
+                                  })
+                                  .Model(model =>
+                                  {
+                                      model.Id(p => p.PurchaseSupplierId);
+
+                                  }
+                                  )
+                                  .Read(read => read.Action("Suppliers_Read", "PurchaseSupplier", new { pId = "#=PurchasePriceComparisonId#" }))
+                                  .Create(create => create.Action("Supplier_Create", "PurchaseSupplier", new { pId = "#=PurchasePriceComparisonId#" }))
+                                  .Update(update => update.Action("Supplier_Update", "PurchaseSupplier"))
+                                  .Destroy(destroy => destroy.Action("Supplier_Destroy", "PurchaseSupplier"))
+                                )//.ClientDetailTemplateId("days-tmpl")
+                                .ToClientTemplate()
+                    )
+                </text>
+                );
+
+          }).ToClientTemplate())
+</script>
+
+<script>
+    function onDataBound() {
+        //$(".k-grid-CustomCommand").find("span").addClass("k-icon k-i-plus");
+
+
+        var grid = this;
+        var gridRows = grid.tbody.find("tr");
+
+        for (var i = 0; i < gridRows.length; i++) {
+            var row = $(gridRows[i]);
+            var dataItem = grid.dataItem(row);
+            if (dataItem.IsSelectedSupplier === true) {
+                row.find(".k-grid-edit").hide();
+                row.find(".k-grid-delete").hide();
+                row.find(".k-grid-CustomCommand").hide();
+                row.addClass("highlighted-row");
+            } else {
+
+                row.find(".k-grid-edit").show();
+                row.find(".k-grid-delete").show();
+                row.find(".k-grid-CustomCommand").show();
+            }
+        }
+    }
+
+
+    function SelectSupplier(e) {
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        var id = dataItem.PurchaseSupplierId;
+        console.log(dataItem);
+        $.ajax({
+            url: '@Url.Action("SetSelectedSupplier", "PurchaseSupplier")',
+            //contentType: "application/json; charset=utf-8",
+            data: { supplierId: id },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                //r = result;
+                location.reload();
+
+            }
+
+        });
+
+        //$('#grid').data('kendoGrid').dataSource.read();
+        //$('#grid').data('kendoGrid').refresh();
+    }
+
+    function onDataBoundOfWIPGrid(e) {
+
+    }
+</script>
+<style>
+   
+    .highlighted-row {
+        background-color: #aafeaa;
+    }
+
+        .highlighted-row.k-alt {
+            background-color: #bff1b4;
+        }
+</style>

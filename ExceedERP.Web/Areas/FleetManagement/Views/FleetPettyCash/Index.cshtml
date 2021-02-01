@@ -1,0 +1,47 @@
+﻿<legend> Petty Cash</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetRegistration.FleetPettyCash>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+
+          columns.ForeignKey(e => e.FleetsID, (System.Collections.IEnumerable)ViewData["Fleets"], "FleetsID", "UnitNum").EditorTemplateName("EquipmentGenericEditor").Width(140);
+          columns.Bound(c => c.Type).EditorTemplateName("PettyCashType");
+          columns.Bound(c => c.JobOrderId).Title("Job No");
+          columns.Bound(c => c.Amount).EditorTemplateName("NumEditor");
+        columns.Bound(c => c.Description);
+        
+          columns.Bound(c => c.CreatedBy);
+ 
+        columns.Bound(c => c.DateCreated).Format("{0:d}");
+     
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+     .HtmlAttributes(new { style = "height: 520px;" })
+                                          .Pageable(pageable => pageable
+                                                            .Input(true)
+                                                            .Numeric(false)
+                                                            .Refresh(true)
+                                                            .PageSizes(true)
+                                                            .ButtonCount(5))
+
+                                                .Scrollable()
+                                                .Sortable()
+                                                .Filterable()
+                                                .Groupable()
+                                                .Scrollable(h => h.Height(500))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+                      .Model(model => { model.Id(p => p.FleetPettyCashId); model.Field(x => x.JobOrderId).Editable(false); model.Field(x => x.CreatedBy).Editable(false); model.Field(x => x.DateCreated).Editable(false); }).Events(ev => ev
+                                                                .Error("error_handler(\"grid\")")
+                                                                .RequestStart("onRequestStart(\"grid\")")
+                                                                .RequestEnd("onRequestEnd(\"grid\")"))
+          .Read(read => read.Action("FleetPettyCashes_Read", "FleetPettyCash"))
+          .Create(create => create.Action("FleetPettyCashes_Create", "FleetPettyCash"))
+          .Update(update => update.Action("FleetPettyCashes_Update", "FleetPettyCash"))
+          .Destroy(destroy => destroy.Action("FleetPettyCashes_Destroy", "FleetPettyCash"))
+      )
+)

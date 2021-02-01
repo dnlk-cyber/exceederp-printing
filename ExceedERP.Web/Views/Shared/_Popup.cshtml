@@ -1,0 +1,262 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    @*<meta charset="utf-8" />*@
+    @*<meta name="viewport" content="width=device-width, initial-scale=1.0">*@
+    <title>SYSTEM</title>
+    <link href="~/Content/ace/css/ace.min.css" rel="stylesheet" />
+    <link href="~/Scripts/etp/jquery.calendars.picker.css" rel="stylesheet" />
+    @*@Styles.Render("~/Content/css")
+        @Scripts.Render("~/bundles/modernizr")*@
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1" />
+    <meta charset="utf-8" />
+
+    <meta name="description" content="overview &amp; stats" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0" />
+
+    <!-- bootstrap & fontawesome -->
+    <link rel="stylesheet" href="~/Content/ace/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="~/Content/ace/font-awesome/4.2.0/css/font-awesome.min.css" />
+
+    <!-- page specific plugin styles -->
+    <!-- text fonts -->
+    <link rel="stylesheet" href="~/Content/ace/fonts/fonts.googleapis.com.css" />
+
+    <!-- ace styles -->
+    <link rel="stylesheet" href="~/Content/ace/css/ace.min.css" class="ace-main-stylesheet" id="main-ace-style" />
+
+    <!--[if lte IE 9]>
+        <link rel="stylesheet" href="~/Content/ace/css/ace-part2.min.css" class="ace-main-stylesheet" />
+    <![endif]-->
+    <!--[if lte IE 9]>
+      <link rel="stylesheet" href="~/Content/ace/css/ace-ie.min.css" />
+    <![endif]-->
+    <!-- inline styles related to this page -->
+    <!-- ace settings handler -->
+    <script src="~/Content/ace/js/ace-extra.min.js"></script>
+
+    <!-- HTML5shiv and Respond.js for IE8 to support HTML5 elements and media queries -->
+    <!--[if lte IE 8]>
+    <script src="~/Content/ace/js/html5shiv.min.js"></script>
+    <script src="~/Content/ace/js/respond.min.js"></script>
+    <![endif]-->
+
+    <link href="@Url.Content("~/Content/kendo/2018.3.911/kendo.common-bootstrap.min.css")" rel="stylesheet" type="text/css" />
+    <link href="@Url.Content("~/Content/kendo/2018.3.911/kendo.mobile.all.min.css")" rel="stylesheet" type="text/css" />
+    <link href="@Url.Content("~/Content/kendo/2018.3.911/kendo.dataviz.min.css")" rel="stylesheet" type="text/css" />
+    <link href="@Url.Content("~/Content/kendo/2018.3.911/kendo.bootstrap.min.css")" rel="stylesheet" type="text/css" />
+    <link href="@Url.Content("~/Content/kendo/2018.3.911/kendo.dataviz.bootstrap.min.css")" rel="stylesheet" type="text/css" />
+
+    <script src="@Url.Content("~/Scripts/kendo/2018.3.911/jquery.min.js")"></script>
+    <script src="@Url.Content("~/Scripts/jquery-dateFormat.js")"></script>
+    <script src="@Url.Content("~/Scripts/kendo/2018.3.911/jszip.min.js")"></script>
+    <script src="@Url.Content("~/Scripts/kendo/2018.3.911/kendo.all.min.js")"></script>
+    <script src="@Url.Content("~/Scripts/kendo/2018.3.911/kendo.aspnetmvc.min.js")"></script>
+    <script src="@Url.Content("~/Scripts/kendo.modernizr.custom.js")"></script>
+    <script src="@Url.Content("~/Scripts/exceed/Virtualization/subaccountMapper.js")"></script>
+
+
+
+
+    <link href="~/Content/jsTree/themes/default/style.min.css" rel="stylesheet" />
+    <link href="~/Content/ExceedStyle.css" rel="stylesheet" />
+    <style>
+        /*html,body {
+            margin: 0;
+            padding: 0;
+        }*/
+
+        /*body {
+            font: 12px/1.5 Tahoma,sans-serif;
+            padding: 2em;
+        }*/
+
+        span.themeChooser {
+            float: right;
+        }
+
+        #tree {
+            height: 9em;
+        }
+
+        .panel-blue {
+            border-color: #3498db;
+        }
+
+        ul.login a {
+            color: #ffffff;
+        }
+
+        .dialog_css {
+            border: 0px none !important;
+            -moz-box-shadow: 1px 2px 4px 2px rgb(136, 136, 136);
+            -webkit-box-shadow: 1px 2px 4px 2px rgb(136, 136, 136);
+            box-shadow: 3px 6px 8px rgb(136, 136, 136);
+        }
+
+        legend {
+            font-size: 15px;
+        }
+
+        table {
+            font-size: 13px;
+        }
+
+        /* Hide the Grid header and pager during export */
+        .k-pdf-export .k-grid-toolbar,
+        .k-pdf-export .k-pager-wrap {
+            display: none;
+        }
+
+
+        .k-grid tbody tr {
+            height: 18px;
+        }
+
+        .k-header h1 {
+            margin: 0;
+            padding: 30px 15px;
+            font-size: 32px;
+            font-weight: lighter;
+        }
+
+        /* Sticky footer styles
+        -------------------------------------------------- */
+        html {
+            position: relative;
+            min-height: 100%;
+        }
+
+        body {
+            /* Margin bottom by footer height */
+            margin-bottom: 60px;
+        }
+
+        .footer {
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            /* Set the fixed height of the footer here */
+            height: 60px;
+            background-color: #f5f5f5;
+        }
+
+        .container-fluid .text-muted {
+            margin: 20px 0;
+        }
+
+        .placeholders {
+            margin: 30px auto;
+        }
+
+        .placeholder img {
+            display: inline-block;
+        }
+
+        p .k-button {
+            margin: 0 15px 0 0;
+        }
+
+        .btn-toggle {
+            position: absolute;
+            top: 0;
+            left: 0;
+            box-shadow: none;
+            height: 48px;
+        }
+
+            .btn-toggle .k-icon {
+                opacity: 1;
+            }
+
+            .btn-toggle,
+            .k-primary.btn-toggle:hover,
+            .btn-toggle:focus:active:not(.k-state-disabled):not([disabled]),
+            .btn-toggle:focus:not(.k-state-disabled):not([disabled]) {
+                box-shadow: none;
+                border-radius: 0;
+            }
+
+                .btn-toggle .k-i-hbars,
+                .k-primary.btn-toggle:hover .k-i-hbars,
+                .btn-toggle:focus:active:not(.k-state-disabled):not([disabled]) .k-i-hbars,
+                .btn-toggle:focus:not(.k-state-disabled):not([disabled]) .k-i-hbars {
+                    background-position: -80px -32px;
+                }
+
+        @@media (max-width: 768px) {
+            .k-item {
+                display: block;
+                clear: both;
+                float: none;
+                width: 100%;
+            }
+
+            .k-header h1 {
+                margin: 0;
+                padding: 16px 15px 14px 60px;
+                font-size: 18px;
+                font-weight: lighter;
+            }
+        }
+    </style>
+
+</head>
+
+<body class="no-skin">
+    <div class="main-container" id="main-container">
+        <div class="main-content">
+            <div class="main-content-inner">
+                <div class="page-content">
+                    <div class="row">
+                        <div class="col-xs-12">
+                            <!-- PAGE CONTENT BEGINS -->
+                            @RenderBody()
+
+                            <!-- PAGE CONTENT ENDS -->
+                        </div><!-- /.col -->
+                    </div><!-- /.row -->
+                </div><!-- /.page-content -->
+            </div>
+        </div><!-- /.main-content -->
+
+        <a href="#" id="btn-scroll-up" class="btn-scroll-up btn btn-sm btn-inverse">
+            <i class="ace-icon fa fa-angle-double-up icon-only bigger-110"></i>
+        </a>
+    </div><!-- /.main-container -->
+
+
+    <script src="~/Content/ace/js/jquery.mobile.custom.min.js"></script>
+    <script src="~/Content/ace/js/bootstrap.min.js"></script>
+
+
+
+    <!-- page specific plugin scripts -->
+    <!--[if lte IE 8]>
+      <script src="~/Content/ace/js/excanvas.min.js"></script>
+    <![endif]-->
+    <script src="~/Content/ace/js/jquery-ui.custom.min.js"></script>
+    <script src="~/Content/ace/js/jquery.ui.touch-punch.min.js"></script>
+    <script src="~/Content/ace/js/jquery.easypiechart.min.js"></script>
+    <script src="~/Content/ace/js/jquery.sparkline.min.js"></script>
+    <script src="~/Content/ace/js/jquery.flot.min.js"></script>
+    <script src="~/Content/ace/js/jquery.flot.pie.min.js"></script>
+    <script src="~/Content/ace/js/jquery.flot.resize.min.js"></script>
+
+    <!-- ace scripts -->
+    <script src="~/Content/ace/js/ace-elements.min.js"></script>
+    <script src="~/Content/ace/js/ace.min.js"></script>
+
+
+    <link href="~/Content/Jqury-ui/jquery-ui.css" rel="stylesheet" />
+    <script src="~/Content/Jqury-ui/jquery-ui.js"></script>
+    <script src="~/Scripts/jquery.validate.min.js"></script>
+    <script src="~/Scripts/jquery.validate.unobtrusive.js"></script>
+
+    <script src="~/Scripts/js.cookie.js"></script>
+    <script src="~/Scripts/NavigationState.js"></script>
+    <script src="~/Content/jsTree/jstree.min.js"></script>
+
+</body>
+
+</html>

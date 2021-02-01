@@ -1,0 +1,23 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.ObjectAccountRequirement>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.ControlAccount);
+        columns.Bound(c => c.ObjectType);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.ObjectAccountRequirementID))
+          .Read(read => read.Action("ObjectAccountRequirements_Read", "ObjectAccountRequirement"))
+          .Create(create => create.Action("ObjectAccountRequirements_Create", "ObjectAccountRequirement"))
+          .Update(update => update.Action("ObjectAccountRequirements_Update", "ObjectAccountRequirement"))
+          .Destroy(destroy => destroy.Action("ObjectAccountRequirements_Destroy", "ObjectAccountRequirement"))
+      )
+)

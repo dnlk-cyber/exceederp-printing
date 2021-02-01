@@ -1,0 +1,45 @@
+﻿
+<legend>Equipment Owning Constant</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetRegistration.OwningandOperatingCostConstant>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.ConstantType).EditorTemplateName("OwningCostTypeEditor");
+          columns.Bound(c => c.Value);
+          columns.Bound(c => c.Remark);
+          columns.Bound(c => c.DateCreated).Format("{0:d}");
+ 
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+          .HtmlAttributes(new { style = "height: 520px;" })
+                          .Pageable(pageable => pageable
+                                            .Input(true)
+                                            .Numeric(false)
+                                            .Refresh(true)
+                                            .PageSizes(true)
+                                            .ButtonCount(5))
+
+                                .Scrollable()
+                                .Sortable()
+                                .Filterable()
+                                .Scrollable(h => h.Height(500))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          
+          .Model(model =>
+              { model.Id(p => p.OwningandOperatingCostConstantId); model.Field(x=>x.DateCreated).Editable(false); model.Field(x=>x.CreatedBy).Editable(false);})
+                             .Events(ev => ev
+                                    .Error("error_handler(\"grid\")")
+                                    .RequestStart("onRequestStart(\"grid\")")
+                                    .RequestEnd("onRequestEnd(\"grid\")"))
+              .Read(read => read.Action("OwningandOperatingCostConstants_Read", "EquipmentOwningCostConstant"))
+          .Create(create => create.Action("OwningandOperatingCostConstants_Create", "EquipmentOwningCostConstant"))
+          .Update(update => update.Action("OwningandOperatingCostConstants_Update", "EquipmentOwningCostConstant"))
+          .Destroy(destroy => destroy.Action("OwningandOperatingCostConstants_Destroy", "EquipmentOwningCostConstant"))
+      )
+)

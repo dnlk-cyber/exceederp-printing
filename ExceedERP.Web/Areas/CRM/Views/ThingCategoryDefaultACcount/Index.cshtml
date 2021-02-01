@@ -1,0 +1,25 @@
+﻿@(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.ThingCategoryDefaultAccount>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.ForeignKey(c => c.ControlAccountID, (System.Collections.IEnumerable)ViewData["ControlAccountList"], "ControlAccountID", "Description").Width(150);
+          columns.ForeignKey(c => c.ProductCategoryId, (System.Collections.IEnumerable)ViewData["ThingCategoryList"], "ProductCategoryId", "Description").Width(150);
+          columns.ForeignKey(c => c.AccountsID, (System.Collections.IEnumerable)ViewData["AccountList"], "AccountsID", "Description").Width(150);
+          columns.Bound(c => c.Remark);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable(s=>s.Height(500))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.ThingCategoryDefaultAccountsID))
+          .Read(read => read.Action("ThingCategoryDefaultAccounts_Read", "ThingCategoryDefaultACcount"))
+          .Create(create => create.Action("ThingCategoryDefaultAccounts_Create", "ThingCategoryDefaultACcount"))
+          .Update(update => update.Action("ThingCategoryDefaultAccounts_Update", "ThingCategoryDefaultACcount"))
+          .Destroy(destroy => destroy.Action("ThingCategoryDefaultAccounts_Destroy", "ThingCategoryDefaultACcount"))
+      )
+)

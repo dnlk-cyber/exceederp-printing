@@ -1,0 +1,190 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.Common.DocumentApproval
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Common.DocumentApproval.AssignApprovalGroup>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.AssignApprovalGroupId).Width(60).Title("#");
+          columns.ForeignKey(p => p.OpertatingUnit, (IEnumerable)ViewData["Branches"], "BranchId", "Name").Width(120).EditorTemplateName("AllBranchSelector");
+          columns.Bound(c => c.Organization).Width(100);
+          columns.Bound(c => c.Position).Width(100);
+          columns.ForeignKey(p => p.Job, (IEnumerable)ViewData["JobTitles"], "LookupId", "Description").Width(100).EditorTemplateName("DocumentJobTitles");
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+          toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .HtmlAttributes(new { style = "height: 550px;" })
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(20))
+      .Scrollable()
+      .Sortable()
+      .Filterable()
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Groupable()
+      .Groupable().Events(ev => ev.DetailExpand("detailExpand"))
+      .Scrollable(h => h.Height(500))
+      .Events(x => x.DataBound("onDataBoundMaster"))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model =>
+          {
+              model.Id(p => p.AssignApprovalGroupId);
+              model.Field(p => p.CreatedBy).Editable(false);
+              model.Field(p => p.DateCreated).Editable(false);
+              model.Field(p => p.ModifiedBy).Editable(false);
+              model.Field(p => p.LastModified).Editable(false);
+
+          })
+          .Read(read => read.Action("AssignApprovalGroups_Read", "AssignApprovalGroup"))
+          .Create(create => create.Action("AssignApprovalGroups_Create", "AssignApprovalGroup"))
+          .Update(update => update.Action("AssignApprovalGroups_Update", "AssignApprovalGroup"))
+          .Destroy(destroy => destroy.Action("AssignApprovalGroups_Destroy", "AssignApprovalGroup"))
+      ).ClientDetailTemplateId("detailtemplate")
+      )
+
+<script id="detailtemplate" type="text/Kendo-tmpl">
+    @(Html.Kendo().TabStrip().Name("tabStrip_#=AssignApprovalGroupId#").SelectedIndex(0).Items(items =>
+                              {
+                                  items.Add().Text("Detail").Content(
+                                    @<text>
+
+
+
+                                        <div>
+                                            <hr>
+                                            <dl class="dl-horizontal">
+
+                                                <dt>
+                                                    CreatedOn
+                                                </dt>
+                                                <dd>
+                                                    #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+
+                                                </dd>
+                                                <dt>
+                                                    CreatedBy
+                                                </dt>
+                                                <dd>
+                                                    #= CreatedBy #
+                                                </dd>
+                                                <dt>
+                                                    Modified By
+                                                </dt>
+                                                <dd>
+                                                    #= ModifiedBy #
+                                                </dd>
+                                                <dt>
+                                                    Modified Date
+                                                </dt>
+                                                <dd>
+                                                    #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+                                                </dd>
+                                            </dl>
+                                        </div>
+
+
+                                    </text>
+                                                            );
+
+                                          items.Add().Text("Assignments").Content(
+                                                        @<text>
+
+                                                            @(Html.Kendo().Grid<AssignApprovalGroupAssignment>()
+                                                                                .Name("AssignApprovalGroupAssignment#=AssignApprovalGroupId#")
+                                                                                .Columns(columns =>
+                                                                            {
+                                                                                        columns.ForeignKey(p => p.ApprovalGroupId, (IEnumerable)ViewData["ApprovalGroups"], "ApprovalGroupId", "Description").Width(80).EditorTemplateName("DocumentApprovalGroup");
+                                                                                        columns.Bound(c => c.DocumentType).Width(80).EditorTemplateName("DocumentType");
+                                                                                        columns.Bound(c => c.From).Width(70);
+                                                                                        columns.Bound(c => c.To).Width(70);
+
+                                                                                        columns.Command(command =>
+                                                                                    {
+                                                                                        command.Edit();
+                                                                                        command.Destroy();
+                                                                                    }).Width(180);
+                                                                                    })
+                                                                          .ToolBar(toolbar =>
+                                                                          {
+                                                                              toolbar.Create();
+                                                                          })
+
+                                                                          .Events(x => x.DataBound("onDataBoundLines"))
+                                                                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                          .Scrollable()
+                                                                          .Selectable()
+                                                                          .DataSource(dataSource => dataSource
+                                                                              .Ajax()
+                                                                                    .Events(ev => ev
+                                                                                        .Error("error_handler(\"AssignApprovalGroupAssignment#=AssignApprovalGroupId#\")")
+                                                                                        .RequestStart("onRequestStart(\"AssignApprovalGroupAssignment#=AssignApprovalGroupId#\")")
+                                                                                                .RequestEnd("onRequestEnd(\"AssignApprovalGroupAssignment#=AssignApprovalGroupId#\")"))
+                                                                              .Model(model =>
+                                                                              {
+                                                                                          model.Id(p => p.AssignApprovalGroupAssignmentId);
+                                                                                          model.Field(p => p.DocumentType).Editable(false);
+
+                                                                                          model.Field(p => p.CreatedBy).Editable(false);
+                                                                                          model.Field(p => p.DateCreated).Editable(false);
+                                                                                          model.Field(p => p.ModifiedBy).Editable(false);
+                                                                                          model.Field(p => p.LastModified).Editable(false);
+
+                                                                                      })
+                                                                                              .Read(read => read.Action("AssignApprovalGroupAssignments_Read", "AssignApprovalGroupAssignment", new { id = "#=AssignApprovalGroupId#" }))
+                                                                                              .Create(create => create.Action("AssignApprovalGroupAssignments_Create", "AssignApprovalGroupAssignment", new { id = "#=AssignApprovalGroupId#" }))
+                                                                                              .Update(update => update.Action("AssignApprovalGroupAssignments_Update", "AssignApprovalGroupAssignment", new { id = "#=AssignApprovalGroupId#" }))
+                                                                                              .Destroy(destroy => destroy.Action("AssignApprovalGroupAssignments_Destroy", "AssignApprovalGroupAssignment"))
+                                                                                          ).ToClientTemplate()
+                                                            )
+
+                                                        </text>
+                                            );
+
+                                              }).ToClientTemplate()
+
+    )
+
+
+</script>
+
+<script>
+    var masterDataItem;
+    var masterRow;
+    var masterGrid;
+
+    var branch;
+
+    function detailExpand(e) {
+
+        masterRow = e.masterRow;
+        masterGrid = $("#grid").data("kendoGrid");
+        masterDataItem = masterGrid.dataItem(masterRow);
+        branch = masterDataItem.OpertatingUnit;
+
+    }
+
+
+    function filterApprovalGroup() {
+
+        return {
+            operatingUnit: branch,
+            text: $("#ApprovalGroupId").data("kendoDropDownList").filterInput.val()
+        };
+    }
+
+</script>

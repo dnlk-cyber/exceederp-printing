@@ -1,0 +1,57 @@
+﻿@using ExceedERP.Core.Domain.HRM.HealthAndInsurance
+@using ExceedERP.Core.Localization
+
+@(Html.Kendo().Grid<AccidentMedicalRecord>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.MedicalTreatment);
+        columns.Bound(c => c.InstitutionName);
+        columns.Bound(c => c.MedicalCost);
+        columns.Bound(c => c.Ramrk);
+        columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+                          .Events(events =>
+                  {
+                      events.Error("error_handler(\"grid\")");
+                      events.RequestStart("onRequestStart(\"grid\")");
+                      events.RequestEnd("onRequestEnd(\"grid\")");
+                  }
+                  )
+
+          .Model(model => model.Id(p => p.AccidentMedicalRecordId))
+          .Read(read => read.Action("AccidentMedicalRecords_Read", "AccidentMedicalRecord"))
+          .Create(create => create.Action("AccidentMedicalRecords_Create", "AccidentMedicalRecord"))
+          .Update(update => update.Action("AccidentMedicalRecords_Update", "AccidentMedicalRecord"))
+          .Destroy(destroy => destroy.Action("AccidentMedicalRecords_Destroy", "AccidentMedicalRecord"))
+      )
+)
+<script>
+    //function error_handler(e) {
+    //    if (e.errors) {
+    //        var message = "Errors:\n";
+    //        $.each(e.errors, function(key, value) {
+    //            if ('errors' in value) {
+    //                $.each(value.errors, function() {
+    //                    message += this + "\n";
+    //                });
+    //            }
+    //        });
+    //        alert(message);
+
+    //    }
+
+    //}
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+</script>

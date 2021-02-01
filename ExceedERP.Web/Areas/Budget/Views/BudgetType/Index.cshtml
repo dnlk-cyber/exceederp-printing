@@ -1,0 +1,46 @@
+﻿@model ExceedERP.Core.Domain.Budget.BudgetCategory
+
+
+<legend>   Budget Category Type </legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Budget.BudgetType>()
+              .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Name).Width(150);
+          columns.Bound(c => c.Description).Width(100);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create();
+      })
+
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+         .HtmlAttributes(new { style = "height: 520px;" })
+                      .Pageable(pageable => pageable
+                                        .Input(true)
+                                        .Numeric(false)
+                                        .Refresh(true)
+                                        .PageSizes(true)
+                                        .ButtonCount(5))
+
+                            .Scrollable()
+                            .Sortable()
+                            .Filterable()
+                             .Scrollable(h => h.Height(500))
+
+           .DataSource(dataSource => dataSource
+          .Ajax()
+                      .Model(model => model.Id(p => p.BudgetTypeId))
+                      .Events(ev => ev
+                                            .Error("error_handler(\"grid\")")
+                                            .RequestStart("onRequestStart(\"grid\")")
+                                            .RequestEnd("onRequestEnd(\"grid\")"))
+                          .Read(read => read.Action("BudgetType_Read", "BudgetType"))
+                      .Create(create => create.Action("BudgetType_Create", "BudgetType"))
+                      .Update(update => update.Action("BudgetType_Update", "BudgetType"))
+                      .Destroy(destroy => destroy.Action("BudgetType_Destroy", "BudgetType"))
+          )
+
+)
+

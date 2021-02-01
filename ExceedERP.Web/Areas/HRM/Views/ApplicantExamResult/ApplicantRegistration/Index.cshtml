@@ -1,0 +1,437 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.Common.HRM
+@using ExceedERP.Core.Domain.HRM.RecruitmentManagment
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<Legend>@Resources.Navigator_Recruitment_ApplicantRegistration</Legend>
+      
+
+                    @(Html.Kendo().Grid<ApplicantRegistration>()
+                          .Name("ApplicantRegistrationgrid")
+                          .Columns(columns =>
+                          {
+                              columns.ForeignKey(c => c.VacancyId, (IEnumerable)ViewData["Vacancy"], "VaccancyCode", "VaccancyCode").EditorTemplateName("Vacancy").Width(150);
+                              columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["JobTitle"], "LookupId", "Description").Width(200);
+                              columns.Bound(c => c.ApplicantName).Width( 150);
+                              columns.Bound(c => c.Age).Width( 120);
+                              columns.Bound(c => c.Sex).Width( 120);
+                              columns.Command(command =>
+                              {
+                                  if (HttpContext.Current.User.IsInRole("HR_Recruitment_User"))
+                                  {
+                                      command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                  }
+                                  if (HttpContext.Current.User.IsInRole("HR_Admin") || HttpContext.Current.User.IsInRole("HR_Recruitment_Admin"))
+                                  {
+                                      command.Destroy().Text(Resources.ActionButton_Cancel);
+                                  }
+                              }).Width(180);
+                          })
+                          .ToolBar(toolbar =>
+                          {
+                              if (HttpContext.Current.User.IsInRole("HR_Recruitment_User"))
+                              {
+                                  toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                              }
+                              if (HttpContext.Current.User.IsInRole("HR_Admin") || HttpContext.Current.User.IsInRole("HR_Recruitment_Admin"))
+                              {
+                                  toolbar.Excel().Text(Resources.ActionButton_ExportExcel).HtmlAttributes(new { @class = "btn btn-primary btn-xs pull-right" });
+                                  toolbar.Pdf().Text(Resources.ActionButton_ExportPDF).HtmlAttributes(new { @class = "btn btn-primary btn-xs pull-right" });
+                              }
+                          })
+                                   .Excel(excel => excel
+                                                            .FileName(Resources.Navigator_Recruitment_ApplicantRegistration + ".xlsx")
+                                        .Filterable(true)
+                                            .AllPages(true)
+                                                                    .ProxyURL(Url.Action("Excel_Export_Save", "ApplicantRegistration"))
+                                    )
+                                         .Pdf(pdf => pdf
+                                        .AllPages()
+                                                                        .FileName(Resources.Navigator_Recruitment_ApplicantRegistration + ".pdf")
+                                                                    .ProxyURL(Url.Action("Pdf_Export_Save", "ApplicantRegistration"))
+                                    )
+                          .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("ApplicantRegistration").Window(window =>
+                          {
+                              window.Title(Resources.Navigator_Recruitment_ApplicantRegistration);
+                              window.Scrollable(false);
+                          }))
+
+                                  .Groupable()
+                                        .HtmlAttributes(new { style = "height: 550px;" })
+                                       .Groupable()
+                                      .Sortable(sortable =>
+                                      {
+                                          sortable.SortMode(GridSortMode.SingleColumn);
+                                      })
+                                       .Filterable()
+                                      .Scrollable()
+                                              .Events(x => { x.Edit("GetDate");
+                                              x.Save("GetDate");})
+                                  .Pageable(pageable => pageable
+                                                        .Input(true)
+                                                        .Numeric(false)
+                                                        .Refresh(true)
+                                                        .PageSizes(true)
+                                                        .ButtonCount(5))
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+                                      .Events(events =>
+                                                                                                              {
+                                                                                                                  events.Error("error_handler(\"ApplicantRegistrationgrid\")");
+                                                                                                                  events.RequestStart("onRequestStart(\"ApplicantRegistrationgrid\")");
+                                                                                                                  events.RequestEnd("onRequestEnd(\"ApplicantRegistrationgrid\")");
+                                                                                                              }
+                                                                                                              )
+                                              
+                              .Model(model => model.Id(p => p.ApplicantRegistrationId))
+                              .Read(read => read.Action("ApplicantRegistration_Read", "ApplicantRegistration"))
+                              .Create(create => create.Action("ApplicantRegistration_Create", "ApplicantRegistration"))
+                              .Update(update => update.Action("ApplicantRegistration_Update", "ApplicantRegistration"))
+                              .Destroy(destroy => destroy.Action("ApplicantRegistration_Destroy", "ApplicantRegistration"))
+                                                  ).ClientDetailTemplateId("AddressTemplate")
+                          )
+             
+
+
+
+<script id="AddressTemplate" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                            .Name("tabstrip2_#=ApplicantRegistrationId#")
+    .SelectedIndex(0)
+    .Items(items =>
+     {
+
+         items.Add().Text(Resources.Navigator_Employee_Education).Content(
+            @<text>
+                
+                @(Html.Kendo().Grid<ApplicantEducation>()
+                  .Name("ApplicantEducationgrid_#=ApplicantRegistrationId#")
+      .Columns(columns =>
+      {
+          columns.ForeignKey(c => c.EduLevel, (IEnumerable)ViewData["EduLevelList"], "LookupId", "Description").EditorTemplateName("EduLevel").Width(150);
+          columns.ForeignKey(c => c.EducField, (IEnumerable)ViewData["EduFiledList"], "LookupId", "Description").EditorTemplateName("EduFiled").Width(150);
+          columns.Bound(c => c.EducationInstitution).Width(150);       
+        //  columns.Bound(c => c.FromAmharic).Width(200).EditorTemplateName ("Calander");
+          columns.Bound(c => c.ToAmahric).Width(200).EditorTemplateName("Calander");
+      
+          columns.Command(command =>
+          {
+              if (HttpContext.Current.User.IsInRole("HR_Recruitment_User"))
+              {
+
+                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+              }
+              if (HttpContext.Current.User.IsInRole("HR_Recruitment_Admin")||HttpContext.Current.User.IsInRole("HR_Admin"))
+              {
+                  command.Destroy().Text(Resources.ActionButton_Cancel);
+              }
+          }).Width(200);
+      })
+      .ToolBar(toolbar =>
+      {
+          if (HttpContext.Current.User.IsInRole("HR_Recruitment_User"))
+          {
+              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+          }
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable(h=> h.Height (500))
+                 .Events(x =>
+                 {
+                     x.Edit("GetAppEdDate");
+                     x.Save("GetAppEdDate");
+                 })
+      .DataSource(dataSource => dataSource
+          .Ajax()
+                  .Events(events =>
+                        {
+                      events.Error("error_handler(\"ApplicantEducationgrid_#=ApplicantRegistrationId#\")");
+                      events.RequestStart("onRequestStart(\"ApplicantEducationgrid_#=ApplicantRegistrationId#\")");
+                          events.RequestEnd("onRequestEnd(\"ApplicantEducationgrid_#=ApplicantRegistrationId#\")");
+                          }
+                            )
+                                  
+                  .Model(model =>
+                              model.Id(p => p.ApplicantEducationId))                  
+                  
+                          .Read(read => read.Action("ApplicantExperience_Read", "ApplicantEducation", new { Area = "HRM", id = "#=ApplicantRegistrationId#" }))
+                                  .Create(create => create.Action("ApplicantExperience_Create", "ApplicantEducation", new { Area = "HRM", id = "#=ApplicantRegistrationId#" }))
+                  .Update(update => update.Action("ApplicantExperience_Update", "ApplicantEducation"))
+                  .Destroy(destroy => destroy.Action("ApplicantExperience_Destroy", "ApplicantEducation"))
+      ).ToClientTemplate() 
+                )
+            </text>
+    );
+         items.Add().Text(Resources.Navigator_Employee_Experience).Content(
+            @<text>
+                    @(Html.Kendo().Grid<ApplicantExperience>()
+                                      .Name("ApplicantExperiencegrid_#=ApplicantRegistrationId#")
+      .Columns(columns =>
+      {
+          columns.ForeignKey(c => c.EduLevel, (IEnumerable)ViewData["EduLevelList"], "LookupId", "Description").EditorTemplateName("EduLevel").Width(150);
+          columns.ForeignKey(c => c.EducField, (IEnumerable)ViewData["EduFiledList"], "LookupId", "Description").EditorTemplateName("EduFiled").Width(150);
+                  columns.Bound(c => c.OrganizationName).Width(100);
+          columns.Bound(c => c.Postion).Width(100);
+          columns.Bound(c => c.FromAmharic).Width(130).EditorTemplateName("Calander");
+          columns.Bound(c => c.ToAmahric).Width(130).EditorTemplateName("Calander");
+          columns.Bound(c => c.Experience).Width(80);
+          //  columns.Bound(c => c.Remark);
+          columns.Command(command =>
+          {
+              if (HttpContext.Current.User.IsInRole("HR_Recruitment_User"))
+              {
+                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+              }
+              if (HttpContext.Current.User.IsInRole("HR_Recruitment_Admin") || HttpContext.Current.User.IsInRole("HR_Admin"))
+              {
+                  command.Destroy().Text(Resources.ActionButton_Cancel);
+              }
+          }).Width(190);
+      })
+      .ToolBar(toolbar =>
+      {
+          if (HttpContext.Current.User.IsInRole("HR_Recruitment_User"))
+          {
+              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+          }
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable(h => h.Height(500))
+                 .Events(x =>
+                 {
+                     x.Edit("GetAppDate");
+                     x.Save("GetAppDate");
+                 })
+      .DataSource(dataSource => dataSource
+          .Ajax()
+                       .Events(events =>
+                                                                                                                              {
+                                                                                                                                  events.Error("error_handler(\"ApplicantExperiencegrid_#=ApplicantRegistrationId#\")");
+                                                                                                                                  events.RequestStart("onRequestStart(\"ApplicantExperiencegrid_#=ApplicantRegistrationId#\")");
+                                                                                                                                  events.RequestEnd("onRequestEnd(\"ApplicantExperiencegrid_#=ApplicantRegistrationId#\")");
+                                                                                                                              }
+                                                                                                                              )
+                                   
+                  .Model(model =>
+                  {
+                      model.Id(p => p.ApplicantExpId);
+                      model.Field(p => p.Experience).Editable(false);
+                  })
+                  .Read(read => read.Action("ApplicantExperience_Read", "ApplicantExperience", new { Area = "HRM", id ="#=ApplicantRegistrationId#" }))
+                          .Create(create => create.Action("ApplicantExperience_Create", "ApplicantExperience", new { Area = "HRM", id ="#=ApplicantRegistrationId#" }))
+          .Update(update => update.Action("ApplicantExperience_Update", "ApplicantExperience"))
+          .Destroy(destroy => destroy.Action("ApplicantExperience_Destroy", "ApplicantExperience"))
+      ).ToClientTemplate()
+                )
+            </text>
+    );
+
+         items.Add().Text(Resources.Navigator_Employee_Tranining).Content(
+            @<text>
+               @* <legend>Training</legend>*@
+                @(Html.Kendo().Grid<ApplicantTraining>()
+                                    .Name("ApplicantTraininggrid_#=ApplicantRegistrationId#")
+                    .Columns(columns =>
+                    {
+                    columns.Bound(c => c.TrainingName);
+                    columns.Bound(c => c.Remark);
+                    columns.Command(command =>
+                    {
+                        if (HttpContext.Current.User.IsInRole("HR_Recruitment_User"))
+                        {
+                            command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                        }
+                        if (HttpContext.Current.User.IsInRole("HR_Recruitment_Admin") || HttpContext.Current.User.IsInRole("HR_Admin"))
+                        {
+                            command.Destroy().Text(Resources.ActionButton_Cancel);
+                        }
+                    }).Width(200);
+                    })
+                    .ToolBar(toolbar => {
+                                            if (HttpContext.Current.User.IsInRole("HR_Recruitment_User"))
+                                            {
+                                                toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                                            }
+                    })
+                    .Editable(editable => editable.Mode(GridEditMode.InLine))
+                    .Scrollable()
+                    .DataSource(dataSource => dataSource
+                    .Ajax()
+                             .Events(events =>
+                                                                                                                                      {
+                                                                                                                                          events.Error("error_handler(\"ApplicantTraininggrid_#=ApplicantRegistrationId#\")");
+                                                                                                                                          events.RequestStart("onRequestStart(\"ApplicantTraininggrid_#=ApplicantRegistrationId#\")");
+                                                                                                                                          events.RequestEnd("onRequestEnd(\"ApplicantTraininggrid_#=ApplicantRegistrationId#\")");
+                                                                                                                                      }
+                                                                                                                                      )
+                                           
+                    .Model(model => model.Id(p => p.ApplicantTrainingId))
+                    .Read(read => read.Action("ApplicantTraining_Read", "ApplicantTraining",new { Area = "HRM", id = "#=ApplicantRegistrationId#"}))
+                            .Create(create => create.Action("ApplicantTraining_Create", "ApplicantTraining", new { Area = "HRM", id = "#=ApplicantRegistrationId#" }))
+                    .Update(update => update.Action("ApplicantTraining_Update", "ApplicantTraining"))
+                    .Destroy(destroy => destroy.Action("ApplicantTraining_Destroy", "ApplicantTraining"))
+                    ).ToClientTemplate() 
+                    )
+            </text>
+    );
+
+
+         items.Add().Text(Resources.HR_Addresse).Content(
+            @<text>
+               @* <legend>Applicant Address</legend>*@
+                @(Html.Kendo().Grid<Address>()
+                      .Name("OrganizationAddresseGrid_#=ApplicantRegistrationId#")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Category).EditorTemplateName("Enum");
+          columns.Bound(c => c.Value);
+          columns.Bound(c => c.Remark);
+          columns.Command(command =>
+          {
+              if (HttpContext.Current.User.IsInRole("HR_Recruitment_User"))
+              {
+                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+              }
+              if (HttpContext.Current.User.IsInRole("HR_Recruitment_Admin") || HttpContext.Current.User.IsInRole("HR_Admin"))
+              {
+                  command.Destroy().Text(Resources.ActionButton_Cancel);
+              }
+          }).Width(200);
+      })
+      .ToolBar(toolbar =>
+      {
+          if (HttpContext.Current.User.IsInRole("HR_Recruitment_User"))
+          {
+              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+          }
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+               .Selectable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+                  .Events(events =>{
+events.Error("error_handler(\"OrganizationAddresseGrid_#=ApplicantRegistrationId#\")");
+events.RequestStart("onRequestStart(\"OrganizationAddresseGrid_#=ApplicantRegistrationId#\")");
+events.RequestEnd("onRequestEnd(\"OrganizationAddresseGrid_#=ApplicantRegistrationId#\")");
+}
+     )
+                                  
+          .Model(model => model.Id(p => p.AddressId))
+                                                          .Read(read => read.Action("Addresses_Read", "Addresse", new { Area = "Common", id = "#=ApplicantRegistrationId#", addressReferenceType = "Applicant" }))
+                                                                                  .Create(create => create.Action("Addresses_Create", "Addresse", new { Area = "Common", id = "#=ApplicantRegistrationId#", addressReferenceType = "Applicant" }))
+          .Update(update => update.Action("Addresses_Update", "Addresse",new { Area = "Common"}))
+                  .Destroy(destroy => destroy.Action("Addresses_Destroy", "Addresse", new { Area = "Common" }))
+       ).ToClientTemplate()
+                )
+            </text>
+    );
+
+     }).ToClientTemplate())
+</script>
+
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 700px;
+    }
+</style>
+                    <script>
+                        //function error_handler(e) {
+                        //    if (e.errors) {
+                        //        var message = "Errors:\n";
+                        //        $.each(e.errors, function (key, value) {
+                        //            if ('errors' in value) {
+                        //                $.each(value.errors, function () {
+                        //                    message += this + "\n";
+                        //                });
+                        //            }
+                        //        });
+                        //        alert(message);
+
+                        //    }
+
+                        //}
+
+                        function sync_handler(e) {
+                            this.read();
+
+                        }
+                    </script>
+<script>
+    function GetDate() {
+
+        var x = AssignDate();
+        var y = x;
+        $("#RegistrationDateAm").trigger("change");
+
+        for (var o in y) {
+            $.ajax({
+                contentType: "application/json; charset=utf-8",
+                url: '@Url.Action("SetDate", "ApplicantRegistration")',
+                data: { name: y[o].id, value: y[o].date },
+                type: 'GET',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                }
+
+            });
+        }
+    }
+    function GetAppDate() {
+
+        var x = AssignDate();
+        var y = x;
+        $("#FromAmharic").trigger("change");
+        $("#ToAmahric").trigger("change");
+        for (var o in y) {
+            $.ajax({
+                contentType: "application/json; charset=utf-8",
+                url: '@Url.Action("SetDate", "ApplicantExperience")',
+                data: { name: y[o].id, value: y[o].date },
+                type: 'GET',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                }
+
+            });
+        }
+    }
+    function GetAppEdDate() {
+
+        var x = AssignDate();
+        var y = x;
+        $("#FromAmharic").trigger("change");
+        $("#ToAmahric").trigger("change");
+        for (var o in y) {
+            $.ajax({
+                contentType: "application/json; charset=utf-8",
+                url: '@Url.Action("SetDate", "ApplicantEducation")',
+                data: { name: y[o].id, value: y[o].date },
+                type: 'GET',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                }
+
+            });
+        }
+    }
+</script>
+<script>
+    function AssignDate() {
+        var list = AssignDates();
+        return list;
+    }
+
+</script>
+<script>
+    function filterCategories() {
+        return {
+            VacancyCode: $("#VacancyCode").val()
+        };
+    }
+</script>

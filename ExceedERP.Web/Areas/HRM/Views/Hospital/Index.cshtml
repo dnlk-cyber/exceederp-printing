@@ -1,0 +1,248 @@
+﻿@using ExceedERP.Core.Domain.Common.HRM
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>@Resources.Navigator_Hospital</legend>
+@(Html.Kendo().Grid<MainCompany>()
+      .Name("TrainingProvidergrid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.TradeName);
+          columns.Bound(c => c.BrandName);
+          //columns.ForeignKey(c => c.BusinessType, (System.Collections.IEnumerable)ViewData["BusinessTypes"], "Value", "Text").EditorTemplateName("BusinessType").Width(150);
+          columns.Bound(c => c.IsActive).ClientTemplate("<input type='checkbox' disabled = 'true' \\#=IsActive? checked='checked' :'' \\# />").Width(100);
+          columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Scrollable(h => h.Height(500))
+      .Groupable()
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Filterable()
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(5))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Events(events =>
+          {
+
+              events.Error("error_handler(\"TrainingProvidergrid\")");
+              events.RequestStart("onRequestStart(\"TrainingProvidergrid\")");
+              events.RequestEnd("onRequestEnd(\"TrainingProvidergrid\")");
+          })
+                      
+          .Model(model => model.Id(p => p.MainCompanyId))
+          .Read(read => read.Action("Companies_Read", "Hospital"))
+          .Create(create => create.Action("Companies_Create", "Hospital"))
+          .Update(update => update.Action("Companies_Update", "Hospital"))
+          .Destroy(destroy => destroy.Action("Companies_Destroy", "Hospital"))
+      ).ClientDetailTemplateId("template"))
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+          .Name("tabstrip_#=MainCompanyId#")
+          .SelectedIndex(0)
+          .Items(items =>
+          {
+              //**************************************Identification****************************************************//
+              items.Add().Text(Resources .HR_Identifications ).Content(
+                  @<text>
+                @(Html.Kendo().Grid<Identification>()
+                              .Name("IdentificationGrid_#=MainCompanyId#")
+                      .Columns(columns =>
+                      {
+                          columns.Bound(c => c.Type).Width(200).EditorTemplateName("Enum");
+                          columns.Bound(c => c.Description).Width (150);
+                          columns.Bound(c => c.IdNumber).Width(150);
+                          columns.Bound(c => c.IssueDateIdAm ).EditorTemplateName ("Calander").Width(200);
+                          columns.Bound(c => c.ExpiryDateAm).EditorTemplateName("Calander").Width(200);
+                          columns.Bound(c => c.Issuer).Width(150);
+                          columns.Bound(c => c.Remark).Width(150);
+                          columns.Command(command =>
+                          {
+                              command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                             command.Destroy().Text(Resources.ActionButton_Cancel);
+                          }).Width(200);
+                      })
+                      .ToolBar(toolbar =>
+                      {
+                          toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                      })
+                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                      .Scrollable()
+                                      .Events(e =>
+                                      {
+                                          e.Save("GetIdentificationDate");
+                              e.Edit("GetIdentificationDate");})
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+                                   .Events(events =>
+                         {
+
+                             events.Error("error_handler(\"IdentificationGrid_#=MainCompanyId#\")");
+                             events.RequestStart("onRequestStart(\"IdentificationGrid_#=MainCompanyId#\")");
+                             events.RequestEnd("onRequestEnd(\"IdentificationGrid_#=MainCompanyId#\")");
+                         })
+                                                  
+                          .Model(model => model.Id(i => i.IdentificationId))
+                          .Read(read => read.Action("Identifications_Read", "Identification", new {Area = "Common",identificationReferenceType = "Hospital", id = "#=MainCompanyId#"}))
+                          .Create(create => create.Action("Identifications_Create", "Identification", new {Area = "Common", identificationReferenceType = "Hospital",id = "#=MainCompanyId#"}))
+                                  .Update(update => update.Action("Identifications_Update", "Identification", new { Area = "Common" }))
+                                  .Destroy(destroy => destroy.Action("Identifications_Destroy", "Identification", new { Area = "Common" }))
+                      ).ToClientTemplate()
+                      )
+
+            </text>
+
+
+                  );
+
+
+              //*****************************************************************************************************//
+              //*********************************Addresse***********************************************************//
+              items.Add().Text(Resources.HR_Addresse).Content(
+                  @<text>
+
+                @(Html.Kendo().Grid<Address>()
+                              .Name("AddresseGrid_#=MainCompanyId#")
+                      .Columns(columns =>
+                      {
+                          columns.Bound(c => c.Category).EditorTemplateName("Enum");
+                          columns.Bound(c => c.Value);
+                          columns.Bound(c => c.Remark);
+                          columns.Command(command =>
+                          {
+                              command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                              command.Destroy().Text(Resources.ActionButton_Cancel);
+                          }).Width(200);
+                      })
+                      .ToolBar(toolbar =>
+                      {
+                          toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                      })
+                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                      .Scrollable()
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+                                  .Events(events =>
+                                  {
+
+                                      events.Error("error_handler(\"AddresseGrid_#=MainCompanyId#\")");
+                                      events.RequestStart("onRequestStart(\"AddresseGrid_#=MainCompanyId#\")");
+                                      events.RequestEnd("onRequestEnd(\"AddresseGrid_#=MainCompanyId#\")");
+                                  })
+
+                          .Model(model => model.Id(p => p.AddressId))
+                          .Read(read => read.Action("Addresses_Read", "Addresse", new {Area = "Common", id = "#=MainCompanyId#", addressReferenceType = "TrainingProvider"}))
+                          .Create(create => create.Action("Addresses_Create", "Addresse", new {Area = "Common", id = "#=MainCompanyId#", addressReferenceType = "TrainingProvider"}))
+                                  .Update(update => update.Action("Addresses_Update", "Addresse", new { Area = "Common" }))
+                                  .Destroy(destroy => destroy.Action("Addresses_Destroy", "Addresse", new { Area = "Common" }))
+                      ).ToClientTemplate()
+                      )
+            </text>
+                  );
+
+              @*//****************************************************************************************************//
+
+              //*********************************Industry Involvement*************************************************//
+              items.Add().Text(Resources .HR_IndustryInvolvement).Content(
+                  @<text>
+                @(Html.Kendo().Grid<ExceedERP.Core.Domain.Common.IndustryInvolved>()
+                              .Name("IndustryInvolvementGrid_#=MainCompanyId#")
+                      .Columns(columns =>
+                      {
+                          // columns.Bound(c => c.Index);
+                          columns.Bound(c => c.Industry).EditorTemplateName("Enum");
+                          columns.Bound(c => c.Remark);
+                          columns.Command(command =>
+                          {
+                              command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                             command.Destroy().Text(Resources.ActionButton_Cancel);
+                          }).Width(180);
+                      })
+                      .ToolBar(toolbar =>
+                      {
+                          toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                      })
+                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                      .Scrollable()
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+                                   .Events(events => events.Error("error_handler")
+                              .Sync("sync_handler"))
+                          .Model(model => model.Id(p => p.IndustryInvolvedID))
+                          .Read(read => read.Action("IndustryInvolveds_Read", "IndustryInvolved", new {Area = "Common", referenceIndustryInvolvment = "#=MainCompanyId#"}))
+                          .Create(create => create.Action("IndustryInvolveds_Create", "IndustryInvolved", new {Area = "Common", referenceIndustryInvolvment = "#=MainCompanyId#"}))
+                                  .Update(update => update.Action("IndustryInvolveds_Update", "IndustryInvolved", new { Area = "Common" }))
+                                  .Destroy(destroy => destroy.Action("IndustryInvolveds_Destroy", "IndustryInvolved", new { Area = "Common" }))
+                      ).ToClientTemplate()
+                      )
+
+            </text>
+                  );*@
+              //*****************************************************************************************************//
+          }).ToClientTemplate())
+</script>
+<script>
+    //function error_handler(e) {
+    //    if (e.errors) {
+    //        var message = "Errors:\n";
+    //        $.each(e.errors, function(key, value) {
+    //            if ('errors' in value) {
+    //                $.each(value.errors, function() {
+    //                    message += this + "\n";
+    //                });
+    //            }
+    //        });
+    //        alert(message);
+
+    //    }
+
+    //}
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+    function AssignDate() {
+        var list = AssignDates();
+        return list;
+    }
+
+    function GetIdentificationDate()
+    {
+
+        var x = AssignDate();
+        var y = x;
+        for (var o in y)
+        {
+            $.ajax({
+                contentType: "application/json; charset=utf-8",
+                url: '@Url.Action("SetDate", "Identification", new { Area = "Common" })',
+                data: { name: y[o].id, value: y[o].date },
+                type: 'GET',
+                cache: false,
+                success: function (result)
+                {
+                    r = result;
+                }
+
+            });
+        }
+    }
+
+</script>

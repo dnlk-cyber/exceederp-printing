@@ -1,0 +1,24 @@
+﻿@using ExceedERP.Core.Domain.HRM.TrainingEducation
+
+@(Html.Kendo().Grid<TrainingStatus>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.TrainingOutCome);
+        columns.Bound(c => c.Remark);
+        columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.TrainingStatusId))
+          .Read(read => read.Action("TrainingStatuses_Read", "TrainingOutCome"))
+          .Create(create => create.Action("TrainingStatuses_Create", "TrainingOutCome"))
+          .Update(update => update.Action("TrainingStatuses_Update", "TrainingOutCome"))
+          .Destroy(destroy => destroy.Action("TrainingStatuses_Destroy", "TrainingOutCome"))
+      )
+)

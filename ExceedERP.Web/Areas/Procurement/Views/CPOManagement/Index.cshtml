@@ -1,0 +1,132 @@
+﻿<legend>Create New CPO Management</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Procurement.CPOManagement.CPOManagement>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.Branch).Width(200);
+        columns.Bound(c => c.ItemDesc).Width(200);
+        columns.Bound(c => c.SupplierName).Width(200);
+        columns.Bound(c => c.AdvanceAmount).Width(200);
+        columns.Bound(c => c.AdvanceDeadline).Width(200);
+        columns.Bound(c => c.PerformanceAmount).Width(200);
+        columns.Bound(c => c.PerformanceDeadline).Width(200);
+        columns.Bound(c => c.Bank).Width(200);
+        columns.Bound(c => c.Status).Width(200);
+        columns.Bound(c => c.Remark).Width(200);
+
+       
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+            toolbar.Excel();
+           // toolbar.Pdf();
+      })
+      .Events(ev => ev.DataBound("onDataBound"))
+      .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("CPOManagement").Window(w => w.Title("CPO Management")))
+          .HtmlAttributes(new { style = "height: 550px;" })
+            .Pageable(pageable => pageable
+                        .Input(true)
+                        .Numeric(false)
+                        .Refresh(true)
+                        .PageSizes(true)
+                        .ButtonCount(5))
+              .Scrollable()
+              
+              .Sortable()
+              .Filterable()
+              .Groupable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.CPOManagementID))
+          .Events(events => events .Error("error_handler_one"))
+          .Read(read => read.Action("CPOManagements_Read", "CPOManagement"))
+          .Create(create => create.Action("CPOManagements_Create", "CPOManagement"))
+          .Update(update => update.Action("CPOManagements_Update", "CPOManagement"))
+          .Destroy(destroy => destroy.Action("CPOManagements_Destroy", "CPOManagement"))
+      ))
+      
+      
+
+
+
+<script type="text/javascript">
+    function error_handler(e) {
+        if (e.errors) {
+            var message = "Errors:\n";
+            $.each(e.errors, function(key, value) {
+                if ('errors' in value) {
+                    $.each(value.errors, function() {
+                        message += this + "\n";
+                    });
+                }
+            });
+            alert(message);
+        }
+    }
+
+    var popup;
+    var aCode;
+
+    function SelectItemCode() {
+
+        // codeid = masterDataItem.GoodSellingAndLendingID;
+        popup = window.open('/Inventory/DataProvider/ItemFilterCat', 'WindowPopup', 'top=100, left=400, width=400, height=320,resizable=no,');
+        popup.focus();
+        return false;
+    }
+
+    function setLang(itemCode) {
+        aCode = itemCode;
+        $("#ItemCode").val(aCode).trigger("change");
+    }
+
+    
+    
+    function dateDiffInDays(a , b) {
+        var date1 = a; 
+        var date2 = b;
+
+       
+
+        var yearDiff = date1.getFullYear() - date2.getFullYear();
+        var y1 = date1.getFullYear();
+        var y2 = date2.getFullYear();
+        var monthDiff = (date1.getMonth() + y1 * 12) - (date2.getMonth() + y2 * 12);
+        var day1 = parseInt(date1.getDate());
+        var day2 = parseInt(date2.getDate());
+        var dayDiff = (day1 - day2) + (monthDiff * 30) + (yearDiff * 365);
+        return Math.abs(dayDiff);
+    }
+    function onDataBound(e) {
+        var rows = e.sender.tbody.children();
+
+        for (var j = 0; j < rows.length; j++) {
+            var row = $(rows[j]);
+            var dataItem = e.sender.dataItem(row);
+            
+            var today = new Date();
+            var dateDiff = 15;
+            if (dataItem.PerformanceDeadline != null) {
+                dateDiff = dateDiffInDays(dataItem.PerformanceDeadline, today);
+
+            }
+
+            if (dateDiff < 15) {
+                row.css("background-color", "crimson");;
+            }
+        }
+
+    }
+</script>
+
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 700px;
+    }
+
+    div.k-content {
+        overflow: hidden;
+        height: auto;
+    }
+</style>

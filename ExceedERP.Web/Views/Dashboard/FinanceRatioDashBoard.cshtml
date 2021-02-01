@@ -1,0 +1,560 @@
+﻿@using ExceedERP.Web.Controllers
+
+@{
+    ViewBag.Title = "FinanceDashboard";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<link href="~/Content/dashboard.css" rel="stylesheet" />
+@*(HttpContext.Current.User.IsInRole("Finance_Report"))*@
+
+<a style="align-content:center;color:white" onclick='return refreshData()' href='#' title="Refresh Data"><i class="fa fa-refresh fa-2x"></i></a>
+
+@if (true)
+{
+    <div class="dashboard">
+        <div class="row">
+
+
+            <div class="col-sm-12  chartcontainer">
+
+                <div class="demo-section k-content wide">
+                    <canvas id="ActivityRatio" width="400" height="400"></canvas>
+                </div>
+
+
+            </div>
+                </div>
+        <div class="row">
+
+
+            <div class="col-sm-12  chartcontainer">
+
+                <div class="demo-section k-content wide">
+                    <canvas id="ProfitabilityRatio" width="400" height="400"></canvas>
+                </div>
+
+
+            </div>
+        </div>
+        <div class="row">
+
+
+            <div class="col-sm-12  chartcontainer">
+
+                <div class="demo-section k-content wide">
+                    <canvas id="LiquidityRatio" width="400" height="400"></canvas>
+                </div>
+
+
+            </div>
+        </div>
+        <div class="row">
+
+
+            <div class="col-sm-12  chartcontainer">
+
+                <div class="demo-section k-content wide">
+                    <canvas id="CapitalStructureRatio" width="400" height="400"></canvas>
+                </div>
+
+
+            </div>
+        </div>
+     
+       </div>
+}
+<script src="~/Scripts/Chart.bundle.js"></script>
+<script src="~/Scripts/Chart.PieceLabel.js"></script>
+<script>
+
+    window.chartColors = {
+        red: 'rgb(255, 99, 132)',
+        orange: 'rgb(255, 159, 64)',
+        yellow: 'rgb(255, 205, 86)',
+        green: 'rgb(75, 192, 192)',
+        blue: 'rgb(54, 162, 235)',
+        purple: 'rgb(153, 102, 255)',
+        grey: 'rgb(201, 203, 207)',
+        black: 'rgb(229, 255, 204)',
+        azure: 'rgb(0, 255, 255)'
+    };
+
+    ActivityRatio();
+    LiquidityRatio();
+    CapitalStructureRatio();
+    ProfitabilityRatio();
+
+    function ActivityRatio() {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetActivityRatio", "Dashboard", new { area = "" })',
+            success: function (result) {
+                //render
+                var ctx = document.getElementById("ActivityRatio").getContext('2d');
+                ctx.height = 600;
+                var myChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: result.Labels,
+                        datasets: [{
+                            type: 'line',
+                            label: 'Average Collection Period',
+                            borderColor: window.chartColors.yellow,
+                            borderWidth: 3,
+                            fill: false,
+                            data: result.Average_Collection_Period
+                        },
+                          {
+                              type: 'line',
+                              label: 'Asset TurnOver',
+                              backgroundColor: window.chartColors.blue,
+                              data: result.Asset_TurnOver,
+                              borderColor: 'white',
+                              borderWidth: 2
+                          }, {
+                              type: 'line',
+                              label: 'Fixed Asset Turnover',
+                              backgroundColor: window.chartColors.green,
+                              data: result.Fixed_Asset_Turnover
+                          }
+
+                          ,
+                          {
+                              type: 'line',
+                              label: 'Receivables TurnOver',
+                              backgroundColor: window.chartColors.azure,
+                              data: result.Receivables_TurnOver,
+                              borderColor: 'white',
+                              borderWidth: 2
+                          }, {
+                              type: 'line',
+                              label: 'Inventory Turnover',
+                              backgroundColor: window.chartColors.red,
+                              data: result.Inventory_TurnOver
+                          }
+                        ]
+
+                    },
+
+
+                    options: {
+
+                        title: {
+                            display: true,
+                            text: 'Activity Ratio'
+                        },
+                        gridLines: {
+                            display: false
+                        },
+                        pieceLabel: {
+                            render: 'value',
+                            fontColor: ['green', 'white', 'black'],
+                            precision: 2
+                        },
+                        legend: {
+                            position: 'bottom',
+                            fontSize: 8,
+                            fullWidth: true,
+                            padding: 6,
+                            labels: {
+                                boxWidth: 15
+                            }
+                        },
+                        scales: {
+                            xAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Months'
+                                },
+                                barPercentage: 0.4
+                            }],
+                            yAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+
+                                    labelString: 'Amount (M ETB)'
+                                },
+                                ticks: {
+
+                                    // forces step size to be 5 units
+                                    stepSize: 100000
+                                }
+                            }]
+                        },
+                        maintainAspectRatio: false
+
+                    }
+                });
+
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+
+
+    function LiquidityRatio() {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetLiquidityRatio", "Dashboard", new { area = "" })',
+            success: function (result) {
+                //render
+                var ctx = document.getElementById("LiquidityRatio").getContext('2d');
+                ctx.height = 600;
+                var myChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: result.Labels,
+                        datasets: [{
+                            type: 'line',
+                            label: 'Profit',
+                            borderColor: window.chartColors.yellow,
+                            borderWidth: 3,
+                            fill: false,
+                            data: result.DataProfit
+                        },
+                          {
+                              type: 'line',
+                              label: 'Current Ratio',
+                              backgroundColor: window.chartColors.blue,
+                              data: result.Current_Ratio,
+                              borderColor: 'white',
+                              borderWidth: 2
+                          }, {
+                              type: 'line',
+                              label: 'Quick Ratio',
+                              backgroundColor: window.chartColors.green,
+                              data: result.Quick_Ratio
+                          }
+
+
+                          ,
+                          {
+                              type: 'line',
+                              label: 'Cash Ratio',
+                              backgroundColor: window.chartColors.azure,
+                              data: result.Cash_Ratio,
+                              borderColor: 'white',
+                              borderWidth: 2
+                          }, {
+                              type: 'line',
+                              label: 'Net Working Capital Ratio',
+                              backgroundColor: window.chartColors.yellow,
+                              data: result.Net_Working_Capital_Ratio
+                          }
+
+                        ]
+
+                    },
+
+
+                    options: {
+
+                        title: {
+                            display: true,
+                            text: 'Liquidity Ratio'
+                        },
+                        gridLines: {
+                            display: false
+                        },
+                        pieceLabel: {
+                            render: 'value',
+                            fontColor: ['green', 'white', 'black'],
+                            precision: 2
+                        },
+                        legend: {
+                            position: 'bottom',
+                            fontSize: 8,
+                            fullWidth: true,
+                            padding: 6,
+                            labels: {
+                                boxWidth: 15
+                            }
+                        },
+                        scales: {
+                            xAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Months'
+                                },
+                                barPercentage: 0.4
+                            }],
+                            yAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+
+                                    labelString: 'Amount (M ETB)'
+                                },
+                                ticks: {
+
+                                    // forces step size to be 5 units
+                                    stepSize: 100000
+                                }
+                            }]
+                        },
+                        maintainAspectRatio: false
+
+                    }
+                });
+
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+
+
+    function CapitalStructureRatio() {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetCapitalStructureRatio", "Dashboard", new { area = "" })',
+            success: function (result) {
+                //render
+                var ctx = document.getElementById("CapitalStructureRatio").getContext('2d');
+                ctx.height = 600;
+                var myChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: result.Labels,
+                        datasets: [{
+                            type: 'line',
+                            label: 'Debt To Assets Ratio',
+                            borderColor: window.chartColors.red,
+                            borderWidth: 3,
+                            fill: false,
+                            data: result.Debt_To_Assets_Ratio
+                        },
+                          {
+                              type: 'line',
+                              label: 'Debt To Equity Ratio',
+                              backgroundColor: window.chartColors.blue,
+                              data: result.Debt_To_Equity_Ratio,
+                              borderColor: 'white',
+                              borderWidth: 2
+                          } ]
+
+                    },
+
+
+                    options: {
+
+                        title: {
+                            display: true,
+                            text: 'Capital Structure Ratio'
+                        },
+                        gridLines: {
+                            display: false
+                        },
+                        pieceLabel: {
+                            render: 'value',
+                            fontColor: ['green', 'white', 'black'],
+                            precision: 2
+                        },
+                        legend: {
+                            position: 'bottom',
+                            fontSize: 8,
+                            fullWidth: true,
+                            padding: 6,
+                            labels: {
+                                boxWidth: 15
+                            }
+                        },
+                        scales: {
+                            xAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Months'
+                                },
+                                barPercentage: 0.4
+                            }],
+                            yAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+
+                                    labelString: 'Amount (M ETB)'
+                                },
+                                ticks: {
+
+                                    // forces step size to be 5 units
+                                    stepSize: 10000
+                                }
+                            }]
+                        },
+                        maintainAspectRatio: false
+
+                    }
+                });
+
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+
+
+
+    function ProfitabilityRatio() {
+        $.ajax({
+            type: "GET",
+            url: '@Url.Action("GetProfitabilityRatio", "Dashboard", new { area = "" })',
+            success: function (result) {
+                //render
+                var ctx = document.getElementById("ProfitabilityRatio").getContext('2d');
+                ctx.height = 600;
+                var myChart = new Chart(ctx, {
+                    type: 'bar',
+                    data: {
+                        labels: result.Labels,
+                        datasets: [{
+                            type: 'line',
+                            label: 'Gross Profit Margin',
+                            borderColor: window.chartColors.red,
+                            borderWidth: 3,
+                            fill: false,
+                            data: result.Gross_Profit_Margin
+                        },
+                          {
+                              type: 'line',
+                              label: 'Operating Profit Margin',
+                              backgroundColor: window.chartColors.blue,
+                              data: result.Operating_Profit_Margin,
+                              borderColor: 'white',
+                              borderWidth: 2
+                          }, {
+                              type: 'line',
+                              label: 'Net Profit Margin',
+                              backgroundColor: window.chartColors.red,
+                              data: result.Net_Profit_Margin
+                          }
+
+                          , {
+                              type: 'line',
+                              label: 'Return On Assets',
+                              backgroundColor: window.chartColors.yellow,
+                              data: result.Return_On_Assets
+                          },
+
+                        {
+                        type: 'line',
+                        label: 'Return On Equity',
+                        backgroundColor: window.chartColors.purple,
+                        data: result.Return_On_Equity
+                    }
+
+                          , {
+                    type: 'line',
+                    label: 'Cost Of Goods Sold',
+                    backgroundColor: window.chartColors.orange,
+                    data: result.Cost_Of_Goods_Sold
+                }
+                        ]
+
+                    },
+
+
+                    options: {
+
+                        title: {
+                            display: true,
+                            text: 'Profitability Ratio'
+                        },
+                        gridLines: {
+                            display: false
+                        },
+                        pieceLabel: {
+                            render: 'value',
+                            fontColor: ['green', 'white', 'black'],
+                            precision: 2
+                        },
+                        legend: {
+                            position: 'bottom',
+                            fontSize: 8,
+                            fullWidth: true,
+                            padding: 6,
+                            labels: {
+                                boxWidth: 15
+                            }
+                        },
+                        scales: {
+                            xAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+                                    labelString: 'Months'
+                                },
+                                barPercentage: 0.4
+                            }],
+                            yAxes: [{
+                                display: true,
+                                scaleLabel: {
+                                    display: true,
+
+                                    labelString: 'Amount (M ETB)'
+                                },
+                                ticks: {
+
+                                    // forces step size to be 5 units
+                                    stepSize: 1000
+                                }
+                            }]
+                        },
+                        maintainAspectRatio: false
+
+                    }
+                });
+
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+    $(document).on('click', '.panel-heading span.clickable', function (e) {
+        var $this = $(this);
+        if (!$this.hasClass('panel-collapsed')) {
+            $this.parents('.panel').find('.panel-body').slideUp();
+            $this.addClass('panel-collapsed');
+            $this.find('i').removeClass('glyphicon-chevron-up').addClass('glyphicon-chevron-down');
+        } else {
+            $this.parents('.panel').find('.panel-body').slideDown();
+            $this.removeClass('panel-collapsed');
+            $this.find('i').removeClass('glyphicon-chevron-down').addClass('glyphicon-chevron-up');
+        }
+    })
+
+    function refreshData() {
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("RefreshFinanceRatioDashboard", "Dashboard")',
+            success: function(result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                recordStatus = result.Status;
+                location.reload(true);
+            }, //end succ
+            beforeSend: function () {
+                // Show image container
+                $("#loading-image").show();
+            },
+            complete: function (data) {
+                // Hide image container
+                $("#loading-image").hide();
+            },
+            error: function(result) {
+                alert(result);
+            }
+        });
+    }
+
+</script>

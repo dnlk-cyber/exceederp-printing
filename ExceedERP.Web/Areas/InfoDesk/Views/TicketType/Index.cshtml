@@ -1,0 +1,40 @@
+﻿<legend>Ticket Types</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.InfoDesk.TicketType_HelpDesk>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Type).Title("Ticket Type");
+          columns.Bound(c => c.Description);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(480);
+      })
+      .ToolBar(toolbar => {
+          toolbar.Create();
+      })
+          .HtmlAttributes(new { style = "height: 520px;" })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+       .Pageable(pageable => pageable
+                        .Input(true)
+                        .Numeric(false)
+                        .Refresh(true)
+                        .PageSizes(true)
+                        .ButtonCount(5))
+                        .Sortable(sortable => {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Filterable()
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => { model.Id(p => p.TicketType_HelpDeskId);
+              model.Field(p => p.CreatedBy).Editable(false);
+              model.Field(p => p.ModifiedBy).Editable(false);
+              model.Field(p => p.DateCreated).Editable(false);
+              model.Field(p => p.LastModified).Editable(false);
+
+          })
+          .Read(read => read.Action("TicketTypes_Read", "TicketType"))
+          .Create(create => create.Action("TicketTypes_Create", "TicketType"))
+          .Update(update => update.Action("TicketTypes_Update", "TicketType"))
+          .Destroy(destroy => destroy.Action("TicketTypes_Destroy", "TicketType"))
+      )
+)

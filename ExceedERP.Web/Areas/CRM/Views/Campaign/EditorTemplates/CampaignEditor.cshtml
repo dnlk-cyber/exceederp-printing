@@ -1,0 +1,169 @@
+﻿@using Kendo.Mvc.UI
+@model ExceedERP.Core.Domain.CRM.Campaign
+ 
+
+<div class="row">
+    <div class="col-md-1">
+    </div>
+    <div class="col-md-3">
+
+        <div class="form-group">
+            <div class="k-label">
+                @Html.LabelFor(model => model.AssignedTo)
+            </div>
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.AssignedTo)
+                              .AutoBind(false)
+                              .OptionLabel("Select Employee ...")
+                                      .DataTextField("Name")
+                                      .DataValueField("EmployeeCode")
+                                                      .ValuePrimitive(true)
+                              .DataSource(dataSource =>
+                              {
+                                  dataSource.Read(read => read.Action("GetEmployeeList", "CRMDataProvider"))
+                                      .ServerFiltering(true);
+                              }))
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-1">
+    </div>   <div class="col-md-3">
+
+        <div class="form-group">
+            <div class="k-label">
+                @Html.LabelFor(model => model.TeamId)
+            </div>
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.TeamId)
+                              .AutoBind(false)
+                              .OptionLabel("Select Team...")
+                                              .DataTextField("Name")
+                                      .DataValueField("OrgStructureID")
+                                              .ValuePrimitive(true)
+                              .DataSource(dataSource =>
+                              {
+                                  dataSource.Read(read => read.Action("GetTeamList", "CRMDataProvider"))
+                                      .ServerFiltering(true);
+                              }))
+            </div>
+        </div>
+    </div>
+
+</div>
+   
+<div class="row">
+    <div class="col-md-1">
+    </div>
+    <div class="col-md-3">
+
+        <div class="form-group">
+            <div class="k-label">
+                @Html.LabelFor(model => model.CartID)
+            </div>
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.CartID)
+                                      .AutoBind(false)
+                                      .OptionLabel("Select Cart...")
+                                      .DataTextField("Description")
+                                      .DataValueField("CartID")
+                                      .DataSource(dataSource =>
+                                      {
+                                          dataSource.Read(read => read.Action("GetCartList", "CRMDataProvider"))
+                                              .ServerFiltering(true);
+                                      }))
+            </div>
+        </div>
+    </div>
+    <div class="col-md-1">
+    </div>
+    <div class="col-md-3">
+
+        <div class="form-group">
+            <div class="k-label">
+                @Html.LabelFor(model => model.CompaignType)
+            </div>
+            <div>
+                @(Html.Kendo().DropDownListFor(model => model.CompaignType).HtmlAttributes(new { @class = "form-control" })
+                                            .DataTextField("Text")
+                                                        .DataValueField("Text").OptionLabel("Select ").ValuePrimitive(true)
+                                                                .DataSource(d => d.Read(r => r.Action("GetOrgCampaignType", "CRMDataProvider"))))
+
+
+
+                @Html.ValidationMessageFor(model => model.CompaignType)
+            </div>
+        </div>
+    </div>
+
+</div>
+<div class="row">
+    <div class="col-md-1">
+    </div>
+    <div class="col-md-3">
+
+
+        <div class="form-group">
+            <div class="k-label">
+                @Html.LabelFor(model => model.Budget)
+
+            </div>
+            <div>
+                @Html.Kendo().TextBoxFor(model => model.Budget)
+                @Html.ValidationMessageFor(model => model.Budget)
+            </div>
+        </div>
+
+    </div>
+    <div class="col-md-1">
+    </div>
+    <div class="col-md-3">
+
+        <div class="form-group">
+            <div class="k-label">
+                @Html.LabelFor(model => model.ExpectedRevenu)
+            </div>
+            <div>
+                @Html.Kendo().TextBoxFor(model => model.ExpectedRevenu)
+                @Html.ValidationMessageFor(model => model.ExpectedRevenu)
+            </div>
+        </div>
+
+    </div>
+</div>
+   
+<div class="row">
+    <div class="col-md-1">
+    </div>
+    <div class="col-md-3">
+
+        <div class="form-group">
+            <div class="k-label">
+                @Html.LabelFor(model => model.Objective)
+            </div>
+            <div>
+                @Html.Kendo().TextBoxFor(model => model.Objective)
+                @Html.ValidationMessageFor(model => model.Objective)
+            </div>
+        </div>
+    </div>
+    <div class="col-md-1">
+    </div>
+    <div class="col-md-3">
+
+
+        <div class="form-group">
+            <div class="k-label">
+                @Html.LabelFor(model => model.Description)
+            </div>
+            <div>
+                @Html.Kendo().TextBoxFor(model => model.Description)
+                @Html.ValidationMessageFor(model => model.Description)
+            </div>
+
+        </div>
+    </div>
+</div>
+    
+ 
+

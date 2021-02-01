@@ -1,0 +1,71 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Processing Plants</legend>
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Production.ProcessingPlant>()
+                              .Name("plants")
+                            .Columns(columns =>
+                            {
+                                columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("Branches");
+                                columns.Bound(c => c.Name);
+                                //columns.Bound(c => c.Width);
+                                //columns.Bound(c => c.Length);
+                                columns.Bound(c => c.PlantType);
+                                
+                                columns.Command(command =>
+                                {
+                                    command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                    command.Destroy().Text(Resources.ActionButton_Cancel);
+                                }).Width(200);
+                            })
+                            .ToolBar(toolbar =>
+                            {
+                                toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                            })
+                              .Scrollable(h => h.Height(700))
+                              .Sortable(sortable =>
+                              {
+                                  sortable.SortMode(GridSortMode.SingleColumn);
+                              })
+                              .Filterable()
+                              .Selectable(selectable =>
+                              {
+                                  selectable.Mode(GridSelectionMode.Single);
+                                  selectable.Type(GridSelectionType.Row);
+                              })
+                              .Pageable(pageable => pageable
+                                  .Input(true)
+                                  .Numeric(false)
+                                  .Refresh(true)
+                                  .PageSizes(true)
+                                  .ButtonCount(5))
+                              .DataSource(dataSource => dataSource
+                                  .Ajax()
+                                  .Group(gr =>
+                                  {
+                                      gr.Add(f => f.BranchId);
+                                  })
+                                  .PageSize(20)
+                                  .Events(events =>
+                                  {
+                                      events.Error("error_handler(\"plants\")");
+                                      events.RequestStart("onRequestStart(\"plants\")");
+                                      events.RequestEnd("onRequestEnd(\"plants\")");
+
+                                  })
+                                .Model(model =>
+                                {
+                                    model.Id(p => p.ProcessingPlantId);
+
+                                    //model.Field(f => f.Area).Editable(false);
+                                })
+                                .Read(read => read.Action("ProductionPlants_Read", "ProcessingPlant"))
+                                .Create(create => create.Action("ProductionPlant_Create", "ProcessingPlant"))
+                                .Update(update => update.Action("ProductionPlant_Update", "ProcessingPlant"))
+                                .Destroy(destroy => destroy.Action("ProductionPlant_Destroy", "ProcessingPlant"))
+                                )
+)
+

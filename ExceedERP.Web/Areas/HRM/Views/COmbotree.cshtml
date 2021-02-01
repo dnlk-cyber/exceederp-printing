@@ -1,0 +1,14 @@
+﻿
+@{
+    ViewBag.Title = "COmbotree";
+}
+
+<h2>COmbotree</h2>
+<select id="cc" class="easyui-combotree" style="width:200px;"
+        data-options="url:'get_data.php',required:true"></select>
+<script  input id="cc" value="01">
+    $('#cc').combotree({
+        url: 'get_data.php',
+        required: true
+    });
+</script>

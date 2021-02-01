@@ -1,0 +1,273 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.HRM.SelfCare
+@using ExceedERP.Core.Localization 
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>@Resources.NavigatorPayroll_OverTimeRequests</legend>
+@(Html.Kendo().Grid<OverTimeRequest>()
+          .Name("OverTimeRequestgrid")
+      .Columns(columns =>
+      {
+          columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["organization"], "OrgStructureId", "Name").EditorTemplateName("OrgSelector").Width(150);
+          columns.Bound(c => c.Description);
+          columns.Bound(c => c.FromDateAm);
+          columns.Bound(c => c.ToDateAm);
+        columns.Bound(c => c.FromTime);//.Format("{0:hh:mm:ss}");
+        columns.Bound(c => c.ToTime);//.Format("{0:hh:mm:ss}");
+      
+       // columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+      })
+      .ToolBar(toolbar => {
+         //   toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+           .Events(events => events.DetailExpand("onDetailExpandUser"))
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+         .Scrollable(h => h.Height(500))
+                                         .Groupable()
+                                                  .Sortable(sortable =>
+                                                  {
+                                                      sortable.SortMode(GridSortMode.SingleColumn);
+                                                  })
+                                      .Filterable()
+                                         .Pageable(pageable => pageable
+                                                                    .Input(true)
+                                                                    .Numeric(false)
+                                                                    .Refresh(true)
+                                                                    .PageSizes(true)
+                                                                    .ButtonCount(5))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+                .Events(events =>
+                                                                                    {
+                                                                                        events.Error("error_handler(\"OverTimeRequestgrid\")");
+                                                                                        events.RequestStart("onRequestStart(\"OverTimeRequestgrid\")");
+                                                                                        events.RequestEnd("onRequestEnd(\"OverTimeRequestgrid\")");
+                                                                                    }) 
+                       
+          .Model(model => model.Id(p => p.OverTimeRequestId))
+          .Read(read => read.Action("OverTimeRequest_Read", "OverTimeRequests"))
+          .Create(create => create.Action("OverTimeRequest_Create", "OverTimeRequests"))
+          .Update(update => update.Action("OverTimeRequest_Update", "OverTimeRequests"))
+          .Destroy(destroy => destroy.Action("OverTimeRequest_Destroy", "OverTimeRequests"))
+              ).ClientDetailTemplateId("template")
+      )
+
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                                  .Name("tabstrip_#=OverTimeRequestId#")
+          .SelectedIndex(0)
+          .Items(items =>
+          {
+
+              items.Add().Text(Resources.HR_SelfCare_OverTimeRequest_Emploees).Content(
+                @<text>
+
+
+                    @(Html.Kendo().Grid<OverTimeRequestEmployee>()
+                                                  .Name("OverTimeRequestEmployee#=OverTimeRequestId#")
+                          .Columns(columns =>
+                          {
+
+                              columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "PersonId", "FullNameWithOutCode").EditorTemplateName("ListOfEmployee").Width(300);
+                             
+                              columns.Bound(c => c.Remark);
+                              columns.Command(command =>
+                              {
+                                 // command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                   command.Destroy().Text(Resources.ActionButton_Cancel);//
+                              }).Width(180);
+                          })
+                          .ToolBar(toolbar =>
+                          {
+                             // toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                          })
+                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                          .Scrollable()
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+                                                              .Events(events =>
+                                                                                            {
+                                                                                                events.Error("error_handler(\"OverTimeRequestEmployee#=OverTimeRequestId#\")");
+                                                                                                events.RequestStart("onRequestStart(\"OverTimeRequestEmployee#=OverTimeRequestId#\")");
+                                                                                                events.RequestEnd("onRequestEnd(\"OverTimeRequestEmployee#=OverTimeRequestId#\")");
+                                                                                            }) 
+           .Model(model =>
+                                              {
+                                                  model.Id(p => p.OverTimeRequestEmployeeId);
+                                                  
+                                              })
+                                                                                              .Read(read => read.Action("OverTimeRequestEmployee_Read", "OverTimeRequestEmployee", new { id = "#=OverTimeRequestId#" }))
+                                  .Create(create => create.Action("OverTimeRequestEmployee_Create", "OverTimeRequestEmployee", new { id = "#=OverTimeRequestId#" }))
+                  .Update(update => update.Action("OverTimeRequestEmployee_Update", "OverTimeRequestEmployee"))
+                  .Destroy(destroy => destroy.Action("OverTimeRequestEmployee_Destroy", "OverTimeRequestEmployee"))
+                          ).ToClientTemplate()
+                    )
+
+
+                </text>
+                  );
+
+              items.Add().Text(Resources .HR_RequestStatus).Content(
+                @<text>
+
+
+                    @(Html.Kendo().Grid<RequestesStatus>()
+                                          .Name("RequestesStatusgrid_#=OverTimeRequestId#")
+                          .Columns(columns =>
+                          {
+                              //columns.Bound(c => c.RequestId);
+                              columns.Bound(c => c.DateReqStatAm).Width(150);
+                              columns.Bound(c => c.Status).EditorTemplateName("Enum").Width(300);
+                              //columns.Bound(c => c.Remark).Width(150);
+                              columns.Command(command =>
+                              {
+                                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                  command.Destroy().Text(Resources.ActionButton_Cancel);
+                              }).Width(180);
+                          })
+                          .ToolBar(toolbar =>
+                          {
+                              // toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+
+                          })
+                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                          .Scrollable()
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+                                                               .Events(events =>
+                                                               {
+                                                                   events.Error("error_handler(\"RequestesStatusgrid_#=OverTimeRequestId#\")");
+                                                                   events.RequestStart("onRequestStart(\"RequestesStatusgrid_#=OverTimeRequestId#\")");
+                                                                   events.RequestEnd("onRequestEnd(\"RequestesStatusgrid_#=OverTimeRequestId#\")");
+                                                               })
+           .Model(model =>
+           {
+               model.Id(p => p.RequestStatusId);
+               model.Field(p => p.Date).Editable(false).DefaultValue(DateTime.Today);
+           })
+                                                                              .Read(read => read.Action("RequestesStatus_Read", "RequestesStatus", new { id = "#=OverTimeRequestId#", referenceType = "OverTime" }))
+                                                                                                                                  .Create(create => create.Action("RequestesStatus_Create", "RequestesStatus", new { id = "#=OverTimeRequestId#", referenceType2 = "OverTime" }))
+                                                  .Update(update => update.Action("RequestesStatus_Update", "RequestesStatus"))
+                                                  .Destroy(destroy => destroy.Action("RequestesStatus_Destroy", "RequestesStatus"))
+                          ).ToClientTemplate()
+                    )
+
+
+                </text>
+                  );
+          }).ToClientTemplate())
+</script>
+
+<script>
+    //function error_handler(e) {
+    //    if (e.errors) {
+    //        var message = "Errors:\n";
+    //        $.each(e.errors, function(key, value) {
+    //            if ('errors' in value) {
+    //                $.each(value.errors, function() {
+    //                    message += this + "\n";
+    //                });
+    //            }
+    //        });
+    //        alert(message);
+
+    //    }
+
+    //}
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+    function onDetailExpandUser(e) {
+        var masterRow = e.masterRow;
+
+        var masterGrid = $("#OverTimeRequestgrid").data("kendoGrid");
+
+        var masterDataItem = masterGrid.dataItem(masterRow);
+
+        masterId = masterDataItem.OverTimeRequestId;
+        var gridName = "#RequestesStatusgrid_" + masterId;
+        $.ajax({
+            url: '@Url.Action("CheckStatus", "OverTimeRequest")',
+
+            data: { masterId: masterId },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                r = result;
+                if (r == "true") {
+                    $(gridName).find(".k-toolbar").hide(); //hide toolbar
+                    $(".k-grid-add", gridName).hide();
+                }
+                else if (r == "approved") {
+                    $(gridName).find(".k-toolbar").hide(); //hide toolbar
+                    $(".k-grid-top", gridName).hide();
+                    $(".k-grid-edit", gridName).hide();
+                    $(".k-grid-delete", gridName).hide();
+                }
+                else if (r == "Dapproved") {
+                    $(gridName).find(".k-toolbar").hide(); //hide toolbar
+                    $(".k-grid-top", gridName).hide();
+                    $(".k-grid-edit", gridName).show();
+                    $(".k-grid-delete", gridName).show();
+                }
+                else {
+                    $(gridName).find(".k-toolbar").show(); //hide toolbar
+                    $(".k-grid-add", gridName).show();
+                }
+
+            }
+
+        });
+
+    }
+</script>
+
+<style>
+    .Employee-photo {
+        display: inline-block;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background-size: 32px 35px;
+        background-position: center center;
+        vertical-align: middle;
+        line-height: 32px;
+        box-shadow: inset 0 0 1px #999, inset 0 0 10px rgba(0, 0, 0, .2);
+        margin-left: 5px;
+    }
+
+    .Employee-name {
+        display: inline-block;
+        vertical-align: middle;
+        line-height: 32px;
+        padding-left: 3px;
+    }
+
+    .k-detail-cell .k-tabstrip .k-content {
+        padding: 0.2em;
+    }
+
+    .employee-details ul {
+        list-style: none;
+        font-style: italic;
+        margin: 15px;
+        padding: 0;
+    }
+
+        .employee-details ul li {
+            margin: 0;
+            line-height: 1.7em;
+        }
+
+    .employee-details label {
+        display: inline-block;
+        width: 90px;
+        padding-right: 10px;
+        text-align: right;
+        font-style: normal;
+        font-weight: bold;
+    }
+</style>

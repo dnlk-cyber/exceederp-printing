@@ -1,0 +1,127 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Procurement.ProcPurchaseValidation>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.PurchaseRequisitionId).EditorTemplateName("PurchaseRequistion");
+          columns.Bound(c => c.PurchaseType).EditorTemplateName("PurchaseType");
+         
+          columns.Bound(c => c.Status);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create();
+          toolbar.Excel();
+         // toolbar.Pdf();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Pageable()
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Scrollable(height => height.Height(500))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model =>
+          {
+              model.Id(p => p.ProcPurchaseValidationId);
+              model.Field(p => p.Status).Editable(false);
+              model.Field(p => p.IsOnlineApproved).Editable(false);
+          } )
+          .Read(read => read.Action("ProcPurchaseValidations_Read", "ProcurmentPurchaseValidation"))
+          .Create(create => create.Action("ProcPurchaseValidations_Create", "ProcurmentPurchaseValidation"))
+          .Update(update => update.Action("ProcPurchaseValidations_Update", "ProcurmentPurchaseValidation"))
+          .Destroy(destroy => destroy.Action("ProcPurchaseValidations_Destroy", "ProcurmentPurchaseValidation"))
+          ).ClientDetailTemplateId("ctemplate")
+)
+
+<script id="ctemplate" type="text/kendo">
+   @(Html.Kendo().TabStrip().Name("Val_#=ProcPurchaseValidationId#").SelectedIndex(0).Items(items =>
+     {
+         items.Add().Text("Item").Content(@<text>
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Procurement.PurchaseValidationItem>()
+          .Name("PurchaseValidationItem_#=ProcPurchaseValidationId#")
+          .Columns(columns =>
+          {
+              columns.Bound(c => c.ItemCode);
+              columns.Bound(c => c.Quantity);
+              columns.Bound(c => c.Unit);
+              columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+          })
+          .ToolBar(toolbar =>
+          {
+              toolbar.Create();
+              toolbar.Excel();
+             // toolbar.Pdf();
+          })
+          .Editable(editable => editable.Mode(GridEditMode.InLine))
+          .Pageable()
+          .Filterable()
+          .Scrollable()
+          .DataSource(dataSource => dataSource
+              .Ajax()
+              .Model(model => model.Id(p => p.PurchaseValidationItemId))
+              .Read(read => read.Action("PurchaseValidationItems_Read", "PurchaseValidationItem" , new {id = "#=ProcPurchaseValidationId#"}))
+              .Create(create => create.Action("PurchaseValidationItems_Create", "PurchaseValidationItem", new {id = "#=ProcPurchaseValidationId#"}))
+              .Update(update => update.Action("PurchaseValidationItems_Update", "PurchaseValidationItem"))
+              .Destroy(destroy => destroy.Action("PurchaseValidationItems_Destroy", "PurchaseValidationItem"))
+          ).ToClientTemplate()
+          )
+
+
+                                           </text>);
+         items.Add().Text("Validation").Content(@<text>
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Procurement.PurchaseValidationApproval>()
+          .Name("PurchaseValidationApproval#=ProcPurchaseValidationId#")
+          .Columns(columns =>
+          {
+              columns.Bound(c => c.Status).EditorTemplateName("Validation");
+              columns.Bound(c => c.Remark);
+              columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+          })
+          .ToolBar(toolbar =>
+          {
+              toolbar.Create();
+          })
+          .Editable(editable => editable.Mode(GridEditMode.InLine))
+          .Pageable()
+          .Scrollable()
+          .DataSource(dataSource => dataSource
+              .Ajax()
+               .Events(ev => ev .Error("error_handler_one").Sync("sync_handler"))
+              .Model(model => model.Id(p => p.PurchaseValidationApprovalId))
+              .Read(read => read.Action("PurchaseValidationApprovals_Read", "PurchaseValidationApproval", new { id = "#=ProcPurchaseValidationId#" }))
+              .Create(create => create.Action("PurchaseValidationApprovals_Create", "PurchaseValidationApproval", new { id = "#=ProcPurchaseValidationId#" }))
+              .Update(update => update.Action("PurchaseValidationApprovals_Update", "PurchaseValidationApproval"))
+              .Destroy(destroy => destroy.Action("PurchaseValidationApprovals_Destroy", "PurchaseValidationApproval"))
+          ).ToClientTemplate()
+          )
+
+ 
+                                                 </text>);
+     }).ToClientTemplate())
+</script>
+
+<script>
+    function error_handler(e) {
+        if (e.errors) {
+            var message = "Errors:\n";
+            $.each(e.errors, function (key, value) {
+                if ('errors' in value) {
+                    $.each(value.errors, function () {
+                        message += this + "\n";
+                    });
+                }
+            });
+            alert(message);
+
+        }
+
+    }
+    function sync_handler(e) {
+        this.read();
+
+    }
+</script>

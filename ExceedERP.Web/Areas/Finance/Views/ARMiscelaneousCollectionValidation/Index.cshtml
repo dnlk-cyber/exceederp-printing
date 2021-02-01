@@ -1,0 +1,32 @@
+﻿@using ExceedERP.Core.Domain.Finance.AR
+@(Html.Kendo().Grid<ARMiscelaneousCollectionValidation>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.Status);
+        columns.Bound(c => c.Remark);
+        columns.Bound(c => c.OrgBranchName);
+        columns.Bound(c => c.DateCreated);
+        columns.Bound(c => c.LastModified);
+        columns.Bound(c => c.CreatedBy);
+        columns.Bound(c => c.ModifiedBy);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+            toolbar.Excel();
+           // toolbar.Pdf();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Pageable()
+      .Filterable()
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.ARMiscelaneousCollectionValidationID))
+          .Read(read => read.Action("ARMiscelaneousCollectionValidations_Read", "ARMiscelaneousCollectionValidation"))
+          .Create(create => create.Action("ARMiscelaneousCollectionValidations_Create", "ARMiscelaneousCollectionValidation"))
+          .Update(update => update.Action("ARMiscelaneousCollectionValidations_Update", "ARMiscelaneousCollectionValidation"))
+          .Destroy(destroy => destroy.Action("ARMiscelaneousCollectionValidations_Destroy", "ARMiscelaneousCollectionValidation"))
+      )
+)

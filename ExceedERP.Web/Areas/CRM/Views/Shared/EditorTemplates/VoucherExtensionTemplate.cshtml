@@ -1,0 +1,15 @@
+﻿@(Html.Kendo().DropDownListFor(m => m)
+                  .AutoBind(false)
+                  .OptionLabel("--Select Voucher Extension--")
+                  .DataTextField("Description")
+                  .DataValueField("VoucherExtensionID")
+                  .DataSource(dataSource =>
+                  {
+                      dataSource.Read(read => read.Action("GetVoucherExtension", "CRMDataProvider"))
+                                .ServerFiltering(true);
+                  })
+
+)
+@Html.ValidationMessageFor(m => m)
+
+

@@ -1,0 +1,171 @@
+﻿<li class="">
+    <a href="#" class="dropdown-toggle">
+        <i class="menu-icon fa fa-hospital-o"></i>
+        <span class="menu-text">
+            APTS
+        </span>
+
+        <b class="arrow fa fa-angle-down"></b>
+    </a>
+    <b class="arrow"></b>
+
+    <ul class="submenu">
+        @if (HttpContext.Current.User.IsInRole("APTS_Despensary"))
+        {
+            <li class="">
+                <a href="#" class="dropdown-toggle">
+                    <i class="menu-icon fa fa-caret-right"></i>
+                    Despensary
+                    <b class="arrow fa fa-angle-down"></b>
+                </a>
+
+                <b class="arrow"></b>
+
+                <ul class="submenu">
+
+
+                    <li id="apts13230" class="actionlinlk">@Html.ActionLink("Request Drug", "Index", "DrugRequest", new { area = "APTS" }, null)<b class="arrow"></b></li>
+                    <li id="apts13231" class="actionlinlk">@Html.ActionLink("Patient Register", "Index", "PatientRegister", new { area = "APTS" }, null)<b class="arrow"></b></li>
+                    <li id="apts12332" class="actionlinlk">@Html.ActionLink("Despensary List", "Index", "DespensaryStore", new { area = "APTS" }, null)<b class="arrow"></b></li>
+                    <li id="apts13228" class="actionlinlk">@Html.ActionLink("Drug Lists", "Index", "MedicineLists", new { area = "APTS" }, null)<b class="arrow"></b></li>
+                    <li id="apts12329" class="actionlinlk">@Html.ActionLink("Drug Units", "Index", "DrugUnit", new { area = "APTS" }, null)<b class="arrow"></b></li>
+
+                </ul>
+            </li>
+        }
+        @if (HttpContext.Current.User.IsInRole("APTS_Laboratory"))
+        {
+            <li class="">
+                <a href="#" class="dropdown-toggle">
+                    <i class="menu-icon fa fa-caret-right"></i>
+                    Laboratory
+                    <b class="arrow fa fa-angle-down"></b>
+                </a>
+
+                <b class="arrow"></b>
+
+                <ul class="submenu">
+
+
+                    <li id="apts203250" class="actionlinlk">@Html.ActionLink("Laboratory Request Drug", "Index", "LaboratoryDrugRequest", new { area = "APTS" }, null)<b class="arrow"></b></li>
+
+
+                </ul>
+            </li>
+        }
+        @if (HttpContext.Current.User.IsInRole("APTS_Emergency"))
+        {
+            <li class="">
+                <a href="#" class="dropdown-toggle">
+                    <i class="menu-icon fa fa-caret-right"></i>
+                    Emergency
+                    <b class="arrow fa fa-angle-down"></b>
+                </a>
+
+                <b class="arrow"></b>
+
+                <ul class="submenu">
+
+
+                    <li id="apts2546400" class="actionlinlk">@Html.ActionLink("Emergency Request Drug", "Index", "EmergencyDrugRequest", new { area = "APTS" }, null)<b class="arrow"></b></li>
+
+
+                </ul>
+            </li>
+         }
+        @if (HttpContext.Current.User.IsInRole("APTS_Admin"))
+        {
+            <li class="">
+                <a href="#" class="dropdown-toggle">
+                    <i class="menu-icon fa fa-caret-right"></i>
+                    Approver
+                    <b class="arrow fa fa-angle-down"></b>
+                </a>
+
+                <b class="arrow"></b>
+
+                <ul class="submenu">
+
+                    <li id="apts17833" class="actionlinlk">@Html.ActionLink("Requested Drugs", "Index", "DrutRequestStatus", new { area = "APTS" }, null)<b class="arrow"></b></li>
+                    <li id="aptsdsf45df" class="actionlinlk">@Html.ActionLink("Request From Store", "Index", "RequestFromDrugStore", new { area = "APTS" }, null)<b class="arrow"></b></li>
+                </ul>
+            </li>
+        }
+        @if (HttpContext.Current.User.IsInRole("APTS_DrugStore"))
+        {
+
+            <li id="aptdfgs13g4" class="actionlinlk">@*@Html.ActionLink("Aprroved Requests", "Index", "Model22AndRequisitions", new { area = "APTS" }, null)<b class="arrow"></b>*@</li>
+
+            <li class="">
+                <a href="#" class="dropdown-toggle">
+                    <i class="menu-icon fa fa-caret-right"></i>
+                    Drug Store
+                    <b class="arrow fa fa-angle-down"></b>
+                </a>
+
+                <b class="arrow"></b>
+
+                <ul class="submenu">
+
+                    <li id="apfgts13dg5" class="actionlinlk">@Html.ActionLink("Approved Drug Requests", "Index", "ApprovedDrugRequest", new { area = "APTS" }, null)<b class="arrow"></b></li>
+
+                    <li id="aptdfgsg136" class="actionlinlk">@Html.ActionLink("Drug Store", "Index", "DrugStore", new { area = "APTS" }, null)<b class="arrow"></b></li>
+                    <li id="afgpts1dfg37" class="actionlinlk">@Html.ActionLink("Drug Receival", "Index", "DrugReceivalModel19", new { area = "APTS" }, null)<b class="arrow"></b></li>
+                    <li id="afgpts1dfg37" class="actionlinlk">@Html.ActionLink("Drug Transfer", "Index", "DrugInnerTransferFromStore", new { area = "APTS" }, null)<b class="arrow"></b></li>
+
+
+                </ul>
+            </li>
+        }
+        @*//================================================================================================*@
+
+        @*<b class="arrow"></b>*@
+
+
+
+        <li class="">
+            <a href="#" class="dropdown-toggle">
+                <i class="menu-icon fa fa-caret-right"></i>
+                Report
+                <b class="arrow fa fa-angle-down"></b>
+            </a>
+
+            <b class="arrow"></b>
+
+            <ul class="submenu">
+
+
+
+
+                <li id="apts131248" class="actionlinlk">
+                    @Html.ActionLink("Drug Store Report", "DrugStore", "APTS", new { area = "APTS" }, null)<b class="arrow"></b>
+                </li>
+
+                <li id="apts1424539" class="actionlinlk">
+                    @Html.ActionLink("Despensary Report", "DespensaryStore", "APTS", new { area = "APTS" }, null)<b class="arrow"></b>
+                </li>
+
+                @*<li id="apts140" class="actionlinlk">
+                    @Html.ActionLink("Patient Recored", "PatientRecored", "APTS", new { area = "APTS" }, null)<b class="arrow"></b>
+                </li>*@
+                <li id="apts1445451" class="actionlinlk">
+                    @Html.ActionLink("Drug By Expire Date", "DrugByExpiry", "APTS", new { area = "APTS" }, null)<b class="arrow"></b>
+                </li>
+                <li id="apts1445452" class="actionlinlk">
+                    @Html.ActionLink("Drug Sale", "DrugSale", "APTS", new { area = "APTS" }, null)<b class="arrow"></b>
+                </li>
+                <li id="apts143876" class="actionlinlk">
+                    @Html.ActionLink("Drug Sale with Drugist", "DrugSaleWithDrugist", "APTS", new { area = "APTS" }, null)<b class="arrow"></b>
+                </li>
+
+            </ul>
+        </li>
+
+    </ul>
+
+
+
+    
+
+
+</li>

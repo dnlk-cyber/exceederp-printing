@@ -1,0 +1,609 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.Common.HRM
+@using ExceedERP.Core.Domain.HRM.Discipline
+@using ExceedERP.Core.Domain.HRM.EmployeeDetail
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<Legend>@Resources.NavigatorDiscipline_EmployeeDisciplinaryCase</Legend>
+@(Html.Kendo().Grid<DisciplinaryCase>()
+          .Name("DisciplinaryCasegrid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.EmployeeCode).Width(150);
+          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "PersonId", "FullNameWithOutCode").EditorTemplateName("ListOfEmployee").Width(200);
+          columns.Bound(c => c.TransgressionDateAm).EditorTemplateName("Calander").Width(200);
+          columns.Bound(c => c.NatureofTransgression).Width(200);
+          columns.Bound(c => c.Evidence).Width(160);
+          //columns.Bound(c => c.Remark).Width (150);
+          columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit); command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(180);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+          .Scrollable(h => h.Height(500))
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+          .Groupable()
+                      .Sortable(sortable =>
+                      {
+                          sortable.SortMode(GridSortMode.SingleColumn);
+                      })
+          .Filterable()
+              .Events(e =>
+              {
+                  e.Save("GetDate");
+
+                  e.Edit("GetDate");
+              })
+             .Pageable(pageable => pageable
+                                        .Input(true)
+                                        .Numeric(false)
+                                        .Refresh(true)
+                                        .PageSizes(true)
+                                        .ButtonCount(5))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+               .Events(events =>
+                                        {
+                                            events.Error("error_handler(\"DisciplinaryCasegrid\")");
+                                            events.RequestStart("onRequestStart(\"DisciplinaryCasegrid\")");
+                                            events.RequestEnd("onRequestEnd(\"DisciplinaryCasegrid\")");
+                                        })
+                       
+          .Model(model => { model.Id(p => p.DisciplinaryCaseId); 
+          model.Field(p => p.EmployeeCode).Editable (false);})
+          .Read(read => read.Action("DisciplinaryCases_Read", "DisciplinaryCase"))
+              .Create(create => create.Action("DisciplinaryCases_Create", "DisciplinaryCase"))
+          .Update(update => update.Action("DisciplinaryCases_Update", "DisciplinaryCase"))
+          .Destroy(destroy => destroy.Action("DisciplinaryCases_Destroy", "DisciplinaryCase"))
+          ).ClientDetailTemplateId("template")
+      )
+
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                          .Name("tabstrip_#=DisciplinaryCaseId#")
+          .SelectedIndex(0)
+          .Items(items =>
+          {
+              items.Add().Text(Resources.NavigatorDiscipline_EmpDisciplinaryHearing).Content(
+                @<text>
+                 @*   <legend>Employee Disciplinary Hearing</legend>*@
+                  @(Html.Kendo().Grid<EmpDisciplinaryHearing>()
+                      .Name("EmpDisciplinaryHearinggrid_#=DisciplinaryCaseId#")
+      .Columns(columns =>
+      {      
+          //columns.Bound(c => c.DisciplinaryCaseId);
+          columns.Bound(c => c.HearingDateAmharic).EditorTemplateName ("Calander").Width (200);
+          columns.Bound(c => c.HearingOutcome).Width(250);
+          columns.Bound(c => c.Remark).Width(200);
+          columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Filterable()
+               .Events(e =>
+                      {
+                          e.Save("GetHearingDate");
+
+                          e.Edit("GetHearingDate");
+                      })
+      .Scrollable(h=> h.Height (500))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+                  .Events(events =>
+                                                {
+                                                    events.Error("error_handler(\"EmpDisciplinaryHearinggrid_#=DisciplinaryCaseId#\")");
+                                                    events.RequestStart("onRequestStart(\"EmpDisciplinaryHearinggrid_#=DisciplinaryCaseId#\")");
+                                                    events.RequestEnd("onRequestEnd(\"EmpDisciplinaryHearinggrid_#=DisciplinaryCaseId#\")");
+                                                })
+                                  
+          .Model(model => model.Id(p => p.DisciplinaryHearingId))
+                                  .Read(read => read.Action("EmpDisciplinaryHearing_Read", "EmpDisciplinaryHearing", new { id = "#=DisciplinaryCaseId#" }))
+                                                  .Create(create => create.Action("EmpDisciplinaryHearing_Create", "EmpDisciplinaryHearing", new { id = "#=DisciplinaryCaseId#" }))
+          .Update(update => update.Action("EmpDisciplinaryHearing_Update", "EmpDisciplinaryHearing"))
+          .Destroy(destroy => destroy.Action("EmpDisciplinaryHearing_Destroy", "EmpDisciplinaryHearing"))
+      ).ToClientTemplate()
+                )
+
+                </text>
+                  );
+             
+              items.Add().Text(Resources.NavigatorDiscipline_EmpDisciplineMeasure).Content(
+                @<text>
+                  @*  <legend>Employee Disciplinary Measure</legend>*@
+                    @(Html.Kendo().Grid<EmpDisciplineMeasure>()
+                  .Name("EmpDisciplineMeasuregrid_#=DisciplinaryCaseId#")
+      .Columns(columns =>
+      {
+
+          //  columns.Bound(c => c.DisciplinaryCaseId);
+          columns.ForeignKey(c => c.MeasuresId, (IEnumerable)ViewData["Measures"], "MeasuresId", "MeasuresType").EditorTemplateName("Measures").Width(150);
+          columns.ForeignKey(c => c.DetailMeasuresId, (IEnumerable)ViewData["MeasuresDetails"], "DetailMeasuresId", "Description").EditorTemplateName("MeasureDetails").Width(150);
+          columns.Bound(c => c.DecisionDateAm).EditorTemplateName("Calander").Width(200);
+          columns.Bound(c => c.Month).EditorTemplateName("Months").Width(150);
+          //columns.Bound(c => c.IsExpired);
+          columns.Bound(c => c.IsReversedByAppeal).ClientTemplate("<input type='checkbox' disabled = 'true' \\#=IsReversedByAppeal ? checked='checked' :'' \\# />").Width(200);
+          columns.Bound(c => c.Remark).Width(150);
+          columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit); command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Filterable()
+      .Scrollable(h => h.Height(500))
+                      .Events(x =>
+                      {
+                          x.Save("GetDisciplineMeasureDate");
+                          x.Edit("GetDisciplineMeasureDate");})
+      .DataSource(dataSource => dataSource
+          .Ajax()
+                                    .Events(events =>
+                                    {
+                                        events.Error("error_handler(\"EmpDisciplineMeasuregrid_#=DisciplinaryCaseId#\")");
+                                        events.RequestStart("onRequestStart(\"EmpDisciplineMeasuregrid_#=DisciplinaryCaseId#\")");
+                                        events.RequestEnd("onRequestEnd(\"EmpDisciplineMeasuregrid_#=DisciplinaryCaseId#\")");
+                                    })
+
+                  .Model(model =>
+                  {
+                      model.Id(p => p.EmpDisciplineMeasureId);
+                  }
+                  )
+                          .Read(read => read.Action("EmpDisciplineMeasure_Read", "EmpDisciplineMeasure", new { id = "#=DisciplinaryCaseId#" }))
+                          .Create(create => create.Action("EmpDisciplineMeasure_Create", "EmpDisciplineMeasure", new { id = "#=DisciplinaryCaseId#" }))
+          .Update(update => update.Action("EmpDisciplineMeasure_Update", "EmpDisciplineMeasure"))
+          .Destroy(destroy => destroy.Action("EmpDisciplineMeasure_Destroy", "EmpDisciplineMeasure"))
+      ).ToClientTemplate()
+                    )
+
+                </text>
+                  );
+              items.Add().Text(Resources.NavigatorDiscipline_DisciplineMeasuerByMoney).Content(
+                @<text>                                    
+    @(Html.Kendo().Grid<DisciplineMeasuerByMoney>()
+                      .Name("DisciplineMeasuerByMoney_#=DisciplinaryCaseId#")
+      .Columns(columns =>
+      {
+        //  columns.Bound(c => c.IsActive);
+          columns.ForeignKey(c => c.GLPeriodId, (IEnumerable)ViewData["PeriodList"], "GLPeriodId", "Name").EditorTemplateName("GLPeriodSelector").Width(200);
+          columns.Bound(c => c.Amount);
+          columns.Bound(c => c.Months);
+          columns.Bound(c => c.MonthlyAmount).Width(150);
+          columns.Bound(c => c.Balance);
+          columns.Bound(c => c.Remark);
+
+         columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit); command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Filterable()
+      .Scrollable(h => h.Height(500))
+      .DataSource(dataSource => dataSource
+        
+                    .Ajax()
+                            .Events(events =>
+{
+    events.Error("error_handler(\"DisciplineMeasuerByMoney_#=DisciplinaryCaseId#\")");
+    events.RequestStart("onRequestStart(\"DisciplineMeasuerByMoney_#=DisciplinaryCaseId#\")");
+    events.RequestEnd("onRequestEnd(\"DisciplineMeasuerByMoney_#=DisciplinaryCaseId#\")");
+})
+                                           
+                  .Model(model => { model.Id(p => p.DisciplineMeasuerByMoneyId);
+                   model.Field(p => p.MonthlyAmount).Editable(false);
+              model.Field(p => p.Balance).Editable(false);})
+                                  .Read(read => read.Action("DisciplineMeasuerByMoney_Read", "DisciplineMeasureByMoney", new { id = "#=DisciplinaryCaseId#", empId = "#=EmployeeId#" }))
+                          .Create(create => create.Action("DisciplineMeasuerByMoney_Create", "DisciplineMeasureByMoney", new { idTwo = "#=DisciplinaryCaseId#", empIdTwo = "#=EmployeeId#" }))
+                  .Update(update => update.Action("DisciplineMeasuerByMoney_Update", "DisciplineMeasureByMoney"))
+                  .Destroy(destroy => destroy.Action("DisciplineMeasuerByMoney_Destroy", "DisciplineMeasureByMoney"))
+      ).ToClientTemplate()
+    )
+                        </text>
+                  );
+                  
+              items.Add().Text(Resources.NavigatorDiscipline_EmpDisciplineMeasureAppeal).Content(
+                @<text>
+                  @*  <legend>Appeal</legend>*@
+                  @(Html.Kendo().Grid<Appeal>()
+              .Name("Appeal_#=DisciplinaryCaseId#")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.AppealDetail);
+          //columns.Bound(c => c.Date);
+          columns.Bound(c => c.DateAmharic).EditorTemplateName ("Calander");
+          columns.Bound(c => c.Remark);
+        //  columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel);  }).Width(180);
+      })
+      //.ToolBar(toolbar =>
+      //{
+      //    toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      //})
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Filterable()
+          .Scrollable(h => h.Height(500))
+                              .Events(x =>
+                              {
+                                  x.Save("GetAppealDate");
+                                  x.Edit("GetAppealDate");
+                              })
+      .DataSource(dataSource => dataSource
+          .Ajax()
+                   .Events(events =>
+        {
+            events.Error("error_handler(\"Appeal_#=DisciplinaryCaseId#\")");
+            events.RequestStart("onRequestStart(\"Appeal_#=DisciplinaryCaseId#\")");
+            events.RequestEnd("onRequestEnd(\"Appeal_#=DisciplinaryCaseId#\")");
+        })
+                                         
+          .Model(model => model.Id(p => p.AppealId))
+                  .Read(read => read.Action("Appeal_Read", "Appeal",  new { ida = "#=DisciplinaryCaseId#" }))
+                          .Create(create => create.Action("Appeal_Create","Appeal", new { idaTwo = "#=DisciplinaryCaseId#" }))
+                  .Update(update => update.Action("Appeal_Update", "Appeal"))
+          .Destroy(destroy => destroy.Action("Appeal_Destroy", "Appeal"))
+      ).ToClientTemplate ()
+                )
+
+                </text>
+                  );
+
+              items.Add().Text(Resources.Navigator_Company_CommitteeMinute).Content(
+                @<text>
+                   @(Html.Kendo().Grid<CommitteMinute>()
+          .Name("CommitteMinute_#=DisciplinaryCaseId#")
+      .Columns(columns =>
+      {
+          columns.ForeignKey(c => c.CommitteeId, (IEnumerable)ViewData["Committees"], "CommitteeId", "Description").EditorTemplateName("Commitee").Width(200);
+
+
+          columns.Bound(c => c.FileNo);
+          columns.Bound(c => c.DateAmharic).EditorTemplateName ("Calander").Width (200);
+          columns.Bound(c => c.Agenda);
+          columns.Bound(c => c.PlaceOfMetting);
+          columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit); command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+              .ClientDetailTemplateId("templatetwo")
+                       .Events(x =>
+                       {
+                           x.Save("GetMinuteDate");
+                           x.Edit("GetMinuteDate");
+                       })
+           .Scrollable(h => h.Height(500))
+                     .Groupable()
+                              .Sortable(sortable =>
+                              {
+                                  sortable.SortMode(GridSortMode.SingleColumn);
+                              })
+                  .Filterable()
+                     .Pageable(pageable => pageable
+                                                .Input(true)
+                                                .Numeric(false)
+                                                .Refresh(true)
+                                                .PageSizes(true)
+                                                .ButtonCount(5))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+                   .Events(events =>
+                   {
+                       events.Error("error_handler(\"CommitteMinute_#=DisciplinaryCaseId#\")");
+                       events.RequestStart("onRequestStart(\"CommitteMinute_#=DisciplinaryCaseId#\")");
+                       events.RequestEnd("onRequestEnd(\"CommitteMinute_#=DisciplinaryCaseId#\")");
+                   })
+
+          .Model(model => model.Id(p => p.CommitteMinuteId))
+
+                              .Read(read => read.Action("CommitteMinute_Read", "CommitteMinuteDetails", new { id = "#=DisciplinaryCaseId#" }))
+                              .Create(create => create.Action("CommitteMinute_Create", "CommitteMinuteDetails", new { id = "#=DisciplinaryCaseId#" }))
+                              .Update(update => update.Action("CommitteMinute_Update", "CommitteMinuteDetails"))
+                              .Destroy(destroy => destroy.Action("CommitteMinute_Destroy", "CommitteMinuteDetails"))
+
+
+          ).ToClientTemplate ()
+                )
+
+                </text>
+                  );
+          }).ToClientTemplate())
+</script>
+<script id="templatetwo" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                            .Name("tabstrip_#=CommitteMinuteId#")
+    .SelectedIndex(0)
+    .Items(items =>
+     {
+
+         //*****************************************************************************************************//
+
+         //*********************************Attachment***********************************************************//
+         items.Add().Text(Resources.HR_File).Content(
+            @<text>
+
+                @(Html.Kendo().Grid<Attachment>()
+                      .Name("Attachment_#=CommitteMinuteId#")
+      .Columns(columns =>
+      {
+          // columns.Bound(c => c.Remark).Title("Description");
+          columns.Bound(c => c.Description).ClientTemplate(Html.ActionLink("DownLoad", "DownloadFile", new { filename = "#=CommitteMinuteId#" }).ToHtmlString());
+          //  columns.Bound(c => c.FileType);
+
+          columns.Command(command =>
+          {
+              command.Destroy().Text(Resources.ActionButton_Cancel);
+              //  command.Custom("Download").Click("DownloadAttachmnets");
+
+          }).Width(300);
+
+      })
+                            .Events(e =>
+                          {
+                              e.Change("DownloadAttachmnets");
+                              e.Edit("onGridEdit");
+                          })
+                       .ToolBar(toolbar =>
+              {
+                  toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+              })
+                      .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("Upload").Window(window =>
+                      {
+                          window.Scrollable(false);
+                          window.Title(Resources.Navigator_Company_CommitteeMinute);
+                      }))
+
+        .Selectable(selectable =>
+        {
+            selectable.Mode(GridSelectionMode.Single);
+            selectable.Type(GridSelectionType.Row);
+        })
+             .Scrollable(h => h.Height(500))
+
+      .DataSource(dataSource => dataSource
+          .Ajax()
+                  .Events(events =>
+                        {
+                            events.Error("error_handler(\"Attachment_#=CommitteMinuteId#\")");
+                            events.RequestStart("onRequestStart(\"Attachment_#=CommitteMinuteId#\")");
+                            events.RequestEnd("onRequestEnd(\"Attachment_#=CommitteMinuteId#\")");
+                        })
+                           
+          .Model(model => model.Id(p => p.AttachmentId))
+
+                                                  .Read(read => read.Action("Attachments_Read", "Attachment", new { Area = "Common", attachmentReferenceType = "MINUTE", id = "#=CommitteMinuteId#", fileOwner = "Discipline" }))
+                                                                     .Create(create => create.Action("Attachments_Create", "Attachment", new { Area = "Common", attachmentReferenceType = "MINUTE", id = "#=CommitteMinuteId#", fileOwner = "Discipline" }))
+                                          .Destroy(destroy => destroy.Action("Attachments_Destroy", "DisciplinaryCase"))
+      ).ToClientTemplate()
+                )
+            </text>
+    );
+         //*****************************************************************************************************//
+
+     }).ToClientTemplate())
+</script>
+
+<style>
+    .Employee-photo {
+        display: inline-block;
+        width: 32px;
+        height: 32px;
+        border-radius: 50%;
+        background-size: 32px 35px;
+        background-position: center center;
+        vertical-align: middle;
+        line-height: 32px;
+        box-shadow: inset 0 0 1px #999, inset 0 0 10px rgba(0, 0, 0, .2);
+        margin-left: 5px;
+    }
+
+    .Employee-name {
+        display: inline-block;
+        vertical-align: middle;
+        line-height: 32px;
+        padding-left: 3px;
+    }
+</style>
+<script>
+    //function error_handler(e) {
+    //    if (e.errors) {
+    //        var message = "Errors:\n";
+    //        $.each(e.errors, function(key, value) {
+    //            if ('errors' in value) {
+    //                $.each(value.errors, function() {
+    //                    message += this + "\n";
+    //                });
+    //            }
+    //        });
+    //        alert(message);
+
+    //    }
+
+    //}
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+    function onGridEdit(e) {
+        e.container.find(".k-button.k-grid-update").hide();
+        e.container.find(".k-button.k-grid-cancel").hide();
+
+    }
+   
+</script>
+<script>
+    function DownloadAttachmnets(e) {
+
+        var grid = e.sender;
+        var selectedRows = this.select();
+        var rowData = this.dataItem(selectedRows[0]);
+        var id = rowData.AttachmentID;
+        $.ajax({
+            contentType: "application/json; charset=utf-8",
+            url: '@Url.Action("Download", "DisciplinaryCase")',
+            data: { 'id': id },
+            type: 'GET',
+            cache: false,
+            success: function (result) {
+                r = result;
+            }
+
+        });
+
+    }
+</script>
+<script>
+    function GetDate() {
+
+        var x = AssignDate();
+        var y = x;
+        $("#TransgressionDateAm").trigger("change");
+     
+        for (var o in y) {
+            $.ajax({
+                contentType: "application/json; charset=utf-8",
+                url: '@Url.Action("SetDate", "DisciplinaryCase")',
+                data: { name: y[o].id, value: y[o].date },
+                type: 'GET',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                }
+
+            });
+        }
+    }
+
+</script>
+<script>
+    function AssignDate() {
+        var list = AssignDates();
+        return list;
+    }
+
+</script>
+
+<script>
+    function GetMinuteDate() {
+
+        var x = AssignDate();
+        var y = x;
+        $("#DateAmharic").trigger("change");
+        for (var o in y) {
+            $.ajax({
+                contentType: "application/json; charset=utf-8",
+                url: '@Url.Action("SetDate", "CommitteMinuteDetail")',
+                data: { name: y[o].id, value: y[o].date },
+                type: 'GET',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                }
+
+            });
+        }
+    }
+    function GetHearingDate() {
+
+        var x = AssignDate();
+        var y = x;
+        $("#HearingDateAmharic").trigger("change");
+        for (var o in y) {
+            $.ajax({
+                contentType: "application/json; charset=utf-8",
+                url: '@Url.Action("SetDate", "EmpDisciplinaryHearing")',
+                data: { name: y[o].id, value: y[o].date },
+                type: 'GET',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                }
+
+            });
+        }
+    }
+    function GetDisciplineMeasureDate() {
+
+        var x = AssignDate();
+        var y = x;
+        $("#DecisionDateAm").trigger("change");
+        for (var o in y) {
+            $.ajax({
+                contentType: "application/json; charset=utf-8",
+                url: '@Url.Action("SetDate", "EmpDisciplineMeasure")',
+                data: { name: y[o].id, value: y[o].date },
+                type: 'GET',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                }
+
+            });
+        }
+    }
+    function GetAppealDate() {
+
+        var x = AssignDate();
+        var y = x;
+        $("#DateAmharic").trigger("change");
+        for (var o in y) {
+            $.ajax({
+                contentType: "application/json; charset=utf-8",
+                url: '@Url.Action("SetDate", "Appeal")',
+                data: { name: y[o].id, value: y[o].date },
+                type: 'GET',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                }
+
+            });
+        }
+    }
+</script>

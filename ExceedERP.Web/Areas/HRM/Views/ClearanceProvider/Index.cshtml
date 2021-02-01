@@ -1,0 +1,95 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.HRM.Company
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>@Resources.Navigator_Company_ClearanceProvider</legend>
+@(Html.Kendo().Grid<ClearanceProvider>()
+          .Name("ClearanceProviderGrid")
+      .Columns(columns =>
+      {
+          columns.ForeignKey(c => c.WorkUnit, (IEnumerable)ViewData["Department"], "Name", "Name").EditorTemplateName("Organization").Width(300);
+          columns.Bound(c => c.Name).Width(300);
+          columns.Bound(c => c.Remark);
+          columns.Command(command =>
+          {
+              if (HttpContext.Current.User.IsInRole("HR_Company_User"))
+              {
+                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+              }
+              if (HttpContext.Current.User.IsInRole("HR_Admin") || HttpContext.Current.User.IsInRole("HR_Company_Admin"))
+              {
+                  command.Destroy().Text(Resources.ActionButton_Cancel);
+              }
+          }).Width(200);
+      })
+      .ToolBar(toolbar => {
+          if (HttpContext.Current.User.IsInRole("HR_Company_User"))
+          {
+              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+          }
+      })
+               .Editable(editable => editable.Mode(GridEditMode.InLine))
+          //.TemplateName("ClearanceProvider").Window(window => { window.Title("Clearance Provider"); window.Scrollable(false); }))
+          .Selectable(selectable =>
+          {
+              selectable.Mode(GridSelectionMode.Single);
+              selectable.Type(GridSelectionType.Row);
+          })
+             .Scrollable(h => h.Height(500))
+                 .Groupable()
+                          .Sortable(sortable =>
+                          {
+                              sortable.SortMode(GridSortMode.SingleColumn);
+                          })
+              .Filterable()
+                 .Pageable(pageable => pageable
+                                            .Input(true)
+                                            .Numeric(false)
+                                            .Refresh(true)
+                                            .PageSizes(true)
+                                            .ButtonCount(5))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+                .Events(events =>
+                {
+                    events.Error("error_handler(\"ClearanceProviderGrid\")");
+                    events.RequestStart("onRequestStart(\"ClearanceProviderGrid\")");
+                    events.RequestEnd("onRequestEnd(\"ClearanceProviderGrid\")");
+                })
+
+          .Model(model => model.Id(p => p.ClearanceProviderId))
+          .Read(read => read.Action("ClearanceProvideres_Read", "ClearanceProvider"))
+          .Create(create => create.Action("ClearanceProvideres_Create", "ClearanceProvider"))
+          .Update(update => update.Action("ClearanceProvideres_Update", "ClearanceProvider"))
+          .Destroy(destroy => destroy.Action("ClearanceProvideres_Destroy", "ClearanceProvider"))
+      )
+)
+<script>
+    //function error_handler(e) {
+    //    if (e.errors) {
+    //        var message = "Errors:\n";
+    //        $.each(e.errors, function(key, value) {
+    //            if ('errors' in value) {
+    //                $.each(value.errors, function() {
+    //                    message += this + "\n";
+    //                });
+    //            }
+    //        });
+    //        alert(message);
+
+    //    }
+
+    //}
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+</script>
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 700px;
+    }
+</style>

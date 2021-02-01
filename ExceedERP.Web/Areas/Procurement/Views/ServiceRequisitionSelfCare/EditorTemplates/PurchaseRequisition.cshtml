@@ -1,0 +1,99 @@
+﻿@using Kendo.Mvc.UI
+@model ExceedERP.Core.Domain.Procurement.PR.PurchaseRequisition
+<form class="form-inline bootstrap-form-with-validation">
+
+    <div class="row">
+        <div class="col-md-1">
+
+        </div>
+         
+            <div class="col-md-10">
+                <div class="col-md-5">
+                    @Html.LabelFor(model => model.StoreRequisitionID)
+                </div>
+                <div class="form-group col-md-4">
+                   
+                    @(Html.Kendo().DropDownListFor(model => model.StoreRequisitionID)
+                          .AutoBind(false)
+                          .OptionLabel("Select Requisition...")
+                          .DataTextField("StoreRequisitionID")
+                          .DataValueField("StoreRequisitionID")
+                          .DataSource(dataSource =>
+                          {
+                              dataSource.Read(read => read.Action("GetStoreRequisitionId", "DataProvider"))
+                                  .ServerFiltering(true);
+                          }))
+                    @Html.ValidationMessageFor(model => model.StoreRequisitionID)
+                </div>
+             
+        </div>
+
+
+
+    </div>
+    <br />
+    <div class="row">
+        <div class="col-md-1">
+
+        </div>
+        <div class="col-md-10">
+            <div class="col-md-5">
+                @Html.LabelFor(model => model.ReferenceNo)
+
+
+            </div>
+            <div class="form-group col-md-4">
+
+                @Html.Kendo().TextBoxFor(model => model.ReferenceNo)
+                @Html.ValidationMessageFor(model => model.ReferenceNo)
+            </div>
+        </div>
+    </div>
+    <br/>
+    <div class="row">
+        <div class="col-md-1">
+
+        </div>
+
+
+
+
+        <div class="col-md-10">
+
+            <div class="col-md-5">
+                @Html.LabelFor(model => model.ProcurementOfficer)
+
+                
+            </div>
+            <div class="form-group col-md-4">
+                @(Html.Kendo().AutoCompleteFor(model => model.ProcurementOfficer).DataTextField("Name")
+                  .Filter(FilterType.StartsWith)
+                 .MinLength(1)
+                 
+                 .Name("ProcurementOfficer")
+                 .Events(events => events.Select("autocompleteValue"))
+                  .DataSource(source => source
+                      .Custom()
+                      
+                      .ServerFiltering(true)
+                      .ServerPaging(true)
+                      .PageSize(20)
+                      .Transport(transport => transport
+                      .Read(read => read.Action("GetEmployees","DataProvider"))
+                      ) 
+                  )
+                )
+                @Html.ValidationMessageFor(model => model.ProcurementOfficer)
+            </div>
+        </div>
+
+    </div>
+
+    <div class="col-md-1">
+
+    </div>
+
+
+
+</form>
+ 

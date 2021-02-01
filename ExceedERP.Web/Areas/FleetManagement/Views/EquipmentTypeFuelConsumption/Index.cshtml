@@ -1,0 +1,54 @@
+﻿@{
+    ViewBag.Title = "Equipment Type ";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>     Equipment Type Fuel Consumption  </legend>
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetRegistration.FleetIFuelConsumption>()
+    .Name("grid")
+    .Columns(columns =>
+    {
+        columns.ForeignKey(e => e.EquipmentCategory, (System.Collections.IEnumerable)ViewData["EquipmentIdentity"], "EquipmentIdentityId", "EquipmentCategoryName").EditorTemplateName("EquipmentIdentities").Width(140);
+        columns.ForeignKey(c => c.EquipmentTypeId, (System.Collections.IEnumerable)ViewData["EquipmentType"], "EquipmentTypeId", "EquipmentTypeName").EditorTemplateName("EquipmentTypeCascadeEditor").Title("Equipment Type").Width(140);
+        columns.Bound(e => e.MinConsupmtion).Width(120);
+        columns.Bound(e => e.MaxConsupmtion).Width(120);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
+
+    })
+              .ToolBar(commands => commands.Create())
+         .Editable(editable =>
+         {
+             editable.Mode(GridEditMode.InLine);
+             editable.DisplayDeleteConfirmation("Are You Sure To Remove Equipment Type");
+         }).HtmlAttributes(new { style = "height: 520px;" })
+                      .Pageable(pageable => pageable
+                                        .Input(true)
+                                        .Numeric(false)
+                                        .Refresh(true)
+                                        .PageSizes(true)
+                                        .ButtonCount(5))
+
+                            .Scrollable()
+                            .Sortable()
+                            .Filterable()
+                            .Scrollable(h => h.Height(500))
+    .DataSource(dataSource => dataSource
+        .Ajax()
+        .ServerOperation(false)
+        .Model(model =>
+              {
+                  model.Id(p => p.FleetIFuelConsumptionId);
+
+                  model.Field(p => p.FleetIFuelConsumptionId).Editable(false);
+
+              }).Events(ev => ev
+                                    .Error("error_handler(\"grid\")")
+                                    .RequestStart("onRequestStart(\"grid\")")
+                                    .RequestEnd("onRequestEnd(\"grid\")"))
+                            .Create(update => update.Action("FleetIFuelConsumption_Create", "EquipmentTypeFuelConsumption"))
+                            .Read(read => read.Action("FleetIFuelConsumption_Read", "EquipmentTypeFuelConsumption"))
+                            .Update(update => update.Action("FleetIFuelConsumption_Update", "EquipmentTypeFuelConsumption"))
+                            .Destroy(update => update.Action("FleetIFuelConsumption_Destroy", "EquipmentTypeFuelConsumption"))
+  )
+)
+

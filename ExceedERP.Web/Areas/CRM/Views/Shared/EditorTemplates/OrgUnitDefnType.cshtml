@@ -1,0 +1,7 @@
+﻿@using ExceedERP.Core.Domain.CRM
+@(Html.Kendo().DropDownListFor(m => m)
+        .DataTextField("Text")
+                    .DataValueField("Value")
+            .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.CRM.OrganizationUnitDefinitionType)))
+                 .ValuePrimitive(true)
+)

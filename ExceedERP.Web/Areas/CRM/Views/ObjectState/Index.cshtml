@@ -1,0 +1,24 @@
+﻿<legend>Object State</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.ObjectState>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.Reference);
+        columns.Bound(c => c.ObjectStateDefinitionID);
+        columns.Bound(c => c.Remark);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable(s=>s.Height(500))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.ObjectStateID))
+          .Read(read => read.Action("ObjectStates_Read", "ObjectState"))
+          .Create(create => create.Action("ObjectStates_Create", "ObjectState"))
+          .Update(update => update.Action("ObjectStates_Update", "ObjectState"))
+          .Destroy(destroy => destroy.Action("ObjectStates_Destroy", "ObjectState"))
+      )
+)

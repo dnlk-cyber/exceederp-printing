@@ -1,0 +1,92 @@
+﻿@model ExceedERP.Core.Domain.FixedAsset.UserCard.UserCard
+
+@Html.HiddenFor(model => model.UserCardID)
+
+<div class="form">
+    <div class="row fullrow">
+
+        <div class="col-md-3 ro1">
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.PersonID, "Emp. ID", htmlAttributes: new { @class = "control-label col-md-6" })
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(model => model.PersonID)
+                    @Html.ValidationMessageFor(model => model.PersonID, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+            <div class="form-group">
+                @Html.LabelFor(model => model.EmployeeName, "Emp. Name", htmlAttributes: new {@class = "control-label col-md-6"})
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(model => model.EmployeeName)
+                    @Html.ValidationMessageFor(model => model.EmployeeName, "", new {@class = "text-danger"})
+                </div>
+            </div>
+            <div class="row"></div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.PostRefNo, htmlAttributes: new {@class = "control-label col-md-6"})
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(model => model.PostRefNo)
+                    @Html.ValidationMessageFor(model => model.PostRefNo, "", new {@class = "text-danger"})
+                </div>
+            </div>
+            <div class="row"></div>
+        </div>
+        <div class="col-md-3 ro1">
+            <div class="form-group">
+                @Html.LabelFor(model => model.BranchName, "Org. Name", htmlAttributes: new { @class = "control-label col-md-6" })
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(model => model.BranchName)
+                    @Html.ValidationMessageFor(model => model.BranchName, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.Process, htmlAttributes: new {@class = "control-label col-md-6"})
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(model => model.Process)
+                    @Html.ValidationMessageFor(model => model.Process, "", new {@class = "text-danger"})
+                </div>
+            </div>
+            <div class="row"></div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.EmpJobTitle, htmlAttributes: new {@class = "control-label col-md-6"})
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(model => model.EmpJobTitle)
+                    @Html.ValidationMessageFor(model => model.EmpJobTitle, "", new {@class = "text-danger"})
+                </div>
+            </div>
+            <div class="row"></div>
+        </div>
+
+        <div class="col-md-3 ro1">
+            <div class="form-group">
+                @Html.LabelFor(model => model.EmpOffice, htmlAttributes: new { @class = "control-label col-md-6" })
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(model => model.EmpOffice)
+                    @Html.ValidationMessageFor(model => model.EmpOffice, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.Bulding, htmlAttributes: new { @class = "control-label col-md-6" })
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(model => model.Bulding)
+                    @Html.ValidationMessageFor(model => model.Bulding, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+        </div>
+    </div>
+</div>
+
+
+
+
+
+
+

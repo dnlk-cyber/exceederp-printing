@@ -1,0 +1,270 @@
+﻿@using ExceedERP.Web.Models
+
+@(Html.Kendo().Grid<RegisterViewModel>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.UserName);
+        columns.Bound(c => c.Email);
+        columns.Bound(c => c.FirstName);
+        columns.Bound(c => c.MiddleName);
+        columns.Bound(c => c.LastName);
+        columns.Bound(c => c.PhoneNo);
+        columns.Bound(c => c.IsEnabled).Width(100).Title("Enable").ClientTemplate(
+         "<input type='checkbox' disabled = 'true' value='#= IsEnabled #' " +
+             "# if (IsEnabled) { #" +
+                 "checked='checked'" +
+             "# } #" +
+         "/>"
+     );
+        columns.Command(command =>
+        {
+            command.Edit();//command.Destroy();
+            command.Custom("Enable").Click("Enable");
+        }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+            toolbar.Excel();
+           // toolbar.Pdf();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("UserEdit").Window(x => x.Title("User AssetRegistration")))
+      .Pageable()
+      .Sortable(sortable => {
+          sortable.SortMode(GridSortMode.SingleColumn);
+          
+      })
+      .Events(events => events.Edit("onEdit").DetailExpand("onDetailExpand"))
+      .Filterable()
+      .Scrollable(height => height.Height(500))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.Id))
+          .Events(events => events.Sync("sync_handler"))
+          .Read(read => read.Action("ApplicationUsers_Read", "ApplicationUser"))
+          .Create(create => create.Action("ApplicationUsers_Create", "ApplicationUser"))
+          .Update(update => update.Action("ApplicationUsers_Update", "ApplicationUser"))
+          .Destroy(destroy => destroy.Action("ApplicationUsers_Destroy", "ApplicationUser"))
+        ).ClientDetailTemplateId("templategroup")
+      )
+<script id="templategroup" type="text/kendo-tmpl">
+    @Html.Kendo().TabStrip().Name("groupTab_#=Id#").SelectedIndex(0).Items(items =>
+    {
+        items.Add().Text("User Groups").Content(@<text>
+                                                   @UserGroups() 
+                                                 </text>);
+        items.Add().Text("UserRoles").Content(@<text>
+                                                  @(Html.Kendo().Grid<ExceedERP.Web.Models.RoleViewModel>()
+                                          .Name("userRole#=Id#")
+                                          .Columns(columns =>
+                                          {
+                                              columns.Bound(c => c.Name);
+                                              columns.Bound(c => c.Description);
+                                             
+                                          })
+                                          .ToolBar(toolbar =>
+                                          {
+                                               
+                                          })
+                                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                          .Selectable(selectable =>
+                                          {
+                                              selectable.Mode(GridSelectionMode.Single);
+                                              selectable.Type(GridSelectionType.Row);
+                                          })
+                                          .Sortable(sortable =>
+                                          {
+                                              sortable.SortMode(GridSortMode.SingleColumn);
+                                          })
+                                          .Filterable()
+                                          .Scrollable()
+                                          .DataSource(dataSource => dataSource
+                                              .Ajax()
+                                              .Model(model => model.Id(p => p.RoleViewModelId))
+                                              .Read(read => read.Action("UserRole_Read", "ApplicationRole" , new {id = "#=Id#"}))
+                                              
+                                          ).ToClientTemplate()
+                                          )
+
+                                               </text>);
+    }).ToClientTemplate()
+
+    
+</script>
+ @helper UserGroups()
+ {
+     @(Html.Kendo().Grid<GroupViewModel>()
+          .Name("userGroup_#=Id#")
+          .Columns(columns =>
+          {
+              columns.Bound(c => c.Name);
+              columns.Bound(c => c.Description);
+              columns.Bound(c => c.IsAllowed).ClientTemplate("<input type='checkbox' \\#= IsAllowed? checked='checked': checked='' \\# class='checkbox'  />");
+
+              
+          })
+             .ToolBar(toolbar => toolbar.Template(@<text>
+                                               @Html.Kendo().Button().Name("assigGroupbtn_#=Id#").Content("Save Change").Events(events => events.Click("sendGroups")).Enable(false).ToClientTemplate()
+                                                </text>))
+
+          .Events(events => events.DataBound("detaildatabound"))
+          .Sortable(sortable =>
+          {
+              sortable.SortMode(GridSortMode.SingleColumn);
+          })
+          .Filterable()
+          .Scrollable(height => height.Height(500))
+         
+        //  .Selectable(s => s.Mode(GridSelectionMode.Multiple))
+          .DataSource(dataSource => dataSource
+                                                                
+              .Ajax()
+              .Events(events => events.Sync("sync_handler"))
+              .Model(model => model.Id(p => p.Id))
+              .Read(read => read.Action("ApplicationUserGroups", "Groups", new { id = "#=Id#" }))
+              
+
+          ).ToClientTemplate()
+    )
+
+}
+
+<script>
+
+    function Enable(e) {
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        var id = dataItem.UserName;
+        $.ajax({
+
+            type: "GET",
+            data: id, //I obtained the id properly
+            url: '@Url.Action("Enable_Disable", "ApplicationUser")/' + id
+
+        });
+
+        $('#grid').data('kendoGrid').dataSource.read();
+        $('#grid').data('kendoGrid').refresh();
+        location.reload();
+    };
+</script>
+
+<script>
+    function sync_handler(e) {
+        this.read();
+
+    }
+    function onEdit(e) {
+
+        var insertionMode = e.model.isNew();
+        if (insertionMode) {
+             
+        }
+        else {
+            $(".forCreate").remove();
+            e.container.data("kendoWindow").title('Edit User');
+        }
+        
+    }
+    var gridName;
+    var masterId;
+    function onDetailExpand(e) {
+        var masterRow = e.masterRow;
+
+        var masterGrid = $("#grid").data("kendoGrid");
+
+        var masterDataItem = masterGrid.dataItem(masterRow);
+
+        masterId = masterDataItem.Id;
+        gridName = "#userGroup_" + masterDataItem.Id;
+        var subgrid = $(gridName).data("kendoGrid");
+
+        subgrid.table.on("click", ".checkbox", selectRow);
+
+    }
+
+    var checkedIds = [];
+    var items = {};
+    var buttonName; 
+    function selectRow() {
+        buttonName = "#assigGroupbtn_" + masterId;
+        var button = $(buttonName).data("kendoButton");
+        button.enable(true);
+        var checked = this.checked,
+            row = $(this).closest("tr"),
+            grid = $(gridName).data("kendoGrid"),
+            dataItem = grid.dataItem(row);
+        var item = dataItem;
+        checkedIds.push(dataItem.Id);
+        if (checked) {
+
+            row.addClass("k-state-selected");
+        } else {
+
+            row.removeClass("k-state-selected");
+        }
+    }
+     
+
+    function sendGroups(e) {
+        var dataItemssel;
+      
+        var items = {};
+         
+        var count = 0;
+        var grid = $(gridName).data("kendoGrid");
+
+        $("#grid").find("input:checked").each(function () {
+
+            var item = grid.dataItem($(this).closest('tr'));
+
+            items['result[' + count + '].Name'] = item.Name;
+            items['result[' + count + '].Id'] = item.Id;
+            items['result[' + count + '].IsAllowed'] = item.IsAllowed;
+            items['result[' + count + '].Description'] = item.Description;
+            count++;
+        });
+
+        items['result[' + count + '].Name'] = "masterGridParameter";
+        items['result[' + count + '].Id'] = masterId;
+        items['result[' + count + '].IsAllowed'] = false;
+        items['result[' + count + '].Description'] = "master Grid Description";
+
+      
+
+        buttonName = "#assigGroupbtn_" + masterId;
+        var button = $(buttonName).data("kendoButton");
+        button.enable(false);
+        $.ajax({
+            type: "POST",
+            data: items,
+            url: '@Url.Action("Groups","ApplicationUser")',
+            success: function (result) {
+                console.log(result);
+            }
+        });
+      
+       
+
+    }
+
+    function detaildatabound(e) {
+
+        var rows = e.sender.tbody.children();
+
+        for (var j = 0; j < rows.length; j++) {
+            var row = $(rows[j]);
+            var dataItem = e.sender.dataItem(row);
+
+            if (dataItem.IsAllowed) {
+                row.addClass("k-state-selected");
+
+            }
+
+
+        }
+
+
+    }
+
+
+</script>

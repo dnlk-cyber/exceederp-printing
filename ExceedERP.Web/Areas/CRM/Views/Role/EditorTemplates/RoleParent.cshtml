@@ -1,0 +1,9 @@
+﻿@using System.Collections
+@(Html.Kendo().DropDownList()
+.BindTo((IEnumerable)ViewData["RoleList"])
+    .OptionLabel("--Select Parent--")
+            .DataValueField("RoleID")
+            .DataTextField("Description")
+            .Name("RoleID")
+                .ValuePrimitive(true)
+)

@@ -1,0 +1,114 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.Finance.GL
+@(Html.Kendo().Grid<GLLedgerPosting>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.GLLedgerPostingID).Width(50).Title("#");
+          columns.Bound(c => c.AccountCode).Width(150);
+          columns.Bound(c => c.AccountDesc).Width(250);
+          columns.Bound(c => c.AccountType).Width(170);
+
+         
+
+      })
+     
+      .HtmlAttributes(new { style = "height: 600px;" })
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(5))
+
+      .Scrollable()
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Filterable()
+      .Groupable()
+      .ClientDetailTemplateId("templates")
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Events(ev => ev.Error("error_handler_one")
+              .Sync("sync_handler"))
+          .Model(model => model.Id(p => p.GLLedgerPostingID))
+          .Read(read => read.Action("GLLedgerPostings_Read", "GlLedgerPosting"))
+      ))
+
+<script id="templates" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+          .Name("tabStrip#=GLLedgerPostingID#")
+          .SelectedIndex(0)
+          .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+          .Items(items =>
+          {
+              
+              items.Add().Text("Details").Content(@<text>
+                        @(Html.Kendo().Grid<GLLedgerPostingLines>()
+                              .Name("GLLedgerPostingLines#=GLLedgerPostingID#")
+                              .Columns(columns =>
+                              {
+                                  columns.Bound(c => c.GLLedgerPostingLinesID).Title("Line No.").Width(50);
+                                  columns.Bound(c => c.JournalNumber).EditorTemplateName("Journal Number").Width(120);
+                                  columns.Bound(c => c.EffectiveDate).Width(90);
+                                  columns.ForeignKey(p => p.GlFiscalYearId, (IEnumerable)ViewData["Years"], "GlFiscalYearId", "Name").Width(100);
+                                  columns.ForeignKey(p => p.GLPeriodId, (IEnumerable)ViewData["Periods"], "GLPeriodId", "Name").Width(100);
+                                  columns.Bound(c => c.Debit).Width(80);
+                                  columns.Bound(c => c.Credit).Width(80);
+                                  columns.Bound(c => c.Balance).Width(80);
+                                  columns.Bound(c => c.Remark).Width(80);
+                                  columns.Bound(c => c.AdditionalDescription).Width(80);
+                              })
+                               .HtmlAttributes(new { style = "height: 430px;" })
+                              .Pageable(pageable => pageable
+                                  .Input(true)
+                                  .Numeric(false)
+                                  .Refresh(true)
+                                  .PageSizes(true)
+                                  .ButtonCount(10))
+                              .Scrollable()
+                              .Selectable(selectable =>
+                              {
+                                  selectable.Mode(GridSelectionMode.Single);
+                                  selectable.Type(GridSelectionType.Row);
+                              })
+                              .Sortable(sortable =>
+                              {
+                                  sortable.SortMode(GridSortMode.SingleColumn);
+                              })
+                              .Filterable()
+                              .DataSource(dataSource => dataSource
+                                  .Ajax()
+                                  .Model(
+                                      model =>
+                                      {
+                                          model.Id(p => p.GLLedgerPostingLinesID);
+                                          model.Field(p => p.OrgBranchName).Editable(false);
+                                          model.Field(p => p.CreatedBy).Editable(false);
+                                          model.Field(p => p.ModifiedBy).Editable(false);
+                                          model.Field(p => p.LastModified).Editable(false);
+                                          model.Field(p => p.DateCreated).Editable(false);
+                                      })
+                                  .Events(events => events
+                                      .Error("error_handler_one")
+                                      .Sync("sync_handler"))
+                                  .Read(read => read.Action("GLLedgerPostingLines_Read", "GlLedgerPostingLines", new {id = "#=GLLedgerPostingID#"}))
+                              )
+                              .ToClientTemplate())
+                    </text>);
+
+
+          })
+
+          .ToClientTemplate()
+          )
+
+</script>
+

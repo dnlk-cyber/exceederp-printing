@@ -1,0 +1,68 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@using Kendo.Mvc.UI
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>  Setting | General </legend>
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Production.ProductionSetting>()
+                          .Name("settingssGrid")
+                          .Columns(columns =>
+                          {
+                              columns.Bound(c => c.Type).EditorTemplateName("SettingTypes");
+                              columns.Bound(c => c.Value);
+                              columns.Bound(c => c.Remark);
+
+                              columns.Command(command =>
+                              {
+                                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                  command.Destroy().Text(Resources.ActionButton_Cancel);
+                              }).Width(200);
+
+                          })
+                          .ToolBar(toolbar =>
+                          {
+                              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                          })
+                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                          .Selectable(selectable =>
+                          {
+                              selectable.Mode(GridSelectionMode.Single);
+                              selectable.Type(GridSelectionType.Row);
+                          })
+                          .Scrollable(h => h.Height(700))
+                          .Sortable(sortable =>
+                          {
+                              sortable.SortMode(GridSortMode.SingleColumn);
+                          })
+                          .Filterable()
+                          .Pageable(pageable => pageable
+                              .Input(true)
+                              .Numeric(false)
+                              .Refresh(true)
+                              .PageSizes(true)
+                              .ButtonCount(5))
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+                              .Group(group => {
+                                  group.Add(f => f.Type);
+                              })
+                              .PageSize(20)
+                              .Events(events =>
+                              {
+                                  events.Error("error_handler(\"settingssGrid\")");
+                                  events.RequestStart("onRequestStart(\"settingssGrid\")");
+                                  events.RequestEnd("onRequestEnd(\"settingssGrid\")");
+                              })
+                              .Model(model =>
+                              {
+                                  model.Id(f => f.ProductionSettingId);
+                              })
+
+                              .Read(read => read.Action("Settings_Read", "Setting"))
+                              .Create(create => create.Action("Setting_Create", "Setting"))
+                              .Update(update => update.Action("Setting_Update", "Setting"))
+                              .Destroy(destroy => destroy.Action("Setting_Destroy", "Setting"))
+                          )
+)

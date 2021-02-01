@@ -1,0 +1,8 @@
+﻿@model ExceedERP.Core.Domain.FleetManagement.FleetMaintenance.ServiceSpare
+ 
+    @(Html.Kendo().DropDownListFor(model => model.ServiceName).Name("ServiceName")
+                                                .DataTextField("Name")
+                                                                            .DataValueField("Value").OptionLabel("Select")
+                                                                                    .DataSource(d => d.Read(r => r.Action("Oil_LubricantDDBind", "SparePart"))))
+
+ 

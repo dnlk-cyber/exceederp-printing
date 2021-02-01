@@ -1,0 +1,103 @@
+﻿@using ExceedERP.Core.Domain.CRM
+<legend>Campaign</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.Campaign>()
+          .Name("CampaignGrid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Description);
+          columns.Bound(c => c.AssignedTo);
+        //  columns.ForeignKey(c => c.TeamId, (System.Collections.IEnumerable)ViewData["TeamList"], "OrgStructureID", "Name").Width(100);
+          columns.ForeignKey(c => c.CartID, (System.Collections.IEnumerable)ViewData["CartList"], "CartID", "Description").Width(80);
+          columns.Bound(c => c.CompaignType).Width(120);
+          columns.Bound(c => c.Budget);
+          columns.Bound(c => c.ExpectedRevenu).Width(140);
+          //columns.Bound(c => c.Objective);
+          //columns.Bound(c => c.Status);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+          .ToolBar(toolbar =>
+          {
+              toolbar.Create();
+          })
+
+                  .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("CampaignEditor").Window(w =>
+                          {
+                              w.Title("Maintain Campain");
+                              w.Scrollable(false);
+                              w.Width(500);
+                          }))
+        .HtmlAttributes(new { style = "height: 520px;" })
+                                                      .Pageable(pageable => pageable
+                                                                        .Input(true)
+                                                                        .Numeric(false)
+                                                                        .Refresh(true)
+                                                                        .PageSizes(true)
+                                                                        .ButtonCount(5))
+
+                                                            .Scrollable()
+                                                            .Sortable()
+                                                            .Filterable()
+                                                            .Groupable()
+                                                            .Scrollable(h => h.Height(500))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+              .Model(model => model.Id(p => p.CampaignID)).Events(ev => ev
+                                                                        .Error("error_handler(\"CampaignGrid\")")
+                                                                        .RequestStart("onRequestStart(\"CampaignGrid\")")
+                                                                        .RequestEnd("onRequestEnd(\"CampaignGrid\")"))
+          .Read(read => read.Action("Campaigns_Read", "Campaign"))
+          .Create(create => create.Action("Campaigns_Create", "Campaign"))
+          .Update(update => update.Action("Campaigns_Update", "Campaign"))
+          .Destroy(destroy => destroy.Action("Campaigns_Destroy", "Campaign"))
+        ).ClientDetailTemplateId("template")
+      )
+      
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                    .Name("tabstrip_#=CampaignID#")
+    .SelectedIndex(0)
+    .Items(items =>
+                {
+
+
+                    /***********************************************Campaign Product**************************************************/
+                    items.Add().Text(" ").Content(
+                        @<text>
+                            <legend>Campaign Product</legend>
+                            @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.CampaignProduct>()
+              .Name("CampaignProductGrid_#=CampaignID#")
+      .Columns(columns =>
+      {
+          columns.ForeignKey(c => c.ProductID, (System.Collections.IEnumerable)ViewData["ProductList"], "ProductID", "Name").EditorTemplateName("ProductEditor").Width(150);
+          columns.Bound(cp => cp.Feedback).Width(500);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.CampaignProductID))
+                  .Events(ev => ev
+                                                                                .Error("error_handler(\"CampaignGrid\")")
+                                                                                .RequestStart("onRequestStart(\"CampaignGrid\")")
+                                                                                .RequestEnd("onRequestEnd(\"CampaignGrid\")"))
+                          .Read(read => read.Action("CampaignProducts_Read", "CampaignProduct", new { campaignID = "#=CampaignID#" }))
+                          .Create(create => create.Action("CampaignProducts_Create", "CampaignProduct", new { Id = "#=CampaignID#" }))
+          .Update(update => update.Action("CampaignProducts_Update", "CampaignProduct"))
+          .Destroy(destroy => destroy.Action("CampaignProducts_Destroy", "CampaignProduct"))
+       ).ToClientTemplate()
+
+                            )
+                        </text>
+
+         );
+                }).ToClientTemplate()
+
+    )
+</script>
+
+

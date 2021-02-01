@@ -1,0 +1,53 @@
+﻿@{
+
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend> Maintenance Type </legend>
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetMaintenance.MaintenanceType>()
+    .Name("grid")
+    .Columns(columns =>
+    {
+        columns.Bound(e => e.Name).Width(140);
+        columns.Bound(e => e.Remark).Width(140);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
+
+    })
+        .ToolBar(commands => commands.Create())
+       .Editable(editable =>
+         {
+             editable.Mode(GridEditMode.InLine);
+             editable.DisplayDeleteConfirmation("Are You Sure To Remove Operator Position");
+         })
+        .HtmlAttributes(new { style = "height: 520px;" })
+                          .Pageable(pageable => pageable
+                                            .Input(true)
+                                            .Numeric(false)
+                                            .Refresh(true)
+                                            .PageSizes(true)
+                                            .ButtonCount(5))
+
+                                .Scrollable()
+                                .Sortable()
+                                .Filterable()
+                                .Scrollable(h => h.Height(500))
+         .DataSource(dataSource => dataSource
+        .Ajax()
+        .ServerOperation(false)
+                       .Model(model =>
+              {
+                  model.Id(p => p.MaintenanceTypeId);
+
+                  model.Field(p => p.MaintenanceTypeId).Editable(false);
+
+              }).Events(ev => ev
+                                            .Error("error_handler(\"grid\")")
+                                            .RequestStart("onRequestStart(\"grid\")")
+                                            .RequestEnd("onRequestEnd(\"grid\")"))
+                        .Create(update => update.Action("MaintenanceType_Create", "MaintenanceType"))
+                        .Read(read => read.Action("MaintenanceType_Read", "MaintenanceType"))
+                        .Update(update => update.Action("MaintenanceType_Update", "MaintenanceType"))
+                        .Destroy(update => update.Action("MaintenanceType_Destroy", "MaintenanceType"))
+  )
+)
+

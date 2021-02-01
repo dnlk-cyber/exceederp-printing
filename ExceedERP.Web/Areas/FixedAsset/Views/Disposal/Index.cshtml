@@ -1,0 +1,32 @@
+﻿@using ExceedERP.Core.Domain.FixedAsset.Registrations
+
+@(Html.Kendo().Grid<Disposal>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.Description);
+        columns.Bound(c => c.OrgBranchName);
+        columns.Bound(c => c.DateCreated);
+        columns.Bound(c => c.LastModified);
+        columns.Bound(c => c.CreatedBy);
+        columns.Bound(c => c.ModifiedBy);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+            toolbar.Excel();
+           // toolbar.Pdf();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Pageable()
+      .Filterable()
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.DisposalId))
+          .Read(read => read.Action("Disposals_Read", "Disposal"))
+          .Create(create => create.Action("Disposals_Create", "Disposal"))
+          .Update(update => update.Action("Disposals_Update", "Disposal"))
+          .Destroy(destroy => destroy.Action("Disposals_Destroy", "Disposal"))
+      )
+)

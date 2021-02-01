@@ -1,0 +1,137 @@
+﻿@using ExceedERP.Core.Domain.HRM.Company
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>@Resources.Navigator_Company_BranchCostCenter</legend>
+@(Html.Kendo().Grid<BranchCostCenter>()
+          .Name("BranchCostCenter")
+      .Columns(columns =>
+      {
+          columns.ForeignKey(c => c.BranchId, (System.Collections.IEnumerable)ViewData["branches"], "BranchId", "Name");
+          columns.ForeignKey(c => c.OrgStructureId, (System.Collections.IEnumerable)ViewData["Orgs"], "OrgStructureId", "Name");
+          columns.ForeignKey(c => c.Values, (System.Collections.IEnumerable)ViewData["costCenter"], "Values", "Description");
+          columns.Bound(c => c.Name).Visible( false);
+        columns.Bound(c => c.Remark);
+        columns.Command(command =>
+        {
+            if (HttpContext.Current.User.IsInRole("HR_Company_User"))
+
+            {
+                command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                
+            }
+            if (HttpContext.Current.User.IsInRole("HR_Admin") || HttpContext.Current.User.IsInRole("HR_Company_Admin"))
+            {
+               
+                 command.Destroy().Text(Resources.ActionButton_Cancel);//
+            }
+        }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              if (HttpContext.Current.User.IsInRole("HR_Company_User"))
+
+                              {
+                                  toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                              }
+                              if (HttpContext.Current.User.IsInRole("HR_Admin") || HttpContext.Current.User.IsInRole("HR_Company_Admin"))
+                              {
+                                  toolbar.Excel().Text(Resources.ActionButton_ExportExcel).HtmlAttributes(new { @class = "btn btn-primary btn-xs pull-right" });
+                                  toolbar.Pdf().Text(Resources.ActionButton_ExportPDF).HtmlAttributes(new { @class = "btn btn-primary btn-xs pull-right" });
+                              }
+      }).Events(x=> x.Edit( "change"))
+          .Excel(excel => excel
+                                                            .FileName(Resources.Navigator_Company_BranchCostCenter + ".xlsx")
+                                        .Filterable(true)
+                                            .AllPages(true)
+                                                                    .ProxyURL(Url.Action("Excel_Export_Save", "BranchCostCenter"))
+                                    )
+                                         .Pdf(pdf => pdf
+                                        .AllPages()
+                                                                .FileName(Resources.Navigator_Company_BranchCostCenter + ".pdf")
+                                                                    .ProxyURL(Url.Action("Pdf_Export_Save", "BranchCostCenter"))
+                                    )
+                  .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("BranchCostCenter").Window(window => { window.Title(Resources.Navigator_Company_BranchCostCenter); window.Scrollable(false); }))
+           .Selectable(selectable =>
+                 {
+                     selectable.Mode(GridSelectionMode.Single);
+                     selectable.Type(GridSelectionType.Row);
+                 })
+                     .Scrollable(h => h.Height(500))
+                         .Groupable()
+                                  .Sortable(sortable =>
+                                  {
+                                      sortable.SortMode(GridSortMode.SingleColumn);
+                                  })
+                      .Filterable()
+                         .Pageable(pageable => pageable
+                                                    .Input(true)
+                                                    .Numeric(false)
+                                                    .Refresh(true)
+                                                    .PageSizes(true)
+                                                    .ButtonCount(5))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+        
+              .Events(events =>
+                                                  {
+                                                      events.Error("error_handler(\"BranchCostCenter\")");
+                                                      events.RequestStart("onRequestStart(\"BranchCostCenter\")");
+                                                      events.RequestEnd("onRequestEnd(\"BranchCostCenter\")");
+                                                  })
+                     
+
+          .Model(model => model.Id(p => p.BranchCostCenterId))
+          .Read(read => read.Action("BranchCostCenter_Read", "BranchCostCenter"))
+          .Create(create => create.Action("BranchCostCenter_Create", "BranchCostCenter"))
+          .Update(update => update.Action("BranchCostCenter_Update", "BranchCostCenter"))
+          .Destroy(destroy => destroy.Action("BranchCostCenter_Destroy", "BranchCostCenter"))
+      )
+)
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 800px;
+    }
+</style>
+<script>
+    //function error_handler(e) {
+    //    if (e.errors) {
+    //        var message = "Errors:\n";
+    //        $.each(e.errors, function(key, value) {
+    //            if ('errors' in value) {
+    //                $.each(value.errors, function() {
+    //                    message += this + "\n";
+    //                });
+    //            }
+    //        });
+    //        alert(message);
+
+    //    }
+
+    //}
+
+    function change(e) {
+       
+        var id = e.model.Name;
+        var key=e.model.OrgStructureId
+        var dropdown = $("#dropdown").data("kendoDropDownList");
+        var $dropdownRootElem = $(dropdown.element).closest("span.k-dropdown");
+        $dropdownRootElem.find("span.k-input").text(id);
+        $dropdownRootElem.find("span.k-input").val(key);
+        $("#OrgStructureId").val(key);
+        $("#OrgStructureId").trigger ("change");
+      
+    }
+    function sync_handler(e) {
+        this.read();
+
+    }
+</script>
+<script>
+  
+    function filterCategories() {
+        return {
+            BranchId: $("#BranchId").val()
+        };
+    }
+</script>

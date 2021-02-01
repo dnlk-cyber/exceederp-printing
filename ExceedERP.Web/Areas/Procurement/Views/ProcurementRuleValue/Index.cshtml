@@ -1,0 +1,46 @@
+﻿<legend>Business Rule Values</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Global.GlobalRuleValue>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        
+          columns.Bound(c => c.Key).EditorTemplateName("BusinessRuleSelector").Width(140);
+          columns.Bound(c => c.Value).Width(140);
+          columns.Command(command => { command.Edit();}).Width(180);
+      })
+      //.ToolBar(toolbar => {
+      //      toolbar.Create();
+      //})
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .HtmlAttributes(new { style = "height: 550px;" })
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(20))
+      .Scrollable()
+      .Sortable()
+      .Filterable()
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Groupable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Events(ev => ev
+              .Error("error_handler(\"grid\")")
+              .RequestStart("onRequestStart(\"grid\")")
+              .RequestEnd("onRequestEnd(\"grid\")"))
+          .Model(model => model.Id(p => p.GlobalRuleValueId))
+          .Read(read => read.Action("GlobalRuleValues_Read", "ProcurementRuleValue"))
+          .Create(create => create.Action("GlobalRuleValues_Create", "ProcurementRuleValue"))
+          .Update(update => update.Action("GlobalRuleValues_Update", "ProcurementRuleValue"))
+          .Destroy(destroy => destroy.Action("GlobalRuleValues_Destroy", "ProcurementRuleValue"))
+      ))

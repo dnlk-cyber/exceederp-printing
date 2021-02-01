@@ -1,0 +1,10 @@
+﻿@using ExceedERP.Core.Domain.Finance.AP
+@using ExceedERP.Helpers.Common
+
+@(Html.Kendo().DropDownListFor(m => m)
+        .DataTextField("Text")
+            .DataValueField("Value")
+            .ValuePrimitive(true)
+            .BindTo(EnumExtension.EnumToSelectList(typeof(AdvanceType)))
+ 
+)

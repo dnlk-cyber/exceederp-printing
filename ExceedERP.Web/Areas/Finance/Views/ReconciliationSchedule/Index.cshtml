@@ -1,0 +1,346 @@
+﻿@using ExceedERP.Core.Domain.Finance.Bank
+<legend>Reconciliation Schedule</legend>
+@(Html.Kendo().Grid<ReconciliationSchedule>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.BankAccount).Width("150").EditorTemplateName("BankAccounts");
+          columns.Bound(c => c.StatementNum).Width("150");
+          columns.Bound(c => c.Date).Width("100");
+          columns.Bound(c => c.BankEndingBalance).Width("100");
+
+          columns.Bound(c => c.OrgBranchName).Width(100).Hidden(true);
+          columns.Bound(c => c.DateCreated).Width(150).Format("{0:dd/MM/yyyy}").Hidden(true);
+          columns.Bound(c => c.LastModified).Width(150).Format("{0:dd/MM/yyyy}").Hidden(true);
+          columns.Bound(c => c.CreatedBy).Width(100).Hidden(true);
+          columns.Bound(c => c.ModifiedBy).Width(100).Hidden(true);
+          columns.Command(command =>
+          {
+              command.Edit(); 
+              //command.Destroy();
+              command.Custom("✔ Reconcile").Click("Reconcile");
+
+          }).Width(280);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+                              //toolbar.Excel();
+                              //// toolbar.Pdf();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .HtmlAttributes(new { style = "height: 550px;" })
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(5))
+
+      .Scrollable()
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Filterable()
+      .Groupable().
+      Events(ev => ev.DetailExpand("detailExpand"))
+      .Events(x => x.DataBound("onDataBoundMaster"))
+      .ClientDetailTemplateId("serviceChargeTemplates")        
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(
+              model =>
+              {
+                  model.Id(p => p.ReconciliationScheduleId);
+                  model.Field(p => p.OrgBranchName).Editable(false);
+                  model.Field(p => p.CreatedBy).Editable(false);
+                  model.Field(p => p.ModifiedBy).Editable(false);
+                  model.Field(p => p.LastModified).Editable(false);
+                  model.Field(p => p.DateCreated).Editable(false);
+
+              })
+          .Events(ev => ev
+              .Error("error_handler(\"grid\")")
+              .RequestStart("onRequestStart(\"grid\")")
+              .RequestEnd("onRequestEnd(\"grid\")"))
+          .Read(read => read.Action("ReconciliationSchedules_Read", "ReconciliationSchedule"))
+          .Create(create => create.Action("ReconciliationSchedules_Create", "ReconciliationSchedule"))
+          .Update(update => update.Action("ReconciliationSchedules_Update", "ReconciliationSchedule"))
+          .Destroy(destroy => destroy.Action("ReconciliationSchedules_Destroy", "ReconciliationSchedule"))
+      ))
+
+
+
+
+
+
+
+<script id="serviceChargeTemplates" type="text/kendo-tmpl">
+@(Html.Kendo().TabStrip()
+        .Name("tabStrip#=ReconciliationScheduleId#")
+        .SelectedIndex(0)
+        .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+        .Items(items =>
+        {
+            items.Add().Text("Detail").Content(@<text>
+
+            <div>
+                <p><b>Record Status :#= Status #</b></p>
+
+                # if (!IsOnlineApproved&&!IsSendForApproval)
+                {#
+                <a onclick='return sendForApproval("#=ReconciliationScheduleId#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                <br />
+                # } #
+
+                @*# if (IsOnlineApproved)
+                {#
+                <a target="new" href='@Url.Action("ApPayment", "FinancePrint")/#=ReconciliationScheduleId#'><i class="fa fa-print fa-2x"></i></a>
+                <br />
+                # } #*@
+
+                # if (IsOnlineApproved && !IsOnlineTransferred )
+                {#
+                <a onclick='return transferToGl("#=ReconciliationScheduleId#")' href=' \#' title="Transfer to GL"><i class="fa fa-paper-plane fa-2x"></i></a>
+                # } #
+
+
+            </div>
+            <div>
+                <hr>
+                <dl class="dl-horizontal">
+
+
+                    <dt>
+                        Created On
+                    </dt>
+                    <dd>
+                        #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+
+                    </dd>
+                    <dt>
+                        Created By
+                    </dt>
+                    <dd>
+                        #= CreatedBy #
+                    </dd>
+                    <dt>
+                        Modified By
+                    </dt>
+                    <dd>
+                        #= ModifiedBy #
+                    </dd>
+                    <dt>
+                        Modified Date
+                    </dt>
+                    <dd>
+                        #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+                    </dd>
+                </dl>
+            </div>
+            <hr>
+
+            # if (IsOnlineApproved&&!IsVoid&&!IsOnlineTransferred)
+            {#
+            @if (HttpContext.Current.User.IsInRole("Bank_Reconciliation_Void"))
+                        {
+                <a onclick='return voidRecord("#=ReconciliationScheduleId#")' href='\#' title='Void Record'><i class='fa  fa-bolt fa-2x' style='color:red'></i></a>
+                        }
+            # } #
+
+        </text>);
+                           
+                                    
+
+items.Add().Text("Distribution").Content(
+                                    @<text>
+                                        @(Html.Kendo().Grid<ReconciliationBankServiceChargeDistribution>()
+                                                        .Name("ReconciliationBankServiceChargeDistribution#=ReconciliationScheduleId#")
+                                                        .Columns(columns =>
+                                                        {
+                                                            columns.Bound(c => c.ReconciliationBankServiceChargeDistributionId).Hidden(true);
+                                                             columns.Bound(c => c.AccountCode).EditorTemplateName("AccountCode").Width(300);
+                                                            columns.Bound(c => c.AccountDesc).Title("Account Description").Width(300);
+                                                            columns.Bound(c => c.Debit).Width(150).ClientFooterTemplate("Total Debit: \\#=sum\\# ");
+                                                            columns.Bound(c => c.Credit).Width(150).ClientFooterTemplate("Total Credit: \\#=sum\\# ");
+
+                                                            columns.Command(command =>
+                                                            {
+
+                                                                command.Edit();
+                                                                command.Destroy();
+
+                                                            }).Width(180).ClientFooterTemplate("Difference: \\#=Debit.sum-Credit.sum\\# ");
+
+                                                        })
+                                                        .ToolBar(toolbar =>
+                                                        {
+                                                            toolbar.Create();
+                                                        })
+                                                        .Editable(editable => editable.Mode(GridEditMode.InLine))
+
+                                                        .Sortable(sortable =>
+                                                        {
+                                                              sortable.SortMode(GridSortMode.SingleColumn);
+                                                 })
+                                                        .Filterable()
+                                                        .Scrollable()
+                                                        .DataSource(dataSource => dataSource
+                                                            .Ajax()
+                                                            .Aggregates(aggregates =>
+                                                            {
+                                                                aggregates.Add(p => p.Debit).Sum();
+                                                                aggregates.Add(p => p.Credit).Sum();
+                                                            })
+                                        .Model(
+                                            model =>
+                                    {
+                                                        model.Id(p => p.ReconciliationBankServiceChargeDistributionId);
+                                                        model.Field(p => p.AccountDesc).Editable(false);
+                                                        model.Field(p => p.OrgBranchName).Editable(false);
+                                                        model.Field(p => p.CreatedBy).Editable(false);
+                                                        model.Field(p => p.ModifiedBy).Editable(false);
+                                                        model.Field(p => p.LastModified).Editable(false);
+                                                        model.Field(p => p.DateCreated).Editable(false);
+                                                    })
+                                        .Events(ev => ev
+                                                                .Error("error_handler(\"ReconciliationBankServiceChargeDistribution#=ReconciliationScheduleId#\")")
+                                                                .RequestStart("onRequestStart(\"ReconciliationBankServiceChargeDistribution#=ReconciliationScheduleId#\")")
+                                                                .RequestEnd("onRequestEnd(\"ReconciliationBankServiceChargeDistribution#=ReconciliationScheduleId#\")"))
+                                                            .Read(read => read.Action("ReconciliationBankServiceChargeDistributions_Read", "ReconciliationBankServiceChargeDistribution", new { id = "#=ReconciliationScheduleId#" }))
+                                                            .Create(create => create.Action("ReconciliationBankServiceChargeDistributions_Create", "ReconciliationBankServiceChargeDistribution", new { id = "#=ReconciliationScheduleId#" }))
+                                                            .Update(update => update.Action("ReconciliationBankServiceChargeDistributions_Update", "ReconciliationBankServiceChargeDistribution", new { id = "#=ReconciliationScheduleId#" }))
+                                                            .Destroy(destroy => destroy.Action("ReconciliationBankServiceChargeDistributions_Destroy", "ReconciliationBankServiceChargeDistribution"))
+                                                        )
+                                                        .ToClientTemplate())
+
+                                    </text>);
+
+                                        items.Add().Text("Validation").Content(
+                        @<text>
+                            @(Html.Kendo().Grid<ReconciliationBankServiceChargeValidation>()
+                                                        .Name("ReconciliationBankServiceChargeValidation#=ReconciliationScheduleId#")
+                                                        .Columns(columns =>
+                                                        {
+                                                            columns.Bound(c => c.ReconciliationBankServiceChargeValidationId).Hidden(true);
+                                                            columns.Bound(c => c.Status).EditorTemplateName("ApprovalStatus").Width(150);
+                                                            columns.Bound(c => c.Remark).Width(200);
+
+                                                            columns.Bound(c => c.DateCreated).Width(200).Title("Time").Format("{0:dd/MM/yyyy}");
+                                                            columns.Bound(c => c.LastModified).Hidden(true);
+                                                            columns.Bound(c => c.CreatedBy).Width(200).Title("User");
+                                                            columns.Bound(c => c.ModifiedBy).Hidden(true);
+                                                            columns.Command(command =>
+                                                            {
+                                                                command.Edit();
+
+                                                            });
+
+                                                        })
+                                                        .ToolBar(toolbar =>
+                                                        {
+                                                            toolbar.Create();
+                                                        })
+                                                        .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                        .Events(x => x.DataBound("onDataBoundFisrtValidation"))
+
+                                                        .Sortable(sortable =>
+                                                        {
+                                                            sortable.SortMode(GridSortMode.SingleColumn);
+                                                        })
+                                                        .Filterable()
+                                                        .Scrollable()
+                                                        .DataSource(dataSource => dataSource
+                                                            .Ajax()
+                                                            .Model(
+                                                                model =>
+                                                                {
+                                                                    model.Id(p => p.ReconciliationBankServiceChargeValidationId);
+                                                                    model.Field(p => p.OrgBranchName).Editable(false);
+                                                                    model.Field(p => p.CreatedBy).Editable(false);
+                                                                    model.Field(p => p.ModifiedBy).Editable(false);
+                                                                    model.Field(p => p.LastModified).Editable(false);
+                                                                    model.Field(p => p.DateCreated).Editable(false);
+                                                                })
+                                                            .Events(ev => ev
+                                                                .Error("error_handler(\"ReconciliationBankServiceChargeValidation#=ReconciliationScheduleId#\")")
+                                                                .RequestStart("onRequestStart(\"ReconciliationBankServiceChargeValidation#=ReconciliationScheduleId#\")")
+                                                                .RequestEnd("onRequestEnd(\"ReconciliationBankServiceChargeValidation#=ReconciliationScheduleId#\")"))
+                                                            .Read(read => read.Action("ReconciliationBankServiceChargeValidations_Read", "ReconciliationBankServiceChargeValidation", new { id = "#=ReconciliationScheduleId#" }))
+                                                            .Create(create => create.Action("ReconciliationBankServiceChargeValidations_Create", "ReconciliationBankServiceChargeValidation", new { id = "#=ReconciliationScheduleId#" }))
+                                                            .Update(update => update.Action("ReconciliationBankServiceChargeValidations_Update", "ReconciliationBankServiceChargeValidation", new { id = "#=ReconciliationScheduleId#" }))
+                                                            .Destroy(destroy => destroy.Action("ReconciliationBankServiceChargeValidations_Destroy", "ReconciliationBankServiceChargeValidation"))
+                                                        )
+                                                        .ToClientTemplate())
+
+                        </text>);
+
+                                               
+                                                    })
+
+                                                    .ToClientTemplate()
+)
+
+</script>
+
+
+<script>
+
+    function voidRecord(id) {
+        var recordStatus = "";
+        var conf = confirm("Are you sure you want to void this record number: " + id + " ?");
+        if (conf === true) {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("Void", "ReconciliationSchedule", new {area = "Finance"})',
+                data: { id: id },
+                success: function (result) {
+                    // toastr.warnning(result.Message);
+                    alert(result.Message);
+                    recordStatus = result.Status;
+                    location.reload(true);
+                }, //end succ
+                error: function (result) {
+                    alert(result);
+                }
+            });
+        }
+    }
+
+    function sendForApproval(id) {
+        var recordStatus = "";
+     
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("SendForApproval", "ReconciliationSchedule", new { area = "Finance" })',
+            data: { id: id },
+            success: function (result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                recordStatus = result.Status;
+                location.reload(true);
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+
+
+   
+</script>
+<script>
+    function Reconcile(e) {
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        var id = dataItem.ReconciliationScheduleId;
+        var url = '@Url.Action("Reconcile", "ReconciliationSchedule")/' + id;
+        location.href = url;
+    };
+
+    
+</script>

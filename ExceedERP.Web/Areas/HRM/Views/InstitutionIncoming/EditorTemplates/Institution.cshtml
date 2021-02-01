@@ -1,0 +1,16 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@using ExceedERP.Core.Domain.HRM
+@(Html.Kendo().DropDownListFor(m => m)
+    .OptionLabel(Resources.Select)
+                     .DataTextField("InstitutionName")
+                            .DataValueField("InstitutionTypeId")
+                              .DataSource(dataSource =>
+                  {
+                      dataSource.Read(read => read.Action("GetInstitutionType", "HRMDataProvider", new { area = "HRM" }))
+                          .ServerFiltering(false);
+                  })
+                           .ValuePrimitive(true)))
+                      
+                         .ValuePrimitive(true)
+)

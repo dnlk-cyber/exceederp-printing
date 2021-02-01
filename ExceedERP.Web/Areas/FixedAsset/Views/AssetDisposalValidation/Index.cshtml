@@ -1,0 +1,27 @@
+﻿@using ExceedERP.Core.Domain.FixedAsset.Registrations
+
+@(Html.Kendo().Grid<AssetDisposalValidation>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Status);
+          columns.Bound(c => c.Remark);
+          columns.Bound(c => c.DateCreated);
+          columns.Bound(c => c.LastModified);
+          columns.Bound(c => c.CreatedBy);
+          columns.Bound(c => c.ModifiedBy);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.AssetDisposalValidationId))
+          .Read(read => read.Action("AssetDisposalValidation_Read", "AssetDisposalValidation"))
+          .Create(create => create.Action("AssetDisposalValidation_Create", "AssetDisposalValidation"))
+          .Update(update => update.Action("AssetDisposalValidation_Update", "AssetDisposalValidation"))
+          .Destroy(destroy => destroy.Action("AssetDisposalValidation_Destroy", "AssetDisposalValidation"))
+      ))

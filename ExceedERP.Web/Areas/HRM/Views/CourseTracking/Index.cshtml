@@ -1,0 +1,374 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.HRM.TrainingEducation
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend >@Resources.NavigatorTraining_CourseTracking</legend>
+@(Html.Kendo().Grid<CourseTracking>()
+          .Name("CourseTrackingGrid")
+      .Columns(columns =>
+      {
+          columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["PeriodList"], "GlFiscalYearId", "Name").EditorTemplateName("GLFPeriod").Width(100);
+          //columns.ForeignKey(c => c.TrainingPlanId, (IEnumerable)ViewData["plan"], "TrainingPlanId", "NoofTrainee").EditorTemplateName("TrainingPlan").Width(120);
+          columns.Bound(x=>x.NoOfTrainee).Width(120);
+          columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["CourseList"], "LookupId", "Description").EditorTemplateName("Course").Width(120);
+          columns.Bound(c => c.FromAmharic).Width(80);
+          columns.Bound(c => c.ToAmharic).Width(80);
+          columns.Bound(c => c.Cost).Width(70);
+          columns.Bound(c => c.TrainingType).EditorTemplateName("Enum").Width(110);
+          columns.Bound(c => c.TrainingTerm).EditorTemplateName("Enum").Width(120);
+          columns.Bound(c => c.TrainingLocation).EditorTemplateName("Enum").Width(120);
+          columns.ForeignKey(c => c.MainCompanyId, (IEnumerable)ViewData["ProviderList"], "MainCompanyId", "TradeName").EditorTemplateName("TrainingProvider").Width(120);
+          //columns.Bound(c => c.Remark);
+          columns.Command(command =>
+          {
+              if (HttpContext.Current.User.IsInRole("HR_Training_User"))
+              {
+                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+              }
+              if (HttpContext.Current.User.IsInRole("HR_Admin"))
+              {
+                  command.Destroy().Text(Resources.ActionButton_Cancel);
+              }
+          }).Width(200);
+      })
+      .ToolBar(toolbar =>
+      {
+      toolbar.Template(@<text>
+                               <div class="toolbar">
+                                   <label class="category-label">@Resources.HR_RecruitmentManagment_Vacancy_BranchId</label>
+                                   @(Html.Kendo().ComboBox()
+                                         .Placeholder(Resources.HR_RecruitmentManagment_Vacancy_BranchId)
+                                         .Name("OrgBranchName")
+                                         .BindTo((IEnumerable) ViewData["Branches"])
+                                         .DataTextField("Name")
+                                         .DataValueField("BranchId")
+                                         .Events(x => x.Change("Branch"))
+                                         .AutoBind(false)
+
+                                         .HtmlAttributes(new {style = "width: 200px;"})
+
+                                         )
+
+                                   <br/>
+                                   <br/>
+                               </div>
+@if (HttpContext.Current.User.IsInRole("HR_Training_User"))
+{
+    @item.CreateButton(Resources.ActionButton_AddNewRecord)
+}
+        </text>);
+           
+      })
+                  .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("CourseTracking").Window(window => { window.Title(Resources.NavigatorTraining_CourseTracking); window.Scrollable(false); }))
+         .Scrollable(h => h.Height(500))
+             .Groupable()
+                      .Sortable(sortable =>
+                      {
+                          sortable.SortMode(GridSortMode.SingleColumn);
+                      })
+          .Filterable()
+                 .Events(e =>
+                 {
+                     e.Save("GetDate");
+
+                     e.Edit("GetDate");
+                 })
+             .Pageable(pageable => pageable
+                                        .Input(true)
+                                        .Numeric(false)
+                                        .Refresh(true)
+                                        .PageSizes(true)
+                                        .ButtonCount(5))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+                    .Events(events =>
+                                                             {
+                                                                 events.Error("error_handler(\"CourseTrackingGrid\")");
+                                                                 events.RequestStart("onRequestStart(\"CourseTrackingGrid\")");
+                                                                 events.RequestEnd("onRequestEnd(\"CourseTrackingGrid\")");
+                                                             })
+                                               
+          .Model(model => model.Id(p => p.CourseTrackingId))
+          .Read(read => read.Action("CourseTrackings_Read", "CourseTracking"))
+          .Create(create => create.Action("CourseTrackings_Create", "CourseTracking"))
+          .Update(update => update.Action("CourseTrackings_Update", "CourseTracking"))
+          .Destroy(destroy => destroy.Action("CourseTrackings_Destroy", "CourseTracking"))
+              ).ClientDetailTemplateId("template")
+)
+
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                                .Name("tabstrip_#=CourseTrackingId#")
+          .SelectedIndex(0)
+          .Items(items =>
+          {
+
+              items.Add().Text(Resources.NavigatorTraining_Trainee).Content(
+                @<text>
+                    
+                  @(Html.Kendo().Grid<Trainee>()
+                      .Name("Traineegrid_#=CourseTrackingId#")
+      .Columns(columns =>
+      {
+
+          columns.ForeignKey(c => c.EmployeeId,(IEnumerable)ViewData["EmployeeList"], "PersonId", "FullName").EditorTemplateName("Employee").Width(200);
+          // columns.Bound(c => c.IsCompleteTraining).Width(200).ClientTemplate("<input type='checkbox' disabled = 'true' \\#=IsCompleteTraining? checked='checked' :'' \\# />").Width(120);
+          columns.ForeignKey(c => c.EducationLevel, (IEnumerable)ViewData["EducationLevel"], "LookupId", "Description").EditorTemplateName("EduLevel").Width(200);
+          columns.Bound(c => c.IsCompleteTraining).Width(80).ClientTemplate(
+            "<input type='checkbox' disabled = 'true' value='\\#= IsCompleteTraining\\#' " +
+            "\\# if (IsCompleteTraining) { \\#" +
+            "checked='checked'" +
+            "\\# } \\#" +
+            "/>"
+            );
+          columns.Bound(c => c.Remark).Width( 200);
+          columns.Command(command =>
+          {
+              if (HttpContext.Current.User.IsInRole("HR_Training_User"))
+              {
+                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+              }
+              if (HttpContext.Current.User.IsInRole("HR_Admin"))
+              {
+                  command.Destroy().Text(Resources.ActionButton_Cancel);
+              }
+          }).Width(200);
+      })
+      .ToolBar(toolbar =>
+      {
+          if (HttpContext.Current.User.IsInRole("HR_Training_User"))
+          {
+              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+          }
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable(h=> h.Height( 500))
+              .ClientDetailTemplateId("outcometemplate")
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          //.Events().Update()
+                  .Events(events =>
+                  {
+                      events.Error("error_handler(\"Traineegrid_#=CourseTrackingId#\")");
+                      events.RequestStart("onRequestStart(\"Traineegrid_#=CourseTrackingId#\")");
+                      events.RequestEnd("onRequestEnd(\"Traineegrid_#=CourseTrackingId#\")");
+                  })
+
+          .Model(model => model.Id(p => p.TraineeId))
+                  .Read(read => read.Action("Trainee_Read", "Trainee", new { id ="#=CourseTrackingId#" }))
+                  .Create(create => create.Action("Trainee_Create", "Trainee", new { id ="#=CourseTrackingId#" }))
+          .Update(update => update.Action("Trainee_Update", "Trainee"))
+          .Destroy(destroy => destroy.Action("Trainee_Destroy", "Trainee"))
+      ).ToClientTemplate()
+                )
+
+                </text>
+                  );
+             
+          }).ToClientTemplate())
+</script>
+
+
+<script id="outcometemplate" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                                        .Name("tabstrip_#=TraineeId#")
+          .SelectedIndex(0)
+          .Items(items =>
+          {
+
+              items.Add().Text(Resources.NavigatorTraining_TrainingStatus).Content(
+                @<text>
+
+                    @(Html.Kendo().Grid<TrainingStatus>()
+                      .Name("TrainingStatus#=TraineeId#")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.TrainingOutCome);
+          columns.Bound(c => c.Remark);
+          columns.Command(command =>
+          {
+              if (HttpContext.Current.User.IsInRole("HR_Training_User"))
+              {
+                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+              }
+              if (HttpContext.Current.User.IsInRole("HR_Admin"))
+              {
+                  command.Destroy().Text(Resources.ActionButton_Cancel);
+              }
+          }).Width(200);
+      })
+      .ToolBar(toolbar =>
+      {
+          if (HttpContext.Current.User.IsInRole("HR_Training_User"))
+          {
+              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+          }
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable(h=> h.Height( 500))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+                   .Events(events =>
+                                                                             {
+                                                                                 events.Error("error_handler(\"TrainingStatus#=TraineeId#\")");
+                                                                                 events.RequestStart("onRequestStart(\"TrainingStatus#=TraineeId#\")");
+                                                                                 events.RequestEnd("onRequestEnd(\"TrainingStatus#=TraineeId#\")");
+                                                                             })
+                                   
+
+          .Model(model => model.Id(p => p.TrainingStatusId))
+
+                  .Read(read => read.Action("TrainingStatuses_Read", "TrainingOutCome", new { id = "#=TraineeId#" }))
+                  .Create(create => create.Action("TrainingStatuses_Create", "TrainingOutCome", new { id = "#=TraineeId#" }))
+          .Update(update => update.Action("TrainingStatuses_Update", "TrainingOutCome"))
+          .Destroy(destroy => destroy.Action("TrainingStatuses_Destroy", "TrainingOutCome"))
+      ).ToClientTemplate() 
+                    )
+
+                </text>
+                  );
+
+          }).ToClientTemplate())
+</script>
+<style>
+    .dropdown-header {
+        border-width: 0 0 1px 0;
+        text-transform: uppercase;
+    }
+
+        .dropdown-header > span {
+            display: inline-block;
+            padding: 10px;
+        }
+
+            .dropdown-header > span:first-child {
+                width: 50px;
+            }
+
+    #customers-list .k-item {
+        line-height: 1em;
+        min-width: 300px;
+    }
+
+    /* Material Theme padding adjustment*/
+
+    .k-material #customers-list .k-item,
+    .k-material #customers-list .k-item.k-state-hover,
+    .k-materialblack #customers-list .k-item,
+    .k-materialblack #customers-list .k-item.k-state-hover {
+        padding-left: 5px;
+        border-left: 0;
+    }
+
+    #customers-list .k-item > span {
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+        display: inline-block;
+        vertical-align: top;
+        margin: 20px 10px 10px 5px;
+    }
+
+        #customers-list .k-item > span:first-child {
+            -moz-box-shadow: inset 0 0 30px rgba(0, 0, 0, .3);
+            -webkit-box-shadow: inset 0 0 30px rgba(0, 0, 0, .3);
+            box-shadow: inset 0 0 30px rgba(0, 0, 0, .3);
+            margin: 10px;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background-size: 100%;
+            background-repeat: no-repeat;
+        }
+
+    #customers-list h3 {
+        font-size: 1.2em;
+        font-weight: normal;
+        margin: 0 0 1px 0;
+        padding: 0;
+    }
+
+    #customers-list p {
+        margin: 0;
+        padding: 0;
+        font-size: .8em;
+    }
+</style>
+
+
+<style>
+    div.k-edit-form-container {
+        width: 700px;
+    }
+
+      
+</style>
+<script>
+    //function error_handler(e) {
+    //    if (e.errors) {
+    //        var message = "Errors:\n";
+    //        $.each(e.errors, function(key, value) {
+    //            if ('errors' in value) {
+    //                $.each(value.errors, function() {
+    //                    message += this + "\n";
+    //                });
+    //            }
+    //        });
+    //        alert(message);
+
+    //    }
+
+    //}
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+</script>
+
+<script>
+    function GetDate() {
+
+        var x = AssignDate();
+        var y = x;
+        $("#FromAmharic").trigger("change");
+        $("#ToAmharic").trigger("change");
+        for (var o in y) {
+            $.ajax({
+                contentType: "application/json; charset=utf-8",
+                url: '@Url.Action("SetDate", "CourseTracking")',
+                data: { name: y[o].id, value: y[o].date },
+                type: 'GET',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                }
+
+            });
+        }
+    }
+
+</script>
+<script>
+    function AssignDate() {
+        var list = AssignDates();
+        return list;
+    }
+
+</script>
+<script>
+    function Branch() {
+
+
+        var value = this.value(),
+            grid = $("#CourseTrackingGrid").data("kendoGrid");
+
+        if (value) {
+            grid.dataSource.filter({ field: "OrgBranchName", operator: "eq", value: parseInt(value) });
+        } else {
+            grid.dataSource.filter({});
+        }
+    }
+</script>

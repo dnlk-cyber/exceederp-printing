@@ -1,0 +1,771 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.Inventory
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<legend>Good Receive</legend>
+@(Html.Kendo().Grid<GoodReceive>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.GoodReceiveId).Title("Receive No.").Width(120).ClientTemplate("#=appendZeros(GoodReceiveId)#");
+          columns.ForeignKey(p => p.ReceiveTypeId, (IEnumerable)ViewData["ReeceiveType"], "ReceiveTypeId", "Name").EditorTemplateName("ReceiveTypeSelector").Width(150);
+          columns.Bound(p => p.ReceiveRef).Width(150);//until data entry.EditorTemplateName("ReceiveReferenceSelector");
+          columns.Bound(p => p.Reference).Width(130);
+          columns.ForeignKey(p => p.StoreCode, (IEnumerable)ViewData["stores"], "StoreCode", "Name").Width(150).EditorTemplateName("StoreSelectorByKeeper");
+          columns.Bound(p => p.SupplierId).Width(90);
+          columns.Bound(p => p.SupplierName).Width(150);//upto data entry.EditorTemplateName("ReceiveSupplierSelector");
+          columns.Bound(c => c.SupplierInvoiceNo).Title("Supplier Invoice").Width(150);
+          columns.ForeignKey(p => p.GLPeriodId, (IEnumerable)ViewData["inventoryPeriods"], "GLPeriodId", "Name").Width(130).Title("Period").EditorTemplateName("InventoryPeriodSelector");
+          columns.Bound(c => c.ReceiveDate).Title("Receive Date").Width(130);
+
+          columns.ForeignKey(p => p.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("BranchSelector").Width(150);
+          columns.Bound(c => c.Status).Width(80);
+
+          columns.Command(command =>
+          {
+              command.Edit();
+              command.Destroy();
+          }).Width(180);
+      })
+      .ToolBar(toolbar =>
+      {
+
+          toolbar.Create();
+          /*toolbar.Template(@<text>
+            <div class="toolbar row">
+                <div class="col-md-1">
+                    <a class="k-button k-button-icontext k-grid-add" href='#'>Add New</a>
+                </div>
+                <div class="col-md-2 pull-right">
+                    @(Html.Kendo().Upload()
+                                         .Name("file")
+                                         .Async(a => a.Save("ReciveImport", "GoodRecive"))
+                                         .Events(e => e.Complete("onUploadSuccess").Upload("checkFileType"))
+                                         .ShowFileList(false).Events(events => events .Error("error_handler_one"))
+
+                    )
+                </div>
+
+            </div>
+
+        </text>);*/
+      })
+      .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("GoodReceive").Window(w => w.Title("Good Receive")))
+
+      .HtmlAttributes(new { style = "height: 550px;" })
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(20))
+      .Scrollable()
+      .Sortable()
+      .Filterable()
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Groupable().Events(ev => ev.DetailExpand("detailExpand"))
+      .Scrollable(h => h.Height(500))
+      .Events(x => x.DataBound("onDataBoundMaster")
+          .Edit("onMasterEdit"))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Sort(sort => sort.Add("GoodReceiveId").Descending())
+          .Events(ev => ev
+              .Error("error_handler(\"grid\")")
+              .RequestStart("onRequestStart(\"grid\")")
+              .RequestEnd("onRequestEnd(\"grid\")"))
+          .Model(model =>
+          {
+              model.Id(p => p.GoodReceiveId);
+              model.Field(p => p.GoodReceiveId).Editable(false);
+              model.Field(p => p.Status).Editable(false);
+              // model.Field(p => p.ReceiveDate).Editable(false);
+              model.Field(p => p.BranchId).Editable(false);
+              // model.Field(p => p.GLPeriodId).Editable(false);
+              model.Field(p => p.CreatedBy).Editable(false);
+              model.Field(p => p.DateCreated).Editable(false);
+              model.Field(p => p.ModifiedBy).Editable(false);
+              model.Field(p => p.LastModified).Editable(false);
+
+          })
+          .Read(read => read.Action("GoodReceives_Read", "GoodReceive"))
+          .Create(create => create.Action("GoodReceives_Create", "GoodReceive"))
+          .Update(update => update.Action("GoodReceives_Update", "GoodReceive"))
+          .Destroy(destroy => destroy.Action("GoodReceives_Destroy", "GoodReceive"))
+      )
+      .ClientDetailTemplateId("templates"))
+
+<script id="templates" type="text/Kendo">
+    @(Html.Kendo().TabStrip()
+                  .SelectedIndex(0)
+                  .Name("tabStrip_#=GoodReceiveId#").Items(items =>
+                  {
+                      items.Add().Text("Detail").Content(
+                        @<text>
+
+                            # if (!IsOnlineApproved&&!IsSendForApproval)
+                            {#
+                            <a onclick='return sendForApproval("#=GoodReceiveId#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                            <br />
+                            # } #
+
+                            # if (IsOnlineApproved)
+                            {#
+                            <a href='@Url.Action("Goodreceive", "InventoryPrint")/#=GoodReceiveId#' title="Print"><i class="fa fa-print fa-2x"></i></a>
+                            <br />
+                            # } #
+                            <div>
+                                <hr>
+                                <dl class="dl-horizontal">
+                                    <dt>
+                                        Store
+                                    </dt>
+                                    <dd>
+                                        #= StoreCode #
+
+                                    </dd>
+                                    <dt>
+                                        Supplier Name
+                                    </dt>
+                                    <dd>
+                                        #= SupplierName #
+                                    </dd>
+                                    <dt>
+                                        Supplier Invoice No.
+                                    </dt>
+                                    <dd>
+                                        #= SupplierInvoiceNo #
+
+                                    </dd>
+                                    <dt>
+                                        Receive Date
+                                    </dt>
+                                    <dd>
+
+                                        #=kendo.toString(kendo.parseDate(ReceiveDate), 'dd/MM/yyyy') #
+
+                                    </dd>
+                                    <dt>
+                                        Status
+                                    </dt>
+                                    <dd>
+                                        #= Status #
+
+                                    </dd>
+                                    <dt>
+                                        CreatedOn
+                                    </dt>
+                                    <dd>
+                                        #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+
+                                    </dd>
+                                    <dt>
+                                        CreatedBy
+                                    </dt>
+                                    <dd>
+                                        #=CreatedBy #
+
+                                    </dd>
+                                    <dt>
+                                        Modified By
+                                    </dt>
+                                    <dd>
+                                        #= ModifiedBy #s
+                                    </dd>
+                                    <dt>
+                                        Modified Date
+                                    </dt>
+                                    <dd>
+                                        #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+                                    </dd>
+                                </dl>
+
+                            </div>
+
+                            # if (IsOnlineApproved&&!IsVoid&&!IsOnlineTransferred)
+                            {#
+                            @if (HttpContext.Current.User.IsInRole("Property_Void"))
+                                        {
+                                <a onclick='return voidRecord("#=GoodReceiveId#")' href='\#' title='Void Record'><i class='fa  fa-bolt fa-2x' style='color:red'></i></a>
+                                        }
+                            /**/
+                            # } #
+
+
+                        </text>
+                                );
+
+                @*=================================================================== Good Receive Item ================================================================*@
+                            items.Add().Text("Items")
+
+                                .Content(
+                            @<text>
+                                @(Html.Kendo().Grid<GoodReceiveItem>()
+                                              .Name("GoodReceiveItems_#=GoodReceiveId#")
+                                              .Columns(columns =>
+                                              {
+                                                          columns.ForeignKey(p => p.ItemCategoryCode, (IEnumerable)ViewData["Category"], "ItemCategoryCode", "Name").Title("Category").EditorTemplateName("ItemCategorySelector").Width(250);
+                                                          columns.ForeignKey(p => p.ItemCode, (IEnumerable)ViewData["Items"], "ItemCode", "Name").Title("Items").EditorTemplateName("ItemSelector").Width(350);
+                                                          columns.Bound(c => c.UOM).EditorTemplateName("UoMDisplay").Width(70);
+                                                          columns.Bound(c => c.Quantity).Width(70);
+                                                          columns.Bound(c => c.UnitPrice).Width(90);
+                                                          columns.ForeignKey(p => p.GLTaxRateID, (IEnumerable)ViewData["tax"], "GLTaxRateID", "TaxName").Title("Tax Name").EditorTemplateName("TaxSelector").Width(120);
+                                                          columns.Bound(c => c.SubTotal).Width(90);
+                                                          columns.Bound(c => c.TaxAmount).Width(90);
+                                                          columns.Bound(c => c.Total).Width(90);
+                                                          columns.Bound(c => c.Specification).Width(110).Hidden();
+
+                                                          columns.Command(command =>
+                                                          {
+                                                              command.Edit();
+                                                              command.Destroy();
+                                                          });
+                                                      })
+                                              .ToolBar(toolbar =>
+                                              {
+                                              //toolbar.Create();
+                                          })
+                                              .Events(ev => ev.Edit("onItemEdit"))
+                                              .Events(x => x.DataBound("onDataBoundLines"))
+                                              .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                              .Scrollable()
+                                              .DataSource(dataSource =>
+                                                  dataSource
+                                                      .Ajax()
+                                                      .Events(ev => ev
+                                                          .Error("error_handler(\"GoodReceiveItems_#=GoodReceiveId#\")")
+                                                          .RequestStart("onRequestStart(\"GoodReceiveItems_#=GoodReceiveId#\")")
+                                                          .RequestEnd("onRequestEnd(\"GoodReceiveItems_#=GoodReceiveId#\")"))
+                                                      .Model(model =>
+                                                      {
+                                                                  model.Id(p => p.GoodReceiveItemID);
+
+                                                                  model.Field(p => p.TaxAmount).Editable(false);
+                                                                  model.Field(p => p.GLTaxRateID).Editable(false);
+                                                                  model.Field(p => p.Total).Editable(false);
+                                                                  model.Field(p => p.ItemCategoryCode).Editable(false);
+                                                                  model.Field(p => p.ItemCode).Editable(false);
+                                                                  model.Field(p => p.UnitPrice).Editable(false);
+                                                                  model.Field(p => p.SubTotal).Editable(false);
+
+                                                                  model.Field(p => p.CreatedBy).Editable(false);
+                                                                  model.Field(p => p.DateCreated).Editable(false);
+                                                                  model.Field(p => p.ModifiedBy).Editable(false);
+                                                                  model.Field(p => p.LastModified).Editable(false);
+
+                                                              })
+                                                      .Read(read => read.Action("GoodReceiveItems_Read", "GoodReceiveItem", new { Id = "#=GoodReceiveId#" }))
+                                                      .Create(create => create.Action("GoodReceiveItems_Create", "GoodReceiveItem", new { Id = "#=GoodReceiveId#" }))
+                                                      .Update(update => update.Action("GoodReceiveItems_Update", "GoodReceiveItem", new { Id = "#=GoodReceiveId#" }))
+                                                      .Destroy(destroy => destroy.Action("GoodReceiveItems_Destroy", "GoodReceiveItem"))
+
+                                              ).ToClientTemplate())
+                            </text>
+                                      );
+                    @*=========================================================== GoodRecive Item Inspection ===================================================================================*@
+                                items.Add().Text("Inspection").Content(
+                                @<text>
+                                    @(Html.Kendo().Grid<ItemInspection>()
+                                                  .Name("Inspection_#=GoodReceiveId#")
+                                                  .Columns(columns =>
+                                                  {
+                                                              columns.ForeignKey(p => p.EmployeeId, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Title("Requester").Width(160).EditorTemplateName("EmployeeSelfSelector");
+                                                              columns.Bound(c => c.InspectionDate).Width(130);
+                                                              columns.Bound(c => c.Accepted).Width(90).ClientTemplate("<input type='checkbox' disabled = 'true' \\#= Accepted ? checked='checked' :'' \\# />");
+                                                              columns.Bound(c => c.Remark).Width(160);
+
+                                                              columns.Command(command =>
+                                                              {
+                                                                  command.Edit();
+                                                                  command.Destroy();
+                                                              }).Width(380);
+                                                          })
+                                                  .ToolBar(toolbar =>
+                                                  {
+                                                              toolbar.Create();
+                                                          })
+                                                  .Events(x => x.DataBound("onDataBoundGoodReceiveInspectionLines"))
+                                                  .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                  .Scrollable()
+                                                  .DataSource(dataSource => dataSource
+                                                      .Ajax()
+                                                      .Events(ev => ev
+                                                          .Error("error_handler(\"Inspection_#=GoodReceiveId#\")")
+                                                          .RequestStart("onRequestStart(\"Inspection_#=GoodReceiveId#\")")
+                                                          .RequestEnd("onRequestEnd(\"Inspection_#=GoodReceiveId#\")"))
+                                                      .Model(model =>
+                                                      {
+                                                                  model.Id(p => p.ItemInspectionId);
+                                                                  model.Field(p => p.CreatedBy).Editable(false);
+                                                                  model.Field(p => p.DateCreated).Editable(false);
+                                                                  model.Field(p => p.ModifiedBy).Editable(false);
+                                                                  model.Field(p => p.LastModified).Editable(false);
+
+                                                              })
+                                                      .Read(read => read.Action("ItemInspections_Read", "ItemInspection", new { id = "#=GoodReceiveId#" }))
+                                                      .Create(create => create.Action("ItemInspections_Create", "ItemInspection", new { id = "#=GoodReceiveId#" }))
+                                                      .Update(update => update.Action("ItemInspections_Update", "ItemInspection"))
+                                                      .Destroy(destroy => destroy.Action("ItemInspections_Destroy", "ItemInspection"))
+                                                  ).ToClientTemplate())
+
+                                </text>
+                                      );
+
+                        @*==============================================================================    GoodReceive Validation =====================================================================*@
+                                    items.Add().Text("Validation").Content(
+                                    @<text>
+                                        @(Html.Kendo().Grid<GoodReceiveValidation>()
+                                                      .Name("GoodReceiveValidation_#=GoodReceiveId#")
+                                                      .Columns(columns =>
+                                                      {
+                                                                  columns.Bound(c => c.Status).Width(170).EditorTemplateName("ValidationStatus");
+                                                                  columns.Bound(c => c.Remark).Width(170);
+                                                                  columns.Command(command =>
+                                                                  {
+                                                                      command.Edit();
+                                                          //command.Destroy();
+                                                      });
+                                                              })
+                                                      .ToolBar(toolbar =>
+                                                      {
+                                                                  toolbar.Create();
+                                                              })
+                                                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                      .Scrollable()
+                                                      .Events(x => x.DataBound("onDataBoundFisrtValidation"))
+                                                      .DataSource(dataSource => dataSource
+                                                          .Ajax()
+                                                          .Events(ev => ev
+                                                              .Error("error_handler(\"GoodReceiveValidation_#=GoodReceiveId#\")")
+                                                              .RequestStart("onRequestStart(\"GoodReceiveValidation_#=GoodReceiveId#\")")
+                                                              .RequestEnd("onRequestEnd(\"GoodReceiveValidation_#=GoodReceiveId#\")"))
+                                                          .Model(model => model.Id(p => p.GoodReceiveValidationID))
+                                                          .Read(read => read.Action("GoodReceiveValidations_Read", "GoodReceiveValidation", new { id = "#=GoodReceiveId#" }))
+                                                          .Create(create => create.Action("GoodReceiveValidations_Create", "GoodReceiveValidation", new { id = "#=GoodReceiveId#" }))
+                                                          .Update(update => update.Action("GoodReceiveValidations_Update", "GoodReceiveValidation"))
+                                                          .Destroy(destroy => destroy.Action("GoodReceiveValidations_Destroy", "GoodReceiveValidation"))
+                                                      ).ToClientTemplate())
+
+                                    </text>
+                                              );
+                                      }).ToClientTemplate()
+
+    )
+    @*======================================================= GoodReceive Distribution =====================================================*@
+    <h6>Distribution</h6>
+    @*# if (IsOnlineApproved && !IsOnlineTransferred )
+        {#
+        <a href='@Url.Action("TransferDistribution", "GoodReceive")/#=GoodReceiveId#'>Transfer To GL</a>
+        <br />
+        # } #*@
+
+    @(Html.Kendo().Grid<GoodReceiveDistribution>()
+                  .Name("GoodReceiveDistribution_#=GoodReceiveId#")
+                  .Columns(columns =>
+                  {
+
+                      columns.Bound(c => c.AccountCode);
+                      columns.Bound(c => c.AccountDesc);
+                      columns.Bound(c => c.Debit);
+                      columns.Bound(c => c.Credit);
+                      columns.Command(command =>
+                      {
+                          command.Edit();
+                          command.Destroy();
+
+                      }).Width(180);
+                  })
+                  .Editable(editable => editable.Mode(GridEditMode.InLine))
+                  .Scrollable()
+
+                  .DataSource(dataSource => dataSource
+                      .Ajax()
+                      .Events(e => e.Error("error_handler_one").Sync("sync_handler"))
+                      .Model(model =>
+                      {
+                          model.Id(p => p.GoodReceiveDistributionID);
+                          model.Field(p => p.Credit).Editable(false);
+                          model.Field(p => p.Debit).Editable(false);
+                          model.Field(p => p.AccountDesc).Editable(false);
+
+
+                      })
+                      .Read(read => read.Action("GoodReceiveDistributions_Read", "GoodReceiveDistribution", new { id = "#=GoodReceiveId#" }))
+                      .Create(create => create.Action("GoodReceiveDistributions_Create", "GoodReceiveDistribution", new { id = "#=GoodReceiveId#" }))
+                      .Update(update => update.Action("GoodReceiveDistributions_Update", "GoodReceiveDistribution"))
+                      .Destroy(destroy => destroy.Action("GoodReceiveDistributions_Destroy", "GoodReceiveDistribution"))
+                  ).ToClientTemplate())
+
+</script>
+
+
+
+
+
+
+
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 700px;
+    }
+</style>
+<script>
+
+
+    function voidRecord(id) {
+        var recordStatus = "";
+        var conf = confirm("Are you sure you want to void this record number: " + id + " ?");
+        if (conf === true) {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("Void", "GoodReceive", new { area = "Inventory" })',
+                data: { id: id },
+                success: function (result) {
+                    // toastr.warnning(result.Message);
+                    alert(result.Message);
+                    recordStatus = result.Status;
+                    location.reload(true);
+                }, //end succ
+                error: function (result) {
+                    alert(result);
+                }
+            });
+        }
+    }
+
+    function sendForApproval(id) {
+        var recordStatus = "";
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("SendForApproval", "GoodReceive", new { area = "Inventory" })',
+            data: { id: id },
+            success: function (result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                recordStatus = result.Status;
+                location.reload(true);
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+
+
+    function filterTypes() {
+        return {
+            id: $("#ReceiveTypeId").data("kendoDropDownList").value(),
+            text: $("#ReceiveRef").data("kendoDropDownList").filterInput.val()
+        }
+    }
+
+
+    
+
+
+    function onSelectType(e) {
+        var type = $("#ReceiveTypeId").data("kendoDropDownList").value();
+
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("CheckReceiveType", "DataProvider", new { area = "Inventory" })',
+            data: { type: type },
+            success: function (result) {
+                if (result.Type === "Manual") {
+                   // alert("manual");
+                    $("#supplierNameDiv").show();
+                    $("#manualRefDiv").show();
+
+
+                    $("#supplierIDDiv").hide();
+                    $("#autoRefDiv").hide();
+
+                } else {
+                    //alert("auto");
+                    $("#supplierIDDiv").show();
+                    $("#autoRefDiv").show();
+
+                    $("#supplierNameDiv").hide();
+                    $("#manualRefDiv").hide();
+                }
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+
+    function onSelectReferenceID(e) {
+        var id =  $("#ReceiveRef").data("kendoDropDownList").value();
+        var  type=$("#ReceiveTypeId").data("kendoDropDownList").value();
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("GetReceiveSuppliers", "DataProvider", new { area = "Inventory" })',
+            data: { id: id,type:type },
+            success: function (result) {
+                console.log(result);
+                if (result.length > 0) {
+
+                    for (var i = 0; i < result.length; i++) {
+                        $("#SupplierId").val(result[i].SupplierId).trigger("change");
+                    }
+                }
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+
+
+    }
+
+
+    $(document).ready(function () {
+        $("form.k-edit-form").kendoValidator();
+    });
+    var storeCode;
+    var codeid;
+
+    function onItemEdit(e) {
+        var masterRow = this.wrapper.closest("tr.k-detail-row").prev(".k-master-row");
+        var masterGrid = $("#grid").data("kendoGrid");
+
+        var masterDataItem = masterGrid.dataItem(masterRow);
+        storeCode = masterDataItem.StoreCode;
+        codeid = masterDataItem.GoodReceiveId;
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("GetGrnReferenceType", "DataProvider", new { area = "Inventory" })',
+            data: { id: codeid },
+            success: function(result) {
+                var min = result.Min;
+                max = result.Max;
+                //update
+
+            }, //end succ
+            error: function(result) {
+                alert(result);
+            }
+
+        });
+    }
+
+    function getgoodreceiveid() {
+
+        return { id: codeid };
+    }
+
+    function getItems() {
+
+        return {
+            StoreCode: storeCode
+        };
+    }
+
+    function checkboxClicked(e) {
+
+        var isChecked = e.checked;
+        var tabStrip = $("#tabstrip").kendoTabStrip({ select: onSelect }).data("kendoTabStrip");
+
+        function onSelect(e) {
+            console.log("Selected: " + tabStrip.select().index());
+        }
+
+        tabStrip.select("li:first");
+        tabStrip.cha(1);
+
+        if (isChecked) {
+
+            tabStrip.select("li:first");
+            tabStrip.select(1);
+
+        } else {
+            tabStrip.select(0);
+
+        }
+
+    };
+
+    function checkboxClickedex(e) {
+        var isChecked = e.checked;
+
+        if (isChecked) {
+
+            $("#isextra").show();
+        } else {
+            $("#isextra").hide();
+
+        }
+    }
+
+    function onSelectedPeriod() {
+        var periodId = $("#GLPeriodId").data("kendoDropDownList").value();
+        var min = "";
+        var max = "";
+        if (periodId) {
+
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("GetPeriodDateRangeById", "DataProvider", new {area = "Inventory"})',
+            data: { id: periodId },
+            success: function (result) {
+                min = result.Min;
+                max = result.Max;
+                //update
+                var datepicker = $("#ReceiveDate").data("kendoDatePicker");
+                datepicker.setOptions({
+                    format: "yyyy-MM-dd",
+                    min:min,
+                    max:max,
+                    value: new Date(),
+                    change: onDOBChange
+                });
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+
+            });
+         }
+
+
+    }
+
+
+
+    function OnIndexCall(elem) {
+        var a = codeid;
+        $(elem).attr('href', $(elem).attr('href') + '?id=' + a);
+    }
+    function onDataBound(e) {
+        var itemGrid = "#GoodReceiveItems_" + codeid;
+        var grid = $(itemGrid).data("kendoGrid");
+        var currentDataItem = grid.dataSource.view();
+        if (isapproved) {
+
+            $(".k-grid-delete", itemGrid).hide();
+            $(".k-grid-edit", itemGrid).hide();
+        }
+    }
+</script>
+<script>
+    function onMasterEdit(e) {
+        $(".typeselector").hide();
+        $(".supplierSelector").hide();
+        $(".lotselectors").hide();
+
+    }
+    function onClick(e) {
+
+
+        var masterDataItem = masterGrid.dataItem(masterRow);
+        var tabstrip = $("#tabStrip_4").data("kendoTabstrip");
+
+
+    }
+
+    var dataparamt;
+    function goodrecivetypeselector(e) {
+       
+        var reciveId = $("#ReceiveTypeId").data("kendoDropDownList").value();
+        
+        var dataRecive;
+        $.ajax({
+            type: "GET",
+
+            dataType: 'json',
+          
+            
+             
+            contentType: "application/json;charset=utf-8",
+            url: "/DataProvider/GetGroodReciveType",
+            data: { id: reciveId },
+            success: function (result) {
+                debugger;
+                dataRecive = result;
+                dataparamt = result;
+                if (result === "Other") {
+                    $(".typeselector").hide();
+                    $(".supplierSelector").hide();
+                    $(".lotselectors").hide();
+                } 
+                if (result === "Tender") {
+                    $(".typeselector").show();
+                    $(".supplierSelector").show();
+                    $(".lotselectors").show();
+
+                }  
+                if (result === "Proforma") {
+                    $(".typeselector").show();
+                    $(".supplierSelector").show();
+                    $(".lotselectors").hide();
+
+                }
+                if (result === "Purchase") {
+                    $(".typeselector").show();
+                    $(".supplierSelector").hide();
+                    $(".lotselectors").hide();
+                  
+
+                } 
+            },
+            error: function (response) {
+                debugger;
+                alert('eror');
+            }
+        });
+
+        
+    }
+
+
+    function GetParameter() {
+        return { type :dataparamt}
+    }
+
+    function GetVoucherRefId() {
+        return {
+            reciveRef: $("#ReciveRef").data("kendoDropDownList").value()
+            
+        }
+    }
+    function GetLotId() {
+        return {
+            reciveRef: $("#TenderLot").data("kendoDropDownList").value()
+            
+        }
+    }
+    function onUploadSuccess(e) {
+
+    }
+
+    function checkFileType(e) {
+        var files = e.files;
+
+        $.each(files, function () {
+
+            if (this.extension.toLowerCase() === ".xls" || this.extension.toLowerCase() === ".xlsx" || this.extension.toLowerCase() === ".xlsm") {
+
+            } else {
+                alert("Only .xls, .xlsx, .xlsm files can be uploaded!");
+                e.preventDefault();
+            }
+
+        });
+    }
+</script>

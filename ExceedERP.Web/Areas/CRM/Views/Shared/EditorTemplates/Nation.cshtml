@@ -1,0 +1,10 @@
+﻿@using System.Collections
+@(Html.Kendo().DropDownList().BindTo((IEnumerable)ViewData["NationList"])
+.OptionLabel("Select..")
+        .DataTextField("Description")
+        .DataValueField("LookupID")
+ .Name("LookupID")
+      .ValuePrimitive(true))
+
+
+

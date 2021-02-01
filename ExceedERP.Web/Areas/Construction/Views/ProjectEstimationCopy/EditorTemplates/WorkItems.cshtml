@@ -1,0 +1,20 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@(Html.Kendo().DropDownListFor(m => m)
+.OptionLabel(Resources.Select)
+        .Name("ProjectEstimationWorkItemId")
+                             .DataTextField("ItemName")
+                                    .DataValueField("ProjectEstimationWorkItemId")
+       
+                           .DataSource(dataSource =>
+    {
+        dataSource.Read(read => read.Action("GetWorkItemsItems", "ProjectEstimationWorkItem").Data("filterWorkItems"))
+                          .ServerFiltering(true);
+
+    })
+            .CascadeFrom("WorkCategoryId")
+
+          .Filter("contains")
+          .MinLength(2)
+          .ValuePrimitive(true)
+)

@@ -1,0 +1,213 @@
+﻿@using ExceedERP.Core.Domain.CMS
+
+<legend>Company Evaluation</legend>
+            @(Html.Kendo().Grid<ExceedERP.Core.Domain.CMS.CmsTrainee>()
+                  .Name("company_grid")
+                  .Columns(columns =>
+                  {
+                      columns.Template(c => { }).Width(100)
+                     .ClientTemplate("<img class='circular-profile-img-small' src ='" + @Url.Content("~/Content/Images/CMS/Profiles/") + "#=ProfilePicFileName#'/>");
+                      columns.Bound(c => c.RegistrationDate).Width(100);
+                      columns.Bound(c => c.RegistrationNumber).Width(350);
+                      columns.ForeignKey(c => c.CMSProgramId, (IEnumerable)ViewData["Programs"], "CMSProgramId", "Name").Width(100);
+                      columns.ForeignKey(c => c.CMSCourseId, (IEnumerable)ViewData["Courses"], "CMSCourseId", "Name").Width(100);
+
+                      //columns.Bound(c => c.FullName);
+                      columns.Bound(c => c.Nationality).Width(100);
+                      columns.Bound(c => c.CompanyName).Width(100);
+                      columns.Bound(c => c.Region).Width(100);
+                      columns.Bound(c => c.Address).Width(100);
+                      columns.ForeignKey(c => c.CityId, (IEnumerable)ViewData["Cities"], "CityId", "Name").Width(100);
+                      //columns.Bound(c => c.DateOfBirth);
+                      columns.Bound(c => c.PhoneNumber).Width(100);
+                      columns.Bound(c => c.MobilePhoneNumber).Width(100);
+                      columns.Bound(c => c.Email).Width(100);
+                      columns.Bound(c => c.PreferedDate).Width(100);
+                      //columns.Bound(c => c.TrainingVenue);
+
+                      //columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+                  })
+                  .ToolBar(toolbar => {
+                      //toolbar.Create();
+                      toolbar.Excel();
+                      toolbar.Pdf();
+                  })
+                  //.Events(ev =>
+                  //{
+                  //    ev.Edit("onCompanyEdit");
+                  //})
+                  //.Editable(editable =>
+                  //{
+                  //    editable.Mode(GridEditMode.PopUp);
+
+                  //    editable.TemplateName("CompanyEditorTemplate");
+                  //    editable.Window(window =>
+                  //    {
+                  //        window.Title("Company Registration");
+                  //        window.Scrollable(true);
+                  //        window.Height(550);
+                  //    });
+                  //})
+                  //.Navigatable()
+                  .Pageable(pagable =>
+                  {
+                      pagable.Enabled(true);
+                      pagable.PageSizes(true);
+                      pagable.Refresh(true);
+                      pagable.ButtonCount(10);
+                      pagable.Input(true);
+                      pagable.Numeric(false);
+                      //pagable.Messages
+
+                  })
+                  .Selectable(selectable => {
+                      selectable.Mode(GridSelectionMode.Single);
+                      selectable.Type(GridSelectionType.Row);
+                  })
+                  .Sortable(sortable => {
+                      sortable.SortMode(GridSortMode.SingleColumn);
+                  })
+                  .Filterable()
+                  .Scrollable(s => s.Height(700))
+                  .DataSource(dataSource => dataSource
+                      .Ajax()
+                      .Model(model => model.Id(p => p.CmsTraineeId))
+                      .Events(ev => ev
+                            .Error("error_handler(\"company_grid\")")
+                            .RequestStart("onRequestStart(\"company_grid\")")
+                            .RequestEnd("onRequestEnd(\"company_grid\")"))
+
+                      .Read(read => read.Action("Trainees_Read", "Trainees", new { traineeType = ExceedERP.Core.Domain.CMS.TraineeType.Company }))
+                  //.Create(create => create.Action("Trainees_Create", "Trainees", new { traineeType = ExceedERP.Core.Domain.CMS.TraineeType.Company }))
+                  //.Update(update => update.Action("Trainees_Update", "Trainees"))
+                  //.Destroy(destroy => destroy.Action("Trainees_Destroy", "Trainees"))
+                  ).ClientDetailTemplateId("company_detail_template")
+            )
+
+<script id="company_detail_template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+        .Name("trainee_tab_str_#=CmsTraineeId#")
+        .SelectedIndex(0)
+        .Items(items =>
+        {
+            items.Add().Text("Detail").Content(@<text>
+                @*<a class="btn btn-primary k-button k-button-icontext" href='@Url.Action("RegistrationSlip", "CMSPrint")/#=CmsTraineeId#' title="Print Registration Slip"><i class="fa fa-print  fa-2x"></i> &nbsp;&nbsp; Print Registration Slip</a>*@
+                @(Html.Kendo().PanelBar()
+                    .Name("trainee_panelbar_#=CmsTraineeId#")
+                    .ExpandMode(PanelBarExpandMode.Multiple)
+                    .Items(panelbar =>
+                    {
+                        panelbar.Add()
+                            .Expanded(true)
+                            .Text("Detail")
+                            .Content(
+                                "<div>" +
+                                "<ul>" +
+                                "<li> <label> Status: </label> <strong> #=Status != null ? Status: ' '# </strong> </li>" +
+                                "<li> <label> Created by: </label> <strong> #=CreatedBy != null ? CreatedBy: ' '# </strong> </li>" +
+                                "<li> <label> Created on: </label> #= kendo.toString(DateCreated, 'dd/MM/yyyy H:mm:ss')# </li>" +
+                                "<li> <label> Modified by :</label> #= ModifiedBy != null ? ModifiedBy: ''# </li>" +
+                                "<li> <label> Last Modified :</label> #= LastModified != null ? kendo.toString(LastModified, 'dd/MM/yyyy H:mm:ss') : ' '# </li>" +
+                                "</ul>" +
+                                "</div>"
+                            );
+
+                    }).ToClientTemplate()
+                ) 
+            </text>);
+            
+            items.Add().Text("Evaluation").Content(@<text>
+                @CompanyEvaluationHelper()
+            </text>);
+        }).ToClientTemplate()
+    )
+</script>
+
+
+@helper CompanyEvaluationHelper() { 
+        @(Html.Kendo().Grid<ExceedERP.Core.Domain.CMS.CompanyEvaluation>()
+                  .Name("evaluation_grid_#=CmsTraineeId#")
+                  .Columns(columns =>
+                  {
+
+                      columns.ForeignKey(c => c.ISOChecklistId, (IEnumerable)ViewData["Checklists"], "ISOChecklistId", "Name").Width(90).EditorTemplateName("ProgramEditorTemlate");
+                      columns.Bound(c => c.Value).Width(80);
+                      //columns.Bound(c => c.Value).Width(50);
+                      columns.Bound(c => c.Remark).Width(100);
+
+
+                      columns.Command(command =>
+                      {
+                          command.Edit();
+                          command.Destroy();
+                      }).Width(600);
+                  })
+                  .ToolBar(toolbar => {
+                      if (HttpContext.Current.User.IsInRole(CMSRoles.Examiner))
+                      {
+                          toolbar.Custom()
+                            .Name("addNewRecordButton")
+                            .IconClass("fa fa-plus")
+                            .Text("&nbsp;&nbsp; Add new record")
+                            .HtmlAttributes(new
+                            {
+                                @class = " btn btn-primary",
+                                @id = "customButton1"
+                            })
+                            .Url(Url.Action("Add", "CompanyEvaluation", new { compI = "#=CmsTraineeId#", company= "#=CompanyName#" }));
+                      }
+                      
+                  })
+
+                  .Editable(editable =>
+                  {
+                      editable.Mode(GridEditMode.InLine);
+
+                      //editable.TemplateName("CompanyEditorTemplate");
+                      //editable.Window(window =>
+                      //{
+                      //    window.Title("Company Registration");
+                      //    window.Scrollable(true);
+                      //    window.Height(550);
+                      //});
+                  })
+                  .Pageable(pagable =>
+                  {
+                      pagable.Enabled(true);
+                      pagable.PageSizes(true);
+                      pagable.Refresh(true);
+                      pagable.ButtonCount(10);
+                      pagable.Input(true);
+                      pagable.Numeric(false);
+
+                  })
+                  .Navigatable()
+                  .Selectable(selectable => {
+                      selectable.Mode(GridSelectionMode.Single);
+                      selectable.Type(GridSelectionType.Row);
+                  })
+                  .Sortable(sortable => {
+                      sortable.SortMode(GridSortMode.SingleColumn);
+                  })
+                  .Filterable()
+                  .Scrollable()
+                  .DataSource(dataSource => dataSource
+                      .Ajax()
+                      .Model(model =>
+                      {
+                          model.Id(p => p.CompanyEvaluationId);
+
+                          model.Field(f => f.ISOChecklistId).Editable(false);
+                      })
+                      .Events(ev => ev
+                            .Error("error_handler(\"evaluation_grid_#=CmsTraineeId#\")")
+                            .RequestStart("onRequestStart(\"evaluation_grid_#=CmsTraineeId#\")")
+                            .RequestEnd("onRequestEnd(\"evaluation_grid_#=CmsTraineeId#\")"))
+
+                      .Read(read => read.Action("CompanyEvaluations_Read", "CompanyEvaluation", new { id = "#=CmsTraineeId#" }))
+                      .Create(create => create.Action("CompanyEvaluation_Create", "CompanyEvaluation", new { id = "#=CmsTraineeId#" }))
+                      .Update(update => update.Action("CompanyEvaluation_Update", "CompanyEvaluation"))
+                      .Destroy(destroy => destroy.Action("CompanyEvaluation_Destroy", "CompanyEvaluation"))
+                  ).ToClientTemplate()
+            )
+    }

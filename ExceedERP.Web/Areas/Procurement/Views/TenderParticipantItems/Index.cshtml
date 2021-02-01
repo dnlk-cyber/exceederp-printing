@@ -1,0 +1,27 @@
+﻿@using ExceedERP.Core.Domain.Procurement.Tender.Lot
+
+@(Html.Kendo().Grid<ParticipantsItem>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.ItemCode);
+          columns.Bound(c => c.Supplier);
+          columns.Bound(c => c.UnitPrice);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Sortable(sortable => {
+                                sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.ParticipantsItemId))
+          .Read(read => read.Action("ParticipantsItems_Read", "TenderParticipantItems"))
+          .Create(create => create.Action("ParticipantsItems_Create", "TenderParticipantItems"))
+          .Update(update => update.Action("ParticipantsItems_Update", "TenderParticipantItems"))
+          .Destroy(destroy => destroy.Action("ParticipantsItems_Destroy", "TenderParticipantItems"))
+      ))

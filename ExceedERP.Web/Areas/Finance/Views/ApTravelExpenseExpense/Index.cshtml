@@ -1,0 +1,31 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Finance.AP.Travel.ApTravelExpenseExpense>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Type);
+          columns.Bound(c => c.Description);
+          columns.Bound(c => c.UoM);
+          columns.Bound(c => c.UnitPrice);
+          columns.Bound(c => c.Quantity);
+          columns.Bound(c => c.Total);
+          columns.Bound(c => c.OrgBranchName);
+          columns.Bound(c => c.DateCreated);
+          columns.Bound(c => c.LastModified);
+          columns.Bound(c => c.CreatedBy);
+          columns.Bound(c => c.ModifiedBy);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.ApTravelExpenseExpenseId))
+          .Read(read => read.Action("ApTravelExpenseExpenses_Read", "ApTravelExpenseExpense"))
+          .Create(create => create.Action("ApTravelExpenseExpenses_Create", "ApTravelExpenseExpense"))
+          .Update(update => update.Action("ApTravelExpenseExpenses_Update", "ApTravelExpenseExpense"))
+          .Destroy(destroy => destroy.Action("ApTravelExpenseExpenses_Destroy", "ApTravelExpenseExpense"))
+      ))

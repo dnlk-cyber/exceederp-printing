@@ -1,0 +1,942 @@
+﻿@model ExceedERP.Core.Domain.CRM.SalesOrderVoucher
+
+
+
+<style>
+
+
+
+
+    .k-grid table tr.k-state-Issued {
+        background: #b7ff9e;
+        color: #040000;
+    }
+
+
+    .k-grid table tr.k-state-Rejected {
+        background: #fcabab;
+        color: #040000;
+    }
+</style>
+
+<legend>Sales Order Voucher</legend>
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.SalesOrderVoucher>()
+          .Name("SalesOrderVoucher")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.SalesOrderVoucherID).Title("#").Width(80);
+          columns.ForeignKey(c => c.OrganizationCustomerId, (System.Collections.IEnumerable)ViewData["OrganizationCustomers"], "OrganizationCustomerID", "TradeName").Title("Customer").EditorTemplateName("OrgCustomerEditor").Width(100);
+      
+           columns.Bound(c => c.PaymentMethod).Title("Payment Method").EditorTemplateName("PaymentMethodType").Width(120);
+          columns.Bound(c => c.Date).Width(100);
+          columns.Bound(c => c.GrandTotal).Format("{0:N0}").Width(100);
+          columns.Bound(c => c.References).Width(100);
+          columns.Bound(c => c.Status).Width(80);
+          columns.Command(command =>
+                {
+
+                    command.Edit();
+
+                    command.Custom("Reject").Click("RejectPopUp");
+                    command.Destroy().Text("Forward");
+
+
+
+                }).Width(250);
+      })
+          .HtmlAttributes(new { style = "height: 520px;" })
+                                                      .Pageable(pageable => pageable
+                                                                        .Input(true)
+                                                                        .Numeric(false)
+                                                                        .Refresh(true)
+                                                                        .PageSizes(true)
+                                                                        .ButtonCount(5))
+
+                                                            .Scrollable()
+                                                            .Sortable()
+                                                            .Filterable()
+                                                        .Scrollable(s => s.Height(500))
+        .ToolBar(toolbar =>
+            {
+
+                toolbar.Template(@<text>
+                    <form>
+                        <div>
+                            <div class="toolbar">
+
+                                @(Html.Kendo().ComboBoxFor(m => m)
+                                           .Name("SalesOrderVoucherReference")
+                                           .Placeholder("Please Select,Sales Quote Voucher..")
+                                           .BindTo((System.Collections.IEnumerable)ViewData["SalesQuoteVoucherList"])
+                                           .DataTextField("SalesQuoteVoucherID")
+                                           .DataValueField("SalesQuoteVoucherID")
+                                           .ValuePrimitive(true)
+
+
+                                )
+
+                                @(Html.Kendo().Button()
+                                           .Name("btnRefer")
+                                           .HtmlAttributes(new { type = "button", @class = "k-primary" })
+                                           .Events(e => e.Click("DisplayReferenceInformation"))
+                                           .Content("Refer"))
+                                <br />
+                                <br />
+                                <a class="k-button k-button-icontext k-grid-add k-primary" href='#'>Add New</a>
+
+                            </div>
+                        </div>
+
+                    </form>
+                </text>);
+            })  .Scrollable(s => s.Height(500))
+                                                            .Events(ev =>
+                                              {
+                                                  ev.DetailExpand("onDetailExpand");
+                                                  ev.DataBound("onDataBound");
+
+                                              })
+                    .Editable(editable =>
+                                          {
+                                              editable.Mode(GridEditMode.InLine);
+                                              editable.DisplayDeleteConfirmation("Are You Sure To Forward Order Voucher");
+                                          }
+                                          )
+                                                                               .Events(ev => ev.DetailExpand("onDetailExpandUser"))
+                                          .DataSource(dataSource => dataSource
+                                                  .Ajax()
+                                      .Sort(x => x.Add(s => s.SalesOrderVoucherID).Descending())
+                                              .Model(model =>
+                                              {
+                                                  model.Id(p => p.SalesOrderVoucherID);
+                                                  model.Field(v => v.SalesOrderVoucherID).Editable(false);
+
+                                                  model.Field(p => p.GrandTotal).Editable(false);
+                                                  model.Field(p => p.References).Editable(false);
+                                                  model.Field(v => v.Status).Editable(false);
+                                                  model.Field(v => v.Remark).Editable(false);
+                                              }
+                                                                                  ).Events(ev => ev
+                                                                                                                                                    .Error("error_handler(\"SalesOrderVoucher\")")
+                                                                                                                                                    .RequestStart("onRequestStart(\"SalesOrderVoucher\")")
+                                                                                                                                                    .RequestEnd("onRequestEnd(\"SalesOrderVoucher\")"))
+
+                                                          .Read(read => read.Action("SalesOrderVouchers_Read", "SalesOrderVoucher"))
+                                              .Create(create => create.Action("SalesOrderVouchers_Create", "SalesOrderVoucher"))
+                                              .Update(update => update.Action("SalesOrderVouchers_Update", "SalesOrderVoucher"))
+                                                  .Destroy(distroy => distroy.Action("Vouchers_Forward", "SalesOrderVoucher"))
+
+                                                  ).ClientDetailTemplateId("template")
+)
+
+
+
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                            .Name("tabstrip_#=SalesOrderVoucherID#")
+    .SelectedIndex(0)
+    .Items(items =>
+                {
+                    /***********************************************Detail*******************************************/
+
+                    items.Add().Text("Detail").Content(
+                        @<text>
+                            <legend>Detail</legend>
+
+                            <div class="box">
+
+                                <div class="box-col">
+                                    <a href='@Url.Action("OrderPrint", "Print")/#=SalesOrderVoucherID#' title="Print"><i class="fa fa-print fa-2x"></i></a>
+
+                                </div>
+
+                            </div>
+                            <legend>  Sales Order </legend>
+                            <div class="demo-section k-header export-app">
+                                <div class="demo-section content-wrapper">
+
+                                    <form>
+
+
+
+                                        <div class="row">
+                                            <div class="col-md-1">
+                                            </div>
+                                            <div class="col-md-2">
+                                                <div class="form-group">
+                                                    <div class="label">
+                                                        @Html.LabelFor(model => model.CreatedBy)
+                                                    </div>
+                                                    <div>
+                                                        #=CreatedBy#
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <div class="form-group">
+                                                    <div class="label">
+                                                        @Html.LabelFor(model => model.DateCreated)
+                                                    </div>
+                                                    <div>
+                                                        #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-2">
+                                                <div class="form-group">
+                                                    <div class="label">
+                                                        @Html.LabelFor(model => model.ModifiedBy)
+                                                    </div>
+                                                    <div>
+
+                                                        #=ModifiedBy#
+
+                                                    </div>
+                                                </div>
+                                            </div>
+
+                                            <div class="col-md-2">
+                                                <div class="form-group">
+                                                    <div class="label">
+                                                        @Html.LabelFor(model => model.LastModified)
+                                                    </div>
+                                                    <div>
+                                                        #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="row">
+                                            <div class="col-md-1">
+                                            </div>
+                                            <div class="col-md-2">
+                                                <div class="form-group">
+                                                    <div class="label">
+                                                        @Html.LabelFor(model => model.Remark)
+                                                    </div>
+                                                    <div>
+                                                        #=Remark#
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </form>
+
+                                </div>
+                            </div>
+
+
+
+                        </text>
+
+
+            );
+                    /***********************************************LineItems**************************************************/
+                    items.Add().Text("Line Items").Content(
+                        @<text>
+
+                            @(Html.Kendo().Grid<ExceedERP.Web.Areas.CRM.Models.LineItemViewModel>()
+                          .Name("LineItems_#=SalesOrderVoucherID#")
+        .Columns(columns =>
+        {
+            columns.ForeignKey(c => c.StoreID, (System.Collections.IEnumerable)ViewData["SalesStore"], "SalesStoreId", "Description").Title("Store").Width(150);
+
+            columns.ForeignKey(c => c.ThingID, (System.Collections.IEnumerable)ViewData["Thing"], "ProductID", "Name").Title("Product").Title("Product").Width(100);
+            // columns.Bound(c => c.Variety).Width(80);
+            // columns.Bound(c => c.Class).Width(50);
+
+            columns.Bound(c => c.UnitAmount).Title("Price").Format("{0:N0}").Width(80);
+            columns.Bound(c => c.Quantity).Title("QTY").Format("{0:N0}").Width(80);
+            columns.Bound(c => c.CalculatedCost).Title("Sub Total").Format("{0:N0}").Width(80);
+            columns.Bound(c => c.TaxAmount).Format("{0:N0}").Width(80);
+            columns.Bound(c => c.TotalAmount).Title("Total").Format("{0:N0}").Width(80);
+            columns.ForeignKey(c => c.Tax, (System.Collections.IEnumerable)ViewData["Tax"], "GLTaxRateID", "TaxName").Title("Tax Type").Width(80);
+           columns.Bound(c => c.Vat).Format("{0:N0}").Width(60);
+         
+
+            columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+        })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create();
+      })
+  .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("LineitemEditorTemplate").Window(w =>
+  {
+      w.Title("Line Item");
+      w.Scrollable(false);
+  }))
+         .HtmlAttributes(new { style = "height: 520px;" })
+                              .Pageable(pageable => pageable
+                                                .Input(true)
+                                                .Numeric(false)
+                                                .Refresh(true)
+                                                .PageSizes(true)
+                                                .ButtonCount(5))
+
+                                    .Scrollable()
+                                    .Sortable()
+                                    .Filterable()
+                                            .Scrollable(h => h.Height(500)).Events(e => e.Edit("AddCostItemInit"))
+.DataSource(dataSource => dataSource
+.Ajax()
+.ServerOperation(false)
+       .Model(model =>
+       {
+           model.Id(p => p.LineItemID);
+           model.Field(v => v.TotalAmount).Editable(false);
+           model.Field(v => v.TaxAmount).Editable(false);
+           model.Field(v => v.CalculatedCost).Editable(false);
+       }
+              ).Events(ev => ev
+                                                                                                                                                                                                                                                                                           .Error("error_handler(\"LineItems_#=SalesOrderVoucherID#\")")
+                                                                                                                                                                    .RequestStart("onRequestStart(\"LineItems_#=SalesOrderVoucherID#\")")
+                                                                                                                                                                    .RequestEnd("onRequestEnd(\"LineItems_#=SalesOrderVoucherID#\")"))
+
+
+                      .Read(read => read.Action("LineItems_Read", "LineItem", new { voucherID = "#=SalesOrderVoucherID#", voucherDefinitionID = "1" }))
+                                      .Create(create => create.Action("LineItems_Create", "LineItem", new { voucherID = "#=SalesOrderVoucherID#", voucherDefinitionIDCreate = "1" }))
+                            .Update(update => update.Action("LineItems_Update", "LineItem", new { voucherID = "#=SalesOrderVoucherID#", voucherDefinitionID = "1" }))
+        .Destroy(destroy => destroy.Action("LineItems_Destroy", "LineItem"))
+).ToClientTemplate()
+
+                            )
+                        </text>
+
+
+            );
+
+                    /***********************************************Voucher Terms*******************************************/
+                    items.Add().Text("VoucherTerms").Content(
+                        @<text>
+                            <legend>Voucher Terms</legend>
+                            @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.VoucherTerm>()
+                                      .Name("VoucherTerms_#=SalesOrderVoucherID#")
+              .Columns(columns =>
+              {
+                  columns.Bound(c => c.TermID).EditorTemplateName("VoucherTermEditor").Width(200);
+                  columns.Bound(c => c.Value);
+                  columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+              })
+              .ToolBar(toolbar =>
+              {
+                  toolbar.Create();
+              })
+              .Editable(editable => editable.Mode(GridEditMode.InLine))
+              .Scrollable()
+              .DataSource(dataSource => dataSource
+                  .Ajax()
+                          .Model(model => model.Id(p => p.VoucherTermID)).Events(ev => ev
+                                                                                                                                                                    .Error("error_handler(\"VoucherTerms_#=SalesOrderVoucherID#\")")
+                                                                                                                                                                    .RequestStart("onRequestStart(\"VoucherTerms_#=SalesOrderVoucherID#\")")
+                                                                                                                                                                    .RequestEnd("onRequestEnd(\"VoucherTerms_#=SalesOrderVoucherID#\")"))
+
+                                          .Read(read => read.Action("VoucherTerms_Read", "VoucherTerm", new { voucherID = "#=SalesOrderVoucherID#" }))
+                                          .Create(create => create.Action("VoucherTerms_Create", "VoucherTerm", new { voucherID = "#=SalesOrderVoucherID#" }))
+                  .Update(update => update.Action("VoucherTerms_Update", "VoucherTerm"))
+                  .Destroy(destroy => destroy.Action("VoucherTerms_Destroy", "VoucherTerm"))
+              ).ToClientTemplate()
+                            )
+
+                        </text>
+
+         );
+
+                    /*************************************************************************************************************/
+                    /***********************************************StoreTransactions*******************************************/
+                    items.Add().Text("StoreTransactions").Content(
+                        @<text>
+                            <legend>Store Transactions</legend>
+                            @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.StoreTransaction>()
+                                              .Name("StoreTransactions_#=SalesOrderVoucherID#")
+
+                   .Columns(columns =>
+              {
+
+                  columns.Bound(c => c.Source);//, (System.Collections.IEnumerable)ViewData["StoreList"], "StoreID", "Description");
+                  columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+              })
+                          .ToolBar(toolbar =>
+              {
+                  toolbar.Create();
+              })
+              .Editable(editable => editable.Mode(GridEditMode.InLine))
+              .Scrollable()
+              .DataSource(dataSource => dataSource
+          .Ajax()
+                  .Model(model => model.Id(p => p.StoreTransactionID)).Events(ev => ev
+                                                                                                                                                                    .Error("error_handler(\"StoreTransactions_#=SalesOrderVoucherID#\")")
+                                                                                                                                                                    .RequestStart("onRequestStart(\"StoreTransactions_#=SalesOrderVoucherID#\")")
+                                                                                                                                                                    .RequestEnd("onRequestEnd(\"StoreTransactions_#=SalesOrderVoucherID#\")"))
+
+                                  .Read(read => read.Action("StoreTransactions_Read", "StoreTransaction", new { voucherID = "#=SalesOrderVoucherID#" }))
+                                          .Create(create => create.Action("StoreTransactions_Create", "StoreTransaction", new { voucherID = "#=SalesOrderVoucherID#", hasEffect = "true" }))
+          .Update(update => update.Action("StoreTransactions_Update", "StoreTransaction"))
+          .Destroy(destroy => destroy.Action("StoreTransactions_Destroy", "StoreTransaction"))
+      ).ToClientTemplate()
+
+                            )
+                        </text>
+
+         );
+                }).ToClientTemplate()
+
+    )
+
+</script>
+
+
+
+@(Html.Kendo().Window().Name("Details")
+    .Title("Invoice Reject ")
+    .Visible(false)
+    .Modal(true)
+    .Draggable(true)
+    .Width(400)
+)
+
+<script type="text/x-kendo-template" id="Rejectemplate">
+    <div id="details-container">
+        <form action=" SalesOrderVoucher/Vouchers_Reject" method="post">
+
+            <input type="hidden" name="Id" value="#= SalesOrderVoucherID #">
+            <textarea rows="5" cols="10" class="form-control" name="Name" />
+            <input type="submit" class=" btn-danger k-button" value="Reject" />
+        </form>
+
+    </div>
+</script>
+
+
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 1000px;
+    }
+</style>
+
+<script>
+
+    var detailsTemplate = kendo.template($("#Rejectemplate").html());
+    function RejectPopUp(e) {
+        e.preventDefault();
+
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        var wnd = $("#Details").data("kendoWindow");
+
+        wnd.content(detailsTemplate(dataItem));
+        wnd.center().open();
+    }
+    function filterThing() {
+        return {
+            StoreID: $("#StoreID").val()
+        };
+    }
+</script>
+<script>
+
+    function DisplayReferenceInformation() {
+        var SalesQuoteVoucherObject = $("#SalesOrderVoucherReference").data("kendoComboBox");
+        var salesQuoteVoucherID = SalesQuoteVoucherObject.value();
+        $.ajax({
+            url: '@Url.Action("PopulateSalseQuoteVoucherForReference", "SalesOrderVoucher")',
+            data: { salesQuoteVoucherID: salesQuoteVoucherID },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                if (result != "") {
+
+                    alert(result);
+                }
+            }
+
+        });
+    }
+</script>
+
+<script>
+
+    var id;
+    var masterId;
+    var gridName;
+    var thingId;
+    var thingsid;
+    var masterDataItem;
+    var selectedStoreID;
+
+    function onDataBound(e) {
+        var grid = this;
+
+        var Checkgrid = $("#SalesOrderVoucher").data("kendoGrid");
+        var gridData = Checkgrid.dataSource.view();
+
+        for (var i = 0; i < gridData.length; i++) {
+            //get the item uid
+            var currentUid = gridData[i].uid;
+            //if the record fits the custom condition
+            if (gridData[i].LastObjectState == "Rejected") {
+                //find the row based on the uid and the custom class
+                var currenRow = grid.table.find("tr[data-uid='" + currentUid + "']");
+                $(currenRow).addClass("k-state-Rejected");
+            }
+        }
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+            //  dataItem.css("background-color", "red");
+            if (dataItem.LastObjectState == "Forwarded") {
+                $(this).find(".reject").remove();
+                $(this).find(".k-grid-edit").remove();
+                $(this).find(".k-grid-delete").remove();
+                $(this).find(".k-grid-Reject").remove();
+                $(this).addClass("k-state-Issued");
+            }
+            if (dataItem.References == "Manual" || dataItem.References == "No_Reference") {
+
+                $(this).find(".k-grid-Reject").remove();
+            }
+            if (dataItem.References != "Manual") {
+
+
+            }
+        });
+    }
+
+
+
+    function onDetailExpand(e) {
+        var masterRow = e.masterRow;
+        //var masterGrid = $("#grid").data("kendoGrid");
+        var masterGrid = $("#SalesOrderVoucher").data("kendoGrid");
+        var masterDataItem2 = masterGrid.dataItem(masterRow);
+        masterId = masterDataItem2.SalesOrderVoucherID;
+        gridName = "#LineItems_" + masterId;
+    }
+    function GetThingId(e) {
+        var masterRow = this.wrapper.closest("tr.k-detail-row").prev(".k-master-row");
+        var masterGridd = $(gridName).data("kendoGrid");
+        var rDataItem = masterGridd.dataItem(masterRow);
+        thingsid = rDataItem.ThingID;
+        selectedStoreID = rDataItem.StoreID;
+    }
+    function GetThingIdValue() {
+        return { thingId: id }
+    }
+
+
+    function selectItem(e) {
+        var grid = $(e.target).data("kendoGrid");
+        var item = grid.dataItem(grid.select());
+        var code = item.SalesOrderVoucherID;
+        //$("#reqRows").on("mousedown", "tr[role='row']", function (e) {
+        //    if (e.which === 3) {
+        //        $("#reqRows tbody tr").removeClass("k-state-selected");
+        //        $(this).addClass("k-state-selected");
+        //    }
+        //});
+        $.ajax({
+            url: "/SalesOrderVoucherView/SalesOrderVoucherViews_Forward",
+            data: { userRole: code, SalesOrderVoucherViewID: code }
+        });
+    }
+
+
+    function showDetails(e) {
+        e.preventDefault();
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+        var wnd = $("#Details").data("kendoWindow");
+        var code = dataItem.SalesOrderVoucherID;
+        $.ajax({
+            url: "/SalesOrderVoucher/Vouchers_Forward",
+            data: { salesOrderVoucherID: code },
+            cache: false,
+
+        });
+        $("#SalesOrderVoucher").data("kendoGrid").dataSource.read();
+        //wnd.content(detailsTemplate(dataItem));
+        //wnd.center().open();
+    }
+
+    function filterPayment() {
+        return {
+            customerId: $("#OrganizationCustomerId").val()
+        };
+    }
+    function filterThing() {
+        return {
+            StoreID: $("#StoreID").val()
+        };
+    }
+
+
+    function filterVariety() {
+        return {
+            ThingID: $("#ThingID").val()
+        };
+    }
+    function filterclass() {
+        return {
+            ProductName: $("#ThingID").val()
+        };
+    }
+</script>
+<script>
+    function GetStockBalance() {
+
+        var storeobj = $("#StoreID").data("kendoDropDownList");
+        var stID = storeobj.value();
+        var thingobj = $("#ThingID").data("kendoDropDownList");
+
+        var tID = thingobj.value();
+        var varityobj = $("#Variety").data("kendoDropDownList");
+        var vid = varityobj.value();
+        var classobj = $("#Class").data("kendoDropDownList");
+        var cid = classobj.value();
+        //   var stID = selectedStoreID = $("#Store").data("kendoDropDownList");
+        $.ajax({
+            url: '@Url.Action("GetStockBalance", "CRMDataProvider")',
+            data: { storeID: stID, productID: tID, VarietyID: vid, Class: cid },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                r = result;
+                $("#UnitAmount").val('0.0');
+                $("#TaxAmount").val('0.0');
+                $("#TotalAmount").val('0.0');
+                if (r != 0) {
+                    var s = r.split(/_/);
+                    $("#StockBalance").val(s[0]);
+                    $("#CalculatedCost").val(s[1]);
+                    $("#StockBalanceReserved").val(s[2]);
+                } else {
+                    $("#StockBalance").val('0.0');
+                    $("#CalculatedCost").val('0.0');
+                    $("#StockBalanceReserved").val('0.0');
+                }
+            }
+
+        });
+    }
+
+
+</script>
+
+<script>
+
+    function GetPriceParameter() {
+        var id = masterDataItem.ThingID;
+        return {
+            productID: id
+        };
+    }
+    function UpdatePriceChange() {
+
+        var priceTagDetail = $("#PriceTagDetail").data("kendoDropDownList");
+        var ptdID = priceTagDetail.value();
+        var priceTag = $("#PriceTag").data("kendoDropDownList");
+        var ptID = priceTag.value();
+        var product = $("#ThingID").data("kendoDropDownList");
+        var pID = product.value();
+        var Varietyobj = $("#Variety").data("kendoDropDownList");
+        var vID = Varietyobj.value();
+        var Classobj = $("#Class").data("kendoDropDownList");
+        var cID = Classobj.value();
+
+        $.ajax({
+            url: '@Url.Action("GetPriceValue", "CRMDataProvider")',
+
+            data: { priceTagID: ptID, priceTagDetailID: ptdID, productID: product.value(), VarietyID: vID, ClassID: cID },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                if (result == "") {
+                    result = 0;
+                }
+                else {
+                    $("#UnitAmount").val(parseFloat(result));
+                }
+
+            }, error: function () {
+                $("#UnitAmount").val("0");
+            }
+
+        });
+
+    }
+
+
+    function GetPriceTagDetailParameter() {
+        var pt = $("#PriceTag").data("kendoDropDownList");
+        return {
+            priceTag: pt.value()
+        };
+    }
+
+
+    function GetTaxValue() {
+
+        var taxObject = $("#Tax").data("kendoDropDownList");
+        var taxID = taxObject.value();
+        var unitAmountValue = $("#UnitAmount").val();
+        var quantityValue = $("#Quantity").val();
+        var InsuranceCost = $("#InsuranceCost").val();
+        var FreightCost = $("#FreightCost").val();
+        var OtherCost = $("#OtherCost").val();
+        var GrowthValue = parseInt(quantityValue);
+
+        $.ajax({
+            url: '@Url.Action("GetTaxValue", "CRMDataProvider")',
+            data: { taxID: taxID },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                r = result;
+
+                var calculatedTax = (r / 100) * parseInt(quantityValue) * unitAmountValue;
+                var calculatedTotalAmount = (quantityValue * unitAmountValue) + calculatedTax ;
+                calculatedTax = parseFloat(Math.round(calculatedTax)).toFixed(2);
+                calculatedTotalAmount = parseFloat(Math.round(calculatedTotalAmount)).toFixed(2);
+
+                $("#TaxAmount").val(calculatedTax);
+                $("#TotalAmount").val(calculatedTotalAmount);
+            }
+
+
+        });
+    }
+
+
+    function GetAdditionalCost() {
+
+        var taxObject = $("#Tax").data("kendoDropDownList");
+        var taxID = taxObject.value();
+        var unitAmountValue = $("#UnitAmount").val();
+        var quantityValue = $("#Quantity").val();
+        var InsuranceCost = $("#InsuranceCost").val();
+        var FreightCost = $("#FreightCost").val();
+        var OtherCost = $("#OtherCost").val();
+        var GrowthValue = parseInt(quantityValue);
+
+        $.ajax({
+            url: '@Url.Action("GetAddiotonalCost", "CRMDataProvider")',
+            data: { taxID: taxID },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                r = result;
+
+                var html = "";
+
+
+                html += "<div class='col-sm-6 form-group'>Type : <select name=AdditionalCostItem[" + index + "][Id] data-bind='value:AdditionalCostItem[" + index + "][Id]' value=" + r + " ><option value='1'>Fright Cost </option></select></div>  <div class='col-sm-3'> Value: <input type='number' name=AdditionalCostItem[" + index + "][Name] data-bind='value:AdditionalCostItem[" + index + "][Name]' min='0' value=" + r + "  /> </div>";
+
+
+                $("#content").append(html);
+
+                kendo.init("#content");
+                index++;
+            }
+
+
+        });
+    }
+
+    function onDetailExpandUser(e) {
+        var masterRow = e.masterRow;
+
+        var masterGrid = $("#SalesOrderVoucher").data("kendoGrid");
+
+        var masterDataItem = masterGrid.dataItem(masterRow);
+
+        masterId = masterDataItem.SalesOrderVoucherID;
+        var linegridName = "#LineItems_" + masterId;
+        var vouchertermGridName = "VoucherTerms_" + masterId;
+        var VoucherExtensionGridName = "VoucherExtension_" + masterId;
+        $.ajax({
+            url: '@Url.Action("GetStatus", "SalesOrderVoucher")',
+
+            data: { Id: masterId },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                r = result;
+
+                if (r == "Forwarded" || r == "Approved") {
+                    $(linegridName).find(".k-toolbar").hide(); //hide toolbar
+                    $(".k-grid-top", linegridName).hide();
+                    $(".k-grid-edit", linegridName).hide();
+                    $(".k-grid-delete", linegridName).hide();
+
+                    $(vouchertermGridName).find(".k-toolbar").hide(); //hide toolbar
+                    $(".k-grid-top", vouchertermGridName).hide();
+                    $(".k-grid-edit", vouchertermGridName).hide();
+                    $(".k-grid-delete", vouchertermGridName).hide();
+
+                    $(VoucherExtensionGridName).find(".k-toolbar").hide(); //hide toolbar
+                    $(".k-grid-top", VoucherExtensionGridName).hide();
+                    $(".k-grid-edit", VoucherExtensionGridName).hide();
+                    $(".k-grid-delete", VoucherExtensionGridName).hide();
+                }
+
+                else {
+                    $(linegridName).find(".k-toolbar").show(); //hide toolbar
+                    $(".k-grid-top", linegridName).show();
+                }
+
+            }
+
+        });
+
+    }
+
+    var index = 0;
+    var PopUpMode = "";
+    function AddCostItemInit(e) {
+
+        if (e.model.isNew()) {
+            $('#lineForm').attr('action', '@Url.Action("LineItems_Create", "LineItem")');
+            $('#linesave').val("Create");
+        }
+        else {
+            $('#lineForm').attr('action', '@Url.Action("LineItems_Update", "LineItem")');
+            $('#linesave').val("Update");
+        }
+        $('#Voucher').val(masterId);
+        $('#VoucherDefinitionId').val('1');
+        var html = "";
+        var optionId = "option" + index;
+
+        $('.k-edit-buttons').css('display', 'none');
+
+        $.ajax({
+            url: "@Url.Action("GetLineAdditionalCost", "CRMDataProvider")",
+            type: 'GET',
+        traditional: true,
+        data: { Id: $("#LineItemID").val() },
+        success: function (data) {
+
+
+
+            $.each(data, function (index, optiondata) {
+                html += "  <div class='col-sm-12 form-row form-control ' id='otherline" + index + "' style='padding:5px;'> <div class='col-sm-6 form-row'> <div class='col-sm-3'> </div> <select class='col-sm-5' name=AdditionalCostItem[" + index + "][Id] id='" + optionId + "' data-bind='value:AdditionalCostItem[" + index + "][Id]' ><option selected value='" + optiondata.AdditionalCostId + "'>" + optiondata.Name + "</option></select></div>  <div class='col-sm-3'> Value: <input type='number' name=AdditionalCostItem[" + index + "][Name] data-bind='value:AdditionalCostItem[" + index + "][Name]' min='0' value= '" + optiondata.Value + "' /> <button id='remove" + index + "' class='k-button k-primary btn-danger ' onclick=' return RemoveCostItem(otherline" + index + ");'>Remove  </button> </div> </div>";
+
+            });
+            $("#CostItem").append(html);
+
+            kendo.init("#CostItem");
+            index++;
+        }
+
+    });
+
+    return false;
+    };
+    function RemoveCostItem(e) {
+
+        $('#' + e.id).remove();
+    }
+    var ItemIndex = 0;
+    function AddCostItem() {
+
+
+        var html = "";
+
+        var optionId = "optionAdded" + ItemIndex;
+        var ItemId = "ItemAdded" + ItemIndex;
+        $('.k-edit-buttons').css('display', 'none');
+        $('.form-bottom').css('display', 'block');
+        html += "  <div class='col-sm-12 form-row form-control' id='" + ItemId + "' style='padding:5px;'> <div class='col-sm-6 form-row'> <div class='col-sm-3'> </div> <select class='col-sm-5' name=AdditionalCostItem[" + ItemIndex + "][Id] id='" + optionId + "' data-bind='value:AdditionalCostItem[" + ItemIndex + "][Id]' ><option selected disabled > Select Cost Type </option></select></div>  <div class='col-sm-4'> Value: <input type='number' name=AdditionalCostItem[" + ItemIndex + "][Name] data-bind='value:AdditionalCostItem[" + ItemIndex + "][Name]' min='0' value= '0' />  <button id='" + generate + "' class='k-button k-primary btn-danger ' onclick=' return RemoveCostItem('"+ItemId+"');'>Remove  </button></div> </div>";
+        $.ajax({
+            url: "@Url.Action("GetAdditionalCost", "CRMDataProvider")",
+            type: 'GET',
+        traditional: true,
+        success: function (data) {
+
+
+
+            $.each(data, function (index, optiondata) {
+
+                $("#" + optionId).append("<option value='" + optiondata.AdditionalCostId + "'>" + optiondata.Name + "</option>");
+            });
+
+        }
+
+    });
+    $("#CostItem").append(html);
+
+    kendo.init("#CostItem");
+    ItemIndex++;
+    return false;
+    };
+
+
+</script>
+<script>
+    function ClearValMsg() {
+        $("#StoreVal").text("");
+        $("#ProductVal").text("");
+        $("#TaxVal").text("");
+        $("#PriceTagVal").text("");
+        $("#PriceTagDetailVal").text("");
+        $("#QuantityVal").text("");
+        return false;
+    }
+    function ValidateInput() {
+        var ValidationCount = 0;
+        var StoreObject = $("#StoreID").data("kendoDropDownList");
+        var StoreId = StoreObject.value();
+        if (StoreId == "" || StoreId == null) {
+            $("#StoreVal").text("Required");
+            ValidationCount = ValidationCount + 1;
+
+        }
+        var ProductObject = $("#ThingID").data("kendoDropDownList");
+        var ProductId = ProductObject.value();
+        if (ProductId == "" || ProductId == null) {
+            $("#ProductVal").text("Required");
+            ValidationCount = ValidationCount + 1;
+
+        }
+        var TaxObject = $("#Tax").data("kendoDropDownList");
+        var TaxId = TaxObject.value();
+        if (TaxId == "" || TaxId == null) {
+            $("#TaxVal").text("Required");
+            ValidationCount = ValidationCount + 1;
+
+        }
+
+        var PriceTagObject = $("#PriceTag").data("kendoDropDownList");
+        var PriceTagId = PriceTagObject.value();
+        if (PriceTagId == "" || PriceTagId == null) {
+            $("#PriceTagVal").text("Required");
+            ValidationCount = ValidationCount + 1;
+
+        }
+        var PriceTagDetailObject = $("#PriceTagDetail").data("kendoDropDownList");
+        var PriceTagDetailId = PriceTagDetailObject.value();
+        if (PriceTagDetailId == "" || PriceTagDetailId == null) {
+            $("#PriceTagDetailVal").text("Required");
+            ValidationCount = ValidationCount + 1;
+
+        }
+        var AmountId = $("#Quantity").val();
+        var StockBaalance = $("#StockBalance").val();
+        if (parseFloat(AmountId) > parseFloat(StockBaalance)) {
+            alert("Quantity Greater Than Stock Balance");
+            ValidationCount = ValidationCount + 1;
+        }
+        var AmountId = $("#Quantity").val();
+        if (AmountId == "0" || AmountId == "" || AmountId == null) {
+            $("#QuantityVal").text("Amount Can't Be 0 ");
+            ValidationCount = ValidationCount + 1;
+        }
+        if (ValidationCount > 0) {
+            return false;
+        }
+
+    }
+</script>

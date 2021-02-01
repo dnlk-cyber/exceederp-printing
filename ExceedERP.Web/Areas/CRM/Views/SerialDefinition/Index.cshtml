@@ -1,0 +1,25 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.SerialDefinition>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.Thing);
+        columns.Bound(c => c.Description);
+        columns.Bound(c => c.IsMandatory);
+        columns.Bound(c => c.Remark);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.SerialDefinitionID))
+          .Read(read => read.Action("SerialDefinitions_Read", "SerialDefinition"))
+          .Create(create => create.Action("SerialDefinitions_Create", "SerialDefinition"))
+          .Update(update => update.Action("SerialDefinitions_Update", "SerialDefinition"))
+          .Destroy(destroy => destroy.Action("SerialDefinitions_Destroy", "SerialDefinition"))
+      )
+)

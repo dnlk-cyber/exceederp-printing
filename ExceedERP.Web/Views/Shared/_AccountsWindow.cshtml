@@ -1,0 +1,87 @@
+﻿@(Html.Kendo().Window().Name("AccountCodeWindow")
+     .Title("Select Accounts")
+    .Visible(false)
+    .Modal(true)
+      .Content(@<text>
+        @(Html.Kendo().ComboBox()
+                         .Name("Accounts")
+                         .HtmlAttributes(new { style = "width:200px" })
+                         .ValuePrimitive(true)
+                         .Placeholder("Account...")
+                                  .Filter("contains")
+              .MinLength(2)
+                         .DataTextField("GlchartAccunt")
+                         .DataValueField("GlValue")
+                         .DataSource(dataSource =>
+                         {
+                             dataSource.Read(read => read.Action("GetAccountCode", "PayrollAcounts", new { area = "HRM" }))
+                                 .ServerFiltering(true);
+                         }))
+
+        <br />
+        <br />
+
+        @(Html.Kendo().ComboBox()
+                          .Name("Company")
+                          .ValuePrimitive(true)
+                          .Placeholder("Comapny...")
+                                   .Filter("contains")
+              .MinLength(2)
+                          .HtmlAttributes(new { style = "width:200px" })
+                                  .DataTextField("Name")
+                                  .DataValueField("Value")
+                          .DataSource(dataSource =>
+                          {
+                              dataSource.Read(read => read.Action("GetCompany", "PayrollAcounts", new { area = "HRM" }))
+                                  .ServerFiltering(true);
+                          })
+        )
+        <br />
+        <br />
+        @(Html.Kendo().ComboBox()
+                           .Name("CostCent")
+                          .ValuePrimitive(true)
+                              .Placeholder("Cost Center...")
+                                       .Filter("contains")
+              .MinLength(2)
+                          .HtmlAttributes(new { style = "width:200px" })
+                                      .DataTextField("GlchartAccunt")
+                                  .DataValueField("GlValue")
+                          .DataSource(dataSource =>
+                          {
+                              dataSource.Read(read => read.Action("GetCostCenter", "PayrollAcounts", new { area = "HRM" }))
+                                  .ServerFiltering(true);
+                          })
+        )
+        <br />
+        <br />
+        @(Html.Kendo().ComboBox()
+                          .Name("SubAccounts")
+                          .ValuePrimitive(true)
+                          .Placeholder("SubAccount...")
+                                   .Filter("contains")
+              .MinLength(2)
+                          .HtmlAttributes(new { style = "width:200px" })
+                                  .DataTextField("GlchartSubAccunt")
+                                  .DataValueField("GlValue")
+                          .DataSource(dataSource =>
+                          {
+                              dataSource.Read(read => read.Action("GetSubAccountCode", "PayrollAcounts", new { area = "HRM" }))
+                                  .ServerFiltering(true);
+                          })
+        )
+        <br />
+        <br />
+
+        @Html.ValidationMessageFor(m => m)
+        <br />
+        <br /> <br />
+        <div class="pull-right">
+            @Html.Kendo().Button().Name("Save").Content("Submit").Events(ev => ev.Click("SelectionSubmitHandler"))
+
+        </div>
+
+    </text>)
+    .Draggable(true)
+    .Width(300)
+)

@@ -1,0 +1,221 @@
+﻿@using System.Collections
+@using ExceedERP.Helpers.Common
+@using Kendo.Mvc.UI
+@model ExceedERP.Core.Domain.HRM.EmployeeDetail.Experience
+@using ExceedERP.Core.Localization
+
+<form>
+
+<div class="row">
+    <div class="col-md-1">
+
+    </div>
+    <div class="col-md-3">
+        <div class="form-group">
+            <div class="k-label">
+                @Html.LabelFor(model => model.EmployeeId, htmlAttributes: new { @class = "control-label col-md-8" })
+
+            </div>
+            <div>
+
+               @(Html.Kendo().DropDownListFor(model => model.EmployeeId)
+                       //  .Name("EmployeeId")
+                                              .DataValueField("PersonId")
+                        .DataTextField("FullName")
+                           .OptionLabel("Select Employee..")
+                            .Filter("contains")
+                            .MinLength(2)
+                            .HtmlAttributes(new { style = "width:100%" })
+                                            .DataSource(source =>
+                                              {
+                                              source.Read(read => read.Action("GetEmployees", "HRMDataProvider"));
+
+
+                                           })
+                           .ValuePrimitive(true)
+
+
+                                                  .Height(400)
+                                                          .HeaderTemplate("<div class=\"dropdown-header k-widget k-header\">" +
+                                        "<span>Photo</span>" +
+                                        "<span>Full Name</span>" +
+                                    "</div>")
+                                                                                                                       .Template(@"<div class='Employee-photo' style='background-image: url(" + Url.Content("~/Content/Images/") + "#:data.PersonId#-Photo/" + "#:data.PersonId#.jpg" + ");'></div>" +
+                                            "<div class='Employee-name'>#:FullName#</div>")
+
+
+
+            )
+
+
+
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div>
+            @Html.LabelFor(model => model.Organozation, htmlAttributes: new { @class = "control-label col-md-8" })
+        </div>
+        <div class="form-group">
+            @Html.Kendo().TextBoxFor(model => model.Organozation)
+            @Html.ValidationMessageFor(model => model.Organozation, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div>
+            @Html.LabelFor(model => model.OrgFullAddress, htmlAttributes: new { @class = "control-label col-md-8" })
+        </div>
+        <div class="form-group">
+            @Html.Kendo().TextBoxFor(model => model.OrgFullAddress)
+            @Html.ValidationMessageFor(model => model.OrgFullAddress, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+</div>
+
+<br/>
+
+
+<div class="row">
+    <div class="col-md-1">
+
+    </div>
+    <div class="col-md-3">
+        <div>
+            @Html.LabelFor(model => model.EmploymentType, htmlAttributes: new { @class = "control-label col-md-8" })
+        </div>
+        <div class="form-group">
+            @(Html.EnumDropDownListFor(model => model.EmploymentType, htmlAttributes: new { @class = "k-dropdown-wrap k-state-default", @style = "width: 140px" })
+
+            )
+            @Html.ValidationMessageFor(model => model.EmploymentType, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div class="form-group">
+            <div class="k-label">
+                @Html.LabelFor(model => model.From, htmlAttributes: new { @class = "control-label col-md-8" })
+
+            </div>
+            <div>
+
+                @Html.Kendo().DatePickerFor(model => model.From)
+                @Html.ValidationMessageFor(model => model.From, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div>
+            @Html.LabelFor(model => model.To, htmlAttributes: new { @class = "control-label col-md-8" })
+        </div>
+        <div class="form-group">
+
+            @Html.Kendo().DatePickerFor(model => model.To)
+            @Html.ValidationMessageFor(model => model.To, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+
+
+
+</div>
+<br/>
+<div class="row">
+    <div class="col-md-1">
+
+    </div>
+    @*<div class="col-md-3">
+        <div>
+            @Html.LabelFor(model => model.TotalDuration, htmlAttributes: new { @class = "control-label col-md-8" })
+        </div>
+        <div class="form-group">
+
+            @Html.Kendo().TextBoxFor(model => model.TotalDuration)
+            @Html.ValidationMessageFor(model => model.TotalDuration, "", new { @class = "text-danger" })
+        </div>
+    </div>*@
+    <div class="col-md-3">
+        <div>
+            @Html.LabelFor(model => model.Responsibility, htmlAttributes: new { @class = "control-label col-md-8" })
+        </div>
+        <div class="form-group">
+
+           @Html.Kendo().TextBoxFor(model => model.Responsibility)
+        @Html.ValidationMessageFor(model => model.Responsibility, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div>
+            @Html.LabelFor(model => model.ClearanceDateTime, htmlAttributes: new { @class = "control-label col-md-8" })
+        </div>
+        <div class="form-group">
+
+            @Html.Kendo().DatePickerFor(model => model.ClearanceDateTime)
+            @Html.ValidationMessageFor(model => model.ClearanceDateTime, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+    <div class="col-md-3">
+        <div>
+            @Html.LabelFor(model => model.CleranceReason, htmlAttributes: new { @class = "control-label col-md-8" })
+
+        </div>
+        <div class="form-group">
+
+            @Html.Kendo().TextBoxFor(model => model.CleranceReason)
+            @Html.ValidationMessageFor(model => model.CleranceReason, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+
+
+
+</div>
+<br/>
+<div class="row">
+    <div class="col-md-1">
+
+    </div>
+    <div class="col-md-3">
+        <div>
+            @Html.LabelFor(model => model.Salary, htmlAttributes: new { @class = "control-label col-md-8" })
+
+        </div>
+        <div class="form-group">
+
+            @Html.Kendo().TextBoxFor(model => model.Salary)
+            @Html.ValidationMessageFor(model => model.Salary, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div>
+            @Html.LabelFor(model => model.IncomeTaxPaymentRefNo, htmlAttributes: new { @class = "control-label col-md-8" })
+
+        </div>
+        <div class="form-group">
+
+            @Html.Kendo().TextBoxFor(model => model.IncomeTaxPaymentRefNo)
+            @Html.ValidationMessageFor(model => model.IncomeTaxPaymentRefNo, "", new { @class = "text-danger" })
+        </div>
+    </div>
+    
+    <div class="col-md-3">
+        <div>
+            @Html.LabelFor(model => model.Remark, htmlAttributes: new { @class = "control-label col-md-8" })
+
+        </div>
+        <div class="form-group">
+
+            @Html.Kendo().TextBoxFor(model => model.Remark)
+            @Html.ValidationMessageFor(model => model.Remark, "", new { @class = "text-danger" })
+        </div>
+    </div>
+
+</div>
+
+<br/>
+
+</form>
+

@@ -1,0 +1,10 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.HRM
+@using ExceedERP.Core.Localization
+@(Html.Kendo().DropDownListFor(m=> m).BindTo((IEnumerable)ViewData["StepList"])
+.OptionLabel(Resources.Select)
+                    .DataTextField("StepName")
+                    .DataValueField("StepId")
+
+                               .ValuePrimitive(true)        
+)

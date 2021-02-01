@@ -1,0 +1,22 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Procurement.Tender.TenderBidDocument>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.FileName);
+          columns.Bound(c => c.FilePath);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.TenderBidDocumentId))
+          .Read(read => read.Action("TenderBidDocuments_Read", "BidDocument"))
+          .Create(create => create.Action("TenderBidDocuments_Create", "BidDocument"))
+          .Update(update => update.Action("TenderBidDocuments_Update", "BidDocument"))
+          .Destroy(destroy => destroy.Action("TenderBidDocuments_Destroy", "BidDocument"))
+      ))

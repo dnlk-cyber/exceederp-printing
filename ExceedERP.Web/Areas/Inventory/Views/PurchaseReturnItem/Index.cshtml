@@ -1,0 +1,29 @@
+﻿@using ExceedERP.Core.Domain.Inventory
+
+@(Html.Kendo().Grid<PurchaseReturnItems>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.InventoryItem);
+          columns.Bound(c => c.Quantity);
+          columns.Bound(c => c.UnitPrice);
+          columns.Bound(c => c.SubTotal);
+          columns.Bound(c => c.TaxType);
+          columns.Bound(c => c.TaxAmount);
+          columns.Bound(c => c.TotalAmount);
+          columns.Bound(c => c.OrgBranchName);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.PurchaseReturnItemsID))
+          .Read(read => read.Action("PurchaseReturnItemss_Read", "PurchaseReturnItem"))
+          .Create(create => create.Action("PurchaseReturnItemss_Create", "PurchaseReturnItem"))
+          .Update(update => update.Action("PurchaseReturnItemss_Update", "PurchaseReturnItem"))
+          .Destroy(destroy => destroy.Action("PurchaseReturnItemss_Destroy", "PurchaseReturnItem"))
+      ))

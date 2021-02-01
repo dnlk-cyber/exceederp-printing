@@ -1,0 +1,308 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.HRM.EmployeeDetail
+@using ExceedERP.Core.Localization
+@using ExceedERP.Core.Domain.Common.HRM
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Complain Description</legend>
+@(Html.Kendo().Grid<Complain>()
+                          .Name("Complain")
+                          .Columns(columns =>
+                          {
+                              columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["Employees"], "EmployeeId", "FullNameaEnglish").Width(140);
+                              columns.Bound(c => c.DateAmharic).EditorTemplateName("Calander").Width(100);
+                              columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["TypeList"], "LookupId", "Description").EditorTemplateName("LookUpList").Width(140);
+                              columns.Bound(c => c.ComplainDescription).Title("Complain Description").Width(300);
+                              columns.ForeignKey(c => c.RefersTo, (IEnumerable)ViewData["RefersTo"], "OrgStructureId", "Name").EditorTemplateName("OrganizationDept").Width(150);
+
+                  //columns.ForeignKey(c => c.CC, (IEnumerable)ViewData["CC"], "OrgStructureId", "Name").EditorTemplateName("OrganizationDept").Width(150);
+                  // columns.ForeignKey(c => c.RefersTo, (IEnumerable)ViewData["RefersTo"], "OrgStructureId", "Name").EditorTemplateName("OrganizationDept").Width(200);
+
+                  columns.Bound(c => c.Remark).Width(100);
+                  // columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit); command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+              })
+                          //.ToolBar(toolbar =>
+                          //{
+                          //    toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                          //})
+                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                          .Scrollable(h => h.Height(500))
+                          .Selectable(selectable =>
+                          {
+                              selectable.Mode(GridSelectionMode.Single);
+                              selectable.Type(GridSelectionType.Row);
+                          })
+                          .Groupable()
+                          .Sortable(sortable =>
+                          {
+                              sortable.SortMode(GridSortMode.SingleColumn);
+                          })
+                          .Filterable()
+                          .Events(e =>
+                          {
+                              e.Save("GetDate");
+
+                              e.Edit("GetDate");
+                          })
+                          .Pageable(pageable => pageable
+                              .Input(true)
+                              .Numeric(false)
+                              .Refresh(true)
+                              .PageSizes(true)
+                              .ButtonCount(5))
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+                                  .Events(events =>
+                                  {
+                                      events.Error("error_handler(\"Complain\")");
+                                      events.RequestStart("onRequestStart(\"Complain\")");
+                                      events.RequestEnd("onRequestEnd(\"Complain\")");
+                                  })
+
+                              .Model(model => model.Id(p => p.ComplainId))
+                              .Read(read => read.Action("ComplainDescription_Read", "ComplainDescription"))
+                              .Create(create => create.Action("ComplainDescription_Create", "ComplainDescription", new { Area = "HRM" }))
+                              .Update(update => update.Action("ComplainDescription_Update", "ComplainDescription"))
+                              .Destroy(destroy => destroy.Action("ComplainDescription_Destroy", "ComplainDescription"))
+
+                         ).ClientDetailTemplateId("template")
+)
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                                                                                                            .Name("tabstrip_#=ComplainId#")
+                                                                                                    .SelectedIndex(0)
+                                                                                                    .Items(items =>
+                                                                                                     {
+
+
+                                                                                             //*****************************************************************************************************//
+                                                                                             //*********************************Clerance*************************************************//
+                                                                                             items.Add().Text("Response").Content(
+                                                                                                        @<text>
+
+
+                                                                                                            @(Html.Kendo().Grid<ComplainDetail>()
+                                                                                                                                                                                                                              .Name("ComplainDetail#=ComplainId#")
+                                                                                                                                                                                                              .Columns(columns =>
+                                                                                                                                                                                                              {
+
+                                                                                                                                                                                                                          columns.Bound(c => c.Response).Width(200);
+                                                                                                                                                                                                                          columns.Bound(c => c.DateAm).Width(50);
+                                                                                                                                                                                                              //columns.Command(command =>
+                                                                                                                                                                                                              //            {
+
+                                                                                                                                                                                                              //    // command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                                                                                                                                                                                              //    // command.Destroy().Text(Resources.ActionButton_Cancel);
+
+                                                                                                                                                                                                              //}).Width(20);
+                                                                                                                                                                                                          })
+
+                                                                                                                                                                                                              .ToolBar(toolbar =>
+                                                                                                                                                                                                              {
+                                                                                                                                                                                                              // toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                                                                                                                                                                                                          })
+
+                                                                                                                                                                                                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                                                                                                                                                      .Scrollable()
+                                                                                                                                                                                                      .Selectable()
+                                                                                                                                                                                                      .DataSource(dataSource => dataSource
+                                                                                                                                                                                                          .Ajax()
+                                                                                                                                                                                                                  .Events(events =>
+                                                                                                                                                                                                                  {
+                                                                                                                                                                                                                              events.Error("error_handler(\"ComplainDetail#=ComplainId#\")");
+                                                                                                                                                                                                                              events.RequestStart("onRequestStart(\"ComplainDetail#=ComplainId#\")");
+                                                                                                                                                                                                                              events.RequestEnd("onRequestEnd(\"ComplainDetail#=ComplainId#\")");
+                                                                                                                                                                                                                          })
+
+
+                                                                                                                                      .Model(model => model.Id(p => p.ComplainDetailId))
+                                                                                                                                   .Read(read => read.Action("ComplainDetail_Read", "ComplainDetail", new { id = "#=ComplainId#" }))
+                                                                                                                                   .Create(create => create.Action("ComplainDetail_Create", "ComplainDetail", new { id = "#=ComplainId#" }))
+                                                                                                                                  .Update(update => update.Action("ComplainDetail_Update", "ComplainDetail"))
+                                                                                                                                  .Destroy(destroy => destroy.Action("ComplainDetail_Destroy", "ComplainDetail"))
+
+                                                                                                                                                                                                      ).ToClientTemplate()
+                                                                                                            )
+                                                                                                            <a href='@Url.Action("ComplainDescriptionLetter", "PrintableLetter")/?id=#=ComplainId#' title="Print"><i class="fa fa-print fa-2x"></i></a>
+
+
+                                                                                                        </text>
+                                                                                                                                                                                                           );
+
+                                                                                                     //*********************************Attachment***********************************************************//
+                                                                                                     items.Add().Text(Resources.Navigator_Company_UploadDocument).Content(
+                                                                                @<text>
+                                                                                    @* <Legend>Photo</Legend>*@
+
+                                                                                    @(Html.Kendo().Grid<Attachment>()
+                                                                                                                                  .Name("Documents_#=ComplainId#")
+                                                                                                                                  .Columns(columns =>
+                                                                                                                                  {
+                                                                                                                                              columns.Bound(c => c.FileName);
+                                                                                                                                              columns.Bound(c => c.Description); //.Title("File Name").ClientTemplate((@Html.ActionLink("#=Description#", "DownloadFile", "DownloadDocument", new { filename = "#=Description#" }, null).ToHtmlString()));
+                                                                                                                                                                                 // columns.Bound(c => c.FileType).ClientTemplate(Html.ActionLink("DownLoad", "DownloadDoument", new { filename = "#=EmployeeId#" }).ToHtmlString());
+                                                                                                                                  columns.Bound(m => m.FileType).ClientTemplate(Html.ActionLink(Resources.Common_Attachment_FileType, "DownloadFile", "HRMDataProvider", new { filename = "\\#= AttachmentId\\#", type = "Doc" }, null).ToString());
+                                                                                                                                              columns.Command(command =>
+                                                                      {
+                                                                                              if (HttpContext.Current.User.IsInRole("HR_Profile_Admin") || HttpContext.Current.User.IsInRole("HR_Admin"))
+                                                                                              {
+                                                                                                  command.Destroy().Text(Resources.ActionButton_Cancel);//
+                                                                                  }
+                                                                                  //    command.Custom("Download").Click("DownloadAttachmnets");
+
+                                                                              }).Width(300);
+
+                                                                                                                                          })
+                                                                                                                                  .Events(e =>
+                                                                                                                                          {
+                                                                                                                                                      e.Change("onChange");
+                                                                                                                                                      e.Edit("onGridEdit");
+                                                                                                                                                  })
+                                                                                                                                               .ToolBar(toolbar =>
+                                                                                                                                               {
+                                                                                                                                               //toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                                                                                                                                           })
+                                                                                                                                                      .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("UploadDocument").Window(window =>
+                                                                                                                                                      {
+                                                                                                                                                                  window.Scrollable(false);
+                                                                                                                                                                  window.Title(Resources.Navigator_Company_UploadDocument);
+                                                                                                                                                              }))
+
+                                                                                                                                      .Scrollable()
+                                                                                                                                      .Selectable()
+                                                                                                                                      .DataSource(dataSource => dataSource
+                                                                                                                                          .Ajax()
+                                                                                                                                                   .Events(events =>
+                                                                                                                                                   {
+
+                                                                                                                                                               events.Error("error_handler(\"Documents_#=ComplainId#\")");
+                                                                                                                                                               events.RequestStart("onRequestStart(\"Documents_#=ComplainId#\")");
+                                                                                                                                                               events.RequestEnd("onRequestEnd(\"Documents_#=ComplainId#\")");
+                                                                                                                                                           })
+
+
+                                                                                                                                          .Model(model => model.Id(p => p.AttachmentId))
+                                                                                                                                                                  .Read(read => read.Action("Attachments_Read", "Attachment", new { Area = "Common", attachmentReferenceType = "DOCUMENT", id = "#=ComplainId#", fileOwner = "#=ComplainId#" }))
+                                                                                                                                                                         .Create(create => create.Action("Attachments_Create", "Attachment", new { Area = "Common", attachmentReferenceType = "DOCUMENT", id = "#=ComplainId#", fileOwner = "#=ComplainId#" }))
+                                                                                                                                                          .Destroy(destroy => destroy.Action("Attachments_Destroy", "EmployeeProfile"))
+
+                                                                                                                                      ).ToClientTemplate()
+                                                                                    )
+                                                                                </text>
+                                                                                                                                                 );
+
+
+
+
+
+                                                                                                                 }).ToClientTemplate())
+</script>
+
+
+
+<script>
+    function GetDate() {
+
+        var x = AssignDate();
+        var y = x;
+        $("#DateAmharic").trigger("change");
+
+        for (var o in y) {
+            $.ajax({
+                contentType: "application/json; charset=utf-8",
+                url: '@Url.Action("SetDate", "Complain")',
+                data: { name: y[o].id, value: y[o].date },
+                type: 'GET',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                }
+
+            });
+        }
+    }
+
+</script>
+<script>
+    //function error_handler(e) {
+    //    if (e.errors) {
+    //        var message = "Errors:\n";
+    //        $.each(e.errors, function (key, value) {
+    //            if ('errors' in value) {
+    //                $.each(value.errors, function () {
+    //                    message += this + "\n";
+    //                });
+    //            }
+    //        });
+    //        alert(message);
+
+    //    }
+
+    //}
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+    function onGridEdit(e) {
+        e.container.find(".k-button.k-grid-update").hide();
+        e.container.find(".k-button.k-grid-cancel").hide();
+
+    }
+
+</script>
+
+<script>
+    function AssignDate() {
+        var list = AssignDates();
+        return list;
+    }
+
+</script>
+
+
+<script>
+    function sync_handler(e) {
+        this.read();
+
+    }
+
+    function onChange(e) {
+        var grid = e.sender;
+        var selectedRows = this.select();
+        var rowData = this.dataItem(selectedRows[0]);
+        var id = rowData.AttachmentID;
+        $.ajax({
+            contentType: "application/json; charset=utf-8",
+            url: '@Url.Action("Download", "ComplainResponseDepartment")',
+            data: { 'id': id },
+            type: 'GET',
+            cache: false,
+            success: function (result) {
+                r = result;
+            }
+
+        });
+
+    }
+
+    function OnChangeAdd(e) {
+        var grid = e.sender;
+        var selectedRows = this.select();
+        var rowData = this.dataItem(selectedRows[0]);
+        var id = rowData.Category;
+        @*$.ajax({
+            contentType: "application/json; charset=utf-8",
+            url: '@Url.Action("Download", "EmployeeProfile")',
+            data: { 'id': id },
+            type: 'GET',
+            cache: false,
+            success: function (result) {
+                r = result;
+            }
+
+        });*@
+
+    }
+</script>

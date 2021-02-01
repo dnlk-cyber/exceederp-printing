@@ -1,0 +1,91 @@
+﻿@using ExceedERP.Core.Domain.FleetManagement.FleetRegistration
+@using ExceedERP.Core.Domain.Procurement.Need
+@using ExceedERP.Helpers.Common
+@model ExceedERP.Core.Domain.Procurement.Need.AnnualNeedAssesmentItem
+
+@Html.HiddenFor(model => model.AnnualNeedAssesmentItemID)
+<div class="form">
+    <div class="row fullrow">
+
+        <div class="col-md-3 ro1">
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.ItemCategory, htmlAttributes: new { @class = "control-label col-md-6" })
+                <div class="col-md-6">
+                    @*@Html.Kendo().TextBoxFor(model => model.ItemCategory)*@
+                    @(Html.Kendo().DropDownListFor(model => model.ItemCategory)
+                        .ValuePrimitive(true)
+                        .OptionLabel("Select category...")
+                        .DataTextField("Name")
+                        .DataValueField("ItemCategoryCode")
+                        .DataSource(dataSource =>
+                            {
+                                dataSource.Read(read => read.Action("GetItemCategory", "DataProvider", new { area = "Inventory" }))
+                                .ServerFiltering(true);
+                            })
+                    )
+                    @Html.ValidationMessageFor(model => model.ItemCategory, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.InventoryItem, htmlAttributes: new { @class = "control-label col-md-6" })
+                <div class="col-md-6">
+                    @*@Html.Kendo().TextBoxFor(model => model.InventoryItem)*@
+                    @(Html.Kendo().DropDownListFor(model => model.InventoryItem)
+                          .ValuePrimitive(true)
+                          .AutoBind(false)
+                          .HtmlAttributes(new { style = "width:150%;" })
+                          .OptionLabel("Select product...")
+                          .DataTextField("Name")
+                          .DataValueField("ItemCode")
+                          .DataSource(dataSource =>
+                          {
+                              dataSource.Read(read => read.Action("GetItems", "DataProvider", new { area = "Inventory" }).Data("filterItems"))
+                                        .ServerFiltering(true);
+                          })
+                        .CascadeFrom("ItemCategory")
+                    )
+
+
+                    @Html.ValidationMessageFor(model => model.InventoryItem, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+        </div>
+
+        <div class="col-md-3 ro1">
+            <div class="form-group">
+                @Html.LabelFor(model => model.Function, htmlAttributes: new { @class = "control-label col-md-6" })
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(model => model.Function)
+                    @Html.ValidationMessageFor(model => model.Function, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.PerformanceRequirement, htmlAttributes: new { @class = "control-label col-md-6" })
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(model => model.PerformanceRequirement)
+                    @Html.ValidationMessageFor(model => model.PerformanceRequirement, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+        </div>
+
+        <div class="col-md-3 ro1">
+            <div class="form-group">
+                @Html.LabelFor(model => model.PhysicalCharacteristics, htmlAttributes: new { @class = "control-label col-md-6" })
+                <div class="col-md-6">
+                    @Html.Kendo().TextBoxFor(model => model.PhysicalCharacteristics)
+                    @Html.ValidationMessageFor(model => model.PhysicalCharacteristics, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div class="row"></div>
+        </div>
+    </div>
+</div>
+
+

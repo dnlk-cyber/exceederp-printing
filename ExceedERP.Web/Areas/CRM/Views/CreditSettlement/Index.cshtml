@@ -1,0 +1,251 @@
+﻿@model ExceedERP.Core.Domain.CRM.CreditSettlement
+@using ExceedERP.Web.Areas.CRM.Models;
+
+ 
+
+<legend>  Credit Settlement  </legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.CreditSettlement>()
+      .Name("grid")
+      .Columns(columns =>
+          {
+              columns.Bound(c => c.CreditSettlementId).Title("#").Width(50);
+              columns.ForeignKey(c => c.Customer, (System.Collections.IEnumerable)ViewData["OrganizationCustomer"], "OrganizationCustomerID", "TradeName").Title("Customer").EditorTemplateName("OrgCreditSettlementEditor").Width(120);
+           
+             columns.Bound(c => c.Date).Width(80);
+             columns.ForeignKey(c => c.RecieveMethod, (System.Collections.IEnumerable)ViewData["PaymentMethod"], "PaymentMethodID", "Method").Title("Recieve Method").EditorTemplateName("GetReceiveMethod").Width(120);
+               columns.Bound(c => c.GrandTotal).Format("{0:N0}").Width(100);
+              columns.Bound(c => c.Status).Title("Remainig").Format("{0:N0}").Width(100);
+              columns.Bound(c => c.Remark).Width(100);
+            columns.Command(command =>
+                  {
+                      command.Edit();
+                   
+                  }).Width(180);
+
+          })
+      .ToolBar(toolbar =>
+          {
+              toolbar.Create();
+          })
+                                           .Events(ev =>
+                                                 {
+                                                     ev.DetailExpand("onDetailExpand");
+                                                     ev.DataBound("onDataBound");
+                                                 })
+                         .Editable(editable =>
+                                          {
+                                              editable.Mode(GridEditMode.InLine);
+                                              editable.DisplayDeleteConfirmation("Are You Sure To Approve Invoice");
+                                          })
+                          .HtmlAttributes(new { style = "height: 520px;" })
+                                              .Pageable(pageable => pageable
+                                                                .Input(true)
+                                                                .Numeric(false)
+                                                                .Refresh(true)
+                                                                .PageSizes(true)
+                                                                .ButtonCount(5))
+
+                                                    .Scrollable()
+                                                    .Sortable()
+                                                    .Filterable()
+                                                    .Groupable()
+                                                    .Scrollable(h => h.Height(500))
+
+      .DataSource(dataSource => dataSource
+                                  .Ajax() .Sort(x => x.Add(s => s.CreditSettlementId).Descending())
+          .Model(model =>
+              {
+              model.Id(p => p.CreditSettlementId);
+              model.Field(p => p.CreditSettlementId).Editable(false);
+              model.Field(p => p.GrandTotal).Editable(false);
+              model.Field(p => p.Status).Editable(false);
+              })       .Events(ev => ev
+                                                                                .Error("error_handler(\"grid\")")
+                                                                                .RequestStart("onRequestStart(\"grid\")")
+                                                                                .RequestEnd("onRequestEnd(\"grid\")"))
+          .Read(read => read.Action("CreditSettlements_Read", "CreditSettlement"))
+          .Create(create => create.Action("CreditSettlements_Create", "CreditSettlement"))
+          .Update(update => update.Action("CreditSettlements_Update", "CreditSettlement"))
+          .Destroy(destroy => destroy.Action("CreditSettlements_Destroy", "CreditSettlement"))
+      ).ClientDetailTemplateId("template")
+)
+
+
+
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                    .Name("tabstrip_#=CreditSettlementId#")
+    .SelectedIndex(0)
+    .Items(items =>
+                {
+      
+                    /***********************************************LineItems**************************************************/
+                    items.Add().Text("Line Invoice").Content(
+                        @<text>
+
+                           
+                            @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.LineCreditSettlement>()
+                                  .Name("LineItems_#=CreditSettlementId#")
+        .Columns(columns =>
+        {
+            columns.Bound(c => c.InvoiceId).Title("Invoice").EditorTemplateName("InvoiceSettelment").Width(80);
+            columns.Bound(c => c.CurrentAmmount).Format("{0:N0}").Width(80);
+            columns.Bound(c => c.SettelmentAmount).EditorTemplateName("NumEditor").Format("{0:N0}").Width(80);
+            columns.Bound(c => c.RemainingAmount).Format("{0:N0}").Width(80);
+          
+            columns.Command(command => { command.Edit(); }).Width(180);
+        })
+        .ToolBar(t=>t.Create())
+                     .Editable(editable =>
+                                                  {
+                                                      editable.Mode(GridEditMode.InLine);
+                                                     })
+      .Scrollable(s => s.Height(500))
+                                    .DataSource(dataSource => dataSource
+          .Ajax()
+                   .Model(model =>
+                   {
+                       model.Id(p => p.LineCreditSettlementId);
+                     //  model.Field(p => p.CurrentAmmount).Editable(false);
+                       model.Field(p => p.RemainingAmount).Editable(false);
+                   }
+                                  ).Events(ev => ev
+                                                                                                .Error("error_handler(\"LineItems_#=CreditSettlementId#\")")
+                                                                                                .RequestStart("onRequestStart(\"LineItems_#=CreditSettlementId#\")")
+                                                                                                .RequestEnd("onRequestEnd(\"LineItems_#=CreditSettlementId#\")"))
+                                                          .Read(read => read.Action("LineItems_Read", "LineCreditSettlement", new { voucherID = "#=CreditSettlementId#" }))
+                                                                  .Create(create => create.Action("LineItems_Create", "LineCreditSettlement", new { voucherID = "#=CreditSettlementId#" }))
+                                  .Update(update => update.Action("LineItems_Update", "LineCreditSettlement", new { voucherID = "#=CreditSettlementId#" }))
+                  .Destroy(destroy => destroy.Action("LineItems_Destroy", "LineCreditSettlement"))
+      ).ToClientTemplate()
+
+                            )
+                        </text>
+
+
+            );
+                  /***********************************************Non Cash Transactions*******************************************/
+                    items.Add().Text("Non Cash Transactions").Content(
+                        @<text>
+                            <legend>Non Cash Transactions</legend>
+                            @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.NonCashTransaction>()
+                                                      .Name("NonCashTransactions_#=CreditSettlementId#")
+
+                .Columns(columns =>
+      {
+          columns.Bound(c => c.Consignee).Width(120);
+          columns.Bound(c => c.ReceiveMethod).Width(120);
+          columns.Bound(c => c.ReceiveProcessor).Width(120);
+          columns.Bound(c => c.Index).Width(100);
+          columns.Bound(c => c.IssueDate).EditorTemplateName("Date").Format("{0:yyyy-MM-dd}").Width(120);
+          columns.Bound(c => c.MaturityDate).EditorTemplateName("Date").Format("{0:yyyy-MM-dd}").Width(120);
+          columns.Bound(c => c.Number).EditorTemplateName("Integer").Format("{0:N0}").Width(100);
+          columns.Bound(c => c.Amount);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create();
+      })
+              .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+                                  .Ajax().Events(e => e.Sync("BindNonTransaction").Change("BindNonTransaction").Error("error_handler(\"NonCashTransactions_#=CreditSettlementId#\")")
+                                                                                .RequestStart("onRequestStart(\"NonCashTransactions_#=CreditSettlementId#\")")
+                                                                                     .RequestEnd("onRequestEnd(\"NonCashTransactions_#=CreditSettlementId#\")"))
+                  .Model(model => model.Id(p => p.NonCashTransactionID))
+                                          .Read(read => read.Action("NonCashTransactions_Read", "NonCashTransaction", new { voucherID = "#=CreditSettlementId#" }))
+                                                  .Create(create => create.Action("NonCashTransactionSettelments_Create", "NonCashTransaction", new { voucherID = "#=CreditSettlementId#" }))
+                  .Update(update => update.Action("NonCashTransactions_Update", "NonCashTransaction"))
+          .Destroy(destroy => destroy.Action("NonCashTransactions_Destroy", "NonCashTransaction"))
+      ).ToClientTemplate()
+
+                            )
+                        </text>
+
+         );
+                }).ToClientTemplate()
+
+    )
+</script>
+
+
+
+<script>
+
+
+    var masterId;
+    var customer;
+    var receiveMethod;
+    function filterCustomerInvoice() {
+        return {
+            Customer: customer
+        };
+    }
+
+    function filterInvoice() {
+        return {
+            Voucher: $('#InvoiceId').val()
+        };
+    }
+    function onDataBound(e) {
+        var grid = this;
+       
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+            $(this).find(".k-grid-edit").remove();
+
+            if (dataItem.Status != 0 ) {
+                $(this).find(".k-grid-delete").remove();
+
+                 console.log("Approved");
+
+            }
+     
+        });
+    }
+
+  
+    function onDetailExpand(e) {
+        var masterRow = e.masterRow;
+
+        var masterGrid = $("#grid").data("kendoGrid");
+
+        var masterDataItem = masterGrid.dataItem(masterRow);
+        customer = masterDataItem.Customer;
+        masterId = masterDataItem.CreditSettlementId;
+        receiveMethod = masterDataItem.RecieveMethod;
+        console.log("master " + masterId + " -- Custromer" + customer + receiveMethod);
+       // gridName = "#LineItems_" + masterId;
+
+
+    }
+
+    function UpdateInvoiceChange() {
+
+       var invoice = $("#InvoiceId").data("kendoDropDownList");
+       
+        $.ajax({
+            url: '@Url.Action("GetCustomerInvoiceBalanceDDBind", "CashSalesInvoice")',
+
+            data: { Voucher: invoice.value() },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                r = result;
+                $("#CurrentAmmount").val(r.Name);
+
+
+            }
+
+        });
+
+    }
+    function BindNonTransaction() {
+
+        $("#Consignee").val(customer);
+        $("#ReceiveMethod").val(receiveMethod);
+
+
+    }
+</script>

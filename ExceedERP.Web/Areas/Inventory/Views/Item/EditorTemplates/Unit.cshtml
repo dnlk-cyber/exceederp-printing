@@ -1,0 +1,15 @@
+﻿@(Html.Kendo().DropDownListFor(m => m)
+                      .AutoBind(false)
+                      .OptionLabel("Select UOM...")
+                          .DataTextField("UoMName")
+                              .DataValueField("Value")
+                                  .ValuePrimitive(true)
+                      .DataSource(dataSource =>
+                      {
+                          dataSource.Read(read => read.Action("GetUoM", "DataProvider"))
+                                    .ServerFiltering(true);
+                      }) 
+
+)
+@Html.ValidationMessageFor(m => m)
+

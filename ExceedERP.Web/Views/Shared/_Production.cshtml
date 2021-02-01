@@ -1,0 +1,358 @@
+﻿
+<li class="">
+    <a href="#" class="dropdown-toggle">
+        @*<i class="menu-icon fa fa-cog"></i>*@
+        <i class="menu-icon fa fa-tasks"></i>
+        @*<i class="glyphicon glyphicon-grain"></i>*@
+        <span class="menu-text">
+            Production Mgmt
+        </span>
+        <b class="arrow fa fa-angle-down"></b>
+    </a>
+    <b class="arrow"></b>
+
+    <ul class="submenu">
+        <li>
+            @* Id initial = PROD-01*@
+            <a href="#" class="dropdown-toggle">
+                <i class="menu-icon fa fa-caret-right"></i>
+                Production
+                <b class="arrow fa fa-angle-down"></b>
+            </a>
+            <b class="arrow"></b>
+            <ul class="submenu">
+                <li>
+                    <a href="#" class="dropdown-toggle">
+                        <i class="menu-icon fa fa-caret-right"></i>
+                        Sites & Blocks
+                        <b class="arrow fa fa-angle-down"></b>
+                    </a>
+                    <ul class="submenu">
+                        <li id="PROD-01-01-01" class="actionlinlk">
+                            @Html.ActionLink("Production Sites", "Index", "ProductionSite", new { area = "Production" }, null)<b class="arrow"></b>
+                        </li>
+                        <li id="PROD-01-01-02" class="actionlinlk">
+                            @Html.ActionLink("Farming Plots ", "Index", "Plot", new { area = "Production" }, null)<b class="arrow"></b>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#" class="dropdown-toggle">
+                        <i class="menu-icon fa fa-caret-right"></i>
+                        Production Order
+                        <b class="arrow fa fa-angle-down"></b>
+                    </a>
+                    <ul class="submenu">
+                        <li id="PROD-01-02-01" class="actionlinlk">
+                            @Html.ActionLink("Production Order", "Index", "ProductionOrder", new { area = "Production" }, null)<b class="arrow"></b>
+                        </li>
+                        <li id="PROD-01-02-02" class="actionlinlk">
+                            @Html.ActionLink("Production Inputs", "Index", "ProductionOrderInputs", new { area = "Production" }, null)<b class="arrow"></b>
+                        </li>
+                        <li id="PROD-01-02-03" class="actionlinlk">
+                            @Html.ActionLink("Production Outputs Produced", "Index", "ProductionOupputs", new { area = "Production" }, null)<b class="arrow"></b>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#" class="dropdown-toggle">
+                        <i class="menu-icon fa fa-caret-right"></i>
+                        Store Mgmt
+                        <b class="arrow fa fa-angle-down"></b>
+                    </a>
+                    <ul class="submenu">
+                        <li id="PROD-01-03-01" class="actionlinlk">
+                            @Html.ActionLink("Raw Product Receive", "Index", "ProductionStoreReceive", new { area = "Production" }, null)<b class="arrow"></b>
+                        </li>
+                    </ul>
+                </li>
+                @*<li>
+                    <a href="#" class="dropdown-toggle">
+                        <i class="menu-icon fa fa-caret-right"></i>
+                        Contract Mgmt
+                        <b class="arrow fa fa-angle-down"></b>
+                    </a>
+                    <ul class="submenu">
+                        <li id="PROD0000" class="actionlinlk">
+                            @Html.ActionLink("Contract", "", "", new { area = "Production" }, null)<b class="arrow"></b>
+                        </li>
+                    </ul>
+                </li>
+
+                <li>
+                    <a href="#" class="dropdown-toggle">
+                        <i class="menu-icon fa fa-caret-right"></i>
+                        Work Schedule
+                        <b class="arrow fa fa-angle-down"></b>
+                    </a>
+                    <ul class="submenu">
+                        <li id="PROD0000" class="actionlinlk">
+                            @Html.ActionLink("Schedules", "", "", new { area = "Production" }, null)<b class="arrow"></b>
+                        </li>
+                    </ul>
+                </li>*@
+            </ul>
+        </li>
+        <li>
+            @* Id initial = PROD-02*@
+            <a href="#" class="dropdown-toggle">
+                <i class="menu-icon fa fa-caret-right"></i>
+                Raw Seed/Gum  & <br />
+                Issue for Processing
+                <b class="arrow fa fa-angle-down"></b>
+            </a>
+            <b class="arrow"></b>
+            <ul class="submenu">
+                <li id="PROD-05-01-01" class="actionlinlk">
+                    @Html.ActionLink("Issues", "Index", "ProductionIssue", new { area = "Production" }, null)<b class="arrow"></b>
+                </li>
+            </ul>
+        </li>
+        <li>
+            @* Id initial = PROD-03*@
+            <a href="#" class="dropdown-toggle">
+                <i class="menu-icon fa fa-caret-right"></i>
+                Processing
+                <b class="arrow fa fa-angle-down"></b>
+            </a>
+            <b class="arrow"></b>
+            <ul class="submenu">
+                <li>
+                    <a href="#" class="dropdown-toggle">
+                        <i class="menu-icon fa fa-caret-right"></i>
+                        Processing Plants
+                        <b class="arrow fa fa-angle-down"></b>
+                    </a>
+                    <ul class="submenu">
+                        <li id="PROD-03-01-01" class="actionlinlk">
+                            @Html.ActionLink("Processing Plants ", "Index", "ProcessingPlant", new { area = "Production" }, null)<b class="arrow"></b>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#" class="dropdown-toggle">
+                        <i class="menu-icon fa fa-caret-right"></i>
+                        Processing Order
+                        <b class="arrow fa fa-angle-down"></b>
+                    </a>
+                    <ul class="submenu">
+                        <li id="PROD-03-02-01" class="actionlinlk">
+                            @Html.ActionLink("Seed Processing", "Index", "SeedProcessing", new { area = "Production" }, null)<b class="arrow"></b>
+                        </li>
+                        <li id="PROD-03-02-02" class="actionlinlk">
+                            @Html.ActionLink("Seed Processing Inputs", "Inputs", "SeedProcessing", new { area = "Production" }, null)<b class="arrow"></b>
+                        </li>
+                        <li id="PROD-03-02-03" class="actionlinlk">
+                            @Html.ActionLink("Seed Processing Outputs", "Outputs", "SeedProcessing", new { area = "Production" }, null)<b class="arrow"></b>
+                        </li>
+
+                        <li id="PROD-03-02-04" class="actionlinlk">
+                            @Html.ActionLink("Natural Gum Processing", "Index", "GumProcessing", new { area = "Production" }, null)<b class="arrow"></b>
+                        </li>
+                        <li id="PROD-03-02-05" class="actionlinlk">
+                            @Html.ActionLink("Natural Gum Processing Inputs", "Inputs", "GumProcessing", new { area = "Production" }, null)<b class="arrow"></b>
+                        </li>
+                        <li id="PROD-03-02-06" class="actionlinlk">
+                            @Html.ActionLink("Natural Gum Outputs Produced", "Outputs", "GumProcessing", new { area = "Production" }, null)<b class="arrow"></b>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#" class="dropdown-toggle">
+                        <i class="menu-icon fa fa-caret-right"></i>
+                        Store Mgmt
+                        <b class="arrow fa fa-angle-down"></b>
+                    </a>
+                    <ul class="submenu">
+                        <li id="PROD-03-03-01" class="actionlinlk">
+                            @Html.ActionLink("Finished Goods Store Receive", "Index", "FinishedGoodsStoreReceive", new { area = "Production" }, null)<b class="arrow"></b>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+        @*<li>
+            <a href="#" class="dropdown-toggle">
+                <i class="menu-icon fa fa-caret-right"></i>
+                Seed Production
+                <b class="arrow fa fa-angle-down"></b>
+            </a>
+            <b class="arrow"></b>
+            <ul class="submenu">
+                <li>
+                    <a href="#" class="dropdown-toggle">
+                        <i class="menu-icon fa fa-caret-right"></i>
+                        Projects
+                        <b class="arrow fa fa-angle-down"></b>
+                    </a>
+                    <ul class="submenu">
+                        <li id="PROD0000" class="actionlinlk">
+                            @Html.ActionLink("Projects ", "Index", "Project", new { area = "Production" }, null)<b class="arrow"></b>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#" class="dropdown-toggle">
+                        <i class="menu-icon fa fa-caret-right"></i>
+                        Production Plan
+                        <b class="arrow fa fa-angle-down"></b>
+                    </a>
+                    <ul class="submenu">
+                        <li id="PROD0000" class="actionlinlk">
+                            @Html.ActionLink("Planning", "Index", "SeedProductionPlan", new { area = "Production" }, null)<b class="arrow"></b>
+                        </li>
+                    </ul>
+                </li>
+                <li>
+                    <a href="#" class="dropdown-toggle">
+                        <i class="menu-icon fa fa-caret-right"></i>
+                        Cost Tracking
+                        <b class="arrow fa fa-angle-down"></b>
+                    </a>
+                    <ul class="submenu">
+                        <li id="PROD0000" class="actionlinlk">
+                            @Html.ActionLink("Costs by Month", "Index", "CostTracking", new { area = "Production" }, null)<b class="arrow"></b>
+                        </li>
+                    </ul>
+                </li>
+
+                <li>
+                    <a href="#" class="dropdown-toggle">
+                        <i class="menu-icon fa fa-caret-right"></i>
+                        Contract Mgmt
+                        <b class="arrow fa fa-angle-down"></b>
+                    </a>
+                    <ul class="submenu">
+                        <li id="PROD0000" class="actionlinlk">
+                            @Html.ActionLink("Contract", "", "", new { area = "Production" }, null)<b class="arrow"></b>
+                        </li>
+                    </ul>
+                </li>
+
+                <li>
+                    <a href="#" class="dropdown-toggle">
+                        <i class="menu-icon fa fa-caret-right"></i>
+                        Work Schedule
+                        <b class="arrow fa fa-angle-down"></b>
+                    </a>
+                    <ul class="submenu">
+                        <li id="PROD0000" class="actionlinlk">
+                            @Html.ActionLink("Schedules", "", "", new { area = "Production" }, null)<b class="arrow"></b>
+                        </li>
+                    </ul>
+                </li>
+            </ul>
+        </li>
+        <li>
+            <a href="#" class="dropdown-toggle">
+                <i class="menu-icon fa fa-caret-right"></i>
+                Natural Gum Production
+                <b class="arrow fa fa-angle-down"></b>
+            </a>
+            <b class="arrow"></b>
+            <ul class="submenu">
+                <li id="PROD0000" class="actionlinlk">
+                    @Html.ActionLink("Contract Mgmt ", "", "", new { area = "Production" }, null)<b class="arrow"></b>
+                </li>
+            </ul>
+        </li>*@
+        <li>
+            @* Id initial = PROD-04*@
+            <a href="#" class="dropdown-toggle">
+                <i class="menu-icon fa fa-caret-right"></i>
+                Budget & <br />
+                Monthly Cash Flow
+                <b class="arrow fa fa-angle-down"></b>
+            </a>
+            <b class="arrow"></b>
+            <ul class="submenu">
+                <li id="PROD-04-01-01" class="actionlinlk">
+                    @Html.ActionLink("Projected Monthly Cash Flow", "ProjectedCashFlow", "BudgetAndCashFlow", new { area = "Production" }, null)<b class="arrow"></b>
+                </li>
+                <li id="PROD-04-01-02" class="actionlinlk">
+                    @Html.ActionLink("Cleaned Seed/Gum Sales", "CleanedSale", "BudgetAndCashFlow", new { area = "Production" }, null)<b class="arrow"></b>
+                </li>
+                <li id="PROD-04-01-03" class="actionlinlk">
+                    @Html.ActionLink("Custom Cleaning Service and Storage", "CustomClean", "BudgetAndCashFlow", new { area = "Production" }, null)<b class="arrow"></b>
+                </li>
+                <li id="PROD-04-01-04" class="actionlinlk">
+                    @Html.ActionLink("Raw Seed/Gum Purchases", "RawPurchase", "BudgetAndCashFlow", new { area = "Production" }, null)<b class="arrow"></b>
+                </li>
+            </ul>
+        </li>
+        <li>
+            @* Id initial = PROD-05*@
+            <a href="#" class="dropdown-toggle">
+                <i class="menu-icon fa fa-caret-right"></i>
+                Cost Build-up & <br />
+                Selling Prices
+                <b class="arrow fa fa-angle-down"></b>
+            </a>
+            <b class="arrow"></b>
+            <ul class="submenu">
+                <li id="PROD-05-01-01" class="actionlinlk">
+                    @Html.ActionLink("Seeds Selling Price", "Index", "SeedSellingPrice", new { area = "Production" }, null)<b class="arrow"></b>
+                </li>
+            </ul>
+        </li>
+        <li>
+            @* Id initial = PROD-06*@
+            <a href="#" class="dropdown-toggle">
+                <i class="menu-icon fa fa-caret-right"></i>
+                Reports
+                <b class="arrow fa fa-angle-down"></b>
+            </a>
+            <b class="arrow"></b>
+            <ul class="submenu">
+                <li id="PROD-06-01-01" class="actionlinlk">
+                    @Html.ActionLink("Production Inputs Summary", "ProductionInputs", "ProductionReports", new { area = "Production" }, null)<b class="arrow"></b>
+                </li>
+                <li id="PROD-06-01-02" class="actionlinlk">
+                    @Html.ActionLink("Production Inputs ", "ProductionInputsDetail", "ProductionReports", new { area = "Production" }, null)<b class="arrow"></b>
+                </li>
+            </ul>
+        </li>
+        <li>
+            @* Id initial = PROD-07*@
+            <a href="#" class="dropdown-toggle">
+                <i class="menu-icon fa fa-cog"></i>
+                Settings
+                <b class="arrow fa fa-angle-down"></b>
+            </a>
+            <b class="arrow"></b>
+            <ul class="submenu">
+                <li id="PROD-07-01" class="actionlinlk">
+                    @Html.ActionLink("General ", "Index", "Setting", new { area = "Production" }, null)<b class="arrow"></b>
+                </li>
+                <li id="PROD-07-02" class="actionlinlk">
+                    @Html.ActionLink("Production Years ", "Index", "ProductionYear", new { area = "Production" }, null)<b class="arrow"></b>
+                </li>
+                <li id="PROD-07-03" class="actionlinlk">
+                    @Html.ActionLink("Periods ", "Index", "ProductionPeriod", new { area = "Production" }, null)<b class="arrow"></b>
+                </li>
+                <li id="PROD-07-04" class="actionlinlk">
+                    @Html.ActionLink("Crops (Seeds) ", "Index", "Crop", new { area = "Production" }, null)<b class="arrow"></b>
+                </li>
+                <li id="PROD-07-05" class="actionlinlk">
+                    @Html.ActionLink("Natural Gums", "Index", "NaturalGum", new { area = "Production" }, null)<b class="arrow"></b>
+                </li>
+                <li id="PROD-07-06" class="actionlinlk">
+                    @Html.ActionLink("Activities", "Index", "ProductionActivity", new { area = "Production" }, null)<b class="arrow"></b>
+                </li>
+                <li id="PROD-07-07" class="actionlinlk">
+                    @Html.ActionLink("Production Item Category", "Index", "ProductionItemCategory", new { area = "Production" }, null)<b class="arrow"></b>
+                </li>
+                <li id="PROD-07-08" class="actionlinlk">
+                    @Html.ActionLink("Cost Category", "Index", "CostCategories", new { area = "Production" }, null)<b class="arrow"></b>
+                </li>
+                <li id="PROD-07-09" class="actionlinlk">
+                    @Html.ActionLink("Input Materials & Chemicals Norm", "Index", "ApplicationNorm", new { area = "Production" }, null)<b class="arrow"></b>
+                </li>
+                <li id="PROD-07-10" class="actionlinlk">
+                    @Html.ActionLink("Raw Vs. Cleaned Products Mapping", "Index", "RawVsCleanedMapping", new { area = "Production" }, null)<b class="arrow"></b>
+                </li>
+            </ul>
+            <b class="arrow"></b>
+        </li>
+    </ul>
+</li>

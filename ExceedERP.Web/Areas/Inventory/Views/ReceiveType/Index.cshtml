@@ -1,0 +1,52 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    
+}
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Inventory.ReceiveType>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Name);
+          columns.Bound(c => c.Type).EditorTemplateName("Type");
+          columns.Bound(c => c.Desctiption);
+          columns.Bound(c => c.Status).ClientTemplate("<input type='checkbox' disabled = 'true'  value='#=Status #' " + " # if (Status) { #" + "checked='checked'" + "# } #" + " />").Width(100); ;
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .HtmlAttributes(new { style = "height: 550px;" })
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(20))
+      .Scrollable()
+      .Sortable()
+      .Filterable()
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Groupable().Events(ev => ev.DetailExpand("detailExpand"))
+      .Scrollable(h => h.Height(500))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Events(ev => ev
+              .Error("error_handler(\"grid\")")
+              .RequestStart("onRequestStart(\"grid\")")
+              .RequestEnd("onRequestEnd(\"grid\")"))
+          .Model(model => model.Id(p => p.ReceiveTypeId))
+          .Read(read => read.Action("ReceiveTypes_Read", "ReceiveType"))
+          .Create(create => create.Action("ReceiveTypes_Create", "ReceiveType"))
+          .Update(update => update.Action("ReceiveTypes_Update", "ReceiveType"))
+          .Destroy(destroy => destroy.Action("ReceiveTypes_Destroy", "ReceiveType"))
+      ).Resizable(x => x.Columns(true)))

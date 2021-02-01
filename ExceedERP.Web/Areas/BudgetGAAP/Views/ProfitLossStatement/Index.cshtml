@@ -1,0 +1,60 @@
+﻿<legend>Profit Loss Statement</legend>
+@(Html.Kendo().Grid<ExceedERP.Web.Areas.BudgetGAAP.Models.ProfitLossViewModel>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.CategoryType).Hidden();
+          columns.Bound(c => c.Name).ClientGroupFooterTemplate("Total ").ClientFooterTemplate("Growth");
+          columns.ForeignKey(c => c.ProfitLossStatementCategoryId, (System.Collections.IEnumerable)ViewData["ProfitLossStatementCategory"], "ProfitLossStatementCategoryId", "Name").Hidden();
+          columns.ForeignKey(c => c.GlFiscalYearId, (System.Collections.IEnumerable)ViewData["FiscalYear"], "GlFiscalYearId", "Name");
+
+          columns.Bound(c => c.First).ClientGroupFooterTemplate("#=sum#").ClientFooterTemplate("#=sum#");
+          columns.Bound(c => c.Second).ClientGroupFooterTemplate("#=sum#").ClientFooterTemplate("#=sum#");
+          columns.Bound(c => c.Third).ClientGroupFooterTemplate("#=sum#").ClientFooterTemplate("#=sum#");
+          columns.Bound(c => c.Fourth).ClientGroupFooterTemplate("#=sum#").ClientFooterTemplate("#=sum#");
+          columns.Bound(c => c.FromAccCode);
+          columns.Bound(c => c.ToAccCode);
+
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create();
+      })
+               .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("ProfitLossEditor"))
+             .HtmlAttributes(new { style = "height: 520px;" })
+                          .Pageable(pageable => pageable
+                                            .Input(true)
+                                            .Numeric(false)
+                                            .Refresh(true)
+                                            .PageSizes(true)
+                                            .ButtonCount(5))
+
+                                .Scrollable()
+                                .Sortable()
+                                .Filterable()
+                                 .Scrollable(h => h.Height(500))
+
+      .DataSource(dataSource => dataSource
+                  .Ajax().ServerOperation(false).Aggregates(aggregates =>
+                                            {
+                                                aggregates.Add(c => c.First).Sum();
+                                                aggregates.Add(c => c.Second).Sum();
+                                                aggregates.Add(c => c.Third).Sum();
+                                                aggregates.Add(c => c.Fourth).Sum();
+
+                                            })
+          .Model(model => { model.Id(p => p.ProfitLossStatementId);  })
+               .Group(x => { x.Add(y => y.CategoryType); x.Add(y => y.ProfitLossStatementCategoryId); })
+          .Read(read => read.Action("ProfitLossStatements_Read", "ProfitLossStatement"))
+          .Create(create => create.Action("ProfitLossStatements_Create", "ProfitLossStatement"))
+          .Update(update => update.Action("ProfitLossStatements_Update", "ProfitLossStatement"))
+          .Destroy(destroy => destroy.Action("ProfitLossStatements_Destroy", "ProfitLossStatement"))
+      )
+)
+
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 900px;
+    }
+</style>

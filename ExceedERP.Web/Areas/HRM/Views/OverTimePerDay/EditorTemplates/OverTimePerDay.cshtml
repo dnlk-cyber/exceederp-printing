@@ -1,0 +1,241 @@
+﻿@using System.Collections
+@using Kendo.Mvc.UI
+@model ExceedERP.Core.Domain.HRM.Payroll.OverTimePerDay
+@using ExceedERP.Core.Localization
+
+<form>
+
+<div class="row">
+    <div class="col-md-1">
+
+    </div>
+
+    <div class="col-md-3">
+        <div class="form-group">
+            <div class="k-label">
+                @Html.LabelFor(model => model.TicketNumber, htmlAttributes: new { @class = "control-label col-md-8" })
+
+            </div>
+            <div>
+                @(Html.Kendo().TextBoxFor(model => model.TicketNumber))
+                @Html.ValidationMessageFor(model => model.TicketNumber, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="form-group">
+            <div class="k-label">
+                @Html.LabelFor(model => model.EmployeeId, htmlAttributes: new { @class = "control-label col-md-8" })
+
+            </div>
+            <div>
+
+              @(Html.Kendo().DropDownListFor(model => model.EmployeeId)
+                      //  .Name("EmployeeId")
+                                              .DataValueField("PersonId")
+                        .DataTextField("FullName")
+                           .OptionLabel(Resources.Select)
+                            .Filter("contains")
+                            .MinLength(2)
+                            .HtmlAttributes(new { style = "width:100%" })
+
+                                            .DataSource(source =>
+                                                                        {
+                                                                            source.Read(read => read.Action("GetEmployees", "Association"));
+                                                                        })
+                                                                           .ValuePrimitive(true)
+
+
+                                                                                                  .Height(400)
+                                                                                                          .HeaderTemplate("<div class=\"dropdown-header k-widget k-header\">" +
+                                                                                        "<span>Photo</span>" +
+                                                                                        "<span>Full Name</span>" +
+                                                                                    "</div>")
+                                                                                                                                                                       .Template(@"<div class='Employee-photo' style='background-image: url(" + Url.Content("~/Content/Images/") + "#:data.PersonId#-Photo/" + "#:data.PersonId#.jpg" + ");'></div>" +
+                                                                                            "<div class='Employee-name'>#:FullName#</div>")
+
+
+
+            )
+
+
+
+            </div>
+        </div>
+    </div>
+
+
+
+    <div class="col-md-3">
+        <div>
+            @Html.LabelFor(model => model.GLPeriodId, htmlAttributes: new { @class = "control-label col-md-8" })
+        </div>
+        <div class="form-group">
+            @(Html.Kendo().DropDownListFor(model => model.GLPeriodId)
+                  .AutoBind(false)
+                  .OptionLabel(Resources.Select)
+                          .DataTextField("Name")
+                                  .DataValueField("GLPeriodId")
+                                   .ValuePrimitive(true)
+                                     .DataSource(dataSource =>
+                                  {
+                                      dataSource.Read(read => read.Action("GetPeriod", "Addition", new { area = "HRM" }))
+                                                            .ServerFiltering(false);
+                                  }))
+        </div>
+    </div>
+
+ 
+</div>
+
+    <br/>
+    <div class="row">
+        <div class="col-md-1">
+
+        </div>
+        <div class="col-md-3">
+
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.Date, htmlAttributes: new { @class = "control-label col-md-8" })
+                </div>
+                <div>
+
+                    @Html.Kendo().DatePickerFor(model => model.Date)
+                    @Html.ValidationMessageFor(model => model.Date, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+        </div>
+
+        <div class="col-md-3">
+
+            <div class="form-group">
+
+                <div class="k-label">
+                   @* @Html.LabelFor(model => model.NormalHours, htmlAttributes: new {@class = "control-label col-md-8"})*@
+
+                </div>
+                <div>
+                    @(Html.Kendo().CheckBoxFor(model => model.NormalHours))
+                    @Html.ValidationMessageFor(model => model.NormalHours, "", new { @class = "text-danger" })
+
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @*@Html.LabelFor(model => model.NightHours, htmlAttributes: new {@class = "control-label col-md-8"})*@
+
+                </div>
+                <div>
+                    @Html.Kendo().CheckBoxFor(model => model.NightHours)
+                    @Html.ValidationMessageFor(model => model.NightHours, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+       
+
+
+    </div>
+    <br />
+
+<div class="row">
+    <div class="col-md-1">
+
+    </div>
+    <div class="col-md-3">
+        <div class="form-group">
+            <div class="k-label">
+               @* @Html.LabelFor(model => model.RestdayHours, htmlAttributes: new { @class = "control-label col-md-8" })*@
+
+            </div>
+            <div>
+                @(Html.Kendo().CheckBoxFor(model => model.RestdayHours))
+                @Html.ValidationMessageFor(model => model.RestdayHours, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+        <div class="form-group">
+            <div class="k-label">
+               @* @Html.LabelFor(model => model.HolidayHours, htmlAttributes: new {@class = "control-label col-md-8"})*@
+
+            </div>
+            <div>
+                @(Html.Kendo().CheckBoxFor(model => model.HolidayHours))
+                @Html.ValidationMessageFor(model => model.HolidayHours, "", new {@class = "text-danger"})
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3">
+
+        <div class="form-group">
+
+            <div class="k-label">
+                @Html.LabelFor(model => model.From, htmlAttributes: new { @class = "control-label col-md-8" })
+
+            </div>
+            <div>
+                @(Html.Kendo().TimePickerFor(model => model.From)
+                                .Events(e => e.Change("GetTotalOT"))
+                                .Format("{0:hh:mm:ss}"))
+
+                @Html.ValidationMessageFor(model => model.From, "", new { @class = "text-danger" })
+
+            </div>
+        </div>
+    </div>
+  
+</div>
+    <div class="row">
+        <div class="col-md-1">
+
+        </div>
+        <div class="col-md-3">
+    <div class="form-group">
+        <div class="k-label">
+            @Html.LabelFor(model => model.To, htmlAttributes: new { @class = "control-label col-md-8" })
+
+        </div>
+        <div>
+            @(Html.Kendo().TimePickerFor(model => model.To).Events(e => e.Change("GetTotalOT"))
+         .Format("{0:hh:mm:ss}"))
+            @Html.ValidationMessageFor(model => model.To, "", new { @class = "text-danger" })
+        </div>
+    </div>
+</div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.TotalHr, htmlAttributes: new { @class = "control-label col-md-8" })
+
+                </div>
+                <div>
+                    @(Html.Kendo().TextBoxFor(model => model.TotalHr).Enable(false))
+                    @Html.ValidationMessageFor(model => model.TotalHr, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.Remark, htmlAttributes: new { @class = "control-label col-md-8" })
+
+                </div>
+                <div>
+                    @(Html.Kendo().TextBoxFor(model => model.Remark).Enable(false))
+                    @Html.ValidationMessageFor(model => model.Remark, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+    </div>
+<br/>
+
+
+
+
+
+</form>

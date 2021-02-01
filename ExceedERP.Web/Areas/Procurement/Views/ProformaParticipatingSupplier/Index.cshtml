@@ -1,0 +1,36 @@
+﻿@using ExceedERP.Core.Domain.Procurement.Proforma
+
+@(Html.Kendo().Grid<ParticipatingSupplier>()
+      .Name("participatingsuppliergrid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.InventoryItem);
+          columns.Bound(c => c.UPrice);
+          columns.Bound(c => c.TPrice);
+          columns.Bound(c => c.Supplier);
+          columns.Bound(c => c.Representative);
+          columns.Bound(c => c.Address);
+          columns.Bound(c => c.Telephone);
+          columns.Bound(c => c.ProformaSubmitionDate);
+          columns.Bound(c => c.ProformaSubmitionTime);
+          columns.Bound(c => c.Remark);
+          columns.Bound(c => c.OrgBranchName);
+          columns.Bound(c => c.DateCreated);
+          columns.Bound(c => c.LastModified);
+          columns.Bound(c => c.CreatedBy);
+          columns.Bound(c => c.ModifiedBy);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.ParticipatingSupplierID))
+          .Read(read => read.Action("ParticipatingSuppliers_Read", "ProformaParticipatingSupplier"))
+          .Create(create => create.Action("ParticipatingSuppliers_Create", "ProformaParticipatingSupplier"))
+          .Update(update => update.Action("ParticipatingSuppliers_Update", "ProformaParticipatingSupplier"))
+          .Destroy(destroy => destroy.Action("ParticipatingSuppliers_Destroy", "ProformaParticipatingSupplier"))
+      ))

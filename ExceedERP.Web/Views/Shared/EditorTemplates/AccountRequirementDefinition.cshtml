@@ -1,0 +1,6 @@
+﻿@using ExceedERP.Core.Domain.Common
+@(Html.Kendo().DropDownListFor(m => m)
+        .DataTextField("Text")
+                .DataValueField("Text")
+                .BindTo(EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.Common.AccountRequirementDefinition)))
+)

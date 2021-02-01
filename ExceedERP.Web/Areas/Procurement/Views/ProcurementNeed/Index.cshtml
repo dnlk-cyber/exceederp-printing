@@ -1,0 +1,374 @@
+﻿@using System.Collections
+<legend>Annual Need Assessment</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Procurement.Need.AnnualNeedAssesment>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.ForeignKey(p => p.GlFiscalYearId, (IEnumerable)ViewData["Periods"], "GlFiscalYearId", "Name").Title("Fiscal Year").EditorTemplateName("GLYears").Width(120);
+          columns.ForeignKey(p => p.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("BranchSelector").Width(150);
+          columns.ForeignKey(p => p.OrgStructureId, (IEnumerable)ViewData["costCenters"], "Code", "Name").Title("Work Unit").Width(180).EditorTemplateName("WorkUnitCostCenterSelector");
+          columns.ForeignKey(p => p.EmployeeId, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Title("Requester").Width(150).EditorTemplateName("EmployeeSelector");
+          columns.Bound(c => c.Remark).Width(100);
+          columns.Bound(c => c.Status).Width(100);
+           
+          columns.Command(command =>
+          {
+              command.Edit();
+              command.Destroy();
+          }).Width(180);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create();
+          // toolbar.Excel();
+          //toolbar.Pdf();
+      })
+      .Groupable().Events(ev => ev.DetailExpand("detailExpand"))
+      .Scrollable(h => h.Height(500))
+      .Events(x => x.DataBound("onDataBoundMaster"))
+
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .HtmlAttributes(new { style = "height: 550px;" })
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(20))
+      .Scrollable()
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Filterable()
+      .Groupable()
+      .ClientDetailTemplateId("template")
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Sort(sort => sort.Add("AnnualNeedAssesmentID").Descending())
+          .PageSize(20)
+          .Model(
+              model =>
+              {
+                  model.Id(p => p.AnnualNeedAssesmentID);
+
+                  model.Field(p => p.Status).Editable(false);
+                  //model.Field(p => p.BranchId).Editable(false);
+                  //model.Field(p => p.GLPeriodId).Editable(false);
+                  //model.Field(p => p.OrgStructureId).Editable(false);
+                    
+                  model.Field(p => p.VoidTime).Editable(false);
+                  model.Field(p => p.VoidBy).Editable(false);
+                  model.Field(p => p.isVoid).Editable(false);
+                  model.Field(p => p.OnlineApprovedTime).Editable(false);
+                  model.Field(p => p.OnlineApprovedBy).Editable(false);
+                  model.Field(p => p.IsOnlineApproved).Editable(false);
+                  model.Field(p => p.Status).Editable(false);
+                  model.Field(p => p.IsSendForApproval).Editable(false);
+
+
+                  model.Field(p => p.OrgBranchName).Editable(false);
+                  model.Field(p => p.CreatedBy).Editable(false);
+                  model.Field(p => p.ModifiedBy).Editable(false);
+                  model.Field(p => p.LastModified).Editable(false);
+                  model.Field(p => p.DateCreated).Editable(false);
+
+
+              })
+          .Events(ev => ev
+              .Error("error_handler(\"grid\")")
+              .RequestStart("onRequestStart(\"grid\")")
+              .RequestEnd("onRequestEnd(\"grid\")"))
+          .Read(read => read.Action("AnnualNeedAssesments_Read", "ProcurementNeed"))
+          .Create(create => create.Action("AnnualNeedAssesments_Create", "ProcurementNeed"))
+          .Update(update => update.Action("AnnualNeedAssesments_Update", "ProcurementNeed"))
+          .Destroy(destroy => destroy.Action("AnnualNeedAssesments_Destroy", "ProcurementNeed"))
+      ))
+
+
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+            .Name("tabStrip_#=AnnualNeedAssesmentID#")
+            .SelectedIndex(0)
+            .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+            .Items(items =>
+            {
+                items.Add().Text("Detail").Content(
+                    @<text>
+                        
+                        # if (!IsOnlineApproved&&!IsSendForApproval)
+                        {#
+                        <a onclick='return sendForApproval("#=AnnualNeedAssesmentID#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                        <br />
+                        # } #
+
+                        # if (IsOnlineApproved)
+                        {#
+                        <a href='@Url.Action("ProcurementNeedPrint", "ProcurementPrint")/#=AnnualNeedAssesmentID#' title="Print"><i class="fa fa-print fa-2x"></i></a>
+                        <br />
+                        # } #
+                        <div>
+                            <hr>
+                            <dl class="dl-horizontal">
+
+                                <dt>
+                                    Need No.
+                                </dt>
+                                <dd>
+                                    #= AnnualNeedAssesmentID #
+                                </dd>
+                                <dt>
+                                    Branch
+                                </dt>
+                                <dd>
+                                    #= BranchId #
+
+                                </dd>
+                                <dt>
+                                    Work Unit
+                                </dt>
+                                <dd>
+                                    #= OrgStructureId #
+                                </dd>
+                                <dt>
+                                   Requesting Name
+                                </dt>
+                                <dd>
+                                    #= EmployeeId #
+
+                                </dd>                                 
+                                <dt>
+                                    Status
+                                </dt>
+                                <dd>
+                                    #= Status #
+
+                                </dd>
+                                <dt>
+                                    Created On
+                                </dt>
+                                <dd>
+                                    #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+
+
+                                </dd>
+                                <dt>
+                                    Created By
+                                </dt>
+                                <dd>
+                                    #=CreatedBy #
+
+                                </dd>
+                            </dl>
+
+                        </div>
+
+                    
+                     </text>
+                  );
+                items.Add().Text("Items").Content(@<text>
+
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Procurement.Need.AnnualNeedAssesmentItem>()
+                          .Name("item#=AnnualNeedAssesmentID#")
+                          .Columns(columns =>
+                          {
+                              columns.Bound(c => c.ItemType).Hidden().Editable("itemEditable");
+                              columns.Bound(c => c.Type).Width(90).EditorTemplateName("ItemTypeSelector").Editable("itemEditable");
+                              columns.ForeignKey(p => p.CatCode, (IEnumerable)ViewData["Category"], "CatCode", "Name").Title("Category").EditorTemplateName("GenericItemCategorySelector").Width(170).Editable("itemEditable");
+                              columns.ForeignKey(p => p.ItmCode, (IEnumerable)ViewData["Items"], "ItmCode", "Name").Title("Item").EditorTemplateName("GenericItemSelector").Width(170).Editable("itemEditable");
+                              columns.Bound(c => c.Name).Width(100).EditorTemplateName("GenericItemNameSelector").Editable("itemEditable");
+                              columns.Bound(c => c.UoM).Title("Unit").Width(70);
+                              columns.Bound(c => c.Price).Title("Price").Width(70);
+                              columns.Bound(c => c.BudgetSource).EditorTemplateName("BudgetSources").Width(140);
+                              columns.Bound(c => c.Function).Width(140);
+                              columns.Bound(c => c.Period1).Width(80);
+                              columns.Bound(c => c.Period2).Width(80);
+                              columns.Bound(c => c.Period3).Width(80);
+                              columns.Bound(c => c.Period4).Width(80);
+                              columns.Bound(c => c.Period5).Width(80);
+                              columns.Bound(c => c.Period6).Width(80);
+                              columns.Bound(c => c.Period7).Width(80);
+                              columns.Bound(c => c.Period8).Width(80);
+                              columns.Bound(c => c.Period9).Width(80);
+                              columns.Bound(c => c.Period10).Width(80);
+                              columns.Bound(c => c.Period11).Width(80);
+                              columns.Bound(c => c.Period12).Width(80);
+                              columns.Bound(c => c.Quantity).Title("Total QTY").Width(80);
+
+                              //columns.Bound(c => c.PerformanceRequirement).Title("Performance Req.").Width(140);
+                              //columns.Bound(c => c.PhysicalCharacteristics).Title("Physical Cha.").Width(160);
+                              //columns.Bound(c => c.BudgetSource).EditorTemplateName("BudgetSources").Width(140);
+                              //columns.Bound(c => c.ProcurementCategory).EditorTemplateName("ProcurementCategorys").Width(160);
+                              //columns.Bound(c => c.EstimatedBudget).Width(140);
+                              //columns.Bound(c => c.EstimatedTimeTheItemIsNeeded).Title("Time Needed").Width(140);
+                              columns.Command(command =>
+                              {
+                                  command.Edit();
+                                  command.Destroy();
+                              }).Width(180);
+                          })
+                          .ToolBar(toolbar =>
+                          {
+                              toolbar.Create();
+                          })
+                          .Events(x => x.DataBound("onDataBoundLines"))
+                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                          .Pageable(pageable => pageable
+                              .Input(true)
+                              .Numeric(false)
+                              .Refresh(true)
+                              .PageSizes(true)
+                              .ButtonCount(10))
+                          .Scrollable()
+                          .Sortable()
+
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+                              .Model(
+                                  model =>
+                                  {
+                                      model.Id(p => p.AnnualNeedAssesmentItemID);
+                                      model.Field(p => p.ItemType).Editable(false);
+                                      model.Field(p => p.Quantity).Editable(false);
+                                      model.Field(p => p.UoM).Editable(false);
+                                      model.Field(p => p.OrgBranchName).Editable(false);
+                                      model.Field(p => p.CreatedBy).Editable(false);
+                                      model.Field(p => p.ModifiedBy).Editable(false);
+                                      model.Field(p => p.LastModified).Editable(false);
+                                      model.Field(p => p.DateCreated).Editable(false);
+
+
+                                  })
+                              .Events(ev => ev
+                                  .Error("error_handler(\"item#=AnnualNeedAssesmentID#\")")
+                                  .RequestStart("onRequestStart(\"item#=AnnualNeedAssesmentID#\")")
+                                  .RequestEnd("onRequestEnd(\"item#=AnnualNeedAssesmentID#\")"))
+                              .Read(read => read.Action("AnnualNeedAssesmentItems_Read", "ProcurementNeedItem", new { id = "#=AnnualNeedAssesmentID#" }))
+                              .Create(create => create.Action("AnnualNeedAssesmentItems_Create", "ProcurementNeedItem", new { id = "#=AnnualNeedAssesmentID#" }))
+                              .Update(update => update.Action("AnnualNeedAssesmentItems_Update", "ProcurementNeedItem"))
+                              .Destroy(destroy => destroy.Action("AnnualNeedAssesmentItems_Destroy", "ProcurementNeedItem"))
+                          )
+                          .ToClientTemplate())
+                </text>
+                );
+
+                items.Add().Text("Validation").Content(@<text>
+
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Procurement.Need.AnnualNeedAssesmentValidation>()
+                          .Name("validation_#=AnnualNeedAssesmentID#")
+                          .Columns(columns =>
+                          {
+                              columns.Bound(c => c.Status).EditorTemplateName("ApprovalStatus").Width(200);
+                              columns.Bound(c => c.Remark).Width(200);
+                          
+                              columns.Command(command =>
+                              {
+                                  command.Edit();
+                                  command.Destroy();
+                              }).Width(180);
+                          })
+                          .ToolBar(toolbar =>
+                          {
+                              toolbar.Create();
+                          })
+                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                          .Events(x => x.DataBound("onDataBoundFisrtValidation"))
+                          .Pageable(pageable => pageable
+                              .Input(true)
+                              .Numeric(false)
+                              .Refresh(true)
+                              .PageSizes(true)
+                              .ButtonCount(5))
+                          .Sortable(sortable =>
+                          {
+                              sortable.SortMode(GridSortMode.SingleColumn);
+                          })
+                          .Filterable()
+                          .Scrollable()
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+                              .Model(
+                                  model =>
+                                  {
+                                      model.Id(p => p.AnnualNeedAssesmentValidationID);
+                                  
+                                  })
+                              .Events(ev => ev
+                                  .Error("error_handler(\"item#=AnnualNeedAssesmentID#\")")
+                                  .RequestStart("onRequestStart(\"item#=AnnualNeedAssesmentID#\")")
+                                  .RequestEnd("onRequestEnd(\"item#=AnnualNeedAssesmentID#\")"))
+
+                              .Read(read => read.Action("AnnualNeedAssesmentValidations_Read", "ProcurementNeedValidation", new { id = "#=AnnualNeedAssesmentID#" }))
+                              .Create(create => create.Action("AnnualNeedAssesmentValidations_Create", "ProcurementNeedValidation", new { id = "#=AnnualNeedAssesmentID#" }))
+                              .Update(update => update.Action("AnnualNeedAssesmentValidations_Update", "ProcurementNeedValidation"))
+                              .Destroy(destroy => destroy.Action("AnnualNeedAssesmentValidations_Destroy", "ProcurementNeedValidation"))
+                          )
+                          .ToClientTemplate())
+                </text>
+                );
+            })
+               .ToClientTemplate()
+    )
+</script>
+
+
+
+
+<script>
+
+    function sendForApproval(id) {
+        var recordStatus = "";
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("SendForApproval", "ProcurementNeed", new { area = "Procurement" })',
+            data: { id: id },
+            success: function (result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                recordStatus = result.Status;
+                location.reload(true);
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+
+    function dataBound() {
+        this.expandRow(this.tbody.find("tr.k-master-row").first());
+    }
+
+    function itemEditable(dataItem) {
+        
+        return dataItem.AnnualNeedAssesmentItemID === 0;
+    }
+</script>
+
+
+@*<style>
+        div.k-edit-form-container {
+            width: 800px;
+            height: auto;
+        }
+
+        div.k-content {
+            overflow: hidden;
+            height: auto;
+        }
+    </style>*@
+
+@*<style type="text/css">
+    div.k-edit-form-container {
+        width: 600px;
+    }
+    div.k-content {
+        overflow: hidden;
+        height: auto;
+    }
+</style>*@

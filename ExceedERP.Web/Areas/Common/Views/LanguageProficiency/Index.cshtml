@@ -1,0 +1,29 @@
+﻿@using ExceedERP.Core.Domain.Common.HRM
+
+@(Html.Kendo().Grid<LanguageProficiency>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.EmployeeId);
+        columns.Bound(c => c.LanguageId);
+        columns.Bound(c => c.Reading);
+        columns.Bound(c => c.Listening);
+        columns.Bound(c => c.Writing);
+        columns.Bound(c => c.Speaking);
+        columns.Bound(c => c.Remark);
+        columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.LanguageProficiencyId))
+          .Read(read => read.Action("LanguageOfProficiencies_Read", "LanguageProficiency"))
+          .Create(create => create.Action("LanguageOfProficiencies_Create", "LanguageProficiency"))
+          .Update(update => update.Action("LanguageOfProficiencies_Update", "LanguageProficiency"))
+          .Destroy(destroy => destroy.Action("LanguageOfProficiencies_Destroy", "LanguageProficiency"))
+      )
+)

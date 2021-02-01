@@ -1,0 +1,1016 @@
+﻿@{
+
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+ 
+
+<script>
+
+    function SelectInventoryStore(e, JobOrderDetailID) {
+        popup = window.open('/FleetManagement/ServiceCenter/InventoryStoreSelector?Id=' + JobOrderDetailID, 'PoP_Up', 'directories=no,titlebar=no,toolbar=no,location=no,status=no,menubar=no,scrollbars=no,resizable=no,width=324,height=268');
+        popup.focus();
+        return false;
+    }
+
+</script>
+<legend> Store Requestion</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetMaintenance.JobOrder>()
+        .Name("grid")
+    .Columns(columns =>
+    {
+        columns.Bound(e => e.Num).Width(80);
+        columns.Bound(e => e.EquipmentName).Width(160);
+        columns.Bound(e => e.ProjectName).Title("Location").Width(140);
+        columns.Bound(e => e.MaintenanceCenter).Width(200);
+        columns.Bound(e => e.Status).Width(200); 
+
+
+
+    })
+
+       .Editable(editable =>
+        {
+            editable.Mode(GridEditMode.PopUp).TemplateName("JobOrderEditor");
+            editable.DisplayDeleteConfirmation("Are You Sure To Send For Approval");
+        })
+             .HtmlAttributes(new { style = "height: 520px;" })
+                          .Pageable(pageable => pageable
+                                            .Input(true)
+                                            .Numeric(false)
+                                            .Refresh(true)
+                                            .PageSizes(true)
+                                            .ButtonCount(5))
+
+                                .Scrollable()
+                                .Sortable()
+                                .Filterable()
+
+                                .Scrollable(h => h.Height(500))
+        .ClientDetailTemplateId("template")
+           .Events(ev => ev.DetailExpand("MasterOnExpand"))
+              .DataSource(dataSource => dataSource
+            .Ajax()
+            .ServerOperation(false).Sort(x => x.Add(s => s.Num).Descending())
+            .PageSize(6)
+            .Model(model =>
+                {
+                    model.Id(p => p.JobOrderID);
+                    model.Field(p => p.JobOrderID).Editable(false);
+                }
+                ).Events(ev => ev
+                                                            .Error("error_handler(\"grid\")")
+                                                            .RequestStart("onRequestStart(\"grid\")")
+                                                            .RequestEnd("onRequestEnd(\"grid\")"))
+                    .Create(update => update.Action("JobOrder_Create", "JobOrder"))
+                                .Read(read => read.Action("ServiceCenter_Read", "ServiceCenter"))
+                        .Update(update => update.Action("JobOrder_Update", "ServiceCenter"))
+                                .Destroy(update => update.Action("JobOrder_Refer", "ServiceCenter"))
+
+        )
+   .Events(events => events.DataBound("dataBound"))
+)
+
+
+
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                            .Name("tabStripline_#=JobOrderID#")
+                    .SelectedIndex(0)
+                    .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+                    .Items(items =>
+                    {
+
+
+                        items.Add().Text("Cost ").Content(@<text>
+                            <div class="row">
+                                <div class="box wide hidden-on-narrow">
+                                    <h4> </h4>
+                                    <div class="box-col">
+                                        <button class="export-pdf btn-primary pull-right "><i class="fa fa-print fa-2x"></i></button>
+                                    </div>
+
+                                </div>
+                                <div id="contentexport#=JobOrderID#" class="content-export">
+                                    
+                                    @*<img src="data:image;base64,@System.Convert.ToBase64String(ViewBag.Image)" width="80" height="80" />*@
+                                    <div class="col-md-7">
+                                        <div id="CostChart#=JobOrderID#" class="gauge"></div>
+
+                                    </div>
+                                </div>
+                            </div>
+                        </text>
+                    );
+
+                        items.Add().Text("Service Tool").Content(@<text>
+                        @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetMaintenance.ServiceTool>()
+                                                .Name("ServiceToolgrid_#=JobOrderID#")
+                                .Columns(columns =>
+                                    {
+                                        columns.Bound(o => o.ServiceName).Title("Tool Name").EditorTemplateName("ToolEditor").Width(120);
+                                        columns.Bound(o => o.ApprovalStatus).EditorTemplateName("ApprovalStatusBind").Width(100);
+                                        columns.Bound(o => o.CreatedBy).Width(100);
+                                        columns.Bound(c => c.DateCreated).Format("{0:yyyy-MM-dd}").Width(100);
+
+                                        columns.Command(command =>
+                                        {
+                                            command.Edit();
+                                            command.Destroy();
+                                        }).Width(250);
+                                    })
+                                    .ToolBar(t => t.Create())
+                                              .Events(x => x.DataBound("dataBound")).Editable(editable =>
+                                    {
+                                        editable.Mode(GridEditMode.InLine);
+                                        editable.DisplayDeleteConfirmation("Are You Sure To Remove Tool");
+                                    })
+
+                                .DataSource(dataSource => dataSource
+                                    .Ajax()
+                                    .PageSize(5)
+                                     .Model(model =>
+                                     {
+                                         model.Id(p => p.ServiceToolID);
+                                         model.Field(p => p.ApprovalStatus).Editable(false);
+                                         model.Field(p => p.CreatedBy).Editable(false);
+                                         model.Field(p => p.DateCreated).Editable(false);
+
+                                     }).Events(ev => ev
+                                                                                    .Error("error_handler(\"ServiceToolgrid_#=JobOrderID#\")")
+                                                                                    .RequestStart("onRequestStart(\"ServiceToolgrid_#=JobOrderID#\")")
+                                                                                    .RequestEnd("onRequestEnd(\"ServiceToolgrid_#=JobOrderID#\")"))
+                                                   .Read(read => read.Action("ServiceToolByService", "ServiceTool", new { tserviceID = "#=JobOrderID#" }))
+                                                                                  .Create(update => update.Action("ServiceTool_Create", "ServiceTool", new { tserviceID = "#=Num#" }))
+                                                                                          .Update(destroy => destroy.Action("ServiceTool_Update", "ServiceTool", new { tserviceID = "#=Num#" }))
+                                                                  .Destroy(destroy => destroy.Action("ServiceTool_Destroy", "ServiceTool"))
+                                      )
+                                .Pageable()
+                               .ToClientTemplate())
+                        </text>);
+                        items.Add().Text(" Spare Part ").Content(@<text>
+
+            @*#if (IsOnlineTransferred == false)
+                {#
+                <img src="~/Content/Images/default.png" width="30px" height="30px" onclick="SelectInventoryStore(this, '#=JobOrderID#')" />
+                #}#*@
+            @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetMaintenance.ServiceSpare>()
+                      .Name("ServiceSparegrid_#=JobOrderID#")
+                      .Columns(columns =>
+                      {
+                          columns.Bound(c => c.InventoryItemId).Title("Item").Width(140);
+                          columns.Bound(o => o.Quantity).EditorTemplateName("NumEditor").Width(100);
+                          //  columns.Bound(o => o.UsedQuantity).Width(100);
+                          columns.Bound(o => o.ApprovalStatus).EditorTemplateName("ApprovalStatusBind").Width(100);
+                          columns.Bound(o => o.CreatedBy).Width(100);
+                          columns.Bound(c => c.DateCreated).Format("{0:yyyy-MM-dd}").Width(100);
+
+                          columns.Command(command =>
+                          {
+
+                          }).Width(50);
+                      })
+                                .Events(x => x.DataBound("dataBound"))
+                      .Editable(editable =>
+                      {
+                          editable.Mode(GridEditMode.InLine);
+                          editable.DisplayDeleteConfirmation("Are You Sure To Remove Spare Part");
+                      })
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+                          .PageSize(5)
+                          .Model(model =>
+                          {
+                              model.Id(p => p.ServiceSpareID);
+                              model.Field(p => p.ApprovalStatus).Editable(false);
+                              model.Field(p => p.CreatedBy).Editable(false);
+                              model.Field(p => p.DateCreated).Editable(false);
+                              model.Field(p => p.UsedQuantity).Editable(false);
+                          }).Events(ev => ev
+                              .Error("error_handler(\"ServiceSparegrid_#=JobOrderID#\")")
+                              .RequestStart("onRequestStart(\"ServiceSparegrid_#=JobOrderID#\")")
+                              .RequestEnd("onRequestEnd(\"ServiceSparegrid_#=JobOrderID#\")"))
+                          .Create(create => create.Action("ServiceSpare_Create", "ServiceSpare", new { sserviceID = "#=JobOrderID#" }))
+                          .Read(read => read.Action("ServiceSpareByService", "ServiceSpare", new { sserviceID = "#=Num#" }))
+                          .Destroy(destroy => destroy.Action("ServiceSpare_Destroy", "ServiceSpare"))
+                          .Update(update => update.Action("ServiceSpare_Update", "ServiceSpare", new { sserviceID = "#=JobOrderID#" }))
+
+                      )
+                      .Pageable()
+                      .ToClientTemplate())
+
+                        </text>
+                        );
+                        items.Add().Text(" Battery ").Content(@<text>
+
+                            @*#if (IsOnlineTransferred == false)
+                                {#
+                                <img src="~/Content/Images/default.png" width="30px" height="30px" onclick="SelectInventoryStore(this, ' #=JobOrderID#')" />
+                                #}#*@
+                            @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetMaintenance.ServiceSpare>()
+                      .Name("Batterygrid_#=JobOrderID#")
+                      .Columns(columns =>
+                      {
+                          columns.Bound(c => c.InventoryItemId).Title("Item").Width(140); columns.Bound(o => o.Quantity).EditorTemplateName("NumEditor").Width(100);
+                          //   columns.Bound(o => o.UsedQuantity).Width(100);
+                          columns.Bound(o => o.ApprovalStatus).EditorTemplateName("ApprovalStatusBind").Width(100);
+                          columns.Bound(o => o.CreatedBy).Width(100);
+                          columns.Bound(c => c.DateCreated).Format("{0:yyyy-MM-dd}").Width(100);
+
+                          columns.Command(command =>
+                          {
+
+                          }).Width(50);
+                      })
+                                    // .ToolBar(t => t.Create())
+                               .Events(x => x.DataBound("dataBound"))
+                      .Editable(editable =>
+                      {
+                          editable.Mode(GridEditMode.InLine);
+                          editable.DisplayDeleteConfirmation("Are You Sure To Remove Battery");
+                      })
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+                          .PageSize(5)
+                          .Model(model =>
+                          {
+                              model.Id(p => p.ServiceSpareID);
+                              model.Field(p => p.ApprovalStatus).Editable(false);
+                              model.Field(p => p.CreatedBy).Editable(false);
+                              model.Field(p => p.DateCreated).Editable(false);
+                              model.Field(p => p.UsedQuantity).Editable(false);
+                          }).Events(ev => ev
+                                      .Error("error_handler(\"Batterygrid_#=JobOrderID#\")")
+                                      .RequestStart("onRequestStart(\"Batterygrid_#=JobOrderID#\")")
+                                      .RequestEnd("onRequestEnd(\"Batterygrid_#=JobOrderID#\")"))
+                                  .Create(create => create.Action("ServiceSpare_Create", "ServiceSpare", new { sserviceID = "#=Num#" }))
+                                          .Read(read => read.Action("ServiceSpareBatteryByService", "ServiceSpare", new { sserviceID = "#=Num#" }))
+                          .Destroy(destroy => destroy.Action("ServiceSpare_Destroy", "ServiceSpare"))
+                                  .Update(update => update.Action("ServiceSpare_Update", "ServiceSpare", new { sserviceID = "#=Num#" }))
+
+                      )
+                      .Pageable()
+                      .ToClientTemplate())
+
+                        </text>
+                        );
+
+
+                        items.Add().Text(" Oil & Lubricant ").Content(@<text>
+                            @*#if (IsOnlineTransferred == false)
+                                {#
+                                <img src="~/Content/Images/default.png" width="30px" height="30px" onclick="SelectInventoryStore(this, '#=JobOrderID#')" />
+                                #}#*@
+                            @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetMaintenance.ServiceSpare>()
+                                                    .Name("Oilgrid_#=JobOrderID#")
+                            .Columns(columns =>
+                            {
+                                columns.Bound(c => c.InventoryItemId).Title("Item").Width(140); columns.Bound(o => o.Quantity).EditorTemplateName("NumEditor").Width(100);
+                                // columns.Bound(o => o.UsedQuantity).Width(100);
+                                columns.Bound(o => o.ApprovalStatus).EditorTemplateName("ApprovalStatusBind").Width(100);
+                                columns.Bound(o => o.CreatedBy).Width(100);
+                                columns.Bound(c => c.DateCreated).Format("{0:yyyy-MM-dd}").Width(100);
+                                columns.Command(command =>
+                                {
+
+                                }).Width(50);
+                            })
+                                    //.ToolBar(t => t.Create())
+                                     .Events(x => x.DataBound("dataBound"))
+                                                   .Editable(editable =>
+                        {
+                            editable.Mode(GridEditMode.InLine);
+                            editable.DisplayDeleteConfirmation("Are You Sure To Remove Lubricant");
+                        })
+                                        .Events(ev => ev.DataBound("ServiceDataBound"))
+                              .DataSource(dataSource => dataSource
+                                .Ajax()
+                                .PageSize(5)
+                                 .Model(model =>
+                                 {
+                                     model.Id(p => p.ServiceSpareID);
+                                     model.Field(p => p.ApprovalStatus).Editable(false);
+                                     model.Field(p => p.CreatedBy).Editable(false);
+                                     model.Field(p => p.DateCreated).Editable(false);
+                                     model.Field(p => p.UsedQuantity).Editable(false);
+                                 }).Events(ev => ev
+                                                                                        .Error("error_handler(\"Oilgrid_#=JobOrderID#\")")
+                                                                                        .RequestStart("onRequestStart(\"Oilgrid_#=JobOrderID#\")")
+                                                                                        .RequestEnd("onRequestEnd(\"Oilgrid_#=JobOrderID#\")"))
+                                                               .Create(update => update.Action("ServiceOilLubricantSpare_Create", "ServiceSpare", new { sserviceID = "#=Num#" }))
+                                                                                                                    .Read(read => read.Action("ServiceSpareOilLubricantByService", "ServiceSpare", new { sserviceID = "#=Num#" }))
+                                                                                                                                                 .Update(destroy => destroy.Action("ServiceSpare_Update", "ServiceSpare", new { sserviceID = "#=Num#" }))
+                                  .Destroy(destroy => destroy.Action("ServiceSpare_Destroy", "ServiceSpare"))
+
+                                                                                              )
+                            .Pageable()
+                            .ToClientTemplate())
+                        </text>
+                    );
+                        items.Add().Text(" Tyre ").Content(@<text>
+                        @*#if (IsOnlineTransferred == false)
+                            {#
+                            <img src="~/Content/Images/default.png" width="30px" height="30px" onclick="SelectInventoryStore(this, '#=JobOrderID#')" />
+                            #}#*@
+                        @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetMaintenance.ServiceSpare>()
+                  .Name("Tyregrid_#=JobOrderID#")
+                  .Columns(columns =>
+                  {
+                      columns.Bound(c => c.InventoryItemId).Title("Item").Width(140); 
+                      columns.Bound(o => o.Quantity).EditorTemplateName("NumEditor").Width(100);
+                      //  columns.Bound(o => o.UsedQuantity).Width(100);
+                      columns.Bound(o => o.ApprovalStatus).EditorTemplateName("ApprovalStatusBind").Width(100);
+                      columns.Bound(o => o.CreatedBy).Width(100);
+                      columns.Bound(c => c.DateCreated).Format("{0:yyyy-MM-dd}").Width(100);
+
+                      columns.Command(command =>
+                      {
+
+                      }).Width(50);
+
+                  })
+                                //.ToolBar(t => t.Create())
+                           .Events(x => x.DataBound("dataBound"))
+                  .Editable(editable =>
+                  {
+                      editable.Mode(GridEditMode.InLine);
+                      editable.DisplayDeleteConfirmation("Are You Sure To Remove Spare Part");
+                  }).Events(ev => ev.DataBound("ServiceDataBound"))
+                  .DataSource(dataSource => dataSource
+                      .Ajax()
+                      .PageSize(5)
+                      .Model(model =>
+                      {
+                          model.Id(p => p.ServiceSpareID);
+                          model.Field(p => p.ApprovalStatus).Editable(false);
+                          model.Field(p => p.CreatedBy).Editable(false);
+                          model.Field(p => p.DateCreated).Editable(false);
+                          model.Field(p => p.UsedQuantity).Editable(false);
+                      }).Events(ev => ev
+                          .Error("error_handler(\"Tyregrid_#=JobOrderID#\")")
+                          .RequestStart("onRequestStart(\"Tyregrid_#=JobOrderID#\")")
+                          .RequestEnd("onRequestEnd(\"Tyregrid_#=JobOrderID#\")"))
+                              .Create(update => update.Action("ServiceTyreSpare_Create", "ServiceSpare", new { sserviceID = "#=Num#" }))
+                              .Read(read => read.Action("ServiceSpareTyreByService", "ServiceSpare", new { sserviceID = "#=Num#" }))
+                              .Update(update => update.Action("ServiceSpare_Update", "ServiceSpare", new { sserviceID = "#=Num#" }))
+                              .Update(destroy => destroy.Action("ServiceSpare_Update", "ServiceSpare", new { sserviceID = "#=Num#" }))
+                      .Destroy(destroy => destroy.Action("ServiceSpare_Destroy", "ServiceSpare"))
+                  )
+                  .Pageable()
+                  .ToClientTemplate())
+
+                        </text>
+                    );
+
+                        items.Add().Text(" Other Material ").Content(@<text>
+                        @*#if (IsOnlineTransferred == false)
+                            {#
+                            <img src="~/Content/Images/default.png" width="30px" height="30px" onclick="SelectInventoryStore(this, '#=JobOrderID#')" />
+                            #}#*@
+                        @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetMaintenance.ServiceSpare>()
+                  .Name("OtherMaterialgrid_#=JobOrderID#")
+                  .Columns(columns =>
+                  {
+                      columns.Bound(c => c.InventoryItemId).Title("Item").Width(140);
+                      columns.Bound(o => o.Quantity).EditorTemplateName("NumEditor").Width(100);
+                      //   columns.Bound(o => o.UsedQuantity).Width(100);
+                      columns.Bound(o => o.ApprovalStatus).EditorTemplateName("ApprovalStatusBind").Width(100);
+                      columns.Bound(o => o.CreatedBy).Width(100);
+                      columns.Bound(c => c.DateCreated).Format("{0:yyyy-MM-dd}").Width(100);
+                      columns.Command(command =>
+                      {
+
+                      }).Width(50);
+                  })
+                                //.ToolBar(t => t.Create())
+                  .Events(x => x.DataBound("dataBound"))
+                  .Editable(editable =>
+                  {
+                      editable.Mode(GridEditMode.InLine);
+                  }).Events(ev => ev.DataBound("ServiceDataBound"))
+                  .DataSource(dataSource => dataSource
+                      .Ajax()
+                      .PageSize(5)
+                      .Model(model =>
+                      {
+                          model.Id(p => p.ServiceSpareID);
+                          model.Field(p => p.ApprovalStatus).Editable(false);
+                          model.Field(p => p.CreatedBy).Editable(false);
+                          model.Field(p => p.DateCreated).Editable(false);
+                          model.Field(p => p.UsedQuantity).Editable(false);
+                      }).Events(ev => ev
+                          .Error("error_handler(\"OtherMaterialgrid_#=JobOrderID#\")")
+                          .RequestStart("onRequestStart(\"OtherMaterialgrid_#=JobOrderID#\")")
+                          .RequestEnd("onRequestEnd(\"OtherMaterialgrid_#=JobOrderID#\")"))
+                              .Create(update => update.Action("ServiceOtherSpare_Create", "ServiceSpare", new { sserviceID = "#=Num#" }))
+                              .Read(read => read.Action("ServiceSpareOtherByService", "ServiceSpare", new { sserviceID = "#=Num#" }))
+                              .Update(destroy => destroy.Action("ServiceSpare_Update", "ServiceSpare", new { sserviceID = "#=Num#" }))
+                      .Destroy(destroy => destroy.Action("ServiceSpare_Destroy", "ServiceSpare"))
+                  )
+                  .Pageable()
+                  .ToClientTemplate())
+
+                        </text>
+                    );
+
+                    @*items.Add().Text("Store Requisition").Content(@<text>
+                            @(Html.Kendo().Grid<ExceedERP.Web.Areas.FleetManagement.Models.RequistionItemViewModel>()
+                                                                        .Name("Requisitiongrid_#=JobOrderID#")
+                                .Columns(columns =>
+                                {
+
+                                          columns.Bound(o => o.StoreRequisitionID).Title("Requisition Id").Width(100);
+                                    columns.Bound(o => o.ItemCategoryCode).Title("Store ").Width(100);
+                                    columns.Bound(o => o.ItemCode).Width(100);
+                                    columns.Bound(o => o.IssuedQuantity).Width(100);
+                                    columns.Bound(o => o.RemainingAmount).Width(100);
+                                    columns.Bound(o => o.UsedAmount).Width(100);
+                                    columns.Bound(o => o.UnitPrice).Width(100);
+                                    columns.Bound(o => o.TotalPrice).Width(100);
+                                    columns.Bound(o => o.Remark).Width(100);
+                                    columns.Command(command =>
+                                     {
+                                     }).Width(250);
+                                })
+
+                                                       .Editable(editable =>
+                            {
+                                editable.Mode(GridEditMode.InLine);
+                            })
+                                  .DataSource(dataSource => dataSource
+                                    .Ajax()
+                                    .PageSize(5)
+                                     .Model(model =>
+                                     {
+                                         model.Id(p => p.StoreRequisitionItemID);
+                                         model.Field(p => p.CreatedBy).Editable(false);
+                                         model.Field(p => p.DateCreated).Editable(false);
+                                     }).Events(ev => ev
+                                                                                                            .Error("error_handler(\"OtherMaterialgrid_#=JobOrderID#\")")
+                                                                                                            .RequestStart("onRequestStart(\"OtherMaterialgrid_#=JobOrderID#\")")
+                                                                                                            .RequestEnd("onRequestEnd(\"OtherMaterialgrid_#=JobOrderID#\")"))
+                                                                                                                                .Read(read => read.Action("GetServiceRequisition", "ServiceCenter", new { Id = "#=JobOrderID#" }))
+
+                                                                                                  )
+                                .Pageable()
+                                .ToClientTemplate())
+                            </text>
+                        );*@
+
+                        items.Add().Text("Salvage Requistion").Content(@<text>
+            @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetSalvageStore.SalvageStore>()
+                                                    .Name("SalvageStoregrid_#=JobOrderID#")
+                            .Columns(columns =>
+                            {
+
+                                columns.Bound(o => o.SparePartName).Title("Part Name").EditorTemplateName("SalvageStoreItem").Width(150);
+                                columns.Bound(o => o.Price).EditorTemplateName("NumEditor").Width(100);
+                                columns.Bound(o => o.Quantity).EditorTemplateName("NumEditor").Width(100);
+                                columns.Bound(o => o.ApprovedQuantity).EditorTemplateName("NumEditor").Width(120);
+                                columns.Bound(o => o.CreatedBy).Width(100);
+                                columns.Bound(c => c.DateCreated).Format("{0:yyyy-MM-dd}").Width(100);
+
+                                columns.Command(command =>
+                                {
+                                    command.Edit();
+
+                                }).Width(250);
+                            })
+                            .ToolBar(t => t.Create())
+                                                           .Editable(editable =>
+                                {
+                                    editable.Mode(GridEditMode.InLine);
+                                    editable.DisplayDeleteConfirmation("Are You Sure To Remove ");
+                                })
+                             .DataSource(dataSource => dataSource
+                                .Ajax()
+                                .PageSize(5)
+                                                          .Model(model =>
+                                         {
+                                             model.Id(p => p.SalvageStoreID);
+                                             model.Field(p => p.ApprovedQuantity).Editable(false);
+                                             model.Field(p => p.Price).Editable(false);
+                                             model.Field(p => p.CreatedBy).Editable(false);
+                                             model.Field(p => p.DateCreated).Editable(false);
+                                         }).Events(ev => ev
+                                                                                                                .Error("error_handler(\"SalvageStoregrid_#=JobOrderID#\")")
+                                                                                                                .RequestStart("onRequestStart(\"SalvageStoregrid_#=JobOrderID#\")")
+                                                                                                                .RequestEnd("onRequestEnd(\"SalvageStoregrid_#=JobOrderID#\")"))
+                                                                                                                                                                 .Create(update => update.Action("SalvageStoreRequistion_Create", "SalvageStore", new { Id = "#=JobOrderID#" }))
+                                                                                                                   .Read(read => read.Action("SalvageStoreRequstion_Read", "SalvageStore", new { Id = "#=JobOrderID#" }))
+                                                                                                                                               .Update(destroy => destroy.Action("SalvageStoreRequstion_Read", "SalvageStore", new { Id = "#=JobOrderID#" }))
+                                                                                          )
+                                  .Pageable()
+                            .ToClientTemplate())
+                        </text>);
+                        items.Add().Text("Store Return").Content(@<text>
+            @(Html.Kendo().Grid<ExceedERP.Core.Domain.Inventory.StoreReturnItems>()
+                                            .Name("CrewOnHandgrid_#=JobOrderID#")
+                            .Columns(columns =>
+                            {
+                                columns.Bound(c => c.ItemCode).Title("Item").Width(140);
+                                columns.Bound(o => o.OrgBranchName).Title("Store Requistion").Width(100);
+                                columns.Bound(o => o.Quantity).Width(100);
+                                columns.Bound(o => o.UnitPrice).Width(100);
+                                columns.Bound(o => o.CreatedBy).Width(100);
+                                columns.Bound(o => o.DateCreated).Width(100);
+                            })
+
+                             .DataSource(dataSource => dataSource
+                                .Ajax()
+                                .PageSize(5)
+                                                         .Model(model => model.Id(p => p.StoreReturnItemsID)).Events(ev => ev
+                                                                                                                .Error("error_handler(\"CrewOnHandgrid_#=JobOrderID#\")")
+                                                                                                                .RequestStart("onRequestStart(\"CrewOnHandgrid_#=JobOrderID#\")")
+                                                                                                                .RequestEnd("onRequestEnd(\"CrewOnHandgrid_#=JobOrderID#\")"))
+
+                                                                                                                   .Read(read => read.Action("OnHand_Read", "JobOrder", new { Id = "#=JobOrderID#" }))
+
+                                                                                          )
+                                  .Pageable()
+                            .ToClientTemplate())
+                        </text>);
+
+                    }).ToClientTemplate()
+
+    )
+</script>
+
+<script>
+    $(document).ready(function () {
+        $(".export-pdf").click(function () {
+            $("#contentexport" + masterId).getKendoChart().saveAsPDF();
+        });
+        $(".export-img").click(function () {
+            var chart = $("#chart").getKendoChart();
+            chart.exportImage().done(function (data) {
+                kendo.saveAs({
+                    dataURI: data,
+                    fileName: "chart.png",
+                    proxyURL: "//demos.telerik.com/kendo-ui/service/export"
+                });
+            });
+        });
+    });
+
+</script>
+
+
+<script>
+
+    var masterId;
+    var fleetPlate;
+    var IsApproved;
+    var IsSecondSendForApproval;
+    var IsOnlineTransfered;
+    function OnExpand(e) {
+        var masterRow = e.masterRow;
+
+        var masterGrid = $("#grid").data("kendoGrid");
+
+        var dataItem = masterGrid.dataItem(masterRow);
+        masterId = dataItem.JobOrderID;
+        fleetPlate = dataItem.VoidBy;
+        IsApproved = dataItem.IsSecondOnlineApproved;
+        IsSecondSendForApproval = dataItem.IsSecondSendForApproval;
+        IsOnlineTransfered = dataItem.IsOnlineTransferred;
+
+        var category = "";
+        var lineitem = "";
+        var index = 0;
+
+        $.ajax({
+            url: '@Url.Action("MaintenaceCheckList_Read", "CheckListLog")',
+
+            data: {},
+            type: 'POST',
+            cache: false,
+            success: function (list) {
+                for (var i = 0 ; i < list.length; i++) {
+
+                    lineitem += "    <div class='col-sm-12'>";
+                    if (category != list[i].CategoryName) {
+
+                        lineitem += "       <div class='col-sm-12'><h2 style='background-color:greenyellow'>" + list[i].CategoryName + " </h2></div>";
+                        category = list[i].CategoryName;
+                    }
+                    lineitem += "<div class='col-sm-4'  >  <input type='hidden' name=model.CheckListViewModel[" + index + "].InspectionId  value=" + masterId + ">   <input type='hidden' name=model.CheckListViewModel[" + index + "].LineName  value=" + list[i].LineName + " '>     <input type='hidden' name=model.CheckListViewModel[" + index + "].LineCode  value=" + list[i].LineCode + " '>    <input type='hidden' name=model.CheckListViewModel[" + index + "].CategoryName  value=" + list[i].CategoryName + " '>  <label class='k-label' ><h4> " + list[i].LineCode + " - " + list[i].LineName + "</h4></label>  <div class='switch_box box_4'><div class='input_wrapper'>     <input type='checkbox' checked    name='model.CheckListViewModel[" + index + "].IsActive'  class='switch_4'> <svg class='is_checked' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 426.67 426.67'>     <path d='M153.504 366.84c-8.657 0-17.323-3.303-23.927-9.912L9.914 237.265c-13.218-13.218-13.218-34.645 0-47.863 13.218-13.218 34.645-13.218 47.863 0l95.727 95.727 215.39-215.387c13.218-13.214 34.65-13.218 47.86 0 13.22 13.218 13.22 34.65 0 47.863L177.435 356.928c-6.61 6.605-15.27 9.91-23.932 9.91z' />     </svg>       <svg class='is_unchecked' xmlns='http://www.w3.org/2000/svg' viewBox='0 0 212.982 212.982'>       <path d='M131.804 106.49l75.936-75.935c6.99-6.99 6.99-18.323 0-25.312-6.99-6.99-18.322-6.99-25.312 0L106.49 81.18 30.555 5.242c-6.99-6.99-18.322-6.99-25.312 0-6.99 6.99-6.99 18.323 0 25.312L81.18 106.49 5.24 182.427c-6.99 6.99-6.99 18.323 0 25.312 6.99 6.99 18.322 6.99 25.312 0L106.49 131.8l75.938 75.937c6.99 6.99 18.322 6.99 25.312 0 6.99-6.99 6.99-18.323 0-25.313l-75.936-75.936z' fill-rule='evenodd' clip-rule='evenodd' />   </svg>  </div> </div>        </div>  ";
+                    index++;
+
+                    lineitem += " </div>";
+                } try {
+                    document.getElementById("lines" + masterId).innerHTML = lineitem;
+                } catch (err) {
+                    console.log("error to inner " + err);
+                }
+            }
+
+        });
+
+
+    }
+
+
+    function ServiceDataBound() {
+        this.expandRow(this.tbody.find("tr.k-master-row").first());
+        var grid = this;
+
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+
+            if (dataItem.Status == "Completed" || IsOnlineTransfered == true) {
+                $(this).find(".k-grid-edit").remove();
+                $(this).find(".k-grid-delete").remove();
+            }
+        });
+    }
+</script>
+
+
+
+
+
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 700px;
+    }
+</style>
+
+
+<script type="text/javascript">
+    var AssignCrewsGridName;
+    var Id;
+    function dataBound() {
+        this.expandRow(this.tbody.find("tr.k-master-row").first());
+
+        var grid = this;
+
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+            if (dataItem.Status == "Closed") {
+                $(this).addClass("k-state-FleetApproved");
+            }
+
+            if (dataItem.IsOnlineApproved == false) {
+                $(this).find(".k-grid-delete").remove();
+            }
+
+        });
+    }
+
+    function AssignCrews(e) {
+        var items = {};
+
+        var count = 0;
+        var gridCrew = $(AssignCrewsGridName).data("kendoGrid");
+
+        $(AssignCrewsGridName).find("input:checked").each(function () {
+
+            var item = gridCrew.dataItem($(this).closest('tr'));
+            items['model.ServiceCrews[' + count + '].ServiceCrewId'] = item.ServiceCrewID;
+            items['model.ServiceCrews[' + count + '].IsActive'] = item.IsActive;
+            count++;
+        });
+
+
+        buttonName = "#AssignCrewbtn_" + Id;
+        var button = $(buttonName).data("kendoButton");
+        button.enable(false);
+        $.ajax({
+            type: "POST",
+            data: items,
+            url: '@Url.Action("AssignServiceCrew", "ServiceCrew")',
+            success: function (result) {
+
+            }
+        });
+
+
+    }
+
+    function AssignCrewsDatabound(e) {
+
+        var rows = e.sender.tbody.children();
+
+        for (var j = 0; j < rows.length; j++) {
+            var row = $(rows[j]);
+            var dataItem = e.sender.dataItem(row);
+
+            if (dataItem.IsActive) {
+                row.addClass("k-state-selected");
+
+            }
+
+
+        }
+    }
+    function WorkSheetDataBound() {
+        var grid = this;
+
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+
+            if (dataItem.IsOnlineApproved == true) {
+                $(this).find(".k-grid-edit").remove();
+                $(this).find(".k-grid-delete").remove();
+            }
+
+        });
+    }
+    var JobOrderDetailId;
+    function onDetailServiceApproveExpandUser(e) {
+
+        var masterRow = e.masterRow;
+
+        var masterGrid = $("#JobOrderApprovalgrid_" + masterId).data("kendoGrid");
+
+        var masterDataItem = masterGrid.dataItem(masterRow);
+
+        Id = masterDataItem.JobOrderDetailID;
+        AssignCrewsGridName = "#ServiceCrewAssigngrid_" + Id;
+        var CrewAssigngrid = $(AssignCrewsGridName).data("kendoGrid");
+
+        CrewAssigngrid.table.on("click", ".checkbox", selectRow);
+
+        if (IsOnlineTransfered == true) {
+            $(CrewAssigngrid).find(".k-toolbar").hide(); //hide toolbar
+            $(".k-grid-top", CrewAssigngrid).hide();
+
+        }
+
+    }
+
+    var checkedIds = [];
+    var items = {};
+    var buttonName;
+    function selectRow() {
+        buttonName = "#AssignCrewbtn_" + Id;
+        var button = $(buttonName).data("kendoButton");
+        button.enable(true);
+        var checked = this.checked,
+            row = $(this).closest("tr"),
+            grid = $(AssignCrewsGridName).data("kendoGrid"),
+            dataItem = grid.dataItem(row);
+        //  dataItem.IsActive = true;
+        checkedIds.push(dataItem.ServiceCrewID);
+        if (checked) {
+
+            row.addClass("k-state-selected");
+        } else {
+
+            row.removeClass("k-state-selected");
+        }
+    }
+    function onDetailServiceExpandUser(e) {
+        var masterRow = e.masterRow;
+
+        var masterGrid = $("#JobOrderDetailgrid_" + masterId).data("kendoGrid");
+
+        var masterDataItem = masterGrid.dataItem(masterRow);
+
+
+    }
+
+    var FleetId;
+    function MasterOnExpand(e) {
+
+
+        var masterRow = e.masterRow;
+
+        var masterGrid = $("#grid").data("kendoGrid");
+
+        var masterDataItem = masterGrid.dataItem(masterRow);
+
+        masterId = masterDataItem.JobOrderID;
+        FleetId = masterDataItem.FleetsID;
+        fleetPlate = masterDataItem.VoidBy;
+        IsApproved = masterDataItem.IsSecondOnlineApproved;
+        IsSecondSendForApproval = masterDataItem.IsSecondSendForApproval;
+        IsOnlineTransfered = masterDataItem.IsOnlineTransferred;
+
+        var linegridName = "#JobOrderDetailgrid_" + masterId;
+        var firstValidationgridName = "#gridd_" + masterId;
+        var SecondValidationgridName = "#JobOrderAdmingrid_" + masterId;
+
+        var category = "";
+        var lineitem = "";
+        var Approvedlineitem = "";
+        var index = 0;
+
+
+        $.ajax({
+            url: '@Url.Action("JobOrderExtra_Read", "JobOrder")',
+
+            data: { Id: masterId },
+            type: 'GET',
+            cache: false,
+            success: function (list) {
+                for (var i = 0; i < list.length; i++) {
+                    var series = [{
+                        name: "Cost",
+                        data: [{ value: list[i].SpareCost, valueColor: "blue" }, { value: list[i].TyreCost, valueColor: "green" }, { value: list[i].BattreyCost, valueColor: "purpule" }, { value: list[i].OilLubricantCost, valueColor: "grey" }, { value: list[i].OtherCost, valueColor: "yellow" }],
+                        colors: ["red", "blue"],
+                        // Line chart marker type
+                        markers: { type: "circle" }
+                    }];
+                    $("#CostChart" + masterId).kendoChart({
+                        title: {
+                            text: "@ViewBag.Name   @ViewBag.Amharic  "
+                        },
+                        legend: {
+                            position: "bottom"
+                        },
+                        seriesDefaults: {
+                            type: "column",
+                            stack: false
+                        },
+                        series: series,
+                        valueAxis: {
+                            line: {
+                                visible: false
+                            }
+                        },
+                        categoryAxis: {
+                            categories: ["Spare Cost", "Tyre Cost", "Battery Cost", "Oil and Lubircant", "Other Material"],
+
+                            majorGridLines: {
+                                visible: false
+                            }
+                        }, theme: "bootstrap",
+                        tooltip: {
+                            visible: true,
+                            format: "{0}"
+                        }
+                    });
+
+                }
+            }
+        });
+    
+        $(".export-pdf").click(function () {
+            $("#CostChart" + masterId).getKendoChart().saveAsPDF();
+        });
+        category = "";
+        var Accessorieslineitem = "";
+        Approvedlineitem = "";
+        index = 0;
+
+        $.ajax({
+            url: '@Url.Action("GetJobStatus", "ServiceCenter")',
+
+            data: { JobId: masterId },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                r = result;
+
+                if (r != "Pending") {
+                    $(linegridName).find(".k-toolbar").hide(); //hide toolbar
+                    $(".k-grid-top", linegridName).hide();
+                    $(".k-grid-edit", linegridName).hide();
+                    $(".k-grid-delete", linegridName).hide();
+
+
+                    $(".k-grid-top", firstValidationgridName).hide();
+                    $(".k-grid-edit", firstValidationgridName).hide();
+                    $(".k-grid-delete", firstValidationgridName).hide();
+                    $(".k-grid-top", SecondValidationgridName).hide();
+                    $(".k-grid-edit", SecondValidationgridName).hide();
+                    $(".k-grid-delete", SecondValidationgridName).hide();
+                }
+
+            }
+
+        });
+
+        Id = masterDataItem.JobOrderID;
+        var ServiceToolgrid = "#ServiceToolgrid_" + Id;
+        var ServiceSparegrid = "#ServiceSparegrid_" + Id;
+        var Oilgrid = "#Oilgrid_" + Id;
+        var Tyregrid = "#Tyregrid_" + Id;
+        var OtherMaterialgrid_ = "#OtherMaterialgrid_" + Id;
+        var ServiceCrewgrid = "#ServiceCrewgrid_" + Id;
+        var SalvageStoregrid = "#SalvageStoregrid_" + Id;
+        var Batterygrid = "#Batterygrid_" + Id;
+        AssignCrewsGridName = "#ServiceCrewAssigngrid_" + Id;
+
+
+        $.ajax({
+            url: '@Url.Action("GetJobStatus", "ServiceCenter")',
+
+            data: { Id: masterId },
+            type: 'POST',
+            cache: false,
+            success: function (r) {
+
+
+                if (r != "Pending") {
+                    $(ServiceToolgrid).find(".k-toolbar").hide(); //hide toolbar
+                    $(".k-grid-top", ServiceToolgrid).hide();
+                    $(".k-grid-edit", ServiceToolgrid).hide();
+                    $(".k-grid-delete", ServiceToolgrid).hide();
+
+                    $(ServiceSparegrid).find(".k-toolbar").hide(); //hide toolbar
+                    $(".k-grid-top", ServiceSparegrid).hide();
+                    $(".k-grid-edit", ServiceSparegrid).hide();
+                    $(".k-grid-delete", ServiceSparegrid).hide();
+
+                    $(Batterygrid).find(".k-toolbar").hide(); //hide toolbar
+                    $(".k-grid-top", Batterygrid).hide();
+                    $(".k-grid-edit", Batterygrid).hide();
+                    $(".k-grid-delete", Batterygrid).hide();
+
+                    $(Oilgrid).find(".k-toolbar").hide(); //hide toolbar
+                    $(".k-grid-top", Oilgrid).hide();
+                    $(".k-grid-edit", Oilgrid).hide();
+                    $(".k-grid-delete", Oilgrid).hide();
+
+
+                    $(Tyregrid).find(".k-toolbar").hide(); //hide toolbar
+                    $(".k-grid-top", Tyregrid).hide();
+                    $(".k-grid-edit", Tyregrid).hide();
+                    $(".k-grid-delete", Tyregrid).hide();
+
+
+                    $(SalvageStoregrid).find(".k-toolbar").hide(); //hide toolbar
+                    $(".k-grid-top", SalvageStoregrid).hide();
+                    $(".k-grid-edit", SalvageStoregrid).hide();
+                    $(".k-grid-delete", SalvageStoregrid).hide();
+
+                    $(OtherMaterialgrid_).find(".k-toolbar").hide(); //hide toolbar
+                    $(".k-grid-top", OtherMaterialgrid_).hide();
+                    $(".k-grid-edit", OtherMaterialgrid_).hide();
+                    $(".k-grid-delete", OtherMaterialgrid_).hide();
+
+                    $(ServiceCrewgrid).find(".k-toolbar").hide(); //hide toolbar
+                    $(".k-grid-top", ServiceCrewgrid).hide();
+
+
+                }
+
+
+
+            }
+
+        });
+
+    }
+   
+
+</script>
+
+
+@helper  AssignCrew()
+{
+
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetMaintenance.ServiceCrew>()
+                                             .Name("ServiceCrewAssigngrid_#=JobOrderDetailID#")
+                             .Columns(columns =>
+                             {
+                                 columns.Bound(o => o.ServiceName).Title("Crew Name").EditorTemplateName("CrewEditor").Width(80);
+                                 columns.Bound(o => o.IsActive).ClientTemplate("<input type='checkbox' \\#= IsActive? checked='checked': checked='' \\# class='checkbox'  />").Width(100);
+
+                                 columns.Bound(o => o.LabourCost).Format("{0:c}").Width(100);
+                                 columns.Bound(o => o.ActivatedDate).Width(100);
+                                 columns.Command(command =>
+                                 {
+                                 }).Width(250);
+                             }).ToolBar(toolbar => toolbar.Template(@<text>
+
+
+
+                                @Html.Kendo().Button().Name("AssignCrewbtn_#=JobOrderDetailID#").Content("Save Change").Events(events => events.Click("AssignCrews")).Enable(true).ToClientTemplate()
+                            </text>))
+
+                                                        .Editable(editable => editable.Mode(GridEditMode.InLine))
+
+                                                                     .Sortable(sortable =>
+                                                                     {
+                                                                         sortable.SortMode(GridSortMode.SingleColumn);
+                                                                     })
+                                                                     .Filterable()
+                                                                     .Scrollable()
+                                                          .Events(events => events.DataBound("AssignCrewsDatabound"))
+
+                                                                     .DataSource(dataSource => dataSource
+                                                              .Ajax()
+                                                    .Group(groups => groups.Add(p => p.IsActive))
+                                                    .PageSize(20)
+                                              .Model(model =>
+                                                          {
+                                                              model.Id(p => p.ServiceCrewID);
+                                                              model.Field(p => p.LabourCost).Editable(false);
+                                                          }
+                                                                              ).Events(ev => ev
+                                                                                                                                                     .Error("error_handler(\"ServiceCrewAssigngrid_#=JobOrderDetailID#\")")
+                                                                                                                                                     .RequestStart("onRequestStart(\"ServiceCrewAssigngrid_#=JobOrderDetailID#\")")
+                                                                                                                                                     .RequestEnd("onRequestEnd(\"ServiceCrewAssigngrid_#=JobOrderDetailID#\")"))
+                                                                                      .Create(c => c.Action("Crew_Update", "ServiceCrew", new { cserviceID = "#=JobOrderDetailID#" }))
+                                                                                                                                                .Read(read => read.Action("ServiceCrewByService", "ServiceCrew", new { Id = "#=JobOrderDetailID#" }))
+                                                                                                                                                                                                    .Update(destroy => destroy.Action("ServiceCrew_Update", "ServiceCrew", new { Id = "#=JobOrderDetailID#" }))
+                                                                                                                               )
+                                                                       .Pageable()
+                                                                 .ToClientTemplate())
+}
+
+

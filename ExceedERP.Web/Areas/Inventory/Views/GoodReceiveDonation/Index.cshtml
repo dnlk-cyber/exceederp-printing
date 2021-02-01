@@ -1,0 +1,402 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+}
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Inventory.GoodReceiveDonation>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.StoreCode).EditorTemplateName("Stores");
+          columns.Bound(c => c.SupplierName);
+          columns.Bound(c => c.SupplierInvoiceNo);
+          columns.Bound(c => c.Status);
+
+          columns.Bound(c => c.Reference);
+          columns.Bound(c => c.ReceiveDate);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create().Text("Add New Donation");
+          toolbar.Excel();
+         // toolbar.Pdf();
+      })
+      .Events(ev => ev.DetailExpand("detailExpand"))
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Pageable()
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Filterable()
+      .Scrollable(height => height.Height(500))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Events(ev => ev .Error("error_handler_one").Sync("sync_handler"))
+          .Model(model => model.Id(p => p.GoodReceiveDonationId))
+          .Read(read => read.Action("GoodReceiveDonations_Read", "GoodReceiveDonation"))
+          .Create(create => create.Action("GoodReceiveDonations_Create", "GoodReceiveDonation"))
+          .Update(update => update.Action("GoodReceiveDonations_Update", "GoodReceiveDonation"))
+          .Destroy(destroy => destroy.Action("GoodReceiveDonations_Destroy", "GoodReceiveDonation"))
+          ).ClientDetailTemplateId("goodreceiveDonationtmpl")
+)
+
+<script type="text/Kendo" id="goodreceiveDonationtmpl">
+    @(Html.Kendo().TabStrip().Name("tabstrip_#=GoodReceiveDonationId#").SelectedIndex(0).Items(Itemn =>
+         {
+
+             Itemn.Add().Text("Detail").Content(
+                @<text>
+                    @Html.ActionLink("Send For Approval", "GoodReceiveDonation_SendForApproval", "GoodReceiveDonation", null, new { @onclick = "OnIndexCall(this)" })
+
+                    @*@Html.ActionLink("Send For Approval ", "GoodReceive_SendForApproval", "GoodRecive", null , new { id =  "getgoodreceiveid" } )*@
+
+                    <div>
+                        <hr>
+                        <dl class="dl-horizontal">
+
+
+                            <dt>
+                                Store
+                            </dt>
+                            <dd>
+                                #= StoreCode #
+
+                            </dd>
+                            <dt>
+                                Supplier Name
+                            </dt>
+                            <dd>
+                                #= SupplierName #
+                            </dd>
+                            <dt>
+                                Supplier Invoice No.
+                            </dt>
+                            <dd>
+                                #= SupplierInvoiceNo #
+
+                            </dd>
+
+
+                            <dt>
+                                Receive Date
+                            </dt>
+                            <dd>
+                                
+                                #=kendo.toString(kendo.parseDate(ReceiveDate), 'dd/MM/yyyy') #
+
+                            </dd>
+                            <dt>
+                                Status
+                            </dt>
+                            <dd>
+                                #= Status #
+
+                            </dd>
+                            <dt>
+                                CreatedOn
+                            </dt>
+                            <dd>
+                                #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+
+
+                            </dd>
+                            <dt>
+                                CreatedBy
+                            </dt>
+                            <dd>
+                                #=CreatedBy #
+
+                            </dd>
+                        </dl>
+
+                    </div>
+
+                </text>
+                  );
+             Itemn.Add().Text("Item").Content(@<text>
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Inventory.GoodReceiveDonationItem>()
+          .Name("GoodReceiveDonationItem_#=GoodReceiveDonationId#")
+          .Columns(columns =>
+              {
+                  columns.Bound(c => c.ItemCode);
+                  columns.Bound(c => c.Quantity);
+                  columns.Bound(c => c.UnitPrice);
+                  columns.Bound(c => c.SubTotal);
+                  columns.Bound(c => c.TaxType);
+
+                  columns.Bound(c => c.TotalAmount);
+                  columns.Bound(c => c.ModifiedBy);
+                  columns.Bound(c => c.LastModified);
+                  columns.Command(c =>
+                      {
+                          c.Edit();
+                          c.Destroy();
+                      }).Width(180);
+
+
+              })
+          .ToolBar(toolbar =>
+              {
+                  toolbar.Create().Text("Add New Item");
+                  toolbar.Excel();
+                 // toolbar.Pdf();
+              })
+          .Selectable(selectable =>
+              {
+                  selectable.Mode(GridSelectionMode.Single);
+                  selectable.Type(GridSelectionType.Row);
+              })
+              .Events(ev => ev.Edit("onEdit"))
+                  .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("GoodReceiveItem").Window(window => window.Title("Donation Items")))
+          .Scrollable()
+          .DataSource(dataSource => dataSource
+              .Ajax()
+              .Events(ev => ev .Error("error_handler_one").Sync("sync_handler"))
+              .Model(model => model.Id(p => p.GoodReceiveDonationItemID))
+              .Read(read => read.Action("GoodReceiveDonationItems_Read", "GoodReceiveDonationItem", new { id = "#=GoodReceiveDonationId#" }))
+              .Create(create => create.Action("GoodReceiveDonationItems_Create", "GoodReceiveDonationItem", new { id = "#=GoodReceiveDonationId#" }))
+              .Update(update => update.Action("GoodReceiveDonationItems_Update", "GoodReceiveDonationItem"))
+              .Destroy(destroy => destroy.Action("GoodReceiveDonationItems_Destroy", "GoodReceiveDonationItem"))
+
+          ).ToClientTemplate())
+
+
+            </text>);
+             Itemn.Add().Text("Validation").Content(@<text>
+
+            @(Html.Kendo().Grid<ExceedERP.Core.Domain.Inventory.GoodReciveDonationValidation>()
+      .Name("GoodReciveDonationValidation_#=GoodReceiveDonationId#")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Status).EditorTemplateName("ValidationStatus");
+          columns.Bound(c => c.Remark);
+
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .Selectable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Events(ev => ev .Error("error_handler_one").Sync("sync_handler"))
+          .Model(model => model.Id(p => p.GoodReciveDonationValidationID))
+                  .Read(read => read.Action("GoodReciveDonationValidations_Read", "GoodReceiveDonationValidation", new { id = "#=GoodReceiveDonationId#" }))
+                  .Create(create => create.Action("GoodReciveDonationValidations_Create", "GoodReceiveDonationValidation", new { id = "#=GoodReceiveDonationId#" }))
+          .Update(update => update.Action("GoodReciveDonationValidations_Update", "GoodReceiveDonationValidation"))
+          .Destroy(destroy => destroy.Action("GoodReciveDonationValidations_Destroy", "GoodReceiveDonationValidation"))
+      ).ToClientTemplate()
+            )
+
+
+            </text>);
+         }).ToClientTemplate())
+    <br />
+      Distribution
+
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Inventory.GoodReciveDonationDistribution>()
+      .Name("GoodReciveDonationDistribution_#=GoodReceiveDonationId#")
+      .Columns(columns =>
+      {
+           
+          columns.Bound(c => c.AccountCode);
+          columns.Bound(c => c.AccountDesc);
+          columns.Bound(c => c.Debit);
+          columns.Bound(c => c.Credit);
+         
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar =>
+      {
+          
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model =>
+              {
+              model.Id(p => p.GoodReciveDonationDistributionID);
+              model.Field(p => p.Credit).Editable(false);
+              model.Field(p => p.AccountDesc).Editable(false);
+              model.Field(p => p.Debit).Editable(false);
+              })
+               
+          .Read(read => read.Action("GoodReciveDonationDistributions_Read", "GoodReciveDonationDistribution" , new {id ="#=GoodReceiveDonationId#"}))
+          .Create(create => create.Action("GoodReciveDonationDistributions_Create", "GoodReciveDonationDistribution", new { id = "#=GoodReceiveDonationId#" }))
+          .Update(update => update.Action("GoodReciveDonationDistributions_Update", "GoodReciveDonationDistribution"))
+          .Destroy(destroy => destroy.Action("GoodReciveDonationDistributions_Destroy", "GoodReciveDonationDistribution"))
+      ) .ToClientTemplate()
+)
+</script>
+
+<script>
+    var popup;
+    var aCode;
+    function SelectItemCode() {
+
+        // codeid = masterDataItem.GoodSellingAndLendingID;
+        popup = window.open('/Inventory/DataProvider/ItemFilterCat', 'WindowPopup', 'top=100, left=400, width=400, height=320,resizable=no,');
+        popup.focus();
+        return false;
+    }
+    function error_handler(e) {
+        if (e.errors) {
+            var message = "Errors:\n";
+            $.each(e.errors, function (key, value) {
+                if ('errors' in value) {
+                    $.each(value.errors, function () {
+                        message += this + "\n";
+                    });
+                }
+            });
+            alert(message);
+
+        }
+
+    }
+    function sync_handler(e) {
+        this.read();
+        //var grid = $("#gsdistribution").data("kendoGrid");
+        //grid.dataSource.read();
+    }
+    function setLang(ItemCode) {
+        aCode = ItemCode;
+        $("#ItemCode").val(aCode).trigger("change");
+    }
+    var storeCode;
+    var codeid;
+
+    function onEdit(e) {
+        var masterRow = this.wrapper.closest("tr.k-detail-row").prev(".k-master-row");
+        var masterGrid = $("#grid").data("kendoGrid");
+
+        var masterDataItem = masterGrid.dataItem(masterRow);
+        storeCode = masterDataItem.StoreCode;
+        codeid = masterDataItem.GoodReceiveDonationId;
+    }
+    function checkboxClicked(e) {
+
+        var isChecked = e.checked;
+        var tabStrip = $("#tabstrip").kendoTabStrip({ select: onSelect }).data("kendoTabStrip");
+
+        function onSelect(e) {
+            console.log("Selected: " + tabStrip.select().index());
+        }
+
+        tabStrip.select("li:first");
+        tabStrip.select(1);
+
+        if (isChecked) {
+
+            tabStrip.select("li:first");
+            tabStrip.select(1);
+
+        }
+        else {
+            tabStrip.select(0);
+
+        }
+
+
+    };
+
+    var masterRow;
+    var masterGrid;
+    var masterDataItem;
+    function detailExpand(e) {
+
+        masterRow = e.masterRow;
+
+        masterGrid = $("#grid").data("kendoGrid");
+
+        masterDataItem = masterGrid.dataItem(masterRow);
+
+
+        //  var masterDataItem = masterGrid.dataItem();
+        codeid = masterDataItem.GoodReceiveDonationId;
+    }
+
+    function OnIndexCall(elem) {
+
+        //var models = [];
+        //models.push(masterDataItem);
+        //$.ajax({
+        //    url: "/GoodRecive/GoodReceive_SendForApproval",
+        //    data: JSON.stringify({ orders: models }),
+        //    dataType: "json",
+        //    type: "POST",
+        //    contentType: 'application/json; charset=utf-8'
+        //});
+        //    var gridItems = [1];
+        //    gridItems.push(masterDataItem);
+        //    var selectedDataItems = $.map( masterRow, function (row) {
+        //        return masterGrid.dataItem(row);
+        //    });
+
+        //    $.ajax({
+        //        url: "/GoodRecive/GoodReceive_SendForApproval",
+        //        data: JSON.stringify(Attr, selectedDataItems),
+        //        datatype: "json"
+        @*var Items = {};
+        var grid = $('#grid').data('kendoGrid');
+
+        for (var j = 0; j < masterRow.length; j++) {
+            var Item = grid.dataItem(masterRow[j]);
+
+            Items['grid[' + j + '].PurchaseOrderID'] = Item.PurchaseOrderID;
+            Items['grid[' + j + '].GoodReceiveId'] = Item.GoodReceiveId;
+            Items['grid[' + j + '].StoreCode'] = Item.StoreCode;
+            Items['grid[' + j + '].SupplierName'] = Item.SupplierName;
+            Items['grid[' + j + '].SupplierInvoiceNo'] = Item.SupplierInvoiceNo;
+            Items['grid[' + j + '].FiscalYear'] = Item.FiscalYear;
+            Items['grid[' + j + '].Reference'] = Item.Reference;
+            Items['grid[' + j + '].Status'] = Item.Status;
+            Items['grid[' + j + '].Remark'] = Item.Remark;
+        }
+        $.ajax({
+            type: "POST",
+            data: Items,
+            url: '@Url.Action("GoodReceive_SendForApproval","GoodRecive")',
+            success: function (result) {
+                console.log(result);
+            }
+        });*@
+        //})
+        //    ;
+
+        var a = codeid;
+        $(elem).attr('href', $(elem).attr('href') + '?id=' + a);
+
+
+
+
+    }
+</script>
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 700px;
+    }
+
+        div.k-edit-form-container div.editor-field textarea, input.k-textbox {
+            width: auto;
+            max-width: none;
+        }
+
+    div.k-popup-edit-form.k-window-content.k-content {
+    }
+
+    div.k-content {
+        height: auto;
+    }
+</style>

@@ -1,0 +1,31 @@
+﻿<legend>Language Proficiency</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.LanguageProficiency>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.Person);
+        columns.Bound(c => c.Languge);
+        columns.Bound(c => c.Reading);
+        columns.Bound(c => c.Listening);
+        columns.Bound(c => c.Writing);
+        columns.Bound(c => c.Speaking);
+        columns.Bound(c => c.Remark);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+              .Model(model => model.Id(p => p.LanguageProficiencyID)).Events(ev => ev
+                                                                        .Error("error_handler(\"grid\")")
+                                                                        .RequestStart("onRequestStart(\"grid\")")
+                                                                        .RequestEnd("onRequestEnd(\"grid\")"))
+          .Read(read => read.Action("LanguageOfProficiencies_Read", "LanguageProficiency"))
+          .Create(create => create.Action("LanguageOfProficiencies_Create", "LanguageProficiency"))
+          .Update(update => update.Action("LanguageOfProficiencies_Update", "LanguageProficiency"))
+          .Destroy(destroy => destroy.Action("LanguageOfProficiencies_Destroy", "LanguageProficiency"))
+      )
+)

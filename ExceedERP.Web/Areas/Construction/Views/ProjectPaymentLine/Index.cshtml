@@ -1,0 +1,26 @@
+﻿@using ExceedERP.Core.Localization
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Construction.ProjectPaymenCertificatetLine>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.ContractAmount);
+        columns.Bound(c => c.SupplimentaryContract);
+        columns.Bound(c => c.VariationOrder);
+        columns.Bound(c => c.VAT);
+        columns.Bound(c => c.TotalAmount);
+        columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.ProjectPaymenCertificatetLineId))
+          .Read(read => read.Action("LineAmounts_Read", "ProjectPaymentLine"))
+          .Create(create => create.Action("LineAmounts_Create", "ProjectPaymentLine"))
+          .Update(update => update.Action("LineAmounts_Update", "ProjectPaymentLine"))
+          .Destroy(destroy => destroy.Action("LineAmounts_Destroy", "ProjectPaymentLine"))
+      )
+)

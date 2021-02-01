@@ -1,0 +1,9 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@(Html.Kendo().DropDownList().BindTo((IEnumerable)ViewData["NationalityList"])
+.OptionLabel(Resources.Select)
+            .DataTextField("Nationality")
+        .DataValueField("CountryId")
+        .Name("CountryId")
+             .ValuePrimitive(true)
+)

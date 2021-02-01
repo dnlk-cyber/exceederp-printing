@@ -1,0 +1,42 @@
+﻿<legend>Account</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.Accounts>()
+      .Name("AccountGrid")
+      .Columns(columns =>
+      {
+          columns.ForeignKey(c => c.ControlAccount, (System.Collections.IEnumerable)ViewData["ControlAccountList"], "ControlAccountID", "Description").EditorTemplateName("ControlAccountList").Width(200);
+          columns.Bound(c => c.Description);
+          columns.Bound(c => c.IsActive).ClientTemplate("<input type='checkbox'  disabled='true' value='#=IsActive #' " + " # if (IsActive) { #" + "checked='checked'" + "# } #" + " />").Title("Is Active"); 
+          columns.ForeignKey(c => c.Parent, (System.Collections.IEnumerable)ViewData["ListOfAccounts"], "AccountsID", "Description").EditorTemplateName("ListOfAccount").Width(200);
+          columns.Bound(c => c.Remark);
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+          toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+       .HtmlAttributes(new { style = "height: 520px;" })
+                                                      .Pageable(pageable => pageable
+                                                                        .Input(true)
+                                                                        .Numeric(false)
+                                                                        .Refresh(true)
+                                                                        .PageSizes(true)
+                                                                        .ButtonCount(5))
+
+                                                            .Scrollable()
+                                                            .Sortable()
+                                                            .Filterable()
+                                                            .Groupable()
+                                                            .Scrollable(h => h.Height(500))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.AccountsID))
+              .Events(ev => ev
+                                                    .Error("error_handler(\"AccountGrid\")")
+                                                    .RequestStart("onRequestStart(\"AccountGrid\")")
+                                                    .RequestEnd("onRequestEnd(\"AccountGrid\")"))
+          .Read(read => read.Action("Accounts_Read", "Account"))
+          .Create(create => create.Action("Accounts_Create", "Account"))
+          .Update(update => update.Action("Accounts_Update", "Account"))
+          .Destroy(destroy => destroy.Action("Accounts_Destroy", "Account"))
+      )
+)

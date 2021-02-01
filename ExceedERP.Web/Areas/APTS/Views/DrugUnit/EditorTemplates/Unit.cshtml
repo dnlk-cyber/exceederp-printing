@@ -1,0 +1,49 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@using ExceedERP.Helpers.Common
+@using ExceedERP.Web.Areas.APTS
+@using Kendo.Mvc.UI
+@model ExceedERP.Core.Domain.APTS.DrugUnit
+
+<div class="form">
+
+    <div class="row fullrow">
+        <div class="col-md-3 ro1">
+
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.UoMName, htmlAttributes: new { @class = "control-label col-md-8" })
+
+                @(Html.Kendo().DropDownListFor(model => model.UoMName)
+                  .OptionLabel(Resources.Select)
+                           .Filter("contains")
+                           .MinLength(2)
+                  .DataTextField("Description")
+                  .DataValueField("DrugListsId")
+                                  .DataSource(source =>
+                                  {
+
+                                      source.Read(read => read.Action("GetUoM", "DrugUnit"));
+
+
+                                  })
+                  // .BindTo((IEnumerable)ViewData["organization"])
+                  .ValuePrimitive(true)
+
+                )
+                @Html.ValidationMessageFor(model => model.UoMName, "", new { @class = "text-danger" })
+            </div>
+
+
+
+        </div>
+
+
+
+
+    </div>
+
+</div>
+
+
+

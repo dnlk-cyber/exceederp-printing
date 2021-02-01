@@ -1,0 +1,25 @@
+﻿<legend>Voucher Term</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.VoucherTerm>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Voucher);
+        columns.Bound(c => c.TermID);
+        columns.Bound(c => c.Value);
+        columns.Bound(c => c.Remark);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.VoucherTermID))
+          .Read(read => read.Action("VoucherTerms_Read", "VoucherTerm"))
+          .Create(create => create.Action("VoucherTerms_Create", "VoucherTerm"))
+          .Update(update => update.Action("VoucherTerms_Update", "VoucherTerm"))
+          .Destroy(destroy => destroy.Action("VoucherTerms_Destroy", "VoucherTerm"))
+      )
+)

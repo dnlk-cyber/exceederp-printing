@@ -1,0 +1,159 @@
+﻿@model  ExceedERP.Core.Domain.FleetManagement.BatteryManagement.BatteryReturn
+
+
+<script>
+    function filterBattery() {
+        return {
+            Id: $("#PlateNumber").val()
+        };
+    }
+</script>
+
+<div class="demo-section k-content">
+    <form>
+
+
+        <div class="row">
+            <div class="col-md-1">
+            </div>
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+
+                        @Html.LabelFor(model => model.PlateNumber)
+                        @(Html.Kendo().DropDownListFor(model => model.PlateNumber).Name("PlateNumber")
+                                                         .DataTextField("EquipmentName")
+                                                         .DataValueField("PlateNumber").OptionLabel(" Select ").Filter(FilterType.Contains)
+                                                                 .DataSource(d => d.Read(r => r.Action("FleetsTyreReadingDDBind", "EquipmentRegistration")).ServerFiltering(false)))
+                    </div>
+                </div>
+            </div>
+
+            
+
+                        <div class="col-md-3">
+                            <div class="form-group">
+                                <div class="k-label">
+                                    @Html.LabelFor(model => model.SerialNo)
+                                </div>
+                                <div>
+                                    @(Html.Kendo().DropDownListFor(model => model.SerialNo).Name("SerialNo")
+                                              .DataTextField("Text")
+                                                      .DataValueField("Value")
+                                      .OptionLabel("Select ").DataSource(d =>
+                                                         {
+                                                             d.Read(r =>
+                                                             {
+                                                                 r.Action("BatteryByFleetByPlate", "EquipmentBattery").Data("filterBattery");
+                                                             })
+                                                             .ServerFiltering(true);
+                                                         }).Events(e => e.Change("BindDetail"))
+                                                         .Enable(false)
+                                                         .AutoBind(false)
+                                                            .CascadeFrom("PlateNumber"))
+                            </div>
+                        </div>
+                    </div>
+
+             
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.Brand)
+                    </div>
+                    <div>
+                        @Html.Kendo().TextBoxFor(model => model.Brand).Enable(false)
+                        @Html.ValidationMessageFor(model => model.Brand)
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="row">
+            <div class="col-md-1">
+            </div>
+
+    
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        Battery Type
+
+                    </div>
+                    @Html.Kendo().TextBoxFor(model => model.BatteryType).Enable(false)
+                    @Html.ValidationMessageFor(model => model.BatteryType)
+
+
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.StoreCode)
+                    </div>
+                    <div>
+                        @Html.Kendo().TextBoxFor(model => model.StoreCode).Enable(false)
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.UnitPrice)
+                    </div>
+                    <div>
+                        @Html.Kendo().TextBoxFor(model => model.UnitPrice).Enable(false)
+                        @Html.ValidationMessageFor(model => model.UnitPrice)
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <div class="row">
+            <div class="col-md-1">
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.KMReading)
+                    </div>
+                    <div>
+                        @Html.Kendo().TextBoxFor(model => model.KMReading).Enable(false)
+
+                    </div>
+                </div>
+            </div>
+
+          <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.InstalledDate)
+                    </div>
+                    <div>
+                        @Html.Kendo().TextBoxFor(model => model.InstalledDate).Enable(false)
+                        @Html.ValidationMessageFor(model => model.InstalledDate)
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-3">
+                <div class="form-group">
+                    <div class="k-label">
+                        @Html.LabelFor(model => model.DescriptionReason)
+                    </div>
+                    <div>
+                        @Html.Kendo().TextBoxFor(model => model.DescriptionReason)
+                        @Html.ValidationMessageFor(model => model.DescriptionReason)
+                    </div>
+                </div>
+            </div>
+
+
+        </div>
+    
+
+    </form>
+</div>

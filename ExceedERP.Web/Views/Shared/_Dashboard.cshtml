@@ -1,0 +1,72 @@
+﻿<li class="">
+    <a href="#" class="dropdown-toggle">
+        <i class="menu-icon fa fa-tachometer"></i>
+        <span class="menu-text">
+            Dashboard
+        </span>
+
+        <b class="arrow fa fa-angle-down"></b>
+    </a>
+    <b class="arrow"></b>
+
+    <ul class="submenu">
+        <li class="">
+            <a href="#" class="dropdown-toggle">
+                <i class="menu-icon fa fa-caret-right"></i>
+
+                Dashboard
+                <b class="arrow fa fa-angle-down"></b>
+            </a>
+
+            <b class="arrow"></b>
+
+            <ul class="submenu">
+           
+                <li id="dashboard000" class="actionlinlk">@Html.ActionLink("Notifications", "Notification", "Notification", new {area = ""}, null)<b class="arrow"></b></li>
+                @if (HttpContext.Current.User.IsInRole("Dashboard_HR"))
+                {
+                    <li id="dashboard001" class="actionlinlk">@Html.ActionLink("HR", "HrDashboard", "Dashboard", new {area = ""}, null)<b class="arrow"></b></li>
+                }
+                
+                 <li class="">
+                    <a href="#" class="dropdown-toggle">
+                        <i class="menu-icon fa fa-caret-right"></i>
+
+                        Property
+                        <b class="arrow fa fa-angle-down"></b>
+                    </a>
+
+                    <b class="arrow"></b>
+
+                     <ul class="submenu">
+                         @if (HttpContext.Current.User.IsInRole("Dashboard_Inventory"))
+                         {
+                             <li id="dashboard002" class="actionlinlk">@Html.ActionLink("Stock", "InventoryDashboard", "Dashboard", new {area = ""}, null)<b class="arrow"></b></li>
+                         }
+                        @if (HttpContext.Current.User.IsInRole("Dashboard_FixedAsset"))
+                        {
+                        
+                         }
+                         <li id="dashboard0022" class="actionlinlk">@Html.ActionLink("PPE", "FixedAssetDashboard", "Dashboard", new {area = ""}, null)<b class="arrow"></b></li>
+                        </ul>
+                </li>
+
+                
+               
+                @if (HttpContext.Current.User.IsInRole("Dashboard_Finance"))
+                {
+                    <li id="dashboard003" class="actionlinlk">@Html.ActionLink("Finance", "FinanceDashboard", "Dashboard", new {area = ""}, null)<b class="arrow"></b></li>
+                    <li id="dashboard003" class="actionlinlk">@Html.ActionLink("Ratios", "FinanceRatioDashBoard", "Dashboard", new {area = ""}, null)<b class="arrow"></b></li>
+                }
+                @if (HttpContext.Current.User.IsInRole("Dashboard_Procurement"))
+                {
+                <li id="dashboard004" class="actionlinlk">@Html.ActionLink("Procurement", "ProcurementDashboard", "Dashboard", new {area = ""}, null)<b class="arrow"></b></li>
+                }
+                <li id="dashboard005" class="actionlinlk">@Html.ActionLink("Construction", "ConstructionDashboard", "Dashboard", new {area = ""}, null)<b class="arrow"></b></li>
+            </ul>
+        </li>
+
+
+    </ul>
+
+</li>

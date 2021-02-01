@@ -1,0 +1,36 @@
+﻿@using ExceedERP.Core.Domain.Finance.AP
+@(Html.Kendo().Grid<ApMiscellaneousPaymentValidation>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.ApMiscellaneousPaymentValidationId);
+        columns.Bound(c => c.Status);
+        columns.Bound(c => c.Remark);
+        columns.Bound(c => c.OrgBranchName);
+        columns.Bound(c => c.DateCreated);
+        columns.Bound(c => c.LastModified);
+        columns.Bound(c => c.CreatedBy);
+        columns.Bound(c => c.ModifiedBy);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+            toolbar.Excel();
+           // toolbar.Pdf();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Pageable()
+      .Sortable(sortable => {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Filterable()
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.ApMiscellaneousPaymentValidationId))
+          .Read(read => read.Action("APMiscellaneousPaymentValidations_Read", "APMiscellaneousPaymentValidation"))
+          .Create(create => create.Action("APMiscellaneousPaymentValidations_Create", "APMiscellaneousPaymentValidation"))
+          .Update(update => update.Action("APMiscellaneousPaymentValidations_Update", "APMiscellaneousPaymentValidation"))
+          .Destroy(destroy => destroy.Action("APMiscellaneousPaymentValidations_Destroy", "APMiscellaneousPaymentValidation"))
+      )
+)

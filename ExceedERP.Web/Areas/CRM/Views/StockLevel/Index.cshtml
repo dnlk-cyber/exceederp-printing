@@ -1,0 +1,28 @@
+﻿<legend>Stock Level</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.StockLevel>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.Thing);
+        columns.Bound(c => c.StoreID);
+        columns.Bound(c => c.MinimumLevel);
+        columns.Bound(c => c.MaximumLevel);
+        columns.Bound(c => c.LeadTime);
+        columns.Bound(c => c.EconomicOrderQuantity);
+        columns.Bound(c => c.Remark);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.StockLevelID))
+          .Read(read => read.Action("StockLevels_Read", "StockLevel"))
+          .Create(create => create.Action("StockLevels_Create", "StockLevel"))
+          .Update(update => update.Action("StockLevels_Update", "StockLevel"))
+          .Destroy(destroy => destroy.Action("StockLevels_Destroy", "StockLevel"))
+      )
+)

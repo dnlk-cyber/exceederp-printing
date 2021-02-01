@@ -1,0 +1,18 @@
+﻿
+@using System.Drawing
+@using Telerik.Reporting.Drawing
+@model object
+
+<div class="popupwrapper">
+    @Html.Kendo().TextBoxFor(model => model).HtmlAttributes(new {  disabled = "disabled",style = "width:100px", @class="et-popup-picker"} ) <img src="~/Scripts/etp/images/calendar-blue.gif" onclick="SelectDate(this)" />
+</div>
+
+
+
+<script >
+function AssignDate() {
+    var list = AssignDates();   
+    return list;
+}
+    
+</script>

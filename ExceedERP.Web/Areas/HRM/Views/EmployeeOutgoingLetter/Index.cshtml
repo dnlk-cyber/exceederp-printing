@@ -1,0 +1,185 @@
+﻿@using ExceedERP.Core.Domain.HRM.ArchiveManagement
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>@Resources.NavigatorArchiveManagement_EmployeeOutgoing</legend>
+@(Html.Kendo().Grid<OutgoingLetter>()
+          .Name("OutgoingLettergrid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.BookNo);
+          columns.Bound(c => c.FolderNo);
+          columns.Bound(c => c.LetterReferenceNo);
+          columns.Bound(c => c.OutgoingLetterDateAm);
+          columns.Bound(c => c.OutgoingTime);
+         // columns.Bound(c => c.OwnerName);
+          columns.ForeignKey(c => c.OwnerName, (System.Collections.IEnumerable)ViewData["Employees"], "EmployeeId", "FullNameaEnglish");
+          //columns.Bound(c => c.InstitutionTypeId);
+          //columns.ForeignKey(c => c.InstitutionTypeId, (System.Collections.IEnumerable)ViewData["InstuType"], "InstitutionTypeId", "InstitutionName");
+          // columns.Bound(c => c.Subject);
+          // columns.Bound(c => c.Shelve);
+          // columns.Bound(c => c.Row);
+          //columns.Bound(c => c.FileNo);
+          //columns.Bound(c => c.NoOfAttachment);
+          columns.Bound(c => c.Subject);
+          //columns.Bound(c => c.Remark);
+          columns.Command(command =>
+          {
+              if (HttpContext.Current.User.IsInRole("Archive_User"))
+              {
+                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+              }
+              if (HttpContext.Current.User.IsInRole("Archive_Admin"))
+              {
+                  command.Destroy().Text(Resources.ActionButton_Cancel);
+              }
+          }).Width(200);
+      })
+      .ToolBar(toolbar => {
+          if (HttpContext.Current.User.IsInRole("Archive_User"))
+          {
+              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+          }
+      })
+                  .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("NewOutgoing").Window(window => { window.Title(Resources.NavigatorArchiveManagement_EmployeeOutgoing); window.Scrollable(false); }))
+                      .Events(x =>
+                      {
+                          x.Edit("GetDate");
+                          x.Save("GetDate");
+
+                      })
+             .Selectable(selectable =>
+             {
+                 selectable.Mode(GridSelectionMode.Single);
+                 selectable.Type(GridSelectionType.Row);
+             })
+                  .Scrollable(h => h.Height(500))
+                     .Groupable()
+                              .Sortable(sortable =>
+                              {
+                                  sortable.SortMode(GridSortMode.SingleColumn);
+                              })
+                  .Filterable()
+                     .Pageable(pageable => pageable
+                                                .Input(true)
+                                                .Numeric(false)
+                                                .Refresh(true)
+                                                .PageSizes(true)
+                                                .ButtonCount(5))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+           .Sort(sort => sort.Add("NewOutgoingLetterLetterId").Descending())
+                            .Events(events =>
+                            {
+                                events.Error("error_handler(\"OutgoingLettergrid\")");
+                                events.RequestStart("onRequestStart(\"OutgoingLettergrid\")");
+                                events.RequestEnd("onRequestEnd(\"OutgoingLettergrid\")");
+                            })
+
+          .Model(model => model.Id(p => p.NewOutgoingLetterLetterId))
+                  .Read(read => read.Action("NewOutgoingLetter_Read", "EmployeeOutgoingLetter"))
+                  .Create(create => create.Action("NewOutgoingLetter_Create", "EmployeeOutgoingLetter"))
+                  .Update(update => update.Action("NewOutgoingLetter_Update", "EmployeeOutgoingLetter"))
+                  .Destroy(destroy => destroy.Action("NewOutgoingLetter_Destroy", "EmployeeOutgoingLetter"))
+      )
+)
+<script>
+    //function error_handler(e) {
+    //    if (e.errors) {
+    //        var message = "Errors:\n";
+    //        $.each(e.errors, function (key, value) {
+    //            if ('errors' in value) {
+    //                $.each(value.errors, function () {
+    //                    message += this + "\n";
+    //                });
+    //            }
+    //        });
+    //        alert(message);
+
+    //    }
+
+    //}
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+    function onGridEdit(e) {
+        e.container.find(".k-button.k-grid-update").hide();
+        e.container.find(".k-button.k-grid-cancel").hide();
+
+    }
+    function AssignDate() {
+        var list = AssignDates();
+        return list;
+    }
+    function GetDate() {
+
+        var x = AssignDate();
+        var y = x;
+        $("#OutgoingLetterDateAm").trigger("change");
+      
+        for (var o in y) {
+            $.ajax({
+                contentType: "application/json; charset=utf-8",
+                url: '@Url.Action("SetDate", "EmployeeOutgoingLetter")',
+                data: { name: y[o].id, value: y[o].date },
+                type: 'GET',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                }
+
+            });
+        }
+    }
+</script>
+<style>
+    div.k-edit-form-container {
+        width: 700px;
+    }
+</style>
+
+<script>
+     function GetData() {
+
+
+         //var institution = $("#InstitutionTypeId").data("kendoDropDownList");
+         //var institute = institution.value();
+
+         var employee = $("#OwnerName").data("kendoDropDownList");
+         var empId = employee.value();
+        $.ajax({
+            url: '@Url.Action("GetData", "EmployeeOutgoingLetter")',
+
+            //data: { institute: institute },
+            data: { empId: empId },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+
+                console.log(result);
+                if (result.length > 0) {
+
+                    for (var i = 0; i < result.length; i++) {
+                        $("#Shelve").data("kendoDropDownList").value(result[i].Shelve);
+                        $("#Shelve").trigger("change");
+
+                        $("#Row").data("kendoDropDownList").value(result[i].Row);
+                        $("#Row").trigger("change");
+
+                        $("#FileNo").data("kendoDropDownList").value(result[i].FileNo);
+                        $("#FileNo").trigger("change");
+                       
+                        $("#FolderNo").data("kendoDropDownList").value(result[i].Folder);
+                        $("#FolderNo").trigger("change");
+                    }
+                }
+
+            }
+
+        });
+    }
+
+</script>

@@ -1,0 +1,61 @@
+﻿@model  ExceedERP.Core.Domain.FleetManagement.EquipmentInspection.DisposalandReplacementRecommendation
+
+
+<br />
+
+<div class="demo-section k-content">
+    @(Html.Kendo().TabStrip()
+          .Name("tabstrip")
+          .Animation(animation =>
+              animation.Open(effect =>
+                  effect.Fade(FadeDirection.In)))
+          .Items(tabstrip =>
+          {
+              tabstrip.Add().Text(" Disposal and Replacement Recommendation ")
+                  .Selected(true)
+                  .Content(@<text>
+
+                      
+                            <div>
+
+                                @(Html.Kendo().DropDownListFor(model => model.FleetsID).Name("FleetsID")
+                                      .DataTextField("PlateNumber")
+                                      .DataValueField("FleetsID")
+                                              .Text("PlateNumber").OptionLabel(" Select Fleet ").Filter(FilterType.Contains)
+                                      .DataSource(d => d.Read(r => r.Action("FleetsDDBind", "EquipmentRegistration")).ServerFiltering(false)))
+                            </div>
+                    <div>
+                        @Html.LabelFor(model => model.RecommendedBy)
+                    </div>
+                    <div>
+                        @Html.Kendo().TextBoxFor(model => model.RecommendedBy)
+                        @Html.ValidationMessageFor(model => model.RecommendedBy)
+                    </div>
+                    <div>
+                        @Html.LabelFor(model => model.YearofReplacement)
+                    </div>
+                    <div>
+                        @Html.Kendo().TextBoxFor(model => model.YearofReplacement)
+                        @Html.ValidationMessageFor(model => model.YearofReplacement)
+                    </div>
+
+                  
+                    <div>
+                        @Html.LabelFor(model => model.Status)
+                    </div>
+    <div>
+        @(
+ Html.Kendo().DropDownListFor(m => m.Status).Name("Status")
+        .DataTextField("Text")
+.DataValueField("Text").OptionLabel(" Select Status")
+.BindTo(EnumHelper.GetSelectList(typeof(ExceedERP.Core.Domain.FleetManagement.EquipmentInspection.DisposalandReplacementRecommendation.Statusenum)))
+    )
+</div>
+                   
+</text>);
+           
+
+                  })
+    ))
+</div>
+  

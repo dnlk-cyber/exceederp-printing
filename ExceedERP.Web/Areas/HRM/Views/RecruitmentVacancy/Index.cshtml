@@ -1,0 +1,296 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.HRM.HRMPlan
+@using ExceedERP.Core.Domain.HRM.RecruitmentManagment
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>@Resources.Navigator_Recruitment_RecruitmentVacancy</legend>
+
+
+@(Html.Kendo().Grid<VacancyForMediaViewModel>()
+                  .Name("RecruitmentPlanGrid")
+              .Columns(columns =>
+              {
+              columns.Bound(c => c.Check).Template(@<text></text>).ClientTemplate("<input type='checkbox' #= Check ? checked='checked':'' # class='chkbx' />")
+                        .HeaderTemplate("<input type='checkbox' id='masterCheckBox' onclick='checkAll(this)'/>").Width(30);
+
+                  columns.Bound(c => c.VacancyCode).Width(120);
+                  columns.Bound(c => c.RecruitmentSource).Width(120);
+                  columns.Bound(c => c.JobtitleName).Width(250);
+                  columns.ForeignKey(c => c.WorkUnitId, (IEnumerable)ViewData["workunits"], "OrgStructureId", "Name").EditorTemplateName("OrganizationDept").Width(200);
+
+                  columns.Bound(c => c.RecruitmentType).EditorTemplateName ("Enum").Width(100);
+                  columns.Bound(c => c.NoOfVacantPost).Width(100);
+                  columns.Bound(c => c.FromAmharic).Width(100);
+                  columns.Bound(c => c.ToAmharic).Width(100);
+              })
+              .ToolBar(toolbar =>
+              {
+
+                  toolbar.Template(@<text>
+           
+            @if (HttpContext.Current.User.IsInRole("HR_Recruitment_User"))
+            {
+                @item.SaveButton()
+
+            }
+        </text>);
+              })
+                                 // .Events(ev => ev.DataBound("onDataBound"))
+                                 // .Events(ev => ev.DataBound("MasteronDataBound"))
+
+                                 .Editable(editable => editable.Mode(GridEditMode.InCell))
+                                          .Selectable(selectable =>
+                                          {
+                                              selectable.Mode(GridSelectionMode.Single);
+                                              selectable.Type(GridSelectionType.Row);
+                                          })
+                                                               .Scrollable(h => h.Height(250))
+                                                                  .Groupable()
+                                                 //.Sortable(sortable =>
+                                                 //{
+                                                 //    sortable.SortMode(GridSortMode.SingleColumn);
+                                                 //})
+                                                 //.Filterable()
+                                                 .Pageable(pageable => pageable
+                                                              .Input(true)
+                                                              .Numeric(false)
+                                                                .Refresh(true)
+                                                               .PageSizes(true)
+                                                               .PageSizes(new int[] { 10, 20, 30, 50, 100, 200 })
+                                                                 .ButtonCount(5))
+                                                                  .DataSource(dataSource => dataSource
+                                                                      .Ajax()
+                                                                       .Sort(sort => sort.Add("VacancyForMediaId").Descending())
+
+                                                                          .Batch(true)
+                                                                                .Events(events =>
+                                                                                {
+                                                                                    events.Error("error_handler(\"RecruitmentPlanGrid\")");
+                                                                                    events.RequestStart("onRequestStart(\"RecruitmentPlanGrid\")");
+                                                                                    events.RequestEnd("onRequestEnd(\"RecruitmentPlanGrid\")");
+                                                                                })
+
+                                                                      .Model(model =>
+                                                                      {
+                                                                          model.Id(p => p.VacancyForMediaId);
+
+                                                                          model.Field(p => p.JobtitleName).Editable(false);
+                                                                          model.Field(p => p.VacancyCode).Editable(false);
+                                                                          model.Field(p => p.RecruitmentType).Editable(false);
+                                                                          model.Field(p => p.WorkUnitId).Editable(false);
+                                                                          model.Field(p => p.FromAmharic).Editable(false);
+                                                                          model.Field(p => p.ToAmharic).Editable(false);
+                                                                          model.Field(p => p.NoOfVacantPost).Editable(false);
+                                                                          model.Field(p => p.VacancyId).Editable(false);
+                                                                          model.Field(p => p.RecruitmentSource).Editable(false);
+
+
+                                                                      })
+                                                                          .Read(read => read.Action("Recruitment_Read", "RecruitmentVacancy"))
+                                                                          .Create(create => create.Action("Editing_Create", "RecruitmentVacancy"))
+                                                                         .Update(update => update.Action("Editing_Create", "RecruitmentVacancy"))
+                                                                      //  .Destroy(destroy => destroy.Action("RecruitmentVacancy_Destroy", "RecruitmentVacancy"))
+                                                                      )
+
+)
+@*==========================================================================================================*@
+<h4 align="center" style="color:#0080ff"><b>Generated Media Vacancy Codes</b></h4>
+@(Html.Kendo().Grid<VacancyForMediaViewModel>()
+      .Name("MediaVacancyCode")
+      .Columns(columns =>
+      {
+
+          columns.Bound(c => c.MediaVacancyCode);
+          columns.Bound(c => c.VacancyCode);
+          columns.Bound(c => c.JobtitleName);
+      })
+
+      .Editable(editable => editable.Mode(GridEditMode.InCell))
+
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Scrollable(h => h.Height(400))
+      .Groupable()
+       .Filterable()
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(5))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+                  .Sort(sort => sort.Add("DateCreated").Descending())
+          .Model(model =>
+          {
+              model.Id(p => p.VacancyForMediaId);
+              model.Field(p => p.MediaVacancyCode).Editable(false);
+              model.Field(p => p.VacancyCode).Editable(false);
+              model.Field(p => p.VacancyId).Editable(false);
+              model.Field(p => p.JobtitleName).Editable(false);
+
+          })
+          .Read(read => read.Action("VacancyMediaCode_Read", "RecruitmentVacancy"))
+      ))
+@*========================================================================================================================================*@
+<script>
+    //function error_handler(e) {
+    //    if (e.errors) {
+    //        var message = "Errors:\n";
+    //        $.each(e.errors, function (key, value) {
+    //            if ('errors' in value) {
+    //                $.each(value.errors, function () {
+    //                    message += this + "\n";
+    //                });
+    //            }
+    //        });
+    //        alert(message);
+
+    //    }
+
+    //}
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+    function onDataBound(e) {
+        var rows = e.sender.tbody.children();
+
+        for (var j = 0; j < rows.length; j++) {
+            var row = $(rows[j]);
+            var dataItem = e.sender.dataItem(row);
+            if (dataItem.Status === 0) {
+
+
+                row.css("background-color", "red");
+
+            } else {
+                row.css("background-color", "green");
+            }
+
+        }
+
+    }
+
+    //function MasteronDataBound(e) {
+    //    var rows = e.sender.tbody.children();
+
+    //    for (var j = 0; j < rows.length; j++) {
+    //        var row = $(rows[j]);
+    //        var dataItem = e.sender.dataItem(row);
+    //        if (dataItem.Status === 0) {
+
+
+    //            row.attr('disabled', disabled);;
+
+    //        } else {
+    //            row.attr('enabled', enabled);;
+    //        }
+
+    //    }
+
+    //}
+</script>
+<script>
+    function Branch() {
+
+
+        var value = this.value(),
+            grid = $("#RecruitmentPlanGrid").data("kendoGrid");
+
+        if (value) {
+            grid.dataSource.filter({ field: "BranchId", operator: "eq", value: parseInt(value) });
+        } else {
+            grid.dataSource.filter({});
+        }
+    }
+</script>
+<script>
+    function RecruitmentType() {
+
+
+        var value = this.value(),
+            grid = $("#RecruitmentPlanGrid").data("kendoGrid");
+
+        if (value) {
+            grid.dataSource.filter({ field: "RecruitmentType", operator: "eq", value: parseInt(value) });
+        } else {
+            grid.dataSource.filter({});
+        }
+    }
+</script>
+<script>
+    function Transfer() {
+        var from = $("#VaccancyCode").data("kendoComboBox");
+
+        try {
+
+            var vacancy = from.value();
+
+            //$("#run").on("click", function (eve) {
+            $.ajax({
+                url: '@Url.Action("SetVacancy", "RecruitmentVacancy")',
+                //contentType: "application/json; charset=utf-8",
+                data: { vacancy: vacancy },
+                type: 'POST',
+                cache: false,
+                success: function (result) {
+                    // r = result;
+                }
+
+
+            });
+
+
+
+        } catch (e) {
+            alert("Please select Vacancy Code!!");
+        }
+        //var value = this.value(),
+        //   grid = $("#RecruitmentPlanGrid").data("kendoGrid");
+
+        //if (value) {
+        //    grid.dataSource.filter({ field: "VacancyCode", operator: "eq", value: parseInt(value) });
+        //} else {
+        //    grid.dataSource.filter({});
+        //}
+        //});
+    }
+</script>
+
+<script type="text/javascript">
+    $(function () {
+        $('#RecruitmentPlanGrid').on('click', '.chkbx', function () {
+            var checked = $(this).is(':checked');
+            var grid = $('#RecruitmentPlanGrid').data().kendoGrid;
+            var dataItem = grid.dataItem($(this).closest('tr'));
+            dataItem.set('Check', checked);
+        })
+    })
+
+    function checkAll(ele) {
+        var state = $(ele).is(':checked');
+        var grid = $('#RecruitmentPlanGrid').data().kendoGrid;
+        $.each(grid.dataSource.view(), function () {
+            if (this['Check'] != state)
+                this.dirty = true;
+            this['Check'] = state;
+        });
+        grid.refresh();
+    }
+
+</script>
+@*<script type="text/javascript">
+        $(document).ready(function() {
+            var disabled =ViewData["disablecontrols"].ToString();
+            if (disabled) {
+                $('chkbx').attr('disabled', disabled);
+            }
+        })
+    </script>*@

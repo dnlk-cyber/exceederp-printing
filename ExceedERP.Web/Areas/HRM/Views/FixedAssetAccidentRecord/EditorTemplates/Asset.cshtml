@@ -1,0 +1,14 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.Common
+@(Html.Kendo().DropDownListFor(m => m)
+
+                        .DataTextField("Name")
+                                                .DataValueField("FleetsID")
+      .DataSource(dataSource =>
+      {
+          dataSource.Read(read => read.Action("GetAssetLists", "HRMDataProvider", new { area = "HRM" }))
+              .ServerFiltering(false);
+      })
+               
+                         .ValuePrimitive(true)
+)

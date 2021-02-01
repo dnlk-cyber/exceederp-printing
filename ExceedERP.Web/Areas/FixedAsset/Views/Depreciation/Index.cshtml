@@ -1,0 +1,38 @@
+﻿@using ExceedERP.Core.Domain.FixedAsset.Depreciation
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@(Html.Kendo().Grid<AnnualDepreciation>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+
+          columns.ForeignKey(p => p.RegistrationID, (System.Collections.IEnumerable) ViewData["assetRegistration"], "AssetAssetRegistrationId", "Tag").Width(300);
+         
+          columns.Bound(c => c.RegistrationID);
+          columns.Bound(c => c.OriginalPrice);
+             
+          columns.Bound(c => c.Amount);
+          columns.Bound(c => c.BookValue);
+          columns.Bound(c => c.Accomodate);
+      
+       
+      })
+      .ToolBar(toolbar => {
+            
+                              toolbar.Excel();
+                              // toolbar.Pdf();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Pageable()
+      .Filterable()
+      .Scrollable(height => height.Height(500))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.DepreciationID))
+          .Read(read => read.Action("Depreciations_Read", "Depreciation"))
+          .Create(create => create.Action("Depreciations_Create", "Depreciation"))
+          .Update(update => update.Action("Depreciations_Update", "Depreciation"))
+          .Destroy(destroy => destroy.Action("Depreciations_Destroy", "Depreciation"))
+      ))

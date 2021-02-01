@@ -1,0 +1,284 @@
+﻿@model ExceedERP.Core.Domain.FleetManagement.FleetTireManagement.TireIssue
+@{
+  
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend> Tyre Issue</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetTireManagement.TireIssue>()
+    .Name("grid")
+    .Columns(columns =>
+    {
+     //   columns.Bound(e => e.StoreCode).Width(140);
+        columns.Bound(e => e.PlateNumber).Width(140);
+        columns.Bound(e => e.Brand).Width(140);
+        columns.Bound(e => e.SerialNo).Width(140);
+        columns.Bound(e => e.TireSize).Width(140);
+        columns.Bound(e => e.UnitPrice).Width(120);
+        columns.Bound(e => e.Status).Width(100); 
+       
+   
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(250);
+
+
+    })
+                                                  .ToolBar(commands => commands.Create())
+      .Editable(editable =>
+      {
+          editable.Window(w => w.Title("Tyre Issue"));
+          editable.Mode(GridEditMode.PopUp).TemplateName("TireIssueEditor");
+          editable.DisplayDeleteConfirmation("Are You Sure To Remove Tire Issue Information");
+      })
+        .HtmlAttributes(new { style = "height: 520px;" })
+                              .Pageable(pageable => pageable
+                                                .Input(true)
+                                                .Numeric(false)
+                                                .Refresh(true)
+                                                .PageSizes(true)
+                                                .ButtonCount(5))
+
+                                    .Scrollable()
+                                    .Sortable()
+                                    .Filterable()
+                                    .Groupable()
+                                    .Scrollable(h => h.Height(500))
+                                           .ClientDetailTemplateId("template")
+                                             .Groupable().Events(ev => { ev.DetailExpand("onDetailExpandUser"); ev.DataBound("onDataBound"); })
+      
+    .DataSource(dataSource => dataSource
+        .Ajax()
+        .ServerOperation(false) 
+        .Model(model =>
+              {
+                  model.Id(p => p.TireIssueID);
+               
+              }).Events(ev => ev
+                                                            .Error("error_handler(\"grid\")")
+                                                            .RequestStart("onRequestStart(\"grid\")")
+                                                            .RequestEnd("onRequestEnd(\"grid\")")) 
+                    .Create(update => update.Action("TireIssue_Create", "TyreManagementIssue"))
+                    .Read(read => read.Action("TireIssue_Read", "TyreManagementIssue"))
+                    .Update(update => update.Action("TireIssue_Update", "TyreManagementIssue"))
+                    .Destroy(update => update.Action("TireIssue_Destroy", "TyreManagementIssue"))
+  )
+)
+
+
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                                            .Name("tabStrip_#=TireIssueID#")
+            .SelectedIndex(0)
+            .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+            .Items(items =>
+            {
+                  items.Add().Text("Detail").Content(
+                        @<text>
+                            <legend>Detail</legend>
+
+                            <div class="box">
+
+                                <div class="box-col">
+                                    # if (IsSendForApproval == false || IsSendForApproval == "false")
+                                    {#
+
+                                    <a href='@Url.Action("TireIssue_SendForOnlineApproval", "TireIssueApproval")/?EId=#=TireIssueID#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                                    # }#
+                                
+                                </div>
+                            </div> 
+                            <div class="demo-section k-header export-app">
+                                <div class="demo-section content-wrapper">
+
+                                    <form>
+
+                                       
+
+                                        <div class="row">
+                                            <div class="col-md-1">
+                                            </div>
+                                            <div class="col-md-2">
+                                                <div class="form-group">
+                                                    <div class="label">
+                                                        @Html.LabelFor(model => model.CreatedBy)
+                                                    </div>
+                                                    <div>
+                                                        #=CreatedBy#
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div class="col-md-2">
+                                                <div class="form-group">
+                                                    <div class="label">
+                                                        @Html.LabelFor(model => model.DateCreated)
+                                                    </div>
+                                                    <div>
+                                                        #=kendo.toString(kendo.parseDate(DateCreated), 'dd/MM/yyyy') #
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                       
+                                            <div class="col-md-2">
+                                                <div class="form-group">
+                                                    <div class="label">
+                                                        @Html.LabelFor(model => model.ModifiedBy)
+                                                    </div>
+                                                    <div>
+
+                                                        #=ModifiedBy#
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                       
+                                                    <div class="col-md-2">
+                                                <div class="form-group">
+                                                    <div class="label">
+                                                        @Html.LabelFor(model => model.LastModified)
+                                                    </div>
+                                                    <div>
+                                                        #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
+
+                                                    </div>
+                                                </div>
+                                            </div>
+                                          
+                                        </div>
+
+                                    </form>
+
+                                </div>
+                            </div>
+
+
+
+                        </text>
+
+
+            );
+                items.Add().Text(" Approval").Content(@<text>
+                
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.FleetManagement.FleetTireManagement.TireIssueApproval>()
+                                                                                        .Name("TireIssueApproval#=TireIssueID#")
+                        .Columns(columns =>
+                        {
+                            columns.Bound(o => o.Status).EditorTemplateName("ApprovalEditor").Width(126);
+
+                            columns.Bound(o => o.Remark).Width(200);
+                            columns.Bound(c => c.CreatedBy).Width(150);
+                            columns.Bound(c => c.DateCreated).Format("{0:yyyy-MM-dd}").Width(150);
+                            columns.Command(command => { command.Edit(); }).Width(250);
+
+                        }).Events(ev =>
+                                               {
+                                                   ev.DataBound("approveonDataBound");
+                                               })
+                             .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                              .DataSource(dataSource => dataSource
+                            .Ajax()
+                            .PageSize(5)
+                                                   .Model(model =>
+                              {
+                                  model.Id(p => p.TireIssueApprovalID);
+                                  model.Field(p => p.CreatedBy).Editable(false);
+                                  model.Field(p => p.DateCreated).Editable(false);
+                              })
+                                                                                .Events(ev => ev
+                                                    .Error("error_handler(\"TireIssueApproval#=TireIssueID#\")")
+                                                    .RequestStart("onRequestStart(\"TireIssueApproval#=TireIssueID#\")")
+                                                    .RequestEnd("onRequestEnd(\"TireIssueApproval#=TireIssueID#\")"))
+                                                                                                           .Create(update => update.Action("TireIssue_Approve", "TireIssueApproval", new { EId = "#=TireIssueID#" }))
+                                                                                             .Read(read => read.Action("TireIssueApproval_Read", "TireIssueApproval", new { EId = "#=TireIssueID#" }))
+                                                                           .Update(update => update.Action("TireIssue_Approve", "TireIssueApproval", new { EId = "#=TireIssueID#" }))
+
+
+                                                      )
+                                               .ToClientTemplate())
+                </text>
+                );
+            })
+                                                                                                                                                                                                                                                                                                                                    .ToClientTemplate())
+</script>
+
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 700px;
+    }
+</style>
+<script type="text/javascript">
+
+
+    var IsApproved;
+    function onDetailExpandUser(e) {
+        var masterRow = e.masterRow;
+
+        var masterGrid = $("#grid").data("kendoGrid");
+
+        var masterDataItem = masterGrid.dataItem(masterRow);
+
+        IsApproved = masterDataItem.IsOnlineApproved;
+    }
+    function onDataBound(e) {
+        var grid = this;
+
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+            console.log(dataItem.IsOnlineApproved);
+            if (dataItem.IsSendForApproval == true || dataItem.IsSendForApproval == "true") {
+                console.log("Approved");
+                $(this).find(".k-grid-edit").remove();
+                $(this).find(".k-grid-delete").remove();
+            } if (dataItem.IsOnlineApproved == true) {
+                $(this).addClass("k-state-FleetApproved");
+            }
+        });
+    }
+
+    function approveonDataBound(e) {
+        var grid = this;
+
+        $(grid).find(".k-toolbar").hide(); //hide toolbar
+        $(".k-grid-top", grid).hide();
+
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+            if (dataItem.Status == "Approve" || IsApproved == true) {
+                console.log("Approved");
+                $(this).find(".k-grid-edit").remove();
+                $(this).find(".k-grid-delete").remove();
+            }
+        });
+    }
+
+</script>
+
+
+
+<script type="text/javascript">
+
+    function BindDetail() {
+
+        var SerialNo = $("#SerialNo").data("kendoDropDownList");
+        var SerialNoId = SerialNo.value();
+        $.ajax({
+            url: '@Url.Action("GetTyreInfo", "TyreManagementIssue")',
+            data: { Id: SerialNoId },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                r = result;
+                if (r != 0) {
+                    var s = r.split(/_/);
+                    $("#Brand").val(s[0]);
+                    $("#TireType").val(s[3]);
+                    $("#TireSize").val(s[2]);
+                    $("#TireTube").val(s[1]);
+                    $("#KMReading").val(s[4]);
+                    $("#UnitPrice").val(s[5]);
+                    $("#InstalledDate").val(s[6]);
+                }
+            }
+
+        });
+    }
+</script>

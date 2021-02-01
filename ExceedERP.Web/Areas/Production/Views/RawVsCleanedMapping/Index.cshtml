@@ -1,0 +1,101 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@using Kendo.Mvc.UI
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>  Setting | Raw, Cleaned and by-product Items Mapping </legend>
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Production.RawProductFinishedGoodMapping>()
+                          .Name("itemMapping")
+                          .Columns(columns =>
+                          {
+                              columns.ForeignKey(c => c.ItemCategoryCode, (IEnumerable)ViewData["ItemCategorys"], "ItemCategoryCode", "Name").EditorTemplateName("ItemCategory");
+                              columns.ForeignKey(c => c.RawItemCode, (IEnumerable)ViewData["Items"], "ItemCode", "Name").EditorTemplateName("RawItemSelector");
+                              columns.ForeignKey(c => c.CleanedItemCode, (IEnumerable)ViewData["Items"], "ItemCode", "Name").EditorTemplateName("CleanedItemSelector");
+                              columns.ForeignKey(c => c.ByproductItemCode, (IEnumerable)ViewData["Items"], "ItemCode", "Name").EditorTemplateName("ByProductItemSelector");
+                              columns.Bound(c => c.Remark);
+
+                              columns.Command(command =>
+                              {
+                                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                  command.Destroy().Text(Resources.ActionButton_Cancel);
+                              }).Width(200);
+
+                          })
+                          .ToolBar(toolbar =>
+                          {
+                              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                          })
+                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                          .Selectable(selectable =>
+                          {
+                              selectable.Mode(GridSelectionMode.Single);
+                              selectable.Type(GridSelectionType.Row);
+                          })
+                          .Scrollable(h => h.Height(500))
+                          .Sortable(sortable =>
+                          {
+                              sortable.SortMode(GridSortMode.SingleColumn);
+                          })
+                          .Filterable()
+                          .Pageable(pageable => pageable
+                              .Input(true)
+                              .Numeric(false)
+                              .Refresh(true)
+                              .PageSizes(true)
+                              .ButtonCount(5))
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+
+                              .Events(events =>
+                              {
+                                  events.Error("error_handler(\"itemMapping\")");
+                                  events.RequestStart("onRequestStart(\"itemMapping\")");
+                                  events.RequestEnd("onRequestEnd(\"itemMapping\")");
+                              })
+                              .Model(model =>
+                              {
+                                  model.Id(f => f.RawProductFinishedGoodMappingId);
+                              })
+
+                              .Read(read => read.Action("Mappings_Read", "RawProductFinishedGoodMapping"))
+                              .Create(create => create.Action("Mapping_Create", "RawProductFinishedGoodMapping"))
+                              .Update(update => update.Action("Mapping_Update", "RawProductFinishedGoodMapping"))
+                              .Destroy(destroy => destroy.Action("Mapping_Destroy", "RawProductFinishedGoodMapping"))
+                          )
+)
+
+
+<script>
+    function getSelectedCategoryAndFilterInputForRawItemCode() {
+        //
+        // summary:
+        //      send the filtering text along with the parent widget's value
+        var dropdownlist = $("#RawItemCode").data("kendoDropDownList");
+        var filterInput = dropdownlist.filterInput;
+        return {
+            ItemCategoryCode: $("#ItemCategoryCode").val(), filterString: filterInput.val()
+        };
+    }
+    function getSelectedCategoryAndFilterInputForCleanedItemCode() {
+        //
+        // summary:
+        //      send the filtering text along with the parent widget's value
+        var dropdownlist = $("#CleanedItemCode").data("kendoDropDownList");
+        var filterInput = dropdownlist.filterInput;
+        return {
+            ItemCategoryCode: $("#ItemCategoryCode").val(), filterString: filterInput.val()
+        };
+    }
+    function getSelectedCategoryAndFilterInputForByProductItemCode() {
+        //
+        // summary:
+        //      send the filtering text along with the parent widget's value
+        var dropdownlist = $("#ByproductItemCode").data("kendoDropDownList");
+        var filterInput = dropdownlist.filterInput;
+        return {
+            ItemCategoryCode: $("#ItemCategoryCode").val(), filterString: filterInput.val()
+        };
+    }
+</script>

@@ -1,0 +1,198 @@
+﻿@model ExceedERP.Core.Domain.CRM.CustomerTicket
+
+<form>
+
+    <div class="row">
+        <div class="col-md-1">
+
+        </div>
+        <div class="col-md-3">
+
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.CustomerID)
+                </div>
+                <div>
+                    @(Html.Kendo().DropDownListFor(model => model.CustomerID)
+                              .AutoBind(false)
+                              .OptionLabel("Select Customer ...")
+                              .DataTextField("CustomerName")
+                              .DataValueField("CustomerID")
+                              .DataSource(dataSource =>
+                              {
+                                  dataSource.Read(read => read.Action("GetCustomerList", "CRMDataProvider"));
+
+                                  }).ValuePrimitive(true))
+                </div>
+            </div>
+        </div>
+
+      
+       
+
+        <div class="col-md-3">
+
+
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.Source)
+                </div>
+                <div>
+                    @(Html.Kendo().DropDownListFor(m => m.Source)
+                          .DataTextField("Text")
+                                  .DataValueField("Value")
+                          .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.CRM.CustomerTicketSourceType)))
+                    )
+                    @Html.ValidationMessageFor(model => model.Source)
+                </div>
+
+            </div>
+
+        </div>
+
+        <div class="col-md-3">
+
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.DueDate)
+                </div>
+                <div>
+                    @Html.Kendo().DateTimePickerFor(model => model.DueDate)
+                </div>
+            </div>
+        </div>
+  
+    </div>
+    <div class="row">
+        <div class="col-md-1">
+
+        </div>
+        <div class="col-md-3">
+
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.TicketDefintion)
+                </div>
+                <div>
+                    @(Html.Kendo().DropDownListFor(model => model.TicketDefintion)
+                              .AutoBind(false)
+                              .OptionLabel("Select")
+                                      .DataTextField("Description")
+                                              .DataValueField("Description")
+                              .DataSource(dataSource =>
+                              {
+                                  dataSource.Read(read => read.Action("GetTicketDefintion", "CRMDataProvider"));
+
+                              }).ValuePrimitive(true))
+                    @Html.ValidationMessageFor(model => model.TicketDefintion)
+                </div>
+            </div>
+        </div>
+
+
+
+
+      
+      
+        <div class="col-md-3">
+
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.TicketGroup)
+                </div>
+                <div>
+                    @(Html.Kendo().DropDownListFor(model => model.TicketGroup)
+                              .AutoBind(false)
+                              .OptionLabel("Select")
+                              .DataTextField("Name")
+                                      .DataValueField("Name")
+                              .DataSource(dataSource =>
+                              {
+                                  dataSource.Read(read => read.Action("GetGroup", "CRMDataProvider"));
+
+                              }).ValuePrimitive(true))
+                    @Html.ValidationMessageFor(model => model.TicketGroup)
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3">
+
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.StatusType)
+                </div>
+                <div>
+                    @(Html.Kendo().DropDownListFor(model => model.StatusType)
+                              .AutoBind(false)
+                              .OptionLabel("Select")
+                                        .DataTextField("Name")
+                                              .DataValueField("Name").DataSource(dataSource =>
+                              {
+                                  dataSource.Read(read => read.Action("StatusAwaitingDDBind", "CRMDataProvider"));
+
+                              }).ValuePrimitive(true).Template("<span class=\"k-state-default\" > <p style=\"background-color:#:data.Color#;\">  #: data.Name #</p></span>")
+                    )
+                    @Html.ValidationMessageFor(model => model.StatusType)
+                </div>
+
+            </div>
+        </div>
+
+
+    </div>
+    <br />
+    <div class="row">
+
+        <div class="col-md-1">
+
+        </div>
+        
+      
+        <div class="col-md-3">
+
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.Priority)
+                </div>
+                <div>
+                    @(Html.Kendo().DropDownListFor(model => model.Priority)
+                              .AutoBind(false)
+                              .OptionLabel("Select")
+                                        .DataTextField("Name")
+                                              .DataValueField("Name").DataSource(dataSource =>
+                              {
+                                  dataSource.Read(read => read.Action("GetPriorityType", "CRMDataProvider"));
+
+                              }).ValuePrimitive(true)      .Template( "<span class=\"k-state-default\" > <p style=\"background-color:#:data.Color#;\">#: data.Name #</p></span>")
+                    )
+                    @Html.ValidationMessageFor(model => model.Priority)
+                </div>
+
+            </div>
+        </div>
+
+        <div class="col-md-6">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.Description)
+                </div>
+                <div>
+                    @Html.TextAreaFor(model => model.Description ,2, 50, new { htmlAttributes = new { @class = "form-control" } }))
+                    @Html.ValidationMessageFor(model => model.Description)
+
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+   
+    <br />
+    <div class="row">
+
+        <div class="col-md-1">
+
+        </div>
+     
+    </div>
+</form>

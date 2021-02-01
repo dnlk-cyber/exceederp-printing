@@ -1,0 +1,280 @@
+﻿@using ExceedERP.Core.Domain.Common.HRM
+@using ExceedERP.Core.Localization
+<Legend>@Resources.NavigatorPayrollSetup_Bank</Legend>
+@(Html.Kendo().Grid<Bank>()
+          .Name("BankGrid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Name);
+          //columns.Bound(c => c.Category);
+          columns.Bound(c => c.IsActive).ClientTemplate("<input type='checkbox' disabled='true' value='#=IsActive #' " + " # if (IsActive) { #" + "checked='checked'" + "# } #" + " />").Width(100);
+        //  columns.Bound(c => c.ParentID);
+          columns.Bound(c => c.Remark);
+          columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+          
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+           .Scrollable(h => h.Height(500))
+                 .Groupable()
+                          .Sortable(sortable =>
+                          {
+                              sortable.SortMode(GridSortMode.SingleColumn);
+                          })
+              .Filterable()
+                 .Pageable(pageable => pageable
+                                            .Input(true)
+                                            .Numeric(false)
+                                            .Refresh(true)
+                                            .PageSizes(true)
+                                            .ButtonCount(5))
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+           .Navigatable()
+          .Scrollable(s => s.Height(500))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+                        .Events(events => events.Error("error_handler(\"BankGrid\")"))
+          .Model(model => model.Id(p => p.BankId))
+          .Read(read => read.Action("Organizations_Read", "Bank"))
+          .Create(create => create.Action("Organizations_Create", "Bank"))
+          .Update(update => update.Action("Organizations_Update", "Bank"))
+          .Destroy(destroy => destroy.Action("Organizations_Destroy", "Bank"))
+          ).ClientDetailTemplateId("template")
+)
+
+
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+            .Name("tabstrip_#=BankId#")
+    .SelectedIndex(0)
+    .Items(items =>
+     {
+      //**************************************Identification****************************************************//
+         items.Add().Text(Resources .HR_Identifications).Content(
+            @<text>
+                @(Html.Kendo().Grid<Identification>()
+                                                        .Name("Identification_#=BankId#")
+                .Columns(columns =>
+                {
+                    columns.Bound(c => c.Description);
+                    columns.Bound(c => c.IdNumber);
+                    columns.Bound(c => c.Type).EditorTemplateName("IdentificationType");
+                    columns.Bound(c => c.IssueDate);
+                    columns.Bound(c => c.ExpiryDate);
+                    columns.Bound(c => c.Issuer);
+                    columns.Bound(c => c.Remark);
+                    columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit); 
+                       command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+                })
+                .ToolBar(toolbar =>
+                {
+                    toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                })
+                .Editable(editable => editable.Mode(GridEditMode.InLine))
+                .Scrollable()
+                .DataSource(dataSource => dataSource
+                .Ajax()
+                .Model(model => model.Id(i => i.IdentificationId))
+                                                                        .Read(read => read.Action("Identifications_Read", "Identification", new { identificationReferenceType = "Bank", id = "#=BankId#" }))
+                                                                                .Create(create => create.Action("Identifications_Create", "Identification", new { identificationReferenceType = "Bank", id = "#=BankId#" }))
+                .Update(update => update.Action("Identifications_Update", "Identification"))
+                .Destroy(destroy => destroy.Action("Identifications_Destroy", "Identification"))
+    ).ToClientTemplate()
+                )
+
+            </text>
+     );
+    @*
+          //*************************************************************************************************//
+          //**************************************Beginnings************************************************//
+               items.Add().Text("Beginnings").Content(
+                  @<text>
+                      @(Html.Kendo().Grid<ExceedERP.Core.Domain.Common.Beginning>()
+                            .Name("BeginningGrid_#=BankID#")
+            .Columns(columns =>
+            {
+                columns.ForeignKey(c => c.Period, (System.Collections.IEnumerable)ViewData["PeriodList"], "PeriodId", "PeriodName").Width(150);
+                columns.Bound(c => c.Value);
+                columns.Bound(c => c.IsProvisional);
+                columns.Bound(c => c.Remark);
+                columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+            })
+            .ToolBar(toolbar =>
+            {
+                toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+            })
+            .Editable(editable => editable.Mode(GridEditMode.InLine))
+            .Scrollable()
+            .DataSource(dataSource => dataSource
+                .Ajax()
+                .Model(model => model.Id(p => p.BeginningID))
+                                                .Read(read => read.Action("Beginnings_Read", "Beginning", new { id = "#=BankID#", beginningReferenceType = "Bank" }))
+                                                                .Create(create => create.Action("Beginnings_Create", "Beginning", new { id = "#=BankID#", beginningReferenceType = "Bank" }))
+                .Update(update => update.Action("Beginnings_Update", "Beginning"))
+                .Destroy(destroy => destroy.Action("Beginnings_Destroy", "Beginning"))
+           ).ToClientTemplate()
+                      )
+                  </text>
+          );
+        //*************************************************************************************************//
+         //**************************************Account Map************************************************//
+               items.Add().Text("Account Map").Content(
+                  @<text>
+                      @(Html.Kendo().Grid<ExceedERP.Core.Domain.Common.AccountMap>()
+                                    .Name("AccountMapGrid_#=BankID#")
+                            .Columns(columns =>
+                            {
+
+                                columns.Bound(c => c.ControlAccountID).EditorTemplateName("AccountRequirementDefinition");
+                                columns.ForeignKey(c => c.AccountID, (System.Collections.IEnumerable)ViewData["AccountList"], "AccountID", "Description").Width(150);
+                                columns.Bound(c => c.Remark);
+                                columns.Command(command =>
+                                {
+                                    command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                   command.Destroy().Text(Resources.ActionButton_Cancel);
+                                }).Width(180);
+                            })
+                            .ToolBar(toolbar =>
+                            {
+                                toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                            })
+                            .Editable(editable => editable.Mode(GridEditMode.InLine))
+                            .Scrollable()
+                            .DataSource(dataSource => dataSource
+                                .Ajax()
+                                .Model(model => model.Id(p => p.AccountMapID))
+                                                                                .Read(read => read.Action("AccountMaps_Read", "AccountMap", new { id = "#=BankID#", accountMapReferenceType = "Bank" }))
+                                                                                        .Create(create => create.Action("AccountMaps_Create", "AccountMap", new { id = "#=BankID#", accountMapReferenceType = "Bank" }))
+                                .Update(update => update.Action("AccountMaps_Update", "AccountMap"))
+                                .Destroy(destroy => destroy.Action("AccountMaps_Destroy", "AccountMap"))
+                            ).ToClientTemplate()
+                      )
+                  </text>
+                   );*@
+
+         //*****************************************************************************************************//
+         //*********************************Address***********************************************************//
+         items.Add().Text(Resources.HR_Addresse).Content(
+            @<text>
+
+                @(Html.Kendo().Grid<Address>()
+                      .Name("AddresseGrid_#=BankId#")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Category).EditorTemplateName("Enum");
+          columns.Bound(c => c.Value);
+          columns.Bound(c => c.Remark);
+          columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+               .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("Address").Window(window => { window.Title(Resources.HR_Addresse); window.Scrollable(false); }))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.AddressId))
+                                                          .Read(read => read.Action("Addresses_Read", "Addresse", new { id = "#=BankId#", addressReferenceType = "Bank" }))
+                                                                  .Create(create => create.Action("Addresses_Create", "Addresse", new { id = "#=BankId#", addressReferenceType = "Bank" }))
+          .Update(update => update.Action("Addresses_Update", "Addresse"))
+          .Destroy(destroy => destroy.Action("Addresses_Destroy", "Addresse"))
+       ).ToClientTemplate()
+                )
+            </text>
+    );
+   @*//*****************************************************************************************************//
+  //*********************************Industry Involvement*************************************************//
+        items.Add().Text("Industry Involvement").Content(
+            @<text>
+                @(Html.Kendo().Grid<ExceedERP.Core.Domain.Common.IndustryInvolved>()
+                      .Name("IndustryInvolvement_#=BankID#")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Index);
+          columns.Bound(c => c.Industry).EditorTemplateName("IndustryType");
+          columns.Bound(c => c.Remark);
+          columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.IndustryInvolvedID))
+                                                                  .Read(read => read.Action("IndustryInvolveds_Read", "IndustryInvolved", new { referenceIndustryInvolvment = "#=BankID#", industryInvolvedReferenceType = "Bank" }))
+                                                                  .Create(create => create.Action("IndustryInvolveds_Create", "IndustryInvolved", new { referenceIndustryInvolvment = "#=BankID#", industryInvolvedReferenceType = "Bank" }))
+                  .Update(update => update.Action("IndustryInvolveds_Update", "IndustryInvolved"))
+          .Destroy(destroy => destroy.Action("IndustryInvolveds_Destroy", "IndustryInvolved"))
+     ).ToClientTemplate()
+                )
+
+            </text>
+    );*@
+         //*****************************************************************************************************//
+
+     }).ToClientTemplate())
+
+</script>
+<script>
+    function error_handler(e) {
+        if (e.errors) {
+            var message = "Errors:\n";
+            $.each(e.errors, function(key, value) {
+                if ('errors' in value) {
+                    $.each(value.errors, function() {
+                        message += this + "\n";
+                    });
+                }
+            });
+            alert(message);
+
+        }
+
+    }
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+    function Change(e) {
+
+        var dropDown = $("#Value").data("kendoTextBox");
+        var x = e.value;
+        if (x == "0" || x == "1" || x == "2" || x == "3") {
+            // $("#VaccancyCode").prop("disabled", false).addClass("k-state-disabled");
+            $("#Value").kendoMaskedTextBox({
+                mask: "(999) 000-0000",
+                placeholder: "",
+                data_email_msg: ""
+            });
+
+        }
+        else if (x == "4" || x == "5" || x == "6" || x == "7" || x == "14" || x == "15") {
+            //$("#Value").kendoMaskedTextBox({
+            //    mask: "~",
+            //    placeholder: ""
+            //});
+            $("#Value").prop("placeholder", "email@email.com");
+            $("#Value").prop("type", "email");
+            $("#Value").prop("required", "required");
+            $("#Value").prop("data_email_msg", "Email format is not valid");
+
+
+        }
+        else {
+            $("#Value").prop("placeholder", "");
+            $("#Value").prop("type", "");
+            //$("#Value").kendoMaskedTextBox({
+            //    mask: "*[!((a-z) or (0-9))]*",
+            //    //placeholder: "",
+            //    //data_email_msg: ""
+            //});
+        }
+    }
+</script>

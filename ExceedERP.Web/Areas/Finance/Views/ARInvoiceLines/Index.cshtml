@@ -1,0 +1,43 @@
+﻿@using ExceedERP.Core.Domain.Finance.AR
+@(Html.Kendo().Grid<ArInvoiceLines>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.Items);
+        columns.Bound(c => c.Description);
+        columns.Bound(c => c.AccountCode);
+        columns.Bound(c => c.AccountDesc);
+        columns.Bound(c => c.Quantity);
+        columns.Bound(c => c.UnitPrice);
+        columns.Bound(c => c.SubTotal);
+        columns.Bound(c => c.TaxType);
+        columns.Bound(c => c.TaxAmount);
+        columns.Bound(c => c.TotalAmount);
+        columns.Bound(c => c.OrgBranchName);
+        columns.Bound(c => c.DateCreated);
+        columns.Bound(c => c.LastModified);
+        columns.Bound(c => c.CreatedBy);
+        columns.Bound(c => c.ModifiedBy);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+            toolbar.Excel();
+           // toolbar.Pdf();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Pageable()
+      .Sortable(sortable => {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Filterable()
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.ArInvoiceLinesId))
+          .Read(read => read.Action("ARInvoiceLines_Read", "ARInvoiceLines"))
+          .Create(create => create.Action("ARInvoiceLines_Create", "ARInvoiceLines"))
+          .Update(update => update.Action("ARInvoiceLines_Update", "ARInvoiceLines"))
+          .Destroy(destroy => destroy.Action("ARInvoiceLines_Destroy", "ARInvoiceLines"))
+      )
+)

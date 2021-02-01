@@ -1,0 +1,121 @@
+﻿@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+
+}
+<legend>Revaluation</legend>
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Inventory.Revaluation>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(p => p.StoreCode).EditorTemplateName("Stores");
+          columns.Bound(p => p.ItemCategoryCode).EditorTemplateName("ItemCategoryCode");
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar =>                                                    
+      {
+          toolbar.Create();
+          toolbar.Excel();
+         // toolbar.Pdf();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Pageable()
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Filterable()
+      .Scrollable(height => height.Height(500))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+                .Events(ev => ev
+                            .Error("error_handler(\"grid\")")
+                            .RequestStart("onRequestStart(\"grid\")")
+                            .RequestEnd("onRequestEnd(\"grid\")"))
+          .Model(model => model.Id(p => p.RevaluationId))
+          .Read(read => read.Action("Revaluations_Read", "Revaluation"))
+          .Create(create => create.Action("Revaluations_Create", "Revaluation"))
+          .Update(update => update.Action("Revaluations_Update", "Revaluation"))
+          .Destroy(destroy => destroy.Action("Revaluations_Destroy", "Revaluation"))
+      ).ClientDetailTemplateId("reevaluationTemplate"))
+<script type="text/kendo" id ="reevaluationTemplate">
+    @(Html.Kendo().TabStrip().SelectedIndex(0).Name("revaluationTabstrip_#=RevaluationId#").Items(items =>
+          {
+          items.Add().Text("Detail").Content(@<text>
+
+    </text>);
+          items.Add().Text("Items").Content(@<text>
+
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Inventory.RevaluationItem>()
+          .Name("revaluation_#=RevaluationId#")
+          .Columns(columns =>
+          {
+              columns.Bound(c => c.ItemCode);
+              columns.Bound(c => c.ItemCategoryCode);
+              columns.Bound(c => c.PreviousPrice);
+              columns.Bound(c => c.NewPrice);
+
+
+              columns.Bound(c => c.Status).ClientTemplate("<input type='checkbox' disabled = 'true'  value='#=Status #' " + " # if (Status) { #" + "checked='checked'" + "# } #" + " />").Width(100);
+         
+              columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+          })
+          .ToolBar(toolbar => {
+                                  toolbar.Create();
+                                  toolbar.Excel();
+                                 // toolbar.Pdf();
+          })
+          .Editable(editable => editable.Mode(GridEditMode.InLine))
+          .Scrollable()
+          .Pageable()
+          .DataSource(dataSource => dataSource
+              .Ajax()
+              .Model(model =>
+              {
+                  model.Id(p => p.RevaluationItemId);
+                  model.Field(p => p.ItemCode).Editable(false);
+                  model.Field(p => p.ItemCategoryCode).Editable(false);
+                  model.Field(p => p.PreviousPrice).Editable(false);
+              
+              })
+              .Read(read => read.Action("RevaluationItems_Read", "RevaluationItem" , new {id ="#=RevaluationId#"}))
+              .Create(create => create.Action("RevaluationItems_Create", "RevaluationItem" ,new {id ="#=RevaluationId#"}))
+              .Update(update => update.Action("RevaluationItems_Update", "RevaluationItem"))
+              .Destroy(destroy => destroy.Action("RevaluationItems_Destroy", "RevaluationItem"))
+          )  .ToClientTemplate())
+    </text>);
+          items.Add().Text("Validation").Content(@<text>
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.Inventory.RevaluationValidation>()
+          .Name("revaluationValidation_#=RevaluationId#")
+          .Columns(columns =>
+          {
+              columns.Bound(c => c.Status).EditorTemplateName("ValidationStatus");
+              columns.Bound(c => c.Remark);
+          
+              columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+          })
+          .ToolBar(toolbar =>
+          {
+              toolbar.Create();
+          })
+          .Editable(editable => editable.Mode(GridEditMode.InLine))
+          .Scrollable()
+          .DataSource(dataSource => dataSource
+              .Ajax()
+              .Model(model => model.Id(p => p.RevaluationValidationId))
+              .Read(read => read.Action("RevaluationValidations_Read", "RevaluationValidation", new { id = "#=RevaluationId#" }))
+              .Create(create => create.Action("RevaluationValidations_Create", "RevaluationValidation", new { id = "#=RevaluationId#" }))
+              .Update(update => update.Action("RevaluationValidations_Update", "RevaluationValidation"))
+              .Destroy(destroy => destroy.Action("RevaluationValidations_Destroy", "RevaluationValidation"))
+          ).ToClientTemplate())
+
+
+                                                  </text>);
+        
+          }).ToClientTemplate())
+</script>

@@ -1,0 +1,371 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.APTS
+@using ExceedERP.Core.Localization
+@using ExceedERP.Core.Domain.HRM.SelfCare
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Drug Request</legend>
+@(Html.Kendo().Grid<DrugRequest>()
+                      .Name("DrugRequestgrid")
+                  .Columns(columns =>
+                  {
+                      //columns.Bound(c => c.IsConfirmed).ClientTemplate("<input type='checkbox' disabled = 'true' #=IsConfirmed ? checked='checked' :'' # >").Width(80).Title("Is Signed?");
+
+                      columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "AmharicName").EditorTemplateName("Branch").Width(150).Title("Branch");
+                      columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["FiscalYear"], "GlFiscalYearId", "Name").EditorTemplateName("Year").Width(120).Title("Year");
+
+                      columns.Bound(c => c.RequestDateAm).EditorTemplateName("Calander").Width(120).Title("Request Date");
+                      //columns.Bound(c => c.PlanType).EditorTemplateName("PlanType").Width(120);
+                      columns.Bound(c => c.IsClosed).ClientTemplate("<input type='checkbox' disabled = 'true' #=IsClosed ? checked='checked' :'' # >").Width(80).Title("Is Closed?");
+
+                      columns.Bound(c => c.Remark).Width(80);
+                      columns.Command(command =>
+                      {
+                          command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                          command.Destroy().Text(Resources.ActionButton_Cancel);//
+                      }).Width(200);
+                  })
+                  .ToolBar(toolbar =>
+                  {
+                  toolbar.Template(@<text>
+                        <div class="toolbar">
+
+                            @item.CreateButton(Resources.ActionButton_AddNewRecord)
+
+
+                            @*@item.CustomCommandToolBarButton("Excel", "<span class='k-icon k-i-excel'></span>" + Resources.ActionButton_ExportExcel, "Excel_Export_Save", "JobTitleMapping", "", new { @class = "k-button k-button-icontext k-grid-excel btn btn-primary btn-xs pull-right" });*@
+                            @*@item.CustomCommandToolBarButton("PDF", "<span class='k-icon k-i-pdf'></span>" + Resources.ActionButton_ExportPDF, "Pdf_Export_Save", "JobTitleMapping", "", new { @class = "k-button k-button-icontext k-grid-pdf  btn btn-primary btn-xs pull-right" });*@
+
+                        </div>
+
+                    </text>);
+                  })
+
+                                     .Excel(excel => excel
+                                        .FileName(Resources.Navigator_Company_JobTitleMapping + ".xlsx")
+                                           .Filterable(true)
+                                             .AllPages(true)
+                                                         //  .ProxyURL(Url.Action("Excel_Export_Save", "JobTitleMapping"))
+                                                         )
+                                                  .Pdf(pdf => pdf
+                                                     .AllPages()
+                                                    .FileName(Resources.Navigator_Company_JobTitleMapping + ".pdf")
+                                                                   // .ProxyURL(Url.Action("Pdf_Export_Save", "JobTitleMapping"))
+                                                                   )
+                             .Editable(editable => editable.Mode(GridEditMode.InLine))//.TemplateName("JobTitleMapping").Window(window => { window.Title(Resources.Navigator_Company_JobTitleMapping); window.Scrollable(false); }))
+                              .Events(events => events.DetailExpand("onDetailExpandUser"))
+                              .Events(e =>
+                              {
+                                  e.DataBound("onDataBound");
+                                  e.Save("GetDate");
+                                  e.Edit("GetDate");
+                              })
+                             .Scrollable(h => h.Height(500))
+                            .Groupable()
+                                        .Sortable(sortable =>
+                                        {
+                                            sortable.SortMode(GridSortMode.SingleColumn);
+                                        })
+                                       .Filterable()
+
+                                 .Pageable(pageable => pageable
+                                                  .Input(true)
+                                                    .Numeric(false)
+                                                     .Refresh(true)
+                                                   .PageSizes(true)
+                                                .ButtonCount(5))
+                                    .DataSource(dataSource => dataSource
+                                        .Ajax()
+                                        .Sort(sort => sort.Add("DateCreated").Descending())
+                                             .Events(events =>
+                                             {
+
+                                                 events.Error("error_handler(\"DrugRequestgrid\")");
+                                                 events.RequestStart("onRequestStart(\"DrugRequestgrid\")");
+
+                                                 events.RequestEnd("onRequestEnd(\"DrugRequestgrid\")");
+                                             })
+
+
+                                      .Model(model =>
+                                      {
+                                          model.Id(p => p.DrugRequestId);
+                                          model.Field(p => p.IsSendForApproval).Editable(false);
+                                          model.Field(p => p.IsConfirmed).Editable(false);
+                                          model.Field(p => p.IsClosed).Editable(false);
+
+                                      })
+                                        .Read(read => read.Action("DrugRequest_Read", "DrugRequest"))
+                                        .Create(create => create.Action("DrugRequest_Create", "DrugRequest"))
+                                        .Update(update => update.Action("DrugRequest_Update", "DrugRequest"))
+                                        .Destroy(destroy => destroy.Action("DrugRequest_Destroy", "DrugRequest"))
+                                        ).ClientDetailTemplateId("template")
+)
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+             .Name("tabstrip_#=DrugRequestId#")
+         .SelectedIndex(0)
+          .Items(items =>
+        {
+            items.Add().Text(Resources.HR_RequestStatus).Content(
+    @<text>
+        @*<legend>Status</legend>*@
+
+        @(Html.Kendo().Grid<APTSRequestStatus>()
+                     .Name("RequestesStatusgrid_#=DrugRequestId#")
+                         .Columns(columns =>
+                         {
+                             //columns.Bound(c => c.RequestId);
+                             columns.Bound(c => c.DateReqStatAm).Width(80);
+                             columns.Bound(c => c.Status).EditorTemplateName("Enum").Width(100);
+                             //columns.Bound(c => c.Remark).Width(50);
+                             columns.Command(command =>
+                             {
+                                 command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                 command.Destroy().Text(Resources.ActionButton_Cancel);
+                             }).Width(400);
+                         })
+                                                 .ToolBar(toolbar =>
+                                                 {
+                                                     toolbar.Custom().Action("SendForApproval", "DrugRequest").Text(Resources.HR_Send_For_Approval);
+                                                 })
+                                                        .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                          .Scrollable()
+                                                         
+                                                             .DataSource(dataSource => dataSource
+                                                              .Ajax()
+                                                                    .Events(events =>
+                                                                    {
+                                                                        events.Error("error_handler(\"RequestesStatusgrid_#=DrugRequestId#\")");
+                                                                        events.RequestStart("onRequestStart(\"RequestesStatusgrid_#=DrugRequestId#\")");
+                                                                        events.RequestEnd("onRequestEnd(\"RequestesStatusgrid_#=DrugRequestId#\")");
+                                                                    })
+
+                                                                                                      .Model(model =>
+                                                                                                      {
+                                                                                                          model.Id(p => p.APTSRequestStatusId);
+                                                                                                          model.Field(p => p.Date).Editable(false).DefaultValue(DateTime.Today);
+                                                                                                      })
+
+                                                                                             .Read(read => read.Action("APTSRequestesStatus_Read", "APTSRequestesStatus", new { id = "#=DrugRequestId#", referenceType = "DrugRequest"/*, area = "HRM"*/ }))
+                                                                                            .Create(create => create.Action("APTSRequestesStatus_Create", "APTSRequestesStatus", new { id = "#=DrugRequestId#", referenceType2 = "DrugRequest"/*, area = "HRM"*/ }))
+                                                                                                          .Update(update => update.Action("APTSRequestesStatus_Update", "APTSRequestesStatus"/*, new { area = "HRM" }*/))
+                                                                                                          .Destroy(destroy => destroy.Action("APTSRequestesStatus_Destroy", "APTSRequestesStatus"))
+                                                                       ).ToClientTemplate()
+        )
+
+
+    </text>
+                                                                         );
+
+        items.Add().Text("Request Items").Content(
+        @<text>
+
+    @(Html.Kendo().Grid<DrugRequestItem>()
+                                      .Name("DrugRequestItem_#=DrugRequestId#")
+                      .Columns(columns =>
+                      {
+                          columns.ForeignKey(c => c.DrugListsId, (IEnumerable)ViewData["DrugLists"], "DrugListsId", "Description").EditorTemplateName("DrugLists").Width(150).Title("Drug Name");
+                          columns.ForeignKey (c => c.DrugUnitId, (IEnumerable)ViewData["UnitsList"], "DrugUnitId", "UoMName").EditorTemplateName("DrugUnits").Width(150).Title("Unit");
+                          columns.Bound(c => c.BegStock).Title("Beg Stock").Width(150);
+                          columns.Bound(c => c.ReceivedQty).Width(100);
+                          columns.Bound(c => c.Loss).Width(100);
+                          columns.Bound(c => c.EndStock).Title("End Stock").Width(150);
+                          columns.Bound(c => c.QtyRequested).Width(100);
+                          columns.Bound(c => c.QtyApproved).Width(100);
+                          columns.Bound(c => c.QtyAllowed).Width(100);
+                          columns.Command(command =>
+                          {
+                              command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                              command.Destroy().Text(Resources.ActionButton_Cancel);//
+                          }).Width(200);
+                      })
+                      .ToolBar(toolbar =>
+                      {
+                          toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                      })
+                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                      .Scrollable(h => h.Height(300))
+                       .Events(e =>
+                                            {
+                                                e.DataBound("onDataBoundDetailSecondTab");
+                                            })
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+                                  .Events(events =>
+                                  {
+
+                                      events.Error("error_handler(\"DrugRequestItem_#=DrugRequestId#\")");
+                                      events.RequestStart("onRequestStart(\"DrugRequestItem_#=DrugRequestId#\")");
+                                      events.RequestEnd("onRequestEnd(\"DrugRequestItem_#=DrugRequestId#\")");
+                                  })
+
+                           .Model(model =>
+                           {
+                               model.Id(p => p.DrugRequestItemId);
+                               model.Field(p => p.BegStock).Editable(false);
+                               model.Field(p => p.QtyApproved).Editable(false);
+                               model.Field(p => p.ReceivedQty).Editable(false);
+                               model.Field(p => p.QtyAllowed).Editable(false);
+                               model.Field(p => p.EndStock).Editable(false);
+
+                           })
+                                          .Read(read => read.Action("DrugReqeustItem_Read", "DrugReqeustItem", new { id = "#=DrugRequestId#" }))
+                                  .Create(create => create.Action("DrugReqeustItem_Create", "DrugReqeustItem", new { idTwo = "#=DrugRequestId#" }))
+                          .Update(update => update.Action("DrugReqeustItem_Update", "DrugReqeustItem"))
+                          .Destroy(destroy => destroy.Action("DrugReqeustItem_Destroy", "DrugReqeustItem"))
+                      ).ToClientTemplate()
+    )
+
+
+</text>
+);
+
+}).ToClientTemplate())
+</script>
+<script>
+    //function error_handler(e) {
+    //    if (e.errors) {
+    //        var message = "Errors:\n";
+    //        $.each(e.errors, function(key, value) {
+    //            if ('errors' in value) {
+    //                $.each(value.errors, function() {
+    //                    message += this + "\n";
+    //                });
+    //            }
+    //        });
+    //        alert(message);
+
+    //    }
+
+    //}
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+</script>
+
+<style>
+    div.k-edit-form-container {
+        width: 700px;
+    }
+</style>
+
+
+<script>
+
+    function titleFilter(element) {
+        element.KendoAutoComplet({
+            dataSource: {
+                transport: {
+                    read:'@Url.Action("FilterMenuCustomization_WorkUnit", "JobTitleMapping")'
+                }
+            }
+        });
+    }
+</script>
+
+<script>
+
+     function GetDate() {
+
+         $("#RequestDateAm").trigger("change");
+       
+    }
+</script>
+
+<script>
+
+      function onDetailExpandUser(e) {
+        var masterRow = e.masterRow;
+
+          var masterGrid = $("#DrugRequestgrid").data("kendoGrid");
+
+        var masterDataItem = masterGrid.dataItem(masterRow);
+
+          masterId = masterDataItem.DrugRequestId;
+          var gridName = "#RequestesStatusgrid_" + masterId;
+         
+        $.ajax({
+            url: '@Url.Action("CheckStatus", "DrugRequest")',
+
+            data: { masterId: masterId },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                r = result;
+                if (r == "true") {
+                    $(gridName).find(".k-toolbar").hide(); //hide toolbar
+                    $(".k-grid-top", gridName).hide();
+                }
+                else if (r == "approved") {
+                    $(gridName).find(".k-toolbar").hide(); //hide toolbar
+                    $(".k-grid-top", gridName).hide();
+                    $(".k-grid-edit", gridName).hide();
+                    $(".k-grid-delete", gridName).hide();
+
+                
+                }
+                else if (r == "Dapproved") {
+                    $(gridName).find(".k-toolbar").hide(); //hide toolbar
+                    $(".k-grid-top", gridName).hide();
+                    $(".k-grid-edit", gridName).hide();
+                    $(".k-grid-delete", gridName).hide();
+
+                     
+                }
+                else {
+                    $(gridName).find(".k-toolbar").show(); //hide toolbar
+                    $(".k-grid-top", gridName).show();
+                }
+
+            }
+
+        });
+
+    }
+
+</script>
+
+<script>
+    function onDataBound(e) {
+
+        var grid = this;
+        var gridRows = grid.tbody.find("tr");
+        for (var i = 0; i < gridRows.length; i++) {
+            var row = $(gridRows[i]);
+            var dataItem = grid.dataItem(row);
+
+            if (dataItem.IsOnlineApproved === true) {
+
+                row.find(".k-grid-edit").hide();
+                row.find(".k-grid-delete").hide();         
+
+                row.css("background-color", "lightgreen");
+            }
+            if (dataItem.IsClosed === true) {
+                row.css("background-color", "gray");
+            }
+        }
+    }
+</script>
+
+<script>
+    function onDataBoundDetailSecondTab(e) {
+
+        var rows = e.sender.tbody.children();
+
+        for (var j = 0; j < rows.length; j++) {
+            var row = $(rows[j]);
+            var dataItem = e.sender.dataItem(row);
+            if (dataItem.IsOnlineApproved === true) {
+
+                row.find(".k-grid-edit").hide();
+                row.find(".k-grid-delete").hide();
+            }
+
+        }
+    }
+</script>

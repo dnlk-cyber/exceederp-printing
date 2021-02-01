@@ -1,0 +1,53 @@
+﻿<legend>Aging Rules</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Finance.AgingPeriodSetup>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.Type);
+          columns.Bound(c => c.Period1);
+          columns.Bound(c => c.Period2);
+          columns.Bound(c => c.Period3);
+          
+          columns.Command(command => { command.Edit();/* command.Destroy(); */}).Width(180);
+      })
+      .ToolBar(toolbar => {
+          //toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .HtmlAttributes(new { style = "height: 550px;" })
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(5))
+
+      .Scrollable()
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(
+              model =>
+              {
+                  model.Id(p => p.AgingPeriodSetupId);
+                  model.Field(p => p.CreatedBy).Editable(false);
+                  model.Field(p => p.ModifiedBy).Editable(false);
+                  model.Field(p => p.LastModified).Editable(false);
+                  model.Field(p => p.DateCreated).Editable(false);
+
+              })
+          .Read(read => read.Action("AgingPeriodSetups_Read", "AgingPeriodSetup"))
+          .Create(create => create.Action("AgingPeriodSetups_Create", "AgingPeriodSetup"))
+          .Update(update => update.Action("AgingPeriodSetups_Update", "AgingPeriodSetup"))
+          .Destroy(destroy => destroy.Action("AgingPeriodSetups_Destroy", "AgingPeriodSetup"))
+      )
+)
