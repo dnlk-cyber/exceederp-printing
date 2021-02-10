@@ -13,6 +13,7 @@ using ExceedERP.Core.Domain.Procurement.PurchaseOrder;
 using ExceedERP.Core.Domain.Procurement.Settings;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
+using ExceedERP.Helpers.Inventory;
 using ExceedERP.Web.Areas.Finance.Models;
 using ExceedERP.Web.Areas.Procurement.Models;
 using ExceedERP.Web.Helpers;
@@ -33,7 +34,16 @@ namespace ExceedERP.Web.Areas.Procurement.Controllers.PO
             PopulateViewData();
             return View();
         }
+        public ActionResult UpdatePurchaseOrderStatus()
+        {
+            var purchaseOrders = _db.PurchaseOrders.Where(po => po.IsOnlineApproved && po.IsVoid == false).ToList();
+            foreach (var item in purchaseOrders)
+            {
+                InventoryValidationHelper.UpdatePurchaseOrderFullFilledStatus(item);
+            }
 
+            return RedirectToAction(nameof(Index));
+        }
         private void PopulateViewData()
         {
             

@@ -157,6 +157,58 @@ namespace ExceedERP.Helpers.Inventory
             }
             return errorMessage;
         }
+
        
+        public static void UpdatePurchaseOrderFullFilledStatus(PurchaseOrder record)
+        {
+            ExceedDbContext db = new ExceedDbContext();
+            string errorMessage = "";
+           
+            List<PurchaseOrderItem> purchaseOrderItems = db.PurchaseOrderItems
+                .Where(pi => pi.PurchaseOrderID == record.PurchaseOrderID)
+                .Where(pi => pi.ItemType == PurchaseItemType.Stock)
+                .ToList();
+
+            decimal totalPurchaseOrderQuantity = purchaseOrderItems.Any() ? purchaseOrderItems.Sum(pi => pi.Quantity) : 0;
+
+            var allReceiveIds = db.GoodReceives
+                                    .Where(x => x.ReceiveType.Type == GoodReceiveType.PurchaseOrder)
+                                    .Where(x => x.ReceiveRef == record.PurchaseOrderID.ToString())
+                                    .Where(x => x.IsOnlineApproved)
+                                    .Where(x => x.IsVoid == false)
+                                    .Select(x => x.GoodReceiveId)
+                                    .ToList();
+
+            var allReceiveItems = db.GoodReceiveItems
+                                    .Where(x => allReceiveIds.Contains(x.GoodReceiveId))
+                                    .ToList();
+
+            decimal totalReceiveQuantity = allReceiveItems.Any() ? allReceiveItems.Sum(ri => ri.Quantity) : 0;
+
+            if(totalReceiveQuantity >= totalPurchaseOrderQuantity)
+            {
+                var currentPurchaseOrder = db.PurchaseOrders.Find(record.PurchaseOrderID);
+                if(currentPurchaseOrder != null)
+                {
+                    currentPurchaseOrder.IsFullfilled = true;
+
+                    db.PurchaseOrders.Attach(currentPurchaseOrder);
+                    db.Entry(currentPurchaseOrder).State = EntityState.Modified;
+                    db.SaveChanges();
+                }
+            }
+            else // in case it has been set to true when it shouldn't have
+            {
+                var currentPurchaseOrder = db.PurchaseOrders.Find(record.PurchaseOrderID);
+                if (currentPurchaseOrder != null)
+                {
+                    currentPurchaseOrder.IsFullfilled = false;
+
+                    db.PurchaseOrders.Attach(currentPurchaseOrder);
+                    db.Entry(currentPurchaseOrder).State = EntityState.Modified;
+                    db.SaveChanges();
+                }
+            }
+        }
     }
 }

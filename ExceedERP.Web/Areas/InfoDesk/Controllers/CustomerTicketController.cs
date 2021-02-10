@@ -13,7 +13,7 @@ using ExceedERP.Web.Models;
 using ExceedERP.Core.Domain.InfoDesk.Support;
 using System.Collections.Generic;
 using ExceedERP.Core.Domain.InfoDesk;
-using ExceedERP.Core.Domain.Common;
+using ExceedERP.Web.Areas.InfoDesk.Models;
 
 namespace ExceedERP.Web.Areas.InfoDesk.Controllers
 {
@@ -42,22 +42,9 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
         {
             ViewData["branchs"] = db.Branch.ToList();
 
-
-            var organizationCustomer =
-                           db.OrganizationCustomers.Select(
-                               o =>
-                                   new
-                                   {
-                                       CustomerID = o.OrganizationCustomerID,
-                                       CustomerType = "Organization",
-                                       CustomerName = o.TradeName
-                                   });
-
-            var combinedCustomer = organizationCustomer.ToList();
-            ViewData["CustomerList"] = combinedCustomer;
+            
             var sysusers =
-              udb.Users.Select(
-                  o =>
+              udb.Users.Select(o =>
                       new
                       {
                           CustomerID = o.Id,
@@ -66,27 +53,15 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
 
             var users = sysusers.ToList();
             ViewData["SysUsers"] = users;
-            ViewData["Customers"] = db.OrganizationCustomers.ToList();
             ViewData["TicketTypes"] = db.TicketType_HelpDesks.ToList();
             ViewData["TicketDefActivity"] = db.TicketActivityDefinition_HelpDesks.ToList();
+            ViewData["Employees"] = db.Person_Employee.ToList();
 
             return View();
         }
         public ActionResult TicketStatus()
         {
 
-            var organizationCustomer =
-                db.OrganizationCustomers.Select(
-                    o =>
-                        new
-                        {
-                            CustomerID = o.OrganizationCustomerID,
-                            CustomerType = "Organization",
-                            CustomerName = o.TradeName
-                        });
-
-            var combinedCustomer = organizationCustomer.ToList();
-            ViewData["CustomerList"] = combinedCustomer;
             ViewData["TicketTypes"] = db.TicketType_HelpDesks.ToList();
             ViewData["TicketDefActivity"] = db.TicketActivityDefinition_HelpDesks.ToList();
 
@@ -95,103 +70,47 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
         public ActionResult ResolvedTicket()
         {
 
-            var organizationCustomer =
-                db.OrganizationCustomers.Select(
-                    o =>
-                        new
-                        {
-                            CustomerID = o.OrganizationCustomerID,
-                            CustomerType = "Organization",
-                            CustomerName = o.TradeName
-                        });
-
-            var combinedCustomer = organizationCustomer.ToList();
-            ViewData["CustomerList"] = combinedCustomer;
             return View();
         }
         public ActionResult AwaitingTicket()
         {
-
-            var organizationCustomer =
-                db.OrganizationCustomers.Select(
-                    o =>
-                        new
-                        {
-                            CustomerID = o.OrganizationCustomerID,
-                            CustomerType = "Organization",
-                            CustomerName = o.TradeName
-                        });
-
-            var combinedCustomer = organizationCustomer.ToList();
-            ViewData["CustomerList"] = combinedCustomer;
+            
             return View();
         }
-        public ActionResult CustomerPendingTickets_Read([DataSourceRequest]DataSourceRequest request, string val)
+      
+        public double GetAge(DateTime? CreatedDate, DateTime? ClosedDate, InfoDeskFinalizeType status)
         {
-            IQueryable<CustomerTicket_HelpDesk> customertickets = db.CustomerTicket_HelpDesks.Where(x => x.Status != FinalizeType.CLOSED);
-            //if (val.HasValue())
-            //{
-            //    List<CustomerTicket> customerTickets = new List<CustomerTicket>();
-            //    var user = User.Identity.Name;
-            //    //  var assignedTickets = db.AssignTickets.Where(x => x.AssinedTo == user).Where(x => x.IsActive == true).ToList();
-            //    var assignedTickets = db.AssignTickets.Where(x => x.AssinedTo == user).ToList();
-
-            //    HashSet<int> ids = new HashSet<int>(assignedTickets.Select(x => x.CustomerTicketId));
-
-            //    customertickets = customertickets.Where(x => ids.Contains(x.CustomerTicketID));
-            //    //foreach (var at in assignedTickets)
-            //    //{
-            //    //    if (at.IsActive == true)
-            //    //        customerTickets.Add(db.CustomerTickets.Find(at.CustomerTicketId));
-            //    //}
-            //}
-            DataSourceResult result = customertickets.ToDataSourceResult(request, customerTicket => new
+            double age = 0;
+            if (status == InfoDeskFinalizeType.CLOSED)
             {
-
-                CustomerTicket_HelpDeskId = customerTicket.CustomerTicket_HelpDeskId,
-                Description = customerTicket.Description,
-                Priority = customerTicket.Priority,
-                TicketGroup = customerTicket.TicketGroup,
-                SpecificTicketTypeId = customerTicket.SpecificTicketTypeId,
-                DueDate = customerTicket.DueDate,
-                CreatedBy = customerTicket.CreatedBy,
-                DateCreated = customerTicket.DateCreated,
-                LastModified = customerTicket.LastModified,
-                ModifiedBy = customerTicket.ModifiedBy,
-                OrgBranchName = customerTicket.OrgBranchName,
-                Status = customerTicket.Status,
-                PriorityColor = customerTicket.PriorityColor,
-                Remark = customerTicket.Remark,
-                AgeOfTicket = customerTicket.AgeOfTicket,
-                IsClosed = customerTicket.IsClosed,
-
-            });
-            return Json(result);
-
-
+                age = ClosedDate.Value.Subtract(CreatedDate.Value).Days;
+            }
+            else
+            {
+                age = DateTime.Now.Subtract(CreatedDate.Value).Days;
+            }
+            return age;
         }
         [AuthorizeRoles(InfoDeskConstants.OpenTicket)]
         public ActionResult CustomerTickets_Read([DataSourceRequest]DataSourceRequest request)
         {
             TimeSpan age = new TimeSpan();
-            IQueryable<CustomerTicket_HelpDesk> customertickets = db.CustomerTicket_HelpDesks;
-            foreach (var ticket in customertickets)
+
+            List<CustomerTicket_HelpDesk> customertickets = new List<CustomerTicket_HelpDesk>();
+
+            var userName = User.Identity.Name;
+
+            var user = udb.Users.FirstOrDefault(x => x.UserName == userName);
+
+            if (user != null)
             {
-                if (ticket.Status == FinalizeType.CLOSED)
-                {
-                    age = (TimeSpan)(ticket.ClosedDate - ticket.DateCreated);
-                    ticket.AgeOfTicket = age.Days.ToString() + "days" + " " + age.Hours.ToString() + "hours";
+                var empId = int.Parse(user.EmployeeId);
+              //  var assinedToMe = db.AssignTicket_HelpDesks.Where(x => x.AssinedTo == empId).ToList()?.Select(x => x.CustomerTicketId);
 
-                }
-                else
-                {
-                    age = (TimeSpan)(DateTime.Now - ticket.DateCreated);
-                    ticket.AgeOfTicket = age.Days.ToString() + "days" + " " + age.Hours.ToString() + "hours";
-
-
-                }
-                //   ticket.CustomerAddress = GetCustomerAddress(ticket.CustomerID);
+                customertickets = db.CustomerTicket_HelpDesks.Where(x => x.EmployeeId == empId).ToList();
             }
+
+          
             DataSourceResult result = customertickets.ToDataSourceResult(request, customerTicket => new
             {
                 CustomerTicket_HelpDeskId = customerTicket.CustomerTicket_HelpDeskId,
@@ -212,140 +131,44 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
                 Remark = customerTicket.Remark,
                 SpecificTicketTypeId = customerTicket.SpecificTicketTypeId,
                 EmployeeId = customerTicket.EmployeeId,
-                AgeOfTicket = customerTicket.AgeOfTicket,
+                Rate = customerTicket.Rate,
+                AgeOfTicket = GetAge(customerTicket.DateCreated, customerTicket.ClosedDate, customerTicket.Status),
 
             });
 
             return Json(result);
         }
-        [AuthorizeRoles(InfoDeskConstants.OpenTicket)]
-        public ActionResult CustomerAwaitingTickets_Read([DataSourceRequest]DataSourceRequest request)
-        {
-            IQueryable<CustomerTicket_HelpDesk> customertickets = db.CustomerTicket_HelpDesks.Where(x => x.Status == FinalizeType.WAITING);
-            DataSourceResult result = customertickets.ToDataSourceResult(request, customerTicket => new
-            {
-                CustomerTicketID = customerTicket.CustomerTicket_HelpDeskId,
-                Description = customerTicket.Description,
-                Priority = customerTicket.Priority,
-                TicketGroup = customerTicket.TicketGroup,
-                DueDate = customerTicket.DueDate,
-                CreatedBy = customerTicket.CreatedBy,
-                DateCreated = customerTicket.DateCreated,
-                LastModified = customerTicket.LastModified,
-                ModifiedBy = customerTicket.ModifiedBy,
-                OrgBranchName = customerTicket.OrgBranchName,
-                PriorityColor = customerTicket.PriorityColor,
-                Remark = customerTicket.Remark,
-            });
-
-            return Json(result);
-        }
-        [AuthorizeRoles(InfoDeskConstants.OpenTicket)]
-        public ActionResult CustomerResolvedTickets_Read([DataSourceRequest]DataSourceRequest request)
-        {
-            IQueryable<CustomerTicket_HelpDesk> customertickets = db.CustomerTicket_HelpDesks.Where(x => x.Status == FinalizeType.RESOLVED);
-            DataSourceResult result = customertickets.ToDataSourceResult(request, customerTicket => new
-            {
-                CustomerTicketID = customerTicket.CustomerTicket_HelpDeskId,
-                Description = customerTicket.Description,
-                Priority = customerTicket.Priority,
-                TicketGroup = customerTicket.TicketGroup,
-                DueDate = customerTicket.DueDate,
-                CreatedBy = customerTicket.CreatedBy,
-                DateCreated = customerTicket.DateCreated,
-                LastModified = customerTicket.LastModified,
-                ModifiedBy = customerTicket.ModifiedBy,
-                OrgBranchName = customerTicket.OrgBranchName,
-                PriorityColor = customerTicket.PriorityColor,
-                Remark = customerTicket.Remark
-            });
-
-            return Json(result);
-        }
-        public ActionResult CustomerClosedTickets_Read([DataSourceRequest]DataSourceRequest request)
-        {
-            IQueryable<CustomerTicket_HelpDesk> customertickets = db.CustomerTicket_HelpDesks.Where(x => x.Status == FinalizeType.CLOSED);
-            DataSourceResult result = customertickets.ToDataSourceResult(request, customerTicket => new
-            {
-                CustomerTicketID = customerTicket.CustomerTicket_HelpDeskId,
-                Description = customerTicket.Description,
-                Priority = customerTicket.Priority,
-                TicketGroup = customerTicket.TicketGroup,
-                DueDate = customerTicket.DueDate,
-                CreatedBy = customerTicket.CreatedBy,
-                DateCreated = customerTicket.DateCreated,
-                LastModified = customerTicket.LastModified,
-                ModifiedBy = customerTicket.ModifiedBy,
-                OrgBranchName = customerTicket.OrgBranchName,
-                PriorityColor = customerTicket.PriorityColor,
-                Remark = customerTicket.Remark
-            });
-
-            return Json(result);
-        }
+     
         [AuthorizeRoles(InfoDeskConstants.OpenTicket)]
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult CustomerTickets_Create([DataSourceRequest]DataSourceRequest request, CustomerTicket_HelpDesk customerTicket)
+        public ActionResult CustomerTickets_Create([DataSourceRequest]DataSourceRequest request, CustomerTicket_HelpDesk customerTicket_HelpDesk)
         {
             if (ModelState.IsValid)
             {
                 var entity = new CustomerTicket_HelpDesk
                 {
-                    Description = customerTicket.Description,
-                    Priority = customerTicket.Priority,
-                    TicketGroup = customerTicket.TicketGroup,
-                    ClosedDate = DateTime.Now,
-                    SpecificTicketTypeId = customerTicket.SpecificTicketTypeId,
-                    DueDate = customerTicket.DueDate,
+                    Description = customerTicket_HelpDesk.Description,
+                    Priority = customerTicket_HelpDesk.Priority,
+                    TicketGroup = customerTicket_HelpDesk.TicketGroup,
+                    ClosedDate = null,
+                    SpecificTicketTypeId = customerTicket_HelpDesk.SpecificTicketTypeId,
+                    DueDate = customerTicket_HelpDesk.DueDate,
                     CreatedBy = User.Identity.Name,
                     DateCreated = DateTime.Now,
-                    Remark = customerTicket.Remark,
-                    SolutionGiven = customerTicket.SolutionGiven,
-                    EmployeeId = customerTicket.EmployeeId,
+                    Remark = customerTicket_HelpDesk.Remark,
+                    SolutionGiven = customerTicket_HelpDesk.SolutionGiven,
+                    EmployeeId = customerTicket_HelpDesk.EmployeeId,
 
                 };
-                //var Status = db.StatusTypes.Where(x => x.Name == customerTicket.StatusType).FirstOrDefault();
-                //var Priority = db.PriorityTypes.Where(x => x.Name == customerTicket.Priority).FirstOrDefault();
-                //if (Status != null)
-                //{
-                //    entity.StatusColor = Status.Color;
-                //}
-                //if (Priority != null)
-                //{
-                //    entity.PriorityColor = Priority.Color;
-                //}
+               
 
                 db.CustomerTicket_HelpDesks.Add(entity);
                 db.SaveChanges();
-                customerTicket.CustomerTicket_HelpDeskId = entity.CustomerTicket_HelpDeskId;
-
-
-                //var Group = db.SupportGroups.Where(x => x.Name == customerTicket.TicketGroup).FirstOrDefault();
-                //if(Group != null)
-                //{
-                //    var Members = db.SupportGroupDetails.Where(x => x.SupportGroupId == Group.SupportGroupId).ToList();
-                //    foreach (var Member in Members)
-                //    {
-
-                //        var Assign = new AssignTicket
-                //        {
-                //            Age = string.Empty,
-                //            AssignedDate = DateTime.Now,
-                //            AssinedTo = Member.Name,
-                //            ClosedDate = DateTime.Now,
-                //             CustomerTicketId = customerTicket.CustomerTicketID,
-                //            CreatedBy = User.Identity.Name,
-                //            DateCreated = DateTime.Now,
-                //            Remark = string.Empty,
-                //        };
-
-                //        db.AssignTickets.Add(Assign);
-                //        db.SaveChanges();
-                //    }
-                //}
+                customerTicket_HelpDesk.CustomerTicket_HelpDeskId = entity.CustomerTicket_HelpDeskId;
+                               
             }
 
-            return Json(new[] { customerTicket }.ToDataSourceResult(request));
+            return Json(new[] { customerTicket_HelpDesk }.ToDataSourceResult(request));
         }
         [AuthorizeRoles(InfoDeskConstants.OpenTicket)]
         [AcceptVerbs(HttpVerbs.Post)]
@@ -420,6 +243,129 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
             return Json(new[] { customerTicket }.ToDataSourceResult(request));
         }
 
+        [AuthorizeRoles(InfoDeskConstants.OpenTicket)]
+        public ActionResult CustomerAwaitingTickets_Read([DataSourceRequest]DataSourceRequest request)
+        {
+            IQueryable<CustomerTicket_HelpDesk> customertickets = db.CustomerTicket_HelpDesks.Where(x => x.Status == InfoDeskFinalizeType.WAITING);
+            DataSourceResult result = customertickets.ToDataSourceResult(request, customerTicket => new
+            {
+                CustomerTicketID = customerTicket.CustomerTicket_HelpDeskId,
+                Description = customerTicket.Description,
+                Priority = customerTicket.Priority,
+                TicketGroup = customerTicket.TicketGroup,
+                DueDate = customerTicket.DueDate,
+                CreatedBy = customerTicket.CreatedBy,
+                DateCreated = customerTicket.DateCreated,
+                LastModified = customerTicket.LastModified,
+                ModifiedBy = customerTicket.ModifiedBy,
+                OrgBranchName = customerTicket.OrgBranchName,
+                PriorityColor = customerTicket.PriorityColor,
+                Remark = customerTicket.Remark,
+            });
+
+            return Json(result);
+        }
+        public ActionResult CustomerPendingTickets_Read([DataSourceRequest]DataSourceRequest request, string val)
+        {
+            IQueryable<CustomerTicket_HelpDesk> customertickets = db.CustomerTicket_HelpDesks;//.Where(x => x.Status != FinalizeType.CLOSED);
+
+            DataSourceResult result = customertickets.ToDataSourceResult(request, customerTicket => new
+            {
+
+                CustomerTicket_HelpDeskId = customerTicket.CustomerTicket_HelpDeskId,
+                Description = customerTicket.Description,
+                Priority = customerTicket.Priority,
+                TicketGroup = customerTicket.TicketGroup,
+                SpecificTicketTypeId = customerTicket.SpecificTicketTypeId,
+                DueDate = customerTicket.DueDate,
+                CreatedBy = customerTicket.CreatedBy,
+                DateCreated = customerTicket.DateCreated,
+                LastModified = customerTicket.LastModified,
+                ModifiedBy = customerTicket.ModifiedBy,
+                OrgBranchName = customerTicket.OrgBranchName,
+                Status = customerTicket.Status,
+                PriorityColor = customerTicket.PriorityColor,
+                Remark = customerTicket.Remark,
+                AgeOfTicket = customerTicket.AgeOfTicket,
+                IsClosed = customerTicket.IsClosed,
+                Rate = customerTicket.Rate,
+                EmployeeId = customerTicket.EmployeeId
+            });
+            return Json(result);
+
+
+        }
+
+        //[AuthorizeRoles(InfoDeskConstants.OpenTicket)]
+        //public ActionResult CustomerResolvedTickets_Read([DataSourceRequest]DataSourceRequest request)
+        //{
+        //    IQueryable<CustomerTicket_HelpDesk> customertickets = db.CustomerTicket_HelpDesks.Where(x => x.Status == FinalizeType.RESOLVED);
+        //    DataSourceResult result = customertickets.ToDataSourceResult(request, customerTicket => new
+        //    {
+        //        CustomerTicketID = customerTicket.CustomerTicket_HelpDeskId,
+        //        Description = customerTicket.Description,
+        //        Priority = customerTicket.Priority,
+        //        TicketGroup = customerTicket.TicketGroup,
+        //        DueDate = customerTicket.DueDate,
+        //        CreatedBy = customerTicket.CreatedBy,
+        //        DateCreated = customerTicket.DateCreated,
+        //        LastModified = customerTicket.LastModified,
+        //        ModifiedBy = customerTicket.ModifiedBy,
+        //        OrgBranchName = customerTicket.OrgBranchName,
+        //        PriorityColor = customerTicket.PriorityColor,
+        //        Remark = customerTicket.Remark
+        //    });
+
+        //    return Json(result);
+        //}
+
+        //public ActionResult CustomerClosedTickets_Read([DataSourceRequest]DataSourceRequest request)
+        //{
+        //    IQueryable<CustomerTicket_HelpDesk> customertickets = db.CustomerTicket_HelpDesks.Where(x => x.Status == FinalizeType.CLOSED);
+        //    DataSourceResult result = customertickets.ToDataSourceResult(request, customerTicket => new
+        //    {
+        //        CustomerTicketID = customerTicket.CustomerTicket_HelpDeskId,
+        //        Description = customerTicket.Description,
+        //        Priority = customerTicket.Priority,
+        //        TicketGroup = customerTicket.TicketGroup,
+        //        DueDate = customerTicket.DueDate,
+        //        CreatedBy = customerTicket.CreatedBy,
+        //        DateCreated = customerTicket.DateCreated,
+        //        LastModified = customerTicket.LastModified,
+        //        ModifiedBy = customerTicket.ModifiedBy,
+        //        OrgBranchName = customerTicket.OrgBranchName,
+        //        PriorityColor = customerTicket.PriorityColor,
+        //        Remark = customerTicket.Remark
+        //    });
+
+        //    return Json(result);
+        //}
+        public ActionResult Confirmation(BindingModel model)
+        {
+
+            int customerTicketId = int.Parse(model.Id);
+            var customerTicket = db.CustomerTicket_HelpDesks.FirstOrDefault(x => x.CustomerTicket_HelpDeskId == customerTicketId);
+
+            customerTicket.IsConfirmedByTheRequester = Convert.ToBoolean(model.IsConfirmedByTheRequester);
+
+            if (customerTicket.IsConfirmedByTheRequester)
+            {
+                customerTicket.Rate = Convert.ToInt32(model.Rate);
+                customerTicket.IsClosed = true;
+                customerTicket.Status = InfoDeskFinalizeType.CLOSED;
+            }
+            if (!customerTicket.IsConfirmedByTheRequester)
+            {
+                customerTicket.Rate = 0;
+                customerTicket.IsClosed = false;
+                customerTicket.Status = InfoDeskFinalizeType.NOT_SOLVED;
+            }
+
+            db.Entry(customerTicket).State = EntityState.Modified;
+            db.SaveChanges();
+            //
+            return RedirectToAction("Index");
+        }
         protected override void Dispose(bool disposing)
         {
             db.Dispose();

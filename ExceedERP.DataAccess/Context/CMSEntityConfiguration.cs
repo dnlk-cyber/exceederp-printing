@@ -89,5 +89,21 @@ namespace ExceedERP.DataAccess.Context
             this.HasKey<int>(p => p.CompanyEvaluationId);
         }
     }
+    public class CmsTraineeIdentificationEntityTypeConfiguration : EntityTypeConfiguration<CmsTraineeIdentification>
+    {
+        public CmsTraineeIdentificationEntityTypeConfiguration()
+        {
+            this.ToTable("CmsTraineeIdentifications", "CMS");
+            this.HasKey<int>(p => p.CmsTraineeIdentificationId);
+        }
+    }
+    public class WelderPerformanceQualificationEntityTypeConfiguration : EntityTypeConfiguration<WelderPerformanceQualification>
+    {
+        public WelderPerformanceQualificationEntityTypeConfiguration()
+        {
+            this.ToTable("WelderPerformanceQualification", "CMS");
+            this.HasKey<int>(p => p.WelderPerformanceQualificationId);
+        }
+    }
     #endregion
 }

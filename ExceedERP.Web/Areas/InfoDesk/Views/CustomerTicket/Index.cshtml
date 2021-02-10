@@ -1,13 +1,15 @@
 ﻿@using ExceedERP.Core.Domain.InfoDesk.Support
 @model ExceedERP.Core.Domain.InfoDesk.Support.CustomerTicket_HelpDesk
 
-<legend> Ticket</legend>
+<legend> Open Ticket</legend>
 @(Html.Kendo().Grid<CustomerTicket_HelpDesk>()
                       .Name("grid")
                   .Columns(columns =>
                   {
                       columns.Bound(c => c.CustomerTicket_HelpDeskId).Width(50).Title("#");
                       columns.ForeignKey(c => c.SpecificTicketTypeId, (System.Collections.IEnumerable)ViewData["TicketTypes"], "TicketType_HelpDeskId", "Type").EditorTemplateName("SpecificTicket").Title("Ticket Type").Width(180);
+                      columns.ForeignKey(c => c.EmployeeId, (System.Collections.IEnumerable)ViewData["Employees"], "EmployeeId", "FullNameaEnglish").Title("Requester").Width(180);
+
                       columns.Bound(c => c.Description).Width(180);
                       columns.Bound(c => c.Priority).HtmlAttributes(new { style = "background-color:#:PriorityColor#;" }).Width(100);
 
@@ -16,8 +18,14 @@
                       columns.Bound(c => c.Status)/*.HtmlAttributes(new { style = "background-color:#:StatusColor#;" })*/.Width(100);
 
 
-                      columns.Bound(c => c.AgeOfTicket).Width(150);
-                      columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+                      columns.Bound(c => c.Rate).Width(120);
+                      columns.Command(command =>
+                      {
+                          command.Edit();
+                          command.Destroy();
+                          command.Custom("confirm").Text("Confirm").Click("Confirmation").HtmlAttributes(new { @class = "btn-success" });
+
+                      }).Width(180);
                   })
                   .ToolBar(toolbar =>
                   {
@@ -25,7 +33,6 @@
 
                   }).Events(ev =>
                   {
-
                       ev.DataBound("onDataBound");
                       ev.DetailExpand("onExpand");
                   })
@@ -85,12 +92,12 @@
 
 <script id="template" type="text/kendo-tmpl">
     @(Html.Kendo().TabStrip()
-                                                                                            .Name("tabstrip_#=CustomerTicket_HelpDeskId#")
-                                            .SelectedIndex(0)
-                                            .Items(items =>
-                                             {
-                                                 items.Add().Text("  Detail  ").Content(
-                                                    @<text>
+               .Name("tabstrip_#=CustomerTicket_HelpDeskId#")
+          .SelectedIndex(0)
+          .Items(items =>
+           {
+               items.Add().Text("  Detail  ").Content(
+                  @<text>
     <dl class="dl-horizontal">
 
 
@@ -138,16 +145,10 @@
 
         </dd>
     </dl>  </text>
-              );
-    
-
-
+              );  
+        
                                                    
-             }).ToClientTemplate())
-
-
-
-   
+             }).ToClientTemplate())  
 
 
 </script>
@@ -178,11 +179,42 @@
             var dataItem = grid.dataItem(this);
 
             if (dataItem.Status != "0") {
-
                 $(this).find(".k-grid-edit").remove();
                 $(this).find(".k-grid-delete").remove();
                 $(this).find(".k-grid-update").remove();
 
+            }
+            if (dataItem.Status == "0") {
+                $(this).find(".k-grid-confirm").hide();
+            }
+            if (dataItem.Status == "1") {
+                $(this).find(".k-grid-confirm").show();
+                $(this).css("background-color", "yellow");
+            }
+            if (dataItem.Status == "1") {
+                $(this).find(".k-grid-confirm").hide();
+                $(this).css("background-color", "yellow");
+            }
+            if (dataItem.Status == "2") {
+                $(this).find(".k-grid-confirm").hide();
+                $(this).css("background-color", "aqua");
+            }
+
+            if (dataItem.Status == "3") {
+                $(this).find(".k-grid-confirm").hide();
+                $(this).css("background-color", "gray");
+            }
+            if (dataItem.Status == "4") {
+                $(this).find(".k-grid-confirm").show();
+                $(this).css("background-color", "red");
+            }
+            if (dataItem.Status == "5") {
+                $(this).find(".k-grid-confirm").show();
+                $(this).css("background-color", "gold");
+            }
+            if (dataItem.IsClosed) {
+                $(this).find(".k-grid-confirm").hide();
+                $(this).css("background-color", "gray");
             }
         });
     }
@@ -237,3 +269,118 @@
 
 </script>
 
+<script>
+    function Confirmation(e) {
+
+
+        var wnd = $("#Details").data("kendoWindow");
+        var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
+
+        //wnd.content(detailsTemplate(dataItem));
+        $("#CustomerTicket_HelpDeskId").val(dataItem.CustomerTicket_HelpDeskId);
+        wnd.center().open();
+    }
+</script>
+
+<script>
+    function DisableSlider() {
+        $("#Rate").data("kendoSlider").value(0);
+        $("#Rate").data("kendoSlider").enable(false);
+    }
+
+    function EnableSlider() {
+        $("#Rate").data("kendoSlider").enable(true);
+    }
+</script>
+
+@(Html.Kendo().Window().Name("Details")
+                  .Title(" Confirm If The Problem Solved ")
+        .Visible(false)
+        .Modal(true)
+        .Draggable(true)
+        .Width(400).Content(@<text><div class="form-group">
+                <form action="@Url.Action("Confirmation", "CustomerTicket")" method="post">
+                    <input type="hidden" name="Id" id="CustomerTicket_HelpDeskId">
+                    <div class="row">
+
+                       <div class="col-lg-10">
+
+                        <div class="demo-section k-content">
+                            <h5>Is Solved ?</h5>
+                            @(Html.Kendo().RadioButtonFor(model => model)
+                           .Name("IsConfirmedByTheRequester")
+                           .Value("true")
+                           .Label("Yes").HtmlAttributes(new { @onchange = "EnableSlider()" })
+
+                            )
+                            &nbsp; &nbsp; &nbsp;
+                            @(Html.Kendo().RadioButtonFor(model => model)
+                           .Name("IsConfirmedByTheRequester")
+                           .Value("false")
+                           .Label("No").HtmlAttributes(new { @onchange = "DisableSlider()" })
+                            )
+                        </div>
+                        <div class="demo-section k-content">
+                            <h5>Rating</h5>
+                            @(Html.Kendo().Slider()
+                              .Name("Rate")
+                              .Min(1)
+                              .Max(5)
+                              .IncreaseButtonTitle("Right")
+                              .DecreaseButtonTitle("Left")
+                              .SmallStep(1)
+                              .LargeStep(1)
+                            )
+                        </div>
+                    </div>
+
+
+
+
+
+                        @*<div class="col-lg-3">
+                            <textarea type="text" name="Remark" cols="80" rows="10" placeholder="Remark Here..."></textarea>
+                        </div>*@
+                    </div>
+                    <div class="row">
+                        <div class="col-lg-7"></div>
+                        <input type="submit" class="btn-primary k-button" value=" Update "  onclick="return confirm('Are you sure to submit?');"/>
+                    </div>
+                </form>
+            </div></text>)
+)
+
+<style>
+    .demo-section {
+        text-align: center;
+    }
+</style>
+
+<script>
+    function onMasterDataBound(e) {
+
+        var rows = e.sender.tbody.children();
+
+        var masterRow = e.masterRow;
+
+        var masterGrid = $("#grid").data("kendoGrid");
+
+        for (var j = 0; j < rows.length; j++) {
+            var row = $(rows[j]);
+            var dataItem = e.sender.dataItem(row);
+            if (dataItem.IsClosed === true) {
+
+                row.css("background-color", "gray");
+
+                //row.find(".k-grid-closeT").hide();
+
+            }
+            if (dataItem.Status == "4") {
+                row.css("background-color", "red");
+            }
+
+        }
+
+
+    }
+</script>

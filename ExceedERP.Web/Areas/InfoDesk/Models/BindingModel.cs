@@ -6,7 +6,8 @@ namespace ExceedERP.Web.Areas.InfoDesk.Models
     public class BindingModel
     {
         public string Id { get; set; }
-        public string Name { get; set; }
+        public string IsConfirmedByTheRequester { get; set; }
+        public string Rate { get; set; }
         public string Remark { get; set; }
     }
 

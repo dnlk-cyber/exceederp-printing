@@ -626,6 +626,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers
                             .Where(x => x.ItemType == PurchaseItemType.Stock)
                             .Where(x => x.PurchaseOrder.IsOnlineApproved)
                             .Where(x => x.PurchaseOrder.IsVoid == false)
+                            .Where(x => x.PurchaseOrder.IsFullfilled == false)
                             .ToList()
                             .DistinctByField(x => x.PurchaseOrderID);
 
@@ -687,6 +688,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers
                             .Where(x => x.ItemType == PurchaseItemType.Stock)
                             .Where(x => x.PurchaseOrder.IsOnlineApproved)
                             .Where(x => x.PurchaseOrder.IsVoid == false)
+                            .Where(x => x.PurchaseOrder.IsFullfilled == false)
                             .ToList();
 
                         if(!String.IsNullOrWhiteSpace(text))

@@ -2,7 +2,8 @@
 @model ExceedERP.Core.Domain.InfoDesk.Support.CustomerTicket_HelpDesk
 
 
-
+<legend>Handler</legend>
+<hr/>
 
 @(Html.Kendo().Grid<CustomerTicket_HelpDesk>
         ()
@@ -10,9 +11,7 @@
         .Columns(columns =>
         {
             columns.Bound(c => c.CustomerTicket_HelpDeskId).Width(50).Title("#");
-            //columns.ForeignKey(c => c.CustomerID, (System.Collections.IEnumerable)ViewData["CustomerList"], "CustomerID", "CustomerName").EditorTemplateName("AcceptedCustomer").Title("Customer").Width(150);
-            //columns.Bound(c => c.TicketType).Width(170);
-            //  columns.ForeignKey(c => c.SpecificTicketTypeId, (System.Collections.IEnumerable)ViewData["TicketTypes"], "TicketTypeId", "Description").EditorTemplateName("SpecificTicket").Width(200);
+            columns.ForeignKey(c => c.EmployeeId, (System.Collections.IEnumerable)ViewData["Employees"], "EmployeeId", "FullNameaEnglish").Title("Requester").Width(180);
 
             columns.Bound(c => c.Description).Width(120);
             columns.Bound(c => c.Priority).HtmlAttributes(new { style = "background-color:#:PriorityColor#;" }).Width(70);
@@ -36,7 +35,11 @@
         }))
         .HtmlAttributes(new { style = "height: 520px;" })
 
-         .Events(events => events.DetailExpand("onDetailExpandUser"))
+         .Events(events =>
+         {
+             events.DetailExpand("onDetailExpandUser");
+             events.DataBound("onMasterDataBound");
+         })
 
         .Pageable(pageable => pageable
         .Input(true)
@@ -66,7 +69,7 @@
             model.Field(p => p.CustomerTicket_HelpDeskId).Editable(false);
             model.Field(p => p.Description).Editable(false);
             model.Field(p => p.Priority).Editable(false);
-           // model.Field(p => p.StatusType).Editable(false);
+            // model.Field(p => p.StatusType).Editable(false);
             model.Field(p => p.TicketGroup).Editable(false);
         })
         .Events(ev => ev
@@ -74,9 +77,9 @@
         .RequestStart("onRequestStart(\"grid\")")
         .RequestEnd("onRequestEnd(\"grid\")"))
             .Read(read => read.Action("CustomerPendingTickets_Read", "Handler"))
-        .Create(create => create.Action("CustomerTickets_Create", "Handler"))
-        .Update(update => update.Action("CustomerTickets_Update", "Handler"))
-        .Destroy(destroy => destroy.Action("CustomerTickets_Destroy", "Handler"))
+        //.Create(create => create.Action("CustomerTickets_Create", "Handler"))
+        //.Update(update => update.Action("CustomerTickets_Update", "Handler"))
+        //.Destroy(destroy => destroy.Action("CustomerTickets_Destroy", "Handler"))
         ).ClientDetailTemplateId("template")
 )
 
@@ -93,10 +96,12 @@
                                       .Name("Assigngrid_#=CustomerTicket_HelpDeskId#")
                           .Columns(columns =>
                           {
-                              columns.ForeignKey(c => c.AssinedTo, (System.Collections.IEnumerable)ViewData["AssignTo"], "EmployeeId", "FullNameaEnglish").Title("Assigned To").EditorTemplateName("EmployeesList").Width(140);
+                              // columns.Bound(c => c.AssignTicket_HelpDeskId).Width(100);
+
+                              columns.ForeignKey(c => c.AssinedTo, (System.Collections.IEnumerable)ViewData["AssignTo"], "EmployeeId", "FullNameaEnglish").Title("Assigned To").EditorTemplateName("EmployeesList").Width(120);
                               columns.Bound(c => c.Role).Width(100);
                               columns.Bound(c => c.AssignedDate).Width(100);
-                              columns.Bound(c => c.Age).Width(80);
+                              // columns.Bound(c => c.Age).Width(80);
                               columns.Bound(c => c.Solution).Width(120);
 
                               columns.Command(command =>
@@ -110,11 +115,12 @@
                           .Events(ev =>
                           {
                               ev.DataBound("DetailDataBound");
-                              // ev.DataBound("LineonDataBound");
+                               ev.DetailExpand("OnDetailDetailExpand");
 
                           })
                           .Editable(editable => editable.Mode(GridEditMode.InLine))
 
+                           .ClientDetailTemplateId("MaterialsUsed")
 
                                       //    }))
 
@@ -136,9 +142,9 @@
                                      .RequestStart("onRequestStart(\"Assigngrid_#=CustomerTicket_HelpDeskId#\")")
                                      .RequestEnd("onRequestEnd(\"Assigngrid_#=CustomerTicket_HelpDeskId#\")"))
 
-                              .Read(read => read.Action("AssignTickets_Read", "AssignTicket", new { Id = "#=CustomerTicket_HelpDeskId#" }))
+                              .Read(read => read.Action("AssignedHandler_Read", "AssignTicket", new { Id = "#=CustomerTicket_HelpDeskId#" }))
                               .Create(create => create.Action("AssignTickets_Create", "AssignTicket", new { Id = "#=CustomerTicket_HelpDeskId#" }))
-                              .Update(update => update.Action("AssignTickets_Update", "AssignTicket"))
+                              .Update(update => update.Action("Handler_Update", "Handler"))
                               .Destroy(destroy => destroy.Action("AssignTickets_Destroy", "AssignTicket"))
                           ).ToClientTemplate()
                     )
@@ -150,6 +156,70 @@
                 //*****************************************************************************************************//
             }).ToClientTemplate())
 </script>
+
+
+
+<script id="MaterialsUsed" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                                   .Name("tabstrip_#AssignTicket_HelpDeskId#")
+      .SelectedIndex(0)
+      .Items(items =>
+      {
+          items.Add().Text("Materials Used").Content(
+            @<text>
+                @* <legend>Measurement</legend>*@
+                @(Html.Kendo().Grid<MaterialsUsed>()
+                            .Name("MaterialUsed_#=AssignTicket_HelpDeskId#")
+         .Columns(columns =>
+         {
+             columns.ForeignKey(c => c.MaterialItemsId, (System.Collections.IEnumerable)ViewData["Materials"], "MaterialItemsId", "ItemName").Title("Material Used").EditorTemplateName("MaterialUsedList").Width(120);
+             columns.Bound(c => c.Remark).Width(120);
+             columns.Command(command =>
+             {
+                 command.Edit(); command.Destroy();
+             }).Width(180);
+         })
+                  .ToolBar(toolbar =>
+                                              {
+                       toolbar.Create();
+                   })
+
+
+          .Editable(editable => editable.Mode(GridEditMode.InLine))
+          .Scrollable(h => h.Height(500))
+          .DataSource(dataSource => dataSource
+              .Ajax()
+
+                                                       .Events(events =>
+                     {
+                         events.Error("error_handler(\"MaterialUsed_#=AssignTicket_HelpDeskId#\")");
+                         events.RequestStart("onRequestStart(\"MaterialUsed_#=AssignTicket_HelpDeskId#\")");
+                         events.RequestEnd("onRequestEnd(\"MaterialUsed_#=AssignTicket_HelpDeskId#\")");
+                     })
+
+                     .Model(model =>
+                     {
+                         model.Id(p => p.MaterialsUsedId);
+                                                 
+                                         }
+                         )
+                                                            .Read(read => read.Action("MaterialsUseds_Read", "MaterialsUseds", new { id = "#=AssignTicket_HelpDeskId#" }))
+                                                            .Create(create => create.Action("MaterialsUseds_Create", "MaterialsUseds", new { id = "#=AssignTicket_HelpDeskId#" }))
+                                                            .Update(update => update.Action("MaterialsUseds_Update", "MaterialsUseds"))
+                                                            .Destroy(destroy => destroy.Action("MaterialsUseds_Destroy", "MaterialsUseds"))
+                                                ).ToClientTemplate()
+                              )
+
+
+                          </text>
+
+                                    
+               );
+
+                                  }).ToClientTemplate())
+</script>
+
+
 
 
 <script>
@@ -206,7 +276,7 @@
         var grid = $("#Assigngrid_" + masterId).data("kendoGrid");
         var dataItem = grid.dataItem(row);
        // var masterId = dataItem.CustomerTicket_HelpDeskId;
-        var childId = dataItem.AssignTicketId;
+        var childId = dataItem.AssignTicket_HelpDeskId;
      
         if (confirm('Are you sure you want to close this ticket')) {
 
@@ -275,6 +345,106 @@
             }
         }
     }
+
+
+    function onMasterDataBound(e) {
+
+        var rows = e.sender.tbody.children();
+
+        var masterRow = e.masterRow;
+
+        var masterGrid = $("#grid").data("kendoGrid");
+
+        for (var j = 0; j < rows.length; j++) {
+            var row = $(rows[j]);
+            var dataItem = e.sender.dataItem(row);
+
+            if (dataItem.Status == "0") {
+
+            }
+            if (dataItem.Status == "1") {
+              //  row.find(".k-grid-confirm").hide();
+                row.css("background-color", "yellow");
+            }
+            if (dataItem.Status == "2") {
+               // row.find(".k-grid-closeT").show();
+                row.css("background-color", "aqua");
+            }
+            if (dataItem.Status == "3") {
+               // row.find(".k-grid-closeT").hide();
+                row.css("background-color", "gray");
+            }
+            if (dataItem.Status == "4") {
+               // row.find(".k-grid-closeT").hide();
+                row.css("background-color", "red");
+            }
+            if (dataItem.Status == "5") {
+                // row.find(".k-grid-closeT").hide();
+                row.css("background-color", "gold");
+            }
+            if (dataItem.IsClosed) {
+               // row.find(".k-grid-closeT").hide();
+                row.css("background-color", "gray");
+            }
+
+        }
+
+
+    }
      
 
+</script>
+
+
+
+<script>
+    
+
+     function OnDetailDetailExpand(e) {
+         e.preventDefault();
+         // debugger;
+         
+         var masterRow = e.masterRow;
+         
+         var masterGrid = $("#Assigngrid_" + CurtomerTicketId_Global).data("kendoGrid");
+
+        var masterDataItem = masterGrid.dataItem(masterRow);         
+
+        masterId = masterDataItem.AssignTicket_HelpDeskId;
+
+        var gridName = "#MaterialUsed_" + masterId;
+
+        //   var detailGrid = $(gridName).data("kendoGrid");
+        console.log("first");
+        $.ajax({
+            url: '@Url.Action("CheckStatus", "Handler")',
+
+            data: { masterId: CurtomerTicketId_Global },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                console.log("second");
+                r = result;
+                if (r == "true") {
+                    console.log("second -second ");
+                    $(gridName).find(".k-toolbar").hide(); //hide toolbar
+                    $(".k-grid-top", gridName).hide();
+                    $(".k-grid-edit", gridName).hide();
+                    $(".k-grid-delete", gridName).hide();
+                }
+                else {
+                    $(gridName).find(".k-toolbar").show(); //hide toolbar
+                    $(".k-grid-top", gridName).show();
+                }
+                console.log("third");
+
+            }
+
+        });
+
+     }
+
+
+
+   
 </script>

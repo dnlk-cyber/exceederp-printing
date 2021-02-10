@@ -39,5 +39,6 @@ namespace ExceedERP.Core.Domain.InfoDesk.Support
         public string Role { get; set; }
         //[ForeignKey("CustomerTicketId")]
         //public virtual CustomerTicket Ticket { get; set; }
+        public int MaterialItemsId { get; set; }
     }
 }

@@ -200,5 +200,48 @@ namespace ExceedERP.Web.Areas.CMS.Controllers.TrainingControllers
 
             return null;
         }
+
+        public ActionResult Wps(int ti, string reg)
+        {
+            var trainee = db.CmsTrainees.Find(ti);
+            if(trainee == null)
+            {
+                return HttpNotFound();
+            }
+            WelderPerformanceQualification model = new WelderPerformanceQualification
+            {
+                CmsTrainee = trainee,
+                CmsTraineeId = ti,
+            };
+            var existingEvaluation = db.WelderPerformanceQualification.FirstOrDefault(p => p.CmsTraineeId == ti);
+            if(existingEvaluation != null)
+            {
+                model = existingEvaluation;
+            }
+            return View(model);
+        }
+        [HttpPost]
+        public ActionResult Wps(WelderPerformanceQualification welderPerformanceQualification)
+        {
+            if(db.WelderPerformanceQualification.FirstOrDefault(d => d.CmsTraineeId == welderPerformanceQualification.CmsTraineeId) == null)
+            {
+                db.WelderPerformanceQualification.Add(welderPerformanceQualification);
+                db.SaveChanges();
+            }
+            else
+            {
+               var existingEntity = db.WelderPerformanceQualification.Find(welderPerformanceQualification.WelderPerformanceQualificationId);
+                db.WelderPerformanceQualification.Attach(existingEntity);
+                db.WelderPerformanceQualification.Remove(existingEntity);
+                db.SaveChanges();
+
+                //db.WelderPerformanceQualification.Attach(welderPerformanceQualification);
+                //db.Entry<WelderPerformanceQualification>(welderPerformanceQualification).State = EntityState.Modified;
+                //db.SaveChanges();
+                db.WelderPerformanceQualification.Add(welderPerformanceQualification);
+                db.SaveChanges();
+            }
+            return RedirectToAction(nameof(Index));
+        }
     }
 }

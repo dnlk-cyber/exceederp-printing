@@ -179,7 +179,9 @@
             items.Add().Text("Detail").Content(@<text>
 
                 <a class="btn btn-primary k-button k-button-icontext" href='@Url.Action("RegistrationSlip", "CMSPrint")/#=CmsTraineeId#' title="Print Registration Slip"><i class="fa fa-print  fa-2x"></i> &nbsp;&nbsp; Print Registration Slip</a>
-
+                #if(Status == "@ExceedERP.Core.Domain.CMS.TraineeStatusConstants.PassedExamination"){#
+                    <a class="btn btn-success k-button k-button-icontext" href="\#" onclick='return printCertificate("#=RegistrationNumber#","#=CmsTraineeId#","#=FullName#" )' title="Print Certificate"><i class="fa fa-certificate  fa-2x"></i> &nbsp;&nbsp; Print Certificate</a>
+                #}#
 
                 @(Html.Kendo().PanelBar()
                     .Name("trainee_panelbar_#=CmsTraineeId#")
@@ -222,6 +224,10 @@
             </text>);
             items.Add().Text("Registration No. Components").Content(@<text>
                 @RegistrationNumberComponentHelper()
+            </text>);
+            items.Add().Text("Identification").Content(
+            @<text>
+                @IdentificationTabHelper()
             </text>);
         }).ToClientTemplate()
     )
@@ -275,6 +281,10 @@
             </text>);
             items.Add().Text("Registration No. Components").Content(@<text>
                 @RegistrationNumberComponentHelper()
+            </text>);
+            items.Add().Text("Identification").Content(
+            @<text>
+                @IdentificationTabHelper()
             </text>);
         }).ToClientTemplate()
     )
@@ -390,11 +400,50 @@
                .ToClientTemplate()
     )
 }
+
+@helper IdentificationTabHelper() { 
+            @(Html.Kendo().Grid<ExceedERP.Core.Domain.CMS.CmsTraineeIdentification>()
+              .Name("identification_#=CmsTraineeId#")
+              .Columns(columns =>
+              {
+                  columns.Bound(c => c.IdentificationType).EditorTemplateName("TraineeIdentificationTypeEditorTemplate").Width(100);
+                  columns.Bound(c => c.IdNumber).Width(100);
+                  columns.Bound(c => c.Remark).Width(100);
+
+                  columns.Command(command => { command.Edit(); command.Destroy(); }).Width(400);
+              })
+              .ToolBar(toolbar => {
+                  toolbar.Create();
+              })
+              .Editable(editable => editable.Mode(GridEditMode.InLine))
+              .Pageable()
+              .Sortable(sortable => {
+                  sortable.SortMode(GridSortMode.SingleColumn);
+              })
+              .Filterable()
+              .Scrollable()
+              .DataSource(dataSource => dataSource
+                  .Ajax()
+                  .Model(model => model.Id(p => p.CmsTraineeIdentificationId))
+                  .Events(ev => ev
+                            .Error("error_handler(\"identification_#=CmsTraineeId#\")")
+                            .RequestStart("onRequestStart(\"identification_#=CmsTraineeId#\")")
+                            .RequestEnd("onRequestEnd(\"identification_#=CmsTraineeId#\")"))
+                  .Read(read => read.Action("CmsTraineeIdentifications_Read", "CmsTraineeIdentifications", new { traineeId= "#=CmsTraineeId#" }))
+                  .Create(create => create.Action("CmsTraineeIdentifications_Create", "CmsTraineeIdentifications", new { traineeId = "#=CmsTraineeId#" }))
+                  .Update(update => update.Action("CmsTraineeIdentifications_Update", "CmsTraineeIdentifications"))
+                  .Destroy(destroy => destroy.Action("CmsTraineeIdentifications_Destroy", "CmsTraineeIdentifications"))
+              ).ToClientTemplate()
+        )
+    }
 <script type="text/javascript">
     function getSelectedRegion() {
         return {
             region: $("#Region").val(), filterString: $("#CityId").data("kendoDropDownList").filterInput.val()
         }
+    }
+    function printCertificate(regNumber, traineeId, fName) {
+        window.location.href = `/CMS/CMSPrint/QualificationCertificate?regn=${regNumber}&ti= ${traineeId}&name=${fName}`;
     }
     function onTraineeEdit(e) {
         if (e.model.isNew()) {
@@ -480,5 +529,12 @@
         .k-grid table tr.k-state-FailedEvaluation.k-alt {
             background: #f9cfcf;
         }
+
+    /*div.k-edit-form-container {
+        width: 400px;
+    }
+    div.k-content {
+        height: inherit;
+    }*/
 </style>
 

@@ -4,9 +4,6 @@ using System.Linq;
 using System.Web.Mvc;
 
 using ExceedERP.DataAccess.Context;
-using System.Data.Entity.Core.Objects;
-using ExceedERP.Core.Domain.Common;
-using ExceedERP.Helpers.Common;
 using ExceedERP.Web.Models;
 using ExceedERP.Core.Domain.InfoDesk;
 
@@ -38,8 +35,7 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
             var StatusTypes = db.TicketActivityDefinition_HelpDesks.ToList();
 
             return Json(StatusTypes, JsonRequestBehavior.AllowGet);
-        }
-      
+        }      
         public JsonResult UserNameDDBind()
         {
 
@@ -102,14 +98,7 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
             var customers = db.Branch.AsQueryable();
             return Json(customers, JsonRequestBehavior.AllowGet);
 
-        }
-        public JsonResult getActiveCustomer()
-        {
-            var customers = db.OrganizationCustomers.Where(c => c.IsActive==true).AsQueryable();
-            return Json(customers, JsonRequestBehavior.AllowGet);
-
-
-        }
+        }      
         public static decimal SelectedTaxRate
         {
             get;
@@ -122,8 +111,6 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
         }
         //New 
        
-       
-     
         public JsonResult GetMembersByGroup(string Group)
         {
             var SupportGroup = db.SupportGroup_HelpDesks.Where(x => x.Name == Group).FirstOrDefault();
@@ -139,28 +126,6 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
             }
             return Json(string.Empty, JsonRequestBehavior.AllowGet);
         }
-        //public JsonResult CustomerTicketDDBind()
-        //{
-
-        //    var Tickets = db.CustomerTickets.Select(s => new
-        //    {
-        //        Name = s.Description,
-        //        Value = s.CustomerTicketID,
-        //    }).ToList();
-        //    return Json(Tickets, JsonRequestBehavior.AllowGet);
-
-        //}
-        //public JsonResult PendingCustomerTicketDDBind()
-        //{
-
-        //    var Tickets = db.CustomerTickets.Where(x=>x.Status != FinalizeType.CLOSED).Select(s => new
-        //    {
-        //        Name = s.Description,
-        //        Value = s.CustomerTicketID,
-        //    }).ToList();
-        //    return Json(Tickets, JsonRequestBehavior.AllowGet);
-
-        //}
         public JsonResult GroupDDBind()
         {
 
@@ -198,76 +163,21 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
         public JsonResult StatusAwaitingDDBind()
         {
 
-            var StatusAwaiting = db.StatusType_HelpDesks.Where(x => x.Status == FinalizeType.WAITING).ToList();
+            var StatusAwaiting = db.StatusType_HelpDesks.Where(x => x.Status == InfoDeskFinalizeType.WAITING).ToList();
             return Json(StatusAwaiting, JsonRequestBehavior.AllowGet);
 
-        }
-     
+        }     
         public JsonResult GetNationality()
         {
             var countries = db.Countries.AsQueryable();
             return Json(countries.Select(p => new { CountryID = p.CountryId, Nationality = p.Nationality }), JsonRequestBehavior.AllowGet);
-        }
-    
-
-        //public JsonResult GetUOM(string Code)
-        //{
-        //    var uom = db.InventoryItems.Where(u => u.ItemCode == Code).AsQueryable();
-        //    return Json(uom.Select(s => new { Text = s.UoMName , Value= s.UoM  }), JsonRequestBehavior.AllowGet);
-        //}
-        //public JsonResult GetLineItemByInvoice( string invoiceId)
-        //{
-        //    var item = db.LineItems.Where(u => u.VoucherDefinitionID == "2" && u.Voucher == invoiceId).Select(lineItem => new
-        //    {
-
-        //        LineItemID = lineItem.LineItemID,
-        //        Voucher = lineItem.Voucher,
-        //         VoucherDefinitionID = lineItem.VoucherDefinitionID,
-        //        ThingID = lineItem.ThingID,
-        //        Product = lineItem.Product.Name,
-        //        UnitAmount = lineItem.UnitAmount,
-        //        Quantity = lineItem.Quantity,
-        //        StoreID = lineItem.StoreID,
-           
-        //    }).ToList();
-        //    return Json(item, JsonRequestBehavior.AllowGet);
-        //}
-
-        public JsonResult GetCustomer()
+        }    
+        public JsonResult GetSpecificationCategory()
         {
-            var organizationCustomers = db.OrganizationCustomers.AsQueryable();
-
-            return Json(organizationCustomers, JsonRequestBehavior.AllowGet);
-        }
-    
-       public JsonResult GetSpecificationCategory()
-        {
-            var specificationCategoryList = db.Lookups.Where(sc => sc.LookupType == LookUpTypes.ADDITION_TYPE).AsQueryable();
+            var specificationCategoryList = db.Lookups.Where(sc => sc.LookupType == Core.Domain.Common.LookUpTypes.ADDITION_TYPE).AsQueryable();
 
             return Json(specificationCategoryList, JsonRequestBehavior.AllowGet);
-        }
-  
-        //public JsonResult GetStoreList()
-        //{
-        //    var storeList = db.SalesStores.Select(p => new  { StoreCode = p.SalesStoreId, Name = p.Description } ).ToList();
-                                 
-        //    return Json(storeList, JsonRequestBehavior.AllowGet);
-
-        //}
-        //public JsonResult GetInventoryStoreList()
-        //{
-        //    var storeList = db.InventoryStores.Select(p => new { StoreCode = p.StoreCode, Name = p.Name }).ToList();
-
-        //    return Json(storeList, JsonRequestBehavior.AllowGet);
-
-        //}
-      
-        public JsonResult GetOrganizationCustomer()
-        {
-            var organizationCustomers = db.OrganizationCustomers.AsQueryable();
-
-            return Json(organizationCustomers);
-        }
+        }              
         public JsonResult GetStatusType()
         {
             var StatusTypes = db.StatusType_HelpDesks.ToList();
@@ -292,18 +202,12 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
 
             return Json(PriorityTypes, JsonRequestBehavior.AllowGet);
         }
-
         public JsonResult GetBankList()
         {
             var bankList = db.Banks.AsQueryable();
 
             return Json(bankList.Select(b => new { BankID = b.BankId, TradeName = b.Name }), JsonRequestBehavior.AllowGet);
         }
-        //public JsonResult GetSerialDefinitionList(string thingId)
-        //{
-        //    var serialDefinitionList = db.SerialDefinitions.Where(sd => sd.Thing == thingId).AsQueryable();
-        //    return Json(serialDefinitionList.Select(p => new { Thing = p.Thing, Description = p.Description }), JsonRequestBehavior.AllowGet);
-        //}
         public JsonResult GetLanguage()
         {
             var languages = db.Languages.AsQueryable();
@@ -316,7 +220,7 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
         }
         public JsonResult GetNation()
         {
-            var lookups = db.Lookups.Where(l => l.LookupType == LookUpTypes.NATION).AsQueryable();
+            var lookups = db.Lookups.Where(l => l.LookupType == Core.Domain.Common.LookUpTypes.NATION).AsQueryable();
             return Json(lookups.Select(p => new { LookupID = p.LookupId, Description = p.Description }), JsonRequestBehavior.AllowGet);
         }
 
@@ -334,23 +238,7 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
           }
    
        
-        public JsonResult GetCustomerList()
-        {
-
-            var organizationCustomer =
-                db.OrganizationCustomers.Select(
-                    o =>
-                        new
-                        {
-                            CustomerID = o.OrganizationCustomerID,
-                            CustomerType = "Organization",
-                            CustomerName = o.TradeName
-                        });
-
-            var combinedCustomer = organizationCustomer.ToList();
-            return Json(combinedCustomer, JsonRequestBehavior.AllowGet);
-
-        }
+      
         public ActionResult GetReference(string referenceType)
         {
             return View();
@@ -393,6 +281,17 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
                 FullNameaEnglish = p.FullNameaEnglish
             }), JsonRequestBehavior.AllowGet);
 
+
+        }
+        public JsonResult GetMaterials()
+        {
+            var materials = db.MaterialItems.ToList();
+
+            return Json(materials.Select(p => new
+            {
+                MaterialItemsId = p.MaterialItemsId,
+                ItemName = p.ItemName
+            }), JsonRequestBehavior.AllowGet);
 
         }
 

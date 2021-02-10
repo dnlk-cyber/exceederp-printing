@@ -1,0 +1,25 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.InfoDesk.Support.MaterialItems>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.ItemName);
+        columns.Bound(c => c.Remark);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Navigatable()
+      .Filterable()
+       .Scrollable(h => h.Height(500))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.MaterialItemsId))
+          .Read(read => read.Action("MaterialItems_Read", "MaterialItems"))
+          .Create(create => create.Action("MaterialItems_Create", "MaterialItems"))
+          .Update(update => update.Action("MaterialItems_Update", "MaterialItems"))
+          .Destroy(destroy => destroy.Action("MaterialItems_Destroy", "MaterialItems"))
+      )
+)

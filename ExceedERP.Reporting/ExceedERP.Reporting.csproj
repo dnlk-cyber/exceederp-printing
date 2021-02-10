@@ -259,6 +259,13 @@
       <DependentUpon>TaskPlan.cs</DependentUpon>
     </Compile>
     <Compile Include="CMS\Printing\DataSources\RegistrationSlipDataSource.cs" />
+    <Compile Include="CMS\Printing\DataSources\WelderCertificatePrintDataSource.cs" />
+    <Compile Include="CMS\Printing\ReportDesigns\QualificationTestCertificateRepDesign.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CMS\Printing\ReportDesigns\QualificationTestCertificateRepDesign.Designer.cs">
+      <DependentUpon>QualificationTestCertificateRepDesign.cs</DependentUpon>
+    </Compile>
     <Compile Include="CMS\Printing\ReportDesigns\RegistrationSlipRepDesg.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -266,6 +273,7 @@
       <DependentUpon>RegistrationSlipRepDesg.cs</DependentUpon>
     </Compile>
     <Compile Include="CMS\Printing\ViewModels\RegistrationSlipViewModel.cs" />
+    <Compile Include="CMS\Printing\ViewModels\WeldersQualificationTestCertificateViewModel.cs" />
     <Compile Include="Construction\BOQ\BOQGrandSummaryView.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -1871,6 +1879,14 @@
     <Compile Include="Fleet\View\RentTimeSheetPerformance.Designer.cs">
       <DependentUpon>RentTimeSheetPerformance.cs</DependentUpon>
     </Compile>
+    <Compile Include="HelpDesk\DataSource\MaintenanceFormODS.cs" />
+    <Compile Include="HelpDesk\Designer\MaintenanceForm.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HelpDesk\Designer\MaintenanceForm.Designer.cs">
+      <DependentUpon>MaintenanceForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HelpDesk\ViewModel\MaintenanceFormVM.cs" />
     <Compile Include="HRM\HRM\Commitment.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -4202,6 +4218,9 @@
     <EmbeddedResource Include="Budget\View\TaskPlan.resx">
       <DependentUpon>TaskPlan.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="CMS\Printing\ReportDesigns\QualificationTestCertificateRepDesign.resx">
+      <DependentUpon>QualificationTestCertificateRepDesign.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="CMS\Printing\ReportDesigns\RegistrationSlipRepDesg.resx">
       <DependentUpon>RegistrationSlipRepDesg.cs</DependentUpon>
     </EmbeddedResource>
@@ -4921,6 +4940,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Fleet\View\VVCC.resx">
       <DependentUpon>VVCC.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="HelpDesk\Designer\MaintenanceForm.resx">
+      <DependentUpon>MaintenanceForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\Commitment.resx">
       <DependentUpon>Commitment.cs</DependentUpon>

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
@@ -141,7 +140,7 @@ namespace ExceedERP.Web.Areas.CMS.Controllers
                     PreferedDate = trainee.PreferedDate,
                     TrainingVenue = trainee.TrainingVenue,
                     ProfilePicFileName = trainee.ProfilePicFileName,
-                    Status = trainee.Status,
+                    Status = TraineeStatusConstants.NewTrainee,
 
                     DateCreated = DateTime.Now,
                     LastModified = trainee.LastModified,

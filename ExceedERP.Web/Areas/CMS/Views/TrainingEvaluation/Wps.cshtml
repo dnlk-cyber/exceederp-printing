@@ -1,0 +1,468 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.CMS
+@model ExceedERP.Core.Domain.CMS.WelderPerformanceQualification
+@{
+    ViewBag.Title = "Welder's Performance Qualification";
+}
+
+<div class="content-wrapper">
+    @*<section class="content-header">
+
+        </section>*@
+    <div class="content">
+        <h4>
+            <i class="fa fa-list"></i> Performance Qualification
+        </h4>
+
+        @if (Model != null)
+        {
+            using (Html.BeginForm("Wps", "TrainingEvaluation", FormMethod.Post))
+            {
+                @Html.HiddenFor(m => m.CmsTraineeId);
+                @Html.HiddenFor(m => m.WelderPerformanceQualificationId);
+                <div class="box box-info custom-styled-box">
+                    <div class="box-body">
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <div class="form-group">
+                                    @Html.LabelFor(m => m.CmsTrainee.FullName, "Welder's Name: ", htmlAttributes: new { @*@class = "control-label"*@})
+                                    @*@Html.EditorFor(model => model.CmsTrainee.FullName, new { htmlAttributes = new { @class = "form-control", @disabled = "disabled" } })*@
+                                    <label>@Model.CmsTrainee.FullName</label>
+
+                                </div>
+                            </div>
+                            <div class="col-sm-9">
+                                <div class="form-group">
+                                    <label>Test No.: </label>
+                                    <label>@Model.CmsTrainee.RegistrationNumber</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-3">
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.ATFNumber)
+                                    @Html.Kendo().TextBoxFor(model => model.ATFNumber)
+                                </div>
+                            </div>
+                            <div class="col-sm-3">
+                                <div class="form-group">
+                                    <label>Welder’s SS No.:</label>
+                                    @(Html.Kendo().TextBoxFor(m => m.WelderSSNumber))
+                                </div>
+
+                            </div>
+                            <div class="col-sm-3">
+                                <label>Date:</label>
+                                @(Html.Kendo().DatePickerFor(m => m.Date).Value(DateTime.Now))
+                            </div>
+                            <div class="col-sm-3">
+                                <label>Reference WPS No:</label>
+                                @(Html.Kendo().TextBoxFor(m => m.ReferenceWPSNumber))
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div class="box box-info custom-styled-box">
+                    <table class="display table table-condensed table-bordered table-striped;" style="width:100%;">
+                        <thead>
+                            <tr>
+                                <th>
+                                    VARIABLES
+                                </th>
+                                <th>
+                                    QUALIFICATION TEST DETAILS
+                                </th>
+                                <th>
+                                    QUALIFICATIION RANGE
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td style="width:30%; font-weight:bold;">
+                                    Code or Specification Used
+                                </td>
+                                <td style="width:35%">
+                                    @Html.Kendo().TextBoxFor(m => m.CodeOrSpecificationUsed).HtmlAttributes(new { style = "width:100%;max-width:100%;" })
+                                </td>
+                                <td style="width:35%">
+                                    @Html.Kendo().TextBoxFor(m => m.RangeOfCodeOrSpecificationUsed).HtmlAttributes(new { style = "width:100%;max-width:100%;" })
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight:bold;">
+                                    Welding Process and Type
+                                </td>
+                                <td>
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            @Html.Kendo().TextBoxFor(m => m.WeldingType).HtmlAttributes(new { style = "width:100%;max-width:100%;", placeholder="Welding Type" })
+                                        </div>
+                                        <div class="col-sm-6">
+                                            @Html.Kendo().TextBoxFor(m => m.WeldingProcess).HtmlAttributes(new { style = "width:100%;max-width:100%;", placeholder="Welding Process" })
+
+                                            @*@(Html.Kendo().DropDownListFor(m => m.WeldingProcess)
+                                                        .DataTextField("Text")
+                                                        .DataValueField("Value")
+                                                        .Filter(FilterType.Contains)
+                                                        .OptionLabel("Select ...")
+                                                        .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.CMS.WeldingProcess)))
+                                                        .ValuePrimitive(true)
+                                                        .HtmlAttributes(new { style = "width:100%;" }))*@
+                                        </div>
+                                    </div>
+                                    
+                                </td>
+                                <td>
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            @Html.Kendo().TextBoxFor(m => m.RangeOfWeldingType).HtmlAttributes(new { style = "width:100%;max-width:100%;", placeholder = "Range of Welding Type" })
+                                        </div>
+                                        <div class="col-sm-6">
+                                            @*@(Html.Kendo().DropDownListFor(m => m.RangeOfWeldingProcess)
+                                                       .DataTextField("Text")
+                                                       .DataValueField("Value")
+                                                       .Filter(FilterType.Contains)
+                                                       .OptionLabel("Select ...")
+                                                       .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.CMS.WeldingProcess)))
+                                                       .ValuePrimitive(true)
+                                                       .HtmlAttributes(new { style = "width:100%;" }
+                                                   ))*@
+                                                @Html.Kendo().TextBoxFor(m => m.RangeOfWeldingProcess).HtmlAttributes(new { style = "width:100%;max-width:100%;", placeholder = "Range of Welding Process" })
+
+                                        </div>
+                                    </div>
+                                   
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight:bold">
+                                    Backing
+                                </td>
+                                <td>
+                                    @(Html.Kendo().DropDownListFor(m => m.BackingMaterial)
+                                                        .DataTextField("Text")
+                                                        .DataValueField("Value")
+                                                        .Filter(FilterType.Contains)
+                                                        .OptionLabel("Select ...")
+                                                        .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.CMS.UsedNotUsedSelectItem)))
+                                                        .ValuePrimitive(true)
+                                                        .HtmlAttributes(new { style = "width:100%;" }))
+                                </td>
+                                <td>
+
+                                    @Html.Kendo().TextBoxFor(m => m.RangeOfBackingMaterial).HtmlAttributes(new { style = "width:100%;max-width:100%;" })
+
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight:bold">Base Metal Spec/P or M-Number</td>
+                                <td>
+                                    @Html.Kendo().TextBoxFor(m => m.SpecOfBaseMetal).HtmlAttributes(new { style = "width:100%;max-width:100%;" })
+                                </td>
+                                <td>
+                                    @Html.Kendo().TextBoxFor(m => m.RangeOfSpecOfBaseMetal).HtmlAttributes(new { style = "width:100%;max-width:100%;" })
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Plate/Pipe Thickness – Groove</td>
+                                <td>
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            @(Html.Kendo().DropDownListFor(m => m.GrooveBaseMetalPlateOrPipe)
+                                                                .DataTextField("Text")
+                                                                .DataValueField("Value")
+                                                                .Filter(FilterType.Contains)
+                                                                .OptionLabel("Select ...")
+                                                                .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.CMS.PlateOrPipeSelectItem)))
+                                                                .ValuePrimitive(true)
+                                                                .HtmlAttributes(new { style = "width:100%;" }))
+                                        </div>
+                                        <div class="col-sm-6">
+                                            @Html.Kendo().TextBoxFor(m => m.ThicknessOfGrooveBaseMetalPlateOrPipe).HtmlAttributes(new { style = "width:100%;max-width:100%;", placeholder="Thickness" })
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    @Html.Kendo().TextBoxFor(m => m.RangeThicknessOfGrooveBaseMetalPlateOrPipe).HtmlAttributes(new { style = "width:100%;max-width:100%;"})
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td>Plate/Pipe Thickness – Fillet</td>
+                                <td>
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            @(Html.Kendo().DropDownListFor(m => m.FilletBaseMetalPlateOrPipe)
+                                                                                .DataTextField("Text")
+                                                                                .DataValueField("Value")
+                                                                                .Filter(FilterType.Contains)
+                                                                                .OptionLabel("Select ...")
+                                                                                .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.CMS.PlateOrPipeSelectItem)))
+                                                                                .ValuePrimitive(true)
+                                                                                .HtmlAttributes(new { style = "width:100%;" }))
+                                        </div>
+                                        <div class="col-sm-6">
+                                            @Html.Kendo().TextBoxFor(m => m.ThicknessOfFilletBaseMetalPlateOrPipe).HtmlAttributes(new { style = "width:100%;max-width:100%;", placeholder = "Thickness" })
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    @Html.Kendo().TextBoxFor(m => m.RangeOfThicknessOfFilletBaseMetalPlateOrPipe).HtmlAttributes(new { style = "width:100%;max-width:100%;" })
+                                </td>
+                            </tr>
+
+                            <tr>
+                                <td>Pipe/Tubular Outside Diameter – Groove</td>
+                                <td>
+                                    @Html.Kendo().TextBoxFor(m => m.GroovePipeOrTubularOutsideDiameter).HtmlAttributes(new { style = "width:100%;max-width:100%;" })
+                                </td>
+                                <td>
+                                    @Html.Kendo().TextBoxFor(m => m.RangeOfGroovePipeOrTubularOutsideDiameter).HtmlAttributes(new { style = "width:100%;max-width:100%;" })
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Pipe/Tubular Outside Diameter – Fillet</td>
+                                <td>
+                                    @Html.Kendo().TextBoxFor(m => m.FilletPipeOrTubularOutsideDiameter).HtmlAttributes(new { style = "width:100%;max-width:100%;" })
+                                </td>
+                                <td>
+                                    @Html.Kendo().TextBoxFor(m => m.RangeOfFilletPipeOrTubularOutsideDiameter).HtmlAttributes(new { style = "width:100%;max-width:100%;" })
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight:bold">Filler Metal Specification No.</td>
+                                <td>
+                                    @Html.Kendo().TextBoxFor(m => m.FillerMetalSpecificationNumber).HtmlAttributes(new { style = "width:100%;max-width:100%;" })
+                                </td>
+                                <td>
+                                    @Html.Kendo().TextBoxFor(m => m.RangeFillerMetalSpecificationNumber).HtmlAttributes(new { style = "width:100%;max-width:100%;" })
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Classification No.</td>
+                                <td>
+                                    @Html.Kendo().TextBoxFor(m => m.FillerMetalClassificationNumber).HtmlAttributes(new { style = "width:100%;max-width:100%;" })
+                                </td>
+                                <td>
+                                    @Html.Kendo().TextBoxFor(m => m.RangeOfFillerMetalClassificationNumber).HtmlAttributes(new { style = "width:100%;max-width:100%;" })
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>F No.</td>
+                                <td>
+                                    @Html.Kendo().TextBoxFor(m => m.FillerMetalFNumber).HtmlAttributes(new { style = "width:100%;max-width:100%;" })
+                                </td>
+                                <td>
+                                    @Html.Kendo().TextBoxFor(m => m.RangeOfFillerMetalFNumber).HtmlAttributes(new { style = "width:100%;max-width:100%;" })
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Diameter</td>
+                                <td>
+                                    @Html.Kendo().TextBoxFor(m => m.FillerMetalDiameter).HtmlAttributes(new { style = "width:100%;max-width:100%;" })
+                                </td>
+                                <td>
+                                    @Html.Kendo().TextBoxFor(m => m.RangeOfFillerMetalDiameter).HtmlAttributes(new { style = "width:100%;max-width:100%;" })
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Consumable Insert</td>
+                                <td>
+                                    @(Html.Kendo().DropDownListFor(m => m.ConsumableInsert)
+                                                                                                .DataTextField("Text")
+                                                                                                .DataValueField("Value")
+                                                                                                .Filter(FilterType.Contains)
+                                                                                                .OptionLabel("Select ...")
+                                                                                                .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.CMS.YesOrNoSelectItem)))
+                                                                                                .ValuePrimitive(true)
+                                                                                                .HtmlAttributes(new { style = "width:100%;" }))
+                                </td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td>Penetration Enhancing Flux</td>
+                                <td>
+                                    @(Html.Kendo().DropDownListFor(m => m.PenetrationEnhanceFlux)
+                                                                                        .DataTextField("Text")
+                                                                                        .DataValueField("Value")
+                                                                                        .Filter(FilterType.Contains)
+                                                                                        .OptionLabel("Select ...")
+                                                                                        .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.CMS.YesOrNoSelectItem)))
+                                                                                        .ValuePrimitive(true)
+                                                                                        .HtmlAttributes(new { style = "width:100%;" }))
+                                </td>
+                                <td></td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight:bold">Deposited Weld Metal Thickness</td>
+                                <td>
+                                    @Html.Kendo().TextBoxFor(m => m.WeldingMetalThickness).HtmlAttributes(new { style = "width:100%;max-width:100%;" })
+                                </td>
+                                <td>
+                                    @Html.Kendo().TextBoxFor(m => m.RangeOfWeldingMetalThickness).HtmlAttributes(new { style = "width:100%;max-width:100%;" })
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight:bold">Current/Polarity & Current Range</td>
+                                <td>
+                                    @Html.Kendo().TextBoxFor(m => m.CurrentPolarityType).HtmlAttributes(new { style = "width:100%;max-width:100%;" })
+                                </td>
+                                <td>
+                                    @Html.Kendo().TextBoxFor(m => m.RangeOfCurrentPolarityType).HtmlAttributes(new { style = "width:100%;max-width:100%;" })
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight:bold">Metal Transfer Mode (GMAW or FCAW)</td>
+                                <td>
+                                    @Html.Kendo().TextBoxFor(m => m.MetalTransferModel).HtmlAttributes(new { style = "width:100%;max-width:100%;" })
+                                </td>
+                                <td>
+                                    @Html.Kendo().TextBoxFor(m => m.RangeOfMetalTransferModel).HtmlAttributes(new { style = "width:100%;max-width:100%;" })
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight:bold">Torch Shielding Gas</td>
+                                <td>
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            @Html.Kendo().TextBoxFor(m => m.TypeOfTorchShieldingGas).HtmlAttributes(new { placeholder = "Type", style = "width:100%;max-width:100%;" })
+                                        </div>
+                                        <div class="col-sm-6">
+                                            @Html.Kendo().TextBoxFor(m => m.FlowOfTorchShieldingGas).HtmlAttributes(new { placeholder = "Flow", style = "width:100%;max-width:100%;" })
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    @Html.Kendo().TextBoxFor(m => m.RangeOfTypeOfTorchShieldingGas).HtmlAttributes(new { style = "width:100%;max-width:100%;" })
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight:bold">Root Shielding Gas</td>
+                                <td>
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            @Html.Kendo().TextBoxFor(m => m.TypeOfRootShieldingGas).HtmlAttributes(new { placeholder = "Type", style = "width:100%;max-width:100%;" })
+                                        </div>
+                                        <div class="col-sm-6">
+                                            @Html.Kendo().TextBoxFor(m => m.FlowOfRootShieldingGas).HtmlAttributes(new { placeholder = "Flow", style = "width:100%;max-width:100%;" })
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    @Html.Kendo().TextBoxFor(m => m.RangeOfTypeOfRootShieldingGas).HtmlAttributes(new { style = "width:100%;max-width:100%;" })
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight:bold">Position(s)</td>
+                                <td>
+                                    @Html.Kendo().TextBoxFor(m => m.TestPositions).HtmlAttributes(new { placeholder = "Test Position(s) (1G, 2G, etc.)", style = "width:100%;max-width:100%;" })
+
+                                </td>
+                                <td>
+                                    @Html.Kendo().TextBoxFor(m => m.QualifiedPositions).HtmlAttributes(new { placeholder = "Qualified Position(s) (F, H, V, O, or All)", style = "width:100%;max-width:100%;" })
+                                </td>
+                            </tr>
+                            <tr>
+                                <td style="font-weight:bold">Vertical Propagation</td>
+                                <td>
+                                    @(Html.Kendo().DropDownListFor(m => m.VerticalPropagation)
+                                                                                               .DataTextField("Text")
+                                                                                               .DataValueField("Value")
+                                                                                               .Filter(FilterType.Contains)
+                                                                                               .OptionLabel("Select ...")
+                                                                                               .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.CMS.UphilOrDownhillSelectItem)))
+                                                                                               .ValuePrimitive(true)
+                                                                                               .HtmlAttributes(new { style = "width:100%;" }))
+                                </td>
+                                <td>
+                                    @(Html.Kendo().DropDownListFor(m => m.RangeOfVerticalPropagation)
+                                                                                               .DataTextField("Text")
+                                                                                               .DataValueField("Value")
+                                                                                               .Filter(FilterType.Contains)
+                                                                                               .OptionLabel("Select ...")
+                                                                                               .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.CMS.UphilOrDownhillSelectItem)))
+                                                                                               .ValuePrimitive(true)
+                                                                                               .HtmlAttributes(new { style = "width:100%;" }))
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="box box-info box-default">
+                    <div class="box-body">
+                        <table class="display table table-condensed table-bordered table-striped;" style="width:100%;">
+                            <thead>
+                                <tr>
+                                    <td style="width:30%;">Type of Test</td>
+                                    <td style="width:35%;">Performed and Accepted</td>
+                                    <td style="width:35%;"></td>
+                                </tr>
+                            </thead>
+                            <tbody>
+
+                                <tr>
+                                    <td>Visual Testing</td>
+                                    <td>@Html.Kendo().CheckBoxFor(m => m.IsVisualTestingPerformedAndAccepted).Label("")</td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>Radiographic testing</td>
+                                    <td>@Html.Kendo().CheckBoxFor(m => m.IsRadiographicTestingPerformedAndAccepted).Label("")</td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>Fracture Testing</td>
+                                    <td>@Html.Kendo().CheckBoxFor(m => m.IsFractureTestingPerformedAndAccepted).Label("")</td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>Bend Test</td>
+                                    <td>@Html.Kendo().CheckBoxFor(m => m.IsBendTestingPerformedAndAccepted).Label("")</td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>Notch Tensile Testing</td>
+                                    <td>@Html.Kendo().CheckBoxFor(m => m.IsNotchTensileTestingPerformedAndAccepted).Label("")</td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>Macroscopic Examination</td>
+                                    <td>@Html.Kendo().CheckBoxFor(m => m.IsMacroscopicExaminationPerformedAndAccepted).Label("")</td>
+                                    <td></td>
+                                </tr>
+                                <tr>
+                                    <td>Additional Testing</td>
+                                    <td>@Html.Kendo().CheckBoxFor(m => m.IsAdditionalTestingPerformedAndAccepted).Label("")</td>
+                                    <td></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                if (Model.CmsTrainee.Status == TraineeStatusConstants.OnExamination /*|| Model.CmsTrainee.Status == TraineeStatusConstants.CompletedTraining*/)
+                {
+                    <div class="box box-info box-default">
+                        <div class="box-body">
+                            <div class="row">
+                                <div class="col-xs-6">
+                                    <a href="/CMS/TraineeEvaluation" class="btn btn-danger" style="line-height:25px; width:100%;"> Calcel</a>
+                                </div>
+                                <div class="col-xs-6">
+                                    <button type="submit" class="btn btn-success" style="line-height:25px; width:100%;"> Save</button>
+
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    }
+                }
+        }
+    </div>
+</div>
+
+

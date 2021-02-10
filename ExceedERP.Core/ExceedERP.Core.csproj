@@ -184,11 +184,13 @@
     <Compile Include="Domain\CMS\Settings\ISOChecklist.cs" />
     <Compile Include="Domain\CMS\Settings\ISOType.cs" />
     <Compile Include="Domain\CMS\Settings\RegistrationNumberPrefix.cs" />
+    <Compile Include="Domain\CMS\TraineeModels\CmsTraineeIdentification.cs" />
     <Compile Include="Domain\CMS\TraineeModels\CompanyEvaluation.cs" />
     <Compile Include="Domain\CMS\TraineeModels\CompanyEvaluationDataEntryViewModel.cs" />
     <Compile Include="Domain\CMS\TraineeModels\Trainee.cs" />
     <Compile Include="Domain\CMS\TraineeModels\TraineeIdNumberComponent.cs" />
     <Compile Include="Domain\CMS\TraineeModels\TraineeProgram.cs" />
+    <Compile Include="Domain\CMS\TraineeModels\WelderPerformanceQualification.cs" />
     <Compile Include="Domain\Common\Approval.cs" />
     <Compile Include="Domain\Common\DocumentApproval\ApprovalDelegation.cs" />
     <Compile Include="Domain\Common\DocumentApproval\ApprovalGroup.cs" />
@@ -912,6 +914,8 @@
     <Compile Include="Domain\InfoDesk\InfoDeskConstants.cs" />
     <Compile Include="Domain\InfoDesk\Support\AssignTicket.cs" />
     <Compile Include="Domain\InfoDesk\Support\CustomerTicket.cs" />
+    <Compile Include="Domain\InfoDesk\Support\MaterialItems.cs" />
+    <Compile Include="Domain\InfoDesk\Support\MaterialsUsed.cs" />
     <Compile Include="Domain\InfoDesk\Support\PriorityType.cs" />
     <Compile Include="Domain\InfoDesk\Support\StatusType.cs" />
     <Compile Include="Domain\InfoDesk\Support\SupportGroup.cs" />

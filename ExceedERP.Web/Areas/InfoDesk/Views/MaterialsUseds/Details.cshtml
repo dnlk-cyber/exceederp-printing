@@ -1,0 +1,51 @@
+﻿@model ExceedERP.Core.Domain.InfoDesk.Support.MaterialsUsed
+
+@{
+    ViewBag.Title = "Details";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<h2>Details</h2>
+
+<div>
+    <h4>MaterialsUsed</h4>
+    <hr />
+    <dl class="dl-horizontal">
+        <dt>
+            @Html.DisplayNameFor(model => model.MaterialItemsId)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.MaterialItemsId)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.AssignedTicketId)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.AssignedTicketId)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.CustomerTicketId)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.CustomerTicketId)
+        </dd>
+
+        <dt>
+            @Html.DisplayNameFor(model => model.Remark)
+        </dt>
+
+        <dd>
+            @Html.DisplayFor(model => model.Remark)
+        </dd>
+
+    </dl>
+</div>
+<p>
+    @Html.ActionLink("Edit", "Edit", new { id = Model.MaterialsUsedId }) |
+    @Html.ActionLink("Back to List", "Index")
+</p>

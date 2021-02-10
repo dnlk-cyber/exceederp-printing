@@ -3443,6 +3443,10 @@
     <Compile Include="Migrations\202010261519362_cms-helpdesk.Designer.cs">
       <DependentUpon>202010261519362_cms-helpdesk.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202102011408095_InfoDeskAndCMSMerged.cs" />
+    <Compile Include="Migrations\202102011408095_InfoDeskAndCMSMerged.Designer.cs">
+      <DependentUpon>202102011408095_InfoDeskAndCMSMerged.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -5984,6 +5988,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202010261519362_cms-helpdesk.resx">
       <DependentUpon>202010261519362_cms-helpdesk.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202102011408095_InfoDeskAndCMSMerged.resx">
+      <DependentUpon>202102011408095_InfoDeskAndCMSMerged.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

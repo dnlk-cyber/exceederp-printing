@@ -6,7 +6,7 @@
             <label> Status :</label>  @(Html.Kendo().DropDownListFor(m => m.Status).Events(x => x.Change("FilterTicket")).OptionLabel("Select ")
 .DataTextField("Text")
         .DataValueField("Value")
-.BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.InfoDesk.FinalizeType)))
+.BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.Common.FinalizeType)))
          .ValuePrimitive(true)
             )
         </span>

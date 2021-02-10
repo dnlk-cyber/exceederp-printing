@@ -348,10 +348,21 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Receives
                     };
 
                     db.GoodReceiveValidations.Add(entity);
-                    db.SaveChanges();
+                   var result =  db.SaveChanges();
                     goodReceiveValidation.GoodReceiveValidationID = entity.GoodReceiveValidationID;
 
-
+                    if(result > 0)
+                    {
+                        if(goodReceiveValidation.Status == ApprovalStatuses.Approve && record != null && record.ReceiveType.Type == GoodReceiveType.PurchaseOrder)
+                        {
+                            int.TryParse(record.ReceiveRef, out int orderId);
+                            var order = db.PurchaseOrders.Find(orderId);
+                            if (order != null)
+                            {
+                                InventoryValidationHelper.UpdatePurchaseOrderFullFilledStatus(order);
+                            }
+                        }
+                    }
                     #region operation log
                     UserHelper.OperationLog(Request.UserHostAddress, "good receive approval", "Success", User.Identity.Name, $"approved good receive {entity.GoodReceiveId} ", Modules.Inventory);
                     #endregion

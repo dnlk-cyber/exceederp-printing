@@ -1403,6 +1403,8 @@ namespace ExceedERP.DataAccess.Context
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.TraineeIdNumberComponentEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.TraineeProgramEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CompanyEvaluationEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CmsTraineeIdentificationEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.WelderPerformanceQualificationEntityTypeConfiguration());
 
             #endregion
             #region Info Desk
@@ -1413,7 +1415,10 @@ namespace ExceedERP.DataAccess.Context
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.InfoDeskEntityConfiguration.StatusTypeEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.InfoDeskEntityConfiguration.PriorityTypeEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.InfoDeskEntityConfiguration.AssignTicketEntityTypeConfiguration());
+
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.InfoDeskEntityConfiguration.TicketTypeEntityTypeConfiguration());
+
+
             #endregion
         }
         #region Common
@@ -2379,6 +2384,11 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<ExceedERP.Core.Domain.InfoDesk.Support.PriorityType_HelpDesk> PriorityType_HelpDesks { get; set; }
         public DbSet<ExceedERP.Core.Domain.InfoDesk.Support.AssignTicket_HelpDesk> AssignTicket_HelpDesks { get; set; }
 
+        //public System.Data.Entity.DbSet<ExceedERP.Core.Domain.InfoDesk.Support.CustomerTicket_HelpDesk> CustomerTickets { get; set; }
+
+        public System.Data.Entity.DbSet<ExceedERP.Core.Domain.InfoDesk.Support.MaterialItems> MaterialItems { get; set; }
+        public System.Data.Entity.DbSet<ExceedERP.Core.Domain.InfoDesk.Support.MaterialsUsed> MaterialsUseds { get; set; }
+
 
         #endregion
         #region CMS
@@ -2389,11 +2399,12 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<ExceedERP.Core.Domain.CMS.ISOType> ISOTypes { get; set; }
         public DbSet<ExceedERP.Core.Domain.CMS.ISOChecklist> ISOChecklists { get; set; }
 
-
         public DbSet<ExceedERP.Core.Domain.CMS.CmsTrainee> CmsTrainees { get; set; }
         public DbSet<ExceedERP.Core.Domain.CMS.TraineeIdNumberComponent> TraineeIdNumberComponents { get; set; }
         public DbSet<ExceedERP.Core.Domain.CMS.TraineeProgram> TraineePrograms { get; set; }
         public DbSet<ExceedERP.Core.Domain.CMS.CompanyEvaluation> CompanyEvaluations { get; set; }
+        public DbSet<ExceedERP.Core.Domain.CMS.CmsTraineeIdentification> CmsTraineeIdentifications { get; set; }
+        public DbSet<ExceedERP.Core.Domain.CMS.WelderPerformanceQualification> WelderPerformanceQualification { get; set; }
 
         #endregion
         #region CRM

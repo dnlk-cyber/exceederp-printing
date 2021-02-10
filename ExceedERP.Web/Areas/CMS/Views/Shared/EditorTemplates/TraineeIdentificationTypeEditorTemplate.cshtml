@@ -1,0 +1,9 @@
+﻿@using ExceedERP.Core.Domain.CMS
+@(Html.Kendo().DropDownListFor(m => m)
+    .DataTextField("Text")
+    .DataValueField("Value")
+    .Filter(FilterType.Contains)
+    .OptionLabel("Select...")
+    .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.CMS.CmsTraineeIdentificationType)))
+    .ValuePrimitive(true)
+)

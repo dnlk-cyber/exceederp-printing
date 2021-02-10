@@ -13,7 +13,6 @@ using ExceedERP.Web.Models;
 using ExceedERP.Core.Domain.InfoDesk.Support;
 using System.Collections.Generic;
 using ExceedERP.Core.Domain.InfoDesk;
-using ExceedERP.Core.Domain.Common;
 
 namespace ExceedERP.Web.Areas.InfoDesk.Controllers
 {
@@ -25,6 +24,8 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
         public ActionResult Index()
         {
             ViewData["AssignTo"] = db.Person_Employee.ToList();
+            ViewData["Employees"] = db.Person_Employee.ToList();
+            ViewData["Materials"] = db.MaterialItems.ToList();
             return View();
         }
         public ActionResult CustomerPendingTickets_Read([DataSourceRequest]DataSourceRequest request)
@@ -39,7 +40,7 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
                 var empId = int.Parse(user.EmployeeId);
                 var assinedToMe = db.AssignTicket_HelpDesks.Where(x=>x.AssinedTo == empId).ToList()?.Select(x=>x.CustomerTicketId);
 
-                customertickets = db.CustomerTicket_HelpDesks.Where(x=>assinedToMe.Contains(x.CustomerTicket_HelpDeskId) && x.Status != FinalizeType.WAITING).ToList();
+                customertickets = db.CustomerTicket_HelpDesks.Where(x=>assinedToMe.Contains(x.CustomerTicket_HelpDeskId) && x.Status != InfoDeskFinalizeType.WAITING).ToList();
             }            
           
             DataSourceResult result = customertickets.ToDataSourceResult(request, customerTicket => new
@@ -60,134 +61,68 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
                 PriorityColor = customerTicket.PriorityColor,
                 Remark = customerTicket.Remark,
                 AgeOfTicket = customerTicket.AgeOfTicket,
-
+                Rate = customerTicket.Rate,
+                EmployeeId = customerTicket.EmployeeId,
+                
 
             });
             return Json(result);
 
 
         }
-        [AuthorizeRoles(InfoDeskConstants.Handler)]
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult CustomerTickets_Create([DataSourceRequest]DataSourceRequest request, CustomerTicket_HelpDesk customerTicket)
+        public ActionResult Handler_Update([DataSourceRequest]DataSourceRequest request, AssignTicket_HelpDesk assignTicket_HelpDesk)
         {
+            ModelState.Clear();
+
             if (ModelState.IsValid)
             {
-                var entity = new CustomerTicket_HelpDesk
+
+                var entity = new AssignTicket_HelpDesk
                 {
-                    Description = customerTicket.Description,
-                    Priority = customerTicket.Priority,
-                    TicketGroup = customerTicket.TicketGroup,
-                    ClosedDate = DateTime.Now,
-                    SpecificTicketTypeId = customerTicket.SpecificTicketTypeId,
-                    DueDate = customerTicket.DueDate,
+                    AssignTicket_HelpDeskId = assignTicket_HelpDesk.AssignTicket_HelpDeskId,
+                    CustomerTicketId = assignTicket_HelpDesk.CustomerTicketId,
+                    Age = assignTicket_HelpDesk.Age,
+                    AssignedDate = assignTicket_HelpDesk.AssignedDate,
+                    AssinedTo = assignTicket_HelpDesk.AssinedTo,
+                    ClosedDate = assignTicket_HelpDesk.ClosedDate,
+                    IsAssigned = false,
                     CreatedBy = User.Identity.Name,
-                    DateCreated = DateTime.Now,
-                    Remark = customerTicket.Remark,
-                    SolutionGiven = customerTicket.SolutionGiven,
-                    EmployeeId = customerTicket.EmployeeId,
-
+                    DateCreated = assignTicket_HelpDesk.DateCreated,
+                    Role = assignTicket_HelpDesk.Role,
+                    Solution = assignTicket_HelpDesk.Solution,
+                    MaterialItemsId = assignTicket_HelpDesk.MaterialItemsId,
+                    Remarked = assignTicket_HelpDesk.Remarked
                 };
-               // var Status = db.StatusTypes.Where(x => x.Name == customerTicket.StatusType).FirstOrDefault();
-                var Priority = db.PriorityType_HelpDesks.Where(x => x.Name == customerTicket.Priority).FirstOrDefault();
-                //if (Status != null)
-                //{
-                //    entity.StatusColor = Status.Color;
-                //}
-                if (Priority != null)
-                {
-                    entity.PriorityColor = Priority.Color;
-                }
-                db.CustomerTicket_HelpDesks.Add(entity);
+
+
+                db.AssignTicket_HelpDesks.Attach(entity);
+                db.Entry(entity).State = EntityState.Modified;
                 db.SaveChanges();
-                customerTicket.CustomerTicket_HelpDeskId = entity.CustomerTicket_HelpDeskId;
-
-
             }
 
-            return Json(new[] { customerTicket }.ToDataSourceResult(request));
+            return Json(new[] { assignTicket_HelpDesk }.ToDataSourceResult(request));
         }
-        [AuthorizeRoles(InfoDeskConstants.Handler)]
-        [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult CustomerTickets_Update([DataSourceRequest]DataSourceRequest request, CustomerTicket_HelpDesk customerTicket)
+        
+        public JsonResult GetMaterials()
         {
+            var materials = db.MaterialItems.ToList();
 
-            var ticket = db.CustomerTicket_HelpDesks.Where(x => x.CustomerTicket_HelpDeskId == customerTicket.CustomerTicket_HelpDeskId).FirstOrDefault();
-
-            if (ModelState.IsValid)
+            return Json(materials.Select(p => new
             {
+                MaterialItemsId = p.MaterialItemsId,
+                ItemName = p.ItemName
+            }), JsonRequestBehavior.AllowGet);
 
-                ticket.Description = customerTicket.Description;
-                ticket.Priority = customerTicket.Priority;
-                ticket.TicketGroup = customerTicket.TicketGroup;
-                ticket.DueDate = customerTicket.DueDate;
-                ticket.CreatedBy = customerTicket.CreatedBy;
-                ticket.DateCreated = customerTicket.DateCreated;
-                ticket.LastModified = DateTime.Now;
-                ticket.SpecificTicketTypeId = customerTicket.SpecificTicketTypeId;
-                ticket.ModifiedBy = User.Identity.Name;
-                ticket.Remark = customerTicket.Remark;
-                ticket.SolutionGiven = customerTicket.SolutionGiven;
-                ticket.EmployeeId = customerTicket.EmployeeId;
-
-                //var Status = db.StatusTypes.Where(x => x.Name == customerTicket.StatusType).FirstOrDefault();
-                //var Priority = db.PriorityTypes.Where(x => x.Name == customerTicket.Priority).FirstOrDefault();
-                //if (Status != null)
-                //{
-                //    ticket.StatusColor = Status.Color;
-                //}
-                //if (Priority != null)
-                //{
-                //    ticket.PriorityColor = Priority.Color;
-                //}
-
-
-                //var Group = db.SupportGroups.Where(x => x.Name == ticket.TicketGroup).FirstOrDefault();
-                //if (Group != null)
-                //{
-
-                //    var Memebers = db.SupportGroupDetails.Where(x => x.SupportGroupId == Group.SupportGroupId).ToList();
-
-                //}
-               // db.CustomerTickets.Attach(ticket);
-                db.Entry(ticket).State = EntityState.Modified;
-                db.SaveChanges();
-            }
-
-            return Json(new[] { customerTicket }.ToDataSourceResult(request, ModelState));
         }
-        [AuthorizeRoles(InfoDeskConstants.Handler)]
-        [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult CustomerTickets_Destroy([DataSourceRequest]DataSourceRequest request, CustomerTicket_HelpDesk customerTicket)
-        {
-            var Ticket = db.CustomerTicket_HelpDesks.Where(x => x.CustomerTicket_HelpDeskId == customerTicket.CustomerTicket_HelpDeskId).FirstOrDefault();
-            if (Ticket != null)
-            {
-
-                db.CustomerTicket_HelpDesks.Attach(Ticket);
-                db.CustomerTicket_HelpDesks.Remove(Ticket);
-                db.SaveChanges();
-                UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted Customer Ticket number " + customerTicket.CustomerTicket_HelpDeskId);
-
-                var Tickets = db.AssignTicket_HelpDesks.Where(x => x.CustomerTicketId == Ticket.CustomerTicket_HelpDeskId).ToList();
-                foreach (var t in Tickets)
-                {
-                    db.AssignTicket_HelpDesks.Attach(t);
-                    db.AssignTicket_HelpDesks.Remove(t);
-                    db.SaveChanges();
-                }
-            }
-
-            return Json(new[] { customerTicket }.ToDataSourceResult(request));
-        }
-
         public string SendForClosing(string childId)
         {
             int assignId = int.Parse(childId);
             var ticket = db.AssignTicket_HelpDesks.Find(assignId);
             if (ticket != null)
             {
-                if (!ticket.IsSendForClosing)
+                var tickets = db.AssignTicket_HelpDesks.Where(x=>x.CustomerTicketId == ticket.CustomerTicketId && x.AssignTicket_HelpDeskId != assignId && !x.IsSendForClosing).ToList();
+                if(tickets.Any())
                 {
                     ticket.IsSendForClosing = true;
 
@@ -198,10 +133,43 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
                 }
                 else
                 {
-                    return "false";
+                    if (!ticket.IsSendForClosing)
+                    {
+                        var customer = db.CustomerTicket_HelpDesks.FirstOrDefault(x=>x.CustomerTicket_HelpDeskId == ticket.CustomerTicketId);
+                        if(customer != null)
+                        {
+                            customer.Status = InfoDeskFinalizeType.WAITING_FOR_CONFIRMATION;
+
+                            db.Entry(customer).State = EntityState.Modified;
+                            db.SaveChanges();
+                        }
+                        ticket.IsSendForClosing = true;
+
+                        db.Entry(ticket).State = EntityState.Modified;
+                        db.SaveChanges();
+
+                        return "true";
+                    }
+                    else
+                    {
+                        return "false";
+                    }
                 }
+                
             }
             return "faild";
+        }
+        public string CheckStatus(int masterId)
+        {
+            var customer = db.CustomerTicket_HelpDesks.FirstOrDefault(x=>x.CustomerTicket_HelpDeskId == masterId);
+            if(customer != null)
+            {
+                if(customer.Status == InfoDeskFinalizeType.RESOLVED || customer.Status == InfoDeskFinalizeType.CLOSED)
+                {
+                    return "true";
+                }                
+            }
+            return "false";
         }
     }
 }

@@ -27,7 +27,7 @@ namespace ExceedERP.Core.Domain.InfoDesk.Support
        
         [DisplayName("Priority Color")]
         public string PriorityColor { get; set; }
-        public FinalizeType Status { get; set; }
+        public InfoDeskFinalizeType Status { get; set; }
        
         public string Priority { get; set; }
         [DisplayName("Group")]
@@ -49,6 +49,8 @@ namespace ExceedERP.Core.Domain.InfoDesk.Support
         public string Remark { get; set; }
         [DisplayName("Age In Days")]
         public string AgeOfTicket { get; set; }
+        public bool IsConfirmedByTheRequester { get; set; }
+        public int Rate { get; set; }
         public bool IsClosed { get; set; }
 
     }
