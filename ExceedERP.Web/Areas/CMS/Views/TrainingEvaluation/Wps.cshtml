@@ -6,13 +6,10 @@
 }
 
 <div class="content-wrapper">
-    @*<section class="content-header">
-
-        </section>*@
     <div class="content">
-        <h4>
+        @*<h4>
             <i class="fa fa-list"></i> Performance Qualification
-        </h4>
+        </h4>*@
 
         @if (Model != null)
         {
@@ -21,12 +18,14 @@
                 @Html.HiddenFor(m => m.CmsTraineeId);
                 @Html.HiddenFor(m => m.WelderPerformanceQualificationId);
                 <div class="box box-info custom-styled-box">
+                    <div class="box-header" style="padding:0px;">
+                        <img src="~/Content/Images/wps.png" style="width:100%; height:100px;" />
+                    </div>
                     <div class="box-body">
                         <div class="row">
                             <div class="col-sm-3">
                                 <div class="form-group">
                                     @Html.LabelFor(m => m.CmsTrainee.FullName, "Welder's Name: ", htmlAttributes: new { @*@class = "control-label"*@})
-                                    @*@Html.EditorFor(model => model.CmsTrainee.FullName, new { htmlAttributes = new { @class = "form-control", @disabled = "disabled" } })*@
                                     <label>@Model.CmsTrainee.FullName</label>
 
                                 </div>

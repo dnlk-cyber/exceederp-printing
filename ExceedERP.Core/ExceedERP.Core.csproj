@@ -184,6 +184,7 @@
     <Compile Include="Domain\CMS\Settings\ISOChecklist.cs" />
     <Compile Include="Domain\CMS\Settings\ISOType.cs" />
     <Compile Include="Domain\CMS\Settings\RegistrationNumberPrefix.cs" />
+    <Compile Include="Domain\CMS\TraineeModels\CMSTraineeCourse.cs" />
     <Compile Include="Domain\CMS\TraineeModels\CmsTraineeIdentification.cs" />
     <Compile Include="Domain\CMS\TraineeModels\CompanyEvaluation.cs" />
     <Compile Include="Domain\CMS\TraineeModels\CompanyEvaluationDataEntryViewModel.cs" />

@@ -5,9 +5,9 @@
       {
           columns.Bound(c => c.Name);
           columns.Bound(c => c.Code);
-
+          columns.ForeignKey(c => c.CMSProgramId, (IEnumerable)ViewData["Programs"], "CMSProgramId", "Name").EditorTemplateName("ProgramEditorTemplate");
           columns.Bound(c => c.CreditHours);
-          
+
           columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
       })
       .ToolBar(toolbar => {

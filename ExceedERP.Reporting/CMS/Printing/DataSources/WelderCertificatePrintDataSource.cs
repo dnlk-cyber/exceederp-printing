@@ -33,7 +33,10 @@ namespace ExceedERP.Reporting.CMS.Printing.DataSource
                     var identification = db.CmsTraineeIdentifications.FirstOrDefault(i => i.CmsTraineeId == trainee.CmsTraineeId);
 
                     var qualification = db.WelderPerformanceQualification.FirstOrDefault(q => q.CmsTraineeId == trainee.CmsTraineeId);
+                    if(qualification == null)
+                    {
 
+                    }
                     string profilePicPath = HostingEnvironment.MapPath("~/Content/Images/CMS/Profiles/" + trainee.ProfilePicFileName);
                     //string file = System.Web.HttpContext.Current.Server.MapPath("~/Content/Images/CMS/Profiles/" + trainee.ProfilePicFileName);
                     //string mimeType = MimeMapping.GetMimeMapping(file);
@@ -57,8 +60,12 @@ namespace ExceedERP.Reporting.CMS.Printing.DataSource
                         Barcode = OrganizationObjectDataSource.ByteArrayToImage(barcodeReadStream),
                         
                         WelderPerformanceQualification = qualification,
-                        CertificateValidUntil = qualification.Date.AddYears(3).AddDays(-1),
+                        //CertificateValidUntil = qualification.Date.AddYears(3).AddDays(-1) ,
                     };
+                    if(qualification != null)
+                    {
+                        record.CertificateValidUntil = qualification.Date.AddYears(3).AddDays(-1);
+                    }
                 }
                 return record;
             }

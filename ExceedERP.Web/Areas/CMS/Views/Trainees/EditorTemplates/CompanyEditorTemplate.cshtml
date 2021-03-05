@@ -70,14 +70,14 @@
                         .Filter("contains")
                         .DataSource(dataSource =>
                         {
-                            dataSource.Read(read => read.Action("GetCourses", "CMSDataProvider", new { area = "CMS" }))
+                            dataSource.Read(read => read.Action("GetCourses", "CMSDataProvider", new { area = "CMS" }).Data("getSelectedProgram"))
                             .ServerFiltering(true);
                         })
                     //.Events(ev =>
                     //{
                     //    ev.Change("referencedSalesOrderSelectorChange");
                     //})
-                    //.CascadeFrom("Source")
+                    .CascadeFrom("CMSProgramId")
                     //.Enable(false)
                     //.AutoBind(false)
 

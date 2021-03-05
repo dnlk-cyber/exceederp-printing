@@ -1406,7 +1406,7 @@ namespace ExceedERP.DataAccess.Context
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CompanyEvaluationEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CmsTraineeIdentificationEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.WelderPerformanceQualificationEntityTypeConfiguration());
-
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.CMSTraineeCourseEntityTypeConfiguration());
             #endregion
             #region Info Desk
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.InfoDeskEntityConfiguration.CustomerTicketEntityTypeConfiguration());
@@ -2407,8 +2407,10 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<ExceedERP.Core.Domain.CMS.CompanyEvaluation> CompanyEvaluations { get; set; }
         public DbSet<ExceedERP.Core.Domain.CMS.CmsTraineeIdentification> CmsTraineeIdentifications { get; set; }
         public DbSet<ExceedERP.Core.Domain.CMS.WelderPerformanceQualification> WelderPerformanceQualification { get; set; }
+        public DbSet<ExceedERP.Core.Domain.CMS.CMSTraineeCourse> CMSTraineeCourses { get; set; }
 
         #endregion
+
         #region CRM
 
         public DbSet<AdvancePaymentDistibution> AdvancePaymentDistibutions { get; set; }

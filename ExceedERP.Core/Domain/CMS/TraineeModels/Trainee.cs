@@ -64,7 +64,10 @@ namespace ExceedERP.Core.Domain.CMS
         [Display(Name = "Date of Birth")]
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
-        public DateTime DateOfBirth { get; set; }
+        public DateTime? DateOfBirth { get; set; }
+
+        [Display(Name = "Place of Birth")]
+        public string PlaceOfBirth { get; set; }
 
         [Display(Name ="Phone #")]
         [DataType(DataType.PhoneNumber)]
@@ -89,11 +92,19 @@ namespace ExceedERP.Core.Domain.CMS
         [NotMapped]
         public string BarcodeImageName { get; set; }
 
+        [Display(Name ="Zip Code")]
+        public string ZipCode { get; set; }
+
+        [Display(Name ="Participant Requirement")]
+        public string Requirement { get; set; }
+
         /// <summary>
         /// Status of Trainee / Company
         /// For Trainee - New, On Training .... examination result
         /// For Company - New, .... to evaluation result
         /// </summary>
         public string Status { get; set; }
+
+
     }
 }

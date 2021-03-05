@@ -102,6 +102,9 @@ namespace ExceedERP.Web.Areas.CMS.Controllers
                 "user-avatar.png" : trainee.ProfilePicFileName,
                 BarcodeImageName = $"barcode-{trainee.CmsTraineeId}.png",
                 Status = trainee.Status,
+                PlaceOfBirth = trainee.PlaceOfBirth,
+                ZipCode = trainee.ZipCode,
+                Requirement= trainee.Requirement,
 
                 DateCreated = trainee.DateCreated,
                 LastModified = trainee.LastModified,
@@ -141,6 +144,9 @@ namespace ExceedERP.Web.Areas.CMS.Controllers
                     TrainingVenue = trainee.TrainingVenue,
                     ProfilePicFileName = trainee.ProfilePicFileName,
                     Status = TraineeStatusConstants.NewTrainee,
+                    PlaceOfBirth = trainee.PlaceOfBirth,
+                    ZipCode = trainee.ZipCode,
+                    Requirement = trainee.Requirement,
 
                     DateCreated = DateTime.Now,
                     LastModified = trainee.LastModified,
@@ -202,6 +208,9 @@ namespace ExceedERP.Web.Areas.CMS.Controllers
                     TrainingVenue = trainee.TrainingVenue,
                     ProfilePicFileName = trainee.ProfilePicFileName,
                     Status = trainee.Status,
+                    PlaceOfBirth = trainee.PlaceOfBirth,
+                    ZipCode = trainee.ZipCode,
+                    Requirement = trainee.Requirement,
 
                     DateCreated = trainee.DateCreated,
                     LastModified = DateTime.Now,
@@ -248,6 +257,9 @@ namespace ExceedERP.Web.Areas.CMS.Controllers
                     TrainingVenue = trainee.TrainingVenue,
                     ProfilePicFileName = trainee.ProfilePicFileName,
                     Status = trainee.Status,
+                    PlaceOfBirth = trainee.PlaceOfBirth,
+                    ZipCode = trainee.ZipCode,
+                    Requirement = trainee.Requirement,
 
                     DateCreated = trainee.DateCreated,
                     LastModified = trainee.LastModified,
@@ -302,7 +314,7 @@ namespace ExceedERP.Web.Areas.CMS.Controllers
 
             linearBarcode.EncodedType = BarcodeLib.TYPE.EAN13;
             linearBarcode.BarWidth = 1;
-            linearBarcode.Height = 250;
+            linearBarcode.Height = 150;
             linearBarcode.IncludeLabel = true;
             linearBarcode.LabelPosition = BarcodeLib.LabelPositions.BOTTOMCENTER;
             linearBarcode.ImageFormat = System.Drawing.Imaging.ImageFormat.Png;
@@ -471,7 +483,7 @@ namespace ExceedERP.Web.Areas.CMS.Controllers
 
                 linearBarcode.EncodedType = BarcodeLib.TYPE.EAN13;
                 linearBarcode.BarWidth = 1;
-                linearBarcode.Height = 250;
+                linearBarcode.Height = 150;
                 linearBarcode.IncludeLabel = true;
                 linearBarcode.LabelPosition = BarcodeLib.LabelPositions.BOTTOMCENTER;
                 linearBarcode.ImageFormat = System.Drawing.Imaging.ImageFormat.Png;

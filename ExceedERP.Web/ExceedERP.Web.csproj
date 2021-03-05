@@ -407,6 +407,7 @@
     <Compile Include="Areas\CMS\Controllers\Settings\RegistrationNumberPrefixController.cs" />
     <Compile Include="Areas\CMS\Controllers\TraineeRegistrationControllers\TraineeIdNumberComponentsController.cs" />
     <Compile Include="Areas\CMS\Controllers\TraineeRegistrationControllers\TraineesController.cs" />
+    <Compile Include="Areas\CMS\Controllers\TrainingControllers\CMSTraineeCourseController.cs" />
     <Compile Include="Areas\CMS\Controllers\TrainingControllers\CmsTraineeIdentificationsController.cs" />
     <Compile Include="Areas\CMS\Controllers\TrainingControllers\ProgramStatusController.cs" />
     <Compile Include="Areas\CMS\Controllers\TrainingControllers\TraineeProgramController.cs" />
@@ -2738,6 +2739,7 @@
     <Content Include="Content\Images\logo.jpg" />
     <Content Include="Content\Images\print.png" />
     <Content Include="Content\Images\search.png" />
+    <Content Include="Content\Images\wps.png" />
     <Content Include="Content\Import\fleet\00000000-0000-0000-0000-000000000000\descriptor.xml" />
     <Content Include="Content\Import\fleet\FleetNotFound.png" />
     <Content Include="Content\Jqury-ui\jquery-1.10.2.js" />
@@ -4725,6 +4727,10 @@
     <Content Include="Areas\InfoDesk\Views\SelfCareOpenTickets\Index.cshtml" />
     <Content Include="Areas\InfoDesk\Views\shared\EditorTemplates\EmployeesListFromGroup.cshtml" />
     <Content Include="Areas\HRM\Views\EmployeeTypes\Index.cshtml" />
+    <Content Include="Areas\CMS\Views\CMSPrint\FullRegistrationSlip.cshtml" />
+    <Content Include="Areas\CMS\Views\CMSPrint\WeldersPerformanceQualification.cshtml" />
+    <Content Include="Areas\CMS\Views\Shared\EditorTemplates\ProgramEditorTemplate.cshtml" />
+    <Content Include="Areas\CMS\Views\TrainingEnrolment\EditorTemplates\CourseEditorTemlate.cshtml" />
     <None Include="Properties\PublishProfiles\dce.pubxml" />
     <None Include="Properties\PublishProfiles\fbc.pubxml" />
     <None Include="Scripts\kendo\2018.3.911\kendo.all-vsdoc.js" />

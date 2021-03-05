@@ -258,8 +258,22 @@
     <Compile Include="Budget\View\TaskPlan.Designer.cs">
       <DependentUpon>TaskPlan.cs</DependentUpon>
     </Compile>
+    <Compile Include="CMS\Printing\DataSources\FullRegistrationSlipDataSource.cs" />
     <Compile Include="CMS\Printing\DataSources\RegistrationSlipDataSource.cs" />
     <Compile Include="CMS\Printing\DataSources\WelderCertificatePrintDataSource.cs" />
+    <Compile Include="CMS\Printing\DataSources\WeldersPerformanceQualificationPrintDataSource.cs" />
+    <Compile Include="CMS\Printing\ReportDesigns\FullRegistrationSlipBackReportDesign.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CMS\Printing\ReportDesigns\FullRegistrationSlipBackReportDesign.Designer.cs">
+      <DependentUpon>FullRegistrationSlipBackReportDesign.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CMS\Printing\ReportDesigns\FullRegistrationSlipReportDesign.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CMS\Printing\ReportDesigns\FullRegistrationSlipReportDesign.Designer.cs">
+      <DependentUpon>FullRegistrationSlipReportDesign.cs</DependentUpon>
+    </Compile>
     <Compile Include="CMS\Printing\ReportDesigns\QualificationTestCertificateRepDesign.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -272,7 +286,15 @@
     <Compile Include="CMS\Printing\ReportDesigns\RegistrationSlipRepDesg.Designer.cs">
       <DependentUpon>RegistrationSlipRepDesg.cs</DependentUpon>
     </Compile>
+    <Compile Include="CMS\Printing\ReportDesigns\WeldersPerformanceQualificationPrintRepDesign.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="CMS\Printing\ReportDesigns\WeldersPerformanceQualificationPrintRepDesign.Designer.cs">
+      <DependentUpon>WeldersPerformanceQualificationPrintRepDesign.cs</DependentUpon>
+    </Compile>
+    <Compile Include="CMS\Printing\ViewModels\FullRegistrationSlipViewModel.cs" />
     <Compile Include="CMS\Printing\ViewModels\RegistrationSlipViewModel.cs" />
+    <Compile Include="CMS\Printing\ViewModels\WeldersPerformanceQualificationPrintViewModel.cs" />
     <Compile Include="CMS\Printing\ViewModels\WeldersQualificationTestCertificateViewModel.cs" />
     <Compile Include="Construction\BOQ\BOQGrandSummaryView.cs">
       <SubType>Component</SubType>
@@ -4219,11 +4241,20 @@
     <EmbeddedResource Include="Budget\View\TaskPlan.resx">
       <DependentUpon>TaskPlan.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="CMS\Printing\ReportDesigns\FullRegistrationSlipBackReportDesign.resx">
+      <DependentUpon>FullRegistrationSlipBackReportDesign.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CMS\Printing\ReportDesigns\FullRegistrationSlipReportDesign.resx">
+      <DependentUpon>FullRegistrationSlipReportDesign.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="CMS\Printing\ReportDesigns\QualificationTestCertificateRepDesign.resx">
       <DependentUpon>QualificationTestCertificateRepDesign.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="CMS\Printing\ReportDesigns\RegistrationSlipRepDesg.resx">
       <DependentUpon>RegistrationSlipRepDesg.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="CMS\Printing\ReportDesigns\WeldersPerformanceQualificationPrintRepDesign.resx">
+      <DependentUpon>WeldersPerformanceQualificationPrintRepDesign.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Construction\BOQ\BOQGrandSummaryView.resx">
       <DependentUpon>BOQGrandSummaryView.cs</DependentUpon>

@@ -182,7 +182,6 @@
                 #if(Status == "@ExceedERP.Core.Domain.CMS.TraineeStatusConstants.PassedExamination"){#
                     <a class="btn btn-success k-button k-button-icontext" href="\#" onclick='return printCertificate("#=RegistrationNumber#","#=CmsTraineeId#","#=FullName#" )' title="Print Certificate"><i class="fa fa-certificate  fa-2x"></i> &nbsp;&nbsp; Print Certificate</a>
                 #}#
-
                 @(Html.Kendo().PanelBar()
                     .Name("trainee_panelbar_#=CmsTraineeId#")
                     .ExpandMode(PanelBarExpandMode.Multiple)
@@ -408,6 +407,8 @@
               {
                   columns.Bound(c => c.IdentificationType).EditorTemplateName("TraineeIdentificationTypeEditorTemplate").Width(100);
                   columns.Bound(c => c.IdNumber).Width(100);
+                  columns.Bound(c => c.DateOfIssue).Width(100);
+                  columns.Bound(c => c.DateOfExpiry).Width(100);
                   columns.Bound(c => c.Remark).Width(100);
 
                   columns.Command(command => { command.Edit(); command.Destroy(); }).Width(400);
@@ -440,6 +441,11 @@
     function getSelectedRegion() {
         return {
             region: $("#Region").val(), filterString: $("#CityId").data("kendoDropDownList").filterInput.val()
+        }
+    }
+    function getSelectedProgram() {
+        return {
+            programId: $("#CMSProgramId").val(), filterString: $("#CMSCourseId").data("kendoDropDownList").filterInput.val()
         }
     }
     function printCertificate(regNumber, traineeId, fName) {
@@ -536,5 +542,13 @@
     div.k-content {
         height: inherit;
     }*/
+    div.k-edit-form-container {
+        width: 400px;
+        height: inherit;
+    }
+    div.k-content {
+        overflow: auto;
+        height: inherit;
+    }
 </style>
 

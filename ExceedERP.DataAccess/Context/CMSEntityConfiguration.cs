@@ -81,6 +81,14 @@ namespace ExceedERP.DataAccess.Context
             this.HasKey<int>(p => p.TraineeProgramId);
         }
     }
+    public class CMSTraineeCourseEntityTypeConfiguration : EntityTypeConfiguration<CMSTraineeCourse>
+    {
+        public CMSTraineeCourseEntityTypeConfiguration()
+        {
+            this.ToTable("CMSTraineeCourses", "CMS");
+            this.HasKey<int>(p => p.CMSTraineeCourseId);
+        }
+    }
     public class CompanyEvaluationEntityTypeConfiguration : EntityTypeConfiguration<CompanyEvaluation>
     {
         public CompanyEvaluationEntityTypeConfiguration()

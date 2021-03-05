@@ -20,8 +20,8 @@ namespace ExceedERP.Reporting.CMS.Printing.ViewModels
 
         public string Identification { get; set; }
         public string PlaceOfBirth { get; set; }
-        public DateTime DateOfBirth { get; set; }
+        public DateTime? DateOfBirth { get; set; }
         public WelderPerformanceQualification WelderPerformanceQualification { get; set; }
-        public DateTime CertificateValidUntil { get; set; }
+        public DateTime? CertificateValidUntil { get; set; }
     }
 }

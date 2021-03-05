@@ -1,0 +1,15 @@
+﻿@using ExceedERP.Core.Domain.CMS
+@(Html.Kendo().DropDownListFor(m => m)
+                    .ValuePrimitive(true)
+                    .Name("CMSProgramId")
+                    //.HtmlAttributes(new { @class = "full-width-custom-input-box" })
+                    .OptionLabel("Select Program...")
+                    .DataTextField("Name")
+                    .DataValueField("CMSProgramId")
+                    .Filter("contains")
+                    .DataSource(dataSource =>
+                    {
+                        dataSource.Read(read => read.Action("GetPrograms", "CMSDataProvider", new { area = "CMS" }))
+                        .ServerFiltering(false);
+                    })
+)

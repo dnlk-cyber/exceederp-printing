@@ -13,7 +13,17 @@ namespace ExceedERP.Web.Areas.CMS.Controllers
             ViewBag.Id = id;
             return View();
         }
+        public ActionResult FullRegistrationSlip(int id)
+        {
+            ViewBag.Id = id;
+            return View();
+        }
         public ActionResult QualificationCertificate( string regn, int ti, string name)
+        {
+            ViewBag.Id = ti;
+            return View();
+        }
+        public ActionResult WeldersPerformanceQualification(string regn, int ti, string name)
         {
             ViewBag.Id = ti;
             return View();

@@ -31,6 +31,8 @@ namespace ExceedERP.Web.Areas.CMS.Controllers.TrainingControllers
                 IdentificationType = cmsTraineeIdentification.IdentificationType,
                 IdNumber = cmsTraineeIdentification.IdNumber,
                 Remark = cmsTraineeIdentification.Remark,
+                DateOfIssue = cmsTraineeIdentification.DateOfIssue,
+                DateOfExpiry = cmsTraineeIdentification.DateOfExpiry,
 
                 DateCreated = cmsTraineeIdentification.DateCreated,
                 LastModified = cmsTraineeIdentification.LastModified,
@@ -59,6 +61,8 @@ namespace ExceedERP.Web.Areas.CMS.Controllers.TrainingControllers
                     IdentificationType = cmsTraineeIdentification.IdentificationType,
                     IdNumber = cmsTraineeIdentification.IdNumber,
                     Remark = cmsTraineeIdentification.Remark,
+                    DateOfIssue = cmsTraineeIdentification.DateOfIssue,
+                    DateOfExpiry = cmsTraineeIdentification.DateOfExpiry,
 
                     DateCreated = DateTime.Now,
                     LastModified = cmsTraineeIdentification.LastModified,
@@ -90,6 +94,8 @@ namespace ExceedERP.Web.Areas.CMS.Controllers.TrainingControllers
                     IdentificationType = cmsTraineeIdentification.IdentificationType,
                     IdNumber = cmsTraineeIdentification.IdNumber,
                     Remark = cmsTraineeIdentification.Remark,
+                    DateOfIssue = cmsTraineeIdentification.DateOfIssue,
+                    DateOfExpiry = cmsTraineeIdentification.DateOfExpiry,
 
                     DateCreated = cmsTraineeIdentification.DateCreated,
                     LastModified = DateTime.Now,
@@ -117,6 +123,8 @@ namespace ExceedERP.Web.Areas.CMS.Controllers.TrainingControllers
                     IdentificationType = cmsTraineeIdentification.IdentificationType,
                     IdNumber = cmsTraineeIdentification.IdNumber,
                     Remark = cmsTraineeIdentification.Remark,
+                    DateOfIssue = cmsTraineeIdentification.DateOfIssue,
+                    DateOfExpiry = cmsTraineeIdentification.DateOfExpiry,
 
                     DateCreated = cmsTraineeIdentification.DateCreated,
                     LastModified = cmsTraineeIdentification.LastModified,

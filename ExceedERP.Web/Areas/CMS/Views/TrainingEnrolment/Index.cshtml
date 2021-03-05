@@ -183,7 +183,7 @@
         .Items(items =>
         {
             items.Add().Text("Detail").Content(@<text>
-                <a class="btn btn-primary k-button k-button-icontext" href='@Url.Action("RegistrationSlip", "CMSPrint")/#=CmsTraineeId#' title="Print Registration Slip"><i class="fa fa-print  fa-1x"></i> &nbsp;&nbsp; Print Registration Slip</a>
+                <a class="btn btn-primary k-button k-button-icontext" href='@Url.Action("FullRegistrationSlip", "CMSPrint")/#=CmsTraineeId#' title="Print Registration Slip"><i class="fa fa-print  fa-1x"></i> &nbsp;&nbsp; Print Full Registration Slip</a>
                 # if (Status == "@ExceedERP.Core.Domain.CMS.TraineeStatusConstants.NewTrainee")
                 {#
                     <a class="btn btn-success k-button k-button-icontext" onclick='return forwardToTraining("#=CmsTraineeId#")' href='\#' title="Forward to Training"><i class="fa fa-share fa-1x"></i> &nbsp; Forward to Training</a>
@@ -227,12 +227,12 @@
                 </div>
 
             </text>);*@
-            items.Add().Text("Training Programs").Content(@<text>
-                # if (Status == "@ExceedERP.Core.Domain.CMS.TraineeStatusConstants.NewTrainee")
-                {#
-                    <a class="btn btn-success k-button k-button-icontext" onclick='return forwardToTraining("#=CmsTraineeId#")' href='\#' title="Forward to Training"><i class="fa fa-share fa-1x"></i> &nbsp; Forward to Training</a>
-                # }#
+            items.Add().Text("Programs").Content(@<text>
+               
                 @TrainingProgramsHelper()
+            </text>);
+            items.Add().Text("Courses/Examinations").Content(@<text>
+                @TrainingCoursesHelper()
             </text>);
         }).ToClientTemplate()
     )
@@ -302,6 +302,70 @@
             )
     }
 
+@helper TrainingCoursesHelper() { 
+        @(Html.Kendo().Grid<ExceedERP.Core.Domain.CMS.CMSTraineeCourse>()
+                  .Name("courses_grid_#=CmsTraineeId#")
+                  .Columns(columns =>
+                  {
+
+                      columns.ForeignKey(c => c.CMSCourseId, (IEnumerable)ViewData["Courses"], "CMSCourseId", "Name").Width(90).EditorTemplateName("CourseEditorTemlate");
+                      columns.Bound(c => c.TrainingStatus).Width(80).EditorTemplateName("TrainingProgramStatusEditorTemplate");
+                      columns.Bound(c => c.PlaceOfTrainingOrExamination).Width(80);
+                      columns.Bound(c => c.StartOfTraining).Width(80);
+                      columns.Bound(c => c.EndOfTraining).Width(80);
+                      columns.Bound(c => c.TargetAmount).Width(80);
+
+                      columns.Command(command => { command.Edit(); command.Destroy(); }).Width(600);
+                  })
+                  .ToolBar(toolbar =>
+                  {
+                      toolbar.Create();
+                      //toolbar.Excel();
+                      //toolbar.Pdf();
+                  })
+
+                  .Editable(editable =>
+                  {
+                      editable.Mode(GridEditMode.InLine);
+
+                      //editable.TemplateName("CompanyEditorTemplate");
+                      //editable.Window(window =>
+                      //{
+                      //    window.Title("Company Registration");
+                      //    window.Scrollable(true);
+                      //    window.Height(550);
+                      //});
+                  })
+                  .Pageable()
+                  .Navigatable()
+                  .Selectable(selectable => {
+                      selectable.Mode(GridSelectionMode.Single);
+                      selectable.Type(GridSelectionType.Row);
+                  })
+                  .Sortable(sortable => {
+                      sortable.SortMode(GridSortMode.SingleColumn);
+                  })
+                  .Filterable()
+                  .Scrollable()
+                  .DataSource(dataSource => dataSource
+                      .Ajax()
+                      .Model(model =>
+                      {
+                          model.Id(p => p.CMSTraineeCourseId);
+                          model.Field(p => p.TrainingStatus).Editable(false);
+                      })
+                      .Events(ev => ev
+                            .Error("error_handler(\"courses_grid_#=CmsTraineeId#\")")
+                            .RequestStart("onRequestStart(\"courses_grid_#=CmsTraineeId#\")")
+                            .RequestEnd("onRequestEnd(\"courses_grid_#=CmsTraineeId#\")"))
+
+                      .Read(read => read.Action("Data_Read", "CMSTraineeCourse", new { id = "#=CmsTraineeId#" }))
+                      .Create(create => create.Action("Data_Create", "CMSTraineeCourse", new { id = "#=CmsTraineeId#" }))
+                      .Update(update => update.Action("Data_Update", "CMSTraineeCourse"))
+                      .Destroy(destroy => destroy.Action("Data_Destroy", "CMSTraineeCourse"))
+                  ).ToClientTemplate()
+            )
+    }
 <script type="text/javascript">
     function forwardToTraining(id) {
          $.ajax({

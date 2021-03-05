@@ -73,14 +73,14 @@
                         .Filter("contains")
                         .DataSource(dataSource =>
                         {
-                            dataSource.Read(read => read.Action("GetCourses", "CMSDataProvider", new { area = "CMS" }))
+                            dataSource.Read(read => read.Action("GetCourses", "CMSDataProvider", new { area = "CMS" }).Data("getSelectedProgram"))
                             .ServerFiltering(true);
                         })
                     //.Events(ev =>
                     //{
                     //    ev.Change("referencedSalesOrderSelectorChange");
                     //})
-                    //.CascadeFrom("Source")
+                    .CascadeFrom("CMSProgramId")
                     //.Enable(false)
                     //.AutoBind(false)
 
@@ -111,6 +111,12 @@
         </div>
         <div class="editor-field">
             @(Html.Kendo().TextBoxFor(m => m.Nationality).HtmlAttributes(new { @class = "full-width-custom-input-box" }))
+        </div>
+         <div class="editor-label">
+            @Html.LabelFor(model => model.Requirement)
+        </div>
+        <div class="editor-field">
+            @(Html.Kendo().TextBoxFor(m => m.Requirement).HtmlAttributes(new { @class = "full-width-custom-input-box" }))
         </div>
         <div class="editor-label">
             @Html.LabelFor(model => model.Region)
@@ -162,10 +168,22 @@
             )
         </div>
         <div class="editor-label">
+            @Html.LabelFor(model => model.ZipCode)
+        </div>
+        <div class="editor-field">
+            @(Html.Kendo().TextBoxFor(m => m.ZipCode).HtmlAttributes(new { @class = "full-width-custom-input-box" }))
+        </div>
+        <div class="editor-label">
             @Html.LabelFor(model => model.DateOfBirth)
         </div>
         <div class="editor-field">
             @(Html.Kendo().DatePickerFor(m => m.DateOfBirth).HtmlAttributes(new { @class = "full-width-custom-input-box" }))
+        </div>
+        <div class="editor-label">
+            @Html.LabelFor(model => model.PlaceOfBirth)
+        </div>
+        <div class="editor-field">
+            @(Html.Kendo().TextBoxFor(m => m.PlaceOfBirth).HtmlAttributes(new { @class = "full-width-custom-input-box" }))
         </div>
 
         <div class="editor-label">

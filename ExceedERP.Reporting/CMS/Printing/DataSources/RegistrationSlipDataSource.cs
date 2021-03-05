@@ -65,7 +65,18 @@ namespace ExceedERP.Reporting.CMS.Printing.DataSource
                         Program = CMSGenericHelper.GetProgramById(trainee.CMSProgramId),
                         Course = CMSGenericHelper.GetCourseById(trainee.CMSCourseId),
                         CompanyName = trainee.CompanyName,
-                        Type =(int)trainee.Type
+                        Type =(int)trainee.Type,
+
+                        Nationality = trainee.Nationality,
+                        Region = trainee.Region.ToString(),
+                        City = CMSGenericHelper.GetCityById(trainee.CityId),
+                        Address = trainee.Address,
+                        DateOfBirth = trainee.DateOfBirth,
+                        MobilePhoneNumber = trainee.MobilePhoneNumber,
+                        PhoneNumber = trainee.PhoneNumber,
+                        Email = trainee.Email,
+                        PreferedDate = trainee.PreferedDate,
+                        TrainingVenue = trainee.TrainingVenue
                     };
                 }
                 return record;

@@ -228,7 +228,8 @@
                 {#
                     <a class="btn btn-danger k-button k-button-icontext" onclick='return setAsFailedExamination("#=CmsTraineeId#")' href='\#' title=""><i class="fa fa-close fa-1x"></i> &nbsp; Failed Examination</a>
                     <a class="btn btn-success k-button k-button-icontext" onclick='return setAsPassedExamination("#=CmsTraineeId#")' href='\#' title=""><i class="fa fa-check fa-1x"></i> &nbsp; Passed Examination</a>
-                    <a class="btn btn-success k-button k-button-icontext" onclick='return insertWeldersPerformanceQualification("#=CmsTraineeId#", "#=RegistrationNumber#")' href='\#' title=""><i class="fa fa-list fa-1x"></i> &nbsp; Welder's Performance Qualification</a>
+                    <a class="btn btn-success k-button k-button-icontext" onclick='return insertWeldersPerformanceQualification("#=CmsTraineeId#", "#=RegistrationNumber#")' href='\#' title=""><i class="fa fa-edit fa-1x"></i> &nbsp; Welder's Performance Qualification</a>
+                    <a class="btn btn-primary k-button k-button-icontext" href="\#" onclick='return printWeldersPerformanceQualification("#=RegistrationNumber#","#=CmsTraineeId#","#=FullName#" )' title="Print Welder's Performance Qualification"><i class="fa fa-print  fa-1x"></i> &nbsp;&nbsp; Print Welder's Performance Qualification</a>
 
                     <br />
                     <br />
@@ -353,5 +354,8 @@
     }
     function insertWeldersPerformanceQualification(id, regNumber) {
         window.location.href = `/CMS/TrainingEvaluation/Wps?ti= ${id}&reg=${regNumber}`;
+    }
+    function printWeldersPerformanceQualification(regNumber, traineeId, fName) {
+        window.location.href = `/CMS/CMSPrint/WeldersPerformanceQualification?regn=${regNumber}&ti= ${traineeId}&name=${fName}`;
     }
 </script>

@@ -18,6 +18,7 @@ namespace ExceedERP.Web.Areas.CMS.Controllers
 
         public ActionResult Index()
         {
+            ViewData["Programs"] = db.CMSPrograms.Select(p => new { p.CMSProgramId, p.Name }).ToList();
             return View();
         }
 
@@ -29,6 +30,7 @@ namespace ExceedERP.Web.Areas.CMS.Controllers
                 Name = cMSCourse.Name,
                 Code = cMSCourse.Code,
                 CreditHours = cMSCourse.CreditHours,
+                CMSProgramId = cMSCourse.CMSProgramId,
 
                 DateCreated = cMSCourse.DateCreated,
                 LastModified = cMSCourse.LastModified,
@@ -49,6 +51,7 @@ namespace ExceedERP.Web.Areas.CMS.Controllers
                     Name = cMSCourse.Name,
                     Code = cMSCourse.Code,
                     CreditHours = cMSCourse.CreditHours,
+                    CMSProgramId = cMSCourse.CMSProgramId,
 
                     DateCreated = DateTime.Now,
                     CreatedBy = User.Identity.Name,
@@ -73,6 +76,7 @@ namespace ExceedERP.Web.Areas.CMS.Controllers
                     Name = cMSCourse.Name,
                     Code = cMSCourse.Code,
                     CreditHours = cMSCourse.CreditHours,
+                    CMSProgramId = cMSCourse.CMSProgramId,
 
                     DateCreated = cMSCourse.DateCreated,
                     LastModified = DateTime.Now,
@@ -99,6 +103,7 @@ namespace ExceedERP.Web.Areas.CMS.Controllers
                     Name = cMSCourse.Name,
                     Code = cMSCourse.Code,
                     CreditHours = cMSCourse.CreditHours,
+                    CMSProgramId = cMSCourse.CMSProgramId,
 
                     DateCreated = cMSCourse.DateCreated,
                     LastModified = cMSCourse.LastModified,
