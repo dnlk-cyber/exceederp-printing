@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
+using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Common.HRM;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.HR;
@@ -16,7 +17,28 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
         private ExceedDbContext db = new ExceedDbContext();
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<EmployeeInfo> GetEmployeeBirthDate(string branchId, string orgStructureId, int agemin, int ageMax)
+        public List<string> GetSexParameterData()
+        {            
+            var list =
+            Enum.GetValues(typeof(Gender))
+                .Cast<Gender>()
+                .Select(x => x.ToString()).ToList();
+            return list;
+        }
+
+        [DataObjectMethod(DataObjectMethodType.Select)]
+        public List<EmployeeTypeReportParameterViewModel> GetEmployeeTypeParameterData()
+        {
+            var list = db.EmployeeTypes.Select(e => new EmployeeTypeReportParameterViewModel
+            {
+                Id =  e.EmployeeTypeId.ToString(),
+                Name = e.Name
+            }).ToList();
+            return list;
+            
+        }
+        [DataObjectMethod(DataObjectMethodType.Select)]
+        public List<EmployeeInfo> GetEmployeeBirthDate(string branchId, string orgStructureId, string employeeTypeId, string sex, int agemin, int ageMax)
         {
             List<EmployeeInfo> EmployeeInfoList = new List<EmployeeInfo>();
             EmployeeInfo EmployeeInfo = new EmployeeInfo();
@@ -27,7 +49,15 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             db = new ExceedDbContext();
        
             emplist = HrHelper.PersonEmployeesOneBranch(branchId, orgStructureId, "");
-
+            if(employeeTypeId != null)
+            {
+                int.TryParse(employeeTypeId, out int empTypeId);
+                emplist = emplist.Where(e => e.EmployeeTypeId == empTypeId).ToList();
+            }
+            if(sex != null)
+            {
+                emplist = emplist.Where(e => e.Gender.ToString() == sex).ToList();
+            }
             if (emplist.Any())
             {
                 foreach (var e in emplist)
@@ -40,6 +70,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                         {
                             EmployeeInfo = new EmployeeInfo();
                             EmployeeInfo.IdNumber = e.EmployeeCode;
+                            EmployeeInfo.Type = GetEmployeeTypeName(e.EmployeeTypeId);
                             EmployeeInfo.Sex = HrHelper.GetGender(e.Gender);
 
                             EmployeeInfo.FullName = HrHelper.GetEmployeeFullName(e.EmployeeId);
@@ -72,6 +103,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                     {
                         EmployeeInfo = new EmployeeInfo();
                         EmployeeInfo.IdNumber = e.EmployeeCode;
+                        EmployeeInfo.Type = GetEmployeeTypeName(e.EmployeeTypeId);
                         EmployeeInfo.Sex = HrHelper.GetGender(e.Gender);
 
                         EmployeeInfo.FullName = HrHelper.GetEmployeeFullName(e.EmployeeId); ;
@@ -104,6 +136,11 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
             }
             return EmployeeInfoList;
+        }
+
+        private string GetEmployeeTypeName(int? id)
+        {
+            return db.EmployeeTypes.Find(id)?.Name;
         }
     }
 }

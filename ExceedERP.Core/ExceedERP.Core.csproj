@@ -738,6 +738,7 @@
     <Compile Include="Domain\HRM\EmployeeDetail\EmployeeCodeSequenceSetting.cs" />
     <Compile Include="Domain\HRM\EmployeeDetail\EmployeeCodeSetting.cs" />
     <Compile Include="Domain\HRM\EmployeeDetail\EmployeesUnderBoss.cs" />
+    <Compile Include="Domain\HRM\EmployeeDetail\EmployeeType.cs" />
     <Compile Include="Domain\HRM\EmployeeDetail\RetirementSetting.cs" />
     <Compile Include="Domain\HRM\Enum.cs" />
     <Compile Include="Domain\HRM\HealthAndInsurance\Diagnosis.cs" />

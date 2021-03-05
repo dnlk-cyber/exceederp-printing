@@ -1964,6 +1964,7 @@
     <Compile Include="HRM\HRM\HRMViewModel\DelegationCCVM.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\DeligationVM.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\EmployeeHealthPayment.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\EmployeeTypeReportParameterViewModel.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\EmployementTypeVM.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\ExperienceVM.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\HealthPaymentDetaiList.cs" />

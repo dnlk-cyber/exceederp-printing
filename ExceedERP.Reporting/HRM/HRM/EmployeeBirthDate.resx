@@ -165,6 +165,12 @@
   <data name="textBox4.Value" xml:space="preserve">
     <value>= Count(Fields.FullName)</value>
   </data>
+  <data name="textBox13.Value" xml:space="preserve">
+    <value>=Fields.Type</value>
+  </data>
+  <data name="textBox12.Value" xml:space="preserve">
+    <value>Type</value>
+  </data>
   <data name="Page.Value" xml:space="preserve">
     <value>Page: </value>
   </data>
@@ -185,5 +191,11 @@
   </data>
   <data name="reportParameter4.Text" xml:space="preserve">
     <value>Maximum</value>
+  </data>
+  <data name="reportParameter5.Text" xml:space="preserve">
+    <value>Gender</value>
+  </data>
+  <data name="reportParameter6.Text" xml:space="preserve">
+    <value>Employee Type</value>
   </data>
 </root>

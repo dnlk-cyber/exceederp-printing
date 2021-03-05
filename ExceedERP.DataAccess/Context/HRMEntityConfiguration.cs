@@ -574,6 +574,16 @@ namespace ExceedERP.DataAccess
 
         }
     }
+    public class EmployeeTypeEntityTypeConfiguration : EntityTypeConfiguration<EmployeeType>
+    {
+
+        public EmployeeTypeEntityTypeConfiguration()
+        {
+            this.ToTable("EmployeeTypes", "HRM");
+            this.HasKey<int>(o => o.EmployeeTypeId);
+
+        }
+    }
 
     public class MainCompanyStructureEntityTypeConfiguration : EntityTypeConfiguration<MainCompanyStructure>
     {

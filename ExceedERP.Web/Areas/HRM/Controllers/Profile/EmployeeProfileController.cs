@@ -56,6 +56,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
             ViewData["commitment"] = commtTypes;
             var cosignTypes = db.Lookups.Where(x => x.LookupType == LookUpTypes.COSIGN_TYPE);
             ViewData["CosignType"] = cosignTypes;
+            ViewData["EmployeeTypes"] = db.EmployeeTypes.Select(e => new { e.EmployeeTypeId, e.Name }).ToList();
 
 
 
@@ -1161,6 +1162,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                 LastNameEnglish = person_Employee.LastNameEnglish,
                 DateOfBirthAm = person_Employee.DateOfBirthAm,
                 HiredDateAmharic = person_Employee.HiredDateAmharic,
+
+                EmployeeTypeId = person_Employee.EmployeeTypeId,
+
                 ProhabitionState = CheckProhabition(person_Employee.EmployeeId),
                 BranchId = person_Employee.BranchId,//Branch(person_Employee.EmployeeId),
                 IsProbationEnd = person_Employee.Status == EmployeeStatus.PROBATION ? Probation(person_Employee.EmployeeId) : false
@@ -1439,6 +1443,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                         DateOfBirthAm = person_Employee.DateOfBirthAm,
                         HiredDateAmharic = person_Employee.HiredDateAmharic,
                         OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name),
+                        EmployeeTypeId = person_Employee.EmployeeTypeId,
                     };
 
                     db.Person_Employee.Add(entity);
@@ -1788,6 +1793,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                                 DateOfBirthAm = person_Employee.DateOfBirthAm,
                                 OrgBranchName = person_Employee.OrgBranchName,
                                 HiredDateAmharic = person_Employee.HiredDateAmharic,
+
+                                EmployeeTypeId = person_Employee.EmployeeTypeId,
+
                             };
                             db = new ExceedDbContext();
                             db.Person_Employee.Attach(entity);
@@ -1864,6 +1872,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                             DateOfBirthAm = person_Employee.DateOfBirthAm,
                             OrgBranchName = person_Employee.OrgBranchName,
                             HiredDateAmharic = person_Employee.HiredDateAmharic,
+
+                            EmployeeTypeId = person_Employee.EmployeeTypeId,
+
                         };
                         db = new ExceedDbContext();
                         db.Person_Employee.Attach(entity);
@@ -1938,6 +1949,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                         DateOfBirthAm = person_Employee.DateOfBirthAm,
                         HiredDateAmharic = person_Employee.HiredDateAmharic,
                         OrgBranchName = person_Employee.OrgBranchName,
+
+                        EmployeeTypeId = person_Employee.EmployeeTypeId,
+
                     };
                     #region delete log
                     UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted employee information of employee Id" + person_Employee.EmployeeCode);

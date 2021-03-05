@@ -1683,6 +1683,7 @@
     <Compile Include="Areas\HRM\Controllers\Performance\ProbationPerformanceSettingController.cs" />
     <Compile Include="Areas\HRM\Controllers\Performance\QuarterController.cs" />
     <Compile Include="Areas\HRM\Controllers\Performance\QuarterLengthController.cs" />
+    <Compile Include="Areas\HRM\Controllers\Profile\EmployeeTypesController.cs" />
     <Compile Include="Areas\HRM\Controllers\Profile\EmployeeCodeSequenceController.cs" />
     <Compile Include="Areas\HRM\Controllers\Profile\EmployeeCodeSettingController.cs" />
     <Compile Include="Areas\HRM\Controllers\Profile\EmployeePlacmentWithJController.cs" />
@@ -4723,6 +4724,7 @@
     <Content Include="Areas\InfoDesk\Views\SelfCareOpenTickets\EditorTemplates\CustomerTicketEditor.cshtml" />
     <Content Include="Areas\InfoDesk\Views\SelfCareOpenTickets\Index.cshtml" />
     <Content Include="Areas\InfoDesk\Views\shared\EditorTemplates\EmployeesListFromGroup.cshtml" />
+    <Content Include="Areas\HRM\Views\EmployeeTypes\Index.cshtml" />
     <None Include="Properties\PublishProfiles\dce.pubxml" />
     <None Include="Properties\PublishProfiles\fbc.pubxml" />
     <None Include="Scripts\kendo\2018.3.911\kendo.all-vsdoc.js" />

@@ -30,7 +30,12 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             List<Person_Employee> employees;
             List<string> allBranches = new List<string>();
 
-            employees = PersonEmployeeBranch(branchId, orgStructureId, employeeType);
+            employees = PersonEmployeeBranch(branchId, orgStructureId, "");
+            if(employeeType != null)
+            {
+                int.TryParse(employeeType, out int eId);
+                employees = employees.Where(e => e.EmployeeTypeId == eId).ToList();
+            }
 
             //DateTime dateFrom = new DateTime(hireFrom.Year, hireFrom.Month, hireFrom.Day);
             //DateTime dateTo = new DateTime(hireTo.Year, hireTo.Month, hireTo.Day);

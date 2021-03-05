@@ -289,7 +289,7 @@ namespace ExceedERP.Web.Areas.CRM.Controllers
             var lookups = db.Lookups.Where(l => l.LookupType == LookUpTypes.NATION).AsQueryable();
             return Json(lookups.Select(p => new { LookupID = p.LookupId, Description = p.Description }), JsonRequestBehavior.AllowGet);
         }
-
+       
         public JsonResult GetEmployeeList()
           {
               var employeeList = db.Person_Employee.Where(e => e.IsActive == true).AsQueryable();

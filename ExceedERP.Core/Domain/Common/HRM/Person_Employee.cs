@@ -100,6 +100,10 @@ namespace ExceedERP.Core.Domain.Common.HRM
         public bool IsProbationEnd { get; set; }
         [Display(Name = "HR_EmployeeDetail_Placement_Branch", ResourceType = typeof(Localization.Resources))]
         public int BranchId { get; set; }
-        
+
+        [Display(Name ="Employee Type")]
+        public int EmployeeTypeId { get; set; }
+
+
     }
 }

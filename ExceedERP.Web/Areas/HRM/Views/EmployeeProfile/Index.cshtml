@@ -57,7 +57,7 @@
              columns.ForeignKey(c => c.Nation, (IEnumerable)ViewData["NationList"], "LookupId", "Description").EditorTemplateName("Nation").Width(100).Visible(true);
              // columns.ForeignKey(c => c.Nationality, (IEnumerable)ViewData["Nationalites"], "CountryId", "Nationality").EditorTemplateName("NationalityList").Width(100);
              columns.Bound(c => c.MartialStatus).EditorTemplateName("Enum").Width(100);
-             //  columns.ForeignKey(c => c.Nation, (IEnumerable)ViewData["Nation"], "Nation", "Description").Filterable(ftb => ftb.Multi(true).Search(true)).Width(100);
+             columns.ForeignKey(c => c.EmployeeTypeId, (IEnumerable)ViewData["EmployeeTypes"], "EmployeeTypeId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(100);
              //columns.Bound(c => c.IsActive).ClientTemplate("<input type='checkbox' disabled = 'true' \\#= Status ? checked='checked' :'' \\# />").Width(100);
              columns.Command(command =>
              {

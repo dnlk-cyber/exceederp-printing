@@ -605,6 +605,7 @@ namespace ExceedERP.DataAccess.Context
             modelBuilder.Configurations.Add(new BonusEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new BackPaymentEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new PayrollPeriodEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new EmployeeTypeEntityTypeConfiguration());
 
             #endregion
 
@@ -1936,6 +1937,7 @@ namespace ExceedERP.DataAccess.Context
 
         #region Employee Detail
 
+        public System.Data.Entity.DbSet<EmployeeType> EmployeeTypes { get; set; }
         public System.Data.Entity.DbSet<EmployeeCodeSequenceSetting> EmployeeCodeSequenceSettings { get; set; }
         public System.Data.Entity.DbSet<EmployeeCodeSetting> EmployeeCodeSettings { get; set; }
         public System.Data.Entity.DbSet<ComplainResponse> ComplainResponses { get; set; }

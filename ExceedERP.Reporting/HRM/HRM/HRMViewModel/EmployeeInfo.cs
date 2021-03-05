@@ -12,6 +12,6 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMViewModel
         public string Value { get; set; }
         public string Dob { get; set; }
         public string TIN { get; set; }
-
+        public string Type { get; set; }
     }
 }

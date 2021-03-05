@@ -1619,6 +1619,11 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
                 Description = p.Description
             }), JsonRequestBehavior.AllowGet);
         }
+        public JsonResult GetEmployeeTypes()
+        {
+            var data = db.EmployeeTypes;
+            return Json(data.Select(p => new { p.EmployeeTypeId, p.Name }), JsonRequestBehavior.AllowGet);
+        }
         public JsonResult GetPersonTitle()
         {
             var lookups = db.Lookups.Where(l => l.LookupType == LookUpTypes.PERSON_TITLE && l.IsActive).AsQueryable();

@@ -3447,6 +3447,10 @@
     <Compile Include="Migrations\202102011408095_InfoDeskAndCMSMerged.Designer.cs">
       <DependentUpon>202102011408095_InfoDeskAndCMSMerged.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202102230655286_EmployeeTypeModelAddedToHR.cs" />
+    <Compile Include="Migrations\202102230655286_EmployeeTypeModelAddedToHR.Designer.cs">
+      <DependentUpon>202102230655286_EmployeeTypeModelAddedToHR.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -5991,6 +5995,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202102011408095_InfoDeskAndCMSMerged.resx">
       <DependentUpon>202102011408095_InfoDeskAndCMSMerged.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202102230655286_EmployeeTypeModelAddedToHR.resx">
+      <DependentUpon>202102230655286_EmployeeTypeModelAddedToHR.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
