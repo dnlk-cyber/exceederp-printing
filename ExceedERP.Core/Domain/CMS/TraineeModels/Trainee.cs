@@ -105,6 +105,17 @@ namespace ExceedERP.Core.Domain.CMS
         /// </summary>
         public string Status { get; set; }
 
+        /// <summary>
+        /// code that represents the iso specification they are being certified for, welding type, welding position and
+        /// other components of the welding qualification.
+        /// this is generated when an individual trainee passes welding qualification
+        /// </summary>
+        public string CertificateDesignationCode { get; set; }
+    }
 
+    public class TraineeCertificateDesignationEditViewModel
+    {
+        public int TraineeId { get; set; }
+        public string DesignationCode { get; set; }
     }
 }

@@ -57,7 +57,11 @@ namespace ExceedERP.Core.Domain.CMS
         Semiautomatic,
         Automatic
     }
-
+    public enum WeldingType
+    {
+        BW,
+        FW
+    }
     public enum UsedNotUsedSelectItem
     {
         Used,

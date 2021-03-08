@@ -105,6 +105,7 @@ namespace ExceedERP.Web.Areas.CMS.Controllers
                 PlaceOfBirth = trainee.PlaceOfBirth,
                 ZipCode = trainee.ZipCode,
                 Requirement= trainee.Requirement,
+                CertificateDesignationCode = trainee.CertificateDesignationCode,
 
                 DateCreated = trainee.DateCreated,
                 LastModified = trainee.LastModified,
@@ -147,6 +148,7 @@ namespace ExceedERP.Web.Areas.CMS.Controllers
                     PlaceOfBirth = trainee.PlaceOfBirth,
                     ZipCode = trainee.ZipCode,
                     Requirement = trainee.Requirement,
+                    CertificateDesignationCode = trainee.CertificateDesignationCode,
 
                     DateCreated = DateTime.Now,
                     LastModified = trainee.LastModified,
@@ -211,6 +213,7 @@ namespace ExceedERP.Web.Areas.CMS.Controllers
                     PlaceOfBirth = trainee.PlaceOfBirth,
                     ZipCode = trainee.ZipCode,
                     Requirement = trainee.Requirement,
+                    CertificateDesignationCode = trainee.CertificateDesignationCode,
 
                     DateCreated = trainee.DateCreated,
                     LastModified = DateTime.Now,
@@ -260,6 +263,7 @@ namespace ExceedERP.Web.Areas.CMS.Controllers
                     PlaceOfBirth = trainee.PlaceOfBirth,
                     ZipCode = trainee.ZipCode,
                     Requirement = trainee.Requirement,
+                    CertificateDesignationCode = trainee.CertificateDesignationCode,
 
                     DateCreated = trainee.DateCreated,
                     LastModified = trainee.LastModified,
@@ -344,6 +348,24 @@ namespace ExceedERP.Web.Areas.CMS.Controllers
         #endregion
 
         #region public methods
+        //[HttpPost]
+        //[ValidateAntiForgeryToken]
+        public ActionResult UpdateCertificateDesignation(int TraineeId, string DesignationCode)
+        {
+            if (ModelState.IsValid)
+            {
+                var currentTrainee = db.CmsTrainees.Find(TraineeId);
+                if(currentTrainee != null)
+                {
+                    currentTrainee.CertificateDesignationCode = DesignationCode;
+
+                    db.CmsTrainees.Attach(currentTrainee);
+                    db.Entry(currentTrainee).State = EntityState.Modified;
+                    db.SaveChanges();
+                }
+            }
+            return Redirect(nameof(Index));
+        }
         #region Generate Id 
         private TraineeIdGenerationStatusViewModel GenerateTraineeRegistrationNumber(CmsTrainee trainee)
         {

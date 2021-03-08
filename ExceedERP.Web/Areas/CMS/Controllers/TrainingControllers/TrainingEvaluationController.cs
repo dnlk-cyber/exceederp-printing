@@ -100,9 +100,61 @@ namespace ExceedERP.Web.Areas.CMS.Controllers.TrainingControllers
                 //record.IsSendForApproval = true;
                 //record.SendForApprovalBy = User.Identity.Name;
                 //record.SendForApprovalTime = DateTime.Now;
+
+                #region generate designation code
+                string designation = "";
+                var idComponent = db.TraineeIdNumberComponents.FirstOrDefault(ic => ic.CmsTraineeId == record.CmsTraineeId);
+                if (idComponent != null)
+                {
+                    designation = $"ISO {idComponent.ISOType}";
+                }
+                var performanceRecord = db.WelderPerformanceQualification.FirstOrDefault(p => p.CmsTraineeId == record.CmsTraineeId);
+                if (performanceRecord != null)
+                {
+                    designation +=
+                         $" {performanceRecord.WeldingProcess}";
+                         
+                    if (performanceRecord.WeldingType == WeldingType.BW.ToString())
+                    {
+                        designation += $"{performanceRecord.GrooveBaseMetalPlateOrPipe}";
+                    }
+                    else if (performanceRecord.WeldingType == WeldingType.FW.ToString())
+                    {
+                        designation += $"{performanceRecord.FilletBaseMetalPlateOrPipe}";
+                    }
+
+                    designation += 
+                         $" {performanceRecord.WeldingType}" +
+                         $" {performanceRecord.FillerMetalClassificationNumber}";
+
+                    if (performanceRecord.WeldingType == WeldingType.BW.ToString())
+                    {
+                        designation +=
+                            $" S s{performanceRecord.ThicknessOfGrooveBaseMetalPlateOrPipe}" +
+                            $" D{performanceRecord.GroovePipeOrTubularOutsideDiameter}";
+                    }
+                    else if (performanceRecord.WeldingType == WeldingType.FW.ToString())
+                    {
+                        designation +=
+                            $" S s{performanceRecord.ThicknessOfFilletBaseMetalPlateOrPipe}" +
+                            $" D{performanceRecord.FilletPipeOrTubularOutsideDiameter}";
+                    }
+                    designation +=
+                        $" {performanceRecord.TestPositions}" +
+                        $" {performanceRecord.TypeOfRootShieldingGas}";
+
+                    record.CertificateDesignationCode = designation;
+                }
+                else
+                {
+                    return Json(new { Message = "No Welder's performance qualification record found for this Trainee", Status = "NOT_OK" }, JsonRequestBehavior.AllowGet);
+                }
+                #endregion
+
                 db.CmsTrainees.Attach(record);
                 db.Entry(record).State = EntityState.Modified;
                 db.SaveChanges();
+
 
                 return Json(new { Message = "Successfully set as 'Passed Examination'.", Status = "OK" }, JsonRequestBehavior.AllowGet);
             }
@@ -134,7 +186,7 @@ namespace ExceedERP.Web.Areas.CMS.Controllers.TrainingControllers
                 return Json(formattedData, JsonRequestBehavior.AllowGet);
             }
 
-           
+
             return null;
         }
         public JsonResult SetAsFailedExamination(int id)
@@ -155,7 +207,7 @@ namespace ExceedERP.Web.Areas.CMS.Controllers.TrainingControllers
                 }
                 else
                 {
-                    
+
                 }
                 #endregion
 
@@ -204,7 +256,7 @@ namespace ExceedERP.Web.Areas.CMS.Controllers.TrainingControllers
         public ActionResult Wps(int ti, string reg)
         {
             var trainee = db.CmsTrainees.Find(ti);
-            if(trainee == null)
+            if (trainee == null)
             {
                 return HttpNotFound();
             }
@@ -214,7 +266,7 @@ namespace ExceedERP.Web.Areas.CMS.Controllers.TrainingControllers
                 CmsTraineeId = ti,
             };
             var existingEvaluation = db.WelderPerformanceQualification.FirstOrDefault(p => p.CmsTraineeId == ti);
-            if(existingEvaluation != null)
+            if (existingEvaluation != null)
             {
                 model = existingEvaluation;
             }
@@ -223,14 +275,14 @@ namespace ExceedERP.Web.Areas.CMS.Controllers.TrainingControllers
         [HttpPost]
         public ActionResult Wps(WelderPerformanceQualification welderPerformanceQualification)
         {
-            if(db.WelderPerformanceQualification.FirstOrDefault(d => d.CmsTraineeId == welderPerformanceQualification.CmsTraineeId) == null)
+            if (db.WelderPerformanceQualification.FirstOrDefault(d => d.CmsTraineeId == welderPerformanceQualification.CmsTraineeId) == null)
             {
                 db.WelderPerformanceQualification.Add(welderPerformanceQualification);
                 db.SaveChanges();
             }
             else
             {
-               var existingEntity = db.WelderPerformanceQualification.Find(welderPerformanceQualification.WelderPerformanceQualificationId);
+                var existingEntity = db.WelderPerformanceQualification.Find(welderPerformanceQualification.WelderPerformanceQualificationId);
                 db.WelderPerformanceQualification.Attach(existingEntity);
                 db.WelderPerformanceQualification.Remove(existingEntity);
                 db.SaveChanges();

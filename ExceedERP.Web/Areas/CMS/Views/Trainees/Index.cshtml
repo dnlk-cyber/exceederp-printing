@@ -180,29 +180,53 @@
 
                 <a class="btn btn-primary k-button k-button-icontext" href='@Url.Action("RegistrationSlip", "CMSPrint")/#=CmsTraineeId#' title="Print Registration Slip"><i class="fa fa-print  fa-2x"></i> &nbsp;&nbsp; Print Registration Slip</a>
                 #if(Status == "@ExceedERP.Core.Domain.CMS.TraineeStatusConstants.PassedExamination"){#
+                    <a class="btn btn-primary k-button k-button-icontext" href="\#" onclick='return printWeldersPerformanceQualification("#=RegistrationNumber#","#=CmsTraineeId#","#=FullName#" )' title="Print Welder's Performance Qualification"><i class="fa fa-print  fa-2x"></i> &nbsp;&nbsp; Print Welder's Performance Qualification</a>
                     <a class="btn btn-success k-button k-button-icontext" href="\#" onclick='return printCertificate("#=RegistrationNumber#","#=CmsTraineeId#","#=FullName#" )' title="Print Certificate"><i class="fa fa-certificate  fa-2x"></i> &nbsp;&nbsp; Print Certificate</a>
+                #}#
+                #if(Status == "@ExceedERP.Core.Domain.CMS.TraineeStatusConstants.PassedExamination"){#
+                    <br />
+                    <br />
+                    <div class="align-items-center" style="padding:10px;  border-radius:5px; ">
+                        <div class="row align-self-center">
+                            <form action="@Url.Action("UpdateCertificateDesignation", "Trainees")">
+                                <div class="col-sm-1">
+                                    <h5>Certificate Designation:</h5>
+                                    @Html.Hidden("TraineeId", "#=CmsTraineeId#")
+                                </div>
+                                <div class="col-sm-3">
+                                    @*@Html.TextBox("DesignationCode", "#=CertificateDesignationCode#")*@
+                                    @Html.Kendo().TextBox().Name("DesignationCode").Value("#=CertificateDesignationCode#").HtmlAttributes(new { @style="width:100%; max-width:100%"})
+                                </div>
+                                <div class="col-sm-1">
+                                    <button type="submit" class="btn btn-primary k-button k-button-icontext"><i class="fa fa-save"></i> &nbsp; Save Changes</button>
+                                </div>
+                            </form>
+                        </div>
+                        
+                    </div>
+                    <br />
                 #}#
                 @(Html.Kendo().PanelBar()
                     .Name("trainee_panelbar_#=CmsTraineeId#")
                     .ExpandMode(PanelBarExpandMode.Multiple)
                     .Items(panelbar =>
                     {
-                        panelbar.Add()
-                            .Expanded(true)
-                            .Text("Detail")
-                            .Content(
-                                "<div>" +
-                                "<ul>" +
-                                "<li> <label> Status: </label> <strong> #=Status != null ? Status: ' '# </strong> </li>" +
-                                "<li> <label> Created by: </label> <strong> #=CreatedBy != null ? CreatedBy: ' '# </strong> </li>" +
-                                "<li> <label> Created on: </label> #= kendo.toString(DateCreated, 'dd/MM/yyyy H:mm:ss')# </li>" +
-                                "<li> <label> Modified by :</label> #= ModifiedBy != null ? ModifiedBy: ''# </li>" +
-                                "<li> <label> Last Modified :</label> #= LastModified != null ? kendo.toString(LastModified, 'dd/MM/yyyy H:mm:ss') : ' '# </li>" +
-                                "</ul>" +
-                                "</div>"
-                            );
+                                panelbar.Add()
+                                    .Expanded(true)
+                                    .Text("Detail")
+                                    .Content(
+                                        "<div>" +
+                                        "<ul>" +
+                                        "<li> <label> Status: </label> <strong> #=Status != null ? Status: ' '# </strong> </li>" +
+                                        "<li> <label> Created by: </label> <strong> #=CreatedBy != null ? CreatedBy: ' '# </strong> </li>" +
+                                        "<li> <label> Created on: </label> #= kendo.toString(DateCreated, 'dd/MM/yyyy H:mm:ss')# </li>" +
+                                        "<li> <label> Modified by :</label> #= ModifiedBy != null ? ModifiedBy: ''# </li>" +
+                                        "<li> <label> Last Modified :</label> #= LastModified != null ? kendo.toString(LastModified, 'dd/MM/yyyy H:mm:ss') : ' '# </li>" +
+                                        "</ul>" +
+                                        "</div>"
+                                    );
 
-                    }).ToClientTemplate()
+                            }).ToClientTemplate()
                 ) 
             </text>);
             items.Add().Text("Barcode").Content(@<text>
@@ -451,6 +475,9 @@
     function printCertificate(regNumber, traineeId, fName) {
         window.location.href = `/CMS/CMSPrint/QualificationCertificate?regn=${regNumber}&ti= ${traineeId}&name=${fName}`;
     }
+    function printWeldersPerformanceQualification(regNumber, traineeId, fName) {
+        window.location.href = `/CMS/CMSPrint/WeldersPerformanceQualification?regn=${regNumber}&ti= ${traineeId}&name=${fName}`;
+    }
     function onTraineeEdit(e) {
         if (e.model.isNew()) {
             $("#trainee-profile-container").hide();
@@ -542,10 +569,12 @@
     div.k-content {
         height: inherit;
     }*/
+
     div.k-edit-form-container {
         width: 400px;
         height: inherit;
     }
+
     div.k-content {
         overflow: auto;
         height: inherit;

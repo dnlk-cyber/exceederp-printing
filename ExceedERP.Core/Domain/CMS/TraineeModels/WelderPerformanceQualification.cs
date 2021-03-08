@@ -41,11 +41,13 @@ namespace ExceedERP.Core.Domain.CMS
         public string RangeOfSpecOfBaseMetal { get; set; }
 
         public string GrooveBaseMetalPlateOrPipe { get; set; }
+        public string RangeOfGrooveBaseMetalPlateOrPipe { get; set; }
         public string ThicknessOfGrooveBaseMetalPlateOrPipe { get; set; }
         public string RangeThicknessOfGrooveBaseMetalPlateOrPipe { get; set; }
 
         
         public string FilletBaseMetalPlateOrPipe { get; set; }
+        public string RangeOfFilletBaseMetalPlateOrPipe { get; set; }
         public string ThicknessOfFilletBaseMetalPlateOrPipe { get; set; }
         public string RangeOfThicknessOfFilletBaseMetalPlateOrPipe { get; set; }
 
@@ -67,8 +69,10 @@ namespace ExceedERP.Core.Domain.CMS
         public string FillerMetalDiameter { get; set; }
         public string RangeOfFillerMetalDiameter { get; set; }
 
-        public YesOrNoSelectItem ConsumableInsert { get; set; }
-        public YesOrNoSelectItem PenetrationEnhanceFlux { get; set; }
+        //public YesOrNoSelectItem ConsumableInsert { get; set; }
+        //public YesOrNoSelectItem PenetrationEnhanceFlux { get; set; }
+        public string Auxiliaries { get; set; }
+        public string RangeOfAuxiliaries { get; set; }
 
         // welding metal 
         public string WeldingMetalThickness { get; set; }

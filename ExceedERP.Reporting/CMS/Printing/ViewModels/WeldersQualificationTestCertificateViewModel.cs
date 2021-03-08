@@ -12,6 +12,7 @@ namespace ExceedERP.Reporting.CMS.Printing.ViewModels
     {
         public Image ProfilePicture { get; set; }
         public Image Barcode { get; set; }
+        public string Designation { get; set; }
         public DateTime RegistrationDate { get; set; }
         public string RegistrationNumber { get; set; }
         
@@ -21,7 +22,18 @@ namespace ExceedERP.Reporting.CMS.Printing.ViewModels
         public string Identification { get; set; }
         public string PlaceOfBirth { get; set; }
         public DateTime? DateOfBirth { get; set; }
+
+        // 
+        public string PlateOrPipe { get; set; }
+        public string RangeOfPlateOrPipe { get; set; }
+
+        public string ThicknessOfWeldingMetal { get; set; }
+        public string RangeOfThicknessOfWeldingMetal { get; set; }
+
+        public string OutsideDiameter { get; set; }
+        public string RangeOfOutsideDiameter { get; set; }
+
         public WelderPerformanceQualification WelderPerformanceQualification { get; set; }
-        public DateTime? CertificateValidUntil { get; set; }
+        public DateTime CertificateValidUntil { get; set; }
     }
 }

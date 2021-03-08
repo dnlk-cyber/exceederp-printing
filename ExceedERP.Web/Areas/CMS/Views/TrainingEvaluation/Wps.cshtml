@@ -98,7 +98,15 @@
                                 <td>
                                     <div class="row">
                                         <div class="col-sm-6">
-                                            @Html.Kendo().TextBoxFor(m => m.WeldingType).HtmlAttributes(new { style = "width:100%;max-width:100%;", placeholder="Welding Type" })
+                                            @*@Html.Kendo().TextBoxFor(m => m.WeldingType).HtmlAttributes(new { style = "width:100%;max-width:100%;", placeholder="Welding Type" })*@
+                                            @(Html.Kendo().DropDownListFor(m => m.WeldingType)
+                                                        .DataTextField("Text")
+                                                        .DataValueField("Text")
+                                                        .Filter(FilterType.Contains)
+                                                        .OptionLabel("Select ...")
+                                                        .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.CMS.WeldingType)))
+                                                        .ValuePrimitive(true)
+                                                        .HtmlAttributes(new { style = "width:100%;" }))
                                         </div>
                                         <div class="col-sm-6">
                                             @Html.Kendo().TextBoxFor(m => m.WeldingProcess).HtmlAttributes(new { style = "width:100%;max-width:100%;", placeholder="Welding Process" })
@@ -173,7 +181,7 @@
                                         <div class="col-sm-6">
                                             @(Html.Kendo().DropDownListFor(m => m.GrooveBaseMetalPlateOrPipe)
                                                                 .DataTextField("Text")
-                                                                .DataValueField("Value")
+                                                                .DataValueField("Text")
                                                                 .Filter(FilterType.Contains)
                                                                 .OptionLabel("Select ...")
                                                                 .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.CMS.PlateOrPipeSelectItem)))
@@ -186,7 +194,14 @@
                                     </div>
                                 </td>
                                 <td>
-                                    @Html.Kendo().TextBoxFor(m => m.RangeThicknessOfGrooveBaseMetalPlateOrPipe).HtmlAttributes(new { style = "width:100%;max-width:100%;"})
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            @Html.Kendo().TextBoxFor(m => m.RangeOfGrooveBaseMetalPlateOrPipe).HtmlAttributes(new { style = "width:100%;max-width:100%;" })
+                                        </div>
+                                        <div class="col-sm-6">
+                                            @Html.Kendo().TextBoxFor(m => m.RangeThicknessOfGrooveBaseMetalPlateOrPipe).HtmlAttributes(new { style = "width:100%;max-width:100%;", placeholder="Range of Thickness" })
+                                        </div>
+                                    </div>
                                 </td>
                             </tr>
 
@@ -197,7 +212,7 @@
                                         <div class="col-sm-6">
                                             @(Html.Kendo().DropDownListFor(m => m.FilletBaseMetalPlateOrPipe)
                                                                                 .DataTextField("Text")
-                                                                                .DataValueField("Value")
+                                                                                .DataValueField("Text")
                                                                                 .Filter(FilterType.Contains)
                                                                                 .OptionLabel("Select ...")
                                                                                 .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.CMS.PlateOrPipeSelectItem)))
@@ -210,7 +225,14 @@
                                     </div>
                                 </td>
                                 <td>
-                                    @Html.Kendo().TextBoxFor(m => m.RangeOfThicknessOfFilletBaseMetalPlateOrPipe).HtmlAttributes(new { style = "width:100%;max-width:100%;" })
+                                    <div class="row">
+                                        <div class="col-sm-6">
+                                            @Html.Kendo().TextBoxFor(m => m.RangeOfThicknessOfFilletBaseMetalPlateOrPipe).HtmlAttributes(new { style = "width:100%;max-width:100%;"})
+                                        </div>
+                                        <div class="col-sm-6">
+                                            @Html.Kendo().TextBoxFor(m => m.RangeOfThicknessOfFilletBaseMetalPlateOrPipe).HtmlAttributes(new { style = "width:100%;max-width:100%;", placeholder="Range of Thickness" })
+                                        </div>
+                                    </div>
                                 </td>
                             </tr>
 
@@ -269,20 +291,15 @@
                                 </td>
                             </tr>
                             <tr>
-                                <td>Consumable Insert</td>
+                                <td>Auxiliaries</td>
                                 <td>
-                                    @(Html.Kendo().DropDownListFor(m => m.ConsumableInsert)
-                                                                                                .DataTextField("Text")
-                                                                                                .DataValueField("Value")
-                                                                                                .Filter(FilterType.Contains)
-                                                                                                .OptionLabel("Select ...")
-                                                                                                .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.CMS.YesOrNoSelectItem)))
-                                                                                                .ValuePrimitive(true)
-                                                                                                .HtmlAttributes(new { style = "width:100%;" }))
+                                    @Html.Kendo().TextBoxFor(m => m.Auxiliaries).HtmlAttributes(new { style = "width:100%;max-width:100%;" })
                                 </td>
-                                <td></td>
+                                <td>
+                                    @Html.Kendo().TextBoxFor(m => m.RangeOfAuxiliaries).HtmlAttributes(new { style = "width:100%;max-width:100%;" })
+                                </td>
                             </tr>
-                            <tr>
+                            @*<tr>
                                 <td>Penetration Enhancing Flux</td>
                                 <td>
                                     @(Html.Kendo().DropDownListFor(m => m.PenetrationEnhanceFlux)
@@ -295,7 +312,7 @@
                                                                                         .HtmlAttributes(new { style = "width:100%;" }))
                                 </td>
                                 <td></td>
-                            </tr>
+                            </tr>*@
                             <tr>
                                 <td style="font-weight:bold">Deposited Weld Metal Thickness</td>
                                 <td>

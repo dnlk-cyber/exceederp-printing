@@ -202,15 +202,15 @@ namespace ExceedERP.Reporting.CMS.Printing.ReportDesigns
             this.textBox160 = new Telerik.Reporting.TextBox();
             this.textBox159 = new Telerik.Reporting.TextBox();
             this.textBox161 = new Telerik.Reporting.TextBox();
-            this.pageFooterSection1 = new Telerik.Reporting.PageFooterSection();
-            this.checkBox10 = new Telerik.Reporting.CheckBox();
-            this.checkBox11 = new Telerik.Reporting.CheckBox();
-            this.checkBox12 = new Telerik.Reporting.CheckBox();
-            this.checkBox13 = new Telerik.Reporting.CheckBox();
-            this.checkBox14 = new Telerik.Reporting.CheckBox();
-            this.checkBox9 = new Telerik.Reporting.CheckBox();
             this.checkBox8 = new Telerik.Reporting.CheckBox();
+            this.checkBox9 = new Telerik.Reporting.CheckBox();
+            this.checkBox14 = new Telerik.Reporting.CheckBox();
+            this.checkBox13 = new Telerik.Reporting.CheckBox();
+            this.checkBox12 = new Telerik.Reporting.CheckBox();
+            this.checkBox11 = new Telerik.Reporting.CheckBox();
+            this.checkBox10 = new Telerik.Reporting.CheckBox();
             this.textBox162 = new Telerik.Reporting.TextBox();
+            this.pageFooterSection1 = new Telerik.Reporting.PageFooterSection();
             this.certificateOds = new Telerik.Reporting.ObjectDataSource();
             this.organizationOds = new Telerik.Reporting.ObjectDataSource();
             ((System.ComponentModel.ISupportInitialize)(this)).BeginInit();
@@ -480,7 +480,7 @@ namespace ExceedERP.Reporting.CMS.Printing.ReportDesigns
             this.textBox5.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(5.3998818397521973D), Telerik.Reporting.Drawing.Unit.Inch(0.15000000596046448D));
             this.textBox5.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
             this.textBox5.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Middle;
-            this.textBox5.Value = " ";
+            this.textBox5.Value = "=Fields.Designation";
             // 
             // textBox8
             // 
@@ -782,19 +782,21 @@ namespace ExceedERP.Reporting.CMS.Printing.ReportDesigns
             this.textBox36.Style.BorderColor.Default = System.Drawing.Color.Silver;
             this.textBox36.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox36.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
+            this.textBox36.Style.TextAlign = Telerik.Reporting.Drawing.HorizontalAlign.Center;
             this.textBox36.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Middle;
             this.textBox36.Value = "Test Piece";
             // 
             // textBox26
             // 
             this.textBox26.Angle = 0D;
-            this.textBox26.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(4.4000000953674316D), Telerik.Reporting.Drawing.Unit.Inch(2.2000000476837158D));
+            this.textBox26.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(4.4002747535705566D), Telerik.Reporting.Drawing.Unit.Inch(2.2000000476837158D));
             this.textBox26.Name = "textBox26";
-            this.textBox26.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(2.0997250080108643D), Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D));
+            this.textBox26.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(2.0994503498077393D), Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D));
             this.textBox26.Style.BorderColor.Default = System.Drawing.Color.Silver;
             this.textBox26.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox26.Style.BorderStyle.Right = Telerik.Reporting.Drawing.BorderType.None;
             this.textBox26.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
+            this.textBox26.Style.TextAlign = Telerik.Reporting.Drawing.HorizontalAlign.Center;
             this.textBox26.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Middle;
             this.textBox26.Value = "Range of Qualification";
             // 
@@ -821,7 +823,10 @@ namespace ExceedERP.Reporting.CMS.Printing.ReportDesigns
             this.textBox40.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(2.3000788688659668D), Telerik.Reporting.Drawing.Unit.Inch(2.4000000953674316D));
             this.textBox40.Name = "textBox40";
             this.textBox40.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(2.0999212265014648D), Telerik.Reporting.Drawing.Unit.Inch(0.15000000596046448D));
+            this.textBox40.Style.BorderColor.Default = System.Drawing.Color.Silver;
+            this.textBox40.Style.BorderStyle.Left = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox40.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
+            this.textBox40.Style.TextAlign = Telerik.Reporting.Drawing.HorizontalAlign.Center;
             this.textBox40.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Middle;
             this.textBox40.Value = "=Fields.WelderPerformanceQualification.WeldingProcess";
             // 
@@ -831,7 +836,10 @@ namespace ExceedERP.Reporting.CMS.Printing.ReportDesigns
             this.textBox39.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(4.4000000953674316D), Telerik.Reporting.Drawing.Unit.Inch(2.4000000953674316D));
             this.textBox39.Name = "textBox39";
             this.textBox39.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(2.0999605655670166D), Telerik.Reporting.Drawing.Unit.Inch(0.15000000596046448D));
+            this.textBox39.Style.BorderColor.Default = System.Drawing.Color.Silver;
+            this.textBox39.Style.BorderStyle.Left = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox39.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
+            this.textBox39.Style.TextAlign = Telerik.Reporting.Drawing.HorizontalAlign.Center;
             this.textBox39.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Middle;
             this.textBox39.Value = "=Fields.WelderPerformanceQualification.RangeOfWeldingProcess";
             // 
@@ -858,7 +866,10 @@ namespace ExceedERP.Reporting.CMS.Printing.ReportDesigns
             this.textBox44.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(2.3000001907348633D), Telerik.Reporting.Drawing.Unit.Inch(2.5500788688659668D));
             this.textBox44.Name = "textBox44";
             this.textBox44.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(2.0999212265014648D), Telerik.Reporting.Drawing.Unit.Inch(0.15000000596046448D));
+            this.textBox44.Style.BorderColor.Default = System.Drawing.Color.Silver;
+            this.textBox44.Style.BorderStyle.Left = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox44.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
+            this.textBox44.Style.TextAlign = Telerik.Reporting.Drawing.HorizontalAlign.Center;
             this.textBox44.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Middle;
             this.textBox44.Value = "=Fields.WelderPerformanceQualification.CurrentPolarityType";
             // 
@@ -868,7 +879,10 @@ namespace ExceedERP.Reporting.CMS.Printing.ReportDesigns
             this.textBox43.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(4.3999218940734863D), Telerik.Reporting.Drawing.Unit.Inch(2.5500788688659668D));
             this.textBox43.Name = "textBox43";
             this.textBox43.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(2.1000385284423828D), Telerik.Reporting.Drawing.Unit.Inch(0.15000000596046448D));
+            this.textBox43.Style.BorderColor.Default = System.Drawing.Color.Silver;
+            this.textBox43.Style.BorderStyle.Left = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox43.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
+            this.textBox43.Style.TextAlign = Telerik.Reporting.Drawing.HorizontalAlign.Center;
             this.textBox43.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Middle;
             this.textBox43.Value = "=Fields.WelderPerformanceQualification.RangeOfCurrentPolarityType";
             // 
@@ -895,9 +909,12 @@ namespace ExceedERP.Reporting.CMS.Printing.ReportDesigns
             this.textBox48.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(2.3000590801239014D), Telerik.Reporting.Drawing.Unit.Inch(2.700157642364502D));
             this.textBox48.Name = "textBox48";
             this.textBox48.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(2.0999212265014648D), Telerik.Reporting.Drawing.Unit.Inch(0.15000000596046448D));
+            this.textBox48.Style.BorderColor.Default = System.Drawing.Color.Silver;
+            this.textBox48.Style.BorderStyle.Left = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox48.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
+            this.textBox48.Style.TextAlign = Telerik.Reporting.Drawing.HorizontalAlign.Center;
             this.textBox48.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Middle;
-            this.textBox48.Value = " ";
+            this.textBox48.Value = "=Fields.PlateOrPipe";
             // 
             // textBox47
             // 
@@ -905,9 +922,12 @@ namespace ExceedERP.Reporting.CMS.Printing.ReportDesigns
             this.textBox47.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(4.3999805450439453D), Telerik.Reporting.Drawing.Unit.Inch(2.700157642364502D));
             this.textBox47.Name = "textBox47";
             this.textBox47.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(2.0999801158905029D), Telerik.Reporting.Drawing.Unit.Inch(0.15000000596046448D));
+            this.textBox47.Style.BorderColor.Default = System.Drawing.Color.Silver;
+            this.textBox47.Style.BorderStyle.Left = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox47.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
+            this.textBox47.Style.TextAlign = Telerik.Reporting.Drawing.HorizontalAlign.Center;
             this.textBox47.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Middle;
-            this.textBox47.Value = " ";
+            this.textBox47.Value = "=Fields.RangeOfPlateOrPipe";
             // 
             // textBox54
             // 
@@ -932,7 +952,10 @@ namespace ExceedERP.Reporting.CMS.Printing.ReportDesigns
             this.textBox52.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(2.3000590801239014D), Telerik.Reporting.Drawing.Unit.Inch(2.8502359390258789D));
             this.textBox52.Name = "textBox52";
             this.textBox52.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(2.0999212265014648D), Telerik.Reporting.Drawing.Unit.Inch(0.15000000596046448D));
+            this.textBox52.Style.BorderColor.Default = System.Drawing.Color.Silver;
+            this.textBox52.Style.BorderStyle.Left = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox52.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
+            this.textBox52.Style.TextAlign = Telerik.Reporting.Drawing.HorizontalAlign.Center;
             this.textBox52.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Middle;
             this.textBox52.Value = "=Fields.WelderPerformanceQualification.WeldingType";
             // 
@@ -942,7 +965,10 @@ namespace ExceedERP.Reporting.CMS.Printing.ReportDesigns
             this.textBox51.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(4.3999805450439453D), Telerik.Reporting.Drawing.Unit.Inch(2.8502359390258789D));
             this.textBox51.Name = "textBox51";
             this.textBox51.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(2.0999801158905029D), Telerik.Reporting.Drawing.Unit.Inch(0.15000000596046448D));
+            this.textBox51.Style.BorderColor.Default = System.Drawing.Color.Silver;
+            this.textBox51.Style.BorderStyle.Left = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox51.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
+            this.textBox51.Style.TextAlign = Telerik.Reporting.Drawing.HorizontalAlign.Center;
             this.textBox51.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Middle;
             this.textBox51.Value = "=Fields.WelderPerformanceQualification.RangeOfWeldingType";
             // 
@@ -969,9 +995,12 @@ namespace ExceedERP.Reporting.CMS.Printing.ReportDesigns
             this.textBox68.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(2.3002161979675293D), Telerik.Reporting.Drawing.Unit.Inch(3.0003142356872559D));
             this.textBox68.Name = "textBox68";
             this.textBox68.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(2.0996859073638916D), Telerik.Reporting.Drawing.Unit.Inch(0.15000000596046448D));
+            this.textBox68.Style.BorderColor.Default = System.Drawing.Color.Silver;
+            this.textBox68.Style.BorderStyle.Left = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox68.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
+            this.textBox68.Style.TextAlign = Telerik.Reporting.Drawing.HorizontalAlign.Center;
             this.textBox68.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Middle;
-            this.textBox68.Value = " ";
+            this.textBox68.Value = "=Fields.WelderPerformanceQualification.SpecOfBaseMetal";
             // 
             // textBox67
             // 
@@ -979,9 +1008,12 @@ namespace ExceedERP.Reporting.CMS.Printing.ReportDesigns
             this.textBox67.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(4.4000396728515625D), Telerik.Reporting.Drawing.Unit.Inch(3.0003142356872559D));
             this.textBox67.Name = "textBox67";
             this.textBox67.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(2.0999598503112793D), Telerik.Reporting.Drawing.Unit.Inch(0.15000000596046448D));
+            this.textBox67.Style.BorderColor.Default = System.Drawing.Color.Silver;
+            this.textBox67.Style.BorderStyle.Left = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox67.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
+            this.textBox67.Style.TextAlign = Telerik.Reporting.Drawing.HorizontalAlign.Center;
             this.textBox67.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Middle;
-            this.textBox67.Value = " ";
+            this.textBox67.Value = "=Fields.WelderPerformanceQualification.RangeOfSpecOfBaseMetal";
             // 
             // textBox66
             // 
@@ -1006,9 +1038,12 @@ namespace ExceedERP.Reporting.CMS.Printing.ReportDesigns
             this.textBox64.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(2.3001577854156494D), Telerik.Reporting.Drawing.Unit.Inch(3.1503927707672119D));
             this.textBox64.Name = "textBox64";
             this.textBox64.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(2.0999212265014648D), Telerik.Reporting.Drawing.Unit.Inch(0.15000000596046448D));
+            this.textBox64.Style.BorderColor.Default = System.Drawing.Color.Silver;
+            this.textBox64.Style.BorderStyle.Left = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox64.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
+            this.textBox64.Style.TextAlign = Telerik.Reporting.Drawing.HorizontalAlign.Center;
             this.textBox64.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Middle;
-            this.textBox64.Value = " ";
+            this.textBox64.Value = "=Fields.WelderPerformanceQualification.FillerMetalClassificationNumber";
             // 
             // textBox63
             // 
@@ -1016,9 +1051,12 @@ namespace ExceedERP.Reporting.CMS.Printing.ReportDesigns
             this.textBox63.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(4.4001569747924805D), Telerik.Reporting.Drawing.Unit.Inch(3.1503927707672119D));
             this.textBox63.Name = "textBox63";
             this.textBox63.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(2.0998032093048096D), Telerik.Reporting.Drawing.Unit.Inch(0.15000000596046448D));
+            this.textBox63.Style.BorderColor.Default = System.Drawing.Color.Silver;
+            this.textBox63.Style.BorderStyle.Left = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox63.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
+            this.textBox63.Style.TextAlign = Telerik.Reporting.Drawing.HorizontalAlign.Center;
             this.textBox63.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Middle;
-            this.textBox63.Value = " ";
+            this.textBox63.Value = "=Fields.WelderPerformanceQualification.RangeOfFillerMetalClassificationNumber";
             // 
             // textBox62
             // 
@@ -1043,9 +1081,12 @@ namespace ExceedERP.Reporting.CMS.Printing.ReportDesigns
             this.textBox60.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(2.3002161979675293D), Telerik.Reporting.Drawing.Unit.Inch(3.3004710674285889D));
             this.textBox60.Name = "textBox60";
             this.textBox60.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(2.0999212265014648D), Telerik.Reporting.Drawing.Unit.Inch(0.15000000596046448D));
+            this.textBox60.Style.BorderColor.Default = System.Drawing.Color.Silver;
+            this.textBox60.Style.BorderStyle.Left = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox60.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
+            this.textBox60.Style.TextAlign = Telerik.Reporting.Drawing.HorizontalAlign.Center;
             this.textBox60.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Middle;
-            this.textBox60.Value = " ";
+            this.textBox60.Value = "=Fields.WelderPerformanceQualification.FillerMetalSpecificationNumber";
             // 
             // textBox59
             // 
@@ -1053,9 +1094,12 @@ namespace ExceedERP.Reporting.CMS.Printing.ReportDesigns
             this.textBox59.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(4.4001569747924805D), Telerik.Reporting.Drawing.Unit.Inch(3.3004710674285889D));
             this.textBox59.Name = "textBox59";
             this.textBox59.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(2.0998032093048096D), Telerik.Reporting.Drawing.Unit.Inch(0.15000000596046448D));
+            this.textBox59.Style.BorderColor.Default = System.Drawing.Color.Silver;
+            this.textBox59.Style.BorderStyle.Left = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox59.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
+            this.textBox59.Style.TextAlign = Telerik.Reporting.Drawing.HorizontalAlign.Center;
             this.textBox59.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Middle;
-            this.textBox59.Value = " ";
+            this.textBox59.Value = "=Fields.WelderPerformanceQualification.RangeFillerMetalSpecificationNumber";
             // 
             // textBox58
             // 
@@ -1081,18 +1125,24 @@ namespace ExceedERP.Reporting.CMS.Printing.ReportDesigns
             this.textBox55.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(4.4002156257629395D), Telerik.Reporting.Drawing.Unit.Inch(3.4505493640899658D));
             this.textBox55.Name = "textBox55";
             this.textBox55.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(2.0997447967529297D), Telerik.Reporting.Drawing.Unit.Inch(0.15000000596046448D));
+            this.textBox55.Style.BorderColor.Default = System.Drawing.Color.Silver;
+            this.textBox55.Style.BorderStyle.Left = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox55.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
+            this.textBox55.Style.TextAlign = Telerik.Reporting.Drawing.HorizontalAlign.Center;
             this.textBox55.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Middle;
-            this.textBox55.Value = " ";
+            this.textBox55.Value = "=Fields.WelderPerformanceQualification.RangeOfTypeOfTorchShieldingGas";
             // 
             // textBox56
             // 
             this.textBox56.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(2.3002164363861084D), Telerik.Reporting.Drawing.Unit.Inch(3.4505493640899658D));
             this.textBox56.Name = "textBox56";
             this.textBox56.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(2.0999212265014648D), Telerik.Reporting.Drawing.Unit.Inch(0.15000000596046448D));
+            this.textBox56.Style.BorderColor.Default = System.Drawing.Color.Silver;
+            this.textBox56.Style.BorderStyle.Left = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox56.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
+            this.textBox56.Style.TextAlign = Telerik.Reporting.Drawing.HorizontalAlign.Center;
             this.textBox56.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Middle;
-            this.textBox56.Value = " ";
+            this.textBox56.Value = "=Fields.WelderPerformanceQualification.TypeOfTorchShieldingGas";
             // 
             // textBox78
             // 
@@ -1117,9 +1167,12 @@ namespace ExceedERP.Reporting.CMS.Printing.ReportDesigns
             this.textBox76.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(2.2999811172485352D), Telerik.Reporting.Drawing.Unit.Inch(3.6006278991699219D));
             this.textBox76.Name = "textBox76";
             this.textBox76.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(2.0999212265014648D), Telerik.Reporting.Drawing.Unit.Inch(0.15000000596046448D));
+            this.textBox76.Style.BorderColor.Default = System.Drawing.Color.Silver;
+            this.textBox76.Style.BorderStyle.Left = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox76.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
+            this.textBox76.Style.TextAlign = Telerik.Reporting.Drawing.HorizontalAlign.Center;
             this.textBox76.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Middle;
-            this.textBox76.Value = " ";
+            this.textBox76.Value = "=Fields.WelderPerformanceQualification.Auxiliaries";
             // 
             // textBox75
             // 
@@ -1127,9 +1180,12 @@ namespace ExceedERP.Reporting.CMS.Printing.ReportDesigns
             this.textBox75.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(4.4002161026000977D), Telerik.Reporting.Drawing.Unit.Inch(3.6006278991699219D));
             this.textBox75.Name = "textBox75";
             this.textBox75.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(2.0998032093048096D), Telerik.Reporting.Drawing.Unit.Inch(0.15000000596046448D));
+            this.textBox75.Style.BorderColor.Default = System.Drawing.Color.Silver;
+            this.textBox75.Style.BorderStyle.Left = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox75.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
+            this.textBox75.Style.TextAlign = Telerik.Reporting.Drawing.HorizontalAlign.Center;
             this.textBox75.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Middle;
-            this.textBox75.Value = " ";
+            this.textBox75.Value = "=Fields.WelderPerformanceQualification.RangeOfAuxiliaries";
             // 
             // textBox74
             // 
@@ -1155,18 +1211,24 @@ namespace ExceedERP.Reporting.CMS.Printing.ReportDesigns
             this.textBox72.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(4.3999805450439453D), Telerik.Reporting.Drawing.Unit.Inch(3.750706672668457D));
             this.textBox72.Name = "textBox72";
             this.textBox72.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(2.0997447967529297D), Telerik.Reporting.Drawing.Unit.Inch(0.15000000596046448D));
+            this.textBox72.Style.BorderColor.Default = System.Drawing.Color.Silver;
+            this.textBox72.Style.BorderStyle.Left = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox72.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
+            this.textBox72.Style.TextAlign = Telerik.Reporting.Drawing.HorizontalAlign.Center;
             this.textBox72.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Middle;
-            this.textBox72.Value = " ";
+            this.textBox72.Value = "=Fields.RangeOfThicknessOfWeldingMetal";
             // 
             // textBox71
             // 
             this.textBox71.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(2.2999813556671143D), Telerik.Reporting.Drawing.Unit.Inch(3.750706672668457D));
             this.textBox71.Name = "textBox71";
             this.textBox71.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(2.0999212265014648D), Telerik.Reporting.Drawing.Unit.Inch(0.15000000596046448D));
+            this.textBox71.Style.BorderColor.Default = System.Drawing.Color.Silver;
+            this.textBox71.Style.BorderStyle.Left = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox71.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
+            this.textBox71.Style.TextAlign = Telerik.Reporting.Drawing.HorizontalAlign.Center;
             this.textBox71.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Middle;
-            this.textBox71.Value = " ";
+            this.textBox71.Value = "=Fields.ThicknessOfWeldingMetal";
             // 
             // textBox90
             // 
@@ -1192,18 +1254,24 @@ namespace ExceedERP.Reporting.CMS.Printing.ReportDesigns
             this.textBox88.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(4.4002156257629395D), Telerik.Reporting.Drawing.Unit.Inch(3.9007852077484131D));
             this.textBox88.Name = "textBox88";
             this.textBox88.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(2.0997447967529297D), Telerik.Reporting.Drawing.Unit.Inch(0.15000000596046448D));
+            this.textBox88.Style.BorderColor.Default = System.Drawing.Color.Silver;
+            this.textBox88.Style.BorderStyle.Left = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox88.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
+            this.textBox88.Style.TextAlign = Telerik.Reporting.Drawing.HorizontalAlign.Center;
             this.textBox88.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Middle;
-            this.textBox88.Value = " ";
+            this.textBox88.Value = "=Fields.RangeOfOutsideDiameter";
             // 
             // textBox87
             // 
             this.textBox87.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(2.3002164363861084D), Telerik.Reporting.Drawing.Unit.Inch(3.9007852077484131D));
             this.textBox87.Name = "textBox87";
             this.textBox87.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(2.0999212265014648D), Telerik.Reporting.Drawing.Unit.Inch(0.15000000596046448D));
+            this.textBox87.Style.BorderColor.Default = System.Drawing.Color.Silver;
+            this.textBox87.Style.BorderStyle.Left = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox87.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
+            this.textBox87.Style.TextAlign = Telerik.Reporting.Drawing.HorizontalAlign.Center;
             this.textBox87.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Middle;
-            this.textBox87.Value = " ";
+            this.textBox87.Value = "=Fields.OutsideDiameter";
             // 
             // textBox86
             // 
@@ -1228,9 +1296,12 @@ namespace ExceedERP.Reporting.CMS.Printing.ReportDesigns
             this.textBox84.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(2.3002164363861084D), Telerik.Reporting.Drawing.Unit.Inch(4.0508637428283691D));
             this.textBox84.Name = "textBox84";
             this.textBox84.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(2.0999212265014648D), Telerik.Reporting.Drawing.Unit.Inch(0.15000000596046448D));
+            this.textBox84.Style.BorderColor.Default = System.Drawing.Color.Silver;
+            this.textBox84.Style.BorderStyle.Left = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox84.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
+            this.textBox84.Style.TextAlign = Telerik.Reporting.Drawing.HorizontalAlign.Center;
             this.textBox84.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Middle;
-            this.textBox84.Value = "= Fields.WelderPerformanceQualification.QualifiedPositions";
+            this.textBox84.Value = "= Fields.WelderPerformanceQualification.TestPositions";
             // 
             // textBox83
             // 
@@ -1238,9 +1309,12 @@ namespace ExceedERP.Reporting.CMS.Printing.ReportDesigns
             this.textBox83.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(4.4002161026000977D), Telerik.Reporting.Drawing.Unit.Inch(4.0508637428283691D));
             this.textBox83.Name = "textBox83";
             this.textBox83.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(2.0998032093048096D), Telerik.Reporting.Drawing.Unit.Inch(0.15000000596046448D));
+            this.textBox83.Style.BorderColor.Default = System.Drawing.Color.Silver;
+            this.textBox83.Style.BorderStyle.Left = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox83.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
+            this.textBox83.Style.TextAlign = Telerik.Reporting.Drawing.HorizontalAlign.Center;
             this.textBox83.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Middle;
-            this.textBox83.Value = "= Fields.WelderPerformanceQualification.TestPositions";
+            this.textBox83.Value = "= Fields.WelderPerformanceQualification.QualifiedPositions";
             // 
             // textBox82
             // 
@@ -1266,18 +1340,24 @@ namespace ExceedERP.Reporting.CMS.Printing.ReportDesigns
             this.textBox80.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(4.4002747535705566D), Telerik.Reporting.Drawing.Unit.Inch(4.2009420394897461D));
             this.textBox80.Name = "textBox80";
             this.textBox80.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(2.0997447967529297D), Telerik.Reporting.Drawing.Unit.Inch(0.15000000596046448D));
+            this.textBox80.Style.BorderColor.Default = System.Drawing.Color.Silver;
+            this.textBox80.Style.BorderStyle.Left = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox80.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
+            this.textBox80.Style.TextAlign = Telerik.Reporting.Drawing.HorizontalAlign.Center;
             this.textBox80.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Middle;
-            this.textBox80.Value = " ";
+            this.textBox80.Value = "=Fields.WelderPerformanceQualification.RangeOfTypeOfRootShieldingGas";
             // 
             // textBox79
             // 
             this.textBox79.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(2.3002164363861084D), Telerik.Reporting.Drawing.Unit.Inch(4.2009420394897461D));
             this.textBox79.Name = "textBox79";
             this.textBox79.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(2.0999212265014648D), Telerik.Reporting.Drawing.Unit.Inch(0.15000000596046448D));
+            this.textBox79.Style.BorderColor.Default = System.Drawing.Color.Silver;
+            this.textBox79.Style.BorderStyle.Left = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox79.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
+            this.textBox79.Style.TextAlign = Telerik.Reporting.Drawing.HorizontalAlign.Center;
             this.textBox79.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Middle;
-            this.textBox79.Value = " ";
+            this.textBox79.Value = "=Fields.WelderPerformanceQualification.TypeOfRootShieldingGas";
             // 
             // textBox94
             // 
@@ -1292,7 +1372,7 @@ namespace ExceedERP.Reporting.CMS.Printing.ReportDesigns
             // 
             this.textBox93.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(0.20007883012294769D), Telerik.Reporting.Drawing.Unit.Inch(4.351020336151123D));
             this.textBox93.Name = "textBox93";
-            this.textBox93.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(6.2996459007263184D), Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D));
+            this.textBox93.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(6.2996459007263184D), Telerik.Reporting.Drawing.Unit.Inch(0.20003916323184967D));
             this.textBox93.Style.BorderColor.Default = System.Drawing.Color.Silver;
             this.textBox93.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox93.Style.BorderStyle.Left = Telerik.Reporting.Drawing.BorderType.None;
@@ -1353,9 +1433,13 @@ namespace ExceedERP.Reporting.CMS.Printing.ReportDesigns
             // 
             // checkBox1
             // 
-            this.checkBox1.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(2.3002164363861084D), Telerik.Reporting.Drawing.Unit.Inch(4.7511768341064453D));
+            this.checkBox1.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(2.3002359867095947D), Telerik.Reporting.Drawing.Unit.Inch(4.7511768341064453D));
             this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.29978358745574951D), Telerik.Reporting.Drawing.Unit.Inch(0.15000000596046448D));
+            this.checkBox1.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.1996655464172363D), Telerik.Reporting.Drawing.Unit.Inch(0.15000000596046448D));
+            this.checkBox1.Style.BorderColor.Default = System.Drawing.Color.Silver;
+            this.checkBox1.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.checkBox1.Style.BorderStyle.Left = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.checkBox1.Style.TextAlign = Telerik.Reporting.Drawing.HorizontalAlign.Left;
             this.checkBox1.Text = " ";
             this.checkBox1.Value = "=Fields.WelderPerformanceQualification.IsVisualTestingPerformedAndAccepted";
             // 
@@ -1381,7 +1465,10 @@ namespace ExceedERP.Reporting.CMS.Printing.ReportDesigns
             // 
             this.checkBox2.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(2.3002359867095947D), Telerik.Reporting.Drawing.Unit.Inch(4.9012551307678223D));
             this.checkBox2.Name = "checkBox2";
-            this.checkBox2.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.29978358745574951D), Telerik.Reporting.Drawing.Unit.Inch(0.15000000596046448D));
+            this.checkBox2.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.1996852159500122D), Telerik.Reporting.Drawing.Unit.Inch(0.15000000596046448D));
+            this.checkBox2.Style.BorderColor.Default = System.Drawing.Color.Silver;
+            this.checkBox2.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.checkBox2.Style.BorderStyle.Left = Telerik.Reporting.Drawing.BorderType.Solid;
             this.checkBox2.Text = " ";
             this.checkBox2.Value = "=Fields.WelderPerformanceQualification.IsRadiographicTestingPerformedAndAccepted";
             // 
@@ -1407,7 +1494,10 @@ namespace ExceedERP.Reporting.CMS.Printing.ReportDesigns
             // 
             this.checkBox3.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(2.3002359867095947D), Telerik.Reporting.Drawing.Unit.Inch(5.0513334274291992D));
             this.checkBox3.Name = "checkBox3";
-            this.checkBox3.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.29978358745574951D), Telerik.Reporting.Drawing.Unit.Inch(0.15000000596046448D));
+            this.checkBox3.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.1996852159500122D), Telerik.Reporting.Drawing.Unit.Inch(0.15000000596046448D));
+            this.checkBox3.Style.BorderColor.Default = System.Drawing.Color.Silver;
+            this.checkBox3.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.checkBox3.Style.BorderStyle.Left = Telerik.Reporting.Drawing.BorderType.Solid;
             this.checkBox3.Text = " ";
             this.checkBox3.Value = "=Fields.WelderPerformanceQualification.IsFractureTestingPerformedAndAccepted";
             // 
@@ -1433,7 +1523,10 @@ namespace ExceedERP.Reporting.CMS.Printing.ReportDesigns
             // 
             this.checkBox4.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(2.3002359867095947D), Telerik.Reporting.Drawing.Unit.Inch(5.2014117240905762D));
             this.checkBox4.Name = "checkBox4";
-            this.checkBox4.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.29978358745574951D), Telerik.Reporting.Drawing.Unit.Inch(0.15000000596046448D));
+            this.checkBox4.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.1996852159500122D), Telerik.Reporting.Drawing.Unit.Inch(0.15000000596046448D));
+            this.checkBox4.Style.BorderColor.Default = System.Drawing.Color.Silver;
+            this.checkBox4.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.checkBox4.Style.BorderStyle.Left = Telerik.Reporting.Drawing.BorderType.Solid;
             this.checkBox4.Text = " ";
             this.checkBox4.Value = "=Fields.WelderPerformanceQualification.IsBendTestingPerformedAndAccepted";
             // 
@@ -1459,7 +1552,10 @@ namespace ExceedERP.Reporting.CMS.Printing.ReportDesigns
             // 
             this.checkBox7.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(2.3002359867095947D), Telerik.Reporting.Drawing.Unit.Inch(5.3514904975891113D));
             this.checkBox7.Name = "checkBox7";
-            this.checkBox7.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.29978358745574951D), Telerik.Reporting.Drawing.Unit.Inch(0.15000000596046448D));
+            this.checkBox7.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.1996852159500122D), Telerik.Reporting.Drawing.Unit.Inch(0.15000000596046448D));
+            this.checkBox7.Style.BorderColor.Default = System.Drawing.Color.Silver;
+            this.checkBox7.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.checkBox7.Style.BorderStyle.Left = Telerik.Reporting.Drawing.BorderType.Solid;
             this.checkBox7.Text = " ";
             this.checkBox7.Value = "=Fields.WelderPerformanceQualification.IsNotchTensileTestingPerformedAndAccepted";
             // 
@@ -1485,7 +1581,10 @@ namespace ExceedERP.Reporting.CMS.Printing.ReportDesigns
             // 
             this.checkBox6.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(2.3002359867095947D), Telerik.Reporting.Drawing.Unit.Inch(5.5015687942504883D));
             this.checkBox6.Name = "checkBox6";
-            this.checkBox6.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.29978358745574951D), Telerik.Reporting.Drawing.Unit.Inch(0.15000000596046448D));
+            this.checkBox6.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.1996852159500122D), Telerik.Reporting.Drawing.Unit.Inch(0.15000000596046448D));
+            this.checkBox6.Style.BorderColor.Default = System.Drawing.Color.Silver;
+            this.checkBox6.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.checkBox6.Style.BorderStyle.Left = Telerik.Reporting.Drawing.BorderType.Solid;
             this.checkBox6.Text = " ";
             this.checkBox6.Value = "=Fields.WelderPerformanceQualification.IsMacroscopicExaminationPerformedAndAccept" +
     "ed";
@@ -1505,7 +1604,7 @@ namespace ExceedERP.Reporting.CMS.Printing.ReportDesigns
             this.textBox105.Name = "textBox105";
             this.textBox105.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(2.0999212265014648D), Telerik.Reporting.Drawing.Unit.Inch(0.15000000596046448D));
             this.textBox105.Style.BorderColor.Default = System.Drawing.Color.Silver;
-            this.textBox105.Style.BorderStyle.Bottom = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.textBox105.Style.BorderStyle.Bottom = Telerik.Reporting.Drawing.BorderType.None;
             this.textBox105.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
             this.textBox105.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Middle;
             this.textBox105.Value = "Other Tests";
@@ -1517,6 +1616,8 @@ namespace ExceedERP.Reporting.CMS.Printing.ReportDesigns
             this.checkBox5.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.1996852159500122D), Telerik.Reporting.Drawing.Unit.Inch(0.15000000596046448D));
             this.checkBox5.Style.BorderColor.Default = System.Drawing.Color.Silver;
             this.checkBox5.Style.BorderStyle.Bottom = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.checkBox5.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.checkBox5.Style.BorderStyle.Left = Telerik.Reporting.Drawing.BorderType.Solid;
             this.checkBox5.Text = " ";
             this.checkBox5.Value = "=Fields.WelderPerformanceQualification.IsAdditionalTestingPerformedAndAccepted";
             // 
@@ -1533,7 +1634,9 @@ namespace ExceedERP.Reporting.CMS.Printing.ReportDesigns
             // 
             this.textBox111.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D), Telerik.Reporting.Drawing.Unit.Inch(5.8017253875732422D));
             this.textBox111.Name = "textBox111";
-            this.textBox111.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(2.0999212265014648D), Telerik.Reporting.Drawing.Unit.Inch(0.15000000596046448D));
+            this.textBox111.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(6.30001974105835D), Telerik.Reporting.Drawing.Unit.Inch(0.15000000596046448D));
+            this.textBox111.Style.BorderColor.Default = System.Drawing.Color.Silver;
+            this.textBox111.Style.BorderStyle.Top = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox111.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
             this.textBox111.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Middle;
             this.textBox111.Value = "Remarks";
@@ -1551,7 +1654,7 @@ namespace ExceedERP.Reporting.CMS.Printing.ReportDesigns
             this.textBox118});
             this.panel1.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(4.4002747535705566D), Telerik.Reporting.Drawing.Unit.Inch(4.5510988235473633D));
             this.panel1.Name = "panel1";
-            this.panel1.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(2.0997254848480225D), Telerik.Reporting.Drawing.Unit.Inch(1.1004699468612671D));
+            this.panel1.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(2.0997254848480225D), Telerik.Reporting.Drawing.Unit.Inch(1.250548243522644D));
             this.panel1.Style.BorderColor.Default = System.Drawing.Color.Silver;
             this.panel1.Style.BorderStyle.Bottom = Telerik.Reporting.Drawing.BorderType.None;
             this.panel1.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
@@ -1859,9 +1962,9 @@ namespace ExceedERP.Reporting.CMS.Printing.ReportDesigns
             // 
             // table2
             // 
-            this.table2.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.033333420753479D)));
-            this.table2.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.033333420753479D)));
-            this.table2.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.033333420753479D)));
+            this.table2.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.0333333015441895D)));
+            this.table2.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.0333333015441895D)));
+            this.table2.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.0333333015441895D)));
             this.table2.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.1283191591501236D)));
             this.table2.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.13389831781387329D)));
             this.table2.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.13389831781387329D)));
@@ -2054,96 +2157,98 @@ namespace ExceedERP.Reporting.CMS.Printing.ReportDesigns
             this.textBox161.Style.TextAlign = Telerik.Reporting.Drawing.HorizontalAlign.Center;
             this.textBox161.Value = "WTTC - Welding Training and Technology Center\r\nAddis Abeba, Ethiopia\r\n";
             // 
-            // pageFooterSection1
+            // checkBox8
             // 
-            this.pageFooterSection1.Height = Telerik.Reporting.Drawing.Unit.Inch(0.10000000149011612D);
-            this.pageFooterSection1.Name = "pageFooterSection1";
-            // 
-            // checkBox10
-            // 
-            this.checkBox10.FalseValue = "= True";
-            this.checkBox10.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(3.5D), Telerik.Reporting.Drawing.Unit.Inch(5.6516470909118652D));
-            this.checkBox10.Name = "checkBox10";
-            this.checkBox10.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(2.9914505481719971D), Telerik.Reporting.Drawing.Unit.Inch(0.15000000596046448D));
-            this.checkBox10.Style.BorderColor.Default = System.Drawing.Color.Silver;
-            this.checkBox10.Style.BorderStyle.Bottom = Telerik.Reporting.Drawing.BorderType.Solid;
-            this.checkBox10.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.None;
-            this.checkBox10.Text = " ";
-            this.checkBox10.TrueValue = "=False";
-            this.checkBox10.Value = "=Fields.WelderPerformanceQualification.IsAdditionalTestingPerformedAndAccepted";
-            // 
-            // checkBox11
-            // 
-            this.checkBox11.FalseValue = "= True";
-            this.checkBox11.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(3.5D), Telerik.Reporting.Drawing.Unit.Inch(5.5015687942504883D));
-            this.checkBox11.Name = "checkBox11";
-            this.checkBox11.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.29999995231628418D), Telerik.Reporting.Drawing.Unit.Inch(0.15000000596046448D));
-            this.checkBox11.Style.BorderColor.Default = System.Drawing.Color.Silver;
-            this.checkBox11.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.None;
-            this.checkBox11.Text = " ";
-            this.checkBox11.TrueValue = "= False";
-            this.checkBox11.Value = "=Fields.WelderPerformanceQualification.IsMacroscopicExaminationPerformedAndAccept" +
-    "ed";
-            // 
-            // checkBox12
-            // 
-            this.checkBox12.FalseValue = "= True";
-            this.checkBox12.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(3.5D), Telerik.Reporting.Drawing.Unit.Inch(5.3514904975891113D));
-            this.checkBox12.Name = "checkBox12";
-            this.checkBox12.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.29999995231628418D), Telerik.Reporting.Drawing.Unit.Inch(0.15000000596046448D));
-            this.checkBox12.Style.BorderColor.Default = System.Drawing.Color.Silver;
-            this.checkBox12.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.None;
-            this.checkBox12.Text = " ";
-            this.checkBox12.TrueValue = "=False";
-            this.checkBox12.Value = "=Fields.WelderPerformanceQualification.IsNotchTensileTestingPerformedAndAccepted";
-            // 
-            // checkBox13
-            // 
-            this.checkBox13.FalseValue = "= True";
-            this.checkBox13.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(3.5D), Telerik.Reporting.Drawing.Unit.Inch(5.2014117240905762D));
-            this.checkBox13.Name = "checkBox13";
-            this.checkBox13.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.29999995231628418D), Telerik.Reporting.Drawing.Unit.Inch(0.15000000596046448D));
-            this.checkBox13.Style.BorderColor.Default = System.Drawing.Color.Silver;
-            this.checkBox13.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.None;
-            this.checkBox13.Text = " ";
-            this.checkBox13.TrueValue = "= False";
-            this.checkBox13.Value = "=Fields.WelderPerformanceQualification.IsBendTestingPerformedAndAccepted";
-            // 
-            // checkBox14
-            // 
-            this.checkBox14.FalseValue = "= True";
-            this.checkBox14.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(3.5D), Telerik.Reporting.Drawing.Unit.Inch(5.0513334274291992D));
-            this.checkBox14.Name = "checkBox14";
-            this.checkBox14.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.299999475479126D), Telerik.Reporting.Drawing.Unit.Inch(0.15000000596046448D));
-            this.checkBox14.Style.BorderColor.Default = System.Drawing.Color.Silver;
-            this.checkBox14.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.None;
-            this.checkBox14.Text = " ";
-            this.checkBox14.TrueValue = "= False";
-            this.checkBox14.Value = "=Fields.WelderPerformanceQualification.IsFractureTestingPerformedAndAccepted";
+            this.checkBox8.FalseValue = "= True";
+            this.checkBox8.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(3.5002939701080322D), Telerik.Reporting.Drawing.Unit.Inch(4.7511773109436035D));
+            this.checkBox8.Name = "checkBox8";
+            this.checkBox8.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.89990174770355225D), Telerik.Reporting.Drawing.Unit.Inch(0.16221211850643158D));
+            this.checkBox8.Style.BorderColor.Default = System.Drawing.Color.Silver;
+            this.checkBox8.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.checkBox8.Style.BorderStyle.Left = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.checkBox8.Text = " ";
+            this.checkBox8.TrueValue = "= False";
+            this.checkBox8.Value = "=Fields.WelderPerformanceQualification.IsVisualTestingPerformedAndAccepted";
             // 
             // checkBox9
             // 
             this.checkBox9.FalseValue = "= True";
             this.checkBox9.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(3.5D), Telerik.Reporting.Drawing.Unit.Inch(4.9134674072265625D));
             this.checkBox9.Name = "checkBox9";
-            this.checkBox9.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.299999475479126D), Telerik.Reporting.Drawing.Unit.Inch(0.13778738677501679D));
+            this.checkBox9.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.90019577741622925D), Telerik.Reporting.Drawing.Unit.Inch(0.13778738677501679D));
             this.checkBox9.Style.BorderColor.Default = System.Drawing.Color.Silver;
-            this.checkBox9.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.None;
+            this.checkBox9.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.checkBox9.Style.BorderStyle.Left = Telerik.Reporting.Drawing.BorderType.Solid;
             this.checkBox9.Text = " ";
             this.checkBox9.TrueValue = "= False";
             this.checkBox9.Value = "=Fields.WelderPerformanceQualification.IsRadiographicTestingPerformedAndAccepted";
             // 
-            // checkBox8
+            // checkBox14
             // 
-            this.checkBox8.FalseValue = "= True";
-            this.checkBox8.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(3.4982142448425293D), Telerik.Reporting.Drawing.Unit.Inch(4.76331090927124D));
-            this.checkBox8.Name = "checkBox8";
-            this.checkBox8.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.30178520083427429D), Telerik.Reporting.Drawing.Unit.Inch(0.15007832646369934D));
-            this.checkBox8.Style.BorderColor.Default = System.Drawing.Color.Silver;
-            this.checkBox8.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.None;
-            this.checkBox8.Text = " ";
-            this.checkBox8.TrueValue = "= False";
-            this.checkBox8.Value = "=Fields.WelderPerformanceQualification.IsVisualTestingPerformedAndAccepted";
+            this.checkBox14.FalseValue = "= True";
+            this.checkBox14.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(3.5D), Telerik.Reporting.Drawing.Unit.Inch(5.0513334274291992D));
+            this.checkBox14.Name = "checkBox14";
+            this.checkBox14.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.90019577741622925D), Telerik.Reporting.Drawing.Unit.Inch(0.15000000596046448D));
+            this.checkBox14.Style.BorderColor.Default = System.Drawing.Color.Silver;
+            this.checkBox14.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.checkBox14.Style.BorderStyle.Left = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.checkBox14.Text = " ";
+            this.checkBox14.TrueValue = "= False";
+            this.checkBox14.Value = "=Fields.WelderPerformanceQualification.IsFractureTestingPerformedAndAccepted";
+            // 
+            // checkBox13
+            // 
+            this.checkBox13.FalseValue = "= True";
+            this.checkBox13.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(3.5D), Telerik.Reporting.Drawing.Unit.Inch(5.2014117240905762D));
+            this.checkBox13.Name = "checkBox13";
+            this.checkBox13.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.90019625425338745D), Telerik.Reporting.Drawing.Unit.Inch(0.15000000596046448D));
+            this.checkBox13.Style.BorderColor.Default = System.Drawing.Color.Silver;
+            this.checkBox13.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.checkBox13.Style.BorderStyle.Left = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.checkBox13.Text = " ";
+            this.checkBox13.TrueValue = "= False";
+            this.checkBox13.Value = "=Fields.WelderPerformanceQualification.IsBendTestingPerformedAndAccepted";
+            // 
+            // checkBox12
+            // 
+            this.checkBox12.FalseValue = "= True";
+            this.checkBox12.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(3.5D), Telerik.Reporting.Drawing.Unit.Inch(5.3514904975891113D));
+            this.checkBox12.Name = "checkBox12";
+            this.checkBox12.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.90019625425338745D), Telerik.Reporting.Drawing.Unit.Inch(0.15000000596046448D));
+            this.checkBox12.Style.BorderColor.Default = System.Drawing.Color.Silver;
+            this.checkBox12.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.checkBox12.Style.BorderStyle.Left = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.checkBox12.Text = " ";
+            this.checkBox12.TrueValue = "=False";
+            this.checkBox12.Value = "=Fields.WelderPerformanceQualification.IsNotchTensileTestingPerformedAndAccepted";
+            // 
+            // checkBox11
+            // 
+            this.checkBox11.FalseValue = "= True";
+            this.checkBox11.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(3.5D), Telerik.Reporting.Drawing.Unit.Inch(5.5015687942504883D));
+            this.checkBox11.Name = "checkBox11";
+            this.checkBox11.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.90019625425338745D), Telerik.Reporting.Drawing.Unit.Inch(0.15000000596046448D));
+            this.checkBox11.Style.BorderColor.Default = System.Drawing.Color.Silver;
+            this.checkBox11.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.checkBox11.Style.BorderStyle.Left = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.checkBox11.Text = " ";
+            this.checkBox11.TrueValue = "= False";
+            this.checkBox11.Value = "=Fields.WelderPerformanceQualification.IsMacroscopicExaminationPerformedAndAccept" +
+    "ed";
+            // 
+            // checkBox10
+            // 
+            this.checkBox10.FalseValue = "= True";
+            this.checkBox10.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(3.5D), Telerik.Reporting.Drawing.Unit.Inch(5.6516470909118652D));
+            this.checkBox10.Name = "checkBox10";
+            this.checkBox10.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.900196373462677D), Telerik.Reporting.Drawing.Unit.Inch(0.15000000596046448D));
+            this.checkBox10.Style.BorderColor.Default = System.Drawing.Color.Silver;
+            this.checkBox10.Style.BorderStyle.Bottom = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.checkBox10.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.checkBox10.Style.BorderStyle.Left = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.checkBox10.Text = " ";
+            this.checkBox10.TrueValue = "=False";
+            this.checkBox10.Value = "=Fields.WelderPerformanceQualification.IsAdditionalTestingPerformedAndAccepted";
             // 
             // textBox162
             // 
@@ -2155,6 +2260,11 @@ namespace ExceedERP.Reporting.CMS.Printing.ReportDesigns
             this.textBox162.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
             this.textBox162.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Middle;
             this.textBox162.Value = "Not Tested";
+            // 
+            // pageFooterSection1
+            // 
+            this.pageFooterSection1.Height = Telerik.Reporting.Drawing.Unit.Inch(0.10000000149011612D);
+            this.pageFooterSection1.Name = "pageFooterSection1";
             // 
             // certificateOds
             // 
@@ -2183,6 +2293,8 @@ namespace ExceedERP.Reporting.CMS.Printing.ReportDesigns
             reportParameter1.Name = "traineeId";
             reportParameter1.Text = "traineeId";
             this.ReportParameters.Add(reportParameter1);
+            this.Style.BorderColor.Default = System.Drawing.Color.Silver;
+            this.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
             styleRule1.Selectors.AddRange(new Telerik.Reporting.Drawing.ISelector[] {
             new Telerik.Reporting.Drawing.TypeSelector(typeof(Telerik.Reporting.TextItemBase)),
             new Telerik.Reporting.Drawing.TypeSelector(typeof(Telerik.Reporting.HtmlTextBox))});
