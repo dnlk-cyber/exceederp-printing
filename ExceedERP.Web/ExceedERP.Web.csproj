@@ -2568,6 +2568,8 @@
     <Content Include="Areas\FleetManagement\Views\VehicleReturn\Index.cshtml" />
     <Content Include="Areas\FleetManagement\Views\web.config" />
     <Content Include="Areas\FleetManagement\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\InfoDesk\Views\AssignTicket\EditorTemplates\index.html" />
+    <Content Include="Areas\InfoDesk\Views\AssignTicket\slider.css" />
     <Content Include="Content\ace\avatars\avatar.png" />
     <Content Include="Content\ace\avatars\avatar1.png" />
     <Content Include="Content\ace\avatars\avatar2.png" />
@@ -7497,6 +7499,7 @@
     <Folder Include="Areas\HRM\Views\PayrollDataProvider\" />
     <Folder Include="Areas\HRM\Views\ProbationPerformanceDetail\" />
     <Folder Include="Areas\HRM\Views\Salary\EditorTemplates\" />
+    <Folder Include="Areas\InfoDesk\Views\NewFolder1\" />
     <Folder Include="Areas\Inventory\Views\StoreItemAssignment\EditorTemplates\" />
     <Folder Include="Areas\Inventory\Views\StoreItemBalance\EditorTemplates\" />
     <Folder Include="Areas\Inventory\Views\StoreKeeperAssignment\EditorTemplates\" />

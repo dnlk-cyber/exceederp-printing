@@ -11,6 +11,7 @@ using ExceedERP.Web.Models;
 using ExceedERP.Core.Domain.InfoDesk.Support;
 using System.Collections.Generic;
 using ExceedERP.Core.Domain.InfoDesk;
+using ExceedERP.Core.Domain.Common;
 using ExceedERP.Web.Areas.InfoDesk.Models;
 
 
@@ -25,7 +26,8 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
         public ActionResult Index()
         {
             ViewData["branchs"] = db.Branch.ToList();
-
+            ViewData["AssignTo"] = db.Person_Employee.ToList();
+            ViewData["Materials"] = db.MaterialItems.ToList();
 
             var sysusers =
               udb.Users.Select(o =>

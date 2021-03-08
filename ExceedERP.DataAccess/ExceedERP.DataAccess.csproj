@@ -3455,6 +3455,10 @@
     <Compile Include="Migrations\202103050748006_CMSModification_TraineeCourseAdded.Designer.cs">
       <DependentUpon>202103050748006_CMSModification_TraineeCourseAdded.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202103081042353_HelpDeskModifications.cs" />
+    <Compile Include="Migrations\202103081042353_HelpDeskModifications.Designer.cs">
+      <DependentUpon>202103081042353_HelpDeskModifications.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -6005,6 +6009,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202103050748006_CMSModification_TraineeCourseAdded.resx">
       <DependentUpon>202103050748006_CMSModification_TraineeCourseAdded.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202103081042353_HelpDeskModifications.resx">
+      <DependentUpon>202103081042353_HelpDeskModifications.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

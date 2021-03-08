@@ -6,6 +6,7 @@ using ExceedERP.Core.Localization;
 
 namespace ExceedERP.Core.Domain.InfoDesk
 {
+
     public enum TicketActivityStatus
     {
         Registration,
@@ -14,7 +15,6 @@ namespace ExceedERP.Core.Domain.InfoDesk
         Archive
 
     }
-
     public enum InfoDeskFinalizeType
     {
         WAITING,
@@ -23,5 +23,7 @@ namespace ExceedERP.Core.Domain.InfoDesk
         CLOSED,
         NOT_SOLVED,
         WAITING_FOR_CONFIRMATION
+
     }
+
 }

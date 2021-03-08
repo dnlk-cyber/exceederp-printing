@@ -13,5 +13,6 @@ namespace ExceedERP.Core.Domain.InfoDesk.Support
         public int AssignedTicketId { get; set; }
         public int CustomerTicketId { get; set; }
         public string Remark { get; set; }
+        public double Quantity { get; set; }
     }
 }

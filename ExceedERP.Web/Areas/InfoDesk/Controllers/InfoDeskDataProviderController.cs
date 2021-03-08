@@ -4,6 +4,9 @@ using System.Linq;
 using System.Web.Mvc;
 
 using ExceedERP.DataAccess.Context;
+using System.Data.Entity.Core.Objects;
+using ExceedERP.Core.Domain.Common;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Web.Models;
 using ExceedERP.Core.Domain.InfoDesk;
 
@@ -163,7 +166,7 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
         public JsonResult StatusAwaitingDDBind()
         {
 
-            var StatusAwaiting = db.StatusType_HelpDesks.Where(x => x.Status == InfoDeskFinalizeType.WAITING).ToList();
+            var StatusAwaiting = db.StatusType_HelpDesks.Where(x => x.Status == FinalizeType.WAITING).ToList();
             return Json(StatusAwaiting, JsonRequestBehavior.AllowGet);
 
         }     
@@ -174,7 +177,7 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
         }    
         public JsonResult GetSpecificationCategory()
         {
-            var specificationCategoryList = db.Lookups.Where(sc => sc.LookupType == Core.Domain.Common.LookUpTypes.ADDITION_TYPE).AsQueryable();
+            var specificationCategoryList = db.Lookups.Where(sc => sc.LookupType == LookUpTypes.ADDITION_TYPE).AsQueryable();
 
             return Json(specificationCategoryList, JsonRequestBehavior.AllowGet);
         }              
@@ -220,7 +223,7 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
         }
         public JsonResult GetNation()
         {
-            var lookups = db.Lookups.Where(l => l.LookupType == Core.Domain.Common.LookUpTypes.NATION).AsQueryable();
+            var lookups = db.Lookups.Where(l => l.LookupType == LookUpTypes.NATION).AsQueryable();
             return Json(lookups.Select(p => new { LookupID = p.LookupId, Description = p.Description }), JsonRequestBehavior.AllowGet);
         }
 

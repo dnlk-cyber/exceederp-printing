@@ -173,6 +173,7 @@
          .Columns(columns =>
          {
              columns.ForeignKey(c => c.MaterialItemsId, (System.Collections.IEnumerable)ViewData["Materials"], "MaterialItemsId", "ItemName").Title("Material Used").EditorTemplateName("MaterialUsedList").Width(120);
+             columns.Bound(c => c.Quantity).Width(120);
              columns.Bound(c => c.Remark).Width(120);
              columns.Command(command =>
              {
@@ -180,9 +181,9 @@
              }).Width(180);
          })
                   .ToolBar(toolbar =>
-                                              {
-                       toolbar.Create();
-                   })
+                  {
+                      toolbar.Create();
+                  })
 
 
           .Editable(editable => editable.Mode(GridEditMode.InLine))
@@ -191,17 +192,17 @@
               .Ajax()
 
                                                        .Events(events =>
-                     {
-                         events.Error("error_handler(\"MaterialUsed_#=AssignTicket_HelpDeskId#\")");
-                         events.RequestStart("onRequestStart(\"MaterialUsed_#=AssignTicket_HelpDeskId#\")");
-                         events.RequestEnd("onRequestEnd(\"MaterialUsed_#=AssignTicket_HelpDeskId#\")");
-                     })
+                                                       {
+                                                           events.Error("error_handler(\"MaterialUsed_#=AssignTicket_HelpDeskId#\")");
+                                                           events.RequestStart("onRequestStart(\"MaterialUsed_#=AssignTicket_HelpDeskId#\")");
+                                                           events.RequestEnd("onRequestEnd(\"MaterialUsed_#=AssignTicket_HelpDeskId#\")");
+                                                       })
 
                      .Model(model =>
                      {
                          model.Id(p => p.MaterialsUsedId);
-                                                 
-                                         }
+
+                     }
                          )
                                                             .Read(read => read.Action("MaterialsUseds_Read", "MaterialsUseds", new { id = "#=AssignTicket_HelpDeskId#" }))
                                                             .Create(create => create.Action("MaterialsUseds_Create", "MaterialsUseds", new { id = "#=AssignTicket_HelpDeskId#" }))

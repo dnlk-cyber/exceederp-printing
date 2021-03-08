@@ -15,7 +15,7 @@ namespace ExceedERP.Core.Domain.InfoDesk.Support
         public string Description { get; set; }
         [Required]
         public string Color { get; set; }
-        public InfoDeskFinalizeType Status { get; set; }
+        public FinalizeType Status { get; set; }
         public string Remark { get; set; }
         [NotMapped]
         [DefaultValue("")]

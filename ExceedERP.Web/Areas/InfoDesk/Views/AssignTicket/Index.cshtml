@@ -235,6 +235,7 @@
          .Columns(columns =>
          {
              columns.ForeignKey(c => c.MaterialItemsId, (System.Collections.IEnumerable)ViewData["Materials"], "MaterialItemsId", "ItemName").Title("Material Used").EditorTemplateName("MaterialUsedList").Width(120);
+             columns.Bound(c => c.Quantity).Width(120);
              columns.Bound(c => c.Remark).Width(120);
              //columns.Command(command =>
              //{

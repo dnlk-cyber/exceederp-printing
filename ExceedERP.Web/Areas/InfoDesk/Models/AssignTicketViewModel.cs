@@ -3,6 +3,7 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using ExceedERP.Core.Domain.CRM;
+using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.InfoDesk;
 
 namespace ExceedERP.Web.Areas.InfoDesk.Models
@@ -44,7 +45,7 @@ namespace ExceedERP.Web.Areas.InfoDesk.Models
         [DisplayName("Customer")]
         public int CustomerId { get; set; }
         [NotMapped]
-        public InfoDeskFinalizeType Status { get; set; }
+        public FinalizeType Status { get; set; }
         [NotMapped]
         public string Priority { get; set; }
         [NotMapped]

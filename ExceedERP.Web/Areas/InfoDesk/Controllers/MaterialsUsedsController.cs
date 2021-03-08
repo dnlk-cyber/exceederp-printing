@@ -27,8 +27,7 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
         }
         
         public ActionResult MaterialsUseds_Read([DataSourceRequest]DataSourceRequest request, int id)
-        {
-
+        {           
             var materials = db.MaterialsUseds.Where(x => x.AssignedTicketId == id).ToList();
 
             DataSourceResult result = materials.ToDataSourceResult(request, s => new
@@ -37,6 +36,7 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
                 CustomerTicketId = s.CustomerTicketId,
                 MaterialItemsId = s.MaterialItemsId,
                 MaterialsUsedId = s.MaterialsUsedId,
+                Quantity = s.Quantity,
                 Remark = s.Remark
 
             });
@@ -49,11 +49,17 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
 
             if (ModelState.IsValid)
             {
+                var assign = db.AssignTicket_HelpDesks.FirstOrDefault(x => x.AssignTicket_HelpDeskId == id);
+                if (assign != null)
+                {
+                    material.CustomerTicketId = assign.CustomerTicketId;
+                }
                 var entity = new MaterialsUsed
                 {
                     AssignedTicketId = id,
                     CustomerTicketId = material.CustomerTicketId,
                     MaterialItemsId = material.MaterialItemsId,
+                    Quantity = material.Quantity,
                     Remark = material.Remark
                 };
 
@@ -81,6 +87,7 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
                     CustomerTicketId = material.CustomerTicketId,
                     MaterialItemsId = material.MaterialItemsId,
                     MaterialsUsedId = material.MaterialsUsedId,
+                    Quantity = material.Quantity,
                     Remark = material.Remark
                 };
 

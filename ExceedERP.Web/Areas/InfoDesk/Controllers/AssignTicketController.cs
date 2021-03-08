@@ -12,6 +12,7 @@ using ExceedERP.Web.Models;
 using ExceedERP.Core.Domain.InfoDesk.Support;
 using ExceedERP.Core.Domain.InfoDesk;
 using ExceedERP.Web.Areas.InfoDesk.Models;
+using ExceedERP.Core.Domain.Common;
 using System.Collections.Generic;
 
 namespace ExceedERP.Web.Areas.InfoDesk.Controllers
@@ -70,7 +71,7 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
             {
                 var day = ClosedDate - CreatedDate;
 
-                age = day.Value.Days.ToString() + " Day " + day.Value.Hours.ToString() + " Hours";
+                age= day.Value.Days.ToString() + " Day " + day.Value.Hours.ToString() + " Hours";
 
             }
             else
@@ -90,12 +91,12 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
             if (user != null)
             {
                 var empId = int.Parse(user.EmployeeId);
-                tickets = tickets.Where(x => x.AssinedTo == empId).ToList();
+                tickets = tickets.Where(x=>x.AssinedTo == empId).ToList();
             }
             else
             {
                 tickets = new List<AssignTicket_HelpDesk>();
-            }
+            }            
 
 
             DataSourceResult result = tickets.ToDataSourceResult(request, s => new
@@ -121,10 +122,10 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
         [AuthorizeRoles(InfoDeskConstants.AssignHandler)]
         public ActionResult AssignTickets_Read([DataSourceRequest]DataSourceRequest request, int Id)
         {
-
+          
 
             var Tickets = db.AssignTicket_HelpDesks.Where(x => x.CustomerTicketId == Id).ToList();
-
+           
 
             DataSourceResult result = Tickets.ToDataSourceResult(request, s => new
             {
@@ -146,7 +147,7 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
 
             return Json(result);
         }
-        //[AuthorizeRoles(InfoDeskConstants.InfoDeskAssignTicket)]
+        [AuthorizeRoles(InfoDeskConstants.InfoDeskAssignTicket)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult AssignTickets_Create([DataSourceRequest]DataSourceRequest request, AssignTicket_HelpDesk assignTicket, int Id)
         {
@@ -178,7 +179,7 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
 
             return Json(new[] { assignTicket }.ToDataSourceResult(request));
         }
-        // [AuthorizeRoles(InfoDeskConstants.AssignHandler)]
+       // [AuthorizeRoles(InfoDeskConstants.AssignHandler)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult AssignTickets_Update([DataSourceRequest]DataSourceRequest request, AssignTicket_HelpDesk assignTicket_HelpDesk)
         {
@@ -229,7 +230,7 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
             }
             return Json(new[] { AssignTicket }.ToDataSourceResult(request, ModelState));
         }
-
+    
         public void Assign(string id)
         {
             var customerTicketId = int.Parse(id);
@@ -271,7 +272,7 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
             }
             return "false";
         }
-
+        
         public string ApproveSolved(string childId)
         {
             int assignId = int.Parse(childId);
@@ -285,12 +286,12 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
                     db.Entry(ticket).State = EntityState.Modified;
                     db.SaveChanges();
 
-                    var assignes = db.AssignTicket_HelpDesks.Where(x => x.CustomerTicketId == ticket.CustomerTicketId && !x.IsSolved).ToList();
-                    if (!assignes.Any())
+                    var assignes = db.AssignTicket_HelpDesks.Where(x=>x.CustomerTicketId == ticket.CustomerTicketId && !x.IsSolved).ToList();
+                    if(!assignes.Any())
                     {
-                        var customer = db.CustomerTicket_HelpDesks.FirstOrDefault(x => x.CustomerTicket_HelpDeskId == ticket.CustomerTicketId);
+                        var customer = db.CustomerTicket_HelpDesks.FirstOrDefault(x=>x.CustomerTicket_HelpDeskId == ticket.CustomerTicketId);
 
-                        if (customer != null)
+                        if(customer != null)
                         {
                             customer.Status = InfoDeskFinalizeType.RESOLVED;
 
@@ -327,7 +328,7 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
                 {
                     return "Closed Before";
                 }
-
+               
             }
             return "Please select the row ";
         }

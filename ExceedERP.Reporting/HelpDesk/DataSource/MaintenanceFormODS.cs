@@ -24,7 +24,7 @@ namespace ExceedERP.Reporting.HelpDesk.DataSource
             DateTime from = new DateTime(frm.Year, frm.Month, frm.Day);
             DateTime to = new DateTime(t.Year, t.Month, t.Day);
 
-            var maintenances = db.CustomerTicket_HelpDesks.Where(x=>x.DateCreated >= from && x.DateCreated <= to).ToList();
+            var maintenances = db.CustomerTicket_HelpDesks.Where(x => x.DateCreated >= from && x.DateCreated <= to).ToList();
             foreach (var maint in maintenances)
             {
                 var maintenance = new MaintenanceFormVM();
@@ -33,6 +33,11 @@ namespace ExceedERP.Reporting.HelpDesk.DataSource
                 if (person != null)
                 {
                     maintenance.Customr = person.FullNameaEnglish;
+                }
+                var ticketType = db.TicketType_HelpDesks.FirstOrDefault(x=>x.TicketType_HelpDeskId == maint.SpecificTicketTypeId);
+                if(ticketType != null)
+                {
+                    maintenance.TicketType = ticketType.Type;
                 }
 
                 maintenance.Date = maint.DateCreated.Value;
@@ -47,9 +52,9 @@ namespace ExceedERP.Reporting.HelpDesk.DataSource
 
                 foreach (var assign in assigns)
                 {
-                    solution = solution  + assign.Solution + ", ";
+                    solution = solution + assign.Solution + ", ";
 
-                    var materials = db.MaterialsUseds.Where(x=>x.AssignedTicketId == assign.AssignTicket_HelpDeskId).ToList();
+                    var materials = db.MaterialsUseds.Where(x => x.AssignedTicketId == assign.AssignTicket_HelpDeskId).ToList();
 
                     var assignedTo = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == assign.AssinedTo);
 
@@ -58,14 +63,14 @@ namespace ExceedERP.Reporting.HelpDesk.DataSource
                         handler = handler + assignedTo.FullNameaEnglish + ", ";
                     }
                     foreach (var mat in materials)
-                    {                      
+                    {
 
-                        var material = db.MaterialItems.FirstOrDefault(x=>x.MaterialItemsId == mat.MaterialItemsId);
+                        var material = db.MaterialItems.FirstOrDefault(x => x.MaterialItemsId == mat.MaterialItemsId);
 
-                        if(material != null)
+                        if (material != null)
                         {
-                            materialUsed = materialUsed + ", " + material.ItemName;
-                        }                      
+                            materialUsed = materialUsed + material.ItemName + " - " + mat.Quantity + ", ";
+                        }
                     }
                 }
 
