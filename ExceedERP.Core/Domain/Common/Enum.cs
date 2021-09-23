@@ -1,18 +1,5 @@
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Data.Common;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web.Hosting;
-using System.Web.Mvc;
-using ExceedERP.Core.Domain.FixedAsset;
-using ExceedERP.Core.Domain.HRM;
 using ExceedERP.Core.Localization;
-using System.Runtime.InteropServices;
 
 namespace ExceedERP.Core.Domain.Common
 {

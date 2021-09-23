@@ -2,11 +2,10 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using ExceedERP.Core.Domain.Common;
-using ExceedERP.Core.Domain.FixedAsset.Setting;
 
 namespace ExceedERP.Core.Domain.FixedAsset.Transfers
 {
-   
+
     public class AssetTransferReceive : Operations
     {
         public int AssetTransferReceiveId { get; set; }

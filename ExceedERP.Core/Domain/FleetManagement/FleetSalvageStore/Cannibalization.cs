@@ -1,12 +1,8 @@
 ﻿
 using System;
-using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Web;
- using ExceedERP.Core.Domain.Common;
-using ExceedERP.Core.Domain.FleetManagement.FleetRegistration;
+using ExceedERP.Core.Domain.Common;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ExceedERP.Core.Domain.FleetManagement.FleetSalvageStore

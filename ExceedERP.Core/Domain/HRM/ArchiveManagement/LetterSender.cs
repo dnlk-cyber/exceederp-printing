@@ -1,8 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Security.AccessControl;
-using System.Web;
 using ExceedERP.Core.Domain.Common;
 
 namespace ExceedERP.Core.Domain.HRM.ArchiveManagement

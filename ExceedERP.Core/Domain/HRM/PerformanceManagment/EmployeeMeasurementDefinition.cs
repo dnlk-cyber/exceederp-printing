@@ -1,7 +1,6 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Common.HRM;
-using ExceedERP.Core.Domain.Finance.GL;
 
 namespace ExceedERP.Core.Domain.HRM.PerformanceManagment
 {

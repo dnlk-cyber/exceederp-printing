@@ -1,4 +1,4 @@
-﻿using System.Data.Entity;
+using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.Finance.GL.Dynamic;
@@ -16,6 +16,15 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
 
         public ActionResult Index()
         {
+            var glSegmentSetups = _db.GlSegmentSetups
+               .Where(x => x.Enabled)
+               .Where(x => x.SegmentType != DynamicSegmentTypes.NaturalAccount).Select(c => new
+               {
+                   Code = c.GLSegmentSetupId,
+                   Name = c.Name
+               });
+
+            ViewData["segmentTypes"] = glSegmentSetups;
             return View();
         }
 

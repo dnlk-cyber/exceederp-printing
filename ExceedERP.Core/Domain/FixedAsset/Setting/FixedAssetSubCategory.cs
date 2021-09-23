@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using ExceedERP.Core.Domain.Common;
-using ExceedERP.Core.Domain.Inventory;
 
 namespace ExceedERP.Core.Domain.FixedAsset.Setting
 {

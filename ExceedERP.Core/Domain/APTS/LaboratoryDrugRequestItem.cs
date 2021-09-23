@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ExceedERP.Core.Domain.APTS
+﻿namespace ExceedERP.Core.Domain.APTS
 {
-   public class LaboratoryDrugRequestItem
+    public class LaboratoryDrugRequestItem
     {
         public int LaboratoryDrugRequestItemId { get; set; }
         public int LaboratoryDrugRequestId { get; set; }

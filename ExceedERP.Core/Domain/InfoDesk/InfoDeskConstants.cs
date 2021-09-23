@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ExceedERP.Core.Domain.InfoDesk
+﻿namespace ExceedERP.Core.Domain.InfoDesk
 {
-   public class InfoDeskConstants
+    public class InfoDeskConstants
     {
         public const string InfoDeskTicketRegistration = "InfoDesk_Ticket_Registration";
 

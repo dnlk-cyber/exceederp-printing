@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Data.Entity;
+﻿using System.Data.Entity;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.DataAccess.Context;
-using ExceedERP.DataAccess.Migrations;
 
 namespace ExceedERP.Helpers.Inventory
 {

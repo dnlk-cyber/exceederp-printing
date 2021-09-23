@@ -72,27 +72,45 @@ namespace ExceedERP.Web.Areas.CMS.Controllers
         {
             if (ModelState.IsValid)
             {
-                var entity = new TraineeIdNumberComponent
+                var selectedISOType = db.ISOTypes.Find(traineeIdNumberComponent.ISOTypeId);
+                var selectedPrefix = db.RegistrationNumberPrefixes.Find(traineeIdNumberComponent.RegistrationNumberPrefixId);
+                if(selectedISOType != null && selectedPrefix != null)
                 {
-                    TraineeIdNumberComponentId = traineeIdNumberComponent.TraineeIdNumberComponentId,
-                    RegistrationNumberPrefixId = traineeIdNumberComponent.RegistrationNumberPrefixId,
-                    PrefixValue = traineeIdNumberComponent.PrefixValue,
-                    ISOTypeId = traineeIdNumberComponent.ISOTypeId,
-                    ISOType = traineeIdNumberComponent.ISOType,
-                    CmsTraineeId = traineeIdNumberComponent.CmsTraineeId,
-                    SystemId = traineeIdNumberComponent.SystemId,
-                    SequenceNumber = traineeIdNumberComponent.SequenceNumber,
-                    CombinedIdNumber = traineeIdNumberComponent.CombinedIdNumber,
+                    var entity = new TraineeIdNumberComponent
+                    {
+                        TraineeIdNumberComponentId = traineeIdNumberComponent.TraineeIdNumberComponentId,
+                        RegistrationNumberPrefixId = traineeIdNumberComponent.RegistrationNumberPrefixId,
+                        PrefixValue = selectedPrefix.PrefixValue, // modified
+                        ISOTypeId = traineeIdNumberComponent.ISOTypeId,
+                        ISOType = selectedISOType.Name, // modified
+                        CmsTraineeId = traineeIdNumberComponent.CmsTraineeId,
+                        SystemId = traineeIdNumberComponent.SystemId,
+                        SequenceNumber = traineeIdNumberComponent.SequenceNumber,
+                        CombinedIdNumber = traineeIdNumberComponent.CombinedIdNumber,
 
-                    DateCreated = traineeIdNumberComponent.DateCreated,
-                    LastModified = DateTime.Now,
-                    CreatedBy = traineeIdNumberComponent.CreatedBy,
-                    ModifiedBy = User.Identity.Name
-                };
+                        DateCreated = traineeIdNumberComponent.DateCreated,
+                        LastModified = DateTime.Now,
+                        CreatedBy = traineeIdNumberComponent.CreatedBy,
+                        ModifiedBy = User.Identity.Name
+                    };
+                    var completeId = $"{entity.PrefixValue}-{entity.ISOType}-{entity.SystemId}.{entity.SequenceNumber}";
+                    entity.CombinedIdNumber = completeId;
 
-                db.TraineeIdNumberComponents.Attach(entity);
-                db.Entry(entity).State = EntityState.Modified;
-                db.SaveChanges();
+                    db.TraineeIdNumberComponents.Attach(entity);
+                    db.Entry(entity).State = EntityState.Modified;
+
+                    // find the header record and modify the registration number
+                    var headerRecord = db.CmsTrainees.Find(traineeIdNumberComponent.CmsTraineeId);
+                    if(headerRecord != null)
+                    {
+                        headerRecord.RegistrationNumber = completeId;
+
+                        db.CmsTrainees.Attach(headerRecord);
+                        db.Entry(headerRecord).State = EntityState.Modified;
+
+                        db.SaveChanges();
+                    }
+                }
             }
 
             return Json(new[] { traineeIdNumberComponent }.ToDataSourceResult(request, ModelState));

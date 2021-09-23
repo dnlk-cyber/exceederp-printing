@@ -23,10 +23,10 @@ using ExceedERP.Core.Domain.CMS;
 
 namespace ExceedERP.Web.Controllers
 {
-   
+
     public class InitialController : BaseController
     {
-        
+
         private const string InitialUserName = "tester";
         private const string InitialUserFirstName = "TestFirstName";
         private const string InitialUserLastName = "TestLastName";
@@ -58,7 +58,7 @@ namespace ExceedERP.Web.Controllers
 
             AddRoles(roleManager);
 
-           
+
 
             return View("Success");
         }
@@ -95,10 +95,18 @@ namespace ExceedERP.Web.Controllers
         {
             List<ApplicationRole> applicationRoles = new List<ApplicationRole>
             {
-                 #region APTS Roles
+                #region General
+                new ApplicationRole("Admin","Sytem Admin","Global"),
+                new ApplicationRole("CanEditUser","Can Edit User","Global"),
+                new ApplicationRole("CanEditGroup","Can Edit Group","Global"),
+                new ApplicationRole("CanEditRole","Can Edit Role","Global"),
+                new ApplicationRole("User","User", "Global"),
+
+                #endregion
+                #region APTS Roles
                 new ApplicationRole("Admin_Module","Module Admin","APTS"),
                 new ApplicationRole("Admin_Regional","Branch Admin","APTS"),
-                 new ApplicationRole("APTS_Laboratory","User of APTS Laboratory","APTS"),
+                new ApplicationRole("APTS_Laboratory","User of APTS Laboratory","APTS"),
                 new ApplicationRole("APTS_Emergency","User of APTS Emergency","APTS"),
 
                 #endregion
@@ -108,153 +116,149 @@ namespace ExceedERP.Web.Controllers
                 new ApplicationRole("APTS_DrugStore","Manage Drugs","APTS"),
                 new ApplicationRole("APTS_Accountant","Manage balance","APTS"),
                 new ApplicationRole("APTS_User","Apts User","APTS"), 
-
                 #endregion
+
                 #region dashboard
                 new ApplicationRole("Admin_Regional","To see dashboard reports","Administrator"),
-
-
                 #endregion
 
-            #region dashboard
-            new ApplicationRole("Dashboard_HR","To see dashboard reports","Global"),
-            new ApplicationRole("Dashboard_Finance","To see dashboard reports","Global"),
-            new ApplicationRole("Dashboard_Inventory","To see dashboard reports","Global"),
-            new ApplicationRole("Dashboard_Procurement","To see dashboard reports","Global"),
+                #region dashboard
+                new ApplicationRole("Dashboard_HR","To see dashboard reports","Global"),
+                new ApplicationRole("Dashboard_Finance","To see dashboard reports","Global"),
+                new ApplicationRole("Dashboard_Inventory","To see dashboard reports","Global"),
+                new ApplicationRole("Dashboard_Procurement","To see dashboard reports","Global"),
+               #endregion
+
+                #region Finance
+                new ApplicationRole("Finance_Admin","To define common finance setup","Finance"),
+                new ApplicationRole("Finance_Checker","To check and correct account transactions","Finance"),
+                new ApplicationRole("Finance_Report","To generate common finance report","Finance"),
+                new ApplicationRole("General_Ledger_Post_User","To post journal records to ledger","Finance"),
+                new ApplicationRole("GeneralLedgerUser","User will record, reverse, send for approval, edit, and delete diffrernt type of transaction entries","Finance"),
+                new ApplicationRole("GeneralLedgerApprover","User will approve/reject different type of transaction ","Finance"),
+                new ApplicationRole("GeneralLedgerView","User will view only transaction.","Finance"),
+                new ApplicationRole("GeneralLedgerAdmin","To define chart of account segment, and journal category ","Finance"),
+                new ApplicationRole("General_Ledger_Beginning","To manage and update beginning balance entries ","Finance"),
+                new ApplicationRole("General_Ledger_Report","To generate GL report","Finance"),
+                new ApplicationRole("General_SubLedger_Transfer","To transfer sub ledger transactions to GL","Finance"),
+                new ApplicationRole("General_SubLedger_Inventory_BatchTransfer","To batch transfer invventory sub ledger transactions to GL","Finance"),
 
 
-           #endregion
-            #region Finance
-            new ApplicationRole("Finance_Admin","To define common finance setup","Finance"),
-            new ApplicationRole("Finance_Checker","To check and correct account transactions","Finance"),
-            new ApplicationRole("Finance_Report","To generate common finance report","Finance"),
-            new ApplicationRole("General_Ledger_Post_User","To post journal records to ledger","Finance"),
-            new ApplicationRole("GeneralLedgerUser","User will record, reverse, send for approval, edit, and delete diffrernt type of transaction entries","Finance"),
-            new ApplicationRole("GeneralLedgerApprover","User will approve/reject different type of transaction ","Finance"),
-            new ApplicationRole("GeneralLedgerView","User will view only transaction.","Finance"),
-            new ApplicationRole("GeneralLedgerAdmin","To define chart of account segment, and journal category ","Finance"),
-            new ApplicationRole("General_Ledger_Beginning","To manage and update beginning balance entries ","Finance"),
-            new ApplicationRole("General_Ledger_Report","To generate GL report","Finance"),
-            new ApplicationRole("General_SubLedger_Transfer","To transfer sub ledger transactions to GL","Finance"),
-            new ApplicationRole("General_SubLedger_Inventory_BatchTransfer","To batch transfer invventory sub ledger transactions to GL","Finance"),
+                new ApplicationRole("Account_Payable_View","User will view only payment and invoice transaction ","Finance"),
+                new ApplicationRole("Account_PayableInvoice","User will record,  send for approval, transfer to GL, edit, and delete different type of supplier invoices ","Finance"),
+                new ApplicationRole("Account_Payable_Approver","User will approve supplier invoice, and payment amount ","Finance"),
+                new ApplicationRole("Account_Payable_Payment","User will record,  send for approval, transfer to GL, edit, and delete different type of supplier payment ","Finance"),
+                new ApplicationRole("Account_Payable_Settlement","User will record,  send for approval, transfer to GL, edit, and delete different type of payment settlment ","Finance"),
+                new ApplicationRole("Account_Payable_Admin","To define payable setup","Finance"),
+                new ApplicationRole("Account_Payable_Report","To generate payable invoice, and payment report","Finance"),
+                new ApplicationRole("Account_Payable_PettyCash_Approver","To approve petty cash transaction","Finance"),
+                new ApplicationRole("Account_Payable_PettyCash","To do petty cash activity","Finance"),
+                new ApplicationRole("Account_Payable_TravelOrder_Approver","To approve travel order transaction","Finance"),
+                new ApplicationRole("Account_Payable_TravelOrder","To do travel order activity","Finance"),
+                new ApplicationRole("Account_Payable_TravelExpenseClaim_Approver","To approve travel expense claim transaction","Finance"),
+                new ApplicationRole("Account_Payable_TravelExpenseClaim","To do travel expense claim activity","Finance"),
+                new ApplicationRole("Account_Payable_Void","To void AP transactions","Finance"),
 
 
-            new ApplicationRole("Account_Payable_View","User will view only payment and invoice transaction ","Finance"),
-            new ApplicationRole("Account_PayableInvoice","User will record,  send for approval, transfer to GL, edit, and delete different type of supplier invoices ","Finance"),
-            new ApplicationRole("Account_Payable_Approver","User will approve supplier invoice, and payment amount ","Finance"),
-            new ApplicationRole("Account_Payable_Payment","User will record,  send for approval, transfer to GL, edit, and delete different type of supplier payment ","Finance"),
-            new ApplicationRole("Account_Payable_Settlement","User will record,  send for approval, transfer to GL, edit, and delete different type of payment settlment ","Finance"),
-            new ApplicationRole("Account_Payable_Admin","To define payable setup","Finance"),
-            new ApplicationRole("Account_Payable_Report","To generate payable invoice, and payment report","Finance"),
-            new ApplicationRole("Account_Payable_PettyCash_Approver","To approve petty cash transaction","Finance"),
-            new ApplicationRole("Account_Payable_PettyCash","To do petty cash activity","Finance"),
-            new ApplicationRole("Account_Payable_TravelOrder_Approver","To approve travel order transaction","Finance"),
-            new ApplicationRole("Account_Payable_TravelOrder","To do travel order activity","Finance"),
-            new ApplicationRole("Account_Payable_TravelExpenseClaim_Approver","To approve travel expense claim transaction","Finance"),
-            new ApplicationRole("Account_Payable_TravelExpenseClaim","To do travel expense claim activity","Finance"),
-            new ApplicationRole("Account_Payable_Void","To void AP transactions","Finance"),
+                new ApplicationRole("Account_Receivable_Report","To generate receivable report","Finance"),
+                new ApplicationRole("Account_Receivable_Admin","To define receivable setup","Finance"),
+                new ApplicationRole("AccountReceivableApprover","User will approve customer  invoice, and collection amount ","Finance"),
+                new ApplicationRole("Account_Receivable_Collection","User will record, send for approval, transfer to GL, edit, and delete different type of customer collection or receipts","Finance"),
+                new ApplicationRole("AccountReceivableInvoice","User will record, send for approval, transfer to GL, edit, and delete different type of customer invoices","Finance"),
+                new ApplicationRole("Account_Receivable_view","User will view only receivable activities ","Finance"),
+                new ApplicationRole("Account_Receivable_Void","Void AR transactions","Finance"),
+
+                new ApplicationRole("AR_SalesOrder","User will record, send for approval, transfer to GL, edit, and delete different type of customer invoices","Finance"),
+                new ApplicationRole("AR_SalesOrder_view","View sales order transactions ","Finance"),
+                new ApplicationRole("AR_SalesOrder_Approver","Approve sales order transactions","Finance"),
+                new ApplicationRole("AR_SalesOrder_Receipt","Print cash and credit receipts.","Finance"),
+                new ApplicationRole("AR_SalesOrder_Void","void sales orders.","Finance"),
 
 
-            new ApplicationRole("Account_Receivable_Report","To generate receivable report","Finance"),
-            new ApplicationRole("Account_Receivable_Admin","To define receivable setup","Finance"),
-            new ApplicationRole("AccountReceivableApprover","User will approve customer  invoice, and collection amount ","Finance"),
-            new ApplicationRole("Account_Receivable_Collection","User will record, send for approval, transfer to GL, edit, and delete different type of customer collection or receipts","Finance"),
-            new ApplicationRole("AccountReceivableInvoice","User will record, send for approval, transfer to GL, edit, and delete different type of customer invoices","Finance"),
-            new ApplicationRole("Account_Receivable_view","User will view only receivable activities ","Finance"),
-            new ApplicationRole("Account_Receivable_Void","Void AR transactions","Finance"),
+                new ApplicationRole("Bank_Reconciliation_View","User will view only bank reconciled and unreconciled transaction  entries ","Finance"),
+                new ApplicationRole("Bank_Reconciliation_Admin","To define bank setup","Finance"),
+                new ApplicationRole("Bank_Reconciliation_Approver","To approve bank reconciliation transactions","Finance"),
+                new ApplicationRole("Bank_Reconciliation_Void","To void bank reconciliation transactions","Finance"),
+                new ApplicationRole("Bank_Reconciliation_Report","To generate different bank reconciliation report","Finance"),
+                new ApplicationRole("Bank_Reconciliation_User ","User will reconcile ledger transaction with bank statement transaction on monthly","Finance"),
+               #endregion
 
-            new ApplicationRole("AR_SalesOrder","User will record, send for approval, transfer to GL, edit, and delete different type of customer invoices","Finance"),
-            new ApplicationRole("AR_SalesOrder_view","View sales order transactions ","Finance"),
-            new ApplicationRole("AR_SalesOrder_Approver","Approve sales order transactions","Finance"),
-            new ApplicationRole("AR_SalesOrder_Receipt","Print cash and credit receipts.","Finance"),
-            new ApplicationRole("AR_SalesOrder_Void","void sales orders.","Finance"),
+                #region payroll
+               new ApplicationRole("OverTime_Actual_Record_User ", "Overtime user", "Payroll"),
+               new ApplicationRole("Payroll_Input", "Manage Payroll input functionalities", "Payroll"),
+               new ApplicationRole("OverTime_Request_Approver", "Approve,Manage pend or reject all Over time requests", "Payroll"),
+               new ApplicationRole("OverTime_Request_User", "Request Over Time requests", "Payroll"),
+               new ApplicationRole("Payroll_Admin", "Manage Payroll Settings and configurations functionalities", "Payroll"),
+               new ApplicationRole("Payroll_Process", "Manage Payroll Process functionalities", "Payroll"),
+               new ApplicationRole("Payroll_Distribute", "Manage Payroll Distribution functionalities", "Payroll"),
+               new ApplicationRole("Payroll_Close", "Manage Payroll Closing functionalities", "Payroll"),
+               new ApplicationRole("Payroll_Transfer", "Manage Payroll Transfer functionalities", "Payroll"),
+               new ApplicationRole("Payroll_Approver", "Approve,Manage pend or reject all payroll requests", "Payroll"),
+               new ApplicationRole("Payroll_Report", "View payroll reports", "Payroll"),
+               new ApplicationRole("Payroll_View", "", "Payroll"),
+               new ApplicationRole("OverTime_Actual_Record_User", "Maintain Actual Employee over time record", "Payroll"),
+               new ApplicationRole("Payroll_Input","User will enter different type of payroll input like loan, overtime, fixed contribution…","Payroll"),
+               new ApplicationRole("Payroll_Admin","To define payroll setup","Payroll"),
+               new ApplicationRole("Payroll_Process","User will process payroll on monthly base, reverse process payroll, transfer transaction to GL, close period, and view transaction.","Payroll"),
+               new ApplicationRole("Payroll_Approver","User will approve processed payroll before issued to payment ","Payroll"),
+               new ApplicationRole("Payroll_Report","To generate different type of payroll report","Payroll"),
+               new ApplicationRole("Payroll_View","User will view only payroll input data, process payroll status, and report.","Payroll"),
+               new ApplicationRole("Payroll_Distribute","Manage Payroll Distribution functionalities","Payroll"),
+               new ApplicationRole("Payroll_Close","Manage Payroll Closing functionalities","Payroll"),
+               new ApplicationRole("Payroll_Transfer","Manage Payroll Transfer functionalities","Payroll"),
+               new ApplicationRole("OverTime_Request_Approver","Approve,Manage pend or reject all Over time requests","Payroll"),
+               new ApplicationRole("OverTime_Request_User","Request Over Time requests","Payroll"),
+               new ApplicationRole("All_Branch_Payroll_Process","Process all branch","Payroll"),
+               new ApplicationRole("All_Branch_Payroll_Report","View all branch report","Payroll"),
+                #endregion
 
+                #region Procurement
+               new ApplicationRole("Procurement_UserDepartment_User", "User departments role", "Procurement"),
+               new ApplicationRole("Procurement_UserDepartment_Approver", "Approver of user departments", "Procurement"),
+               new ApplicationRole("Procurement_Bond_User", "Guarantee,bond and cpo", "Procurement"),
+               new ApplicationRole("Procurement_Bond_Approver", "Guarantee,bond and cpo approver", "Procurement"),
 
-            new ApplicationRole("Bank_Reconciliation_View","User will view only bank reconciled and unreconciled transaction  entries ","Finance"),
-            new ApplicationRole("Bank_Reconciliation_Admin","To define bank setup","Finance"),
-            new ApplicationRole("Bank_Reconciliation_Approver","To approve bank reconciliation transactions","Finance"),
-            new ApplicationRole("Bank_Reconciliation_Void","To void bank reconciliation transactions","Finance"),
-            new ApplicationRole("Bank_Reconciliation_Report","To generate different bank reconciliation report","Finance"),
-            new ApplicationRole("Bank_Reconciliation_User ","User will reconcile ledger transaction with bank statement transaction on monthly","Finance"),
-          
-           #endregion
+               new ApplicationRole("Procurement_AdvanceBond_User", "Advance guarantee,bond and cpo", "Procurement"),
+               new ApplicationRole("Procurement_AdvanceBond_Approver", "Advance guarantee,bond and cpo approver", "Procurement"),
 
-            #region payroll
-           new ApplicationRole("OverTime_Actual_Record_User ", "Overtime user", "Payroll"),
-           new ApplicationRole("Payroll_Input", "Manage Payroll input functionalities", "Payroll"),
-           new ApplicationRole("OverTime_Request_Approver", "Approve,Manage pend or reject all Over time requests", "Payroll"),
-           new ApplicationRole("OverTime_Request_User", "Request Over Time requests", "Payroll"),
-           new ApplicationRole("Payroll_Admin", "Manage Payroll Settings and configurations functionalities", "Payroll"),
-           new ApplicationRole("Payroll_Process", "Manage Payroll Process functionalities", "Payroll"),
-           new ApplicationRole("Payroll_Distribute", "Manage Payroll Distribution functionalities", "Payroll"),
-           new ApplicationRole("Payroll_Close", "Manage Payroll Closing functionalities", "Payroll"),
-           new ApplicationRole("Payroll_Transfer", "Manage Payroll Transfer functionalities", "Payroll"),
-           new ApplicationRole("Payroll_Approver", "Approve,Manage pend or reject all payroll requests", "Payroll"),
-           new ApplicationRole("Payroll_Report", "View payroll reports", "Payroll"),
-           new ApplicationRole("Payroll_View", "", "Payroll"),
-           new ApplicationRole("OverTime_Actual_Record_User", "Maintain Actual Employee over time record", "Payroll"),
-           new ApplicationRole("Payroll_Input","User will enter different type of payroll input like loan, overtime, fixed contribution…","Payroll"),
-           new ApplicationRole("Payroll_Admin","To define payroll setup","Payroll"),
-           new ApplicationRole("Payroll_Process","User will process payroll on monthly base, reverse process payroll, transfer transaction to GL, close period, and view transaction.","Payroll"),
-           new ApplicationRole("Payroll_Approver","User will approve processed payroll before issued to payment ","Payroll"),
-           new ApplicationRole("Payroll_Report","To generate different type of payroll report","Payroll"),
-           new ApplicationRole("Payroll_View","User will view only payroll input data, process payroll status, and report.","Payroll"),
-           new ApplicationRole("Payroll_Distribute","Manage Payroll Distribution functionalities","Payroll"),
-           new ApplicationRole("Payroll_Close","Manage Payroll Closing functionalities","Payroll"),
-           new ApplicationRole("Payroll_Transfer","Manage Payroll Transfer functionalities","Payroll"),
-           new ApplicationRole("OverTime_Request_Approver","Approve,Manage pend or reject all Over time requests","Payroll"),
-           new ApplicationRole("OverTime_Request_User","Request Over Time requests","Payroll"),
-           new ApplicationRole("All_Branch_Payroll_Process","Process all branch","Payroll"),
-           new ApplicationRole("All_Branch_Payroll_Report","View all branch report","Payroll"),
-            #endregion
+               new ApplicationRole("Procurement_Supplier_User", "Supplier management user", "Procurement"),
+               new ApplicationRole("Procurement_Supplier_Approver", "Supplier management approver", "Procurement"),
+               new ApplicationRole("Procurement_Contract_User", "Contract management user", "Procurement"),
+               new ApplicationRole("Procurement_Contract_Manager", "Contract management manager", "Procurement"),
+               new ApplicationRole("Procurement_Contract_Approver", "Contract management approver", "Procurement"),
+               new ApplicationRole("Procurement_Plan_User", "Procurement need and plan management user", "Procurement"),
+               new ApplicationRole("Procurement_Plan_Approver", "Procurement need and plan management approver", "Procurement"),
+               new ApplicationRole("Procurement_Tender_User", "Tender,proforma and PO management user", "Procurement"),
+               new ApplicationRole("Procurement_Tender_Approver", "Tender,proforma and PO management user approver", "Procurement"),
+               new ApplicationRole("Procurement_Void", "To void procurement transactions", "Procurement"),
+               new ApplicationRole("Procurement_TeamLeader", "To distribute purchase requisions to team members", "Procurement"),
+               new ApplicationRole("Procurement_Officer", "To see asigned purchase requisions by procurement officers", "Procurement"),
+               new ApplicationRole("Procurement_ForeignPurchase_User", "Foreign purchase follow up activity", "Procurement"),
+               new ApplicationRole("Procurement_ForeignPurchase_Approver", "Foreign purchase follow up approver", "Procurement"),
+               new ApplicationRole("Procurement_Report", "View procurement reports", "Procurement"),
+               #endregion
 
-            #region Procurement
-           new ApplicationRole("Procurement_UserDepartment_User", "User departments role", "Procurement"),
-           new ApplicationRole("Procurement_UserDepartment_Approver", "Approver of user departments", "Procurement"),
-           new ApplicationRole("Procurement_Bond_User", "Guarantee,bond and cpo", "Procurement"),
-           new ApplicationRole("Procurement_Bond_Approver", "Guarantee,bond and cpo approver", "Procurement"),
-
-           new ApplicationRole("Procurement_AdvanceBond_User", "Advance guarantee,bond and cpo", "Procurement"),
-           new ApplicationRole("Procurement_AdvanceBond_Approver", "Advance guarantee,bond and cpo approver", "Procurement"),
-
-           new ApplicationRole("Procurement_Supplier_User", "Supplier management user", "Procurement"),
-           new ApplicationRole("Procurement_Supplier_Approver", "Supplier management approver", "Procurement"),
-           new ApplicationRole("Procurement_Contract_User", "Contract management user", "Procurement"),
-           new ApplicationRole("Procurement_Contract_Manager", "Contract management manager", "Procurement"),
-           new ApplicationRole("Procurement_Contract_Approver", "Contract management approver", "Procurement"),
-           new ApplicationRole("Procurement_Plan_User", "Procurement need and plan management user", "Procurement"),
-           new ApplicationRole("Procurement_Plan_Approver", "Procurement need and plan management approver", "Procurement"),
-           new ApplicationRole("Procurement_Tender_User", "Tender,proforma and PO management user", "Procurement"),
-           new ApplicationRole("Procurement_Tender_Approver", "Tender,proforma and PO management user approver", "Procurement"),
-           new ApplicationRole("Procurement_Void", "To void procurement transactions", "Procurement"),
-           new ApplicationRole("Procurement_TeamLeader", "To distribute purchase requisions to team members", "Procurement"),
-           new ApplicationRole("Procurement_Officer", "To see asigned purchase requisions by procurement officers", "Procurement"),
-           new ApplicationRole("Procurement_ForeignPurchase_User", "Foreign purchase follow up activity", "Procurement"),
-           new ApplicationRole("Procurement_ForeignPurchase_Approver", "Foreign purchase follow up approver", "Procurement"),
-           new ApplicationRole("Procurement_Report", "View procurement reports", "Procurement"),
-           #endregion
-
-            #region Property
-             new ApplicationRole("User_Department", "Approve store requisitions", "Property"),
-             new ApplicationRole("Property_Requisition_Second_Approver", "Request second approver", "Property"),
-             new ApplicationRole("Property_Count_User", "Physical count", "Property"),
-             new ApplicationRole("Property_Count_Approver", "Physical count Approver", "Property"),
-             new ApplicationRole("Property_Requisition_User","All users that request items from store ","Property"),
-             new ApplicationRole("Property_User","Property Staff that handles property transactions ","Property"),
-             new ApplicationRole("User_Department","Approver of work unit requisitions ","Property"),
-             new ApplicationRole("Property_Approver","Approve property transactions ","Property"),
-             new ApplicationRole("Property_Authorizer","Authorize property transactions after approval","Property"),
-             new ApplicationRole("Property_Count_Approver","Property Physical Count Update approver","Property"),
-             new ApplicationRole("Property_Count_User","Property Physical Count user","Property"),
-             new ApplicationRole("Property_Admin","Setting Property lookups ","Property"),
-             new ApplicationRole("Property_Report","View, Export and print Property related reports","Property"),
-             new ApplicationRole("PropertyImport","Import data","Property"),
-             new ApplicationRole("Property_StoreKeeper","Store transactions","Property"),
-             new ApplicationRole("Property_Inspector","Good receive inspection role","Property"),
-             new ApplicationRole("Property_Void","Void Stock Transactions","Property"),
-             new ApplicationRole("Property_Bincard","Update or recalculate bincard transaction","Property"),
-           #endregion
-             #region Fixed Asset
+                #region Property
+                 new ApplicationRole("User_Department", "Approve store requisitions", "Property"),
+                 new ApplicationRole("Property_Requisition_Second_Approver", "Request second approver", "Property"),
+                 new ApplicationRole("Property_Count_User", "Physical count", "Property"),
+                 new ApplicationRole("Property_Count_Approver", "Physical count Approver", "Property"),
+                 new ApplicationRole("Property_Requisition_User","All users that request items from store ","Property"),
+                 new ApplicationRole("Property_User","Property Staff that handles property transactions ","Property"),
+                 new ApplicationRole("User_Department","Approver of work unit requisitions ","Property"),
+                 new ApplicationRole("Property_Approver","Approve property transactions ","Property"),
+                 new ApplicationRole("Property_Authorizer","Authorize property transactions after approval","Property"),
+                 new ApplicationRole("Property_Count_Approver","Property Physical Count Update approver","Property"),
+                 new ApplicationRole("Property_Count_User","Property Physical Count user","Property"),
+                 new ApplicationRole("Property_Admin","Setting Property lookups ","Property"),
+                 new ApplicationRole("Property_Report","View, Export and print Property related reports","Property"),
+                 new ApplicationRole("PropertyImport","Import data","Property"),
+                 new ApplicationRole("Property_StoreKeeper","Store transactions","Property"),
+                 new ApplicationRole("Property_Inspector","Good receive inspection role","Property"),
+                 new ApplicationRole("Property_Void","Void Stock Transactions","Property"),
+                 new ApplicationRole("Property_Bincard","Update or recalculate bincard transaction","Property"),
+               #endregion
+                #region Fixed Asset
              new ApplicationRole("FixedAsset_Requisition_User", "Fixed asset requisition user", "Fixed Asset"),
              new ApplicationRole("FixedAsset_Requisition_Approver", "Fixed asset requisition approver", "Fixed Asset"),
              new ApplicationRole("FixedAsset_Requisition_Second_Approver", "Fixed asset requisition second approver", "Fixed Asset"),
@@ -277,7 +281,7 @@ namespace ExceedERP.Web.Controllers
              new ApplicationRole("FixedAsset_Inspector","Fixed asset receive inspection role","Fixed Asset"),
              new ApplicationRole("Dashboard_FixedAsset","View Fixed Asset Dashboard ","Fixed Asset"),
             #endregion
-            #region HR roles
+                #region HR roles
              new ApplicationRole("GenerateDayAbsent", "GenerateDayAbsent", "HR"),
              new ApplicationRole("SalaryStructure", "SalaryStructure", "HR"),
              new ApplicationRole("Miscellaneous", "Miscellaneous", "HR"),
@@ -322,24 +326,24 @@ namespace ExceedERP.Web.Controllers
             new ApplicationRole("HR_Training_Requester", "Request Training", "HR"),
              #endregion
 
-            #region Archive
+                #region Archive
             new ApplicationRole("Archive_Admin","Manage archive Settings and configurations by Archive administrator","Archive "),
             new ApplicationRole("Archive_User","Manage archive functionalities by Archiver","Archive "),
             new ApplicationRole("Archive_Report","View archive  reports","Archive "),
               #endregion
 
-              #region Health
+                #region Health
             new ApplicationRole("Health_Admin","Manage settings and configurations","Health"),
             new ApplicationRole("Health_User","Manage health and insurance functionalities","Health"),
             new ApplicationRole("Health_Approver","Approve , pend or reject all health  requests","Health"),
             #endregion
 
-            #region insurance
+                #region insurance
              new ApplicationRole("Insurance_Admin", "Manage settings and configurations", "Insurance"),
              new ApplicationRole("Insurance_User", "Manage Insurance functionalities", "Insurance"),
             #endregion
               
-            #region Budget
+                #region Budget
             new ApplicationRole("Budget_Admin", "Budget Administrator", "Budget"),
             new ApplicationRole("Budget_Approver", "Budget Approver", "Budget"),
             new ApplicationRole("Budget_Report", "Budget Report", "Budget"),
@@ -348,7 +352,7 @@ namespace ExceedERP.Web.Controllers
             new ApplicationRole("Budget_Transfer", "Budget Transfer", "Budget"),
             #endregion
 
-            #region CRM
+                #region CRM
              new ApplicationRole("CRM_Admin", "CRM Administrator", "CRM"),
              new ApplicationRole("Sales_Report", "Sales Report", "CRM"),
              new ApplicationRole("Marketing_Report", "Marketing Report", "CRM"),
@@ -369,7 +373,7 @@ namespace ExceedERP.Web.Controllers
              new ApplicationRole("Credit_Settlement_User", "Credit Settlement User", "CRM"),
             #endregion
 
-            #region FLEET
+                #region FLEET
               new ApplicationRole("Fleet_Admin", "Fleet Administrator", "FLEET"),
               new ApplicationRole("Registration_User", "Registration User", "FLEET"),
               new ApplicationRole("Registration_Approver", "Registration Approver", "FLEET"),
@@ -408,7 +412,7 @@ namespace ExceedERP.Web.Controllers
              new ApplicationRole("Fleet_Registration_Report", "Fleet Registration Report", "FLEET"),
 
            #endregion
-            #region CONSTRUCTION
+                #region CONSTRUCTION
                 //new ApplicationRole("Construction_Setting_Admin", "Construction Administrator", "CONSTRUCTION"),
                 //new ApplicationRole("Estimation_User", "Estimation User", "CONSTRUCTION"),
                 //new ApplicationRole("Estimation_Approver", "Estimation Approver", "CONSTRUCTION"),
@@ -445,7 +449,7 @@ namespace ExceedERP.Web.Controllers
                 new ApplicationRole("AssignHandler", "AssignHandler", "HelpDesk"),
                 new ApplicationRole("Handler", "Handler", "HelpDesk")
                 #endregion
-        };
+            };
 
             foreach (ApplicationRole role in applicationRoles)
             {
@@ -532,6 +536,6 @@ namespace ExceedERP.Web.Controllers
             var plainUsers = allGroups.FirstOrDefault(g => g.Name == "Users");
             groupManager.SetUserGroups(user.Id, plainUsers.Id);
         }
-      
+
     }
 }

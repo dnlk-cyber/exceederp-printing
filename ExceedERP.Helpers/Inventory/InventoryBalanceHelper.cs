@@ -1,17 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web.Mvc;
-using ExceedERP.Core.Domain.CRM;
-using ExceedERP.Core.Domain.Finance.GL;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.DataAccess.Context;
-using ExceedERP.DataAccess.Migrations;
-using ExceedERP.Helpers.Common;
-using ExceedERP.Helpers.Finance;
 
 namespace ExceedERP.Helpers.Inventory
 {

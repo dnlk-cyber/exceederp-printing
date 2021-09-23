@@ -3,8 +3,6 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using ExceedERP.Core.Domain.Common;
-using ExceedERP.Core.Domain.CRM;
-using ExceedERP.Core.Domain.InfoDesk;
 
 namespace ExceedERP.Core.Domain.InfoDesk.Support
 {

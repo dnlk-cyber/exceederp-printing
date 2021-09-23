@@ -2,20 +2,17 @@
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.DataAccess.Context;
 using System.Configuration;
 using System.Data.SqlClient;
-using ExceedERP.DataAccess.Migrations;
 using ExceedERP.Core.Domain.Admin;
 
 namespace ExceedERP.Helpers.Common
 {
 
-     public static class UserHelper
+    public static class UserHelper
     {
         
        

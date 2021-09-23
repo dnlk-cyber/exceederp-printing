@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ExceedERP.Core.Domain.APTS
 {
-   public class LaboratoryRequest
+    public class LaboratoryRequest
     {
         public int LaboratoryRequestId { get; set; }
         public int BranchId { get; set; }

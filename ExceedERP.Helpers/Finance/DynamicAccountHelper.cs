@@ -1,4 +1,4 @@
-﻿using ExceedERP.Core.Domain.Finance.GL;
+using ExceedERP.Core.Domain.Finance.GL;
 using ExceedERP.DataAccess.Context;
 using System;
 using System.Collections.Generic;
@@ -298,7 +298,7 @@ namespace ExceedERP.Helpers.Finance
         public  void SplitLedgerAccountCombination()
         {
             var ledgers = _db.GLLedgerPostings
-                //.Where(x => x.AccountSegment == null)
+                .Where(x => x.AccountSegment == null || x.SubAccountSegment==null)
                 .ToList();
             foreach (var ledger in ledgers)
             {
@@ -322,8 +322,9 @@ namespace ExceedERP.Helpers.Finance
         public  void SplitLedgerAccount(GLLedgerPosting ledger)
         {
             string[] account = ledger.AccountCode.Split('-');
-            
 
+            if (GetNaturalAccountSequenceIndex() != -1)
+                ledger.AccountSegment = account[GetNaturalAccountSequenceIndex()];
             if (GetCostCenterAccountSequenceIndex() != -1)
                 ledger.CostCenterSegment = account[GetCostCenterAccountSequenceIndex()];
             if (GetSubAccountSequenceIndex() != -1)
@@ -504,6 +505,106 @@ namespace ExceedERP.Helpers.Finance
                     if(GetBizUnitAccountSequenceIndex()!=-1)
                         journalDetail.BusinessUnit = account[GetBizUnitAccountSequenceIndex()];
                     if(GetBranchAccountSequenceIndex()!=-1)
+                        journalDetail.BranchSegment = account[GetBranchAccountSequenceIndex()];
+
+                    #region dynamic segments
+
+                    if (account.Length == 8)
+                    {
+                        journalDetail.Segment1 = account[0];
+                        journalDetail.Segment2 = account[1];
+                        journalDetail.Segment3 = account[2];
+                        journalDetail.Segment4 = account[3];
+                        journalDetail.Segment5 = account[4];
+                        journalDetail.Segment6 = account[5];
+                        journalDetail.Segment7 = account[6];
+                        journalDetail.Segment8 = account[7];
+                    }
+                    else if (account.Length == 7)
+                    {
+                        journalDetail.Segment1 = account[0];
+                        journalDetail.Segment2 = account[1];
+                        journalDetail.Segment3 = account[2];
+                        journalDetail.Segment4 = account[3];
+                        journalDetail.Segment5 = account[4];
+                        journalDetail.Segment6 = account[5];
+                        journalDetail.Segment7 = account[6];
+                    }
+                    else if (account.Length == 6)
+                    {
+                        journalDetail.Segment1 = account[0];
+                        journalDetail.Segment2 = account[1];
+                        journalDetail.Segment3 = account[2];
+                        journalDetail.Segment4 = account[3];
+                        journalDetail.Segment5 = account[4];
+                        journalDetail.Segment6 = account[5];
+                    }
+                    else if (account.Length == 5)
+                    {
+                        journalDetail.Segment1 = account[0];
+                        journalDetail.Segment2 = account[1];
+                        journalDetail.Segment3 = account[2];
+                        journalDetail.Segment4 = account[3];
+                        journalDetail.Segment5 = account[4];
+                    }
+                    else if (account.Length == 4)
+                    {
+                        journalDetail.Segment1 = account[0];
+                        journalDetail.Segment2 = account[1];
+                        journalDetail.Segment3 = account[2];
+                        journalDetail.Segment4 = account[3];
+                    }
+                    else if (account.Length == 3)
+                    {
+                        journalDetail.Segment1 = account[0];
+                        journalDetail.Segment2 = account[1];
+                        journalDetail.Segment3 = account[2];
+                    }
+                    else if (account.Length == 2)
+                    {
+                        journalDetail.Segment1 = account[0];
+                        journalDetail.Segment2 = account[1];
+                    }
+                    else if (account.Length == 1)
+                    {
+                        journalDetail.Segment1 = account[0];
+                    }
+
+                    #endregion
+                }
+
+                context.Entry(journalDetail).State = EntityState.Modified;
+                context.SaveChanges();
+            }
+        }
+
+        public void SplitBegJournalAccountCombination()
+        {
+            var journalDetails = _db.GLRecordJournalBegDistributions.Where(x => x.AccountSegment == null || x.BranchSegment == null).ToList();
+            foreach (var journalDetail in journalDetails)
+            {
+                SplitBegJournal(journalDetail.GLRecordJournalBegDistributionId);
+            }
+        }
+
+        public void SplitBegJournal(int id)
+        {
+            using (var context = new ExceedDbContext())
+            {
+
+                var journalDetail = context.GLRecordJournalBegDistributions.Find(id);
+
+                if (journalDetail != null)
+                {
+                    string[] account = journalDetail.AccountCode.Split('-');
+                    journalDetail.AccountSegment = account[GetNaturalAccountSequenceIndex()];
+                    if (GetCostCenterAccountSequenceIndex() != -1)
+                        journalDetail.CostCenterSegment = account[GetCostCenterAccountSequenceIndex()];
+                    if (GetSubAccountSequenceIndex() != -1)
+                        journalDetail.SubAccountSegment = account[GetSubAccountSequenceIndex()];
+                    if (GetBizUnitAccountSequenceIndex() != -1)
+                        journalDetail.BusinessUnit = account[GetBizUnitAccountSequenceIndex()];
+                    if (GetBranchAccountSequenceIndex() != -1)
                         journalDetail.BranchSegment = account[GetBranchAccountSequenceIndex()];
 
                     #region dynamic segments

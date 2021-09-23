@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ExceedERP.Core.Domain.APTS
 {
-   public class Model22
+    public class Model22
     {
         public int Model22Id { get; set; }
         public int RequisitionModel20Id { get; set; }

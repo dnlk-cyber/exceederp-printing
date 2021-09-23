@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
- using ExceedERP.Core.Domain.Common;
+using ExceedERP.Core.Domain.Common;
 
 namespace ExceedERP.Core.Domain.FleetManagement.FleetResource
 {
-      public  class VehicleDemandApproval     : TrackUserOperation
+    public  class VehicleDemandApproval     : TrackUserOperation
     {
         public int VehicleDemandApprovalID { get; set; }
         public Guid VehicleDemandId { get; set; }

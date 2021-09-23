@@ -1,0 +1,120 @@
+﻿@using System.Collections
+@{
+
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.ProductionFollowUp.FinishedGoodReceiving>()
+                      .Name("grid")
+                      .Columns(columns =>
+                      {
+                          columns.ForeignKey(c => c.JobId, (IEnumerable)ViewData["JobOrder"], "JobId", "JobNo").EditorTemplateName("JobOrders");
+                          columns.Bound(c => c.VoucherNo);
+                          columns.Bound(c => c.Store);
+                          columns.Bound(c => c.DeliveredBy);
+                          columns.Bound(c => c.ReceivedBy);
+                          columns.Bound(c => c.Supervisor);
+                          columns.Command(command =>
+                          {
+                              command.Edit();
+                              command.Destroy();
+                          }).Width(180);
+                      })
+                      .ToolBar(toolbar =>
+                      {
+                          toolbar.Create();
+                      })
+                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                      .Pageable(pageable => pageable
+                                         .Input(true)
+                                         .Numeric(false)
+                                         .Refresh(true)
+                                         .PageSizes(true)
+                                         .ButtonCount(5))
+                                   .Filterable()
+                                   .Scrollable(h => h.Height(500))
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+                          .Model(model => model.Id(p => p.FinishedGoodReceivingId))
+                          .Read(read => read.Action("FinishedGoodReceivings_Read", "FinishedGoodReceivings"))
+                          .Create(create => create.Action("FinishedGoodReceivings_Create", "FinishedGoodReceivings"))
+                          .Update(update => update.Action("FinishedGoodReceivings_Update", "FinishedGoodReceivings"))
+                          .Destroy(destroy => destroy.Action("FinishedGoodReceivings_Destroy", "FinishedGoodReceivings"))
+                     ).ClientDetailTemplateId("Detail")
+)
+
+
+<script id="Detail" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                                 .Name("tabstrip2_#=FinishedGoodReceivingId#")
+                                .SelectedIndex(0)
+                                .Items(items =>
+                                {
+
+                                    items.Add().Text("Finished Goods").Content(
+                        @<text>
+                            <a href='@Url.Action("FinishedGoodReceival", "ReportProductionFollowUp")/?id=#=FinishedGoodReceivingId#' target="_blank" title="Print Finished Good Receiving Form"><i class="fa fa-print fa-2x"></i></a>
+
+                            @(Html.Kendo().Grid<ExceedERP.Core.Domain.ProductionFollowUp.FinishedGoods>()
+                                                   .Name("FinishedGoods#=FinishedGoodReceivingId#")
+                                                           .Columns(columns =>
+                                                           {
+                                                                       columns.Bound(c => c.CodeNo).Width(100);
+                                                                       columns.Bound(c => c.Description).Width(100);
+                                                                       columns.Bound(c => c.Unit).Width(70);
+                                                                       columns.Bound(c => c.Quantity).Width(70);
+                                                                       columns.Bound(c => c.Remark).Width(70);
+
+                                                                       columns.Command(command =>
+                                                           {
+                                                                                   command.Edit();
+                                                                                   command.Destroy();
+                                                                               }).Width(150);
+                                                                   })
+                                                                .ToolBar(toolbar =>
+                                                                {
+                                                                            toolbar.Create();
+                                                                        })
+                                                                       .NoRecords("No Data Registered")
+                                                              .Editable(editable => editable.Mode(GridEditMode.InLine).Window(window =>
+                                                              {
+
+                                                                          window.Scrollable(false);
+                                                                          window.Title("Finished Goods");
+                                                                      }))
+                                                              .Pageable(pageable => pageable
+                                                                .Refresh(true)
+                                                                )
+
+                                                          .Scrollable(h => h.Height(250))
+
+                                                          .DataSource(dataSource => dataSource
+                                                             .Ajax()
+                                                                     //  .Sort(s => s.Add(x => x.ProformaId).Descending())
+                                                                     .Events(events =>
+                                                                     {
+                                                                                 events.Error("error_handler(\"FinishedGoods#=FinishedGoodReceivingId#\")");
+                                                                                 events.RequestStart("onRequestStart(\"FinishedGoods#=FinishedGoodReceivingId#\")");
+                                                                                 events.RequestEnd("onRequestEnd(\"FinishedGoods#=FinishedGoodReceivingId#\")");
+                                                                             }
+                                                                        )
+
+                                                                        .Model(model =>
+                                                                        {
+                                                                                    model.Id(p => p.FinishedGoodsId);
+                                                                                })
+
+                                                        .Read(read => read.Action("FinishedGoods_Read", "FinishedGoods", new { id = "#=FinishedGoodReceivingId#" }))
+                                                       .Create(create => create.Action("FinishedGoods_Create", "FinishedGoods", new { id = "#=FinishedGoodReceivingId#" }))
+                                                       .Update(update => update.Action("FinishedGoods_Update", "FinishedGoods"))
+                                                       .Destroy(destroy => destroy.Action("FinishedGoods_Destroy", "FinishedGoods"))
+
+                                                       ).ToClientTemplate()
+                            )
+                        </text>
+                                                                        );
+
+
+
+                                        }).ToClientTemplate())
+</script>

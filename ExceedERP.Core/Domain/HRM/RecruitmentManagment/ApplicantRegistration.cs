@@ -1,9 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
 using ExceedERP.Core.Domain.Common;
-using ExceedERP.Core.Domain.HRM.TrainingEducation;
-using System.Collections.Generic;
-using ExceedERP.Core.Domain.HRM.EmployeeDetail;
 using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ExceedERP.Core.Domain.HRM.RecruitmentManagment

@@ -1,16 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using ExceedERP.Core.Domain.Common;
 using System.ComponentModel;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel.DataAnnotations;
 
 namespace ExceedERP.Core.Domain.FleetManagement.FleetRegistration
 {
-   public class EquipmentArrival : Operations
+    public class EquipmentArrival : Operations
     {
 
        public Guid EquipmentArrivalId { get; set; }

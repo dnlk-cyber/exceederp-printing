@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using ExceedERP.Core.Domain.Common;
-using ExceedERP.Core.Domain.Finance.GL;
 
 namespace ExceedERP.Core.Domain.Finance.Bank
 {

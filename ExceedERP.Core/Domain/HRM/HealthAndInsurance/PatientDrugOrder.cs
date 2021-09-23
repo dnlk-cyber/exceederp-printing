@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ExceedERP.Core.Domain.HRM.HealthAndInsurance
+﻿namespace ExceedERP.Core.Domain.HRM.HealthAndInsurance
 {
-   public class PatientDrugOrder
+    public class PatientDrugOrder
     {
         public int PatientDrugOrderId { get; set; }
         public int DrugListsId { get; set; }

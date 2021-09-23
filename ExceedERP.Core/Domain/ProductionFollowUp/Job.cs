@@ -1,0 +1,108 @@
+﻿using System;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+
+namespace ExceedERP.Core.Domain.ProductionFollowUp
+{
+    public class Job
+    {
+        public int JobId { get; set; }
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+        [Display(Name = "Recived Date")]
+        public DateTime Time { get; set; }
+        [NotMapped]
+        [Display(Name = "Have Proforma ?")]
+        public bool HaveProforma { get; set; }
+        [Display(Name = "Proforma ")]
+        public int? ProformaId { get; set; }
+        // [RegularExpression(@"^(\d{5})$", ErrorMessage = "Enter a valid 5 digit Job No")]
+        [Display(Name = "Job No.")]
+        public string JobNo { get; set; }
+        [StringLength(50)]
+        [Display(Name = "Customer Name")]
+        public string CustomerName { get; set; }
+        [Display(Name = "Estimated By")]
+        public string Estimatedby { get; set; }
+        public string Code { get; set; }
+        public string Approvedby { get; set; }
+        [Display(Name = "Contact Name")]
+        public string ContactName { get; set; }
+        [Display(Name = "Contact Phone")]
+        public string ContactPhone { get; set; }
+        public string City { get; set; }
+        [Display(Name = "Sub City")]
+        public string SubCity { get; set; }
+        public string Wereda { get; set; }
+        [Display(Name = "P.O. Box")]
+        public string Pobox { get; set; }
+        [Display(Name = "Job Type")]
+        public int JobTypeId { get; set; }
+        [Display(Name = "Job Type Item")]
+        public int? JobTypeItemId { get; set; }
+       
+        public int Pages { get; set; }
+        public int Copies { get; set; }
+        public int Quant { get; set; }
+        [Display(Name = "Unit Price")]
+        public double UnitPrice { get; set; }
+        [Display(Name = "Before Tax")]
+        public double BeforeTax { get; set; }
+      
+        [Display(Name = "Total Price")]
+        public decimal TotalPrice { get; set; }
+        public bool Contract { get; set; }
+
+        [Display(Name = "Total Impression")]
+        public int TotalImpression { get; set; }
+        [Display(Name = "Delivery Date")]
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+        public DateTime? DeliveryDate { get; set; }
+        [Display(Name = "Text Weight")]
+        public double TextWeight { get; set; }
+        [Display(Name = "Cover Weight")]
+        public double CoverWeight { get; set; }
+        [Display(Name = "Color Text")]
+        public int ColorText { get; set; }
+        [Display(Name = "Color Cover")]
+        public int Colorcover { get; set; }
+        [StringLength(15)]
+        [Display(Name = "Finishing Size")]
+        public string FinishingSize { get; set; }
+        [Display(Name = "Printing Line")]
+        [StringLength(15)]
+        public string PrintingLine { get; set; }
+        [Display(Name = "Printing Machine")]
+        [StringLength(15)]
+        public string PrintingMachine { get; set; }
+        public bool Sewing { get; set; }
+        public bool New { get; set; }
+        public bool PerfectBinding { get; set; }
+        public bool Repeat { get; set; }
+        public bool Lamnating { get; set; }
+        public bool Varnish { get; set; }
+        public bool Perforate { get; set; }
+        public bool Camsur { get; set; }
+        [Display(Name = "Graphic Design Expected Completetion")]
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+        public DateTime? GraphicDesignExpectedCompletetion { get; set; }
+        [Display(Name = "Printing Expected Completetion")]
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+        public DateTime? PrintingExpectedCompletetion { get; set; }
+        [Display(Name = "Finish Expected Completetion")]
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+        public DateTime? FinishExpectedCompletetion { get; set; }
+        [StringLength(25)]
+        public string Status { get; set; }
+        [StringLength(50)]
+        [Display(Name = "Finishing Workflow")]
+        public string FinishingWorkflow { get; set; }
+        public string Reason { get; set; }
+
+    }
+
+}

@@ -1,9 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using ExceedERP.Core.Domain.Common;
-using ExceedERP.Core.Domain.Finance.AP.Travel;
-using ExceedERP.Core.Domain.Procurement.Contract;
 
 namespace ExceedERP.Core.Domain.Procurement.ForeignPurchase
 {

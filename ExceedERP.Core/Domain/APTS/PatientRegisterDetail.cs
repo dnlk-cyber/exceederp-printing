@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ExceedERP.Core.Domain.APTS
+﻿namespace ExceedERP.Core.Domain.APTS
 {
-   public class PatientRegisterDetail
+    public class PatientRegisterDetail
     {
         public int PatientRegisterDetailId { get; set; }
         public int PatientRegisterId { get; set; }

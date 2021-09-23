@@ -1,0 +1,119 @@
+﻿@using System.Collections
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.ProductionFollowUp.ProductDelivery>()
+              .Name("grid")
+              .Columns(columns =>
+              {
+                  columns.ForeignKey(c => c.JobId,(ICollection)ViewData["JobOrder"],"JobId","JobNo").EditorTemplateName("JobOrders");
+                  columns.Bound(c => c.CustomerRefNo);
+                  columns.Bound(c => c.CreditSaleNo);
+                  columns.Bound(c => c.CashSaleNo);
+                  columns.Bound(c => c.PreparedBy);
+                  columns.Bound(c => c.ApprovedBy);
+                  columns.Bound(c => c.IdentificationNo);
+                  columns.Command(command =>
+                  {
+                      command.Edit();
+                      command.Destroy();
+                  }).Width(180);
+              })
+              .ToolBar(toolbar =>
+              {
+                  toolbar.Create();
+              })
+              .Editable(editable => editable.Mode(GridEditMode.InLine))
+            .Pageable(pageable => pageable
+                                         .Input(true)
+                                         .Numeric(false)
+                                         .Refresh(true)
+                                         .PageSizes(true)
+                                         .ButtonCount(5))
+                                   .Filterable()
+                                   .Scrollable(h => h.Height(500))
+              .DataSource(dataSource => dataSource
+                  .Ajax()
+                  .Model(model => model.Id(p => p.ProductDeliveryId))
+                  .Read(read => read.Action("ProductDeliveries_Read", "ProductDeliveries"))
+                  .Create(create => create.Action("ProductDeliveries_Create", "ProductDeliveries"))
+                  .Update(update => update.Action("ProductDeliveries_Update", "ProductDeliveries"))
+                  .Destroy(destroy => destroy.Action("ProductDeliveries_Destroy", "ProductDeliveries"))
+               ).ClientDetailTemplateId("Detail")
+)
+
+
+<script id="Detail" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                 .Name("tabstrip2_#=ProductDeliveryId#")
+                .SelectedIndex(0)
+                .Items(items =>
+                {
+
+                    items.Add().Text("Delivery Items").Content(
+        @<text>
+            <a href='@Url.Action("ProductDelivery", "ReportProductionFollowUp")/?id=#=ProductDeliveryId#' target="_blank" title="Print Finished Good Receiving Form"><i class="fa fa-print fa-2x"></i></a>
+
+            @(Html.Kendo().Grid<ExceedERP.Core.Domain.ProductionFollowUp.ProductDeliveryItems>()
+                .Name("ProductDeliveryItems#=ProductDeliveryId#")
+                        .Columns(columns =>
+                        {
+                            columns.Bound(c => c.ItemCode).Width(100);
+                            columns.Bound(c => c.Description).Width(100);
+                            columns.Bound(c => c.Unit).Width(70);
+                            columns.Bound(c => c.Quantity).Width(70);
+                            columns.Bound(c => c.UnitCost).Width(70);
+                            columns.Bound(c => c.TotalCost).Width(70);
+
+                            columns.Command(command =>
+                            {
+                                command.Edit();
+                                command.Destroy();
+                            }).Width(150);
+                        })
+                                   .ToolBar(toolbar =>
+                                   {
+                                       toolbar.Create();
+                                   })
+                                          .NoRecords("No Data Registered")
+                                 .Editable(editable => editable.Mode(GridEditMode.InLine).Window(window =>
+                                 {
+
+                                     window.Scrollable(false);
+                                     window.Title("Finished Goods");
+                                 }))
+                                 .Pageable(pageable => pageable
+                                   .Refresh(true)
+                                   )
+
+                             .Scrollable(h => h.Height(250))
+
+                             .DataSource(dataSource => dataSource
+                                .Ajax()
+                                        //  .Sort(s => s.Add(x => x.ProformaId).Descending())
+                                        .Events(events =>
+                                        {
+                                            events.Error("error_handler(\"ProductDeliveryItems#=ProductDeliveryId#\")");
+                                            events.RequestStart("onRequestStart(\"ProductDeliveryItems#=ProductDeliveryId#\")");
+                                            events.RequestEnd("onRequestEnd(\"ProductDeliveryItems#=ProductDeliveryId#\")");
+                                        }
+                                           )
+
+                                           .Model(model =>
+                                           {
+                                               model.Id(p => p.ProductDeliveryItemsId);
+                                           })
+
+                           .Read(read => read.Action("ProductDeliveryItems_Read", "ProductDeliveryItems", new { id = "#=ProductDeliveryId#" }))
+                          .Create(create => create.Action("ProductDeliveryItems_Create", "ProductDeliveryItems", new { id = "#=ProductDeliveryId#" }))
+                          .Update(update => update.Action("ProductDeliveryItems_Update", "ProductDeliveryItems"))
+                          .Destroy(destroy => destroy.Action("ProductDeliveryItems_Destroy", "ProductDeliveryItems"))
+
+                          ).ToClientTemplate()
+                                    )
+                                </text>
+                                      );
+
+                           }).ToClientTemplate())
+</script>

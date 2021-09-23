@@ -138,13 +138,13 @@
                                               {
                                                   columns.Bound(c => c.ReferenceDoc).Title("Ref. Doc.").Width(100);
                                                   columns.Bound(c => c.Reference).Title("Ref.").Width(100);
-                                                  columns.Bound(c => c.Debit).Width(70);
-                                                  columns.Bound(c => c.Credit).Width(70);
+                                                  columns.Bound(c => c.Debit).Width(70).Format("{0:n}");
+                                                  columns.Bound(c => c.Credit).Width(70).Format("{0:n}");
                                                   columns.Bound(c => c.Date).Width(100);
                                                   columns.Bound(c => c.Source).Width(100);
 
                                                   //columns.Bound(client => client.Source).ClientTemplate("<a onclick=\"return showDetails(this)\">#=Source#</a>");
-                                                 
+
                                                   columns.Bound(c => c.Reconciled).Width(80).ClientTemplate(
                                                   "<input type='checkbox' disabled = 'true' value='#= Reconciled #' " +
                                                   "# if (Reconciled) { #" +
@@ -152,14 +152,14 @@
                                                   "# } #" +
                                                   "/>"
                                                   );
-                                                          columns.Bound(c => c.Check).Hidden(true).ClientTemplate(
-                                                  "<input type='checkbox' disabled = 'true' value='#= Check #' " +
-                                                  "# if (Check) { #" +
-                                                  "checked='checked'" +
-                                                  "# } #" +
-                                                  "/>"
-                                                  );
-                                                  
+                                                  columns.Bound(c => c.Check).Hidden(true).ClientTemplate(
+                                          "<input type='checkbox' disabled = 'true' value='#= Check #' " +
+                                          "# if (Check) { #" +
+                                          "checked='checked'" +
+                                          "# } #" +
+                                          "/>"
+                                          );
+
 
                                                   columns.Command(command =>
                                                   {
@@ -184,16 +184,15 @@
                                               .Scrollable()
                                               .Sortable()
                                               .Filterable()
-                                              .Selectable(selectable =>
-                                              {
-                                                  selectable.Mode(GridSelectionMode.Single);
-                                                  selectable.Type(GridSelectionType.Row);
-                                              })
+                                              .Navigatable()
+
                                             .Events(x => x.DataBound("onDataBoundLineBankReconciliation"))
 
                                               .DataSource(dataSource => dataSource
                                                   .Ajax()
-                                                  .Batch(true)
+                                                    .Batch(true)
+                                                    .PageSize(20)
+                                                    .ServerOperation(false)
                                                   .Sort(sort => sort.Add("ReconciliationBookAccountId").Descending())
                                                   .Model(
                                                       model =>
@@ -252,8 +251,8 @@
                                                       {
                                                           columns.Bound(c => c.Type).Width(100);
                                                           columns.Bound(c => c.Reference).Title("Ref.").Width(100);
-                                                          columns.Bound(c => c.Debit).Width(50);
-                                                          columns.Bound(c => c.Credit).Width(50);
+                                                          columns.Bound(c => c.Debit).Width(50).Format("{0:n}");
+                                                          columns.Bound(c => c.Credit).Width(50).Format("{0:n}");
                                                           columns.Bound(c => c.Date).Width(100);
                                                           columns.Bound(c => c.Reconciled).Width(100).ClientTemplate(
                                                           "<input type='checkbox' disabled = 'true' value='#= Reconciled #' " +
@@ -397,8 +396,8 @@
                                                               {
                                                                   columns.Bound(c => c.ReferenceDoc).Title("Ref. Doc.").Width(100);
                                                                   columns.Bound(c => c.Reference).Title("Ref.").Width(100);
-                                                                  columns.Bound(c => c.Debit).Width(50);
-                                                                  columns.Bound(c => c.Credit).Width(50);
+                                                                  columns.Bound(c => c.Debit).Width(50).Format("{0:n}");
+                                                                  columns.Bound(c => c.Credit).Width(50).Format("{0:n}");
                                                                   columns.Bound(c => c.Date).Width(100);
                                                                   columns.Bound(c => c.Reconciled).Hidden(true).ClientTemplate(
                                                               "<input type='checkbox' disabled = 'true' value='#= Reconciled #' " +

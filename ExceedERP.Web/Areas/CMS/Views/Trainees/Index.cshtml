@@ -180,7 +180,7 @@
 
                 <a class="btn btn-primary k-button k-button-icontext" href='@Url.Action("RegistrationSlip", "CMSPrint")/#=CmsTraineeId#' title="Print Registration Slip"><i class="fa fa-print  fa-2x"></i> &nbsp;&nbsp; Print Registration Slip</a>
                 #if(Status == "@ExceedERP.Core.Domain.CMS.TraineeStatusConstants.PassedExamination"){#
-                    <a class="btn btn-primary k-button k-button-icontext" href="\#" onclick='return printWeldersPerformanceQualification("#=RegistrationNumber#","#=CmsTraineeId#","#=FullName#" )' title="Print Welder's Performance Qualification"><i class="fa fa-print  fa-2x"></i> &nbsp;&nbsp; Print Welder's Performance Qualification</a>
+                    <a class="btn btn-primary k-button k-button-icontext" href="\#" onclick='return printWeldersPerformanceQualification("#=RegistrationNumber#","#=CmsTraineeId#","#=FullName#" )' title="Print Welder's Performance Qualification"><i class="fa fa-print  fa-1x"></i> &nbsp;&nbsp; Print Welder's Performance Qualification</a>
                     <a class="btn btn-success k-button k-button-icontext" href="\#" onclick='return printCertificate("#=RegistrationNumber#","#=CmsTraineeId#","#=FullName#" )' title="Print Certificate"><i class="fa fa-certificate  fa-2x"></i> &nbsp;&nbsp; Print Certificate</a>
                 #}#
                 #if(Status == "@ExceedERP.Core.Domain.CMS.TraineeStatusConstants.PassedExamination"){#
@@ -246,7 +246,7 @@
 
             </text>);
             items.Add().Text("Registration No. Components").Content(@<text>
-                @RegistrationNumberComponentHelper()
+                @RegistrationNumberComponentHelperWithCrud()
             </text>);
             items.Add().Text("Identification").Content(
             @<text>
@@ -303,7 +303,9 @@
                 </div>
             </text>);
             items.Add().Text("Registration No. Components").Content(@<text>
-                @RegistrationNumberComponentHelper()
+                @*#if(Status == "@ExceedERP.Core.Domain.CMS.TraineeStatusConstants.OnExamination"){#*@
+                @RegistrationNumberComponentHelperWithCrud()
+                @*#}#*@
             </text>);
             items.Add().Text("Identification").Content(
             @<text>
@@ -312,6 +314,73 @@
         }).ToClientTemplate()
     )
 </script>
+@helper RegistrationNumberComponentHelperWithCrud() { 
+        @(Html.Kendo().Grid<ExceedERP.Core.Domain.CMS.TraineeIdNumberComponent>()
+                  .Name("id_component_grid_#=CmsTraineeId#")
+                  .Columns(columns =>
+                  {
+
+                      columns.ForeignKey(c => c.RegistrationNumberPrefixId, (IEnumerable)ViewData["RegistrationNumberPrefixes"], "RegistrationNumberPrefixId", "PrefixValue").Width(40).EditorTemplateName("RegistrationNumberPrefixEditorTemplate");
+                      columns.ForeignKey(c => c.ISOTypeId, (IEnumerable)ViewData["ISOTypes"], "ISOTypeId", "Name").Width(30).EditorTemplateName("ISOTypeEditorTemplate");
+                      columns.Bound(c => c.SystemId).Width(80);
+                      columns.Bound(c => c.SequenceNumber).Width(30);
+                      columns.Bound(c => c.CombinedIdNumber).Width(100);
+
+
+                      columns.Command(command => { command.Edit(); }).Width(380);
+                  })
+                  //.ToolBar(toolbar =>
+                  //{
+                  //    toolbar.Create();
+                  //    toolbar.Excel();
+                  //    toolbar.Pdf();
+                  //})
+
+                  .Editable(editable =>
+                  {
+                      editable.Mode(GridEditMode.InLine);
+
+                      //editable.TemplateName("CompanyEditorTemplate");
+                      //editable.Window(window =>
+                      //{
+                      //    window.Title("Company Registration");
+                      //    window.Scrollable(true);
+                      //    window.Height(550);
+                      //});
+                  })
+                  .Pageable()
+                  .Navigatable()
+                  .Selectable(selectable => {
+                      selectable.Mode(GridSelectionMode.Single);
+                      selectable.Type(GridSelectionType.Row);
+                  })
+                  .Sortable(sortable => {
+                      sortable.SortMode(GridSortMode.SingleColumn);
+                  })
+                  .Filterable()
+                  .Scrollable()
+                  .DataSource(dataSource => dataSource
+                      .Ajax()
+                      .Model(model =>
+                      {
+                          model.Id(p => p.TraineeIdNumberComponentId);
+
+                          model.Field(f => f.SystemId).Editable(false);
+                          model.Field(f => f.CombinedIdNumber).Editable(false);
+                          model.Field(f => f.SequenceNumber).Editable(false);
+                      })
+                      .Events(ev => ev
+                            .Error("error_handler(\"id_component_grid_#=CmsTraineeId#\")")
+                            .RequestStart("onRequestStart(\"id_component_grid_#=CmsTraineeId#\")")
+                            .RequestEnd("onRequestEnd(\"id_component_grid_#=CmsTraineeId#\")"))
+
+                      .Read(read => read.Action("TraineeIdNumberComponents_Read", "TraineeIdNumberComponents", new { id = "#=CmsTraineeId#" }))
+                      .Create(create => create.Action("TraineeIdNumberComponent_Create", "TraineeIdNumberComponents", new { id = "#=CmsTraineeId#" }))
+                      .Update(update => update.Action("TraineeIdNumberComponent_Update", "TraineeIdNumberComponents"))
+                      .Destroy(destroy => destroy.Action("TraineeIdNumberComponent_Destroy", "TraineeIdNumberComponents"))
+                  ).ToClientTemplate()
+            )
+    }
 @helper RegistrationNumberComponentHelper() { 
         @(Html.Kendo().Grid<ExceedERP.Core.Domain.CMS.TraineeIdNumberComponent>()
                   .Name("id_component_grid_#=CmsTraineeId#")

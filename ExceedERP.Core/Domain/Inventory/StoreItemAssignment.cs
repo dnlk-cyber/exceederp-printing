@@ -1,10 +1,8 @@
 ﻿using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Inventory.BaseModel;
-using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ExceedERP.Core.Domain.Inventory
 {

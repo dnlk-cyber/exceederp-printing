@@ -1,4 +1,4 @@
-﻿using System.Data.Entity;
+using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.Finance.GL.Dynamic;
@@ -19,10 +19,11 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
             return View();
         }
 
-        public ActionResult GlCrossValidationRuleElements_Read([DataSourceRequest]DataSourceRequest request)
+        public ActionResult GlCrossValidationRuleElements_Read([DataSourceRequest]DataSourceRequest request,int id)
         {
-            IQueryable<GLCrossValidationRuleElement> glcrossvalidationruleelements = _db.GlCrossValidationRuleElements;
+            IQueryable<GLCrossValidationRuleElement> glcrossvalidationruleelements = _db.GlCrossValidationRuleElements.Where(x=>x.GLSegmentCrossValidationId==id);
             DataSourceResult result = glcrossvalidationruleelements.ToDataSourceResult(request, gLCrossValidationRuleElement => new {
+                GLSegmentCrossValidationId = gLCrossValidationRuleElement.GLSegmentCrossValidationId,
                 GLCrossValidationRuleElementId = gLCrossValidationRuleElement.GLCrossValidationRuleElementId,
                 SegmentType = gLCrossValidationRuleElement.SegmentType,
                 From = gLCrossValidationRuleElement.From,
@@ -37,12 +38,13 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult GlCrossValidationRuleElements_Create([DataSourceRequest]DataSourceRequest request, GLCrossValidationRuleElement gLCrossValidationRuleElement)
+        public ActionResult GlCrossValidationRuleElements_Create([DataSourceRequest]DataSourceRequest request, GLCrossValidationRuleElement gLCrossValidationRuleElement,int id)
         {
             if (ModelState.IsValid)
             {
                 var entity = new GLCrossValidationRuleElement
                 {
+                    GLSegmentCrossValidationId = id,
                     SegmentType = gLCrossValidationRuleElement.SegmentType,
                     From = gLCrossValidationRuleElement.From,
                     To = gLCrossValidationRuleElement.To,
@@ -71,6 +73,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
             {
                 var entity = new GLCrossValidationRuleElement
                 {
+                    GLSegmentCrossValidationId = gLCrossValidationRuleElement.GLSegmentCrossValidationId,
                     GLCrossValidationRuleElementId = gLCrossValidationRuleElement.GLCrossValidationRuleElementId,
                     SegmentType = gLCrossValidationRuleElement.SegmentType,
                     From = gLCrossValidationRuleElement.From,

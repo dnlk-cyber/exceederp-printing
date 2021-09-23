@@ -1,6 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
 using ExceedERP.Core.Domain.Common;
-using ExceedERP.Core.Domain.Common.HRM;
 using System.Collections.Generic;
 
 namespace ExceedERP.Core.Domain.HRM.EmployeeDetail

@@ -3,7 +3,6 @@ using System.ComponentModel;
 using ExceedERP.Core.Domain.Common;
 using System.ComponentModel.DataAnnotations;
 using ExceedERP.Core.Domain.Procurement.Proforma;
-using ExceedERP.Core.Domain.Procurement.Tender.Lot;
 
 namespace ExceedERP.Core.Domain.Procurement.Tender
 {

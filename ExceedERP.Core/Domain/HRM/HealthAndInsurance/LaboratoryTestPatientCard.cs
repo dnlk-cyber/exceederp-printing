@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ExceedERP.Core.Domain.HRM.HealthAndInsurance
+﻿namespace ExceedERP.Core.Domain.HRM.HealthAndInsurance
 {
-   public class LaboratoryTestPatientCard
+    public class LaboratoryTestPatientCard
     {
         public int LaboratoryTestPatientCardId { get; set; }
         public int PatientId { get; set; }

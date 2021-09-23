@@ -1,19 +1,12 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Web.Mvc;
-using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Dashboard;
 using ExceedERP.Core.Domain.Finance;
 using ExceedERP.Core.Domain.Finance.GL;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.DataAccess.Context;
-using ExceedERP.DataAccess.Migrations;
-using ExceedERP.Helpers.Budget;
 using ExceedERP.Helpers.Finance;
 
 namespace ExceedERP.Helpers.Common

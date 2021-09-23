@@ -1,0 +1,14 @@
+﻿@using System.Collections
+@(Html.Kendo().DropDownListFor(m => m)
+ 
+             .OptionLabel( "--Select--")
+                            .DataTextField("TaxName")
+                                    .DataValueField("GLTaxRateID")
+                                     .Filter("contains")
+      .DataSource(dataSource =>
+      {
+          dataSource.Read(read => read.Action("GetTaxTypes", "MegaDataProvider", new { area = "ProductionFollowUp" }))
+              .ServerFiltering(false);
+      })
+                    .ValuePrimitive( true)
+)

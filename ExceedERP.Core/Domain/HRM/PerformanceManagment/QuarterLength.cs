@@ -1,14 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 using ExceedERP.Core.Domain.Finance.GL;
 
 namespace ExceedERP.Core.Domain.HRM.PerformanceManagment
 {
-   public  class QuarterLength
+    public  class QuarterLength
     {
         [Key]
         public int QuarterLengthId { get; set; }

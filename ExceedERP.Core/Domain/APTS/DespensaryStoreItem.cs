@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ExceedERP.Core.Domain.APTS
+﻿namespace ExceedERP.Core.Domain.APTS
 {
-   public class DespensaryStoreItem
+    public class DespensaryStoreItem
     {
         public int DespensaryStoreItemId { get; set; }
         public int DrugStoreId { get; set; }

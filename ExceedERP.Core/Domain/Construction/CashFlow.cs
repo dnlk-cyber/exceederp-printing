@@ -1,10 +1,6 @@
 ﻿using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Finance.GL;
-using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
 
 namespace ExceedERP.Core.Domain.Construction
 {

@@ -1,0 +1,110 @@
+﻿@using System.Collections
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.ProductionFollowUp.JobType>()
+                  .Name("grid")
+                  .Columns(columns =>
+                  {
+                      columns.Bound(c => c.Type);
+          //  columns.Bound(c => c.VAT).ClientTemplate("<input type='checkbox' disabled = 'true' #=VAT ? checked='checked' :'' # >");
+          columns.ForeignKey(c => c.GLTaxRateID, (IEnumerable)ViewData["TaxRate"], "GLTaxRateID", "TaxName").EditorTemplateName("TaxList");
+
+                      columns.Command(command =>
+                      {
+                          command.Edit();
+                          command.Destroy();
+                      });
+                  })
+                  .ToolBar(toolbar =>
+                  {
+                      toolbar.Create();
+                  })
+                  .Editable(editable => editable.Mode(GridEditMode.InLine))
+                  .Pageable(pageable => pageable
+                                             .Input(true)
+                                             .Numeric(false)
+                                             .Refresh(true)
+                                             .PageSizes(true)
+                                             .ButtonCount(5))
+                      .Filterable()
+                       .Scrollable(h => h.Height(500))
+                  .DataSource(dataSource => dataSource
+                      .Ajax()
+                      .Model(model => model.Id(p => p.JobTypeId))
+                      .Read(read => read.Action("JobTypes_Read", "JobTypes"))
+                      .Create(create => create.Action("JobTypes_Create", "JobTypes"))
+                      .Update(update => update.Action("JobTypes_Update", "JobTypes"))
+                      .Destroy(destroy => destroy.Action("JobTypes_Destroy", "JobTypes"))
+                  ).ClientDetailTemplateId("Detail")
+)
+
+
+<script id="Detail" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                       .Name("tabstrip2_#=JobTypeId#")
+                      .SelectedIndex(0)
+                      .Items(items =>
+                      {
+
+                          items.Add().Text("Items").Content(
+                    @<text>
+
+                        @(Html.Kendo().Grid<ExceedERP.Core.Domain.ProductionFollowUp.JobTypeItem>()
+                                                .Name("JobTypeItem#=JobTypeId#")
+                                    .Columns(columns =>
+                                    {
+                          //  columns.Bound(c => c.JobType).EditorTemplateName("Enum");
+                          columns.Bound(c => c.Name);
+
+                                      columns.Command(command =>
+                           {
+                                                       command.Edit();
+                                                       command.Destroy();
+
+                                                   }).Width(250);
+                                  })
+                                                       .ToolBar(toolbar =>
+                                                       {
+
+                                                         toolbar.Create();
+
+                                                     })
+                                                           .NoRecords("No Data Registered")
+                                                        .Editable(editable => editable.Mode(GridEditMode.InLine).TemplateName("ProformaItems").Window(window =>
+                                                        {
+
+                                                          window.Scrollable(false);
+                                                          window.Title("Job Type Items");
+                                                      }))
+                                                            .Pageable(pageable => pageable
+                                                              .Refresh(true)
+                                                              )
+
+                                                       .Scrollable(h => h.Height(250))
+
+                                                             .DataSource(dataSource => dataSource
+                                                                 .Ajax()
+                                                              //  .Sort(s => s.Add(x => x.ProformaId).Descending())
+                                                              .Events(events =>
+                                                              {
+                                                                events.Error("error_handler(\"JobTypeItem#=JobTypeId#\")");
+                                                                events.RequestStart("onRequestStart(\"JobTypeItem#=JobTypeId#\")");
+                                                                events.RequestEnd("onRequestEnd(\"JobTypeItem#=JobTypeId#\")");
+                                                            })
+
+                                                       .Model(model =>
+                                                         model.Id(p => p.JobTypeItemId))
+
+                                                       .Read(read => read.Action("JobTypeItems_Read", "JobTypeItems", new { id = "#=JobTypeId#" }))
+                                                       .Create(create => create.Action("JobTypeItems_Create", "JobTypeItems", new { id = "#=JobTypeId#" }))
+                                                       .Update(update => update.Action("JobTypeItems_Update", "JobTypeItems"))
+                                                       .Destroy(destroy => destroy.Action("JobTypeItems_Destroy", "JobTypeItems"))
+                                                                                     ).ToClientTemplate()
+                        )
+                    </text>
+                                                );
+
+                              }).ToClientTemplate())
+</script>

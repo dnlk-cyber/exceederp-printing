@@ -1,0 +1,63 @@
+﻿using ExceedERP.DataAccess.Context;
+using ExceedERP.Reporting.Mega.ViewModel;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ExceedERP.Reporting.Mega.DataSource
+{
+    [DataObject]
+   public class FinishedGoodReceivalODS
+    {
+        ExceedDbContext db = new ExceedDbContext();
+        [DataObjectMethod(DataObjectMethodType.Select)]
+        public List<FinishedGoodReceivalVM> GetFinishedItems(string id)
+        {
+            List<FinishedGoodReceivalVM> finishedReceivalList = new List<FinishedGoodReceivalVM>();
+            if(id != null)
+            {
+                int.TryParse(id,out int finishedReceivalId);
+                var finishedReceivals = db.FinishedGoodReceivings.FirstOrDefault(x=>x.FinishedGoodReceivingId == finishedReceivalId);
+                if(finishedReceivals != null)
+                {
+                    var receival = new FinishedGoodReceivalVM();
+
+                    receival.Store = finishedReceivals.Store;
+                    receival.VoucherNo = finishedReceivals.VoucherNo;
+                    receival.DeliveredBy = finishedReceivals.DeliveredBy;
+                    receival.ReceivedBy = finishedReceivals.ReceivedBy;
+                    receival.Supervisor = finishedReceivals.Supervisor;
+
+                    var job = db.Jobs.FirstOrDefault(x=>x.JobId == finishedReceivals.JobId);
+                    if(job != null)
+                    {
+                        receival.JobOrderNo = job.JobNo;
+                        receival.CustomerName = job.CustomerName;
+                    }
+
+                    receival.FinishedGoods = new List<FinishedGoodsVM>();
+
+                    var receivalItems = db.FinishedGoods.Where(x=>x.FinishedGoodReceivingId == finishedReceivals.FinishedGoodReceivingId).ToList();
+                    foreach(var item in receivalItems)
+                    {
+                        var finished = new FinishedGoodsVM();
+
+                        finished.CodeNo = item.CodeNo;
+                        finished.Description = item.Description;
+                        finished.Unit = item.Unit;
+                        finished.Quantity = item.Quantity;
+
+                        receival.FinishedGoods.Add(finished);
+                    }
+
+                    finishedReceivalList.Add(receival);
+                }
+            }
+
+           return finishedReceivalList;
+        }
+    }
+}

@@ -1,14 +1,10 @@
 ﻿using ExceedERP.Core.Domain.Common.HRM;
 using ExceedERP.Core.Domain.Finance.GL;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ExceedERP.Core.Domain.APTS
 {
-   public class DrugRequest : AptsStatus
+    public class DrugRequest : AptsStatus
     {
         public int DrugRequestId { get; set; }
         public int BranchId { get; set; }

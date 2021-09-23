@@ -4,14 +4,10 @@ using ExceedERP.Core.Domain.FleetManagement.FleetTireManagement;
 using ExceedERP.Core.Domain.FleetManagement.FuelManagement;
 using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel;
 using ExceedERP.Core.Domain.Common;
-using ExceedERP.Core.Domain.FleetManagement.FleetMaintenance;
-using ExceedERP.Core.Domain.FleetManagement.FleetResource;
 
 namespace ExceedERP.Core.Domain.FleetManagement.FleetRegistration
 {

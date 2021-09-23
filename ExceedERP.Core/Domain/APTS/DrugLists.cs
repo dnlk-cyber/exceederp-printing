@@ -1,14 +1,10 @@
 ﻿using ExceedERP.Core.Domain.Inventory;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ExceedERP.Core.Domain.APTS
 {
-   public class DrugLists
+    public class DrugLists
     {
         public int DrugListsId { get; set; }
         [Display(Name = "Drug Code")]

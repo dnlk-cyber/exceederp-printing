@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using ExceedERP.Core.Domain.Common;
-using ExceedERP.Core.Domain.Inventory;
-using ExceedERP.Core.Domain.Procurement.Proforma;
 using ExceedERP.Core.Domain.Procurement.PR;
 
 namespace ExceedERP.Core.Domain.Procurement.Tender.Lot

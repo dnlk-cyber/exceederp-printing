@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations;
 
 namespace ExceedERP.Core.Domain.HRM.PerformanceManagment
 {
-   public class EmployeePerformanceScore
+    public class EmployeePerformanceScore
     {
         public int EmployeePerformanceScoreId { get; set; }
         public int? MeasurementDefinitionId { get; set; }

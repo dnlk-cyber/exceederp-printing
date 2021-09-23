@@ -1,12 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-
-namespace ExceedERP.Core.Domain.APTS
+﻿namespace ExceedERP.Core.Domain.APTS
 {
-   public class DrugStoreTransfer
+    public class DrugStoreTransfer
     {
         public int DrugStoreTransferId { get; set; }    
         public int FromDrugStoreId { get; set; }

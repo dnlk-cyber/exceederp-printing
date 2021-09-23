@@ -1,10 +1,7 @@
-﻿using ExceedERP.Core.Domain.Finance.GL;
-using ExceedERP.Core.Domain.Inventory;
+﻿using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.DataAccess.Context;
-using ExceedERP.DataAccess.Migrations;
 using ExceedERP.Helpers.Finance;
 using ExceedERP.Helpers.HR;
-using System;
 using System.Collections.Generic;
 using System.Linq;
 

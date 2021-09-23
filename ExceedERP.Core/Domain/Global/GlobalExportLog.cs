@@ -1,13 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ExceedERP.Core.Domain.Global
 {
-    
+
     public class GlobalExportLog
     {
         public int GlobalExportLogId { get; set; }

@@ -1,6 +1,4 @@
-﻿using ExceedERP.Core.Domain.Finance.AR;
-
-namespace ExceedERP.Core.Domain.Common
+﻿namespace ExceedERP.Core.Domain.Common
 {
     public class VoucherValidation : TrackUserOperation
     {

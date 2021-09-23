@@ -3604,6 +3604,65 @@
     <Compile Include="Inventory\ViewModel\StoreRequisitionItemViewModel.cs" />
     <Compile Include="Inventory\ViewModel\StoreReturnItemViewModel.cs" />
     <Compile Include="Inventory\ViewModel\VariationVm.cs" />
+    <Compile Include="Mega\DataSource\ChangeOfOrderODS.cs" />
+    <Compile Include="Mega\DataSource\FinishedGoodReceivalODS.cs" />
+    <Compile Include="Mega\DataSource\JobOrderNoParameterODS.cs" />
+    <Compile Include="Mega\DataSource\JobOrderODS.cs" />
+    <Compile Include="Mega\DataSource\JobOrderTimeSheetODS.cs" />
+    <Compile Include="Mega\DataSource\ProductDeliveryODS.cs" />
+    <Compile Include="Mega\DataSource\ProformaItemsListParameterODS.cs" />
+    <Compile Include="Mega\DataSource\ProformaItemsODS.cs" />
+    <Compile Include="Mega\DataSource\ProformaListParameterODS.cs" />
+    <Compile Include="Mega\DataSource\ProformaODS.cs" />
+    <Compile Include="Mega\Designer\rptChangeOfOrder.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Mega\Designer\rptChangeOfOrder.Designer.cs">
+      <DependentUpon>rptChangeOfOrder.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Mega\Designer\rptFinishedGoodReceivalForm.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Mega\Designer\rptFinishedGoodReceivalForm.Designer.cs">
+      <DependentUpon>rptFinishedGoodReceivalForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Mega\Designer\rptJobOrder.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Mega\Designer\rptJobOrder.Designer.cs">
+      <DependentUpon>rptJobOrder.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Mega\Designer\rptJobOrdeTimeSheet.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Mega\Designer\rptJobOrdeTimeSheet.Designer.cs">
+      <DependentUpon>rptJobOrdeTimeSheet.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Mega\Designer\rptProductDelivery.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Mega\Designer\rptProductDelivery.Designer.cs">
+      <DependentUpon>rptProductDelivery.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Mega\Designer\rptProforma.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Mega\Designer\rptProforma.Designer.cs">
+      <DependentUpon>rptProforma.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Mega\ViewModel\ChangeOfOrderVM.cs" />
+    <Compile Include="Mega\ViewModel\FinishedGoodReceivalVM.cs" />
+    <Compile Include="Mega\ViewModel\FinishedGoodsVM.cs" />
+    <Compile Include="Mega\ViewModel\JobOrderMaterialVM.cs" />
+    <Compile Include="Mega\ViewModel\JobOrderTimeListVM.cs" />
+    <Compile Include="Mega\ViewModel\JobOrderVM.cs" />
+    <Compile Include="Mega\ViewModel\JobTimeSheetVM.cs" />
+    <Compile Include="Mega\ViewModel\JobTypeItemVM.cs" />
+    <Compile Include="Mega\ViewModel\JobTypeVM.cs" />
+    <Compile Include="Mega\ViewModel\ProductDeliveryItemsVM.cs" />
+    <Compile Include="Mega\ViewModel\ProductDeliveryVM.cs" />
+    <Compile Include="Mega\ViewModel\ProformaItemVM.cs" />
+    <Compile Include="Mega\ViewModel\ProformaVM.cs" />
     <Compile Include="Procurements\AmharicAward.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -5497,6 +5556,24 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Inventory\VariationSummary.resx">
       <DependentUpon>VariationSummary.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Mega\Designer\rptChangeOfOrder.resx">
+      <DependentUpon>rptChangeOfOrder.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Mega\Designer\rptFinishedGoodReceivalForm.resx">
+      <DependentUpon>rptFinishedGoodReceivalForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Mega\Designer\rptJobOrder.resx">
+      <DependentUpon>rptJobOrder.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Mega\Designer\rptJobOrdeTimeSheet.resx">
+      <DependentUpon>rptJobOrdeTimeSheet.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Mega\Designer\rptProductDelivery.resx">
+      <DependentUpon>rptProductDelivery.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Mega\Designer\rptProforma.resx">
+      <DependentUpon>rptProforma.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Procurements\AmharicAward.resx">
       <DependentUpon>AmharicAward.cs</DependentUpon>

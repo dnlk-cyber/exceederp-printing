@@ -14,7 +14,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>ExceedERP.Web</RootNamespace>
     <AssemblyName>ExceedERP.Web</AssemblyName>
-    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <MvcBuildViews>false</MvcBuildViews>
     <UseIISExpress>true</UseIISExpress>
     <IISExpressSSLPort />
@@ -418,6 +418,7 @@
     <Compile Include="Areas\Common\Controllers\AttachmentController.cs" />
     <Compile Include="Areas\Common\Controllers\BankController.cs" />
     <Compile Include="Areas\Common\Controllers\BankReferenceController.cs" />
+    <Compile Include="Areas\Common\Controllers\CostCentersController.cs" />
     <Compile Include="Areas\Common\Controllers\CountryController.cs" />
     <Compile Include="Areas\Common\Controllers\DateConverterController.cs" />
     <Compile Include="Areas\Common\Controllers\DateVM.cs" />
@@ -1817,6 +1818,14 @@
     <Compile Include="Areas\Inventory\Controllers\Returns\StoreReturnAttachmentController.cs" />
     <Compile Include="Areas\Inventory\Controllers\Settings\ItemMergeController.cs" />
     <Compile Include="Areas\Inventory\Controllers\Settings\InventorySettingController.cs" />
+    <Compile Include="Areas\JobCosting\Common\JobCostingDataProviderController.cs" />
+    <Compile Include="Areas\JobCosting\Controllers\JobOrderSummariesController.cs" />
+    <Compile Include="Areas\JobCosting\Controllers\JobOrderSummaryCostCenterDetailsController.cs" />
+    <Compile Include="Areas\JobCosting\Controllers\JobOrderSummaryCostCentersController.cs" />
+    <Compile Include="Areas\JobCosting\Controllers\JobOrderTimeRegistrationsController.cs" />
+    <Compile Include="Areas\JobCosting\Controllers\JobOrderTimeSheetsController.cs" />
+    <Compile Include="Areas\JobCosting\JobCostingAreaRegistration.cs" />
+    <Compile Include="Areas\JobCosting\Report\ReportJobCostingController.cs" />
     <Compile Include="Areas\Procurement\Controllers\Guarantee\GuaranteeAdvanceController.cs" />
     <Compile Include="Areas\Procurement\Controllers\PurchaseRequisitions\PurchaseRequisitionItemSpecController.cs" />
     <Compile Include="Areas\Inventory\Controllers\Settings\InventoryStorePeriodStatusController.cs" />
@@ -1933,6 +1942,23 @@
     <Compile Include="Areas\Procurement\Controllers\Bid\TenderBidDocumentController.cs" />
     <Compile Include="Areas\Procurement\Controllers\Proforma\ProformaUploadsController.cs" />
     <Compile Include="Areas\Procurement\Models\GrnViewModel.cs" />
+    <Compile Include="Areas\ProductionFollowUp\Controllers\CommertialItemsController.cs" />
+    <Compile Include="Areas\ProductionFollowUp\Controllers\MachinesController.cs" />
+    <Compile Include="Areas\ProductionFollowUp\Controllers\MegaDataProviderController.cs" />
+    <Compile Include="Areas\ProductionFollowUp\Controllers\Operation\ChangeOfOrdersController.cs" />
+    <Compile Include="Areas\ProductionFollowUp\Controllers\Operation\FinishedGoodReceivingsController.cs" />
+    <Compile Include="Areas\ProductionFollowUp\Controllers\Operation\FinishedGoodsController.cs" />
+    <Compile Include="Areas\ProductionFollowUp\Controllers\Operation\JobOrderMaterialsController.cs" />
+    <Compile Include="Areas\ProductionFollowUp\Controllers\Operation\JobOrdersController.cs" />
+    <Compile Include="Areas\ProductionFollowUp\Controllers\Operation\ProductDeliveriesController.cs" />
+    <Compile Include="Areas\ProductionFollowUp\Controllers\Operation\ProductDeliveryItemsController.cs" />
+    <Compile Include="Areas\ProductionFollowUp\Controllers\Operation\ProformaItemsController.cs" />
+    <Compile Include="Areas\ProductionFollowUp\Controllers\Operation\ProformasController.cs" />
+    <Compile Include="Areas\ProductionFollowUp\Controllers\Report\ReportProductionFollowUpController.cs" />
+    <Compile Include="Areas\ProductionFollowUp\Controllers\Setting\JobTypeItemsController.cs" />
+    <Compile Include="Areas\ProductionFollowUp\Controllers\Setting\JobTypesController.cs" />
+    <Compile Include="Areas\ProductionFollowUp\Controllers\ViewModel\ChangeOfOrderVM.cs" />
+    <Compile Include="Areas\ProductionFollowUp\ProductionFollowUpAreaRegistration.cs" />
     <Compile Include="Areas\Production\Controllers\BudgetAndCashFlow\BudgetAndCashFlowController.cs" />
     <Compile Include="Areas\Production\Controllers\BudgetAndCashFlow\CleanedProductSaleController.cs" />
     <Compile Include="Areas\Production\Controllers\BudgetAndCashFlow\CleanedProductSaleItemController.cs" />
@@ -4733,8 +4759,57 @@
     <Content Include="Areas\CMS\Views\CMSPrint\WeldersPerformanceQualification.cshtml" />
     <Content Include="Areas\CMS\Views\Shared\EditorTemplates\ProgramEditorTemplate.cshtml" />
     <Content Include="Areas\CMS\Views\TrainingEnrolment\EditorTemplates\CourseEditorTemlate.cshtml" />
-    <None Include="Properties\PublishProfiles\dce.pubxml" />
-    <None Include="Properties\PublishProfiles\fbc.pubxml" />
+    <Content Include="Areas\CMS\Views\Trainees\EditorTemplates\ISOTypeEditorTemplate.cshtml" />
+    <Content Include="Areas\CMS\Views\Trainees\EditorTemplates\RegistrationNumberPrefixEditorTemplate.cshtml" />
+    <Content Include="Areas\JobCosting\Views\JobOrderSummaries\EditorTemplates\JobOrders.cshtml" />
+    <Content Include="Areas\JobCosting\Views\JobOrderSummaries\Index.cshtml" />
+    <Content Include="Areas\JobCosting\Views\JobOrderSummaryCostCenterDetails\Index.cshtml" />
+    <Content Include="Areas\JobCosting\Views\JobOrderSummaryCostCenters\EditorTemplates\JobOrders.cshtml" />
+    <Content Include="Areas\JobCosting\Views\JobOrderSummaryCostCenters\Index.cshtml" />
+    <Content Include="Areas\JobCosting\Views\JobOrderTimeRegistrations\EditorTemplates\JobOrders.cshtml" />
+    <Content Include="Areas\JobCosting\Views\JobOrderTimeRegistrations\Index.cshtml" />
+    <Content Include="Areas\JobCosting\Views\JobOrderTimeSheets\Index.cshtml" />
+    <Content Include="Areas\JobCosting\Views\ReportJobCosting\JobOrderTimeSheet.cshtml" />
+    <Content Include="Areas\JobCosting\Views\Shared\_Layout.cshtml" />
+    <Content Include="Areas\JobCosting\Views\web.config" />
+    <Content Include="Areas\JobCosting\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\ProductionFollowUp\Views\ChangeOfOrders\Index.cshtml" />
+    <Content Include="Areas\ProductionFollowUp\Views\CommertialItems\Index.cshtml" />
+    <Content Include="Areas\ProductionFollowUp\Views\FinishedGoodReceivings\EditorTemplates\JobOrders.cshtml" />
+    <Content Include="Areas\ProductionFollowUp\Views\FinishedGoodReceivings\Index.cshtml" />
+    <Content Include="Areas\ProductionFollowUp\Views\FinishedGoods\Index.cshtml" />
+    <Content Include="Areas\ProductionFollowUp\Views\JobOrderPaperTypes\Index.cshtml" />
+    <Content Include="Areas\ProductionFollowUp\Views\JobOrders\EditorTemplates\backupitems.cshtml" />
+    <Content Include="Areas\ProductionFollowUp\Views\JobOrders\EditorTemplates\JobOrderPop.cshtml" />
+    <Content Include="Areas\ProductionFollowUp\Views\JobOrders\EditorTemplates\JobOrders.cshtml" />
+    <Content Include="Areas\ProductionFollowUp\Views\JobOrders\EditorTemplates\JobPopUp.cshtml" />
+    <Content Include="Areas\ProductionFollowUp\Views\JobOrders\Index.cshtml" />
+    <Content Include="Areas\ProductionFollowUp\Views\JobTypeItems\Index.cshtml" />
+    <Content Include="Areas\ProductionFollowUp\Views\JobTypes\EditorTemplates\TaxList.cshtml" />
+    <Content Include="Areas\ProductionFollowUp\Views\JobTypes\Index.cshtml" />
+    <Content Include="Areas\ProductionFollowUp\Views\Machines\Index.cshtml" />
+    <Content Include="Areas\ProductionFollowUp\Views\ProductDeliveries\EditorTemplates\JobOrders.cshtml" />
+    <Content Include="Areas\ProductionFollowUp\Views\ProductDeliveries\Index.cshtml" />
+    <Content Include="Areas\ProductionFollowUp\Views\ProductDeliveryItems\Index.cshtml" />
+    <Content Include="Areas\ProductionFollowUp\Views\ProformaItems\Index.cshtml" />
+    <Content Include="Areas\ProductionFollowUp\Views\Proformas\EditorTemplates\ApprovedReplacements.cshtml" />
+    <Content Include="Areas\ProductionFollowUp\Views\Proformas\EditorTemplates\ConfirmationUpload.cshtml" />
+    <Content Include="Areas\ProductionFollowUp\Views\Proformas\EditorTemplates\ProformaItems.cshtml" />
+    <Content Include="Areas\ProductionFollowUp\Views\Proformas\EditorTemplates\Upload.cshtml" />
+    <Content Include="Areas\ProductionFollowUp\Views\Proformas\EditorTemplates\UploadDocument.cshtml" />
+    <Content Include="Areas\ProductionFollowUp\Views\Proformas\Index.cshtml" />
+    <Content Include="Areas\ProductionFollowUp\Views\ReportProductionFollowUp\ChangeOfOrder.cshtml" />
+    <Content Include="Areas\ProductionFollowUp\Views\ReportProductionFollowUp\FinishedGoodReceival.cshtml" />
+    <Content Include="Areas\ProductionFollowUp\Views\ReportProductionFollowUp\JobOrder.cshtml" />
+    <Content Include="Areas\ProductionFollowUp\Views\ReportProductionFollowUp\ProductDelivery.cshtml" />
+    <Content Include="Areas\ProductionFollowUp\Views\ReportProductionFollowUp\ProformaPrint.cshtml" />
+    <Content Include="Areas\ProductionFollowUp\Views\ReportProductionFollowUp\testp.cshtml" />
+    <Content Include="Areas\ProductionFollowUp\Views\Shared\_Layout.cshtml" />
+    <Content Include="Areas\ProductionFollowUp\Views\web.config" />
+    <Content Include="Areas\ProductionFollowUp\Views\_ViewStart.cshtml" />
+    <Content Include="Areas\Finance\Views\GLSegmentCrossValidation\EditorTemplates\GLNaturalAccount.cshtml" />
+    <None Include="Properties\PublishProfiles\Brana.pubxml" />
+    <None Include="Properties\PublishProfiles\mega.pubxml" />
     <None Include="Scripts\kendo\2018.3.911\kendo.all-vsdoc.js" />
     <None Include="Scripts\kendo\2018.3.911\kendo.all.min.intellisense.js" />
     <Content Include="Scripts\kendo\2018.3.911\kendo.all.min.js" />
@@ -6944,7 +7019,6 @@
     <Content Include="Areas\FleetManagement\Views\Shared\EditorTemplates\LicenseLevelEditor.cshtml" />
     <Content Include="Areas\Finance\Views\FinanceReports\SociAllProject.cshtml" />
     <Content Include="Areas\Finance\Views\PaymentRequest\Index.cshtml" />
-    <None Include="Properties\PublishProfiles\ex.pubxml" />
     <None Include="Scripts\jquery-1.10.2.intellisense.js" />
     <Content Include="Scripts\Custom.js" />
     <Content Include="Scripts\exceed\AccountSelector.js" />
@@ -7372,6 +7446,8 @@
     <Content Include="Views\GlobalUserAccessLogs\PayrollOperationLog.cshtml" />
     <Content Include="Views\Shared\_CMS.cshtml" />
     <Content Include="Views\Shared\_InformationDesk.cshtml" />
+    <Content Include="Views\Shared\_JobCosting.cshtml" />
+    <Content Include="Views\Shared\_ProductionFollowUp.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="App_Data\Bid Cancellation\" />
@@ -7503,7 +7579,11 @@
     <Folder Include="Areas\Inventory\Views\StoreItemAssignment\EditorTemplates\" />
     <Folder Include="Areas\Inventory\Views\StoreItemBalance\EditorTemplates\" />
     <Folder Include="Areas\Inventory\Views\StoreKeeperAssignment\EditorTemplates\" />
+    <Folder Include="Areas\JobCosting\Models\" />
+    <Folder Include="Areas\JobCosting\Views\JobCostingDataProvider\" />
     <Folder Include="Areas\Procurement\Views\TenderParticipantItems\EditorTemplates\" />
+    <Folder Include="Areas\ProductionFollowUp\Models\" />
+    <Folder Include="Areas\ProductionFollowUp\Views\MegaDataProvider\" />
     <Folder Include="Areas\Production\Models\" />
     <Folder Include="Areas\Production\Views\ProductionStoreReceiveValidation\" />
     <Folder Include="Content\Import\Finance\Bank\" />
@@ -7575,7 +7655,7 @@
           <AutoAssignPort>True</AutoAssignPort>
           <DevelopmentServerPort>2808</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
-          <IISUrl>http://localhost:2808/</IISUrl>
+          <IISUrl>http://localhost:2020/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>
           <UseCustomServer>False</UseCustomServer>
           <CustomServerUrl>

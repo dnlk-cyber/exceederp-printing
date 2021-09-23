@@ -1,10 +1,4 @@
-﻿
-
-using ExceedERP.Core.Domain.FleetManagement.FleetRegistration;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.ComponentModel;

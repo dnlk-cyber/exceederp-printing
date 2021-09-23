@@ -1,15 +1,11 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
-using System.Security.Policy;
-using System.Web.Util;
 using ExceedERP.Core.Domain.Common;
-using ExceedERP.Core.Domain.HRM;
 using ExceedERP.Core.Domain.Inventory;
 using System;
 using ExceedERP.Core.Domain.Common.HRM;
 using ExceedERP.Core.Domain.Procurement;
-using ExceedERP.Core.Domain.Finance.GL;
 
 namespace ExceedERP.Core.Domain.Construction
 {

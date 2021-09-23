@@ -1,5 +1,4 @@
 ﻿using ExceedERP.Core.Domain.Common;
-using ExceedERP.Core.Domain.CRM;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;

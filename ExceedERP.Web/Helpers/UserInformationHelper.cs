@@ -729,5 +729,33 @@ namespace ExceedERP.Web.Helpers
 
             return false;
         }
+        /// <summary>
+        /// get reports to workunit and its immediate children
+        /// </summary>
+        /// <param name="userName"></param>
+        /// <returns></returns>
+        public static List<int> GetUserReportsToAndChildWorkUnits(string userName)
+        {
+            ExceedDbContext db = new ExceedDbContext();
+            List<int> list = new List<int>();
+
+            var userdetail = new ApplicationDbContext();
+            var userempId = userdetail.Users.FirstOrDefault(x => x.UserName == userName);
+            if (userempId != null)
+            {
+
+                var placment = db.Placements.FirstOrDefault(x => x.EmployeeId.ToString() == userempId.EmployeeId && x.isCurrent);
+                if (placment != null)
+                {
+                    list.Add(placment.ReportsTo);
+                    var childOrds = db.MainCompanyStructures.Where(x => x.Parent == placment.ReportsTo).Select(x => x.OrgStructureId).ToList();
+                    list.AddRange(childOrds);
+                }
+            }
+
+
+            return list;
+
+        }
     }
 }

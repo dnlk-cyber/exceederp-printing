@@ -33,8 +33,18 @@ namespace ExceedERP.Web.Areas.CMS.Controllers
 
             return Json(data.Select(c => new { c.CMSCourseId, Name= c.Code + " " + c.Name }), JsonRequestBehavior.AllowGet);
         }
-             
+        public JsonResult GetAllRegistrationNumberPrefixes()
+        {
+            var data = db.RegistrationNumberPrefixes.ToList();
 
+            return Json(data.Select(c => new { c.RegistrationNumberPrefixId, c.PrefixValue }), JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult GetAllISOTypes()
+        {
+            var data = db.ISOTypes.ToList();
+
+            return Json(data.Select(c => new { c.ISOTypeId, c.Name }), JsonRequestBehavior.AllowGet);
+        }
         public JsonResult GetCities(Region region, string filterString)
         {
             var data = db.Cities.Where(c => c.Region == region).ToList();

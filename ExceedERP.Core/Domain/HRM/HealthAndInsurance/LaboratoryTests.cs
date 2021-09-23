@@ -1,12 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ExceedERP.Core.Domain.HRM.HealthAndInsurance
 {
-   public class LaboratoryTests
+    public class LaboratoryTests
     {
         public int LaboratoryTestsId { get; set; }
         public int LaboratoryCatagoryId { get; set; }

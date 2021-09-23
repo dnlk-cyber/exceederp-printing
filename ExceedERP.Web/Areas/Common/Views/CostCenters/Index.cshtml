@@ -1,0 +1,42 @@
+﻿@{ 
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.JobCosting.CostCenter>()
+      .Name("CostCenterGrid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.CostCenterName);
+          columns.Bound(c => c.Description);
+          columns.Command(command =>
+          {
+              command.Edit();
+              command.Destroy();
+          }).Width(180);
+      })
+      .ToolBar(toolbar => {
+          toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Pageable(pageable => pageable
+                               .Input(true)
+                               .Numeric(false)
+                               .Refresh(true)
+                               .PageSizes(true)
+                               .ButtonCount(5))
+                      .Filterable()
+                       .Scrollable(h => h.Height(500))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+            .Events(events =>
+            {
+                events.Error("error_handler(\"CostCenterGrid\")");
+                events.RequestStart("onRequestStart(\"CostCenterGrid\")");
+                events.RequestEnd("onRequestEnd(\"CostCenterGrid\")");
+            })
+          .Model(model => model.Id(p => p.CostCenterId))
+          .Read(read => read.Action("CostCenters_Read", "CostCenters"))
+          .Create(create => create.Action("CostCenters_Create", "CostCenters"))
+          .Update(update => update.Action("CostCenters_Update", "CostCenters"))
+          .Destroy(destroy => destroy.Action("CostCenters_Destroy", "CostCenters"))
+      )
+)

@@ -1,13 +1,4 @@
-﻿
-using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Web;
-
-
-namespace ExceedERP.Core.Domain.Global
+﻿namespace ExceedERP.Core.Domain.Global
 {
     public class UserBusinessUnitMap
     {

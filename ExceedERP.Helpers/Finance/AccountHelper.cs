@@ -1,4 +1,4 @@
-﻿using ExceedERP.Core.Domain.Finance.GL;
+using ExceedERP.Core.Domain.Finance.GL;
 using ExceedERP.DataAccess.Context;
 using System;
 using System.Collections.Generic;
@@ -604,6 +604,51 @@ namespace ExceedERP.Helpers.Finance
             }
         }
 
+        public void SplitBegJournalAccountCombination()
+        {
+            if (IsDynamicCoA())
+            {
+                _dynamicAccount.SplitJournalAccountCombination();
+            }
+            else
+            {
+                var lines = _db.GLRecordJournalBegDistributions.Where(x => x.AccountSegment == null || x.BranchSegment == null).ToList();
+                foreach (var line in lines)
+                {
+                    SplitBegJournal(line.GLRecordJournalBegDistributionId);
+                }
+            }
+
+
+        }
+
+        public void SplitBegJournal(int id)
+        {
+            using (var context = new ExceedDbContext())
+            {
+                var journalDetail = context.GLRecordJournalBegDistributions.Find(id);
+                if (IsDynamicCoA())
+                {
+                    _dynamicAccount.SplitJournal(id);
+                }
+                else
+                {
+                    if (journalDetail != null)
+                    {
+                        string[] account = journalDetail.AccountCode.Split('-');
+
+                        journalDetail.AccountSegment = account[GetAccountSequenceIndex(GlSegmentTypes.Account)];
+                        journalDetail.BranchSegment = account[GetAccountSequenceIndex(GlSegmentTypes.Location)];
+                        journalDetail.CostCenterSegment = account[GetAccountSequenceIndex(GlSegmentTypes.CostCenter)];
+                        journalDetail.SubAccountSegment = account[GetAccountSequenceIndex(GlSegmentTypes.SubAccount)];
+                    }
+
+                    context.Entry(journalDetail).State = EntityState.Modified;
+                    context.SaveChanges();
+                }
+            }
+        }
+
         public void SplitBookAccountCombination()
         {
             if (IsDynamicCoA())
@@ -756,14 +801,14 @@ namespace ExceedERP.Helpers.Finance
             decimal sumCredit = Math.Round(glRecordJournalDetails.Sum(x => x.Credit), 4);
             if (sumDebit != sumCredit)
             {
-                errorMsg = $"Journal id {glRecordJournalDetails.FirstOrDefault()?.GlRecordJournalId} does not have balanced debit and credit.";
+                errorMsg = $"Journal {glRecordJournalDetails.FirstOrDefault()?.GlRecordJournalId} does not have balanced debit and credit.";
                 return errorMsg;
             }
 
 
             if (sumDebit== 0)
             {
-                errorMsg = $"Journal id {glRecordJournalDetails.FirstOrDefault()?.GlRecordJournalId} should not have total debit and credit as zero.";
+                errorMsg = $"Journal {glRecordJournalDetails.FirstOrDefault()?.GlRecordJournalId} should not have total debit and credit as zero.";
                 return errorMsg;
             }
 

@@ -1,10 +1,9 @@
-﻿using ExceedERP.Core.Domain.Common;
-using System.ComponentModel;
+﻿using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 
 namespace ExceedERP.Core.Domain.Construction
 {
-  public  class DocumentManagement
+    public  class DocumentManagement
     {
     }
 

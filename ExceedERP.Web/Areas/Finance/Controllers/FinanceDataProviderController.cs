@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using ExceedERP.DataAccess.Context;
 using System.Linq;
@@ -256,6 +256,20 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
             {
                 Code = c.Values,
                 Name = c.Values+"-"+c.Description
+            }),
+                JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult GetNaturalAccounts()
+        {
+            var accounts = _db.GLChartOfAccountAccounts
+                .Where(x => x.Enable)
+                .Where(x => x.AllowPosting)
+                .Where(x => x.Parent==false).AsQueryable();
+            return Json(accounts.Select(c => new
+            {
+                Code = c.Values,
+                Name = c.Values + "-" + c.Description
             }),
                 JsonRequestBehavior.AllowGet);
         }

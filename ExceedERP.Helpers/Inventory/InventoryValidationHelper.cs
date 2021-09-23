@@ -1,16 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
-using ExceedERP.Core.Domain.Construction;
-using ExceedERP.Core.Domain.FleetManagement.FleetRegistration;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.Core.Domain.Procurement.PR;
 using ExceedERP.Core.Domain.Procurement.PurchaseOrder;
 using ExceedERP.Core.Domain.Procurement.Settings;
 using ExceedERP.DataAccess.Context;
-using ExceedERP.DataAccess.Migrations;
-using ExceedERP.Helpers.Construction;
 
 namespace ExceedERP.Helpers.Inventory
 {

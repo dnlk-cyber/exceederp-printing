@@ -1,17 +1,13 @@
-﻿using ExceedERP.Core.Domain.Common;
-using ExceedERP.Core.Domain.Inventory;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using ExceedERP.Core.Domain.Finance.AP.Travel;
 using ExceedERP.Core.Domain.Procurement.Settings;
-using ExceedERP.Core.Domain.Procurement.Tender;
-using ExceedERP.Core.Domain.Procurement.Tender.Lot;
 
 namespace ExceedERP.Core.Domain.Procurement.Proforma
 {
-   
+
     public class ProformaPurchase : NewOperations
     {
         public int ProformaPurchaseID { get; set; }

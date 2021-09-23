@@ -1,17 +1,12 @@
 ﻿using ExceedERP.Core.Domain.Common.HRM;
 using ExceedERP.Core.Domain.Finance.GL;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Security.AccessControl;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ExceedERP.Core.Domain.HRM.HealthAndInsurance
 {
-   public class HealthRankAndValue
+    public class HealthRankAndValue
     {
         public int HealthRankAndValueId { get; set; }
         [Display(Name = "HR_EmployeeDetail_Placement_PersonEmployee", ResourceType = typeof(Localization.Resources))]

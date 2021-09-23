@@ -7,7 +7,7 @@
           columns.Bound(c => c.BankAccount).Width("150").EditorTemplateName("BankAccounts");
           columns.Bound(c => c.StatementNum).Width("150");
           columns.Bound(c => c.Date).Width("100");
-          columns.Bound(c => c.BankEndingBalance).Width("100");
+          columns.Bound(c => c.BankEndingBalance).Width("100").Format("{0:n}");
 
           columns.Bound(c => c.OrgBranchName).Width(100).Hidden(true);
           columns.Bound(c => c.DateCreated).Width(150).Format("{0:dd/MM/yyyy}").Hidden(true);

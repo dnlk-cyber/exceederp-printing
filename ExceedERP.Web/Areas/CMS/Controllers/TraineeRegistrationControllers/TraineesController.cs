@@ -25,6 +25,8 @@ namespace ExceedERP.Web.Areas.CMS.Controllers
             ViewData["Programs"] = db.CMSPrograms.Select(p => new { p.CMSProgramId, p.Name }).ToList();
             ViewData["Courses"] = db.CMSCourses.Select(p => new { p.CMSCourseId, p.Name }).ToList();
             ViewData["Cities"] = db.Cities.Select(c => new { c.Name, c.CityId }).ToList();
+            ViewData["RegistrationNumberPrefixes"] = db.RegistrationNumberPrefixes.Select(c => new { c.PrefixValue, c.RegistrationNumberPrefixId }).ToList();
+            ViewData["ISOTypes"] = db.ISOTypes.Select(c => new { c.Name, c.ISOTypeId }).ToList();
 
             if (db.CmsTrainees.Any(t => string.IsNullOrEmpty(t.Status)))
             {
@@ -316,16 +318,16 @@ namespace ExceedERP.Web.Areas.CMS.Controllers
 
             BarcodeLib.Barcode linearBarcode = new BarcodeLib.Barcode();
 
-            linearBarcode.EncodedType = BarcodeLib.TYPE.EAN13;
-            linearBarcode.BarWidth = 1;
-            linearBarcode.Height = 150;
-            linearBarcode.IncludeLabel = true;
-            linearBarcode.LabelPosition = BarcodeLib.LabelPositions.BOTTOMCENTER;
-            linearBarcode.ImageFormat = System.Drawing.Imaging.ImageFormat.Png;
+            //linearBarcode.EncodedType = BarcodeLib.TYPE.EAN13;
+            //linearBarcode.BarWidth = 1;
+            //linearBarcode.Height = 150;
+            //linearBarcode.IncludeLabel = true;
+            //linearBarcode.LabelPosition = BarcodeLib.LabelPositions.BOTTOMCENTER;
+            //linearBarcode.ImageFormat = System.Drawing.Imaging.ImageFormat.Png;
 
-            linearBarcode.Encode(BarcodeLib.TYPE.CODE39, systemId) /*= trainee.RegistrationNumber*/;
+            //linearBarcode.Encode(BarcodeLib.TYPE.CODE39, systemId) /*= trainee.RegistrationNumber*/;
 
-            linearBarcode.SaveImage(fullFilePath, BarcodeLib.SaveTypes.PNG);
+            //linearBarcode.SaveImage(fullFilePath, BarcodeLib.SaveTypes.PNG);
 
             //BarcodeLib.Barcode.DoEncode(BarcodeLib.TYPE.CODE39, trainee.RegistrationNumber).Save(fullFilePath);
 
@@ -503,16 +505,16 @@ namespace ExceedERP.Web.Areas.CMS.Controllers
 
                 BarcodeLib.Barcode linearBarcode = new BarcodeLib.Barcode();
 
-                linearBarcode.EncodedType = BarcodeLib.TYPE.EAN13;
-                linearBarcode.BarWidth = 1;
-                linearBarcode.Height = 150;
-                linearBarcode.IncludeLabel = true;
-                linearBarcode.LabelPosition = BarcodeLib.LabelPositions.BOTTOMCENTER;
-                linearBarcode.ImageFormat = System.Drawing.Imaging.ImageFormat.Png;
+                //linearBarcode.EncodedType = BarcodeLib.TYPE.EAN13;
+                //linearBarcode.BarWidth = 1;
+                //linearBarcode.Height = 150;
+                //linearBarcode.IncludeLabel = true;
+                //linearBarcode.LabelPosition = BarcodeLib.LabelPositions.BOTTOMCENTER;
+                //linearBarcode.ImageFormat = System.Drawing.Imaging.ImageFormat.Png;
 
-                linearBarcode.Encode(BarcodeLib.TYPE.CODE39, idComponent.SystemId);
+                //linearBarcode.Encode(BarcodeLib.TYPE.CODE39, idComponent.SystemId);
 
-                linearBarcode.SaveImage(fullFilePath, BarcodeLib.SaveTypes.PNG);
+                //linearBarcode.SaveImage(fullFilePath, BarcodeLib.SaveTypes.PNG);
 
                 return Json(new { Message = $"Barcode regenerated for Trainee with registration number: {trainee.RegistrationNumber}", Status = "Ok" });
             }

@@ -3,11 +3,10 @@ using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Common.HRM;
-using ExceedERP.Core.Domain.Finance.AP.PettyCash;
 
 namespace ExceedERP.Core.Domain.Finance.AP.PaymentRequest
 {
-   public class PaymentRequest: DepartmentOperations
+    public class PaymentRequest: DepartmentOperations
     {
         public int PaymentRequestId { get; set; }
 

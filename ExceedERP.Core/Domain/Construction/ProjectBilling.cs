@@ -4,7 +4,6 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Finance.GL;
-using ExceedERP.Core.Domain.Inventory;
 
 namespace ExceedERP.Core.Domain.Construction
 {

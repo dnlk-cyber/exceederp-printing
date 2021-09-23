@@ -92,7 +92,8 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
         {
             var user = _userdb.Users.FirstOrDefault(x => x.UserName == User.Identity.Name);
             var storekeepers = _db.StoreKeeperAssignments.Where(x => x.StoreKeeper == user.Id).ToList();
-            int userworkunit = UserInformationHelper.GetUserReportsTo(User.Identity.Name);
+            //int userworkunit = UserInformationHelper.GetUserReportsTo(User.Identity.Name);
+            List<int> userworkunit = UserInformationHelper.GetUserReportsToAndChildWorkUnits(User.Identity.Name);
             List<string> userStores = UserInformationHelper.GetUserStores(User.Identity.Name);
 
             //List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
@@ -105,7 +106,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
             {
                 if (!storekeepers.Any())
                 {
-                    storeRequisitions = storeRequisitions.Where(x => x.OrgStructureId == userworkunit && userworkunit != 0
+                    storeRequisitions = storeRequisitions.Where(x => userworkunit.Contains(x.OrgStructureId) && userworkunit != null
                                                                      || x.CreatedBy == User.Identity.Name).AsQueryable();
                 }
                 else
@@ -119,7 +120,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
             {
                 if (!storekeepers.Any())
                 {
-                    storeRequisitions = storeRequisitions.Where(x => x.OrgStructureId==userworkunit&&userworkunit!=0
+                    storeRequisitions = storeRequisitions.Where(x => userworkunit.Contains(x.OrgStructureId) && userworkunit != null
                                                                      || x.CreatedBy == User.Identity.Name).AsQueryable();
                 }
                 else

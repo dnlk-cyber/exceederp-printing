@@ -1,6 +1,4 @@
-﻿using System.ComponentModel;
-
-namespace ExceedERP.Core.Domain.FixedAsset.Setting
+﻿namespace ExceedERP.Core.Domain.FixedAsset.Setting
 {
     public class TagCodeSetting
     {

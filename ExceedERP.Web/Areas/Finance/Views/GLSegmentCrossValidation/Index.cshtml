@@ -1,130 +1,131 @@
-﻿@using ExceedERP.Core.Domain.Finance.GL
+﻿@using System.Collections
 @using ExceedERP.Core.Domain.Finance.GL.Dynamic
 <legend>Cross Validation</legend>
 @(Html.Kendo().Grid<GLSegmentCrossValidation>()
-      .Name("grid")
-      .Columns(columns =>
-      {
-          columns.Bound(c => c.Name).Width(110);
-          columns.Bound(c => c.Description).Width(150);
-          columns.Bound(c => c.ErrMsg).Width(150);
-          columns.Bound(c => c.ErrorSegment).Width(90);
-          columns.Bound(c => c.ErrorSegmentFrom).Width(90);
-          columns.Bound(c => c.ErrorSegmentTo).Width(90);
-          columns.Bound(c => c.Enabled).Width(110).ClientTemplate("<input type='checkbox' disabled = 'true' #= Enabled ? checked='checked' :'' # />"); 
-        
-          columns.Command(command => { command.Edit(); }).Width(180);
-      })
-      .ToolBar(toolbar => {
-                              toolbar.Create();
-      })
-      .Editable(editable => editable.Mode(GridEditMode.InLine))
-      .HtmlAttributes(new { style = "height: 550px;" })
-      .Pageable(pageable => pageable
-          .Input(true)
-          .Numeric(false)
-          .Refresh(true)
-          .PageSizes(true)
-          .ButtonCount(20))
-      .Scrollable()
-      .Selectable(selectable =>
-      {
-          selectable.Mode(GridSelectionMode.Single);
-          selectable.Type(GridSelectionType.Row);
-      })
-      .Sortable(sortable =>
-      {
-          sortable.SortMode(GridSortMode.SingleColumn);
-      })
-      .Filterable()
-      .Groupable()
-      .Events(ev => ev.DetailExpand("detailExpand"))
-      .Scrollable(h => h.Height(500))
-      .Events(x => x.DataBound("onDataBoundMaster"))
-      .ClientDetailTemplateId("templates")
-      .DataSource(dataSource => dataSource
-          .Ajax()
-          .Events(ev => ev
-              .Error("error_handler(\"grid\")")
-              .RequestStart("onRequestStart(\"grid\")")
-              .RequestEnd("onRequestEnd(\"grid\")"))
-          .Model(model => model.Id(p => p.GLSegmentCrossValidationId))
-          .Read(read => read.Action("GlSegmentCrossValidations_Read", "GlSegmentCrossValidation"))
-          .Create(create => create.Action("GlSegmentCrossValidations_Create", "GlSegmentCrossValidation"))
-          .Update(update => update.Action("GlSegmentCrossValidations_Update", "GlSegmentCrossValidation"))
-      ))
+          .Name("grid")
+          .Columns(columns =>
+          {
+              columns.Bound(c => c.Name).EditorTemplateName("GLNaturalAccount").Width(150);
+              columns.Bound(c => c.Description).Width(150);
+  // columns.Bound(c => c.ErrMsg).Width(150);
+  // columns.Bound(c => c.ErrorSegment).Width(90);
+  //columns.Bound(c => c.ErrorSegmentFrom).Width(90);
+  //columns.Bound(c => c.ErrorSegmentTo).Width(90);
+  columns.Bound(c => c.Enabled).Width(110).ClientTemplate("<input type='checkbox' disabled = 'true' #= Enabled ? checked='checked' :'' # />");
+
+              columns.Command(command => { command.Edit(); }).Width(180);
+          })
+          .ToolBar(toolbar =>
+          {
+              toolbar.Create();
+          })
+          .Editable(editable => editable.Mode(GridEditMode.InLine))
+          .HtmlAttributes(new { style = "height: 550px;" })
+          .Pageable(pageable => pageable
+              .Input(true)
+              .Numeric(false)
+              .Refresh(true)
+              .PageSizes(true)
+              .ButtonCount(20))
+          .Scrollable()
+          .Selectable(selectable =>
+          {
+              selectable.Mode(GridSelectionMode.Single);
+              selectable.Type(GridSelectionType.Row);
+          })
+          .Sortable(sortable =>
+          {
+              sortable.SortMode(GridSortMode.SingleColumn);
+          })
+          .Filterable()
+
+          .Events(ev => ev.DetailExpand("detailExpand"))
+          .Scrollable(h => h.Height(500))
+          .Events(x => x.DataBound("onDataBoundMaster"))
+          .ClientDetailTemplateId("templates")
+          .DataSource(dataSource => dataSource
+              .Ajax()
+              .Events(ev => ev
+                  .Error("error_handler(\"grid\")")
+                  .RequestStart("onRequestStart(\"grid\")")
+                  .RequestEnd("onRequestEnd(\"grid\")"))
+              .Model(model => model.Id(p => p.GLSegmentCrossValidationId))
+              .Read(read => read.Action("GlSegmentCrossValidations_Read", "GlSegmentCrossValidation"))
+              .Create(create => create.Action("GlSegmentCrossValidations_Create", "GlSegmentCrossValidation"))
+              .Update(update => update.Action("GlSegmentCrossValidations_Update", "GlSegmentCrossValidation"))
+          ))
 
 
 <script id="templates" type="text/kendo-tmpl">
     @(Html.Kendo().TabStrip()
-                                .Name("tabStrip#=GLSegmentCrossValidationId#")
-                .SelectedIndex(0)
-                .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
-                .Items(items =>
-                {
-                    items.Add().Text("Rule Elements").Content(@<text>
-                        @(Html.Kendo().Grid<GLCrossValidationRuleElement>()
-                              .Name("GLCrossValidationRuleElement#=GLSegmentCrossValidationId#")
-                              .Columns(columns =>
-                              {
-                                  columns.Bound(c => c.SegmentType).EditorTemplateName("SegmentTypeSelector").Width(120);
-                                  columns.Bound(c => c.From).Width(120);
-                                  columns.Bound(c => c.To).Width(100);
+                                        .Name("tabStrip#=GLSegmentCrossValidationId#")
+                        .SelectedIndex(0)
+                        .Animation(animation => animation.Open(open => open.Fade(FadeDirection.In)))
+                        .Items(items =>
+                        {
+                            items.Add().Text("Rule Elements").Content(@<text>
+                                @(Html.Kendo().Grid<GLCrossValidationRuleElement>()
+                                              .Name("GLCrossValidationRuleElement#=GLSegmentCrossValidationId#")
+                                              .Columns(columns =>
+                                              {
+                                                          columns.ForeignKey(p => p.SegmentType, (IEnumerable)ViewData["segmentTypes"], "Code", "Name").Title("Sub Category").EditorTemplateName("SegmentTypeSelector").Width(120);
+                                                          columns.Bound(c => c.From).Width(120);
+                                                          columns.Bound(c => c.To).Width(100);
 
-                                  columns.Command(command =>
-                                  {
+                                                          columns.Command(command =>
+                                                          {
 
-                                      command.Edit();
-                                      command.Destroy();
+                                                              command.Edit();
+                                                              command.Destroy();
 
-                                  }).Width(180);
-                              })
-                              .ToolBar(toolbar =>
-                              {
-                                  toolbar.Create();
-                              })
+                                                          }).Width(180);
+                                                      })
+                                              .ToolBar(toolbar =>
+                                              {
+                                                          toolbar.Create();
+                                                      })
 
-                              .Editable(editable => editable.Mode(GridEditMode.InLine))
-                              .Pageable(pageable => pageable
-                                  .Input(true)
-                                  .Numeric(false)
-                                  .Refresh(true)
-                                  .PageSizes(true)
-                                  .ButtonCount(10))
-                              .Scrollable()
-                              .Sortable()
-                              .Filterable()
-                              .Events(x => x.DataBound("onDataBoundLines"))
-                              .DataSource(dataSource => dataSource
-                                  .Ajax()
-                                  .Sort(sort => sort.Add("Debit").Descending())
-                                 
-                                  .Model(
-                                      model =>
-                                      {
-                                          model.Id(p => p.GLCrossValidationRuleElementId);
-                                          model.Field(p => p.CreatedBy).Editable(false);
-                                          model.Field(p => p.ModifiedBy).Editable(false);
-                                          model.Field(p => p.LastModified).Editable(false);
-                                          model.Field(p => p.DateCreated).Editable(false);
-                                      })
-                                  .Events(ev => ev
-                                      .Error("error_handler(\"GLCrossValidationRuleElement#=GLSegmentCrossValidationId#\")")
-                                      .RequestStart("onRequestStart(\"GLCrossValidationRuleElement#=GLSegmentCrossValidationId#\")")
-                                      .RequestEnd("onRequestEnd(\"GLCrossValidationRuleElement#=GLSegmentCrossValidationId#\")"))
-                                  .Read(read => read.Action("GLCrossValidationRuleElements_Read", "GlCrossValidationRuleElement", new { id = "#=GLSegmentCrossValidationId#" }))
-                                  .Create(create => create.Action("GLCrossValidationRuleElements_Create", "GlCrossValidationRuleElement", new { id = "#=GLSegmentCrossValidationId#" }))
-                                  .Update(update => update.Action("GLCrossValidationRuleElements_Update", "GlCrossValidationRuleElement", new { id = "#=GLSegmentCrossValidationId#" }))
-                                  .Destroy(destroy => destroy.Action("GLCrossValidationRuleElements_Destroy", "GlCrossValidationRuleElement"))
-                              )
+                                              .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                              .Pageable(pageable => pageable
+                                                  .Input(true)
+                                                  .Numeric(false)
+                                                  .Refresh(true)
+                                                  .PageSizes(true)
+                                                  .ButtonCount(10))
+                                              .Scrollable()
+                                              .Sortable()
+                                              .Filterable()
+                                              .Events(x => x.DataBound("onDataBoundLines"))
+                                              .DataSource(dataSource => dataSource
+                                                  .Ajax()
+                                                  .Sort(sort => sort.Add("SegmentType").Descending())
 
-                              .ToClientTemplate())
-                    </text>);
+                                                  .Model(
+                                                      model =>
+                                                      {
+                                                                  model.Id(p => p.GLCrossValidationRuleElementId);
+                                                                  model.Field(p => p.CreatedBy).Editable(false);
+                                                                  model.Field(p => p.ModifiedBy).Editable(false);
+                                                                  model.Field(p => p.LastModified).Editable(false);
+                                                                  model.Field(p => p.DateCreated).Editable(false);
+                                                              })
+                                                  .Events(ev => ev
+                                                      .Error("error_handler(\"GLCrossValidationRuleElement#=GLSegmentCrossValidationId#\")")
+                                                      .RequestStart("onRequestStart(\"GLCrossValidationRuleElement#=GLSegmentCrossValidationId#\")")
+                                                      .RequestEnd("onRequestEnd(\"GLCrossValidationRuleElement#=GLSegmentCrossValidationId#\")"))
+                                                  .Read(read => read.Action("GLCrossValidationRuleElements_Read", "GlCrossValidationRuleElement", new { id = "#=GLSegmentCrossValidationId#" }))
+                                                  .Create(create => create.Action("GLCrossValidationRuleElements_Create", "GlCrossValidationRuleElement", new { id = "#=GLSegmentCrossValidationId#" }))
+                                                  .Update(update => update.Action("GLCrossValidationRuleElements_Update", "GlCrossValidationRuleElement", new { id = "#=GLSegmentCrossValidationId#" }))
+                                                  .Destroy(destroy => destroy.Action("GLCrossValidationRuleElements_Destroy", "GlCrossValidationRuleElement"))
+                                              )
 
-                   
-                })
+                                              .ToClientTemplate())
+                            </text>);
 
-      .ToClientTemplate()
+
+                                })
+
+                      .ToClientTemplate()
     )
 
 </script>

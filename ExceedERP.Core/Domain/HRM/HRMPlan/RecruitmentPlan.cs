@@ -2,7 +2,6 @@
 using System.ComponentModel.DataAnnotations;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Common.HRM;
-using ExceedERP.Core.Domain.Finance.GL;
 using ExceedERP.Core.Domain.HRM.SalaryStructure;
 
 namespace ExceedERP.Core.Domain.HRM.HRMPlan
@@ -22,7 +21,7 @@ namespace ExceedERP.Core.Domain.HRM.HRMPlan
         public int WorkUnitId { get; set; }
         [Display(Name = "HR_Company_JobTitleMapping_BranchId", ResourceType = typeof(Localization.Resources))]
         public int BranchId { get; set; }
-        public virtual Branch Branch { get; set; }
+        //public virtual Branch Branch { get; set; }
         [Required ]
 
         [Display(Name = "HR_HRMPlan_RecruitmentPlan_LookupId", ResourceType = typeof(Localization.Resources))]

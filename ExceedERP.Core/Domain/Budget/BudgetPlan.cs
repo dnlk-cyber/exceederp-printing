@@ -2,7 +2,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using ExceedERP.Core.Domain.Common;
-using ExceedERP.Core.Domain.Finance.GL;
 using ExceedERP.Core.Domain.Common.HRM;
 
 

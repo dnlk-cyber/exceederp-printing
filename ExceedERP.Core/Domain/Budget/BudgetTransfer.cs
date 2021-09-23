@@ -1,7 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
- using ExceedERP.Core.Domain.Common;
-using ExceedERP.Core.Domain.Common.HRM;
+using ExceedERP.Core.Domain.Common;
 
 namespace ExceedERP.Core.Domain.Budget
 {

@@ -1,13 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ExceedERP.Core.Domain.APTS
 {
-   public class DrugRequestItem
+    public class DrugRequestItem
     {
         public int DrugRequestItemId { get; set; }
         public int DrugRequestId { get; set; }

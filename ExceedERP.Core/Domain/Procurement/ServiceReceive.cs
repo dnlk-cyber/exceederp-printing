@@ -5,11 +5,10 @@ using System.ComponentModel.DataAnnotations;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.Core.Domain.Procurement.PR;
-using ExceedERP.Core.Domain.Procurement.Settings;
 
 namespace ExceedERP.Core.Domain.Procurement
 {
-   
+
 
     public class ServiceReceive : Operations
     {

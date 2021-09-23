@@ -1,15 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ExceedERP.Core.Domain.Common;
-using ExceedERP.Core.Domain.Finance.GL;
 
 namespace ExceedERP.Core.Domain.APTS
 {
-   public class RequisitionModel20
+    public class RequisitionModel20
     {
         public int RequisitionModel20Id { get; set; }
         [Display(Name = "Description")]

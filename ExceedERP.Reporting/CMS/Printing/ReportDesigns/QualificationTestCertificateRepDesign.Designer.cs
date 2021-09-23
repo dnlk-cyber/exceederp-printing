@@ -274,18 +274,18 @@ namespace ExceedERP.Reporting.CMS.Printing.ReportDesigns
             // pbOrgLogo
             // 
             this.pbOrgLogo.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(0D), Telerik.Reporting.Drawing.Unit.Inch(0D));
-            this.pbOrgLogo.MimeType = "image/jpeg";
+            this.pbOrgLogo.MimeType = "image/png";
             this.pbOrgLogo.Name = "pbOrgLogo";
-            this.pbOrgLogo.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.79999995231628418D), Telerik.Reporting.Drawing.Unit.Inch(0.59996062517166138D));
+            this.pbOrgLogo.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.800000011920929D), Telerik.Reporting.Drawing.Unit.Inch(0.59996062517166138D));
             this.pbOrgLogo.Sizing = Telerik.Reporting.Drawing.ImageSizeMode.ScaleProportional;
             this.pbOrgLogo.Value = ((object)(resources.GetObject("pbOrgLogo.Value")));
             // 
             // pictureBox1
             // 
-            this.pictureBox1.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(5.6999998092651367D), Telerik.Reporting.Drawing.Unit.Inch(0D));
+            this.pictureBox1.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(5.0999999046325684D), Telerik.Reporting.Drawing.Unit.Inch(0D));
             this.pictureBox1.MimeType = "image/jpeg";
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.79999995231628418D), Telerik.Reporting.Drawing.Unit.Inch(0.59996062517166138D));
+            this.pictureBox1.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.99999994039535522D), Telerik.Reporting.Drawing.Unit.Inch(0.59996062517166138D));
             this.pictureBox1.Sizing = Telerik.Reporting.Drawing.ImageSizeMode.Stretch;
             this.pictureBox1.Value = ((object)(resources.GetObject("pictureBox1.Value")));
             // 

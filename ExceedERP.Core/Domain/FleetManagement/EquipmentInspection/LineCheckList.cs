@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
- using ExceedERP.Core.Domain.Common;
+﻿using ExceedERP.Core.Domain.Common;
 using System.ComponentModel.DataAnnotations;
 
 namespace ExceedERP.Core.Domain.FleetManagement.EquipmentInspection

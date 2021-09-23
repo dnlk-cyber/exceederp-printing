@@ -1,0 +1,12 @@
+﻿@(Html.Kendo().DropDownListFor(m => m)
+                .ValuePrimitive(true)
+                .OptionLabel("Select...")
+                .DataTextField("PrefixValue")
+                .DataValueField("RegistrationNumberPrefixId")
+                .Filter(FilterType.Contains)
+                .DataSource(dataSource =>
+                {
+                    dataSource.Read(read => read.Action("GetAllRegistrationNumberPrefixes", "CMSDataProvider", new { area = "CMS" }));
+                })
+
+)

@@ -147,7 +147,7 @@ namespace ExceedERP.Web.Areas.InfoDesk.Controllers
 
             return Json(result);
         }
-        [AuthorizeRoles(InfoDeskConstants.InfoDeskAssignTicket)]
+        //[AuthorizeRoles(InfoDeskConstants.InfoDeskAssignTicket)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult AssignTickets_Create([DataSourceRequest]DataSourceRequest request, AssignTicket_HelpDesk assignTicket, int Id)
         {

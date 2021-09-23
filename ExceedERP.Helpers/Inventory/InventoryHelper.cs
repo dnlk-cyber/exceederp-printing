@@ -6,7 +6,6 @@ using ExceedERP.Core.Domain.Construction;
 using ExceedERP.Core.Domain.FleetManagement.FleetRegistration;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.DataAccess.Context;
-using ExceedERP.DataAccess.Migrations;
 using ExceedERP.Helpers.Construction;
 
 namespace ExceedERP.Helpers.Inventory
