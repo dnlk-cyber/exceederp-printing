@@ -89,6 +89,10 @@
     <Compile Include="Migrations\202106181450301_CostingAndFollowUpMerged.Designer.cs">
       <DependentUpon>202106181450301_CostingAndFollowUpMerged.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202110270715203_finance.cs" />
+    <Compile Include="Migrations\202110270715203_finance.Designer.cs">
+      <DependentUpon>202110270715203_finance.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -113,6 +117,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202106181450301_CostingAndFollowUpMerged.resx">
       <DependentUpon>202106181450301_CostingAndFollowUpMerged.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202110270715203_finance.resx">
+      <DependentUpon>202110270715203_finance.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
