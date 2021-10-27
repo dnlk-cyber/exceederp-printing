@@ -3311,6 +3311,7 @@ namespace ExceedERP.DataAccess.Context
 
         public DbSet<Core.Domain.Dashboard.FinanceDashboardRange> FinanceDashboardRanges { get; set; }
         public DbSet<FinanceSetting> FinanceSettings { get; set; }
+        public DbSet<InvoiceArchive> InvoiceArchives { get; set; }
 
 
 

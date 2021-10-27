@@ -699,7 +699,6 @@
     <Compile Include="Areas\CRM\Controllers\AdditionalCostController.cs" />
     <Compile Include="Areas\CRM\Controllers\AddresseController.cs" />
     <Compile Include="Areas\CRM\Controllers\AdvancePaymentController.cs" />
-    <Compile Include="Areas\CRM\Controllers\AdvancePaymentLineController.cs" />
     <Compile Include="Areas\CRM\Controllers\AssignTicketController.cs" />
     <Compile Include="Areas\CRM\Controllers\AttachmentController.cs" />
     <Compile Include="Areas\CRM\Controllers\BankAccountDetailController.cs" />
@@ -709,14 +708,10 @@
     <Compile Include="Areas\CRM\Controllers\CampaignController.cs" />
     <Compile Include="Areas\CRM\Controllers\CampaignProductController.cs" />
     <Compile Include="Areas\CRM\Controllers\CartTransactionController.cs" />
-    <Compile Include="Areas\CRM\Controllers\CashSalesInvoiceController.cs" />
-    <Compile Include="Areas\CRM\Controllers\CashSalesPartialItemController.cs" />
-    <Compile Include="Areas\CRM\Controllers\CashSalesPartialLineItemController.cs" />
     <Compile Include="Areas\CRM\Controllers\CashSalesPrintController.cs" />
     <Compile Include="Areas\CRM\Controllers\CommunicationSourceController.cs" />
     <Compile Include="Areas\CRM\Controllers\ConfigurationController.cs" />
     <Compile Include="Areas\CRM\Controllers\CountryController.cs" />
-    <Compile Include="Areas\CRM\Controllers\CreditSalesInvoiceController.cs" />
     <Compile Include="Areas\CRM\Controllers\CreditSettingController.cs" />
     <Compile Include="Areas\CRM\Controllers\CreditSettlementController.cs" />
     <Compile Include="Areas\CRM\Controllers\CRMDataProviderController.cs" />
@@ -732,8 +727,6 @@
     <Compile Include="Areas\CRM\Controllers\InventoryCategoryMapController.cs" />
     <Compile Include="Areas\CRM\Controllers\LanguagesController.cs" />
     <Compile Include="Areas\CRM\Controllers\LifeSpanController.cs" />
-    <Compile Include="Areas\CRM\Controllers\LineCreditSettlementController.cs" />
-    <Compile Include="Areas\CRM\Controllers\LineItemController.cs" />
     <Compile Include="Areas\CRM\Controllers\LookupsController.cs" />
     <Compile Include="Areas\CRM\Controllers\MailModelController.cs" />
     <Compile Include="Areas\CRM\Controllers\NonCashTransactionController.cs" />
@@ -756,7 +749,6 @@
     <Compile Include="Areas\CRM\Controllers\RelationController.cs" />
     <Compile Include="Areas\CRM\Controllers\ReportController.cs" />
     <Compile Include="Areas\CRM\Controllers\RoleController.cs" />
-    <Compile Include="Areas\CRM\Controllers\SalesInventoryController.cs" />
     <Compile Include="Areas\CRM\Controllers\SalesOrderPrintController.cs" />
     <Compile Include="Areas\CRM\Controllers\SalesOrderVoucherController.cs" />
     <Compile Include="Areas\CRM\Controllers\SalesQuotePrintController.cs" />
@@ -959,7 +951,6 @@
     <Compile Include="Areas\Finance\Controllers\GL\GlSegmentSequenceController.cs" />
     <Compile Include="Areas\Finance\Controllers\GL\GLTaxRateController.cs" />
     <Compile Include="Areas\Finance\Controllers\GL\JournalSourceMapController.cs" />
-    <Compile Include="Areas\Finance\Controllers\GL\SubModule\CRMTransactionsController.cs" />
     <Compile Include="Areas\Finance\Controllers\GL\SubModule\FixedAssetTransactionsController.cs" />
     <Compile Include="Areas\Finance\Controllers\GL\SubModule\InventoryTransactionsController.cs" />
     <Compile Include="Areas\Finance\Controllers\InvoiceArchiveController.cs" />

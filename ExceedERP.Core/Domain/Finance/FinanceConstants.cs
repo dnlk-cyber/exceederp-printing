@@ -13,6 +13,7 @@
         public const string GeneralSubLedgerTransfer = "General_SubLedger_Transfer";
         public const string GeneralSubLedgerInventoryBatchTransfer = "General_SubLedger_Inventory_BatchTransfer";
         public const string GeneralLedgerPostUser = "General_Ledger_Post_User";
+        public const string GeneralLedgerUnPostUser = "General_Ledger_UnPost_User";
         public const string GeneralLedgerUser = "General_Ledger_User";
         public const string GeneralLedgerApprover = "General_Ledger_Approver";
         public const string GeneralLedgerView = "General_Ledger_View";

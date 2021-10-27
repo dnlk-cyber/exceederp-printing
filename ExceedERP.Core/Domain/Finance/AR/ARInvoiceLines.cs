@@ -37,5 +37,10 @@ namespace ExceedERP.Core.Domain.Finance.AR
         [Display(Name = "Total Amount")]
         public decimal TotalAmount { get; set; }
         public int ArSalesOrderLineId { get; set; }//partial line item
+
+        /// <summary>
+        /// remaining, or not used quantity
+        /// </summary>
+        public decimal RemainingQuantity { get; set; }
     }
 }

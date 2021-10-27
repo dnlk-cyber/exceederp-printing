@@ -1,369 +1,446 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Web.Mvc;
+using ExceedERP.Core.Domain.CRM;
+using ExceedERP.Core.Domain.Finance.GL;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.DataAccess.Migrations;
+using ExceedERP.Helpers.Common;
+using ExceedERP.Helpers.Finance;
 
 namespace ExceedERP.Helpers.Inventory
 {
     public class InventoryBalanceHelper
     {
 
-        public static void RecalculateTransactionBincardData(int storeAssignmentId, int bincardId)
+        public static void RecalculateTransactionBincardData(int storeAssignmentId, int bincardId,bool useNextYear=false)
         {
-            ExceedDbContext db = new ExceedDbContext();          
+            ExceedDbContext db = new ExceedDbContext();
 
             var storeitem = db.StoreItemAssignments.Find(storeAssignmentId);
 
             var startingLine = db.BinCardLines
                 .Where(x => x.StoreItemAssignmentID == storeAssignmentId)
                 .FirstOrDefault(x => x.BinCardLineID == bincardId);
-
-            var cardLines = db.BinCardLines
-                .Where(x => x.StoreItemAssignmentID == storeAssignmentId)
-                .AsQueryable();//added
-                //.Where(x => x.Date >= startingLine.Date)
-                //.OrderBy(x => x.Date)
-                //.ThenBy(x => x.BinCardLineID)
-                //.ToArray();
-
-            string sortOrder = InventoryConfigurationHelper.GetBinCardRSortOrder();
-
-            if(sortOrder== BincardSortOrderAttributes.DateOfTransaction.ToString())
+            if (startingLine != null)
             {
-                cardLines = cardLines
-                      .Where(x => x.Date >= startingLine.Date)
-                      .OrderBy(x => x.Date)
-                      .ThenBy(x => x.BinCardLineID)
-                      .AsQueryable();
-            }
-            else
-            {
-                cardLines = cardLines
-                      .Where(x => x.BinCardLineID >= startingLine.BinCardLineID)
-                      .OrderBy(x => x.BinCardLineID)
-                      .AsQueryable();
-            }
-
-            var cardLinesArray = cardLines.ToArray();
-
-            if (cardLinesArray.Length > 0)
-            {
-                for (int i = 0; i < cardLinesArray.Length; i++)
+                var currentYear = db.GLFiscalYears.FirstOrDefault(y => startingLine.Date >= y.DateFrom && startingLine.Date <= y.DateTo);
+                // for recalculate all we shall use the next year since it starts from previous year
+                if (useNextYear)
                 {
-                    decimal totalPrice = 0;
-                    decimal totalQty = 0;
-
-                    #region update the arary
-
-                    if (i == 0 && startingLine != null)
-                    {
-                        #region incrementing operation
-
-                        if (cardLinesArray[i].ReferenceDoc.StartsWith("Receive") ||
-                            cardLinesArray[i].ReferenceDoc.StartsWith("Transfer Receive"))
-                        {
-                            #region grn Transfer Receive
-
-                            totalQty = startingLine.BalanceQTY + cardLinesArray[i].ReceivedQTY;
-                            cardLinesArray[i].BalanceQTY = totalQty;
-
-                            totalPrice =
-                                (startingLine.BalanceQTY * startingLine.BalanceUPrice)
-                                + (cardLinesArray[i].ReceivedQTY * cardLinesArray[i].ReceivedUPrice);
-
-                            cardLinesArray[i].ReceivedTPrice = cardLinesArray[i].ReceivedQTY * cardLinesArray[i].ReceivedUPrice;
-                            cardLinesArray[i].BalanceUPrice = totalQty == 0 ? 0 : totalPrice / totalQty;
-                            cardLinesArray[i].BalanceTPrice = cardLinesArray[i].BalanceUPrice * cardLinesArray[i].BalanceQTY;
-
-                            #endregion
-                        }
-
-                        else if (cardLinesArray[i].ReferenceDoc.StartsWith("Return"))
-                        {
-                            #region return
-
-                            totalQty = startingLine.BalanceQTY + cardLinesArray[i].ReceivedQTY;
-                            cardLinesArray[i].BalanceQTY = totalQty;
-
-                            cardLinesArray[i].ReceivedTPrice = cardLinesArray[i].ReceivedQTY * cardLinesArray[i].ReceivedUPrice;
-                            cardLinesArray[i].BalanceUPrice = startingLine.BalanceUPrice;
-                            cardLinesArray[i].BalanceTPrice = cardLinesArray[i].BalanceUPrice * cardLinesArray[i].BalanceQTY;
-
-                            #endregion
-                        }
-
-                        else if (cardLinesArray[i].ReferenceDoc.StartsWith("Void Issue"))
-                        {
-                            #region Void Issue
-
-                            totalQty = startingLine.BalanceQTY + cardLinesArray[i].ReceivedQTY;
-                            cardLinesArray[i].BalanceQTY = totalQty;
-
-                            cardLinesArray[i].ReceivedUPrice = Math.Abs(cardLinesArray[i].ReceivedUPrice);
-                            cardLinesArray[i].ReceivedTPrice = cardLinesArray[i].ReceivedQTY * cardLinesArray[i].ReceivedUPrice;
-                            cardLinesArray[i].BalanceUPrice = startingLine.BalanceUPrice;
-                            cardLinesArray[i].BalanceTPrice = cardLinesArray[i].BalanceUPrice * cardLinesArray[i].BalanceQTY;
-
-                            #endregion
-                        }
-
-                        else if (cardLinesArray[i].ReferenceDoc.StartsWith("Void Transfer Send"))
-                        {
-                            #region Void Transfer Send
-
-                            totalQty = startingLine.BalanceQTY + cardLinesArray[i].ReceivedQTY;
-                            cardLinesArray[i].BalanceQTY = totalQty;
-
-                            cardLinesArray[i].ReceivedTPrice = cardLinesArray[i].ReceivedQTY * cardLinesArray[i].ReceivedUPrice;
-                            cardLinesArray[i].BalanceUPrice = startingLine.BalanceUPrice;
-                            cardLinesArray[i].BalanceTPrice = cardLinesArray[i].BalanceUPrice * cardLinesArray[i].BalanceQTY;
-
-                            #endregion
-                        }
-
-                        #endregion
-                        #region dencrementing operation
-
-                        if (cardLinesArray[i].ReferenceDoc.StartsWith("Issue") ||
-                            cardLinesArray[i].ReferenceDoc.StartsWith("Transfer Send"))
-                        {
-                            #region issue
-
-                            cardLinesArray[i].IssuedUPrice = startingLine.BalanceUPrice;
-                            cardLinesArray[i].IssuedTPrice =
-                                cardLinesArray[i].IssuedUPrice * cardLinesArray[i].IssuedQTY;
-
-                            totalQty = startingLine.BalanceQTY - cardLinesArray[i].IssuedQTY;
-
-                            cardLinesArray[i].BalanceQTY = totalQty;
-                            cardLinesArray[i].IssuedTPrice = cardLinesArray[i].IssuedQTY * cardLinesArray[i].IssuedUPrice;
-                            cardLinesArray[i].BalanceUPrice = startingLine.BalanceUPrice;
-                            cardLinesArray[i].BalanceTPrice = cardLinesArray[i].BalanceUPrice * cardLinesArray[i].BalanceQTY;
-
-                            #endregion
-                        }
-                        else if (cardLinesArray[i].ReferenceDoc.StartsWith("Void Receive"))
-                        {
-                            //decimal totalpricebefore = 0;
-
-                            #region Void Receive
-
-                            totalQty = startingLine.BalanceQTY - cardLinesArray[i].IssuedQTY;
-                            //get issued price from original record if possible
-                            //totalpricebefore = cardLines[i].BalanceTPrice -
-                            //                   (cardLines[i].IssuedQTY * cardLines[i].IssuedUPrice);
-
-                            cardLinesArray[i].BalanceQTY = totalQty;
-                            cardLinesArray[i].IssuedTPrice = cardLinesArray[i].IssuedQTY * cardLinesArray[i].IssuedUPrice;
-                            cardLinesArray[i].BalanceUPrice = totalQty == 0 ? 0 : startingLine.BalanceUPrice;
-                            cardLinesArray[i].BalanceTPrice = cardLinesArray[i].BalanceUPrice * cardLinesArray[i].BalanceQTY;
-
-                            #endregion
-                        }
-
-                        else if (cardLinesArray[i].ReferenceDoc.StartsWith("Void Transfer Receive"))
-                        {
-                            decimal totalpricebefore = 0;
-
-                            #region Void Transfer Receive
-
-                            totalQty = startingLine.BalanceQTY - cardLinesArray[i].IssuedQTY;
-                            //get issued price from original record if possible
-                            totalpricebefore = cardLinesArray[i].BalanceTPrice -
-                                               (cardLinesArray[i].IssuedQTY * cardLinesArray[i].IssuedUPrice);
-
-                            cardLinesArray[i].BalanceQTY = totalQty;
-                            cardLinesArray[i].IssuedTPrice = cardLinesArray[i].IssuedQTY * cardLinesArray[i].IssuedUPrice;
-                            cardLinesArray[i].BalanceUPrice = totalQty == 0 ? 0 : totalpricebefore / totalQty;
-                            cardLinesArray[i].BalanceTPrice = cardLinesArray[i].BalanceUPrice * cardLinesArray[i].BalanceQTY;
-
-                            #endregion
-                        }
-                        else if (cardLinesArray[i].ReferenceDoc.StartsWith("Void Return"))
-                        {
-                            #region Void Return
-
-                            totalQty = startingLine.BalanceQTY - cardLinesArray[i].IssuedQTY;
-
-                            cardLinesArray[i].BalanceQTY = totalQty;
-                            cardLinesArray[i].IssuedTPrice = cardLinesArray[i].IssuedQTY * cardLinesArray[i].IssuedUPrice;
-                            cardLinesArray[i].BalanceUPrice = startingLine.BalanceUPrice;
-                            cardLinesArray[i].BalanceTPrice = cardLinesArray[i].BalanceUPrice * cardLinesArray[i].BalanceQTY;
-
-                            #endregion
-                        }
-
-                        #endregion
-                    }
-                    else
-                    {
-                        #region incrementing operation
-
-                        if (cardLinesArray[i].ReferenceDoc.StartsWith("Receive") ||
-                            cardLinesArray[i].ReferenceDoc.StartsWith("Transfer Receive"))
-                        {
-                            #region grn Transfer Receive
-
-                            totalQty = cardLinesArray[i - 1].BalanceQTY + cardLinesArray[i].ReceivedQTY;
-                            cardLinesArray[i].BalanceQTY = totalQty;
-
-                            totalPrice =
-                                (cardLinesArray[i - 1].BalanceQTY * cardLinesArray[i - 1].BalanceUPrice)
-                                + (cardLinesArray[i].ReceivedQTY * cardLinesArray[i].ReceivedUPrice);
-
-                            cardLinesArray[i].ReceivedTPrice = cardLinesArray[i].ReceivedQTY * cardLinesArray[i].ReceivedUPrice;
-                            cardLinesArray[i].BalanceUPrice = totalQty == 0 ? 0 : totalPrice / totalQty;
-                            cardLinesArray[i].BalanceTPrice = cardLinesArray[i].BalanceUPrice * cardLinesArray[i].BalanceQTY;
-
-                            #endregion
-                        }
-
-                        else if (cardLinesArray[i].ReferenceDoc.StartsWith("Return"))
-                        {
-                            #region return
-
-                            cardLinesArray[i].BalanceQTY = cardLinesArray[i - 1].BalanceQTY + cardLinesArray[i].ReceivedQTY;
-
-                            cardLinesArray[i].ReceivedUPrice = cardLinesArray[i - 1].BalanceUPrice;
-
-                            cardLinesArray[i].ReceivedTPrice = cardLinesArray[i].ReceivedQTY * cardLinesArray[i].ReceivedUPrice;
-                            cardLinesArray[i].BalanceUPrice = cardLinesArray[i - 1].BalanceUPrice;
-                            cardLinesArray[i].BalanceTPrice = cardLinesArray[i].BalanceUPrice * cardLinesArray[i].BalanceQTY;
-
-                            #endregion
-                        }
-
-                        else if (cardLinesArray[i].ReferenceDoc.StartsWith("Void Issue"))
-                        {
-                            #region Void Issue
-
-                            totalQty = cardLinesArray[i - 1].BalanceQTY + cardLinesArray[i].ReceivedQTY;
-                            cardLinesArray[i].BalanceQTY = totalQty;
-
-                            cardLinesArray[i].ReceivedUPrice = Math.Abs(cardLinesArray[i].ReceivedUPrice);
-                            cardLinesArray[i].ReceivedTPrice = cardLinesArray[i].ReceivedQTY * cardLinesArray[i].ReceivedUPrice;
-                            cardLinesArray[i].BalanceUPrice = cardLinesArray[i - 1].BalanceUPrice;
-                            cardLinesArray[i].BalanceTPrice = cardLinesArray[i].BalanceUPrice * cardLinesArray[i].BalanceQTY;
-
-                            #endregion
-                        }
-
-                        else if (cardLinesArray[i].ReferenceDoc.StartsWith("Void Transfer Send"))
-                        {
-                            #region Void Transfer Send
-
-                            totalQty = cardLinesArray[i - 1].BalanceQTY + cardLinesArray[i].ReceivedQTY;
-                            cardLinesArray[i].BalanceQTY = totalQty;
-
-                            cardLinesArray[i].ReceivedTPrice = cardLinesArray[i].ReceivedQTY * cardLinesArray[i].ReceivedUPrice;
-                            cardLinesArray[i].BalanceUPrice = cardLinesArray[i - 1].BalanceUPrice;
-                            cardLinesArray[i].BalanceTPrice = cardLinesArray[i].BalanceUPrice * cardLinesArray[i].BalanceQTY;
-
-                            #endregion
-                        }
-
-                        #endregion
-                        #region dencrementing operation
-
-                        if (cardLinesArray[i].ReferenceDoc.StartsWith("Issue") ||
-                            cardLinesArray[i].ReferenceDoc.StartsWith("Transfer Send"))
-                        {
-                            #region issue
-
-                            cardLinesArray[i].IssuedUPrice = cardLinesArray[i - 1].BalanceUPrice;
-                            cardLinesArray[i].IssuedTPrice = cardLinesArray[i].IssuedUPrice * cardLinesArray[i].IssuedQTY;
-
-                            totalQty = cardLinesArray[i - 1].BalanceQTY - cardLinesArray[i].IssuedQTY;
-
-                            cardLinesArray[i].BalanceQTY = totalQty;
-                            cardLinesArray[i].IssuedTPrice = cardLinesArray[i].IssuedQTY * cardLinesArray[i].IssuedUPrice;
-                            cardLinesArray[i].BalanceUPrice = cardLinesArray[i - 1].BalanceUPrice;
-                            cardLinesArray[i].BalanceTPrice = cardLinesArray[i].BalanceUPrice * cardLinesArray[i].BalanceQTY;
-
-                            #endregion
-                        }
-                        else if (cardLinesArray[i].ReferenceDoc.StartsWith("Void Receive"))
-                        {
-                            //decimal totalpricebefore = 0;
-
-                            #region Void Receive
-
-                            totalQty = cardLinesArray[i - 1].BalanceQTY - cardLinesArray[i].IssuedQTY;
-                            ////get issued price from original record if possible
-                            //totalpricebefore = cardLines[i].BalanceTPrice -
-                            //                   (cardLines[i].IssuedQTY * cardLines[i].IssuedUPrice);
-
-                            cardLinesArray[i].IssuedUPrice = cardLinesArray[i - 1].BalanceUPrice;
-                            cardLinesArray[i].IssuedTPrice = cardLinesArray[i].IssuedUPrice * cardLinesArray[i].IssuedQTY;
-
-                            cardLinesArray[i].BalanceQTY = totalQty;
-                            cardLinesArray[i].IssuedTPrice = cardLinesArray[i].IssuedQTY * cardLinesArray[i].IssuedUPrice;
-                            cardLinesArray[i].BalanceUPrice = totalQty == 0 ? 0 : cardLinesArray[i - 1].BalanceUPrice;
-                            cardLinesArray[i].BalanceTPrice = cardLinesArray[i].BalanceUPrice * cardLinesArray[i].BalanceQTY;
-
-                            #endregion
-                        }
-
-                        else if (cardLinesArray[i].ReferenceDoc.StartsWith("Void Transfer Receive"))
-                        {
-                            decimal totalpricebefore = 0;
-
-                            #region Void Transfer Receive
-
-                            totalQty = cardLinesArray[i - 1].BalanceQTY - cardLinesArray[i].IssuedQTY;
-                            //get issued price from original record if possible
-                            //totalpricebefore = cardLinesArray[i].BalanceTPrice -
-                            //                   (cardLinesArray[i].IssuedQTY * cardLinesArray[i].IssuedUPrice);
-
-                            cardLinesArray[i].BalanceQTY = totalQty;
-                            cardLinesArray[i].IssuedTPrice = cardLinesArray[i].IssuedQTY * cardLinesArray[i].IssuedUPrice;
-                            cardLinesArray[i].BalanceUPrice = totalQty == 0 ? 0 : cardLinesArray[i - 1].BalanceUPrice;
-                            cardLinesArray[i].BalanceTPrice = cardLinesArray[i].BalanceUPrice * cardLinesArray[i].BalanceQTY;
-
-                            #endregion
-                        }
-                        else if (cardLinesArray[i].ReferenceDoc.StartsWith("Void Return"))
-                        {
-                            #region Void Return
-
-                            totalQty = cardLinesArray[i - 1].BalanceQTY - cardLinesArray[i].IssuedQTY;
-
-                            cardLinesArray[i].BalanceQTY = totalQty;
-                            cardLinesArray[i].IssuedTPrice = cardLinesArray[i].IssuedQTY * cardLinesArray[i].IssuedUPrice;
-                            cardLinesArray[i].BalanceUPrice = cardLinesArray[i - 1].BalanceUPrice;
-                            cardLinesArray[i].BalanceTPrice = cardLinesArray[i].BalanceUPrice * cardLinesArray[i].BalanceQTY;
-
-                            #endregion
-                        }
-
-                        #endregion
-                    }
-
-                    #endregion
-
-                    db.Entry(cardLinesArray[i]).State = EntityState.Modified;
-
-                    if (i == cardLinesArray.Length - 1)
-                    {
-                        if (storeitem != null)
-                        {
-                            storeitem.AvgPrice = cardLinesArray[i].BalanceUPrice;
-                            storeitem.Balance = cardLinesArray[i].BalanceQTY;
-                            db.Entry(storeitem).State = EntityState.Modified;
-                        }
-                    }
-                    db.SaveChanges();
+                    FiscalYearHelper fiscalYearHelper = new FiscalYearHelper();
+                    currentYear = db.GLFiscalYears.Find(fiscalYearHelper.GetNextFYearId(currentYear.GlFiscalYearId));
                 }
-            }
-            else
-            {
-                if (storeitem != null && startingLine != null)
+                var countBinCard = db.BinCardLines
+                    .FirstOrDefault(b => b.StoreItemAssignmentID == storeAssignmentId &&
+                        b.ReferenceDoc != null &&
+                        b.ReferenceDoc.StartsWith("Count on date") &&
+                        b.Date > startingLine.Date && b.Date <= currentYear.DateTo
+                    );
+                var cardLines = db.BinCardLines
+                    .Where(x => x.StoreItemAssignmentID == storeAssignmentId)
+                    .AsQueryable();//added
+                                   //.Where(x => x.Date >= startingLine.Date)
+                                   //.OrderBy(x => x.Date)
+                                   //.ThenBy(x => x.BinCardLineID)
+                                   //.ToArray();
+
+                string sortOrder = InventoryConfigurationHelper.GetBinCardRSortOrder();
+
+                if (sortOrder == BincardSortOrderAttributes.DateOfTransaction.ToString())
                 {
-                    storeitem.AvgPrice = startingLine.BalanceUPrice;
-                    storeitem.Balance = startingLine.BalanceQTY;
-                    db.Entry(storeitem).State = EntityState.Modified;
-                    db.SaveChanges();
+                    cardLines = cardLines
+                          .Where(x => x.Date >= startingLine.Date && x.Date <= currentYear.DateTo)
+                          .OrderBy(x => x.Date)
+                          .ThenBy(x => x.BinCardLineID)
+                          .AsQueryable();
+
+                    if (countBinCard != null)
+                    {
+                        cardLines = cardLines
+                            .Where(b => b.Date <= countBinCard.Date && b.BinCardLineID != countBinCard.BinCardLineID)
+                            .OrderBy(x => x.Date)
+                            .ThenBy(x => x.BinCardLineID);
+                    }
+                }
+                else
+                {
+                    cardLines = cardLines
+                          .Where(x => x.BinCardLineID >= startingLine.BinCardLineID)
+                          .OrderBy(x => x.BinCardLineID)
+                          .AsQueryable();
+                }
+
+                var cardLinesArray = cardLines.ToArray();
+
+                if (cardLinesArray.Length > 0)
+                {
+                    for (int i = 0; i < cardLinesArray.Length; i++)
+                    {
+                        decimal totalPrice = 0;
+                        decimal totalQty = 0;
+
+                        #region update the arary
+
+                        if (i == 0 && startingLine != null)
+                        {
+                            #region incrementing operation
+
+                            if (cardLinesArray[i].ReferenceDoc.StartsWith("Receive") ||
+                                cardLinesArray[i].ReferenceDoc.StartsWith("Transfer Receive"))
+                            {
+                                #region grn Transfer Receive
+
+                                totalQty = startingLine.BalanceQTY; //+ cardLinesArray[i].ReceivedQTY;
+                                cardLinesArray[i].BalanceQTY = totalQty;
+
+                                totalPrice =
+                                    (startingLine.BalanceQTY * startingLine.BalanceUPrice)
+                                    + (cardLinesArray[i].ReceivedQTY * cardLinesArray[i].ReceivedUPrice);
+
+                                cardLinesArray[i].ReceivedTPrice = cardLinesArray[i].ReceivedQTY * cardLinesArray[i].ReceivedUPrice;
+                                cardLinesArray[i].BalanceUPrice = totalQty == 0 ? 0 : totalPrice / totalQty;
+                                cardLinesArray[i].BalanceTPrice = cardLinesArray[i].BalanceUPrice * cardLinesArray[i].BalanceQTY;
+
+                                #endregion
+                            }
+
+                            else if (cardLinesArray[i].ReferenceDoc.StartsWith("Return"))
+                            {
+                                #region return
+
+                                totalQty = startingLine.BalanceQTY;// + cardLinesArray[i].ReceivedQTY;
+                                cardLinesArray[i].BalanceQTY = totalQty;
+
+                                cardLinesArray[i].ReceivedTPrice = cardLinesArray[i].ReceivedQTY * cardLinesArray[i].ReceivedUPrice;
+                                cardLinesArray[i].BalanceUPrice = startingLine.BalanceUPrice;
+                                cardLinesArray[i].BalanceTPrice = cardLinesArray[i].BalanceUPrice * cardLinesArray[i].BalanceQTY;
+
+                                #endregion
+                            }
+
+                            else if (cardLinesArray[i].ReferenceDoc.StartsWith("Void Issue") ||
+                                        cardLinesArray[i].ReferenceDoc.StartsWith("Void SalesDonation"))
+                            {
+                                #region Void Issue
+
+                                totalQty = startingLine.BalanceQTY; //+ cardLinesArray[i].ReceivedQTY;
+                                cardLinesArray[i].BalanceQTY = totalQty;
+
+                                cardLinesArray[i].ReceivedUPrice = Math.Abs(cardLinesArray[i].ReceivedUPrice);
+                                cardLinesArray[i].ReceivedTPrice = cardLinesArray[i].ReceivedQTY * cardLinesArray[i].ReceivedUPrice;
+                                cardLinesArray[i].BalanceUPrice = startingLine.BalanceUPrice;
+                                cardLinesArray[i].BalanceTPrice = cardLinesArray[i].BalanceUPrice * cardLinesArray[i].BalanceQTY;
+
+                                #endregion
+                            }
+
+                            else if (cardLinesArray[i].ReferenceDoc.StartsWith("Void Shipment"))
+                            {
+                                #region Void shipment
+
+                                totalQty = startingLine.BalanceQTY; //+ cardLinesArray[i].ReceivedQTY;
+                                cardLinesArray[i].BalanceQTY = totalQty;
+
+                                cardLinesArray[i].ReceivedUPrice = Math.Abs(cardLinesArray[i].ReceivedUPrice);
+                                cardLinesArray[i].ReceivedTPrice = cardLinesArray[i].ReceivedQTY * cardLinesArray[i].ReceivedUPrice;
+                                cardLinesArray[i].BalanceUPrice = startingLine.BalanceUPrice;
+                                cardLinesArray[i].BalanceTPrice = cardLinesArray[i].BalanceUPrice * cardLinesArray[i].BalanceQTY;
+
+                                #endregion
+                            }
+
+                            else if (cardLinesArray[i].ReferenceDoc.StartsWith("Void Transfer Send"))
+                            {
+                                #region Void Transfer Send
+
+                                totalQty = startingLine.BalanceQTY; //+ cardLinesArray[i].ReceivedQTY;
+                                cardLinesArray[i].BalanceQTY = totalQty;
+
+                                cardLinesArray[i].ReceivedTPrice = cardLinesArray[i].ReceivedQTY * cardLinesArray[i].ReceivedUPrice;
+                                cardLinesArray[i].BalanceUPrice = startingLine.BalanceUPrice;
+                                cardLinesArray[i].BalanceTPrice = cardLinesArray[i].BalanceUPrice * cardLinesArray[i].BalanceQTY;
+
+                                #endregion
+                            }
+
+                            #endregion
+                            #region dencrementing operation
+
+                            if (cardLinesArray[i].ReferenceDoc.StartsWith("Issue") ||
+                                cardLinesArray[i].ReferenceDoc.StartsWith("Transfer Send") ||
+                                cardLinesArray[i].ReferenceDoc.StartsWith("SalesDonation") ||
+                                cardLinesArray[i].ReferenceDoc.StartsWith("Shipment"))
+                            {
+                                #region issue
+
+                                cardLinesArray[i].IssuedUPrice = startingLine.BalanceUPrice;
+                                cardLinesArray[i].IssuedTPrice =
+                                    cardLinesArray[i].IssuedUPrice * cardLinesArray[i].IssuedQTY;
+
+                                totalQty = startingLine.BalanceQTY /*- cardLinesArray[i].IssuedQTY*/;
+
+                                cardLinesArray[i].BalanceQTY = totalQty;
+                                cardLinesArray[i].IssuedTPrice = cardLinesArray[i].IssuedQTY * cardLinesArray[i].IssuedUPrice;
+                                cardLinesArray[i].BalanceUPrice = startingLine.BalanceUPrice;
+                                cardLinesArray[i].BalanceTPrice = cardLinesArray[i].BalanceUPrice * cardLinesArray[i].BalanceQTY;
+
+                                #endregion
+                            }
+                            else if (cardLinesArray[i].ReferenceDoc.StartsWith("Void Receive"))
+                            {
+                                //decimal totalpricebefore = 0;
+
+                                #region Void Receive
+
+                                totalQty = startingLine.BalanceQTY /*- cardLinesArray[i].IssuedQTY*/;
+                                //get issued price from original record if possible
+                                //totalpricebefore = cardLines[i].BalanceTPrice -
+                                //                   (cardLines[i].IssuedQTY * cardLines[i].IssuedUPrice);
+
+                                cardLinesArray[i].BalanceQTY = totalQty;
+                                cardLinesArray[i].IssuedTPrice = cardLinesArray[i].IssuedQTY * cardLinesArray[i].IssuedUPrice;
+                                cardLinesArray[i].BalanceUPrice = totalQty == 0 ? 0 : startingLine.BalanceUPrice;
+                                cardLinesArray[i].BalanceTPrice = cardLinesArray[i].BalanceUPrice * cardLinesArray[i].BalanceQTY;
+
+                                #endregion
+                            }
+
+                            else if (cardLinesArray[i].ReferenceDoc.StartsWith("Void Transfer Receive"))
+                            {
+                                decimal totalpricebefore = 0;
+
+                                #region Void Transfer Receive
+
+                                totalQty = startingLine.BalanceQTY /*- cardLinesArray[i].IssuedQTY*/;
+                                //get issued price from original record if possible
+                                totalpricebefore = cardLinesArray[i].BalanceTPrice -
+                                                   (cardLinesArray[i].IssuedQTY * cardLinesArray[i].IssuedUPrice);
+
+                                cardLinesArray[i].BalanceQTY = totalQty;
+                                cardLinesArray[i].IssuedTPrice = cardLinesArray[i].IssuedQTY * cardLinesArray[i].IssuedUPrice;
+                                cardLinesArray[i].BalanceUPrice = totalQty == 0 ? 0 : totalpricebefore / totalQty;
+                                cardLinesArray[i].BalanceTPrice = cardLinesArray[i].BalanceUPrice * cardLinesArray[i].BalanceQTY;
+
+                                #endregion
+                            }
+                            else if (cardLinesArray[i].ReferenceDoc.StartsWith("Void Return"))
+                            {
+                                #region Void Return
+
+                                totalQty = startingLine.BalanceQTY /*- cardLinesArray[i].IssuedQTY*/;
+
+                                cardLinesArray[i].BalanceQTY = totalQty;
+                                cardLinesArray[i].IssuedTPrice = cardLinesArray[i].IssuedQTY * cardLinesArray[i].IssuedUPrice;
+                                cardLinesArray[i].BalanceUPrice = startingLine.BalanceUPrice;
+                                cardLinesArray[i].BalanceTPrice = cardLinesArray[i].BalanceUPrice * cardLinesArray[i].BalanceQTY;
+
+                                #endregion
+                            }
+
+                            #endregion
+                        }
+                        else
+                        {
+                            #region incrementing operation
+
+                            if (cardLinesArray[i].ReferenceDoc.StartsWith("Receive") ||
+                                cardLinesArray[i].ReferenceDoc.StartsWith("Transfer Receive"))
+                            {
+                                #region grn Transfer Receive
+
+                                totalQty = cardLinesArray[i - 1].BalanceQTY + cardLinesArray[i].ReceivedQTY;
+                                cardLinesArray[i].BalanceQTY = totalQty;
+
+                                totalPrice =
+                                    (cardLinesArray[i - 1].BalanceQTY * cardLinesArray[i - 1].BalanceUPrice)
+                                    + (cardLinesArray[i].ReceivedQTY * cardLinesArray[i].ReceivedUPrice);
+
+                                cardLinesArray[i].ReceivedTPrice = cardLinesArray[i].ReceivedQTY * cardLinesArray[i].ReceivedUPrice;
+                                cardLinesArray[i].BalanceUPrice = totalQty == 0 ? 0 : totalPrice / totalQty;
+                                cardLinesArray[i].BalanceTPrice = cardLinesArray[i].BalanceUPrice * cardLinesArray[i].BalanceQTY;
+
+                                #endregion
+                            }
+
+                            else if (cardLinesArray[i].ReferenceDoc.StartsWith("Return"))
+                            {
+                                #region return
+
+                                cardLinesArray[i].BalanceQTY = cardLinesArray[i - 1].BalanceQTY + cardLinesArray[i].ReceivedQTY;
+
+                                cardLinesArray[i].ReceivedUPrice = cardLinesArray[i - 1].BalanceUPrice;
+
+                                cardLinesArray[i].ReceivedTPrice = cardLinesArray[i].ReceivedQTY * cardLinesArray[i].ReceivedUPrice;
+                                cardLinesArray[i].BalanceUPrice = cardLinesArray[i - 1].BalanceUPrice;
+                                cardLinesArray[i].BalanceTPrice = cardLinesArray[i].BalanceUPrice * cardLinesArray[i].BalanceQTY;
+
+                                #endregion
+                            }
+
+                            else if (cardLinesArray[i].ReferenceDoc.StartsWith("Void Issue") ||
+                                       cardLinesArray[i].ReferenceDoc.StartsWith("Void SalesDonation"))
+                            {
+                                #region Void Issue
+
+                                totalQty = cardLinesArray[i - 1].BalanceQTY + cardLinesArray[i].ReceivedQTY;
+                                cardLinesArray[i].BalanceQTY = totalQty;
+
+                                cardLinesArray[i].ReceivedUPrice = Math.Abs(cardLinesArray[i].ReceivedUPrice);
+                                cardLinesArray[i].ReceivedTPrice = cardLinesArray[i].ReceivedQTY * cardLinesArray[i].ReceivedUPrice;
+                                cardLinesArray[i].BalanceUPrice = cardLinesArray[i - 1].BalanceUPrice;
+                                cardLinesArray[i].BalanceTPrice = cardLinesArray[i].BalanceUPrice * cardLinesArray[i].BalanceQTY;
+
+                                #endregion
+                            }
+
+                            else if (cardLinesArray[i].ReferenceDoc.StartsWith("Void Shipment"))
+                            {
+                                #region Void Shipment
+
+                                totalQty = cardLinesArray[i - 1].BalanceQTY + cardLinesArray[i].ReceivedQTY;
+                                cardLinesArray[i].BalanceQTY = totalQty;
+
+                                cardLinesArray[i].ReceivedUPrice = Math.Abs(cardLinesArray[i].ReceivedUPrice);
+                                cardLinesArray[i].ReceivedTPrice = cardLinesArray[i].ReceivedQTY * cardLinesArray[i].ReceivedUPrice;
+                                cardLinesArray[i].BalanceUPrice = cardLinesArray[i - 1].BalanceUPrice;
+                                cardLinesArray[i].BalanceTPrice = cardLinesArray[i].BalanceUPrice * cardLinesArray[i].BalanceQTY;
+
+                                #endregion
+                            }
+
+                            else if (cardLinesArray[i].ReferenceDoc.StartsWith("Void Transfer Send"))
+                            {
+                                #region Void Transfer Send
+
+                                totalQty = cardLinesArray[i - 1].BalanceQTY + cardLinesArray[i].ReceivedQTY;
+                                cardLinesArray[i].BalanceQTY = totalQty;
+
+                                cardLinesArray[i].ReceivedTPrice = cardLinesArray[i].ReceivedQTY * cardLinesArray[i].ReceivedUPrice;
+                                cardLinesArray[i].BalanceUPrice = cardLinesArray[i - 1].BalanceUPrice;
+                                cardLinesArray[i].BalanceTPrice = cardLinesArray[i].BalanceUPrice * cardLinesArray[i].BalanceQTY;
+
+                                #endregion
+                            }
+
+                            #endregion
+                            #region dencrementing operation
+
+                            if (cardLinesArray[i].ReferenceDoc.StartsWith("Issue") ||
+                                cardLinesArray[i].ReferenceDoc.StartsWith("Transfer Send") ||
+                                cardLinesArray[i].ReferenceDoc.StartsWith("SalesDonation") ||
+                                cardLinesArray[i].ReferenceDoc.StartsWith("Shipment"))
+                            {
+                                #region issue
+
+                                cardLinesArray[i].IssuedUPrice = cardLinesArray[i - 1].BalanceUPrice;
+                                cardLinesArray[i].IssuedTPrice = cardLinesArray[i].IssuedUPrice * cardLinesArray[i].IssuedQTY;
+
+                                totalQty = cardLinesArray[i - 1].BalanceQTY - cardLinesArray[i].IssuedQTY;
+
+                                cardLinesArray[i].BalanceQTY = totalQty;
+                                cardLinesArray[i].IssuedTPrice = cardLinesArray[i].IssuedQTY * cardLinesArray[i].IssuedUPrice;
+                                cardLinesArray[i].BalanceUPrice = cardLinesArray[i - 1].BalanceUPrice;
+                                cardLinesArray[i].BalanceTPrice = cardLinesArray[i].BalanceUPrice * cardLinesArray[i].BalanceQTY;
+
+                                #endregion
+                            }
+                            else if (cardLinesArray[i].ReferenceDoc.StartsWith("Void Receive"))
+                            {
+                                //decimal totalpricebefore = 0;
+
+                                #region Void Receive
+
+                                totalQty = cardLinesArray[i - 1].BalanceQTY - cardLinesArray[i].IssuedQTY;
+                                ////get issued price from original record if possible
+                                //totalpricebefore = cardLines[i].BalanceTPrice -
+                                //                   (cardLines[i].IssuedQTY * cardLines[i].IssuedUPrice);
+
+                                cardLinesArray[i].IssuedUPrice = cardLinesArray[i - 1].BalanceUPrice;
+                                cardLinesArray[i].IssuedTPrice = cardLinesArray[i].IssuedUPrice * cardLinesArray[i].IssuedQTY;
+
+                                cardLinesArray[i].BalanceQTY = totalQty;
+                                cardLinesArray[i].IssuedTPrice = cardLinesArray[i].IssuedQTY * cardLinesArray[i].IssuedUPrice;
+                                cardLinesArray[i].BalanceUPrice = totalQty == 0 ? 0 : cardLinesArray[i - 1].BalanceUPrice;
+                                cardLinesArray[i].BalanceTPrice = cardLinesArray[i].BalanceUPrice * cardLinesArray[i].BalanceQTY;
+
+                                #endregion
+                            }
+
+                            else if (cardLinesArray[i].ReferenceDoc.StartsWith("Void Transfer Receive"))
+                            {
+                                decimal totalpricebefore = 0;
+
+                                #region Void Transfer Receive
+
+                                totalQty = cardLinesArray[i - 1].BalanceQTY - cardLinesArray[i].IssuedQTY;
+                                //get issued price from original record if possible
+                                //totalpricebefore = cardLinesArray[i].BalanceTPrice -
+                                // (cardLinesArray[i].IssuedQTY * cardLinesArray[i].IssuedUPrice);
+
+                                cardLinesArray[i].BalanceQTY = totalQty;
+                                cardLinesArray[i].IssuedTPrice = cardLinesArray[i].IssuedQTY * cardLinesArray[i].IssuedUPrice;
+                                cardLinesArray[i].BalanceUPrice = totalQty == 0 ? 0 : cardLinesArray[i - 1].BalanceUPrice;
+                                cardLinesArray[i].BalanceTPrice = cardLinesArray[i].BalanceUPrice * cardLinesArray[i].BalanceQTY;
+
+                                #endregion
+                            }
+                            else if (cardLinesArray[i].ReferenceDoc.StartsWith("Void Return"))
+                            {
+                                #region Void Return
+
+                                totalQty = cardLinesArray[i - 1].BalanceQTY - cardLinesArray[i].IssuedQTY;
+
+                                cardLinesArray[i].BalanceQTY = totalQty;
+                                cardLinesArray[i].IssuedTPrice = cardLinesArray[i].IssuedQTY * cardLinesArray[i].IssuedUPrice;
+                                cardLinesArray[i].BalanceUPrice = cardLinesArray[i - 1].BalanceUPrice;
+                                cardLinesArray[i].BalanceTPrice = cardLinesArray[i].BalanceUPrice * cardLinesArray[i].BalanceQTY;
+
+                                #endregion
+                            }
+
+                            #endregion
+                        }
+
+                        #endregion
+
+                        db.Entry(cardLinesArray[i]).State = EntityState.Modified;
+
+                        if (i == cardLinesArray.Length - 1)
+                        {
+                            if (storeitem != null)
+                            {
+                                storeitem.AvgPrice = cardLinesArray[i].BalanceUPrice;
+                                storeitem.Balance = cardLinesArray[i].BalanceQTY;
+                                db.Entry(storeitem).State = EntityState.Modified;
+                            }
+                        }
+                        db.SaveChanges();
+                    }
+
+                    #region find and update count table with the most recent bincard balance
+                    if (sortOrder == BincardSortOrderAttributes.DateOfTransaction.ToString() && countBinCard != null)
+                    {
+                        PropertyCountHelper
+                            .UpdatePropertyCountItemPreviousBalanceFromBinCard
+                            (countBinCard: countBinCard, latestBinCard: cardLines.ToArray()[cardLines.Count() - 1]);
+                    }
+                    #endregion
+                }
+                else
+                {
+                    if (storeitem != null && startingLine != null)
+                    {
+                        storeitem.AvgPrice = startingLine.BalanceUPrice;
+                        storeitem.Balance = startingLine.BalanceQTY;
+                        db.Entry(storeitem).State = EntityState.Modified;
+                        db.SaveChanges();
+                    }
                 }
             }
         }
@@ -373,18 +450,18 @@ namespace ExceedERP.Helpers.Inventory
             int updatedPeriodId = 0;
             var allowed = InventoryConfigurationHelper.RecalculateSourceTransactionOnBincardUpdate();
 
-            if (assignmentid != null && binid != null&& allowed)
+            if (assignmentid != null && binid != null && allowed)
             {
                 int storeAssignmentId = int.Parse(assignmentid);
                 int bincardId = int.Parse(binid);
 
-                var storeitem = db.StoreItemAssignments.Find(storeAssignmentId);               
+                var storeitem = db.StoreItemAssignments.Find(storeAssignmentId);
 
                 var cardLines = db.BinCardLines
                     .Where(x => x.StoreItemAssignmentID == storeAssignmentId)
                     .Where(x => x.BinCardLineID >= bincardId).ToArray();
 
-                foreach(var card in cardLines)
+                foreach (var card in cardLines)
                 {
 
                     #region incrementing operation
@@ -402,7 +479,7 @@ namespace ExceedERP.Helpers.Inventory
                             updatedPeriodId = InventoryHelper.GetInventoryPeriodFromDate(card.Date);
 
                             record.GLPeriodId = updatedPeriodId != 0 ? updatedPeriodId : record.GLPeriodId;
-                            record.ReceiveDate = card.Date;                           
+                            record.ReceiveDate = card.Date;
                             db.GoodReceives.Attach(record);
                             db.Entry(record).State = EntityState.Modified;
                             db.SaveChanges();
@@ -426,7 +503,7 @@ namespace ExceedERP.Helpers.Inventory
                             db.GoodReceiveItems.Attach(item);
                             db.Entry(item).State = EntityState.Modified;
                             db.SaveChanges();
-                        }                        
+                        }
 
                         #endregion
                     }
@@ -452,7 +529,7 @@ namespace ExceedERP.Helpers.Inventory
                         #endregion
                         var item = db.ItemTransferItemReceive
                             .Where(x => x.ItemCode == storeitem.ItemCode)
-                            .Where(x => x.ItemTransferReceiveId == recordid).FirstOrDefault();                      
+                            .Where(x => x.ItemTransferReceiveId == recordid).FirstOrDefault();
 
                         if (item != null)
                         {
@@ -492,7 +569,7 @@ namespace ExceedERP.Helpers.Inventory
                             .Where(x => x.ItemCode == storeitem.ItemCode)
                             .Where(x => x.StoreReturnID == recordid).FirstOrDefault();
 
-                      
+
 
                         if (item != null)
                         {
@@ -535,7 +612,7 @@ namespace ExceedERP.Helpers.Inventory
 
                         var item = db.IssueItems
                             .Where(x => x.ItemCode == storeitem.ItemCode)
-                            .Where(x => x.IssueID == recordid).FirstOrDefault();                       
+                            .Where(x => x.IssueID == recordid).FirstOrDefault();
 
                         if (item != null)
                         {
@@ -591,11 +668,49 @@ namespace ExceedERP.Helpers.Inventory
 
                     #endregion
 
-                }      
+                }
 
 
-               
 
+
+            }
+        }
+
+        //public static void AutoRecalculateBincardLines(List<BinCardLine> binCardLinesList)
+        public static void AutoRecalculateBincardLines(List<int> binCardLineIds)
+        {
+            if (InventoryConfigurationHelper.IsBinCardRecalculateAllowed())
+            {
+                var db = new ExceedDbContext();
+                string sortOrder = InventoryConfigurationHelper.GetBinCardRSortOrder();
+                var binCardLinesList = db.BinCardLines.Where(b => binCardLineIds.Contains(b.BinCardLineID)).ToList();
+                foreach (var binCardLine in binCardLinesList)
+                {
+                    var currentYear = db.GLFiscalYears.FirstOrDefault(y => binCardLine.Date >= y.DateFrom && binCardLine.Date <= y.DateTo);
+                    if (currentYear != null)
+                    {
+                        #region find the most recent record prior to this very one
+                        var binCardLines =
+                               db.BinCardLines
+                               .Where(b => b.Date <= binCardLine.Date &&
+                               b.BinCardLineID != binCardLine.BinCardLineID &&
+                               b.StoreItemAssignmentID == binCardLine.StoreItemAssignmentID &&
+                               b.Date >= currentYear.DateFrom && b.Date <= currentYear.DateTo &&
+                               b.ReferenceDoc != null &&
+                               !b.ReferenceDoc.StartsWith("Count on date")
+                               ).ToList();
+                        if (sortOrder == BincardSortOrderAttributes.DateOfTransaction.ToString())
+                        {
+                            binCardLines = binCardLines.OrderByDescending(d => d.Date).ThenByDescending(d => d.BinCardLineID).ToList();
+                            if (binCardLines.Any())
+                            {
+                                var targetBinTransaction = binCardLines[0];
+                                RecalculateTransactionBincardData(targetBinTransaction.StoreItemAssignmentID, targetBinTransaction.BinCardLineID);
+                            }
+                        }
+                        #endregion
+                    }
+                }
             }
         }
     }

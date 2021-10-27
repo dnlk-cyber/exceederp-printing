@@ -436,6 +436,7 @@
     <Compile Include="Domain\Finance\GL\GLRuleValue.cs" />
     <Compile Include="Domain\Finance\GL\Dynamic\GLSegmentCrossValidation.cs" />
     <Compile Include="Domain\Finance\GL\Dynamic\GLSegmentSetup.cs" />
+    <Compile Include="Domain\Finance\InvoiceArchive.cs" />
     <Compile Include="Domain\Finance\Report\RevenueBySalesType.cs" />
     <Compile Include="Domain\Finance\StockClearingAccount.cs" />
     <Compile Include="Domain\Finance\RevenueAccount.cs" />

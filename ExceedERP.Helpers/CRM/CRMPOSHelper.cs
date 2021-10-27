@@ -1,15 +1,10 @@
 ﻿using ExceedERP.Core.Domain.CRM;
-using ExceedERP.Core.Domain.Finance.GL;
 using ExceedERP.DataAccess.Context;
 using System;
-using System.Collections.Generic;
 
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Web;
 using System.Xml;
-using ExceedERP.Helpers.Common;
 
 namespace ExceedERP.Helpers.CRM
 {

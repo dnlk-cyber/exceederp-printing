@@ -140,9 +140,7 @@
     <Compile Include="CRM\CRMDistributionHelper.cs" />
     <Compile Include="CRM\CRMDynamicDistributionHelper.cs" />
     <Compile Include="CRM\CRMGenericHelper.cs" />
-    <Compile Include="CRM\CRMPaymentDistibutionHelper.cs" />
     <Compile Include="CRM\CRMPOSHelper.cs" />
-    <Compile Include="CRM\CRMSalesHelper.cs" />
     <Compile Include="CRM\CRMStaticDistributionHelper.cs" />
     <Compile Include="Finance\FinanceDistributionHelper.cs" />
     <Compile Include="Finance\DynamicAccountHelper.cs" />
@@ -169,6 +167,7 @@
     <Compile Include="Inventory\InventoryBalanceHelper.cs" />
     <Compile Include="Inventory\InventoryConfigurationHelper.cs" />
     <Compile Include="Inventory\InventoryValidationHelper.cs" />
+    <Compile Include="Inventory\PropertyCountHelper.cs" />
     <Compile Include="Inventory\StaticDistributionHelper.cs" />
     <Compile Include="Inventory\DynamicDistributionHelper.cs" />
     <Compile Include="Inventory\DistributionHelper.cs" />

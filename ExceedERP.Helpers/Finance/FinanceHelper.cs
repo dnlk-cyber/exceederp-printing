@@ -1239,7 +1239,77 @@ namespace ExceedERP.Helpers.Finance
             }
 
         }
+        public bool Unpost(int journalId, string user)
+        {
+            ExceedDbContext db = new ExceedDbContext();
+            var journal = db.GLRecordJournals.Find(journalId);
+            if (journal != null)
+            {
+                try
+                {
+                    var journallines = db.GLRecordJournalDetails
+                        .Where(x => x.GlRecordJournalId == journalId).AsNoTracking().ToList();
 
+                    foreach (var journalline in journallines)
+                    {
+                        string sourceid = journalline.GlRecordJournalId + "-" + journalline.GlRecordJournalDetailId;
+                        #region check and remove if exisit in ledger
+
+                        var ledgerLine = db.GLLedgerPostingLines.FirstOrDefault(x => x.JournalNumber == sourceid);
+
+                        if (ledgerLine != null)
+                        {
+                            db.GLLedgerPostingLines.Attach(ledgerLine);
+                            db.GLLedgerPostingLines.Remove(ledgerLine);
+                        }
+                        #endregion
+
+                        #region check and remove if book
+
+                        var bookline = db.ReconcilationBookAccounts.FirstOrDefault(x => x.SourceID == sourceid);
+
+                        if (bookline != null)
+                        {
+                            db.ReconcilationBookAccounts.Attach(bookline);
+                            db.ReconcilationBookAccounts.Remove(bookline);
+                        }
+                        #endregion
+                    }
+
+                    #region update journal posting status
+
+                    journal.Posting = "UN_POSTED";
+                    journal.Status = "UN_POSTED";
+                    journal.isPosted = false;
+                    journal.IsOnlineApproved = false;
+                    journal.IsSendForApproval = false;
+                    db.Entry(journal).State = EntityState.Modified;
+                    db.SaveChanges();
+                    #endregion
+
+                    #region update ledger balances
+
+                    //update ledger
+                    foreach (var journalline in journallines)
+                    {
+                        UpdateBegEndBalances(journalline.AccountCode, journal.PeriodName, user);
+                    }
+
+                    #endregion
+
+                    return true;
+                }
+                catch (Exception ex)
+                {
+                    return false;
+                }
+
+
+            }
+
+            return false;
+
+        }
         public  void CreateBegEndInitial()
         {
 
@@ -3574,7 +3644,7 @@ namespace ExceedERP.Helpers.Finance
             #endregion
         }
 
-        public void TransferFiscalYearEnding(int sourcePeriod,int destPeriod, string user)
+        public void TransferFiscalYearEnding(int sourcePeriod, int destPeriod, string user)
         {
             ExceedDbContext db = new ExceedDbContext();
             DateTime timeStamp = DateTime.Now;
@@ -3586,9 +3656,9 @@ namespace ExceedERP.Helpers.Finance
 
             var postings = db.GLLedgerPostings
                 .Include(x => x.GLLedgerPostingLines)
-                .Where(x=>x.AccountType!=GlAccountTypes.Expense)
+                .Where(x => x.AccountType != GlAccountTypes.Expense)
                 .Where(x => x.AccountType != GlAccountTypes.Revenue)
-                //.Where(x => x.GLLedgerPostingID == 12555)//test
+                .Where(x => x.AccountCode == "1-100-110-21408-00000")//test
                 .OrderBy(x => x.GLLedgerPostingID)
                .Select(x => new
                {
@@ -3606,7 +3676,7 @@ namespace ExceedERP.Helpers.Finance
 
                 //var posting =ledger;
                 //var selectedLines = ledgerLines.Where(x => x.GLLedgerPosting.GLLedgerPostingID == posting.GLLedgerPostingID);
-                
+
                 #region beginning period
 
                 var endRecord = posting.GLLedgerPostingLines.Where(x => x.GLPeriodId == sourcePeriod)
@@ -3619,7 +3689,7 @@ namespace ExceedERP.Helpers.Finance
                 if (endRecord != null)
                 {
                     if (begRecord != null)
-                    {                        
+                    {
                         #region balance type
                         if (posting.AccountType == GlAccountTypes.Revenue ||
                                posting.AccountType == GlAccountTypes.Expense)
@@ -3652,7 +3722,6 @@ namespace ExceedERP.Helpers.Finance
                                 begRecord.Debit = 0;
                                 begRecord.Credit = endRecord.Balance;
                                 begRecord.Balance = endRecord.Balance;
-
 
                             }
                             else
@@ -3753,6 +3822,8 @@ namespace ExceedERP.Helpers.Finance
 
             decimal earningAmount = 0;
             decimal profittax = 0;
+            decimal earningAfterTaxAmount = 0;
+
             var profittaxRate = db.FinanceSettings.FirstOrDefault();
             var retainedAccount = db.GlRetainedEarningAccounts.Where(x => x.Type == EarningTypes.RetainedEarning).FirstOrDefault();
             var profitTaxAccount = db.GlRetainedEarningAccounts.Where(x => x.Type == EarningTypes.ProfitTax).FirstOrDefault();
@@ -3767,27 +3838,27 @@ namespace ExceedERP.Helpers.Finance
 
             earningAmount = revenue.Sum(x => x.Balance) - expense.Sum(x => x.Balance);
 
-           
+
             decimal rate = profittaxRate?.ProfitTaxCalculatedRate ?? 0;
             profittax = earningAmount * rate;
-
-            if(earningAmount!=0)
+            earningAfterTaxAmount = earningAmount - profittax;
+            if (earningAfterTaxAmount != 0)
             {
                 #region update earning
                 var retainedEarning = db.GLLedgerPostingLines
-                                        .Where(x=>x.GLLedgerPosting.AccountCode.ToUpper()== retainedAccount.AccountCode.ToUpper())
+                                        .Where(x => x.GLLedgerPosting.AccountCode.ToUpper() == retainedAccount.AccountCode.ToUpper())
                                         .Where(x => x.GLPeriodId == destPeriod)
                                         .Where(x => x.Type == LedgerPostTypes.Begining)
                                         .FirstOrDefault();
 
                 if (retainedEarning != null)
                 {
-                    if(earningAmount>0)
-                        retainedEarning.Credit = retainedEarning.Credit + earningAmount;
-                    if (earningAmount <0)
-                        retainedEarning.Debit = retainedEarning.Debit +Math.Abs(earningAmount);
+                    if (earningAfterTaxAmount > 0)
+                        retainedEarning.Credit = retainedEarning.Credit + earningAfterTaxAmount;
+                    if (earningAfterTaxAmount < 0)
+                        retainedEarning.Debit = retainedEarning.Debit + Math.Abs(earningAfterTaxAmount);
 
-                    retainedEarning.Balance = retainedEarning.Balance + earningAmount;
+                    retainedEarning.Balance = retainedEarning.Balance + earningAfterTaxAmount;
 
                     db.GLLedgerPostingLines.Attach(retainedEarning);
                     db.Entry(retainedEarning).State = EntityState.Modified;
@@ -3830,15 +3901,15 @@ namespace ExceedERP.Helpers.Finance
                             Type = LedgerPostTypes.Begining,
                             Debit = 0,
                             Credit = 0,
-                            Balance = earningAmount,
+                            Balance = earningAfterTaxAmount,
                             CreatedBy = "Transfer " + user,
                             DateCreated = timeStamp
                         };
 
-                        if (earningAmount > 0)
-                            newEarningLine.Credit = earningAmount;
-                        if (earningAmount < 0)
-                            retainedEarning.Debit = Math.Abs(earningAmount);
+                        if (earningAfterTaxAmount > 0)
+                            newEarningLine.Credit = earningAfterTaxAmount;
+                        if (earningAfterTaxAmount < 0)
+                            retainedEarning.Debit = Math.Abs(earningAfterTaxAmount);
 
                         db.GLLedgerPostingLines.Add(newEarningLine);
                         db.SaveChanges();
@@ -3864,15 +3935,15 @@ namespace ExceedERP.Helpers.Finance
                             Type = LedgerPostTypes.Begining,
                             Debit = 0,
                             Credit = 0,
-                            Balance = earningAmount,
+                            Balance = earningAfterTaxAmount,
                             CreatedBy = "Transfer " + user,
                             DateCreated = timeStamp
                         };
 
-                        if (earningAmount > 0)
-                            newEarningLine.Credit = earningAmount;
-                        if (earningAmount < 0)
-                            retainedEarning.Debit = Math.Abs(earningAmount);
+                        if (earningAfterTaxAmount > 0)
+                            newEarningLine.Credit = earningAfterTaxAmount;
+                        if (earningAfterTaxAmount < 0)
+                            retainedEarning.Debit = Math.Abs(earningAfterTaxAmount);
 
                         db.GLLedgerPostingLines.Add(newEarningLine);
                         db.SaveChanges();
@@ -3888,7 +3959,7 @@ namespace ExceedERP.Helpers.Finance
                 #region update profit tax
 
                 var profitTax = db.GLLedgerPostingLines
-                                       .Where(x => x.GLLedgerPosting.AccountCode.ToUpper() == retainedAccount.AccountCode.ToUpper())
+                                       .Where(x => x.GLLedgerPosting.AccountCode.ToUpper() == profitTaxAccount.AccountCode.ToUpper())
                                        .Where(x => x.GLPeriodId == destPeriod)
                                        .Where(x => x.Type == LedgerPostTypes.Begining)
                                        .FirstOrDefault();
@@ -3898,7 +3969,7 @@ namespace ExceedERP.Helpers.Finance
                     if (profittax > 0)
                         profitTax.Credit = profitTax.Credit + profittax;
                     if (profittax < 0)
-                        profitTax.Debit = profitTax.Debit + Math.Abs(earningAmount);
+                        profitTax.Debit = profitTax.Debit + Math.Abs(profittax);
 
                     profitTax.Balance = profitTax.Balance + profittax;
 
@@ -3949,9 +4020,9 @@ namespace ExceedERP.Helpers.Finance
                         };
 
                         if (profittax > 0)
-                            profitTax.Credit =  profittax;
+                            profitTax.Credit = profittax;
                         if (profittax < 0)
-                            profitTax.Debit = Math.Abs(earningAmount);
+                            profitTax.Debit = Math.Abs(profittax);
 
                         db.GLLedgerPostingLines.Add(newEarningLine);
                         db.SaveChanges();
@@ -3985,7 +4056,7 @@ namespace ExceedERP.Helpers.Finance
                         if (profittax > 0)
                             profitTax.Credit = profittax;
                         if (profittax < 0)
-                            profitTax.Debit = Math.Abs(earningAmount);
+                            profitTax.Debit = Math.Abs(profittax);
 
                         db.GLLedgerPostingLines.Add(newEarningLine);
                         db.SaveChanges();
@@ -3996,9 +4067,7 @@ namespace ExceedERP.Helpers.Finance
                 #endregion
             }
 
-            #endregion
-
-            
+            #endregion           
 
         }
 
