@@ -8,6 +8,7 @@ using ExceedERP.Core.Domain.Finance.GL;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.DataAccess.Migrations;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Helpers.Inventory;
 using ExceedERP.Web.Helpers;

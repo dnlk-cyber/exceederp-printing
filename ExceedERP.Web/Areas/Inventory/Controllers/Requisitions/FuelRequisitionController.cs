@@ -198,6 +198,12 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
         public ActionResult FuelRequisitions_Create([DataSourceRequest] DataSourceRequest request, StoreRequisition storeRequisition)
         {
             #region validation
+            // new
+            if (string.IsNullOrEmpty(storeRequisition.PlateNo))
+            {
+                ModelState.AddModelError("plateNo", "Plate number is required.");
+            }
+            //
             if (storeRequisition.IsTransfer && storeRequisition.ToStoreCode == null)
             {
                 ModelState.AddModelError("invalidEntry", "Please select the Requester Store for Transfer");
@@ -310,6 +316,12 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
         public ActionResult FuelRequisitions_Update([DataSourceRequest] DataSourceRequest request, StoreRequisition storeRequisition)
         {
             #region validation
+            // new
+            if (string.IsNullOrEmpty(storeRequisition.PlateNo))
+            {
+                ModelState.AddModelError("plateNo", "Plate number is required.");
+            }
+            //
             if (storeRequisition.IsTransfer && storeRequisition.ToStoreCode == null)
             {
                 ModelState.AddModelError("invalidEntry", "Please select the Requester Store for Transfer");

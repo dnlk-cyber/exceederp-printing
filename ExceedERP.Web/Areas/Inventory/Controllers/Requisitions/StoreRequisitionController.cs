@@ -104,9 +104,9 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
             if (System.Web.HttpContext.Current.User.IsInRole(InventoryConstants.UserDepartment)
             && System.Web.HttpContext.Current.User.IsInRole(InventoryConstants.PropertyRequistion))
             {
-                if (!storekeepers.Any())
+                if (!storekeepers.Any() && userworkunit.Any())
                 {
-                    storeRequisitions = storeRequisitions.Where(x => userworkunit.Contains(x.OrgStructureId) && userworkunit != null
+                    storeRequisitions = storeRequisitions.Where(x => userworkunit.Contains(x.OrgStructureId)
                                                                      || x.CreatedBy == User.Identity.Name).AsQueryable();
                 }
                 else
@@ -118,7 +118,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Requisitions
 
             else if (System.Web.HttpContext.Current.User.IsInRole(InventoryConstants.UserDepartment))
             {
-                if (!storekeepers.Any())
+                if (!storekeepers.Any() && userworkunit.Any())
                 {
                     storeRequisitions = storeRequisitions.Where(x => userworkunit.Contains(x.OrgStructureId) && userworkunit != null
                                                                      || x.CreatedBy == User.Identity.Name).AsQueryable();

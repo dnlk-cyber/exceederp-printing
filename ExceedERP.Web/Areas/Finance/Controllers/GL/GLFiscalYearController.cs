@@ -740,7 +740,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
                 {
                     var formattedData = new
                     {
-                        Message = "The fiscal year is in"+year.Status.ToString()+" state, it should be closed or permanently closed state to allow transfer.",
+                        Message = "The fiscal year is in "+year.Status.ToString()+" state, it should be closed or permanently closed to allow transfer.",
                         Status = "NOT_OK"
                     };
                     return Json(formattedData, JsonRequestBehavior.AllowGet);

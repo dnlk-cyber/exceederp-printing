@@ -22,6 +22,33 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
         [AuthorizeRoles(FinanceConstants.GeneralLedgerUser, FinanceConstants.GeneralLedgerApprover, FinanceConstants.GeneralLedgerView, FinanceConstants.GeneralLedgerAdmin)]
         public ActionResult Index()
         {
+            
+
+            List<string> list = new List<string>();
+
+            var categories = _db.GLRecordJournals
+                .Where(x => x.isPosted==true).OrderBy(x => x.CategoryName)
+                .Select(x => x.CategoryName).AsNoTracking().Distinct().ToList();
+
+            list.AddRange(categories);
+            
+            ViewData["CategoryList"] = list
+                   .Select(category => new
+                   {
+                       Category = category
+                   });
+
+
+            //var users = _db.GLRecordJournals
+            //                .Where(x => x.IsOnlineApproved && !x.isVoid && !x.isPosted).AsNoTracking().OrderBy(x => x.CreatedBy).Select(x => x.CreatedBy).Distinct().ToList();
+
+            //ViewData["UserList"] = users
+            //        .Select(user => new
+            //        {
+            //            User = user
+            //        })
+            //    ;
+
             return View();
         }
 

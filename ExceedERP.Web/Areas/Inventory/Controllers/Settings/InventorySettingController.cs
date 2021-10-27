@@ -214,6 +214,13 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Settings
                               .Select(v => v.ToString())
                               .ToList();
                     break;
+                case "REPLACE_COSTCENTER_ON_ISSUE_DEBIT":
+                    attributes =
+                          Enum.GetValues(typeof(BooleanTypeAttributes))
+                              .Cast<BooleanTypeAttributes>()
+                              .Select(v => v.ToString())
+                              .ToList();
+                    break;
 
             }
 

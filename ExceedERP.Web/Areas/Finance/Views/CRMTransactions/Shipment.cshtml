@@ -1,0 +1,1021 @@
+﻿@using ExceedERP.Core.Domain.CRM;
+@using System.Collections;
+<legend>Shipments</legend>  
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.SalesShipment>()
+        .Name("grid")
+        .Columns(columns =>
+        {
+            columns.Bound(c => c.SalesShipmentId).Title("#").Width(90);
+            columns.Bound(c => c.Source);
+            columns.Group(g => g.Title("References").HeaderHtmlAttributes(new { style = "text-align: center; font-weight: bold;" })
+                .Columns(innerCols =>
+                {
+                    innerCols.Bound(c => c.CashSalesInvoiceID);
+                    innerCols.Bound(c => c.FsInvoiceNumber);
+                    innerCols.Bound(c => c.SalesOrderVoucherID);
+                    //innerCols.ForeignKey(c => c.CashSalesInvoiceID, (System.Collections.IEnumerable)ViewData["SalesInvoices"], "CashSalesInvoiceID", "InvoiceNumberDisplay").EditorTemplateName("SalesInvoiceSelector");
+                    //innerCols.ForeignKey(c => c.SalesOrderVoucherID , (System.Collections.IEnumerable)ViewData["SalesOrderVouchers"], "SalesOrderVoucherID", "SalesOrderVoucherID");
+                })
+            );
+            columns.ForeignKey(c => c.OrganizationCustomerId, (System.Collections.IEnumerable)ViewData["OrganizationCustomers"], "OrganizationCustomerID", "TradeName").Title("Customer").EditorTemplateName("CashOrgCustomerEditor");
+            columns.ForeignKey(c => c.BranchId, (System.Collections.IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("BranchSelector");
+            columns.ForeignKey(c => c.StoreID, (System.Collections.IEnumerable)ViewData["SalesStore"], "SalesStoreId", "Description").Width(100);
+            columns.ForeignKey(c => c.CRMPeriodId, (System.Collections.IEnumerable)ViewData["CRMPeriods"], "CRMPeriodId", "Name").EditorTemplateName("OpenCRMPeriodsSelector");
+            //columns.ForeignKey(c => c.CashSalesInvoiceID, (System.Collections.IEnumerable)ViewData["SalesInvoices"], "CashSalesInvoiceID", "InvoiceNumberDisplay").EditorTemplateName("SalesInvoiceSelector");
+            columns.Bound(c => c.ShipmentDate);
+            columns.Bound(c => c.MethodOfShipment);
+            columns.Bound(c => c.PlateNo);
+
+            //columns.Bound(c => c.DateCreated).Format("{0:yyyy-MM-dd}");
+            columns.Bound(c => c.CreatedBy);
+            columns.Bound(c => c.Status);
+            columns.Bound(c => c.Remark);
+            
+        })
+        .ToolBar(toolbar =>
+                  {
+                      toolbar.Template(@<text>
+                        <div class="toolbar">
+                            <table>
+                                <tr>
+                                    <td>
+                                        <i>Periods:</i>
+                                        @(Html.Kendo().DropDownListFor(m => m)
+                                                      .Name("PeriodList")
+                                                      .Filter(FilterType.Contains)
+                                                      .BindTo((IEnumerable)ViewData["CRMPeriods"])
+                                                      .DataTextField("Name")
+                                                      .DataValueField("CRMPeriodId")
+                                                      .HtmlAttributes(new { style = "width: 300px;" })
+                                                      .ValuePrimitive(true))
+                                    </td>
+                                    <td></td>
+                                    <td>
+
+                                        @(Html.Kendo().Button()
+                                                      .Name("btnPost")
+                                                      .HtmlAttributes(new { type = "search", @class = "k-primary" })
+                                                      .Events(e => e.Click("BatchTransfer"))
+                                                      .Content("Batch Transfer"))
+                                    </td>
+                                </tr>
+                            </table>
+
+                        </div>
+                    </text>);
+                    })
+        .Events(ev =>
+        {
+            ev.DataBound("mainGridDataBound");
+            //ev.Edit("onShipmentEdit");
+        })
+        //.Editable(editable =>
+        //{
+        //    editable.Mode(GridEditMode.PopUp);
+        //    editable.TemplateName("ShipmentEditor");
+        //    editable.Window(w =>
+        //    {
+        //        w.Title("Shipment");
+        //        w.Scrollable(false);
+        //    });
+        //})
+        .HtmlAttributes(new { style = "height: 700px;" })
+        .Pageable(pageable => pageable
+                        .Input(true)
+                        .Numeric(false)
+                        .Refresh(true)
+                        .PageSizes(true)
+                        .ButtonCount(5))
+
+            .Scrollable()
+            .Sortable()
+            .Filterable()
+            .Scrollable(h => h.Height(500))
+        // .ClientDetailTemplateId("template")
+        .DataSource(dataSource => dataSource
+        .Ajax()
+        .Sort(s =>
+        {
+            s.Add(f => f.SalesShipmentId).Descending();
+        })
+        .Model(model =>
+        {
+            model.Id(p => p.SalesShipmentId);
+            model.Field(v => v.DateCreated).Editable(false);
+            model.Field(f => f.CreatedBy).Editable(false);
+            model.Field(v => v.Status).Editable(false);
+        })
+        .Events(ev => ev
+            .Error("error_handler(\"grid\")")
+            .RequestStart("onRequestStart(\"grid\")")
+            .RequestEnd("onRequestEnd(\"grid\")"))
+
+        .Read(read => read.Action("Shipments_Read", "CRMTransactions"))
+        //.Create(create => create.Action("Shipment_Create", "SalesShipment", new { voucherDefinitionID = "2" }))
+        //.Update(update => update.Action("Shipment_Update", "SalesShipment"))
+        //.Destroy(destroy => destroy.Action("Shipment_Destroy", "SalesShipment"))
+        ).ClientDetailTemplateId("template")
+)
+
+
+
+<script id="template" type="text/kendo-tmpl">
+    #if(Source==0){#
+    @(Html.Kendo().TabStrip()
+        .Name("tabstrip_#=SalesShipmentId#")
+        .SelectedIndex(0)
+        .Items(items =>
+        {
+        items.Add().Text("Detail").Content(@<text>
+            <a href='@Url.Action("Shipment", "Print", new { area="CRM"})/#=SalesShipmentId#' title="Print Shipment"><i class="fa fa-print  fa-2x"></i></a>
+           
+            @(Html.Kendo().PanelBar()
+                .Name("panelbar_#=SalesShipmentId#")
+                .ExpandMode(PanelBarExpandMode.Multiple)
+                //.HtmlAttributes(new { st})
+                .Items(panelbar =>
+                {
+                        panelbar.Add()
+                            .Expanded(true)
+                            .Text("Shipment Detail")
+                            .Content(
+                                "<div>" +
+                                "<ul>" +
+                                "<li> <label> Created by: </label> <strong> #=CreatedBy != null ? CreatedBy: ' '# </strong> </li>" +
+                                "<li> <label> Created on: </label> #= kendo.toString(DateCreated, 'dd/MM/yyyy H:mm:ss')# </li>" +
+                                "<li> <label> Modified by :</label> #= ModifiedBy != null ? ModifiedBy: ''# </li>" +
+                                "<li> <label> Last Modified :</label> #= LastModified != null ? kendo.toString(LastModified, 'dd/MM/yyyy H:mm:ss') : ' '# </li>" +
+                                "<li> <label> Remark: </label> <strong> #=Remark != null ? Remark : ' '# </strong> </li>" +
+                                "</ul>" +
+                                "</div>"
+                            );
+                    }).ToClientTemplate()
+            )
+        </text>);
+        items.Add().Text("Shipment Line Items ").Content(
+        @<text>
+            #if(IsOnlineApproved){#
+                @ShipmentLineItemHelper()
+            #} else if(!IsOnlineApproved){#
+                @ShipmentLineItemHelper()
+            #}#
+        </text>);
+        items.Add().Text("Invoice Line Items ").Content(
+                @<text>
+                    @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.LineItem>()
+                        .Name("invoice_line_items_#=SalesShipmentId#")
+                        .Columns(columns =>
+                        {
+                            columns.ForeignKey(c => c.StoreID, (System.Collections.IEnumerable)ViewData["SalesStore"], "SalesStoreId", "Description").Title("Store").Width(150);
+                            columns.ForeignKey(c => c.ThingID, (System.Collections.IEnumerable)ViewData["Thing"], "ProductID", "Name").Title("Product").Title("Product").Width(100);
+
+                            columns.Bound(c => c.Variety).Width(80);
+                            columns.Bound(c => c.Class).Width(50);
+
+                            columns.Bound(c => c.UnitAmount).Title("Price").Format("{0:N4}").Width(80);
+                            columns.Bound(c => c.Quantity).Title("QTY").Format("{0:N4}").Width(80);
+                            columns.Bound(c => c.CalculatedCost).Title("Sub Total").Format("{0:N4}").Width(80);
+                            columns.Bound(c => c.TaxAmount).Format("{0:N4}").Width(80);
+                            columns.Bound(c => c.TotalAmount).Title("Total").Format("{0:N4}").Width(80);
+                            columns.ForeignKey(c => c.Tax, (System.Collections.IEnumerable)ViewData["Tax"], "GLTaxRateID", "TaxName").Title("Tax Type").Width(80);
+                            columns.Bound(c => c.WithholdingType).Width(100);
+                            columns.Bound(c => c.WithholdingAmount).Width(100);
+                            columns.Bound(c => c.WithholdTax).ClientTemplate("<input type='checkbox'  disabled='true' \\#= WithholdTax? checked='checked': checked='' \\# class='checkbox'  />").Width(80);
+                            columns.Bound(c => c.Vat).Format("{0:N4}").Width(60);
+                            columns.Bound(c => c.Status).Width(80);
+                        })
+
+                        .Scrollable()
+                        .Pageable(pageable => pageable
+                            .Input(true)
+                            .Numeric(false)
+                            .Refresh(true)
+                            .PageSizes(true)
+                            .ButtonCount(5))
+                        .DataSource(dataSource => dataSource
+                        .Ajax()
+                                .Model(model =>
+                                {
+                                    model.Id(p => p.LineItemID);
+                                    model.Field(v => v.TotalAmount).Editable(false);
+                                    model.Field(v => v.TaxAmount).Editable(false);
+                                    model.Field(v => v.CalculatedCost).Editable(false);
+                                    model.Field(v => v.Status).Editable(false);
+                                }
+                                )
+
+                                .Events(ev => ev
+                                    .Error("error_handler(\"invoice_line_items_#=SalesShipmentId#\")")
+                                    .RequestStart("onRequestStart(\"invoice_line_items_#=SalesShipmentId#\")")
+                                    .RequestEnd("onRequestEnd(\"invoice_line_items_#=SalesShipmentId#\")"))
+                        .Read(read => read.Action("LineItemInventory_Read", "LineItem", new {area="CRM", voucherID = "#=CashSalesInvoiceID#", voucherDefinitionID = "2" }))
+                        
+                        ).ToClientTemplate()
+
+                    )
+                </text>);
+                items.Add().Text("Cost Distribution").Content(
+                @<text>
+                    #if(!IsOnlineTransferred)
+                    {#
+                            <a onclick='return regenerateDistribution("#=SalesShipmentId#")' href='\#' title='Regenerate Distribution'><i class='fa  fa-refresh fa-2x' style='color:red'></i></a>
+                    #}#
+                    # if (IsOnlineApproved && !IsOnlineTransferred )
+                    {#
+                        <a onclick='return transferToGl("#=SalesShipmentId#")' href=' \#' title="Transfer to GL"><i class="fa fa-paper-plane fa-2x"></i></a>
+                    # } #
+                    #if(IsOnlineTransferred){#
+                        @CostDistributionContent()
+                    #} else if(!IsOnlineTransferred){#
+                        @CostDistributionContentWithCrud()
+                    #}#
+                </text>);
+
+                items.Add().Text("Revenue Distribution").Content(
+                @<text>
+                     #if(!IsOnlineTransferred)
+                    {#
+                            <a onclick='return regenerateDistribution("#=SalesShipmentId#")' href='\#' title='Regenerate Distribution'><i class='fa  fa-refresh fa-2x' style='color:red'></i></a>
+                    #}#
+                    # if (IsOnlineApproved && !IsOnlineTransferred )
+                    {#
+                        <a onclick='return transferToGl("#=SalesShipmentId#")' href=' \#' title="Transfer to GL"><i class="fa fa-paper-plane fa-2x"></i></a>
+                    # } #
+                    #if(IsOnlineTransferred){#
+                        @RevenueDistributionContent()
+                    #} else if(!IsOnlineTransferred){#
+                        @RevenueDistributionContentWithCrud()
+                    #}#
+                </text>);
+        items.Add().Text("Validation").Content(
+            @<text>
+                 #if(IsOnlineApproved){#
+                    @ValidationHelper()
+                #} else if (!IsOnlineApproved){#
+                    @ValidationHelperCrud()
+                #}#
+            </text>);
+
+            }).ToClientTemplate()
+            )
+    #}else if(Source==1){#
+    @(Html.Kendo().TabStrip()
+        .Name("tabstrip_#=SalesShipmentId#")
+        .SelectedIndex(0)
+        .Items(items =>
+        {
+        items.Add().Text("Detail").Content(
+            @<text>
+                <a href='@Url.Action("Shipment", "Print", new { area = "CRM"})/#=SalesShipmentId#' title="Print Shipment"><i class="fa fa-print  fa-2x"></i></a>
+                @(Html.Kendo().PanelBar()
+                    .Name("panelbar_#=SalesShipmentId#")
+                    .ExpandMode(PanelBarExpandMode.Multiple)
+                    //.HtmlAttributes(new { st})
+                    .Items(panelbar =>
+                    {
+                            panelbar.Add()
+                                .Expanded(true)
+                                .Text("Shipment Detail")
+                                .Content(
+                                    "<div>" +
+                                    "<ul>" +
+                                    "<li> <label> Created by: </label> <strong> #=CreatedBy != null ? CreatedBy: ' '# </strong> </li>" +
+                                    "<li> <label> Created on: </label> #= kendo.toString(DateCreated, 'dd/MM/yyyy H:mm:ss')# </li>" +
+                                    "<li> <label> Modified by :</label> #= ModifiedBy != null ? ModifiedBy: ''# </li>" +
+                                    "<li> <label> Last Modified :</label> #= LastModified != null ? kendo.toString(LastModified, 'dd/MM/yyyy H:mm:ss') : ' '# </li>" +
+                                    "<li> <label> Remark: </label> <strong> #=Remark != null ? Remark : ' '# </strong> </li>" +
+                                    "</ul>" +
+                                    "</div>"
+                                );
+                        }).ToClientTemplate()
+                )
+            </text>);
+
+        items.Add().Text("Shipment Line Items ").Content(
+            @<text>
+                 #if(IsOnlineApproved){#
+                @ShipmentLineItemHelper()
+            #} else if(!IsOnlineApproved){#
+                @ShipmentLineItemHelper()
+            #}#
+            </text>
+        );
+        items.Add().Text("Sales Order Voucher Line Items").Content(
+            @<text>
+            @(Html.Kendo().Grid<ExceedERP.Web.Areas.CRM.Models.LineItemViewModel>()
+                .Name("so_lineItems_#=SalesShipmentId#")
+                .Columns(columns =>
+                {
+                    columns.ForeignKey(c => c.StoreID, (System.Collections.IEnumerable)ViewData["SalesStore"], "SalesStoreId", "Description").Title("Store").Width(150);
+
+                    columns.ForeignKey(c => c.ThingID, (System.Collections.IEnumerable)ViewData["Thing"], "ProductID", "Name").Title("Product").Title("Product").Width(100);
+                    columns.Bound(c => c.Variety).Width(80);
+                    columns.Bound(c => c.Class).Width(50);
+
+                    columns.Bound(c => c.UnitAmount).Title("Price").Format("{0:N4}").Width(80);
+                    columns.Bound(c => c.Quantity).Title("QTY").Format("{0:N4}").Width(80);
+                    columns.Bound(c => c.CalculatedCost).Title("Sub Total").Format("{0:N4}").Width(80);
+                    columns.Bound(c => c.TaxAmount).Format("{0:N4}").Width(80);
+                    columns.Bound(c => c.TotalAmount).Title("Total").Format("{0:N4}").Width(80);
+                    columns.ForeignKey(c => c.Tax, (System.Collections.IEnumerable)ViewData["Tax"], "GLTaxRateID", "TaxName").Title("Tax Type").Width(80);
+                    columns.Bound(c => c.Vat).Format("{0:N4}").Width(60);
+                })
+
+            .Pageable(pageable => pageable
+                            .Input(true)
+                            .Numeric(false)
+                            .Refresh(true)
+                            .PageSizes(true)
+                            .ButtonCount(5))
+
+                .Scrollable()
+                .Sortable()
+                .Filterable()
+                .DataSource(dataSource => dataSource
+                .Ajax()
+                .ServerOperation(false)
+                .Model(model =>
+                {
+                    model.Id(p => p.LineItemID);
+                    model.Field(v => v.TotalAmount).Editable(false);
+                    model.Field(v => v.TaxAmount).Editable(false);
+                    model.Field(v => v.CalculatedCost).Editable(false);
+                })
+                        .Events(ev => ev
+
+                        .Error("error_handler(\"so_lineItems_#=SalesShipmentId#\")")
+                        .RequestStart("onRequestStart(\"so_lineItems_#=SalesShipmentId#\")")
+                        .RequestEnd("onRequestEnd(\"so_lineItems_#=SalesShipmentId#\")"))
+
+                .Read(read => read.Action("LineItems_Read", "LineItem", new { area = "CRM", voucherID = "#=SalesOrderVoucherID#", voucherDefinitionID = "1" }))
+                ).ToClientTemplate()
+                )
+        </text>);
+        items.Add().Text("Cost Distribution").Content(
+            @<text>
+                 #if(!IsOnlineTransferred)
+                    {#
+                            <a onclick='return regenerateDistribution("#=SalesShipmentId#")' href='\#' title='Regenerate Distribution'><i class='fa  fa-refresh fa-2x' style='color:red'></i></a>
+                    #}#
+                # if (IsOnlineApproved && !IsOnlineTransferred )
+                {#
+                    <a onclick='return transferToGl("#=SalesShipmentId#")' href=' \#' title="Transfer to GL"><i class="fa fa-paper-plane fa-2x"></i></a>
+                # } #
+                #if(IsOnlineTransferred){#
+                    @CostDistributionContent()
+                #} else if(!IsOnlineTransferred){#
+                    @CostDistributionContentWithCrud()
+                #}#
+            </text>);
+            items.Add().Text("Revenue Distribution").Content(
+            @<text>
+                 #if(!IsOnlineTransferred)
+                    {#
+                            <a onclick='return regenerateDistribution("#=SalesShipmentId#")' href='\#' title='Regenerate Distribution'><i class='fa  fa-refresh fa-2x' style='color:red'></i></a>
+                    #}#
+                # if (IsOnlineApproved && !IsOnlineTransferred )
+                {#
+                    <a onclick='return transferToGl("#=SalesShipmentId#")' href=' \#' title="Transfer to GL"><i class="fa fa-paper-plane fa-2x"></i></a>
+                # } #
+                #if(IsOnlineTransferred){#
+                    @RevenueDistributionContent()
+                #} else if(!IsOnlineTransferred){#
+                    @RevenueDistributionContentWithCrud()
+                #}#
+            </text>);
+
+            items.Add().Text("Validation").Content(
+            @<text>
+                #if(IsOnlineApproved){#
+                    @ValidationHelper()
+                #} else if (!IsOnlineApproved){#
+                    @ValidationHelperCrud()
+                #}#
+            </text>
+            );
+
+            }).ToClientTemplate()
+
+    )
+    #}#
+</script>
+
+<script type="text/javascript">    
+    function mainGridDataBound(e) {
+        var grid = this;
+        var gridRows = grid.tbody.find("tr");
+
+        for (var i = 0; i < gridRows.length; i++) {
+            var row = $(gridRows[i]);
+            var dataItem = grid.dataItem(row);
+            //perform your custom check
+            if (dataItem.IsOnlineApproved === true) {
+                //hide buttons using jQuery
+                row.find(".k-grid-edit").hide();
+                row.find(".k-grid-delete").hide();
+                //row.find(".k-grid-customAction").text('ይከፈት');
+                row.addClass("k-state-Approved");
+            } else if (dataItem.IsSendForApproval) {
+                row.find(".k-grid-edit").hide();
+                row.find(".k-grid-delete").hide();
+            }
+            else if (dataItem.Status == "Rejected") {
+                row.addClass("k-state-Rejected");
+            }
+            else {
+
+                row.find(".k-grid-edit").show();
+                row.find(".k-grid-delete").show();
+            }
+           
+        }
+    }
+
+   
+   
+   
+     function voidRecord(id) {
+        var recordStatus = "";
+        var conf = confirm("Are you sure you want to void this record number: " + id + " ?");
+        if (conf === true) {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("Void", "SalesShipment", new {area = "CRM"})',
+                data: { id: id },
+                success: function (result) {
+                    alert(result.Message);
+                    recordStatus = result.Status;
+                    location.reload(true);
+                },
+                error: function (result) {
+                    alert(result);
+                }
+            });
+        }
+    }
+     function regenerateDistribution(id) {
+        $.ajax({
+                type: "POST",
+                url: '@Url.Action("RegenerateDistribution", "SalesShipment", new { area = "CRM" })',
+                data: {
+                    id: id,
+                },
+                success: function (result) {
+                    alert(result.Message);
+                    if (result.Status == "OK") {
+                        location.reload(true);
+                    }
+                }, 
+                error: function (result) {
+                    alert(result);
+                }
+            });
+    }
+    function BatchTransfer() {
+        var periodObject = $("#PeriodList").data("kendoDropDownList");
+        var periodid = periodObject.value();
+       
+        if (periodid != null) {
+
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("BatchtransferShipment", "CRMTransactions", new {area = "Finance"})',
+                data: { crmPeriodId: periodid },
+                success: function (result) {
+                    // toastr.warnning(result.Message);
+                    alert(result.Message);
+                    location.reload(true);
+                }, //end succ
+                beforeSend: function(){
+                    // Show image container
+                    $("#loading-image").show();
+                },
+                complete:function(data){
+                    // Hide image container
+                    $("#loading-image").hide();
+                },
+                error: function (result) {
+                    alert(result);
+                }
+            });
+
+
+            $("#grid").data("kendoGrid").dataSource.read();
+        } else {
+            alert("Please select period.");
+        }
+        
+    }
+
+      function transferToGl(id) {
+        var desc = prompt("Please enter transaction description:");
+        if (desc != null) {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("TransferDistribution", "SalesShipment", new { area = "CRM" })',
+                data: {
+                    id: id,
+                    description: desc
+                },
+                success: function (result) {
+                    alert(result.Message);
+                    location.reload(true);
+                }, //end succ
+                error: function (result) {
+                    alert(result);
+                }
+            });
+        }
+    }
+   
+  
+    
+</script>
+
+<style>
+    .k-grid table tr.k-state-Approved {
+        background: #b7ff9e;
+        color: #040000;
+    }
+
+
+    .k-grid table tr.k-state-Rejected {
+        background: #fcabab;
+        color: #040000;
+    }
+    div.k-edit-form-container {
+        width: 400px;
+    }
+
+</style>
+
+@* =========== helpers ===============*@ 
+<script>
+    @helper ShipmentLineItemHelper() {
+        @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.SalesShipmentLineItem>()
+                .Name("shipment_line_items_#=SalesShipmentId#")
+                .Columns(columns =>
+                {
+                    columns.ForeignKey(c => c.SalesStoreId, (System.Collections.IEnumerable)ViewData["SalesStore"], "SalesStoreId", "Description").Width(150);
+                    columns.ForeignKey(c => c.ProductId, (System.Collections.IEnumerable)ViewData["Thing"], "ProductId", "Name").Width(100);
+                    columns.Bound(c => c.Variety).Width(80);
+                    columns.Bound(c => c.Class).Width(80);
+                    columns.Bound(c => c.Price).Format("{0:N4}").Width(80);
+                    columns.Bound(c => c.TotalQuantity).Format("{0:N4}").Width(80);
+                    //columns.Bound(c => c.SubTotal).Title("Sub Total").Format("{0:N0}").Width(80);
+                    //columns.Bound(c => c.TaxAmount).Format("{0:N4}").Width(80);
+                    //columns.Bound(c => c.TotalAmount).Format("{0:N4}").Width(80);
+                    columns.Bound(c => c.ShipedQuantityTilPreShipment).Width(100).Format("{0:N4}");
+                    columns.Bound(c => c.ShipedQuantity).Width(100).Format("{0:N4}");
+                    columns.Bound(c => c.RemainingQuantity).Width(100).Format("{0:N4}");
+                    columns.Bound(c => c.Remark).Width(80);
+                })
+
+                .Scrollable()
+                .Pageable(pageable => pageable
+                    .Input(true)
+                    .Numeric(false)
+                    .Refresh(true)
+                    .PageSizes(true)
+                    .ButtonCount(5))
+                .DataSource(dataSource => dataSource
+                .Ajax()
+                        .Model(model =>
+                        {
+                            model.Id(p => p.SalesShipmentLineItemId);
+                            model.Field(v => v.TotalAmount).Editable(false);
+                            model.Field(v => v.TaxAmount).Editable(false);
+                            model.Field(v => v.SalesStoreId).Editable(false);
+                            model.Field(v => v.ProductId).Editable(false);
+                            model.Field(v => v.Price).Editable(false);
+                            model.Field(v => v.TotalQuantity).Editable(false);
+                            model.Field(v => v.SubTotal).Editable(false);
+                            model.Field(v => v.RemainingQuantity).Editable(false);
+                            model.Field(v => v.ShipedQuantityTilPreShipment).Editable(false);
+                            model.Field(v => v.Variety).Editable(false);
+                            model.Field(v => v.Class).Editable(false);
+
+                        }
+                        )
+
+                .Read(read => read.Action("Shipments_Read", "SalesShipmentLineItem", new { area = "CRM", id = "#=SalesShipmentId#" }))
+
+                ).ToClientTemplate()
+
+            )
+    }
+
+    @helper ShipmentLineItemHelperWithCrud() {
+        @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.SalesShipmentLineItem>()
+                .Name("shipment_line_items_#=SalesShipmentId#")
+                .Columns(columns =>
+                {
+                    columns.ForeignKey(c => c.SalesStoreId, (System.Collections.IEnumerable)ViewData["SalesStore"], "SalesStoreId", "Description").Width(150);
+                    columns.ForeignKey(c => c.ProductId, (System.Collections.IEnumerable)ViewData["Thing"], "ProductId", "Name").Width(100);
+
+
+                    columns.Bound(c => c.Variety).Width(80);
+                    columns.Bound(c => c.Class).Width(80);
+                    columns.Bound(c => c.Price).Format("{0:N4}").Width(80);
+                    columns.Bound(c => c.TotalQuantity).Format("{0:N4}").Width(80);
+                    //columns.Bound(c => c.SubTotal).Title("Sub Total").Format("{0:N0}").Width(80);
+                    //columns.Bound(c => c.TaxAmount).Format("{0:N4}").Width(80);
+                    //columns.Bound(c => c.TotalAmount).Format("{0:N4}").Width(80);
+                    columns.Bound(c => c.ShipedQuantityTilPreShipment).Width(100).Format("{0:N4}");
+                    columns.Bound(c => c.ShipedQuantity).Width(100).Format("{0:N4}");
+                    columns.Bound(c => c.RemainingQuantity).Width(100).Format("{0:N4}");
+                    columns.Bound(c => c.Remark).Width(80);
+
+                    columns.Command(command =>
+                    {
+                        command.Edit();
+                    }).Width(100);
+                })
+
+                .Scrollable()
+                .Pageable(pageable => pageable
+                    .Input(true)
+                    .Numeric(false)
+                    .Refresh(true)
+                    .PageSizes(true)
+                    .ButtonCount(5))
+                .DataSource(dataSource => dataSource
+                .Ajax()
+                        .Model(model =>
+                        {
+                            model.Id(p => p.SalesShipmentLineItemId);
+                            model.Field(v => v.TotalAmount).Editable(false);
+                            model.Field(v => v.TaxAmount).Editable(false);
+                            model.Field(v => v.SalesStoreId).Editable(false);
+                            model.Field(v => v.ProductId).Editable(false);
+                            model.Field(v => v.Price).Editable(false);
+                            model.Field(v => v.TotalQuantity).Editable(false);
+                            model.Field(v => v.SubTotal).Editable(false);
+                            model.Field(v => v.RemainingQuantity).Editable(false);
+                            model.Field(v => v.ShipedQuantityTilPreShipment).Editable(false);
+                            model.Field(v => v.Variety).Editable(false);
+                            model.Field(v => v.Class).Editable(false);
+
+                        }
+                        )
+
+                        .Events(ev => ev
+                            .Error("error_handler(\"shipment_line_items_#=SalesShipmentId#\")")
+                            .RequestStart("onRequestStart(\"shipment_line_items_#=SalesShipmentId#\")")
+                            .RequestEnd("onRequestEnd(\"shipment_line_items_#=SalesShipmentId#\")"))
+                .Read(read => read.Action("Shipments_Read", "SalesShipmentLineItem", new { area = "CRM", id = "#=SalesShipmentId#" }))
+                .Create(create => create.Action("Shipment_Create", "SalesShipmentLineItem", new { id = "#=SalesShipmentId#" }))
+                .Update(update => update.Action("Shipment_Update", "SalesShipmentLineItem"))
+                .Destroy(destroy => destroy.Action("Shipment_Destroy", "SalesShipmentLineItem"))
+                ).ToClientTemplate()
+
+            )
+    }
+</script>
+<script>
+    @helper ValidationHelperCrud()
+    {
+        @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.SalesShipmentValidation>()
+                    .Name("validation_#=SalesShipmentId#")
+                    .Columns(columns =>
+                    {
+
+                        columns.Bound(c => c.Status).EditorTemplateName("ApprovalStatusSelector");
+                        columns.Bound(c => c.Remark);
+
+                        columns.Command(command =>
+                        {
+                            command.Edit();
+                            command.Destroy();
+                        }).Width(200);
+                    })
+
+                    .ToolBar(toolbar =>
+                    {
+                        toolbar.Create();
+                    })
+                    .Editable(editable => editable.Mode(GridEditMode.InLine))
+                    .Selectable(selectable =>
+                    {
+                        selectable.Mode(GridSelectionMode.Single);
+                        selectable.Type(GridSelectionType.Row);
+                    })
+                    .Scrollable()
+                    .Pageable(pageable => pageable
+                        .Input(true)
+                        .Numeric(false)
+                        .Refresh(true)
+                        .PageSizes(true)
+                        .ButtonCount(5))
+                    //.Groupable()
+                    .Sortable(sortable =>
+                    {
+                        sortable.SortMode(GridSortMode.SingleColumn);
+                    })
+                    //.Filterable()
+                    .Pageable(pageable => pageable
+                        .Input(true)
+                        .Numeric(false)
+                        .Refresh(true)
+                        .PageSizes(true)
+                        .ButtonCount(5))
+                    .DataSource(dataSource => dataSource
+                        .Ajax()
+
+                        .Events(events =>
+                        {
+                            events.Error("error_handler(\"validation_#=SalesShipmentId#\")");
+                            events.RequestStart("onRequestStart(\"validation_#=SalesShipmentId#\")");
+                            events.RequestEnd("onRequestEnd(\"validation_#=SalesShipmentId#\")");
+                        })
+                        .Model(model =>
+                        {
+                            model.Id(f => f.SalesShipmentValidationId);
+
+                        })
+
+                        .Read(read => read.Action("Validations_Read", "SalesShipmentValidation", new { area = "CRM", id = "#=SalesShipmentId#" }))
+                        .Create(create => create.Action("Validation_Create", "SalesShipmentValidation", new { id = "#=SalesShipmentId#" }))
+                        .Update(update => update.Action("Validation_Update", "SalesShipmentValidation"))
+                        .Destroy(destroy => destroy.Action("Validation_Destroy", "SalesShipmentValidation"))
+                    )
+                    .ToClientTemplate()
+                )
+    }
+
+    @helper ValidationHelper() { 
+        @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.SalesShipmentValidation>()
+                    .Name("validation_#=SalesShipmentId#")
+                    .Columns(columns =>
+                    {
+                        columns.Bound(c => c.Status).EditorTemplateName("ApprovalStatusSelector");
+                        columns.Bound(c => c.Remark);
+                    })
+                    .Selectable(selectable =>
+                    {
+                        selectable.Mode(GridSelectionMode.Single);
+                        selectable.Type(GridSelectionType.Row);
+                    })
+                    .Scrollable()
+                    .Pageable(pageable => pageable
+                        .Input(true)
+                        .Numeric(false)
+                        .Refresh(true)
+                        .PageSizes(true)
+                        .ButtonCount(5))
+                    //.Groupable()
+                    .Sortable(sortable =>
+                    {
+                        sortable.SortMode(GridSortMode.SingleColumn);
+                    })
+                    .Pageable(pageable => pageable
+                        .Input(true)
+                        .Numeric(false)
+                        .Refresh(true)
+                        .PageSizes(true)
+                        .ButtonCount(5))
+                    .DataSource(dataSource => dataSource
+                        .Ajax()
+
+                        .Events(events =>
+                        {
+                            events.Error("error_handler(\"validation_#=SalesShipmentId#\")");
+                            events.RequestStart("onRequestStart(\"validation_#=SalesShipmentId#\")");
+                            events.RequestEnd("onRequestEnd(\"validation_#=SalesShipmentId#\")");
+                        })
+                        .Model(model =>
+                        {
+                            model.Id(f => f.SalesShipmentValidationId);
+
+                        })
+
+                        .Read(read => read.Action("Validations_Read", "SalesShipmentValidation", new { area = "CRM", id = "#=SalesShipmentId#" }))
+
+                    )
+                    .ToClientTemplate()
+                )
+    }
+</script>
+<script>
+    @helper CostDistributionContent()
+    {
+        @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.CostDistributionViewModel>()
+                                    .Name("cost_Distribution_#=SalesShipmentId#")
+                                    .Columns(columns =>
+                                    {
+                                        columns.Bound(c => c.AccountCode);
+                                        columns.Bound(c => c.AccountDesc);
+                                        columns.Bound(c => c.Debit)
+                                            .ClientTemplate(
+                                                "\\# if (Debit === 0) { \\#" +
+                                                "0" +
+                                                "\\# } else {\\#" +
+                                                "\\#: kendo.toString( Debit, 'N4') \\#" +
+                                                "\\# } \\#"
+                                            )
+                                            .ClientFooterTemplate("Total: \\#=kendo.toString(sum, 'N4')\\#");
+                                        //.ClientGroupFooterTemplate("Sub Total: \\#=kendo.toString(sum, 'N4')\\#");
+
+                                        columns.Bound(c => c.Credit)
+                                            .ClientTemplate(
+                                                "\\# if (Credit === 0) { \\#" +
+                                                "0" +
+                                                "\\# } else {\\#" +
+                                                "\\#: kendo.toString( Credit, 'N4') \\#" +
+                                                "\\# } \\#"
+                                            )
+                                            .ClientFooterTemplate("Total: \\#=kendo.toString(sum, 'N4')\\#");
+                                        //.ClientGroupFooterTemplate("Sub Total: \\#=kendo.toString(sum, 'N4')\\#");
+                                        columns.Bound(c => c.AdditionalDescription).ClientFooterTemplate("Diff: \\#=kendo.toString(Math.abs(data.Debit.sum - data.Credit.sum), 'N4')\\#");
+                                        columns.Command(command => { }).Width(180);
+                                    })
+
+                                    .Scrollable()
+                                    .DataSource(dataSource => dataSource
+                                                            .Ajax().Events(e => e.Error("error_handler(\"cost_Distribution_#=SalesShipmentId#\")")
+                                                            .RequestStart("onRequestStart(\"cost_Distribution_#=SalesShipmentId#\")")
+                                                            .RequestEnd("onRequestEnd(\"cost_Distribution_#=SalesShipmentId#\")"))
+                                    .Model(model => model.Id(p => p.CostDistributionId))
+                                    .Aggregates(ag =>
+                                    {
+                                        ag.Add(f => f.Debit).Sum();
+                                        ag.Add(f => f.Credit).Sum();
+                                    })
+                                    .Read(read => read.Action("CostDistributions_Read", "SalesShipmentCostDistribution", new { area = "CRM", id = "#=SalesShipmentId#" }))
+
+                                    ).ToClientTemplate()
+
+        )    }
+
+    @helper CostDistributionContentWithCrud()
+    {
+        @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.CostDistributionViewModel>()
+                                    .Name("cost_Distribution_#=SalesShipmentId#")
+                                    .Columns(columns =>
+                                    {
+                                        columns.Bound(c => c.AccountCode).EditorTemplateName("AccountCode").Width(280);
+                                        columns.Bound(c => c.AccountDesc).Width(200);
+                                        columns.Bound(c => c.Debit).Width(120)
+                                            .ClientTemplate(
+                                                "\\# if (Debit === 0) { \\#" +
+                                                "0" +
+                                                "\\# } else {\\#" +
+                                                "\\#: kendo.toString(Debit, 'N4') \\#" +
+                                                "\\# } \\#"
+                                            )
+                                            .ClientFooterTemplate("Total: \\#=kendo.toString(sum, 'N4')\\#");
+                                        //.ClientGroupFooterTemplate("Sub Total: \\#=kendo.toString(sum, 'N4')\\#");
+
+                                        columns.Bound(c => c.Credit).Width(120)
+                                            .ClientTemplate(
+                                                "\\# if (Credit === 0) { \\#" +
+                                                "0" +
+                                                "\\# } else {\\#" +
+                                                "\\#: kendo.toString( Credit, 'N4') \\#" +
+                                                "\\# } \\#"
+                                            )
+                                            .ClientFooterTemplate("Total: \\#=kendo.toString(sum, 'N4')\\#");
+                                        //.ClientGroupFooterTemplate("Sub Total: \\#=kendo.toString(sum, 'N4')\\#");
+                                        columns.Bound(c => c.AdditionalDescription).Width(120).ClientFooterTemplate("Diff: \\#=kendo.toString(Math.abs(data.Debit.sum - data.Credit.sum), 'N4')\\#");
+                                        columns.Command(command =>
+                                        {
+                                            command.Edit();
+                                            command.Destroy();
+                                        });
+                                    })
+                                    .ToolBar(toolbar =>
+                                    {
+                                        toolbar.Create();
+                                    })
+                                    .Scrollable()
+                                    .DataSource(dataSource => dataSource
+                                        .Ajax()
+                                        .Events(e => e.Error("error_handler(\"cost_Distribution_#=SalesShipmentId#\")")
+                                                            .RequestStart("onRequestStart(\"cost_Distribution_#=SalesShipmentId#\")")
+                                                            .RequestEnd("onRequestEnd(\"cost_Distribution_#=SalesShipmentId#\")"))
+                                        .Model(model => model.Id(p => p.CostDistributionId))
+                                        .Aggregates(ag =>
+                                        {
+                                            ag.Add(f => f.Debit).Sum();
+                                            ag.Add(f => f.Credit).Sum();
+                                        })
+                                        .Read(read => read.Action("CostDistributions_Read", "SalesShipmentCostDistribution", new { area = "CRM", id = "#=SalesShipmentId#" }))
+                                        .Create(read => read.Action("CostDistribution_Create", "SalesShipmentCostDistribution", new { area = "CRM", id = "#=SalesShipmentId#" }))
+                                        .Update(read => read.Action("CostDistribution_Update", "SalesShipmentCostDistribution", new { area = "CRM"}))
+                                        .Destroy(read => read.Action("CostDistribution_Destroy", "SalesShipmentCostDistribution", new { area = "CRM"}))
+
+                                    ).ToClientTemplate()
+        )    }
+</script>
+<script>
+@helper RevenueDistributionContent() { 
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.RevenueDistributionViewModel>()
+                        .Name("revenue_Distribution_#=SalesShipmentId#")
+                        .Columns(columns =>
+                        {
+                            columns.Bound(c => c.AccountCode);
+                            columns.Bound(c => c.AccountDesc);
+                            columns.Bound(c => c.Debit)
+                                .ClientTemplate(
+                                    "\\# if (Debit === 0) { \\#" +
+                                    "0" +
+                                    "\\# } else {\\#" +
+                                    "\\#: kendo.toString( Debit, 'N4') \\#" +
+                                    "\\# } \\#"
+                                )
+                                .ClientFooterTemplate("Total: \\#=kendo.toString(sum, 'N4')\\#")
+                                .ClientGroupFooterTemplate("Sub Total: \\#=kendo.toString(sum, 'N4')\\#");
+
+                            columns.Bound(c => c.Credit)
+                                .ClientTemplate(
+                                    "\\# if (Credit === 0) { \\#" +
+                                    "0" +
+                                    "\\# } else {\\#" +
+                                    "\\#: kendo.toString( Credit, 'N4') \\#" +
+                                    "\\# } \\#"
+                                )
+                                .ClientFooterTemplate("Total: \\#=kendo.toString(sum, 'N4')\\#")
+                                .ClientGroupFooterTemplate("Sub Total: \\#=kendo.toString(sum, 'N4')\\#");
+                            columns.Bound(c => c.AdditionalDescription).ClientFooterTemplate("Diff: \\#=kendo.toString(Math.abs(data.Debit.sum - data.Credit.sum), 'N4')\\#");
+                            columns.Command(command => { }).Width(180);
+                        })
+
+                        .Scrollable()
+                        .DataSource(dataSource => dataSource
+                                                .Ajax()
+                                                .Events(e => e.Error("error_handler(\"revenue_Distribution_#=SalesShipmentId#\")")
+                                                .RequestStart("onRequestStart(\"revenue_Distribution_#=SalesShipmentId#\")")
+                                                .RequestEnd("onRequestEnd(\"revenue_Distribution_#=SalesShipmentId#\")"))
+                        .Model(model => model.Id(p => p.RevenueDistributionId))
+                        .Aggregates(ag =>
+                        {
+                            ag.Add(f => f.Debit).Sum();
+                            ag.Add(f => f.Credit).Sum();
+                        })
+                        .Read(read => read.Action("CostDistributions_Read", "SalesShipmentRevenueDistribution", new { area = "CRM", id = "#=SalesShipmentId#" }))
+
+                        ).ToClientTemplate()
+
+        )}
+
+@helper RevenueDistributionContentWithCrud() { 
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.RevenueDistributionViewModel>()
+                        .Name("revenue_Distribution__#=SalesShipmentId#")
+                        .Columns(columns =>
+                        {
+                            columns.Bound(c => c.AccountCode).EditorTemplateName("AccountCode").Width(280);
+                            columns.Bound(c => c.AccountDesc).Width(200);
+                            columns.Bound(c => c.Debit).Width(120)
+                                .ClientTemplate(
+                                    "\\# if (Debit === 0) { \\#" +
+                                    "0" +
+                                    "\\# } else {\\#" +
+                                    "\\#: kendo.toString( Debit, 'N4') \\#" +
+                                    "\\# } \\#"
+                                )
+                                .ClientFooterTemplate("Total: \\#=kendo.toString(sum, 'N4')\\#")
+                                .ClientGroupFooterTemplate("Sub Total: \\#=kendo.toString(sum, 'N4')\\#");
+
+                            columns.Bound(c => c.Credit).Width(120)
+                                .ClientTemplate(
+                                    "\\# if (Credit === 0) { \\#" +
+                                    "0" +
+                                    "\\# } else {\\#" +
+                                    "\\#: kendo.toString( Credit, 'N4') \\#" +
+                                    "\\# } \\#"
+                                )
+                                .ClientFooterTemplate("Total: \\#=kendo.toString(sum, 'N4')\\#")
+                                .ClientGroupFooterTemplate("Sub Total: \\#=kendo.toString(sum, 'N4')\\#");
+                            columns.Bound(c => c.AdditionalDescription).Width(120).ClientFooterTemplate("Diff: \\#=kendo.toString(Math.abs(data.Debit.sum - data.Credit.sum), 'N4')\\#");
+                            columns.Command(command =>
+                            {
+                                command.Edit();
+                                command.Destroy();
+                            });
+                        })
+                        .ToolBar(toolbar => {
+                            toolbar.Create();
+                        })
+                        .Scrollable()
+                        .DataSource(dataSource => dataSource
+                                                .Ajax()
+                                                .Events(e => e.Error("error_handler(\"revenue_Distribution__#=SalesShipmentId#\")")
+                                                .RequestStart("onRequestStart(\"revenue_Distribution__#=SalesShipmentId#\")")
+                                                .RequestEnd("onRequestEnd(\"revenue_Distribution__#=SalesShipmentId#\")"))
+
+                        .Model(model => model.Id(p => p.RevenueDistributionId))
+                        .Aggregates(ag =>
+                        {
+                            ag.Add(f => f.Debit).Sum();
+                            ag.Add(f => f.Credit).Sum();
+                        })
+                        .Read(read => read.Action("RevenueDistributions_Read", "SalesShipmentRevenueDistribution", new { area = "CRM", id = "#=SalesShipmentId#" }))
+                        .Create(read => read.Action("RevenueDistribution_Create", "SalesShipmentRevenueDistribution", new { area = "CRM", id = "#=SalesShipmentId#" }))
+                        .Update(read => read.Action("RevenueDistribution_Update", "SalesShipmentRevenueDistribution", new { area = "CRM"}))
+                        .Destroy(read => read.Action("RevenueDistribution_Destroy", "SalesShipmentRevenueDistribution", new { area = "CRM"}))
+
+                        ).ToClientTemplate()
+        )}
+    </script>
+
+@*============= end of helpers ==========*@ 

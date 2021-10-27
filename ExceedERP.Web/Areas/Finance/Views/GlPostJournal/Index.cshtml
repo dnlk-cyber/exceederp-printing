@@ -100,8 +100,7 @@
                                   {
                                       sortable.SortMode(GridSortMode.SingleColumn);
                                   })
-                                  .Filterable()
-                                  .Groupable()
+                                  .Filterable()                                  
                                   .Events(ev => ev.DetailExpand("detailExpandPost"))
                                   .Scrollable(h => h.Height(500))
                                   .Events(x => x.DataBound("onDataBoundMaster"))

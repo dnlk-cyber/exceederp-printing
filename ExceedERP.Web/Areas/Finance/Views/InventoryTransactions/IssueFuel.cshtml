@@ -17,6 +17,7 @@
           columns.Bound(c => c.IssueDate).Title("Issue Date").Width(130);
           columns.Bound(c => c.Owner).Width(130).EditorTemplateName("InternalOrExternal");
           columns.Bound(c => c.PlateNo).Title("Plate No.").Width(130);
+          columns.Bound(c => c.Reference).Title("Issue Reference").Width(90);
           columns.Bound(c => c.SupplierAccountCode).Title("Supplier Account").EditorTemplateName("AccountCode").Width(220);
           columns.Bound(c => c.HasReading).Width(130).EditorTemplateName("HasReading").ClientTemplate(
               "<input type='checkbox' disabled = 'true' value='#= HasReading #' " +

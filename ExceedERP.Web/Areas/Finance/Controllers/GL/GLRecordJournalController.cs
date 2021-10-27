@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
@@ -491,7 +491,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
 
                 #region check valida journal
                 AccountHelper accountHelper = new AccountHelper();
-                string message = accountHelper.IsValidJournal(lines);
+                string message =lines.Any()? accountHelper.IsValidJournal(lines) :"Please add account transaction first";
                 if (!String.IsNullOrEmpty(message))
                 {
                     var formattedData = new

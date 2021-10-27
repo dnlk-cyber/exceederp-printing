@@ -21,7 +21,8 @@
           columns.ForeignKey(p => p.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("BranchSelector").Width(200);
           columns.ForeignKey(p => p.EmployeeId, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Title("Requester").Width(130).EditorTemplateName("EmployeeSelector");
           columns.ForeignKey(p => p.RecipientId, (IEnumerable)ViewData["personEmployees"], "Code", "Name").Title("Recipient").Width(130).EditorTemplateName("EmployeeSelector");
-          columns.Bound(c => c.Remark).Title("Issue Reference").Width(90);
+          columns.Bound(c => c.Reference).Title("Issue Reference").Width(90);
+          columns.Bound(c => c.Remark).Width(90);
           columns.Bound(c => c.Status).Width(90);
           columns.Command(command =>
           {

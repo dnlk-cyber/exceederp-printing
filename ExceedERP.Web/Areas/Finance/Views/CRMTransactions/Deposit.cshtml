@@ -1,0 +1,558 @@
+﻿@using System.Collections
+
+<legend>Deposit</legend>
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.CRMDeposit>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.CRMDepositId).Width(50).Title("#");
+          columns.Bound(c => c.SalesPersonUserName).EditorTemplateName("UserSelector").ClientTemplate(
+                                  "<strong> #=SalesPersonFullName#</strong> <br /> @<i style=''>#=SalesPersonUserName#</i>"
+                                  );
+          columns.ForeignKey(c => c.BranchId, (System.Collections.IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("BranchSelector").Width(100);
+          columns.ForeignKey(c => c.StoreID, (System.Collections.IEnumerable)ViewData["SalesStore"], "SalesStoreId", "Description").EditorTemplateName("StoresAndShopsSelector").Width(100);
+          columns.ForeignKey(c => c.CRMPeriodId, (System.Collections.IEnumerable)ViewData["CRMPeriods"], "CRMPeriodId", "Name").EditorTemplateName("OpenCRMPeriodsSelector").Width(100);
+
+          columns.Bound(c => c.Date);
+          columns.Bound(c => c.Status);
+          columns.Bound(c => c.Remark);
+
+          //columns.Command(command =>
+          //{
+          //    command.Edit(); command.Destroy();
+          //}).Width(180);
+      })
+      .ToolBar(toolbar =>
+                  {
+                      toolbar.Template(@<text>
+                        <div class="toolbar">
+                            <table>
+                                <tr>
+                                    <td>
+                                        <i>Periods:</i>
+                                        @(Html.Kendo().DropDownListFor(m => m)
+                                                      .Name("PeriodList")
+                                                      .Filter(FilterType.Contains)
+                                                      .BindTo((IEnumerable)ViewData["CRMPeriods"])
+                                                      .DataTextField("Name")
+                                                      .DataValueField("CRMPeriodId")
+                                                      .HtmlAttributes(new { style = "width: 300px;" })
+                                                      .ValuePrimitive(true))
+                                    </td>
+                                    <td></td>
+                                    <td>
+
+                                        @(Html.Kendo().Button()
+                                                      .Name("btnPost")
+                                                      .HtmlAttributes(new { type = "search", @class = "k-primary" })
+                                                      .Events(e => e.Click("BatchTransfer"))
+                                                      .Content("Batch Transfer"))
+                                    </td>
+                                </tr>
+                            </table>
+
+                        </div>
+                    </text>);
+                    })
+      .Events(e =>
+      {
+          e.DataBound("mainGridDataBound");
+      })
+      .Pageable(pageable => pageable
+                        .Input(true)
+                        .Numeric(false)
+                        .Refresh(true)
+                        .PageSizes(true)
+                        .ButtonCount(5))
+      .Navigatable()
+      .Selectable(selectable => {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable => {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Filterable()
+      .Scrollable(s => s.Height(700))
+
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model =>
+          {
+              model.Id(p => p.CRMDepositId);
+              model.Field(f => f.Status).Editable(false);
+              model.Field(f => f.CRMDepositId).Editable(false);
+          })
+          .Events(ev => ev
+                            .Error("error_handler(\"grid\")")
+                            .RequestStart("onRequestStart(\"grid\")")
+                            .RequestEnd("onRequestEnd(\"grid\")"))
+          .Read(read => read.Action("CRMDeposit_Read", "CRMTransactions"))
+
+      ).ClientDetailTemplateId("deposit_line_items")
+)
+<script type="text/kendo-templ" id="deposit_line_items">
+    @(Html.Kendo().TabStrip()
+    .Name("tab_#=CRMDepositId#")
+    .SelectedIndex(0)
+    .Items(items => {
+        items.Add().Text("Detail").Content(@<text>
+                    @*<div class="box">
+                        <div class="box-col">
+                            # if (IsSendForApproval == false || IsSendForApproval == "false")
+                            {#
+                            <a onclick='return sendForApproval("#=CRMDepositId#")' href='\#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>
+                            # }#
+                        </div>
+                    </div>*@
+
+                    @(Html.Kendo().PanelBar()
+                    .Name("panelbar_#=CRMDepositId#")
+                    .ExpandMode(PanelBarExpandMode.Multiple)
+                    .Items(panelbar =>
+                    {
+                        panelbar.Add()
+                            .Expanded(true)
+                            .Text("Detail")
+                            .Content(
+                                "<div>" +
+                                "<ul>" +
+                                "<li> <label> Status: </label> <strong> #=Status != null ? Status: ' '# </strong> </li>" +
+                                "<li> <label> Created by: </label> <strong> #=CreatedBy != null ? CreatedBy: ' '# </strong> </li>" +
+                                "<li> <label> Created on: </label> #= kendo.toString(DateCreated, 'dd/MM/yyyy H:mm:ss')# </li>" +
+                                "<li> <label> Modified by :</label> #= ModifiedBy != null ? ModifiedBy: ''# </li>" +
+                                "<li> <label> Last Modified :</label> #= LastModified != null ? kendo.toString(LastModified, 'dd/MM/yyyy H:mm:ss') : ' '# </li>" +
+                                "<li> <label> Remark: </label> <strong> #=Remark != null ? Remark : ' '# </strong> </li>" +
+                                "</ul>" +
+                                "</div>"
+                            );
+                                            
+                    }).ToClientTemplate()
+                )                                
+        </text>);
+        items.Add().Text("Line Items").Content(@<text>
+            #if(IsOnlineApproved){#
+                @DepositLineItemHelper()
+            #}else {#
+                @DepositLineItemHelper()
+            #}#
+        </text>);
+        items.Add().Text("Distribution").Content(@<text>
+            #if(!IsOnlineTransferred)
+            {#
+                    <a onclick='return regenerateDistribution("#=CRMDepositId#")' href='\#' title='Regenerate Distribution'><i class='fa  fa-refresh fa-2x' style='color:red'></i></a>
+            #}#
+            &nbsp;&nbsp;
+            # if (IsOnlineApproved && !IsOnlineTransferred )
+            {#
+                <a onclick='return transferToGl("#=CRMDepositId#")' href=' \#' title="Transfer to GL"><i class="fa fa-paper-plane fa-2x"></i></a>
+            # } #
+            #if(IsOnlineTransferred){#
+                @DistributionTabItemContent()
+            #} else if(!IsOnlineTransferred){#
+                @DistributionTabItemContentWithCrud()
+            #}#
+        </text>);
+        items.Add().Text("Validation").Content(@<text>
+            #if(IsOnlineApproved){#
+                @ValidationHelper()
+            #}else {#
+                @ValidationHelper()
+            #}#
+        </text>);
+    }).ToClientTemplate()
+    )
+</script>
+<script>
+    function mainGridDataBound(e) {
+        var grid = this;
+        var gridRows = grid.tbody.find("tr");
+        for (var i = 0; i < gridRows.length; i++) {
+            var row = $(gridRows[i]);
+            var dataItem = grid.dataItem(row);
+            if (dataItem.IsOnlineApproved === true) {
+                row.find(".k-grid-edit").hide();
+                row.find(".k-grid-delete").hide();
+                row.addClass("k-state-Approved");
+            } else if (dataItem.IsSendForApproval) {
+                row.find(".k-grid-edit").hide();
+                row.find(".k-grid-delete").hide();
+            }
+            else if (dataItem.Status == "Rejected") {
+                row.addClass("k-state-Rejected");
+            }
+            else {
+
+                row.find(".k-grid-edit").show();
+                row.find(".k-grid-delete").show();
+            }
+        }
+    }
+    function sendForApproval(id) {
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("SendForApproval", "CRMDeposit", new { area = "CRM" })',
+            data: { id: id },
+            success: function (result) {
+                alert(result.Message);
+                if (result.Status == "OK") {
+                    location.reload(true);
+                }
+            }, 
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+    function onPeriodChange(e) {
+        var drp = this;
+        var id = drp.value();
+        var voucherDate = $("#Date").data("kendoDatePicker");
+        var refOrderId = $("#References").val();
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("GetPeriodRangesWithinSalesSingleSalesOrderDates", "CRMDataProvider", new { area = "CRM" })',
+            data: { periodId: id, orderId: refOrderId },
+            success: function (result) {
+                if (result) {
+                    var ranges = result.split('_');
+                    var start = ranges[0];
+                    var end = ranges[1];
+                    var startDate = new Date(start);
+                    var endDate = new Date(end);
+                    if (voucherDate) {
+                        voucherDate.min(startDate);
+                        voucherDate.max(endDate);
+                        voucherDate.value(startDate);
+                        voucherDate.trigger("change");
+                    } 
+                }
+            }, 
+            error: function (result) {
+            }
+        });
+
+    }
+    function getSelectedBranch() {
+        return {
+            branchId: $("#BranchId").data("kendoDropDownList").value()
+        };
+    }
+
+    function transferToGl(id) {
+        var desc = prompt("Please enter transaction description:");
+        if (desc != null) {
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("TransferDistribution", "CRMDeposit", new { area = "CRM" })',
+                data: {
+                    id: id,
+                    description: desc
+                },
+                success: function (result) {
+                    alert(result.Message);
+                    location.reload(true);
+                }, //end succ
+                error: function (result) {
+                    alert(result);
+                }
+            });
+        }
+    }
+    function regenerateDistribution(id) {
+        $.ajax({
+                type: "POST",
+                url: '@Url.Action("RegenerateDistribution", "CRMDeposit", new { area = "CRM" })',
+                data: {
+                    id: id,
+                },
+                success: function (result) {
+                    alert(result.Message);
+                    if (result.Status == "OK") {
+                        location.reload(true);
+                    }
+                }, 
+                error: function (result) {
+                    alert(result);
+                }
+            });
+    }
+    function BatchTransfer() {
+        var periodObject = $("#PeriodList").data("kendoDropDownList");
+        var periodid = periodObject.value();
+       
+        if (periodid != null) {
+
+            $.ajax({
+                type: "POST",
+                url: '@Url.Action("BatchtransferDeposit", "CRMTransactions", new {area = "Finance"})',
+                data: { crmPeriodId: periodid },
+                success: function (result) {
+                    // toastr.warnning(result.Message);
+                    alert(result.Message);
+                    location.reload(true);
+                }, //end succ
+                beforeSend: function(){
+                    // Show image container
+                    $("#loading-image").show();
+                },
+                complete:function(data){
+                    // Hide image container
+                    $("#loading-image").hide();
+                },
+                error: function (result) {
+                    alert(result);
+                }
+            });
+
+
+            $("#grid").data("kendoGrid").dataSource.read();
+        } else {
+            alert("Please select period.");
+        }
+        
+    }
+</script>
+
+@*Line item helper*@
+<script>
+    
+    @helper DepositLineItemHelper() { 
+        @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.CRMDepositLine>()
+                  .Name("lineitemsgrid_#=CRMDepositId#")
+                  .Columns(columns =>
+                  {
+                      columns.ForeignKey(c => c.ReceiveMethodId, (System.Collections.IEnumerable)ViewData["PaymentMethod"], "PaymentMethodID", "Method").Title("Recieve Method").EditorTemplateName("RecieveMethodType").Width(120);
+                      columns.Bound(c => c.DepositAmount).Format("{0:N4}");
+                      columns.Bound(c => c.Reference);
+                      columns.Bound(c => c.Remark);
+
+                  })
+                 
+                  .Navigatable()
+                  .Sortable(sortable => {
+                      sortable.SortMode(GridSortMode.SingleColumn);
+                  })
+                  .Pageable(pageable => pageable
+                        .Input(true)
+                        .Numeric(false)
+                        .Refresh(true)
+                        .PageSizes(true)
+                        .ButtonCount(5))
+                  .Filterable()
+                  .Scrollable()
+                  .DataSource(dataSource => dataSource
+                      .Ajax()
+                      .Model(model => model.Id(p => p.CRMDepositLineId))
+                      .Events(ev => ev
+                            .Error("error_handler(\"lineitemsgrid_#=CRMDepositId#\")")
+                            .RequestStart("onRequestStart(\"lineitemsgrid_#=CRMDepositId#\")")
+                            .RequestEnd("onRequestEnd(\"lineitemsgrid_#=CRMDepositId#\")"))
+                      .Read(read => read.Action("CRMDepositLine_Read", "CRMDepositLine", new {area="CRM", id = "#=CRMDepositId#" }))
+                      
+                  ).ToClientTemplate()
+            )
+    }
+</script>
+
+@*distribution helpers*@
+<script>
+@helper DistributionTabItemContent()
+{
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.CRMDepositDistribution>()
+
+            .Name("Distribution_#=CRMDepositId#")
+            .Columns(columns =>
+            {
+                columns.Bound(c => c.AccountCode);
+                columns.Bound(c => c.AccountDesc);
+                columns.Bound(c => c.Debit)
+                      .ClientTemplate(
+                          "\\# if (Debit === 0) { \\#" +
+                          "0" +
+                          "\\# } else {\\#" +
+                          "\\#: kendo.toString( Debit, 'N4') \\#" +
+                          "\\# } \\#"
+                      )
+                      .ClientFooterTemplate("Total: \\#=kendo.toString(sum, 'N4')\\#")
+                      .ClientGroupFooterTemplate("Sub Total: \\#=kendo.toString(sum, 'N4')\\#");
+
+                columns.Bound(c => c.Credit)
+                    .ClientTemplate(
+                        "\\# if (Credit === 0) { \\#" +
+                        "0" +
+                        "\\# } else {\\#" +
+                        "\\#: kendo.toString( Credit, 'N4') \\#" +
+                        "\\# } \\#"
+                    )
+                    .ClientFooterTemplate("Total: \\#=kendo.toString(sum, 'N4')\\#")
+                    .ClientGroupFooterTemplate("Sub Total: \\#=kendo.toString(sum, 'N4')\\#");
+                columns.Bound(c => c.AdditionalDescription).Width(120).ClientFooterTemplate("Diff: \\#=kendo.toString(Math.abs(data.Debit.sum - data.Credit.sum), 'N4')\\#");
+
+                columns.Command(command => { }).Width(180);
+            })
+            .Pageable(pageable => pageable
+                        .Input(true)
+                        .Numeric(false)
+                        .Refresh(true)
+                        .PageSizes(true)
+                        .ButtonCount(5))
+            .Scrollable()
+            .DataSource(dataSource => dataSource
+                .Ajax()
+                .Events(e =>
+                        e.Error("error_handler(\"Distribution_#=CRMDepositId#\")")
+                        .RequestStart("onRequestStart(\"Distribution_#=CRMDepositId#\")")
+                        .RequestEnd("onRequestEnd(\"Distribution_#=CRMDepositId#\")"))
+                .Model(model => model.Id(p => p.CRMDepositDistributionId))
+
+                .Aggregates(ag => {
+                    ag.Add(f => f.Debit).Sum();
+                    ag.Add(f => f.Credit).Sum();
+                })
+                .Read(read => read.Action("Distributions_Read", "CRMDepositDistribution", new {area="CRM", Id = "#=CRMDepositId#" }))
+
+            ).ToClientTemplate()
+
+            )
+}
+
+@helper DistributionTabItemContentWithCrud()
+{
+    @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.CRMDepositDistribution>()
+
+            .Name("Distribution_#=CRMDepositId#")
+            .Columns(columns =>
+            {
+                columns.Bound(c => c.AccountCode).EditorTemplateName("AccountCode").Width(280);
+                columns.Bound(c => c.AccountDesc).Width(200);
+                columns.Bound(c => c.Debit).Width(120)
+                      .ClientTemplate(
+                          "\\# if (Debit === 0) { \\#" +
+                          "0" +
+                          "\\# } else {\\#" +
+                          "\\#: kendo.toString( Debit, 'N4') \\#" +
+                          "\\# } \\#"
+                      )
+                      .ClientFooterTemplate("Total: \\#=kendo.toString(sum, 'N4')\\#")
+                      .ClientGroupFooterTemplate("Sub Total: \\#=kendo.toString(sum, 'N4')\\#");
+
+                columns.Bound(c => c.Credit).Width(120)
+                    .ClientTemplate(
+                        "\\# if (Credit === 0) { \\#" +
+                        "0" +
+                        "\\# } else {\\#" +
+                        "\\#: kendo.toString( Credit, 'N4') \\#" +
+                        "\\# } \\#"
+                    )
+                    .ClientFooterTemplate("Total: \\#=kendo.toString(sum, 'N4')\\#")
+                    .ClientGroupFooterTemplate("Sub Total: \\#=kendo.toString(sum, 'N4')\\#");
+                columns.Bound(c => c.AdditionalDescription).Width(120).ClientFooterTemplate("Diff: \\#=kendo.toString(Math.abs(data.Debit.sum - data.Credit.sum), 'N4')\\#");
+
+                columns.Command(command =>
+                {
+                    command.Edit();
+                    command.Destroy();
+                });
+            })
+            .ToolBar(toolbar =>
+            {
+                toolbar.Create();
+            })
+            .Scrollable()
+            .Pageable(pageable => pageable
+                        .Input(true)
+                        .Numeric(false)
+                        .Refresh(true)
+                        .PageSizes(true)
+                        .ButtonCount(5))
+            .DataSource(dataSource => dataSource
+                .Ajax().Events(e =>
+                                          e.Error("error_handler(\"Distribution_#=CRMDepositId#\")")
+                                              .RequestStart("onRequestStart(\"Distribution_#=CRMDepositId#\")")
+                                              .RequestEnd("onRequestEnd(\"Distribution_#=CRMDepositId#\")"))
+                .Model(model => {
+                    model.Id(p => p.CRMDepositDistributionId);
+                    //model.Field(f => f.AccountDesc).Editable(false);
+                })
+
+                .Aggregates(ag => {
+                    ag.Add(f => f.Debit).Sum();
+                    ag.Add(f => f.Credit).Sum();
+                })
+                .Read(read => read.Action("Distributions_Read", "CRMDepositDistribution", new { area = "CRM",id = "#=CRMDepositId#" }))
+                    .Create(create => create.Action("Distribution_Create", "CRMDepositDistribution", new { area = "CRM",id = "#=CRMDepositId#" }))
+                    .Update(update => update.Action("Distribution_Update", "CRMDepositDistribution", new { area = "CRM" }))
+                    .Destroy(destroy => destroy.Action("Distribution_Destroy", "CRMDepositDistribution", new { area = "CRM" }))
+
+        ).ToClientTemplate()
+
+            )
+}
+    </script>
+
+@*Validation helpers*@
+<script>
+    @helper ValidationHelper() { 
+        @(Html.Kendo().Grid<ExceedERP.Core.Domain.CRM.CashSalesInvoiceValidation>()
+            .Name("validation_#=CRMDepositId#")
+            .Columns(columns =>
+            {
+
+                columns.Bound(c => c.Status).EditorTemplateName("ApprovalStatusSelector");
+                columns.Bound(c => c.Remark);
+            })
+            .Selectable(selectable =>
+            {
+                selectable.Mode(GridSelectionMode.Single);
+                selectable.Type(GridSelectionType.Row);
+            })
+            .Scrollable()
+            .Scrollable()
+            .Sortable(sortable =>
+            {
+                sortable.SortMode(GridSortMode.SingleColumn);
+            })
+            .Pageable(pageable => pageable
+                .Input(true)
+                .Numeric(false)
+                .Refresh(true)
+                .PageSizes(true)
+                .ButtonCount(5))
+            .DataSource(dataSource => dataSource
+                .Ajax()
+
+                .Events(events =>
+                {
+                    events.Error("error_handler(\"validation_#=CRMDepositId#\")");
+                    events.RequestStart("onRequestStart(\"validation_#=CRMDepositId#\")");
+                    events.RequestEnd("onRequestEnd(\"validation_#=CRMDepositId#\")");
+                })
+                .Model(model =>
+                {
+                    model.Id(f => f.CashSalesInvoiceValidationId);
+
+                })
+
+                .Read(read => read.Action("Validations_Read", "CRMDepositValidation", new { area = "CRM",id = "#=CRMDepositId#" }))
+            )
+    .ToClientTemplate()
+    )
+    }
+</script>
+<style>
+    .k-grid table tr.k-state-Approved {
+        background: #b7ff9e;
+        color: #040000;
+    }
+
+    .k-grid table tr.k-state-Rejected {
+        background: #fcabab;
+        color: #040000;
+    }
+
+    div.k-edit-form-container {
+        width: 400px;
+    }
+</style>

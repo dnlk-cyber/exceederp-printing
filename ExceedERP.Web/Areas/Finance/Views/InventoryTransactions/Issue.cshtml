@@ -16,6 +16,7 @@
           columns.Bound(c => c.StoreCode).Width(130).EditorTemplateName("StoreReadOnly");
           columns.ForeignKey(p => p.GLPeriodId, (IEnumerable)ViewData["inventoryPeriods"], "GLPeriodId", "Name").Width(90).Title("Period").EditorTemplateName("InventoryPeriodSelector");
           columns.Bound(c => c.IssueDate).Title("Issue Date").Width(150);
+          columns.Bound(c => c.Reference).Title("Issue Reference").Width(90);
           columns.Bound(c => c.Remark).Width(150);
           columns.ForeignKey(p => p.OrgStructureId, (IEnumerable)ViewData["costCenters"], "Code", "Name").Title("Work Unit").Width(160).EditorTemplateName("WorkUnitCostCenterSelector");
           columns.ForeignKey(p => p.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("BranchSelector").Width(200);

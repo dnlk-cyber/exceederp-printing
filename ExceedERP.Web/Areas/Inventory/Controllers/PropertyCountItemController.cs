@@ -1,18 +1,23 @@
-﻿using System;
-using System.Data.Entity;
-using System.Linq;
-using System.Net;
-using System.Web.Mvc;
-using ExceedERP.Core.Domain.Inventory;
-using ExceedERP.DataAccess.Context;
-using ExceedERP.Helpers.Common;
-using ExceedERP.Web.Helpers;
-using Kendo.Mvc.Extensions;
-using Kendo.Mvc.UI;
+﻿﻿using System;
+﻿using System.Collections.Generic;
+﻿using System.Data.Entity;
+﻿using System.Linq;
+ using System.Net;
+ using System.Web.Mvc;
+ using ExceedERP.Core.Domain.Finance.Bank;
+ using ExceedERP.Core.Domain.Inventory;
+﻿using ExceedERP.DataAccess.Context;
+ using ExceedERP.DataAccess.Migrations;
+ using ExceedERP.Helpers.Common;
+ using ExceedERP.Helpers.Inventory;
+ using ExceedERP.Web.Areas.Inventory.Models;
+ using ExceedERP.Web.Helpers;
+ using Kendo.Mvc.Extensions;
+﻿using Kendo.Mvc.UI;
 
 namespace ExceedERP.Web.Areas.Inventory.Controllers
 {
-
+    
     public class PropertyCountItemController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();

@@ -198,8 +198,57 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers
             var storeitems = db.StoreItemAssignments.Where(x => x.StoreCode == countRecord.StoreCode).ToList();
             var countItems = db.PropertyCountItems.Where(i => i.PropertyCountId == id).ToList();
 
+            string sortOrder = InventoryConfigurationHelper.GetBinCardRSortOrder();
+
             foreach (var item in storeitems)
             {
+                decimal balanceBeforeCount = item.Balance;
+                // temporary change
+                #region get balance with respect to property count date instead of CURRENT BALANCE
+                var binCardLines =
+                   db.BinCardLines.Where(b => b.Date <= countRecord.CountDate &&
+                   b.StoreItemAssignmentID == item.StoreItemAssignmentID
+                   //b.ReferenceDoc != null &&
+                   //!b.ReferenceDoc.StartsWith("Count on date") // exclude count
+                   ).ToList();
+                if (sortOrder == BincardSortOrderAttributes.DateOfTransaction.ToString())
+                {
+                    binCardLines = binCardLines.OrderByDescending(d => d.Date).ThenByDescending(d => d.BinCardLineID).ToList();
+                    if (binCardLines.Any())
+                    {
+                        var targetBinTransaction = binCardLines[0];
+                        if (targetBinTransaction.ReferenceDoc != null && targetBinTransaction.ReferenceDoc.StartsWith("Count on date") && binCardLines.Count > 1)
+                        {
+                            var secondTransaction = binCardLines[1];
+                            balanceBeforeCount = secondTransaction.BalanceQTY;
+
+                        }
+                        else
+                        {
+                            balanceBeforeCount = targetBinTransaction.BalanceQTY;
+                        }
+                    }
+                }
+                else if (sortOrder == BincardSortOrderAttributes.SequencialId.ToString())
+                {
+                    binCardLines = binCardLines.OrderByDescending(d => d.BinCardLineID).ToList();
+                    var targetBinTransaction = binCardLines[0];
+                    if (targetBinTransaction.ReferenceDoc != null && targetBinTransaction.ReferenceDoc.StartsWith("Count on date") && binCardLines.Count > 1)
+                    {
+                        var secondTransaction = binCardLines[1];
+                        balanceBeforeCount = secondTransaction.BalanceQTY;
+
+                    }
+                    else
+                    {
+                        balanceBeforeCount = targetBinTransaction.BalanceQTY;
+                    }
+
+                }
+                
+                #endregion
+
+
                 var countItem = countItems.FirstOrDefault(x => x.ItemCode == item.ItemCode);
                 if (countItem == null)
                 {
@@ -218,7 +267,8 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers
                                 ItemCodeReadOnly = item.ItemCode.Trim(),
                                 PropertyCountId = id,
                                 Count = 0,
-                                PreviousBalance = item.Balance,
+                                //PreviousBalance = item.Balance,
+                                PreviousBalance = balanceBeforeCount,
                                 Price = ExceedERP.Helpers.Inventory.InventoryHelper.GetItemAveragePrice(item.ItemCode, countRecord.StoreCode),
                                 Status = false,
                                 Location=item.ItemLocation,
@@ -235,11 +285,13 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers
                 }
                 else
                 {
-                    if (!countItem.Updated)
+                    //if (!countItem.Updated)
+                    if (!countRecord.IsClosed)
                     {
                         #region update item item
 
-                        countItem.PreviousBalance = item.Balance;
+                        //countItem.PreviousBalance = item.Balance;
+                        countItem.PreviousBalance = balanceBeforeCount;
                         db.Entry(countItem).State = EntityState.Modified;
                         db.SaveChanges();
 

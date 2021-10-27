@@ -29,7 +29,7 @@
                         columns.Command(
             command =>
             {
-
+                command.Edit();
 
             command.Custom("←").Click("Select");
             command.Custom("→").Click("SelectDesti");
@@ -51,7 +51,7 @@
                 </div>
 
             </text>);
-                })
+         })
 
                .Editable(editable => editable.Mode(GridEditMode.InLine))
                .HtmlAttributes(new { style = "height: 400px;" })
@@ -64,6 +64,9 @@
                .Scrollable()
                .Sortable()
                .Filterable()
+               .Events(ev => {
+                   ev.Save("onItemEditSave");
+               })
                .Selectable(selectable =>
                {
                    selectable.Mode(GridSelectionMode.Single);
@@ -80,16 +83,20 @@
                .Model(model =>
                {
                    model.Id(p => p.ItemCode);
+
                    model.Field(p => p.DateCreated).Editable(false);
                    model.Field(p => p.Enable).Editable(false);
                    model.Field(p => p.ItemCode).Editable(false);
+                   model.Field(p => p.ItemCategoryCode).Editable(false);
+                   model.Field(p => p.SubCategoryCode).Editable(false);
+                   model.Field(p => p.Balance).Editable(false);
                })
                .Events(ev => ev
                .Error("error_handler(\"grid\")")
                .RequestStart("onRequestStart(\"grid\")")
                .RequestEnd("onRequestEnd(\"grid\")"))
                .Read(read => read.Action("Items_Read", "ItemMerge"))
-
+               .Update(update => update.Action("Items_Update", "Item"))
                ))
 
 <div class="row">
@@ -103,11 +110,15 @@
     </div>
 </div>
 
-
+<script id="remove-source-item-template" type="text/x-kendo-template">
+    <button class="btn-remove-item btn btn-link">
+        <span class="fa fa-close fa-1x" style="color:red;" title="Remove Item"></span>
+    </button>
+</script>
 
 <script type="text/javascript">
-
     var selectedToMerge = [];
+    var destinationItem = [];
 
     $(document).ready(function () {
         $("#selectiongrid").kendoGrid({
@@ -118,25 +129,21 @@
                         fields: {
                             ItemCode: { type: "string" },
                             Name: { type: "string" },
-
                         }
                     }
                 },
                 pageSize: 20
             },
             height: 200,
-
+            dataBound: onSourceGridDataBound,
             columns: [
-
-
-                { field: "ItemCode", title: "Item Code", width: "130px" },
-                { field: "Name", title: "Item Name", width: "130px" },
-
+                { field: "ItemCode", title: "Item Code", width: "110px" },
+                { field: "Name", title: "Item Name", width: "150px" },
+                { template: kendo.template($("#remove-source-item-template").html()), width: "30px;" }
             ]
         });
     });
 
-    var destinationItem = [];
 
     $(document).ready(function () {
         $("#destinationgrid").kendoGrid({
@@ -147,7 +154,6 @@
                         fields: {
                             ItemCode: { type: "string" },
                             Name: { type: "string" },
-
                         }
                     }
                 },
@@ -156,19 +162,61 @@
             height: 200,
 
             columns: [
-
-
-                { field: "ItemCode", title: "Item Code", width: "130px" },
-                { field: "Name", title: "Item Name", width: "130px" },
-
+                { field: "ItemCode", title: "Item Code", width: "110px" },
+                { field: "Name", title: "Item Name", width: "150px" },
             ]
         });
     });
+    function onSourceGridDataBound(e) {
+        var grid = this;
+        $(".btn-remove-item").on("click", function (e) {
+            var selectedItem = $(this).closest("tr");
+            var dataItem = grid.dataItem(selectedItem);
+           
+            let newArray = selectedToMerge.filter(function (item) {
+                return item.ItemCode != dataItem.ItemCode;
+            });
+            
+            selectedToMerge = [];
+            selectedToMerge.push(...newArray);
+            grid.dataSource.remove(dataItem);
+            console.log(grid.dataSource.data());
+            //$('#selectiongrid').data('kendoGrid').dataSource.filter(
+            //    {
+            //        field: "ItemCode",
+            //        operator: "neq",
+            //        value: dataItem.ItemCode
+            //    }
+            //);
+           /* $("#selectiongrid").data("kendoGrid")*///grid.dataSource.read();
+            /*$('#selectiongrid').data('kendoGrid')*///grid.refresh();
+        });
+    }
+    function onItemEditSave(e) {
+        var dataItem = $("#grid").data("kendoGrid").dataItem(e.container.closest("tr"));
+        if (dataItem) {
+            var itemInSourceGrid = selectedToMerge.find(item => item.ItemCode == dataItem.ItemCode);
+            if (itemInSourceGrid) {
+                itemInSourceGrid.Name = dataItem.Name;
 
+                $('#selectiongrid').data('kendoGrid').dataSource.read();
+                $('#selectiongrid').data('kendoGrid').refresh();
+            }
+            var itemInDestinationGrid = destinationItem.find(item => item.ItemCode == dataItem.ItemCode);
+            if (itemInDestinationGrid) {
+                itemInDestinationGrid.Name = dataItem.Name;
+
+                $('#destinationgrid').data('kendoGrid').dataSource.read();
+                $('#destinationgrid').data('kendoGrid').refresh();
+            }
+        }
+    }
     function Select(e) {
 
         var dataItem = this.dataItem($(e.currentTarget).closest("tr"));
-        selectedToMerge.push({
+        var existingItem = selectedToMerge.find(i => i.ItemCode == dataItem.ItemCode);
+        if (!existingItem) {
+            selectedToMerge.push({
             ItemCode: dataItem.ItemCode,
             Name: dataItem.Name})
 
@@ -182,6 +230,8 @@
         $('#selectiongrid').data('kendoGrid').dataSource.read();
         $('#selectiongrid').data('kendoGrid').refresh();
         //location.reload();
+        }
+        
     };
 
     function SelectDesti(e) {

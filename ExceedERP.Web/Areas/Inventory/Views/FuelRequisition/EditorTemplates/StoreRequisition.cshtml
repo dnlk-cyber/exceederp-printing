@@ -157,7 +157,18 @@
             <div class="form-group">
                 @Html.LabelFor(model => model.PlateNo, htmlAttributes: new { @class = "control-label col-md-8" })
                 <div class="col-md-6">
-                    @Html.Kendo().TextBoxFor(model => model.PlateNo)
+                    @(Html.Kendo().DropDownListFor(model => model.PlateNo)
+                                  .ValuePrimitive(true)
+                                  .OptionLabel("Select...")
+                                  .DataTextField("PlateNo")
+                                  .DataValueField("PlateNo")
+                                  .Filter("contains")
+                                  .DataSource(dataSource =>
+                                  {
+                                      dataSource.Read(read => read.Action("GetPlateNumbersForFuelRequisition", "DataProvider", new { area = "Inventory" }))
+                                          .ServerFiltering(false);
+                                  })
+                    )
                     @Html.ValidationMessageFor(model => model.PlateNo, "", new { @class = "text-danger" })
                 </div>
             </div>

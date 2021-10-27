@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
@@ -26,32 +26,35 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
         [AuthorizeRoles(FinanceConstants.GeneralLedgerUser, FinanceConstants.GeneralLedgerApprover, FinanceConstants.GeneralLedgerView, FinanceConstants.GeneralLedgerPostUser, FinanceConstants.GeneralLedgerAdmin)]
         public ActionResult Index()
         {
-            var periods = _db.GLPeriods.Where(x=>x.Status==FiscalYearStatus.Open).ToList();
-            ViewData["PeriodList"] = periods
-                .Select(e => new GLPeriod
-                {
-                    Name = e.Name,
-                    GLPeriodId = e.GLPeriodId
-                })
-                .OrderBy(e => e.DateTo);
+            PopulateData();
+
+            return View();
+        }
+
+        
+
+        private void PopulateData()
+        {
+            
 
             List<string> list = new List<string>();
-            
+
             var categories = _db.GLRecordJournals
-                .Where(x => x.IsOnlineApproved && !x.isVoid && !x.isPosted).OrderBy(x => x.CategoryName)
+                .Where(x => x.IsOnlineApproved==true)
+                .Where(x=>x.isPosted==false).OrderBy(x => x.CategoryName)
                 .Select(x => x.CategoryName).AsNoTracking().Distinct().ToList();
-           
+
             list.AddRange(categories);
 
             ViewData["CategoryList"] = list
                    .Select(category => new
                    {
                        Category = category
-                   })               ;
-            
+                   });
+
 
             var users = _db.GLRecordJournals
-                            .Where(x => x.IsOnlineApproved && !x.isVoid&&!x.isPosted).AsNoTracking().OrderBy(x=>x.CreatedBy).Select(x => x.CreatedBy).Distinct().ToList();
+                            .Where(x => x.IsOnlineApproved && !x.isVoid && !x.isPosted).AsNoTracking().OrderBy(x => x.CreatedBy).Select(x => x.CreatedBy).Distinct().ToList();
 
             ViewData["UserList"] = users
                     .Select(user => new
@@ -60,7 +63,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
                     })
                 ;
 
-            return View();
+
         }
         [AuthorizeRoles(FinanceConstants.GeneralLedgerPostUser,FinanceConstants.GeneralLedgerAdmin)]
         public JsonResult BatchPost(string id,string category,string user)
@@ -252,6 +255,98 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
             return null;
         }
 
+        [AuthorizeRoles(FinanceConstants.GeneralLedgerUnPostUser)]
+        public JsonResult UnPostLedger(string id)
+        {
+            int myid = int.Parse(id);
+            var gLRecordJournal = _db.GLRecordJournals.Find(myid);
+
+            if (gLRecordJournal != null && gLRecordJournal.isPosted)
+            {
+                bool result = _financeHelper.Unpost(gLRecordJournal.GlRecordJournalId, User.Identity.Name);
+                if (result)
+                {
+                    #region update daily balance joob
+
+                    var glperiod = _db.GLPeriods.FirstOrDefault(x => x.Name == gLRecordJournal.PeriodName);
+                    // var jobUpdateStandard = BackgroundJob.Enqueue(() => );
+
+                    RecurringJob.AddOrUpdate(() => _financeHelper.UpdateAllStandardBalancesMonthlyFastP(glperiod.GLPeriodId, User.Identity.Name), "0 19 * * *");//7pm
+
+                    #endregion
+
+                    #region operation log
+                    UserHelper.OperationLog(Request.UserHostAddress, "GL unpost", "Success", User.Identity.Name, $"unposted journal number {id} ", Modules.Finance);
+                    #endregion
+
+                    var formattedData = new
+                    {
+                        Message = "Operation Successful.",
+                        Status = "OK"
+                    };
+                    return Json(formattedData, JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                    var formattedData = new
+                    {
+                        Message = "Try Again.",
+                        Status = "NOT_OK"
+                    };
+                    return Json(formattedData, JsonRequestBehavior.AllowGet);
+                }
+            }
+
+            var formattedData3 = new
+            {
+                Message = "It is not possible to unpost the record.",
+                Status = "NOT_OK"
+            };
+            return Json(formattedData3, JsonRequestBehavior.AllowGet);
+        }
+        [AuthorizeRoles(FinanceConstants.GeneralLedgerUnPostUser)]
+        public JsonResult BatchUnPost(string category)
+        {
+            var journals = _db.GLRecordJournals.Where(x => x.CategoryName == category).AsNoTracking().ToList();
+            string userName = User.Identity.Name;
+
+            foreach (var journal in journals)
+            {
+
+                if (journal != null && journal.isPosted)
+                {
+                    bool result = _financeHelper.Unpost(journal.GlRecordJournalId, userName);
+                    if (result)
+                    {
+                        #region update daily balance joob
+
+                        var glperiod = _db.GLPeriods.FirstOrDefault(x => x.Name == journal.PeriodName);
+                        // var jobUpdateStandard = BackgroundJob.Enqueue(() => );
+
+                        //RecurringJob.AddOrUpdate(() => _financeHelper.UpdateAllStandardBalancesMonthlyFastP(glperiod.GLPeriodId, User.Identity.Name), "0 19 * * *");//7pm
+
+                        #endregion
+
+                        #region operation log
+                        UserHelper.OperationLog(Request.UserHostAddress, "GL unpost", "Success", User.Identity.Name, $"unposted journal number {journal.GlRecordJournalId} ", Modules.Finance);
+                        #endregion
+                        
+                    }
+                    else
+                    {
+                        #region operation log
+                        UserHelper.OperationLog(Request.UserHostAddress, "GL unpost", "Failed", User.Identity.Name, $"unposted journal number {journal.GlRecordJournalId} ", Modules.Finance);
+                        #endregion
+                    }
+                }
+            }
+            var formattedData = new
+            {
+                Message = "Operation Complete.",
+                Status = "OK"
+            };
+            return Json(formattedData, JsonRequestBehavior.AllowGet);
+        }
         [AuthorizeRoles(FinanceConstants.GeneralLedgerUser, FinanceConstants.GeneralLedgerApprover, FinanceConstants.GeneralLedgerView, FinanceConstants.GeneralLedgerPostUser, FinanceConstants.GeneralLedgerAdmin)]
         public ActionResult GlPostJournals_Read([DataSourceRequest]DataSourceRequest request)
        {

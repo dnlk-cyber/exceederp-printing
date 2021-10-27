@@ -26,7 +26,11 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
             ViewBag.Id = id;
             return View();
         }
-
+        public ActionResult GlBegJournalVoucher(int id)
+        {
+            ViewBag.Id = id;
+            return View();
+        }
         public ActionResult ApPayment(int id)
         {
             ViewBag.Id = id;

@@ -133,8 +133,40 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Transfer
                         transferReceive.OnlineApprovedTime = DateTime.Now;
                         db.ItemTransferReceive.Attach(transferReceive);
                         db.Entry(transferReceive).State = EntityState.Modified;
-                       // db.SaveChanges();
-                    
+                        // db.SaveChanges();
+
+                        #region update transfer send Received Quantity
+                        var transferItems = db.ItemTransferItems.Where(i => i.ItemTransferID == transferReceive.ItemTransferID).ToList();
+                        foreach (ItemTransferItem transferItem in transferItems)
+                        {
+                            decimal previouslyReceivedQty = 0;
+                            decimal receivedInCurrentReceiveQty = 0;
+                            // last approved transer receive items
+                            var previouslyReceivedItems = db
+                                .ItemTransferItemReceive.Where(i => 
+                                    i.ItemTransferReceive.ItemTransferID == transferReceive.ItemTransferID &&
+                                    i.ItemTransferReceive.ItemTransferReceiveId != transferReceive.ItemTransferReceiveId && // exclude current transfer record
+                                    i.ItemTransferReceive.IsOnlineApproved &&
+                                    i.ItemTransferReceive.IsVoid == false &&
+                                    i.ItemCode == transferItem.ItemCode).ToList();
+                            if (previouslyReceivedItems.Any())
+                            {
+                                previouslyReceivedQty = previouslyReceivedItems.Sum(i => i.ReceivedQuantity);
+                            }
+                            // transfer receive items in current record
+                            var receivedItems = transferReceive.ItemTransferItemReceive.Where(i => i.ItemCode == transferItem.ItemCode).ToList();
+                            if (receivedItems.Any())
+                            {
+                                receivedInCurrentReceiveQty = receivedItems.Sum(i => i.ReceivedQuantity);
+                            }
+
+                            transferItem.ReceivedQuantity = previouslyReceivedQty + receivedInCurrentReceiveQty;
+
+                            db.ItemTransferItems.Attach(transferItem);
+                            db.Entry(transferItem).State = EntityState.Modified;
+                        }
+                        #endregion
+
                         var averagePriceSetting = db.AveragePriceSettings.FirstOrDefault();
                         if (averagePriceSetting != null)
                         {

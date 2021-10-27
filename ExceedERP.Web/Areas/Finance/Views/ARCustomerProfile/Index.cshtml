@@ -5,41 +5,42 @@
       .Columns(columns =>
       {
           columns.Bound(c => c.ArCustomerProfileId).Hidden();
-        columns.Bound(c => c.CustomerId).Width(120);
-        columns.Bound(c => c.CompanyName).Width(150);
-         columns.Bound(c => c.AccountCode).EditorTemplateName("AccountCode").Width(220);
-        columns.Bound(c => c.TinNo).Title("TIN").Width(120);
+          columns.Bound(c => c.CustomerId).Width(120);
+          columns.Bound(c => c.CompanyName).Width(150);
+          columns.Bound(c => c.AccountCode).EditorTemplateName("AccountCode").Width(220);
+          columns.Bound(c => c.TinNo).Title("TIN").Width(120);
 
-        columns.Bound(c => c.CustomerType).EditorTemplateName("CustomerTypes").Width(150);
-        columns.Bound(c => c.ContactName).Width(150);
-        columns.Bound(c => c.PhoneNumber).Title("Phone").Width(120);
-          
-        columns.Bound(c => c.Address).Width(200);
-        columns.Bound(c => c.Country).EditorTemplateName("CountrySelector").Width(150);
-        columns.Bound(c => c.IsActive).Width(100).ClientTemplate(
-           "<input type='checkbox' disabled = 'true' value='#= IsActive #' " +
-               "# if (IsActive) { #" +
-                   "checked='checked'" +
-               "# } #" +
-           "/>"
-       );
-       
+          columns.Bound(c => c.CustomerType).EditorTemplateName("CustomerTypes").Width(150);
+          columns.Bound(c => c.ContactName).Width(150);
+          columns.Bound(c => c.PhoneNumber).Title("Phone").Width(120);
 
-        columns.Bound(c => c.OrgBranchName).Width(200).Hidden(true);
-        columns.Bound(c => c.DateCreated).Width(150).Hidden(true).Format("{0:dd/MM/yyyy}");
-        columns.Bound(c => c.LastModified).Width(150).Hidden(true).Format("{0:dd/MM/yyyy}");
-        columns.Bound(c => c.CreatedBy).Width(150).Hidden(true);
-        columns.Bound(c => c.ModifiedBy).Width(150).Hidden(true);
-        columns.Command(command =>
-        {
-            command.Edit();
-           
-        }).Width(180);
+          columns.Bound(c => c.Address).Width(200);
+          columns.Bound(c => c.Country).EditorTemplateName("CountrySelector").Width(150);
+          columns.Bound(c => c.IsActive).Width(100).ClientTemplate(
+             "<input type='checkbox' disabled = 'true' value='#= IsActive #' " +
+                 "# if (IsActive) { #" +
+                     "checked='checked'" +
+                 "# } #" +
+             "/>"
+         );
+
+
+          columns.Bound(c => c.OrgBranchName).Width(200).Hidden(true);
+          columns.Bound(c => c.DateCreated).Width(150).Hidden(true).Format("{0:dd/MM/yyyy}");
+          columns.Bound(c => c.LastModified).Width(150).Hidden(true).Format("{0:dd/MM/yyyy}");
+          columns.Bound(c => c.CreatedBy).Width(150).Hidden(true);
+          columns.Bound(c => c.ModifiedBy).Width(150).Hidden(true);
+          columns.Command(command =>
+          {
+              command.Edit();
+
+          }).Width(180);
       })
       .ToolBar(toolbar => {
-            toolbar.Create();
-            toolbar.Excel();
-           
+          toolbar.Create();
+          toolbar.Excel();
+          toolbar.Custom().IconClass("fa fa-phone").Action("UpdateEmptyPhoneWithDefault", "ArCustomerProfile").Text("&nbsp;&nbsp;Set Default Phone").HtmlAttributes(new { /*onclick = "onSetDefaultPhoneClick()",*/ @class = "btn btn-info", title = "Set Default Phone (+251 – 11000000) for customers with no phone number." });
+
       })
               .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("Customer").Window(w => w.Title("Customer Registration")))
    .HtmlAttributes(new { style = "height: 550px;" })
@@ -51,10 +52,10 @@
                        .ButtonCount(5))
       .Scrollable()
            .Selectable(selectable =>
-                        {
-                            selectable.Mode(GridSelectionMode.Single);
-                            selectable.Type(GridSelectionType.Row);
-                        })
+           {
+               selectable.Mode(GridSelectionMode.Single);
+               selectable.Type(GridSelectionType.Row);
+           })
                     .Sortable(sortable =>
                     {
                         sortable.SortMode(GridSortMode.SingleColumn);

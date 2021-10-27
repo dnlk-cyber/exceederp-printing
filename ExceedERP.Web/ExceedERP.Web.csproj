@@ -959,8 +959,10 @@
     <Compile Include="Areas\Finance\Controllers\GL\GlSegmentSequenceController.cs" />
     <Compile Include="Areas\Finance\Controllers\GL\GLTaxRateController.cs" />
     <Compile Include="Areas\Finance\Controllers\GL\JournalSourceMapController.cs" />
+    <Compile Include="Areas\Finance\Controllers\GL\SubModule\CRMTransactionsController.cs" />
     <Compile Include="Areas\Finance\Controllers\GL\SubModule\FixedAssetTransactionsController.cs" />
     <Compile Include="Areas\Finance\Controllers\GL\SubModule\InventoryTransactionsController.cs" />
+    <Compile Include="Areas\Finance\Controllers\InvoiceArchiveController.cs" />
     <Compile Include="Areas\Finance\Controllers\SelfCare\PaymentRequestDepartmentValidationController.cs" />
     <Compile Include="Areas\Finance\Controllers\SelfCare\ApTravelExpenseClaimRequestController.cs" />
     <Compile Include="Areas\Finance\Controllers\SelfCare\ApTravelExpenseExpenseRequestController.cs" />
@@ -4808,6 +4810,14 @@
     <Content Include="Areas\ProductionFollowUp\Views\web.config" />
     <Content Include="Areas\ProductionFollowUp\Views\_ViewStart.cshtml" />
     <Content Include="Areas\Finance\Views\GLSegmentCrossValidation\EditorTemplates\GLNaturalAccount.cshtml" />
+    <Content Include="Areas\Finance\Views\CRMTransactions\CashSalesInvoice.cshtml" />
+    <Content Include="Areas\Finance\Views\CRMTransactions\CreditSalesInvoice.cshtml" />
+    <Content Include="Areas\Finance\Views\CRMTransactions\CreditSettlement.cshtml" />
+    <Content Include="Areas\Finance\Views\CRMTransactions\Deposit.cshtml" />
+    <Content Include="Areas\Finance\Views\CRMTransactions\Shipment.cshtml" />
+    <Content Include="Areas\Finance\Views\FinancePrint\GlBegJournalVoucher.cshtml" />
+    <Content Include="Areas\Finance\Views\InvoiceArchive\Index.cshtml" />
+    <Content Include="Areas\Inventory\Views\StoreRequisition\EditorTemplates\ItemCategorySelector.cshtml" />
     <None Include="Properties\PublishProfiles\Brana.pubxml" />
     <None Include="Properties\PublishProfiles\mega.pubxml" />
     <None Include="Scripts\kendo\2018.3.911\kendo.all-vsdoc.js" />

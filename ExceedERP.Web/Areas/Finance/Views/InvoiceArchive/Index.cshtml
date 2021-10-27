@@ -1,0 +1,64 @@
+﻿@using ExceedERP.Core.Domain.Finance
+<legend>Archive</legend>
+@(Html.Kendo().Grid<InvoiceArchive>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.PaidFor).Width(130);
+          columns.Bound(c => c.InvoiceNo).Width(100);
+          columns.Bound(c => c.VoucherNo).Width(100);
+          columns.Bound(c => c.AmountPaid).Width(100).Format("{0:N2}");
+          columns.Bound(c => c.DatePaid).Width(100);
+          columns.Bound(c => c.BoxFileNo).Width(100);
+
+          columns.Bound(c => c.DateCreated).Width(150).Format("{0:dd/MM/yyyy}").Hidden(true);
+          
+          columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+                              toolbar.Create();
+                              toolbar.Excel();
+                              // toolbar.Pdf();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .HtmlAttributes(new { style = "height: 550px;" })
+      .Pageable(pageable => pageable
+          .Input(true)
+          .Numeric(false)
+          .Refresh(true)
+          .PageSizes(true)
+          .ButtonCount(5))
+
+      .Scrollable()
+      .Selectable(selectable =>
+      {
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
+      })
+      .Sortable(sortable =>
+      {
+          sortable.SortMode(GridSortMode.SingleColumn);
+      })
+      .Filterable()
+      //.Groupable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(
+              model =>
+              {
+                  model.Id(p => p.InvoiceArchiveId);
+                  model.Field(p => p.CreatedBy).Editable(false);
+                  model.Field(p => p.ModifiedBy).Editable(false);
+                  model.Field(p => p.LastModified).Editable(false);
+                  model.Field(p => p.DateCreated).Editable(false);
+              })
+              .Events(ev => ev
+                    .Error("error_handler(\"grid\")")
+                    .RequestStart("onRequestStart(\"grid\")")
+                    .RequestEnd("onRequestEnd(\"grid\")"))
+
+          .Read(read => read.Action("Data_Read", "InvoiceArchive"))
+          .Create(create => create.Action("Data_Create", "InvoiceArchive"))
+          .Update(update => update.Action("Data_Update", "InvoiceArchive"))
+          .Destroy(destroy => destroy.Action("Data_Destroy", "InvoiceArchive"))
+      ))

@@ -21,17 +21,18 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AR.Invoice
         private readonly AccountHelper _accountHelper = new AccountHelper();
 
 
-        [AuthorizeRoles(FinanceConstants.AccountReceivableView ,FinanceConstants.AccountReceivableApprover,FinanceConstants.AccountReceivableInvoice)]
+        [AuthorizeRoles(FinanceConstants.AccountReceivableView, FinanceConstants.AccountReceivableApprover, FinanceConstants.AccountReceivableInvoice)]
         public ActionResult Index()
         {
             return View();
         }
 
-        [AuthorizeRoles(FinanceConstants.AccountReceivableView ,FinanceConstants.AccountReceivableApprover,FinanceConstants.AccountReceivableInvoice)]
+        [AuthorizeRoles(FinanceConstants.AccountReceivableView, FinanceConstants.AccountReceivableApprover, FinanceConstants.AccountReceivableInvoice)]
         public ActionResult ARInvoiceLines_Read(int id, [DataSourceRequest]DataSourceRequest request)
         {
-            IQueryable<ArInvoiceLines> arinvoicelines = _db.ARInvoiceLines.Where(x=>x.ArInvoiceId==id);
-            DataSourceResult result = arinvoicelines.ToDataSourceResult(request, aRInvoiceLines => new {
+            IQueryable<ArInvoiceLines> arinvoicelines = _db.ARInvoiceLines.Where(x => x.ArInvoiceId == id);
+            DataSourceResult result = arinvoicelines.ToDataSourceResult(request, aRInvoiceLines => new
+            {
                 ArInvoiceId = aRInvoiceLines.ArInvoiceId,
                 ArInvoiceLinesId = aRInvoiceLines.ArInvoiceLinesId,
                 Items = aRInvoiceLines.Items,
@@ -39,6 +40,8 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AR.Invoice
                 AccountCode = aRInvoiceLines.AccountCode,
                 AccountDesc = aRInvoiceLines.AccountDesc,
                 Quantity = aRInvoiceLines.Quantity,
+                RemainingQuantity = aRInvoiceLines.RemainingQuantity,
+                ArSalesOrderLineId = aRInvoiceLines.ArSalesOrderLineId,
                 UnitPrice = aRInvoiceLines.UnitPrice,
                 SubTotal = aRInvoiceLines.SubTotal,
                 GLTaxRateID = aRInvoiceLines.GLTaxRateID,
@@ -55,9 +58,9 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AR.Invoice
             return Json(result);
         }
 
-       [AuthorizeRoles( FinanceConstants.AccountReceivableInvoice)]
+        [AuthorizeRoles(FinanceConstants.AccountReceivableInvoice)]
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult ARInvoiceLines_Create(int id,[DataSourceRequest]DataSourceRequest request, ArInvoiceLines aRInvoiceLines)
+        public ActionResult ARInvoiceLines_Create(int id, [DataSourceRequest]DataSourceRequest request, ArInvoiceLines aRInvoiceLines)
         {
             #region calculate
 
@@ -86,35 +89,37 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AR.Invoice
             #endregion
             if (ModelState.IsValid)
             {
-                    var entity = new ArInvoiceLines
-                    {
-                        Items = aRInvoiceLines.Items,
-                        ArInvoiceId = id,
-                        Description = aRInvoiceLines.Description,
-                        AccountCode = aRInvoiceLines.AccountCode,
-                        AccountDesc = _accountHelper.GetAccountDesc(aRInvoiceLines.AccountCode),
-                        Quantity = aRInvoiceLines.Quantity,
-                        UnitPrice = aRInvoiceLines.UnitPrice,
-                        SubTotal = aRInvoiceLines.Quantity * aRInvoiceLines.UnitPrice,
-                        GLTaxRateID = aRInvoiceLines.GLTaxRateID,
-                        TaxAmount = aRInvoiceLines.TaxAmount,
-                        Discount = aRInvoiceLines.Discount,
-                        TotalAmount = aRInvoiceLines.TotalAmount,
-                        OrgBranchName = aRInvoiceLines.OrgBranchName,
-                        DateCreated = DateTime.Now,
-                        LastModified = aRInvoiceLines.LastModified,
-                        CreatedBy = User.Identity.Name,
-                        ModifiedBy = aRInvoiceLines.ModifiedBy
-                    };
+                var entity = new ArInvoiceLines
+                {
+                    Items = aRInvoiceLines.Items,
+                    ArInvoiceId = id,
+                    Description = aRInvoiceLines.Description,
+                    AccountCode = aRInvoiceLines.AccountCode,
+                    AccountDesc = _accountHelper.GetAccountDesc(aRInvoiceLines.AccountCode),
+                    Quantity = aRInvoiceLines.Quantity,
+                    RemainingQuantity = aRInvoiceLines.RemainingQuantity,
+                    ArSalesOrderLineId = aRInvoiceLines.ArSalesOrderLineId,
+                    UnitPrice = aRInvoiceLines.UnitPrice,
+                    SubTotal = aRInvoiceLines.Quantity * aRInvoiceLines.UnitPrice,
+                    GLTaxRateID = aRInvoiceLines.GLTaxRateID,
+                    TaxAmount = aRInvoiceLines.TaxAmount,
+                    Discount = aRInvoiceLines.Discount,
+                    TotalAmount = aRInvoiceLines.TotalAmount,
+                    OrgBranchName = aRInvoiceLines.OrgBranchName,
+                    DateCreated = DateTime.Now,
+                    LastModified = aRInvoiceLines.LastModified,
+                    CreatedBy = User.Identity.Name,
+                    ModifiedBy = aRInvoiceLines.ModifiedBy
+                };
 
-                    _db.ARInvoiceLines.Add(entity);
-                    _db.SaveChanges();
-                    aRInvoiceLines.ArInvoiceLinesId = entity.ArInvoiceLinesId;
+                _db.ARInvoiceLines.Add(entity);
+                _db.SaveChanges();
+                aRInvoiceLines.ArInvoiceLinesId = entity.ArInvoiceLinesId;
 
-                    #region update parent and default distribution
+                #region update parent and default distribution
 
-                    UpdateInvoiceTotals(id);
-                    _distributionHelper.UpdateArInvoiceDistribution(id);
+                UpdateInvoiceTotals(id);
+                _distributionHelper.UpdateArInvoiceDistribution(id);
 
                 #endregion
                 #region operation log
@@ -125,9 +130,9 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AR.Invoice
             return Json(new[] { aRInvoiceLines }.ToDataSourceResult(request, ModelState));
         }
 
-       [AuthorizeRoles( FinanceConstants.AccountReceivableInvoice)]
+        [AuthorizeRoles(FinanceConstants.AccountReceivableInvoice)]
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult ARInvoiceLines_Update([DataSourceRequest]DataSourceRequest request, ArInvoiceLines aRInvoiceLines,int id)
+        public ActionResult ARInvoiceLines_Update([DataSourceRequest]DataSourceRequest request, ArInvoiceLines aRInvoiceLines, int id)
         {
             if (ModelState.IsValid)
             {
@@ -138,7 +143,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AR.Invoice
                         x => x.ArInvoiceId == aRInvoiceLines.ArInvoiceId);
                 if (parent != null && parent.IsOnlineApproved)
                 {
-                     ModelState.AddModelError("approved", "You cannot manipulate this record");
+                    ModelState.AddModelError("approved", "You cannot manipulate this record");
                     //return View("Error");
                 }
 
@@ -159,35 +164,37 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AR.Invoice
                 #endregion
 
                 var entity = new ArInvoiceLines
-                    {
-                        ArInvoiceLinesId = aRInvoiceLines.ArInvoiceLinesId,
-                        ArInvoiceId = id,
-                        Items = aRInvoiceLines.Items,
-                        Description = aRInvoiceLines.Description,
-                        AccountCode = aRInvoiceLines.AccountCode,
-                        AccountDesc = _accountHelper.GetAccountDesc(aRInvoiceLines.AccountCode),
-                        Quantity = aRInvoiceLines.Quantity,
-                        UnitPrice = aRInvoiceLines.UnitPrice,
-                        SubTotal = aRInvoiceLines.SubTotal,
-                        GLTaxRateID = aRInvoiceLines.GLTaxRateID,
-                        TaxAmount = aRInvoiceLines.TaxAmount,
-                        TotalAmount = aRInvoiceLines.TotalAmount,
-                        Discount = aRInvoiceLines.Discount,
-                        OrgBranchName = aRInvoiceLines.OrgBranchName,
-                        DateCreated = aRInvoiceLines.DateCreated,
-                        LastModified = DateTime.Now,
-                        CreatedBy = aRInvoiceLines.CreatedBy,
-                        ModifiedBy = User.Identity.Name
-                    };
+                {
+                    ArInvoiceLinesId = aRInvoiceLines.ArInvoiceLinesId,
+                    ArInvoiceId = id,
+                    Items = aRInvoiceLines.Items,
+                    Description = aRInvoiceLines.Description,
+                    AccountCode = aRInvoiceLines.AccountCode,
+                    AccountDesc = _accountHelper.GetAccountDesc(aRInvoiceLines.AccountCode),
+                    Quantity = aRInvoiceLines.Quantity,
+                    RemainingQuantity = aRInvoiceLines.RemainingQuantity,
+                    ArSalesOrderLineId = aRInvoiceLines.ArSalesOrderLineId,
+                    UnitPrice = aRInvoiceLines.UnitPrice,
+                    SubTotal = aRInvoiceLines.SubTotal,
+                    GLTaxRateID = aRInvoiceLines.GLTaxRateID,
+                    TaxAmount = aRInvoiceLines.TaxAmount,
+                    TotalAmount = aRInvoiceLines.TotalAmount,
+                    Discount = aRInvoiceLines.Discount,
+                    OrgBranchName = aRInvoiceLines.OrgBranchName,
+                    DateCreated = aRInvoiceLines.DateCreated,
+                    LastModified = DateTime.Now,
+                    CreatedBy = aRInvoiceLines.CreatedBy,
+                    ModifiedBy = User.Identity.Name
+                };
 
-                    _db.ARInvoiceLines.Attach(entity);
-                    _db.Entry(entity).State = EntityState.Modified;
-                    _db.SaveChanges();
+                _db.ARInvoiceLines.Attach(entity);
+                _db.Entry(entity).State = EntityState.Modified;
+                _db.SaveChanges();
 
-                    #region update parent and default distribution
+                #region update parent and default distribution
 
-                    UpdateInvoiceTotals(id);
-                    _distributionHelper.UpdateArInvoiceDistribution(id);
+                UpdateInvoiceTotals(id);
+                _distributionHelper.UpdateArInvoiceDistribution(id);
 
                 #endregion
 
@@ -199,7 +206,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AR.Invoice
             return Json(new[] { aRInvoiceLines }.ToDataSourceResult(request, ModelState));
         }
 
-       [AuthorizeRoles( FinanceConstants.AccountReceivableInvoice)]
+        [AuthorizeRoles(FinanceConstants.AccountReceivableInvoice)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ARInvoiceLines_Destroy([DataSourceRequest]DataSourceRequest request, ArInvoiceLines aRInvoiceLines)
         {
@@ -217,38 +224,40 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AR.Invoice
             #endregion
             if (ModelState.IsValid)
             {
-                
-                
-                    var entity = new ArInvoiceLines
-                    {
-                        ArInvoiceLinesId = aRInvoiceLines.ArInvoiceLinesId,
-                        Items = aRInvoiceLines.Items,
-                        Description = aRInvoiceLines.Description,
-                        AccountCode = aRInvoiceLines.AccountCode,
-                        AccountDesc = aRInvoiceLines.AccountDesc,
-                        Quantity = aRInvoiceLines.Quantity,
-                        UnitPrice = aRInvoiceLines.UnitPrice,
-                        SubTotal = aRInvoiceLines.SubTotal,
-                        GLTaxRateID = aRInvoiceLines.GLTaxRateID,
-                        TaxAmount = aRInvoiceLines.TaxAmount,
-                        TotalAmount = aRInvoiceLines.TotalAmount,
-                        Discount = aRInvoiceLines.Discount,
-                        OrgBranchName = aRInvoiceLines.OrgBranchName,
-                        DateCreated = aRInvoiceLines.DateCreated,
-                        LastModified = aRInvoiceLines.LastModified,
-                        CreatedBy = aRInvoiceLines.CreatedBy,
-                        ModifiedBy = aRInvoiceLines.ModifiedBy
-                    };
-
-                    _db.ARInvoiceLines.Attach(entity);
-                    _db.ARInvoiceLines.Remove(entity);
-                    _db.SaveChanges();
 
 
-                    #region update parent and default distribution
+                var entity = new ArInvoiceLines
+                {
+                    ArInvoiceLinesId = aRInvoiceLines.ArInvoiceLinesId,
+                    Items = aRInvoiceLines.Items,
+                    Description = aRInvoiceLines.Description,
+                    AccountCode = aRInvoiceLines.AccountCode,
+                    AccountDesc = aRInvoiceLines.AccountDesc,
+                    Quantity = aRInvoiceLines.Quantity,
+                    RemainingQuantity = aRInvoiceLines.RemainingQuantity,
+                    ArSalesOrderLineId = aRInvoiceLines.ArSalesOrderLineId,
+                    UnitPrice = aRInvoiceLines.UnitPrice,
+                    SubTotal = aRInvoiceLines.SubTotal,
+                    GLTaxRateID = aRInvoiceLines.GLTaxRateID,
+                    TaxAmount = aRInvoiceLines.TaxAmount,
+                    TotalAmount = aRInvoiceLines.TotalAmount,
+                    Discount = aRInvoiceLines.Discount,
+                    OrgBranchName = aRInvoiceLines.OrgBranchName,
+                    DateCreated = aRInvoiceLines.DateCreated,
+                    LastModified = aRInvoiceLines.LastModified,
+                    CreatedBy = aRInvoiceLines.CreatedBy,
+                    ModifiedBy = aRInvoiceLines.ModifiedBy
+                };
 
-                    _distributionHelper.UpdateArInvoiceDistribution(aRInvoiceLines.ArInvoiceId);
-                    UpdateInvoiceTotals(aRInvoiceLines.ArInvoiceId);
+                _db.ARInvoiceLines.Attach(entity);
+                _db.ARInvoiceLines.Remove(entity);
+                _db.SaveChanges();
+
+
+                #region update parent and default distribution
+
+                _distributionHelper.UpdateArInvoiceDistribution(aRInvoiceLines.ArInvoiceId);
+                UpdateInvoiceTotals(aRInvoiceLines.ArInvoiceId);
 
                 #endregion
                 #region delete log

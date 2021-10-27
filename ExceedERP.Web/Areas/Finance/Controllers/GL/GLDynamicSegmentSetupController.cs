@@ -4,6 +4,7 @@ using System.Web.Mvc;
 using ExceedERP.Core.Domain.Finance.GL.Dynamic;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.DataAccess.Migrations;
 using ExceedERP.Helpers.Common;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;

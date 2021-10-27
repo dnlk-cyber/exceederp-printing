@@ -575,7 +575,19 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers
                 }),
                 JsonRequestBehavior.AllowGet);
         }
-
+        public JsonResult GetItemCategoryExcludingFuel()
+        {
+            var fuelCategoryCodes = new HashSet<string>( db.FuelItemSettings.Select(x => x.ItemCategoryCode));
+            var itemCategory = db.ItemCategorys
+                .Where(x => x.HaveParent == false && fuelCategoryCodes.Contains(x.ItemCategoryCode) == false)
+                .ToList();
+            return Json(itemCategory.Select(p => new
+            {
+                Name = p.ItemCategoryCode + "-" + p.Name,
+                ItemCategoryCode = p.ItemCategoryCode
+            }),
+                JsonRequestBehavior.AllowGet);
+        }
         public JsonResult GetFuelItemCategory()
         {
             var itemCategory = db.FuelItemSettings.DistinctBy(x => x.ItemCategoryCode).AsQueryable();
@@ -1007,7 +1019,8 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers
         
         public JsonResult GetReceiveSuppliers(string id, string type)
         {
-            int did = int.Parse(id);
+            //int did = int.Parse(id);
+            int.TryParse(id, out int did);
             int typed = int.Parse(type);
             var receiveTypes = db.ReceiveTypes.Find(typed);
             if (receiveTypes != null)
@@ -1693,6 +1706,13 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers
         public ActionResult ItemFilterCat()
         {
             return View();
+        }
+
+        public JsonResult GetPlateNumbersForFuelRequisition()
+        {
+            var plateNumbers = db.AssetRegistrations
+                .Where(a => string.IsNullOrEmpty(a.PlateNo) == false).Select(p => new { p.PlateNo }).Distinct().ToList();
+            return Json(plateNumbers.Select(p => new { p.PlateNo }), JsonRequestBehavior.AllowGet);
         }
     }
 }

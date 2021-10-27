@@ -82,6 +82,10 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AR.Setting
             {
                 ModelState.AddModelError("exist", "The customer ID already exists.");
             }
+            if (string.IsNullOrEmpty(aRCustomerProfile.PhoneNumber))
+            {
+                ModelState.AddModelError("", "Phone number is required");
+            }
             #endregion
             if (ModelState.IsValid)
             {
@@ -134,6 +138,10 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AR.Setting
             if (exists1.Any())
             {
                 ModelState.AddModelError("exist", "The customer ID already exists.");
+            }
+            if (string.IsNullOrEmpty(aRCustomerProfile.PhoneNumber))
+            {
+                ModelState.AddModelError("", "Phone number is required");
             }
             #endregion
             if (ModelState.IsValid)
@@ -221,7 +229,47 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AR.Setting
 
             return File(fileContents, contentType, fileName);
         }
+        public ActionResult UpdateEmptyPhoneWithDefault()
+        {
+            var customersWithNoPhone = _db.ARCustomerProfiles.Where(c => c.PhoneNumber == null).ToList();
+            if (customersWithNoPhone.Any())
+            {
+                var defaultPhone = "+251 – 11000000";
+                foreach (var item in customersWithNoPhone)
+                {
+                    item.PhoneNumber = defaultPhone;
 
+                    _db.ARCustomerProfiles.Attach(item);
+                    _db.Entry(item).State = EntityState.Modified;
+                    _db.SaveChanges();
+                }
+                //if (result > 0)
+                //{
+                //    return Json(new
+                //    {
+                //        Message = $"{customersWithNoPhone.Count} Customers set to default phone number ({defaultPhone})",
+                //        Status = "OK"
+                //    }, JsonRequestBehavior.AllowGet);
+                //}
+                //else
+                //{
+                //    return Json(new
+                //    {
+                //        Message = $"Operation canceled.",
+                //        Status = "Error"
+                //    }, JsonRequestBehavior.AllowGet);
+                //}
+            }
+            //else
+            //{
+            //    return Json(new
+            //    {
+            //        Message = $"All customers have phone numbers.",
+            //        Status = "Error"
+            //    }, JsonRequestBehavior.AllowGet);
+            //}
+            return Redirect(nameof(Index));
+        }
         protected override void Dispose(bool disposing)
         {
             _db.Dispose();

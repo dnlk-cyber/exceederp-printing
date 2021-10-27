@@ -531,7 +531,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
                             }
                         }
 
-                        var import = new GLRecordJournalBegDistribution
+                        var dist = new GLRecordJournalBegDistribution
                         {
                             GLRecordJournalBegId = myid,
                             AccountCode = line.GLLedgerPosting.AccountCode,
@@ -540,7 +540,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
                             Credit = credit,
                         };
 
-                        dbContext.GLRecordJournalBegDistributions.Add(import);
+                        dbContext.GLRecordJournalBegDistributions.Add(dist);
                         dbContext.SaveChanges();
 
                     }
@@ -633,7 +633,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
                 return Json(formattedData, JsonRequestBehavior.AllowGet);
             }
 
-            if (record != null)
+            if (record != null && record.IsOnlineApproved && ! record.isPosted)
             {
                 AccountHelper _accountHelper = new AccountHelper();
                 var lines = _db.GLRecordJournalBegDistributions.Where(x => x.GLRecordJournalBegId == myid).AsNoTracking();
@@ -714,7 +714,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
                     SourcesName = "GL",
                     JournalNumber = $"Beginning Journal {period.Name}",
                     EffectiveDate = period.DateFrom,
-                    Posting = "POSTED",
+                    Posting = "",//"POSTED",
                     isReversed = false,
                     IsSendForApproval = false,
                     isPosted =true,
