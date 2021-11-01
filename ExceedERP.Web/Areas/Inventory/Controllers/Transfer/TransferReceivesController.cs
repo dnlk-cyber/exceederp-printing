@@ -723,7 +723,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Transfer
                             PartOrCodeNumber = item.PartOrCodeNumber,
                             ShippedQuantity = item.ShippedQuantity,
                             TPrice = item.ShippedQuantity * item.UPrice,
-                            ReceivedQuantity = 0,
+                            ReceivedQuantity = remainingQty,
                             DateCreated = DateTime.Now,
                             CreatedBy = User.Identity.Name
                         };
