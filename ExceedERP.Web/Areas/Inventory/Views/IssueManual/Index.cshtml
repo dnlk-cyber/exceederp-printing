@@ -401,7 +401,7 @@
         if (conf === true) {
             $.ajax({
                 type: "POST",
-                url: '@Url.Action("Void", "Issue", new {area = "Inventory"})',
+                url: '@Url.Action("Void", "IssueManual", new {area = "Inventory"})',
             data: { id: id },
             success: function (result) {
                 // toastr.warnning(result.Message);
