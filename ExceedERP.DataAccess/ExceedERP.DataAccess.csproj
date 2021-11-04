@@ -93,6 +93,10 @@
     <Compile Include="Migrations\202110270715203_finance.Designer.cs">
       <DependentUpon>202110270715203_finance.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202111040843067_payroll-hr.cs" />
+    <Compile Include="Migrations\202111040843067_payroll-hr.Designer.cs">
+      <DependentUpon>202111040843067_payroll-hr.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -120,6 +124,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202110270715203_finance.resx">
       <DependentUpon>202110270715203_finance.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202111040843067_payroll-hr.resx">
+      <DependentUpon>202111040843067_payroll-hr.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
