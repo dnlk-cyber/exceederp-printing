@@ -730,11 +730,13 @@
     <Compile Include="Domain\HRM\ArchiveManagement\Zone.cs" />
     <Compile Include="Domain\HRM\Attendance\Absence.cs" />
     <Compile Include="Domain\HRM\Attendance\Attendance.cs" />
+    <Compile Include="Domain\HRM\Attendance\AttendanceNew.cs" />
     <Compile Include="Domain\HRM\Attendance\EmpPayrollNoDaysWorked.cs" />
     <Compile Include="Domain\HRM\EmployeeDetail\ComplainCC.cs" />
     <Compile Include="Domain\HRM\EmployeeDetail\ComplainDetail.cs" />
     <Compile Include="Domain\HRM\EmployeeDetail\ComplainResponse.cs" />
     <Compile Include="Domain\HRM\EmployeeDetail\DelegationReason.cs" />
+    <Compile Include="Domain\HRM\EmployeeDetail\DelegationTempoRole.cs" />
     <Compile Include="Domain\HRM\EmployeeDetail\DeligationCC.cs" />
     <Compile Include="Domain\HRM\EmployeeDetail\DuplicateProfile.cs" />
     <Compile Include="Domain\HRM\EmployeeDetail\EmployeeCodeSequenceSetting.cs" />

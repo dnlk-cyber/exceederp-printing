@@ -164,7 +164,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                             db.SaveChanges();
                             loan.LoanId = entity.LoanId;
                             #region operation log
-                            UserHelper.OperationLog(Request.UserHostAddress, "payroll loan", "Success", User.Identity.Name, $"added loan  {entity.Description} for employee {entity.Employee.EmployeeCode} amount {entity.LoanAmount} monthly amount {entity.MonthlyAmount} months {entity.Months} balance {entity.Balance} period {entity.GLPeriodId} active {entity.IsActive}", Modules.Payroll);
+                            UserHelper.OperationLog(Request.UserHostAddress, "payroll loan", "Success", User.Identity.Name, $"added loan  {entity.Description} for employee {entity.EmployeeId} amount {entity.LoanAmount} monthly amount {entity.MonthlyAmount} months {entity.Months} balance {entity.Balance} period {entity.GLPeriodId} active {entity.IsActive}", Modules.Payroll);
                             #endregion
                         }
                     }
@@ -228,7 +228,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                 db.Entry(entity).State = EntityState.Modified;
                                 db.SaveChanges();
                                 #region operation log
-                                UserHelper.OperationLog(Request.UserHostAddress, "payroll loan", "Success", User.Identity.Name, $"updated loan  {entity.Description} for employee {entity.Employee.EmployeeCode} amount {entity.LoanAmount} monthly amount {entity.MonthlyAmount} months {entity.Months} balance {entity.Balance} period {entity.GLPeriodId} active {entity.IsActive}", Modules.Payroll);
+                                UserHelper.OperationLog(Request.UserHostAddress, "payroll loan", "Success", User.Identity.Name, $"updated loan  {entity.Description} for employee {entity.EmployeeId} amount {entity.LoanAmount} monthly amount {entity.MonthlyAmount} months {entity.Months} balance {entity.Balance} period {entity.GLPeriodId} active {entity.IsActive}", Modules.Payroll);
                                 #endregion
                             }
                             else
@@ -267,7 +267,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                             db.Entry(entity).State = EntityState.Modified;
                             db.SaveChanges();
                             #region operation log
-                            UserHelper.OperationLog(Request.UserHostAddress, "payroll loan", "Success", User.Identity.Name, $"updated loan  {entity.Description} for employee {entity.Employee.EmployeeCode} amount {entity.LoanAmount} monthly amount {entity.MonthlyAmount} months {entity.Months} balance {entity.Balance} period {entity.GLPeriodId} active {entity.IsActive}", Modules.Payroll);
+                            UserHelper.OperationLog(Request.UserHostAddress, "payroll loan", "Success", User.Identity.Name, $"updated loan  {entity.Description} for employee {entity.EmployeeId} amount {entity.LoanAmount} monthly amount {entity.MonthlyAmount} months {entity.Months} balance {entity.Balance} period {entity.GLPeriodId} active {entity.IsActive}", Modules.Payroll);
                             #endregion
                         }
                     }

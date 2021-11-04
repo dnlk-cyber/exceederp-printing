@@ -384,7 +384,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                 if (findPeriod.DateTo > delegationEndDate &&
                                     checkDelegation.FromDateTime > findPeriod.DateFrom)
                                 {
-                                    double dateDiff = (checkDelegation.FromDateTime - delegationEndDate).TotalDays;
+                                    var dif = (checkDelegation.FromDateTime - delegationEndDate);
+                                    double dateDiff = dif.HasValue ? dif.Value.TotalDays : 0;
                                     if (dateDiff >= 30)
                                     {
                                         totalDelagatin = Convert.ToDecimal(dateDiff);
@@ -393,7 +394,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                 else if (delegationEndDate > findPeriod.DateTo &&
                                          checkDelegation.FromDateTime > findPeriod.DateFrom)
                                 {
-                                    double dateDiff = (findPeriod.DateTo - checkDelegation.FromDateTime).TotalDays;
+                                    var dif = (findPeriod.DateTo - checkDelegation.FromDateTime);
+                                    double dateDiff = dif.HasValue ? dif.Value.TotalDays : 0;
                                     if (dateDiff >= 30)
                                     {
                                         totalDelagatin = Convert.ToDecimal(dateDiff);
@@ -401,7 +403,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                 }
                                 else if (findPeriod.DateTo < checkDelegation.FromDateTime)
                                 {
-                                    double dateDiff = (findPeriod.DateTo - checkDelegation.FromDateTime).TotalDays;
+                                    var dif = (findPeriod.DateTo - checkDelegation.FromDateTime);
+                                    double dateDiff = dif.HasValue ? dif.Value.TotalDays : 0;
                                     if (dateDiff >= 30)
                                     {
                                         totalDelagatin = Convert.ToDecimal(dateDiff);
@@ -443,7 +446,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                 if (findPeriod.DateTo > delegationEndDate &&
                                     checkDelegation.FromDateTime > findPeriod.DateFrom)
                                 {
-                                    double dateDiff = (checkDelegation.FromDateTime - delegationEndDate).TotalDays;
+                                    var dif = (checkDelegation.FromDateTime - delegationEndDate);
+                                    double dateDiff = dif.HasValue ? dif.Value.TotalDays : 0;
                                     if (dateDiff >= 30)
                                     {
                                         totalDelagatin = Convert.ToDecimal(dateDiff);
@@ -452,7 +456,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                 else if (delegationEndDate > findPeriod.DateTo &&
                                          checkDelegation.FromDateTime > findPeriod.DateFrom)
                                 {
-                                    double dateDiff = (findPeriod.DateTo - checkDelegation.FromDateTime).TotalDays;
+                                    var dif = (findPeriod.DateTo - checkDelegation.FromDateTime);
+                                    double dateDiff = dif.HasValue? dif.Value.TotalDays : 0;
                                     if (dateDiff >= 30)
                                     {
                                         totalDelagatin = Convert.ToDecimal(dateDiff);
@@ -460,7 +465,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                 }
                                 else if (findPeriod.DateTo < checkDelegation.FromDateTime)
                                 {
-                                    double dateDiff = (findPeriod.DateTo - checkDelegation.FromDateTime).TotalDays;
+                                    var dif = (findPeriod.DateTo - checkDelegation.FromDateTime);
+                                    double dateDiff = dif.HasValue ? dif.Value.TotalDays : 0;
                                     if (dateDiff >= 30)
                                     {
                                         totalDelagatin = Convert.ToDecimal(dateDiff);

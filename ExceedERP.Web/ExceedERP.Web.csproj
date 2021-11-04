@@ -1570,9 +1570,11 @@
     <Compile Include="Areas\HRM\Controllers\Payroll\AllowanceController.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Areas\HRM\Controllers\Payroll\AllowanceCourtController.cs" />
     <Compile Include="Areas\HRM\Controllers\Payroll\AllowanceMappingController.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Areas\HRM\Controllers\Payroll\AllowanceMappingCourtController.cs" />
     <Compile Include="Areas\HRM\Controllers\Payroll\AllowanceTypeRuleController.cs">
       <SubType>Code</SubType>
     </Compile>

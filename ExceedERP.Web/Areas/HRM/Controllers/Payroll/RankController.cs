@@ -16,7 +16,6 @@ using System.Net;
 using System.Web;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.HRM.SalaryStructure;
-using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Web.Helpers;
 using Kendo.Mvc;

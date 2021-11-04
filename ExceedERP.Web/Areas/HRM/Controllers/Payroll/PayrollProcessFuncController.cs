@@ -71,7 +71,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
             var employees = from e in db.Person_Employee
                             join p in db.Placements
                                 on e.EmployeeId equals p.EmployeeId
-                            where e.IsActive && p.isCurrent
+                            where e.IsActive && p.isCurrent && !p.IsPend
                             //where e.EmployeeId==814
                             select (new
                             {
@@ -177,6 +177,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                    // int maxempassignment = 0;
                     foreach (EmployeeIdView employee in FilteredactiveEmployees)
                     {
+                        string branchCode = null;
 
                         payroldata = new PayrollProcessViewModel();
                         payroldata.UnpaidLeaveDays = GetemployeeUnpaidLeaveDays(employee.PersonId, findPeriod.GLPeriodId);
@@ -262,20 +263,28 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                         }
 
                         #endregion
-
+                       
                         #region basic salary
 
                         var assignment =
                             db.Placements.Where(x => x.EmployeeId == employee.PersonId && x.isCurrent).FirstOrDefault();
                         if (assignment != null)
                         {
-
                             payroldata.BasicSalary = assignment.Salary;
+                            //branchCode = assignment.Branch.Code;
+                            var br = db.Branch.Find(assignment.BranchId);
+                            if(br != null)
+                            {
+                                branchCode = br.Code;
+                            }
                         }
                         else
                         {
                             payroldata.BasicSalary = 0;
                         }
+                        #region set branch code ()
+                        payroldata.LocationCode = branchCode;
+                        #endregion
                         #region Check placment Date 
                         decimal WorkingdateDiff = 0;                       
 
@@ -288,7 +297,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                             {
                                 if (findPeriod.DateTo > employee.PlacmentDate)
                                 {
-                                    WorkingdateDiff = (decimal)(findPeriod.DateTo - employee.PlacmentDate).TotalDays;//+1;                                               
+                                    WorkingdateDiff = (decimal)(findPeriod.DateTo - employee.PlacmentDate).TotalDays+1;                                               
                                                                                                                      //WorkingdateDiff = (30 - employee.PlacmentDate.Day)+1;
                                     decimal actualWorkeddays = DeductUnpaidLeave ? WorkingdateDiff - payroldata.UnpaidLeaveDays : WorkingdateDiff;//added
                                     if (actualWorkeddays <= 30 && actualWorkeddays > 0)
@@ -480,8 +489,10 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                         if (findPeriod.DateTo > delegationEndDate &&
                                             checkDelegation.FromDateTime > findPeriod.DateFrom)
                                         {
+                                            var dif =
+                                                (checkDelegation.FromDateTime - delegationEndDate);
                                             double dateDiff =
-                                                (checkDelegation.FromDateTime - delegationEndDate).TotalDays;
+                                                dif.HasValue? dif.Value.TotalDays : 0;
                                             if (dateDiff >= 30)
                                             {
                                                 totalDelagatin = Convert.ToDecimal(dateDiff);
@@ -490,8 +501,10 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                         else if (delegationEndDate > findPeriod.DateTo &&
                                                  checkDelegation.FromDateTime > findPeriod.DateFrom)
                                         {
+                                            var dif =
+                                                (findPeriod.DateTo - checkDelegation.FromDateTime);
                                             double dateDiff =
-                                                (findPeriod.DateTo - checkDelegation.FromDateTime).TotalDays;
+                                                dif.HasValue? dif.Value.TotalDays : 0;
                                             if (dateDiff >= 30)
                                             {
                                                 totalDelagatin = Convert.ToDecimal(dateDiff);
@@ -499,8 +512,10 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                         }
                                         else if (findPeriod.DateTo < checkDelegation.FromDateTime)
                                         {
+                                            var dif =
+                                                (findPeriod.DateTo - checkDelegation.FromDateTime);
                                             double dateDiff =
-                                                (findPeriod.DateTo - checkDelegation.FromDateTime).TotalDays;
+                                                dif.HasValue ? dif.Value.TotalDays : 0;
                                             if (dateDiff >= 30)
                                             {
                                                 totalDelagatin = Convert.ToDecimal(dateDiff);
@@ -542,8 +557,10 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                         if (findPeriod.DateTo > delegationEndDate &&
                                             checkDelegation.FromDateTime > findPeriod.DateFrom)
                                         {
+                                            var dif =
+                                                (checkDelegation.FromDateTime - delegationEndDate);
                                             double dateDiff =
-                                                (checkDelegation.FromDateTime - delegationEndDate).TotalDays;
+                                               dif.HasValue ? dif.Value.TotalDays : 0;
                                             if (dateDiff >= 30)
                                             {
                                                 totalDelagatin = Convert.ToDecimal(dateDiff);
@@ -552,8 +569,10 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                         else if (delegationEndDate > findPeriod.DateTo &&
                                                  checkDelegation.FromDateTime > findPeriod.DateFrom)
                                         {
+                                            var dif =
+                                                (findPeriod.DateTo - checkDelegation.FromDateTime);
                                             double dateDiff =
-                                                (findPeriod.DateTo - checkDelegation.FromDateTime).TotalDays;
+                                                dif.HasValue ? dif.Value.TotalDays : 0;
                                             if (dateDiff >= 30)
                                             {
                                                 totalDelagatin = Convert.ToDecimal(dateDiff);
@@ -561,8 +580,10 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                         }
                                         else if (findPeriod.DateTo < checkDelegation.FromDateTime)
                                         {
+                                            var dif =
+                                                (findPeriod.DateTo - checkDelegation.FromDateTime);
                                             double dateDiff =
-                                                (findPeriod.DateTo - checkDelegation.FromDateTime).TotalDays;
+                                                dif.HasValue ? dif.Value.TotalDays : 0;
                                             if (dateDiff >= 30)
                                             {
                                                 totalDelagatin = Convert.ToDecimal(dateDiff);

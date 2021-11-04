@@ -140,7 +140,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                              LastNameEnglish = a.employee.LastNameEnglish,
                              DateOfBirthAm = a.employee.DateOfBirthAm,
                              HiredDateAmharic = a.employee.HiredDateAmharic,
-                             Branch = a.bank.FirstOrDefault(x => x.EmployeeId == a.employee.EmployeeId && x.isCurrent ).Branch .Name ,
+                             //Branch = a.bank.FirstOrDefault(x => x.EmployeeId == a.employee.EmployeeId && x.isCurrent ).Branch .Name ,
 
                          });
 
@@ -158,7 +158,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                 DateOfBirthAm = person_Employee.DateOfBirthAm,
                 HiredDateAmharic = person_Employee.HiredDateAmharic,
                 AccountNumber = person_Employee.AccountNumber,
-                Branch = person_Employee.Branch,
+                //Branch = person_Employee.Branch,
              
 
             });
@@ -167,10 +167,14 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
         }
         private string GetBranchName(int id)
         {
-            var branch = db.Placements.Where(br => br.isCurrent && br.EmployeeId == id).FirstOrDefault();
-            if (branch != null)
+            var placement = db.Placements.Where(br => br.isCurrent && br.EmployeeId == id).FirstOrDefault();
+            if (placement != null)
             {
-                return branch.Branch.Name;
+                var branch = db.Branch.Find(placement.BranchId);
+                if(branch != null)
+                {
+                    return branch.Name;
+                }
             }
             return "";
         }

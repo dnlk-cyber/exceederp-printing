@@ -14,9 +14,8 @@ namespace ExceedERP.Core.Domain.HRM.EmployeeDetail
         public int FromEmployeeId { get; set; }
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}")]
-        [Required]
         [Display(Name = "HR_Attendance_Attendance_FromDateTime", ResourceType = typeof(Localization.Resources))]
-        public DateTime FromDateTime { get; set; }
+        public DateTime? FromDateTime { get; set; }
         [Display(Name = "HR_Attendance_Attendance_FromDateTime", ResourceType = typeof(Localization.Resources))]
         public string FromDateTimeAm { get; set; }
         [DataType(DataType.Date)]
@@ -35,6 +34,6 @@ namespace ExceedERP.Core.Domain.HRM.EmployeeDetail
         public virtual GLPeriod Period { get; set; }
         [Display(Name = "Remark", ResourceType = typeof(Localization.Resources))]
         public string Remark { get; set; }
-
+        public bool IsOpen { get; set; }
     }
 }

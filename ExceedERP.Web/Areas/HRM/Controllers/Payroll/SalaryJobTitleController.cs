@@ -34,7 +34,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
             ViewData["StepList"] = steps != null ? steps.ToList() : new List<Step>();
             var jobTitle = db.Lookups.Where(x => x.LookupType == LookUpTypes.JOB_TITLE);
             ViewData["jobTitles"] = jobTitle != null ? jobTitle.ToList() : new List<Lookup>();
-          //  GetSalary();
+            //  GetSalary();
             var structres = db.MainCompanyStructures.AsQueryable();
             ViewData["organization"] = structres;
             return View();
@@ -77,12 +77,13 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
         public ActionResult SalariesJobTitles_Read([DataSourceRequest]DataSourceRequest request)
         {
             IQueryable<SalaryJobTitle> salariesjobtitles = db.SalariesJobTitles;
-            DataSourceResult result = salariesjobtitles.ToDataSourceResult(request, salaryJobTitle => new {
+            DataSourceResult result = salariesjobtitles.ToDataSourceResult(request, salaryJobTitle => new
+            {
                 SalJobTiId = salaryJobTitle.SalJobTiId,
                 Salary = salaryJobTitle.Salary,
                 RankId = salaryJobTitle.RankId,
                 StepId = salaryJobTitle.StepId,
-                JobTitle = GetTitleName(salaryJobTitle.LookupId ),
+                JobTitle = GetTitleName(salaryJobTitle.LookupId),
                 LookupId = salaryJobTitle.LookupId,
                 Remark = salaryJobTitle.Remark,
                 DateCreated = salaryJobTitle.DateCreated,
@@ -124,8 +125,29 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                     db.SalariesJobTitles.Add(entity);
                     db.SaveChanges();
                     salaryJobTitle.SalJobTiId = entity.SalJobTiId;
+
                     #region operation log
-                    UserHelper.OperationLog(Request.UserHostAddress, "payroll salary job title", "Success", User.Identity.Name, $"added  {entity.SalJobTiId} rank {entity.Rank.RankName} step {entity.Step.StepName} job title {entity.Lookup.Description} amount {entity.SalJobTiId}", Modules.Payroll);
+                    string rankName = "";
+                    string stepName = "";
+                    string lookUpDescription = "";
+                    var rank = db.Ranks.FirstOrDefault(x => x.RankId == entity.RankId);
+                    if (rank != null)
+                    {
+                        rankName = rank.RankName;
+                    }
+                    var step = db.Steps.FirstOrDefault(x => x.StepId == entity.StepId);
+                    if (step != null)
+                    {
+                        stepName = step.StepName;
+                    }
+                    var lookup = db.Lookups.FirstOrDefault(x=>x.LookupId == entity.LookupId);
+                    if(lookup != null)
+                    {
+                        lookUpDescription = lookup.Description;
+                    }
+
+                    UserHelper.OperationLog(Request.UserHostAddress, "payroll salary job title", "Success", User.Identity.Name, $"added  {entity.SalJobTiId} rank {rank} step {step} job title {lookUpDescription} amount {entity.SalJobTiId}", Modules.Payroll);
+
                     #endregion
                 }
             }
@@ -145,26 +167,46 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                     Salary = salaryJobTitle.Salary,
                     RankId = salaryJobTitle.RankId,
                     StepId = salaryJobTitle.StepId,
-                    JobTitle = GetTitleName(salaryJobTitle.LookupId ),
+                    JobTitle = GetTitleName(salaryJobTitle.LookupId),
                     LookupId = salaryJobTitle.LookupId,
                     Remark = salaryJobTitle.Remark,
                     DateCreated = salaryJobTitle.DateCreated,
-                    LastModified = DateTime.Now ,
+                    LastModified = DateTime.Now,
                     CreatedBy = salaryJobTitle.CreatedBy,
-                    ModifiedBy = User.Identity .Name 
+                    ModifiedBy = User.Identity.Name
                 };
 
                 db.SalariesJobTitles.Attach(entity);
                 db.Entry(entity).State = EntityState.Modified;
                 db.SaveChanges();
                 #region operation log
-                UserHelper.OperationLog(Request.UserHostAddress, "payroll salary job title", "Success", User.Identity.Name, $"updated  {entity.SalJobTiId} rank {entity.Rank.RankName} step {entity.Step.StepName} job title {entity.Lookup.Description} amount {entity.SalJobTiId}", Modules.Payroll);
+
+                string rankName = "";
+                string stepName = "";
+                string lookUpDescription = "";
+                var rank = db.Ranks.FirstOrDefault(x => x.RankId == entity.RankId);
+                if (rank != null)
+                {
+                    rankName = rank.RankName;
+                }
+                var step = db.Steps.FirstOrDefault(x => x.StepId == entity.StepId);
+                if (step != null)
+                {
+                    stepName = step.StepName;
+                }
+                var lookup = db.Lookups.FirstOrDefault(x => x.LookupId == entity.LookupId);
+                if (lookup != null)
+                {
+                    lookUpDescription = lookup.Description;
+                }
+
+                UserHelper.OperationLog(Request.UserHostAddress, "payroll salary job title", "Success", User.Identity.Name, $"updated  {entity.SalJobTiId} rank {rank} step {step} job title {lookUpDescription} amount {entity.SalJobTiId}", Modules.Payroll);
                 #endregion
             }
 
             return Json(new[] { salaryJobTitle }.ToDataSourceResult(request, ModelState));
         }
-         [Authorize(Roles = HR_Company_Admin + "," +  "," + HR_Admin + "," + Payroll_Admin)]
+        [Authorize(Roles = HR_Company_Admin + "," + "," + HR_Admin + "," + Payroll_Admin)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult SalariesJobTitles_Destroy([DataSourceRequest]DataSourceRequest request, SalaryJobTitle salaryJobTitle)
         {
@@ -174,7 +216,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                 var entity = new SalaryJobTitle
                 {
                     SalJobTiId = salaryJobTitle.SalJobTiId,
-                    
+
                     Salary = salaryJobTitle.Salary,
                     RankId = salaryJobTitle.RankId,
                     StepId = salaryJobTitle.StepId,
@@ -187,7 +229,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                     ModifiedBy = salaryJobTitle.ModifiedBy
                 };
                 #region delete log
-                UserHelper.OperationLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted salary structure information of rank " + salaryJobTitle.RankId + " , step" + salaryJobTitle.StepId + " and " + salaryJobTitle.LookupId,Modules.Payroll);
+                UserHelper.OperationLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted salary structure information of rank " + salaryJobTitle.RankId + " , step" + salaryJobTitle.StepId + " and " + salaryJobTitle.LookupId, Modules.Payroll);
                 #endregion
                 db.SalariesJobTitles.Attach(entity);
                 db.SalariesJobTitles.Remove(entity);
@@ -196,8 +238,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
 
             return Json(new[] { salaryJobTitle }.ToDataSourceResult(request, ModelState));
         }
-      
-   
+
+
         public JsonResult GetSalary()
         {
 

@@ -1937,6 +1937,7 @@ namespace ExceedERP.DataAccess.Context
         public System.Data.Entity.DbSet<ExceedERP.Core.Domain.HRM.Payroll.Setting.PayrollEmployeeAccount> PayrollEmployeeAccounts { get; set; }
         public System.Data.Entity.DbSet<ExceedERP.Core.Domain.HRM.Payroll.Setting.PayrollAccounts> PayrollAccounts { get; set; }
         public System.Data.Entity.DbSet<Delegation> Delegations { get; set; }
+        public System.Data.Entity.DbSet<DelegationTempoRole> DelegationTempoRoles { get; set; }
 
         #endregion
 
@@ -3367,6 +3368,8 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<Core.Domain.Common.DocumentApproval.ApprovalGroupRule> ApprovalGroupRules { get; set; }
         public DbSet<Core.Domain.Common.DocumentApproval.AssignApprovalGroup> AssignApprovalGroups { get; set; }
         public DbSet<Core.Domain.Common.DocumentApproval.AssignApprovalGroupAssignment> AssignApprovalGroupAssignments { get; set; }
+        public System.Data.Entity.DbSet<ExceedERP.Core.Domain.HRM.Attendance.AttendanceNew> AttendanceNews { get; set; }
+        
         #endregion
 
 
@@ -3398,7 +3401,7 @@ namespace ExceedERP.DataAccess.Context
         //                entity.ModifiedBy = identityName;
         //                entity.LastModified = now;
         //            }
-                   
+
         //        }
         //    }
 
@@ -3406,7 +3409,7 @@ namespace ExceedERP.DataAccess.Context
         //}
 
 
-     
+
 
         public DbSet<SupplierRemoveBlackListValidation> SupplierRemoveBlackListValidations { get; set; }
         public DbSet<GlChartOfAccountCategory> GlChartOfAccountCategories { get; set; }

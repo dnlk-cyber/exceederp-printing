@@ -165,7 +165,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                     association.AssociationId = entity.AssociationId;
 
                                     #region operation log
-                                    UserHelper.OperationLog(Request.UserHostAddress, "payroll association", "Success", User.Identity.Name, $"added association type  {entity.Type} for employee {entity.Employee.EmployeeCode} amount type {entity.AmtPercnet.ToString()} amount {entity.Amount} monthly {entity.MonthlyAmount} additional amount {entity.AdditionalAmount}", Modules.Payroll);
+                                    UserHelper.OperationLog(Request.UserHostAddress, "payroll association", "Success", User.Identity.Name, $"added association type  {entity.Type} for employee {entity.EmployeeId} amount type {entity.AmtPercnet.ToString()} amount {entity.Amount} monthly {entity.MonthlyAmount} additional amount {entity.AdditionalAmount}", Modules.Payroll);
                                     #endregion
                                 }
                                 else
@@ -236,7 +236,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                 db.SaveChanges();
                                 association.AssociationId = entity.AssociationId;
                                 #region operation log
-                                UserHelper.OperationLog(Request.UserHostAddress, "payroll association", "Success", User.Identity.Name, $"added association type  {entity.Type} for employee {entity.Employee.EmployeeCode} amount type {entity.AmtPercnet.ToString()} amount {entity.Amount} monthly {entity.MonthlyAmount} additional amount {entity.AdditionalAmount}", Modules.Payroll);
+                                UserHelper.OperationLog(Request.UserHostAddress, "payroll association", "Success", User.Identity.Name, $"added association type  {entity.Type} for employee {entity.EmployeeId} amount type {entity.AmtPercnet.ToString()} amount {entity.Amount} monthly {entity.MonthlyAmount} additional amount {entity.AdditionalAmount}", Modules.Payroll);
                                 #endregion
                             }
                         }
@@ -348,7 +348,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                         db.SaveChanges();
                                         association.AssociationId = entity.AssociationId;
                                     #region operation log
-                                    UserHelper.OperationLog(Request.UserHostAddress, "payroll association", "Success", User.Identity.Name, $"updated association type  {entity.Type} for employee {entity.Employee.EmployeeCode} amount type {entity.AmtPercnet.ToString()} amount {entity.Amount} monthly {entity.MonthlyAmount} additional amount {entity.AdditionalAmount}", Modules.Payroll);
+                                    UserHelper.OperationLog(Request.UserHostAddress, "payroll association", "Success", User.Identity.Name, $"updated association type  {entity.Type} for employee {entity.EmployeeId} amount type {entity.AmtPercnet.ToString()} amount {entity.Amount} monthly {entity.MonthlyAmount} additional amount {entity.AdditionalAmount}", Modules.Payroll);
                                     #endregion
                                 }
 
@@ -383,7 +383,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                 db.Entry(entity).State = EntityState.Modified;
                                 db.SaveChanges();
                             #region operation log
-                            UserHelper.OperationLog(Request.UserHostAddress, "payroll association", "Success", User.Identity.Name, $"updated association type  {entity.Type} for employee {entity.Employee.EmployeeCode} amount type {entity.AmtPercnet.ToString()} amount {entity.Amount} monthly {entity.MonthlyAmount} additional amount {entity.AdditionalAmount}", Modules.Payroll);
+                            UserHelper.OperationLog(Request.UserHostAddress, "payroll association", "Success", User.Identity.Name, $"updated association type  {entity.Type} for employee {entity.EmployeeId} amount type {entity.AmtPercnet.ToString()} amount {entity.Amount} monthly {entity.MonthlyAmount} additional amount {entity.AdditionalAmount}", Modules.Payroll);
                             #endregion
                         }
                     }

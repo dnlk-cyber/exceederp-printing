@@ -13,17 +13,25 @@ using ExceedERP.Core.Domain.HRM;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Core.Domain.Finance.GL;
 using ExceedERP.Core.Domain.HRM.EmployeeDetail;
-using ExceedERP.Core.Domain.HRM.Payroll;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Web.Controllers;
 using ExceedERP.Web.Helpers;
 using ExceedERP.Core.Domain.Common;
+using ExceedERP.Web.Models;
+using Microsoft.AspNet.Identity.Owin;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
 {
     [Authorize(Roles = HR_Profile_Admin + "," + HR_Profile_User + "," + HR_Admin)]
     public class DelegationController : BaseController
     {
+        private ApplicationRoleManager RoleManager;
+
+        public DelegationController()
+        {
+            RoleManager = ApplicationRoleManager.RoleManager;
+        }
+
         private ExceedDbContext db = new ExceedDbContext();
         private const string HR_Profile_Admin = "HR_Profile_Admin";
         private const string HR_Profile_User = "HR_Profile_User";
@@ -46,8 +54,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                            g
                        });
             ViewData["PeriodList"] = db.GLPeriods.ToList();// list.Select(x => x.g).ToList(); ;
-            var listt = inputs.GetEmployees(User.Identity.Name);
-            ViewData["EmployeeList"] = listt.Where(x => x.IsActive);
+                                                           // var listt = inputs.GetEmployees(User.Identity.Name);
+            ViewData["EmployeeList"] = db.Person_Employee.ToList();
             return View();
         }
         public ActionResult IndexForCC()
@@ -85,8 +93,15 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
         [Authorize(Roles = HR_Profile_Admin + "," + HR_Profile_User + "," + HR_Admin)]
         public ActionResult Delegations_Read([DataSourceRequest]DataSourceRequest request)
         {
-            List<string> employees = inputs.GetUserBranchEmployees(User.Identity.Name);
-            IQueryable<Delegation> delegations = db.Delegations.Where(x => employees.Contains(x.EmployeeId.ToString()));
+            // List<string> employees = inputs.GetUserBranchEmployees(User.Identity.Name);
+
+            var placements = db.Placements.Where(x => x.isCurrent).ToList();
+            int branchId = UserInformationHelper.GetUserBranchByUserName(User.Identity.Name);
+
+            var employees = placements.Where(x => x.BranchId == branchId).Select(x => x.EmployeeId);
+
+            IQueryable<Delegation> delegations = db.Delegations;//.Where(x => employees.Contains(x.EmployeeId));
+
             DataSourceResult result = delegations.ToDataSourceResult(request, delegation => new
             {
                 DelegationId = delegation.DelegationId,
@@ -103,21 +118,63 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                 CreatedBy = delegation.CreatedBy,
                 ModifiedBy = delegation.ModifiedBy,
                 //Reason = delegation.Reason,
-                GLPeriodId = delegation.GLPeriodId
+                GLPeriodId = delegation.GLPeriodId,
+                IsOpen = delegation.IsOpen,
+                HideButtons = CheckDate(delegation.DelegationId)
             });
 
             return Json(result);
+        }
+        public ActionResult Profile_Delegations_Read([DataSourceRequest]DataSourceRequest request, int id)
+        {
+
+            IQueryable<Delegation> delegations = db.Delegations.Where(x => x.EmployeeId == id || x.FromEmployeeId == id);
+
+            DataSourceResult result = delegations.ToDataSourceResult(request, delegation => new
+            {
+                DelegationId = delegation.DelegationId,
+                FromDateTime = delegation.FromDateTime,
+                ToDateTime = delegation.ToDateTime,
+                FromDateTimeAm = delegation.FromDateTimeAm,
+                ToDateTimeAm = delegation.ToDateTimeAm,
+                EmployeeId = delegation.EmployeeId,
+                FromEmployeeId = delegation.FromEmployeeId,
+                Remark = delegation.Remark,
+                OrgBranchName = delegation.OrgBranchName,
+                DateCreated = delegation.DateCreated,
+                LastModified = delegation.LastModified,
+                CreatedBy = delegation.CreatedBy,
+                ModifiedBy = delegation.ModifiedBy,
+                //Reason = delegation.Reason,
+                GLPeriodId = delegation.GLPeriodId,
+                IsOpen = delegation.IsOpen,
+                HideButtons = CheckDate(delegation.DelegationId)
+            });
+
+            return Json(result);
+        }
+        public bool CheckDate(int id)
+        {
+            var delegation = db.Delegations.FirstOrDefault(x => x.DelegationId == id);
+            if (delegation != null)
+            {
+                if (delegation.ToDateTime < DateTime.Now)
+                {
+                    return true;
+                }
+            }
+            return false;
         }
         public ActionResult DelegationsCC_Read([DataSourceRequest]DataSourceRequest request)
         {
             List<Delegation> delegations = new List<Delegation>();
             var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-            var place = db.Placements.FirstOrDefault(x=>x.EmployeeId == empId && x.isCurrent);
-            if(place != null)
-            {               
-                var delegationCC = db.DelegationCCs.Where(x => x.CC == place.OrgStructureId).Select(x=>x.DelegationId);
+            var place = db.Placements.FirstOrDefault(x => x.EmployeeId == empId && x.isCurrent);
+            if (place != null)
+            {
+                var delegationCC = db.DelegationCCs.Where(x => x.CC == place.OrgStructureId).Select(x => x.DelegationId);
 
-                 delegations = db.Delegations.Where(x=> delegationCC.Contains(x.DelegationId)).ToList();
+                delegations = db.Delegations.Where(x => delegationCC.Contains(x.DelegationId)).ToList();
             }
             DataSourceResult result = delegations.ToDataSourceResult(request, delegation => new
             {
@@ -145,61 +202,59 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
         public ActionResult Delegations_Create([DataSourceRequest]DataSourceRequest request, Delegation delegation)
         {
             ModelState.Clear();
+            if (delegation.FromDateTimeAm != null)
+            {
+                var splitDate = delegation.FromDateTimeAm.Split('/');
+                delegation.FromDateTime = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
+            }
+            if (delegation.ToDateTimeAm != null)
+            {
+                var splitDate = delegation.ToDateTimeAm.Split('/');
+                delegation.FromDateTime = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
+            }
+            var checkexistancep = db.PayrollProcessViewModel.FirstOrDefault(x => x.GLPeriodId == delegation.GLPeriodId);
+            if (checkexistancep != null)
+            {
+                ModelState.AddModelError("", "You cannot add this delegation. This period is already processed!!");
+            }
+            if (delegation.FromEmployeeId == delegation.EmployeeId)
+            {
+                ModelState.AddModelError("", "The assigned employee should be diffretnt from Delegator!!");
+            }
             if (ModelState.IsValid)
             {
-                var checkexistancep = db.PayrollProcessViewModel.Where(x => x.GLPeriodId == delegation.GLPeriodId).FirstOrDefault();
-                if (checkexistancep != null)
+
+                var entity = new Delegation
                 {
+                    FromDateTime = delegation.FromDateTime,
+                    ToDateTime = delegation.ToDateTime,
+                    FromDateTimeAm = delegation.FromDateTimeAm,
+                    ToDateTimeAm = delegation.ToDateTimeAm,
+                    EmployeeId = delegation.EmployeeId,
+                    Remark = delegation.Remark,
+                    FromEmployeeId = delegation.FromEmployeeId,
+                    OrgBranchName = delegation.OrgBranchName,
+                    DateCreated = DateTime.Now,
+                    LastModified = delegation.LastModified,
+                    CreatedBy = User.Identity.Name,
+                    ModifiedBy = delegation.ModifiedBy,
+                    // Reason = delegation.Reason,
+                    GLPeriodId = delegation.GLPeriodId
+                };
 
+                db.Delegations.Add(entity);
+                db.SaveChanges();
+                delegation.DelegationId = entity.DelegationId;
 
-                    ModelState.AddModelError("", "You cannot add this delegation. This period is already processed!!");
-                }
-                else
-                {
-                    if (delegation.FromEmployeeId == delegation.EmployeeId)
-                    {
-                        ModelState.AddModelError("", "The assigned employee should be diffretnt from Delegator!!");
-                    }
-                    //else if (FromDate.Date > ToDate.Date)
-                    //{
-                    //    ModelState.AddModelError("", "Please check the date range !!");
-                    //}
-                    else
-                    {
+                #region operation log
 
-                        var entity = new Delegation
-                        {
-                            FromDateTime = FromDate,
-                            ToDateTime = ToDate,
-                            FromDateTimeAm = FromDateAm,
-                            ToDateTimeAm = ToDateAm,
-                            EmployeeId = delegation.EmployeeId,
-                            Remark = delegation.Remark,
-                            FromEmployeeId = delegation.FromEmployeeId,
-                            OrgBranchName = delegation.OrgBranchName,
-                            DateCreated = DateTime.Now,
-                            LastModified = delegation.LastModified,
-                            CreatedBy = User.Identity.Name,
-                            ModifiedBy = delegation.ModifiedBy,
-                           // Reason = delegation.Reason,
-                            GLPeriodId = delegation.GLPeriodId
-                        };
+                UserHelper.OperationLog(Request.UserHostAddress, "Delegation", "Success", User.Identity.Name, User.Identity.Name + " add new Delegation at date" + DateTime.Today, Modules.HRM);
 
-                        db.Delegations.Add(entity);
-                        db.SaveChanges();
-                        delegation.DelegationId = entity.DelegationId;
+                #endregion
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "delegation", "Success", User.Identity.Name, $"added delegation from  {entity.FromDateTime} to {entity.ToDateTime} ", Modules.Payroll);
+                #endregion
 
-                        #region operation log
-                        
-                        UserHelper.OperationLog(Request.UserHostAddress, "Delegation", "Success", User.Identity.Name, User.Identity.Name + " add new Delegation at date" + DateTime.Today, Modules.HRM);
-
-                        #endregion
-                        #region operation log
-                        UserHelper.OperationLog(Request.UserHostAddress, "delegation", "Success", User.Identity.Name, $"added delegation from  {entity.FromDateTime} to {entity.ToDateTime} ", Modules.Payroll);
-                        #endregion
-
-                    }
-                }
             }
             return Json(new[] { delegation }.ToDataSourceResult(request, ModelState));
         }
@@ -208,62 +263,64 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
         public ActionResult Delegations_Update([DataSourceRequest]DataSourceRequest request, Delegation delegation)
         {
             ModelState.Clear();
+
+            if (delegation.FromDateTimeAm != null)
+            {
+                var splitDate = delegation.FromDateTimeAm.Split('/');
+                delegation.FromDateTime = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
+            }
+            if (delegation.ToDateTimeAm != null)
+            {
+                var splitDate = delegation.ToDateTimeAm.Split('/');
+                delegation.FromDateTime = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
+            }
+            var checkexistancep = db.PayrollProcessViewModel.FirstOrDefault(x => x.GLPeriodId == delegation.GLPeriodId);
+            if (checkexistancep != null)
+            {
+                ModelState.AddModelError("", "You cannot add this delegation. This period is already processed!!");
+            }
+            if (delegation.FromEmployeeId == delegation.EmployeeId)
+            {
+                ModelState.AddModelError("", "The assigned employee should be diffretnt from Delegator!!");
+            }
+            var checkExit = db.PayrollProcessViewModel.FirstOrDefault(x => x.GLPeriodId == delegation.GLPeriodId);
+            if (checkExit != null)
+            {
+                ModelState.AddModelError("", "You cannot add this delegation. This period is already processed!!");
+            }
+            if (delegation.FromDateTime > delegation.ToDateTime)
+            {
+                ModelState.AddModelError("", "Please check the date range!!");
+            }
             if (ModelState.IsValid)
             {
-                if (FromDateAm == null)
-                {
-                    FromDateAm = delegation.FromDateTimeAm;
-                    var splitDate = FromDateAm.Split('/');
-                    FromDate = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
-                }
-                if (ToDateAm == null)
-                {
-                    ToDateAm = delegation.ToDateTimeAm;
-                    var splitDate = ToDateAm.Split('/');
-                    ToDate = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
-                }
-                var checkexistancep = db.PayrollProcessViewModel.Where(x => x.GLPeriodId == delegation.GLPeriodId).FirstOrDefault();
-                if (checkexistancep != null)
-                {
 
-
-                    ModelState.AddModelError("", "You cannot add this delegation. This period is already processed!!");
-                }
-                else
+                var entity = new Delegation
                 {
-                    if (FromDate > ToDate)
-                    {
-                        ModelState.AddModelError("", "Please check the date range!!");
-                    }
-                    else
-                    {
-                        var entity = new Delegation
-                        {
-                            DelegationId = delegation.DelegationId,
-                            FromDateTime = FromDate,
-                            ToDateTime = ToDate,
-                            FromDateTimeAm = FromDateAm,
-                            ToDateTimeAm = ToDateAm,
-                            EmployeeId = delegation.EmployeeId,
-                            FromEmployeeId = delegation.FromEmployeeId,
-                            Remark = delegation.Remark,
-                            OrgBranchName = delegation.OrgBranchName,
-                            DateCreated = delegation.DateCreated,
-                            LastModified = DateTime.Now,
-                            CreatedBy = delegation.CreatedBy,
-                            ModifiedBy = User.Identity.Name,
-                            //Reason = delegation.Reason,
-                            GLPeriodId = delegation.GLPeriodId
-                        };
+                    DelegationId = delegation.DelegationId,
+                    FromDateTime = FromDate,
+                    ToDateTime = ToDate,
+                    FromDateTimeAm = FromDateAm,
+                    ToDateTimeAm = ToDateAm,
+                    EmployeeId = delegation.EmployeeId,
+                    FromEmployeeId = delegation.FromEmployeeId,
+                    Remark = delegation.Remark,
+                    OrgBranchName = delegation.OrgBranchName,
+                    DateCreated = delegation.DateCreated,
+                    LastModified = DateTime.Now,
+                    CreatedBy = delegation.CreatedBy,
+                    ModifiedBy = User.Identity.Name,
+                    //Reason = delegation.Reason,
+                    GLPeriodId = delegation.GLPeriodId
+                };
 
-                        db.Delegations.Attach(entity);
-                        db.Entry(entity).State = EntityState.Modified;
-                        db.SaveChanges();
-                        #region operation log
-                        UserHelper.OperationLog(Request.UserHostAddress, "delegation", "Success", User.Identity.Name, $"updated delegation from  {entity.FromDateTime} to {entity.ToDateTime} ", Modules.Payroll);
-                        #endregion
-                    }
-                }
+                db.Delegations.Attach(entity);
+                db.Entry(entity).State = EntityState.Modified;
+                db.SaveChanges();
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "delegation", "Success", User.Identity.Name, $"updated delegation from  {entity.FromDateTime} to {entity.ToDateTime} ", Modules.Payroll);
+                #endregion
+
             }
             return Json(new[] { delegation }.ToDataSourceResult(request, ModelState));
         }
@@ -468,10 +525,217 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
 
             return Json(new[] { delegation }.ToDataSourceResult(request, ModelState));
         }
+        private ApplicationGroupManager _groupManager;
+        public ApplicationGroupManager GroupManager
+        {
+            get
+            {
+                return _groupManager ?? new ApplicationGroupManager();
+            }
+            private set
+            {
+                _groupManager = value;
+            }
+        }
+
+        public ActionResult OpenDelegation(int id)
+        {
+            ApplicationDbContext adb = new ApplicationDbContext();
+
+            var delegation = db.Delegations.FirstOrDefault(x => x.DelegationId == id);
+
+            if (delegation != null)
+            {
+                delegation.IsOpen = true;
+                delegation.FromDateTime = DateTime.Now;
+                delegation.FromDateTimeAm = XAPI.EthiopicDateTime.GetEthiopicDate(DateTime.Now.Day, DateTime.Now.Month, DateTime.Now.Year);
+
+                db.Entry(delegation).State = EntityState.Modified;
+                db.SaveChanges();
+
+                var placementFrom = db.Placements.FirstOrDefault(x => x.EmployeeId == delegation.FromEmployeeId && x.isCurrent);
+                if (placementFrom != null && placementFrom.IsHead)
+                {
+                    placementFrom.IsHead = false;
+
+                    db.Entry(placementFrom).State = EntityState.Modified;
+                    db.SaveChanges();
+
+                    var placementTo = db.Placements.FirstOrDefault(x => x.EmployeeId == delegation.EmployeeId && x.isCurrent);
+                    if (placementTo != null)
+                    {
+                        placementTo.IsHead = true;
+
+                        db.Entry(placementTo).State = EntityState.Modified;
+                        db.SaveChanges();
+                    }
+                }
+                var user = adb.Users.FirstOrDefault(x => x.EmployeeId == delegation.FromEmployeeId.ToString());
+                if (user != null)
+                {
+                    List<string> roleNames = new List<string>();
+                    var toUser = adb.Users.FirstOrDefault(x => x.EmployeeId == delegation.EmployeeId.ToString());
+                    if (toUser != null)
+                    {
+                        foreach (var rm in user.Roles)
+                        {
+                            var chek = toUser.Roles.FirstOrDefault(x => x.RoleId == rm.RoleId);
+                            if (chek == null)
+                            {
+                                var identityRole = adb.Roles.Find(rm.RoleId);
+
+                                if (identityRole != null)
+                                {
+                                    roleNames.Add(identityRole.Name);
+                                }
+                            }
+                        }
+
+
+                        //  var _userManager = HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
+
+                        ApplicationUserManager _userManager = HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
+
+
+                        _userManager.AddToRolesAsync(toUser.Id, roleNames.ToArray());
+
+                        //  _userManager.AddToRolesAsync(toUser.Id, rolesArray);
+
+                        foreach (var tou in roleNames)
+                        {
+                            _userManager.AddToRoleAsync(toUser.Id, tou);
+
+                            var tempo = new DelegationTempoRole();
+
+                            tempo.FromUserId = user.Id;
+                            tempo.ToUserId = toUser.Id;
+                            tempo.RoleName = tou;
+
+                            db.DelegationTempoRoles.Add(tempo);
+                            db.SaveChanges();
+                        }
+                    }
+                }
+
+                var formattedData = new
+                {
+                    Message = "You successfully open this delegation .",
+                    Status = "OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+            var formattedData1 = new
+            {
+                Message = "the employee is not open.",
+                Status = "FAIL"
+            };
+            return Json(formattedData1, JsonRequestBehavior.AllowGet);
+
+        }
+        public ActionResult CloseDelegation(int id)
+        {
+            ApplicationDbContext adb = new ApplicationDbContext();
+            var delegation = db.Delegations.FirstOrDefault(x => x.DelegationId == id);
+
+            if (delegation != null)
+            {
+                delegation.IsOpen = false;
+                delegation.ToDateTime = DateTime.Now;
+                delegation.ToDateTimeAm = XAPI.EthiopicDateTime.GetEthiopicDate(DateTime.Now.Day, DateTime.Now.Month, DateTime.Now.Year);
+
+                db.Entry(delegation).State = EntityState.Modified;
+                db.SaveChanges();
+
+                var placementTo = db.Placements.FirstOrDefault(x => x.EmployeeId == delegation.EmployeeId && x.isCurrent);
+                if (placementTo != null && placementTo.IsHead)
+                {
+                    placementTo.IsHead = false;
+
+                    db.Entry(placementTo).State = EntityState.Modified;
+                    db.SaveChanges();
+
+                    var placementFrom = db.Placements.FirstOrDefault(x => x.EmployeeId == delegation.FromEmployeeId && x.isCurrent);
+                    if (placementFrom != null)
+                    {
+                        placementFrom.IsHead = true;
+
+                        db.Entry(placementFrom).State = EntityState.Modified;
+                        db.SaveChanges();
+                    }
+                }
+
+
+                var user = adb.Users.FirstOrDefault(x => x.EmployeeId == delegation.FromEmployeeId.ToString());
+                if (user != null)
+                {
+                    //List<string> roleNames = new List<string>();
+
+                    //foreach (var rm in user.Roles)
+                    //{
+                    //    var identityRole = adb.Roles.Find(rm.RoleId);
+                    //    if (identityRole != null)
+                    //    {
+                    //        roleNames.Add(identityRole.Name);
+                    //    }
+                    //}
+
+                    //var rolesArray = roleNames.ToArray();
+
+                    var toUser = adb.Users.FirstOrDefault(x => x.EmployeeId == delegation.EmployeeId.ToString());
+                    if (toUser != null)
+                    {
+                        var tempoRoles = db.DelegationTempoRoles.Where(x => x.FromUserId == user.Id && x.ToUserId == toUser.Id).ToList();
+
+                        List<string> roleNames = new List<string>();
+
+                        foreach (var temp in tempoRoles)
+                        {
+                            roleNames.Add(temp.RoleName);
+                        }
+
+                        var rolesArray = roleNames.ToArray();
+
+                        var _userManager = HttpContext.GetOwinContext().GetUserManager<ApplicationUserManager>();
+
+                        _userManager.RemoveFromRolesAsync(toUser.Id, rolesArray);
+
+                        foreach (var tm in tempoRoles)
+                        {
+                            db.Entry(tm).State = EntityState.Deleted;
+                            db.SaveChanges();
+                        }
+
+                        //db.Entry(tempoRoles).State = EntityState.Deleted;
+                        //db.SaveChanges();
+                    }
+                }
+
+                var formattedData = new
+                {
+                    Message = "You successfully close this delegation .",
+                    Status = "OK"
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+            var formattedData1 = new
+            {
+                Message = "the employee is not closed.",
+                Status = "FAIL"
+            };
+            return Json(formattedData1, JsonRequestBehavior.AllowGet);
+
+        }
+
         protected override void Dispose(bool disposing)
         {
             db.Dispose();
             base.Dispose(disposing);
         }
+    }
+
+    public class ToEmpRoleVM
+    {
+        public string RoleId { get; set; }
+        public string UserId { get; set; }
     }
 }

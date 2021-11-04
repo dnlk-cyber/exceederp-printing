@@ -138,7 +138,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                             db.SaveChanges();
                             addition.AdditionId = entity.AdditionId;
                             #region operation log
-                            UserHelper.OperationLog(Request.UserHostAddress, "payroll addition", "Success", User.Identity.Name, $"added addition for period {entity.GLPeriodId} and employee {entity.Employee.EmployeeCode} type {entity.AdditionId} amount {entity.Amount} ", Modules.Payroll);
+                            UserHelper.OperationLog(Request.UserHostAddress, "payroll addition", "Success", User.Identity.Name, $"added addition for period {entity.GLPeriodId} and employee {entity.EmployeeId} type {entity.AdditionId} amount {entity.Amount} ", Modules.Payroll);
                             #endregion
                         }
                     }
@@ -191,7 +191,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                             db.SaveChanges();
 
                             #region operation log
-                            UserHelper.OperationLog(Request.UserHostAddress, "payroll addition", "Success", User.Identity.Name, $"edited addition for period {entity.GLPeriodId} and employee {entity.Employee.EmployeeCode} type {entity.AdditionId} amount {entity.Amount} ", Modules.Payroll);
+                            UserHelper.OperationLog(Request.UserHostAddress, "payroll addition", "Success", User.Identity.Name, $"edited addition for period {entity.GLPeriodId} and employee {entity.EmployeeId} type {entity.AdditionId} amount {entity.Amount} ", Modules.Payroll);
                             #endregion
                         }
                     }
@@ -225,7 +225,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                         db.Entry(entity).State = EntityState.Modified;
                         db.SaveChanges();
                         #region operation log
-                        UserHelper.OperationLog(Request.UserHostAddress, "payroll addition", "Success", User.Identity.Name, $"edited addition for period {entity.GLPeriodId} and employee {entity.Employee.EmployeeCode} type {entity.AdditionId} amount {entity.Amount} ", Modules.Payroll);
+                        UserHelper.OperationLog(Request.UserHostAddress, "payroll addition", "Success", User.Identity.Name, $"edited addition for period {entity.GLPeriodId} and employee {entity.EmployeeId} type {entity.AdditionId} amount {entity.Amount} ", Modules.Payroll);
                         #endregion
                     }
                 }
@@ -270,7 +270,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                         db.SaveChanges();
 
                         #region operation log
-                        UserHelper.OperationLog(Request.UserHostAddress, "payroll addition", "Success", User.Identity.Name, $"deleted addition for period {entity.GLPeriodId} and employee {entity.Employee.EmployeeCode} type {entity.AdditionId} amount {entity.Amount} ", Modules.Payroll);
+                        UserHelper.OperationLog(Request.UserHostAddress, "payroll addition", "Success", User.Identity.Name, $"deleted addition for period {entity.GLPeriodId} and employee {entity.EmployeeId} type {entity.AdditionId} amount {entity.Amount} ", Modules.Payroll);
                         #endregion
                     }
                 }

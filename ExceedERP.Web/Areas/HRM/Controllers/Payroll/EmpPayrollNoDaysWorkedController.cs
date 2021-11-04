@@ -1,4 +1,4 @@
-﻿using System.Collections.Generic;
+using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
@@ -29,7 +29,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
         private static List<EmployeeIdView> List { get; set; }
         public ActionResult Index()
         {
-
             List = new List<EmployeeIdView>();
             GetPeriod();
             List = inputs.GetPlacmentEmployees(User.Identity.Name);
@@ -65,15 +64,15 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
             if (glyear != null)
             {
                 var periodLists = periodList.Where(x => x.GlFiscalYearId == glyear.GlFiscalYearId).ToList();
-                foreach(var pl in periodLists)
+                foreach (var pl in periodLists)
                 {
-                    var checkexistancep = db.PayrollProcessViewModel.Where(x => x.GLPeriodId == pl.GLPeriodId).FirstOrDefault();
-                    if(checkexistancep == null)
+                    var checkexistancep = db.PayrollProcessViewModel.FirstOrDefault(x => x.GLPeriodId == pl.GLPeriodId);
+                    if (checkexistancep == null)
                     {
                         gLPeriods.Add(pl);
                     }
                 }
-                
+
             }
 
 
@@ -105,9 +104,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                 }
                 foreach (var l in List)
                 {
-                    var check =
-                        db.EmpPayrollNoDaysWorkeds.Where(x => x.EmployeeId == l.PersonId && x.GLPeriodId == period)
-                            .FirstOrDefault();
+                    var check = db.EmpPayrollNoDaysWorkeds.FirstOrDefault(x => x.EmployeeId == l.PersonId && x.GLPeriodId == period);
                     if (check != null)
                     {
                         db.EmpPayrollNoDaysWorkeds.Attach(check);
@@ -141,12 +138,79 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
             }
             return null;
         }
+
+        public ActionResult RefreshNew(int period)
+        {
+            var checkexistancep = db.PayrollProcessViewModel.Where(x => x.GLPeriodId == period).FirstOrDefault();
+            if (checkexistancep != null)
+            {
+                var error = "You cannot create this data. It already processed!!";
+                return new JavaScriptResult() { Script = "alert('" + error + "');" };
+            }
+
+            var attendances = db.AttendanceNews.Where(x => x.GlPeriodId == period).Where(x => !x.IsPresentMorning || !x.IsPresentAfternoon).ToList();
+            foreach (var att in attendances)
+            {
+                double day = 0;
+                if (!att.IsPresentMorning && !att.IsPresentAfternoon)
+                {
+                    day = 1;
+                }
+                else if (!att.IsPresentMorning || !att.IsPresentAfternoon)
+                {
+                    day = 0.5;
+                }
+
+                var leave = db.Leaves.FirstOrDefault(x => x.EmployeeId == att.EmployeeId && x.From <= att.Date && x.To >= att.Date);
+                if (leave != null)
+                {
+                    if (leave.Day == LeaveDay.ሙሉ_ቀን)
+                    {
+                        day = day - 1;
+                    }
+                    else if (leave.Day == LeaveDay.ግማሽ_ቀን)
+                    {
+                        day = day - 0.5;
+                    }
+                }
+                var person = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == att.EmployeeId);
+                if (person != null)
+                {
+                    var absent = db.EmpPayrollNoDaysWorkeds.FirstOrDefault(x => x.EmployeeId == person.EmployeeId && x.GLPeriodId == att.GlPeriodId);
+                    if (absent != null)
+                    {
+                        absent.Days = Convert.ToDecimal(day);
+                        absent.ModifiedBy = User.Identity.Name;
+                        absent.LastModified = DateTime.Now;
+
+                        db.Entry(absent).State = EntityState.Modified;
+                        db.SaveChanges();
+                    }
+                    else
+                    {
+                        var entity = new EmpPayrollNoDaysWorked
+                        {
+                            EmployeeId = person.EmployeeId,
+                            GLPeriodId = att.GlPeriodId,
+                            Days = Convert.ToDecimal(day),
+                            DateCreated = DateTime.Now,
+                            CreatedBy = User.Identity.Name,
+                        };
+
+                        db.EmpPayrollNoDaysWorkeds.Add(entity);
+                        db.SaveChanges();
+                    }
+
+                }
+            }
+
+            return new JavaScriptResult() { Script = "alert('" + "Employee Absent days are successfully generated" + "');" };
+        }
         public ActionResult Refresh(int period)
         {
             var checkexistancep = db.PayrollProcessViewModel.Where(x => x.GLPeriodId == period).FirstOrDefault();
             if (checkexistancep != null)
             {
-
                 //ModelState.AddModelError("", "You cannot create this data. It already processed!!");
                 var error = "You cannot create this data. It already processed!!";
                 return new JavaScriptResult() { Script = "alert('" + error + "');" };
@@ -172,7 +236,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
 
             foreach (var e in emloyeeList)
             {
-
                 int id = 0;
                 var code = "";
                 var name = "";
@@ -197,7 +260,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                         late = total.ToString();
                     }
                 }
-
 
                 var employeeAttendance = weeklyAttendance.Where(x => x.EmployeeId.ToString() == e).ToList();
                 for (int i = 1; i < 5; i++)
@@ -367,18 +429,18 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                     // MeasureTaken = late.MeasureTaken,
                 };
 
-                var checkExistance = db.EmpPayrollNoDaysWorkeds.FirstOrDefault(x=>x.EmployeeId == entity.EmployeeId && x.GLPeriodId == entity.GLPeriodId);
-                if(checkExistance != null)
+                var checkExistance = db.EmpPayrollNoDaysWorkeds.FirstOrDefault(x => x.EmployeeId == entity.EmployeeId && x.GLPeriodId == entity.GLPeriodId);
+                if (checkExistance != null)
                 {
                     checkExistance.Days = totalNo;
                     checkExistance.ModifiedBy = User.Identity.Name;
                     checkExistance.LastModified = DateTime.Now;
 
-                   // db.EmpPayrollNoDaysWorkeds.Attach(entity);
+                    // db.EmpPayrollNoDaysWorkeds.Attach(entity);
                     db.Entry(checkExistance).State = EntityState.Modified;
                     db.SaveChanges();
                 }
-                else if(entity.Days > 0)
+                else if (entity.Days > 0)
                 {
                     db.EmpPayrollNoDaysWorkeds.Add(entity);
                     db.SaveChanges();
@@ -555,38 +617,36 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
             {
                 ModelState.AddModelError("", "this employee is already recoreded");
             }
+
+            var checkexistancep = db.PayrollProcessViewModel.FirstOrDefault(x => x.GLPeriodId == empPayrollNoDaysWorked.GLPeriodId);
+            if (checkexistancep != null)
+            {
+                ModelState.AddModelError("", "You cannot create this data. It already processed!!");
+            }
+
             if (ModelState.IsValid)
             {
-                var checkexistancep = db.PayrollProcessViewModel.Where(x => x.GLPeriodId == empPayrollNoDaysWorked.GLPeriodId).FirstOrDefault();
-                if (checkexistancep != null)
+                var entity = new EmpPayrollNoDaysWorked
                 {
+                    EmployeeId = empPayrollNoDaysWorked.EmployeeId,
+                    GLPeriodId = empPayrollNoDaysWorked.GLPeriodId,
+                    Days = empPayrollNoDaysWorked.Days,
+                    Remark = empPayrollNoDaysWorked.Remark,
+                    DateCreated = DateTime.Now,
+                    LastModified = empPayrollNoDaysWorked.LastModified,
+                    CreatedBy = User.Identity.Name,
+                    ModifiedBy = empPayrollNoDaysWorked.ModifiedBy,
+                    Reason = empPayrollNoDaysWorked.Reason,
+                    MeasureTaken = empPayrollNoDaysWorked.MeasureTaken,
+                };
 
-                    ModelState.AddModelError("", "You cannot create this data. It already processed!!");
-                }
+                db.EmpPayrollNoDaysWorkeds.Add(entity);
+                db.SaveChanges();
+                empPayrollNoDaysWorked.EmpPayrollNoDaysWorkedId = entity.EmpPayrollNoDaysWorkedId;
 
-                else
-                {
-                    var entity = new EmpPayrollNoDaysWorked
-                    {
-                        EmployeeId = empPayrollNoDaysWorked.EmployeeId,
-                        GLPeriodId = empPayrollNoDaysWorked.GLPeriodId,
-                        Days = empPayrollNoDaysWorked.Days,
-                        Remark = empPayrollNoDaysWorked.Remark,
-                        DateCreated = DateTime.Now,
-                        LastModified = empPayrollNoDaysWorked.LastModified,
-                        CreatedBy = User.Identity.Name,
-                        ModifiedBy = empPayrollNoDaysWorked.ModifiedBy,
-                        Reason = empPayrollNoDaysWorked.Reason,
-                        MeasureTaken = empPayrollNoDaysWorked.MeasureTaken,
-                    };
-
-                    db.EmpPayrollNoDaysWorkeds.Add(entity);
-                    db.SaveChanges();
-                    empPayrollNoDaysWorked.EmpPayrollNoDaysWorkedId = entity.EmpPayrollNoDaysWorkedId;
-                    #region operation log
-                    UserHelper.OperationLog(Request.UserHostAddress, "payroll employee work days", "Success", User.Identity.Name, $"added employee work days for employee  {entity.EmployeeCode} of period {entity.GLPeriod.Name} ", Modules.Payroll);
-                    #endregion
-                }
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "payroll employee work days", "Success", User.Identity.Name, $"added employee work days for employee  {entity.EmployeeId} of period {entity.GLPeriodId} ", Modules.Payroll);
+                #endregion
             }
 
             return Json(new[] { empPayrollNoDaysWorked }.ToDataSourceResult(request, ModelState));
@@ -596,39 +656,37 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
         public ActionResult EmpPayrollNoDaysWorkeds_Update([DataSourceRequest]DataSourceRequest request, EmpPayrollNoDaysWorked empPayrollNoDaysWorked)
         {
             ModelState.Clear();
-            if (ModelState.IsValid)
+
+            var checkexistance = db.PayrollProcessViewModel.FirstOrDefault(x => x.EmployeeId == empPayrollNoDaysWorked.EmployeeId && x.GLPeriodId == empPayrollNoDaysWorked.GLPeriodId);
+            if (checkexistance != null)
             {
 
-                var checkexistance = db.PayrollProcessViewModel.Where(x => x.EmployeeId == empPayrollNoDaysWorked.EmployeeId && x.GLPeriodId == empPayrollNoDaysWorked.GLPeriodId).FirstOrDefault();
-                if (checkexistance != null)
-                {
+                ModelState.AddModelError("", "You cannot delete this data. It already processed!!");
+            }
 
-                    ModelState.AddModelError("", "You cannot delete this data. It already processed!!");
-                }
-                else
+            if (ModelState.IsValid)
+            {
+                var entity = new EmpPayrollNoDaysWorked
                 {
-                    var entity = new EmpPayrollNoDaysWorked
-                    {
-                        EmpPayrollNoDaysWorkedId = empPayrollNoDaysWorked.EmpPayrollNoDaysWorkedId,
-                        EmployeeId = empPayrollNoDaysWorked.EmployeeId,
-                        GLPeriodId = empPayrollNoDaysWorked.GLPeriodId,
-                        Days = empPayrollNoDaysWorked.Days,
-                        Remark = empPayrollNoDaysWorked.Remark,
-                        DateCreated = empPayrollNoDaysWorked.DateCreated,
-                        LastModified = DateTime.Now,
-                        CreatedBy = empPayrollNoDaysWorked.CreatedBy,
-                        ModifiedBy = User.Identity.Name,
-                        Reason = empPayrollNoDaysWorked.Reason,
-                        MeasureTaken = empPayrollNoDaysWorked.MeasureTaken,
-                    };
+                    EmpPayrollNoDaysWorkedId = empPayrollNoDaysWorked.EmpPayrollNoDaysWorkedId,
+                    EmployeeId = empPayrollNoDaysWorked.EmployeeId,
+                    GLPeriodId = empPayrollNoDaysWorked.GLPeriodId,
+                    Days = empPayrollNoDaysWorked.Days,
+                    Remark = empPayrollNoDaysWorked.Remark,
+                    DateCreated = empPayrollNoDaysWorked.DateCreated,
+                    LastModified = DateTime.Now,
+                    CreatedBy = empPayrollNoDaysWorked.CreatedBy,
+                    ModifiedBy = User.Identity.Name,
+                    Reason = empPayrollNoDaysWorked.Reason,
+                    MeasureTaken = empPayrollNoDaysWorked.MeasureTaken,
+                };
 
-                    db.EmpPayrollNoDaysWorkeds.Attach(entity);
-                    db.Entry(entity).State = EntityState.Modified;
-                    db.SaveChanges();
-                    #region operation log
-                    UserHelper.OperationLog(Request.UserHostAddress, "payroll employee work days", "Success", User.Identity.Name, $"updated employee work days for employee  {entity.EmployeeCode} of period {entity.GLPeriod.Name} ", Modules.Payroll);
-                    #endregion
-                }
+                db.EmpPayrollNoDaysWorkeds.Attach(entity);
+                db.Entry(entity).State = EntityState.Modified;
+                db.SaveChanges();
+                #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "payroll employee work days", "Success", User.Identity.Name, $"updated employee work days for employee  {entity.EmployeeCode} of period {entity.GLPeriod.Name} ", Modules.Payroll);
+                #endregion
             }
 
             return Json(new[] { empPayrollNoDaysWorked }.ToDataSourceResult(request, ModelState));
@@ -663,7 +721,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                         MeasureTaken = empPayrollNoDaysWorked.MeasureTaken,
                     };
                     #region delete log
-                    UserHelper.OperationLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted employee day abcent information of employee " + empPayrollNoDaysWorked.EmployeeCode + " and period " + empPayrollNoDaysWorked.GLPeriodId,Modules.Payroll);
+                    UserHelper.OperationLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted employee day abcent information of employee " + empPayrollNoDaysWorked.EmployeeCode + " and period " + empPayrollNoDaysWorked.GLPeriodId, Modules.Payroll);
                     #endregion
                     db.EmpPayrollNoDaysWorkeds.Attach(entity);
                     db.EmpPayrollNoDaysWorkeds.Remove(entity);

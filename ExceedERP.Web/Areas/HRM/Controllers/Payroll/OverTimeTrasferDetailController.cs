@@ -76,7 +76,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                 db.SaveChanges();
                 overTime.OverTimeId = entity.OverTimeId;
                 #region operation log
-                UserHelper.OperationLog(Request.UserHostAddress, "payroll overtime transfer detail", "Success", User.Identity.Name, $"added overtime transfer for employee  {entity.Employee.EmployeeCode} period {entity.GLPeriodId} normal {entity.NormalHours} night {entity.NightHours} holiday {entity.HolidayHours} rest {entity.RestdayHours} ", Modules.Payroll);
+                UserHelper.OperationLog(Request.UserHostAddress, "payroll overtime transfer detail", "Success", User.Identity.Name, $"added overtime transfer for employee  {entity.EmployeeId} period {entity.GLPeriodId} normal {entity.NormalHours} night {entity.NightHours} holiday {entity.HolidayHours} rest {entity.RestdayHours} ", Modules.Payroll);
                 #endregion
             }
 
@@ -104,7 +104,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                 db.Entry(entity).State = EntityState.Modified;
                 db.SaveChanges();
                 #region operation log
-                UserHelper.OperationLog(Request.UserHostAddress, "payroll overtime transfer detail", "Success", User.Identity.Name, $"updated overtime transfer for employee  {entity.Employee.EmployeeCode} period {entity.GLPeriodId} normal {entity.NormalHours} night {entity.NightHours} holiday {entity.HolidayHours} rest {entity.RestdayHours} ", Modules.Payroll);
+                UserHelper.OperationLog(Request.UserHostAddress, "payroll overtime transfer detail", "Success", User.Identity.Name, $"updated overtime transfer for employee  {entity.EmployeeId} period {entity.GLPeriodId} normal {entity.NormalHours} night {entity.NightHours} holiday {entity.HolidayHours} rest {entity.RestdayHours} ", Modules.Payroll);
                 #endregion
             }
 
