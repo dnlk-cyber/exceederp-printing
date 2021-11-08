@@ -60,7 +60,7 @@ namespace ExceedERP.Reporting.Mega.DataSource
                         pro.Vat = Math.Round(vat,2);
                         pro.Total = Math.Round(pro.Vat + pro.SubTotal,2);
                         //pro.PriceInWord = ReportHelper.NumberToWords(Convert.ToDouble(pro.Total));
-                      //  pro.PriceInWord = XAPI.NumberExtensions.toWords(Convert.ToInt32(pro.Total));
+                      pro.PriceInWord = XAPI.NumberExtensions.toWords(Convert.ToInt32(pro.Total));
                     }
 
                     proformaList.Add(pro);

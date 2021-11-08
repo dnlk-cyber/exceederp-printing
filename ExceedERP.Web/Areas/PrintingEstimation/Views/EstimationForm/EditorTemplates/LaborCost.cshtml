@@ -1,0 +1,104 @@
+﻿@model ExceedERP.Core.Domain.PrintingEstimation.LaborCost
+
+<form id="lineForm" method="post">
+
+    <div class="row">
+        <div class="col-sm-1">
+            <div class="k-label">
+                @Html.HiddenFor(model => model.LaborCostId)
+            </div>
+        </div>
+        <div class="col-sm-4">
+            <div class="form-group">
+                <div class="k-label">
+                    <label for="PrintingCategory">Printing Category</label>
+                </div>
+                <div>
+                    @(Html.Kendo().DropDownListFor(model => model.PrintingSteps)
+                                                                .DataTextField("Text")
+                                                                .DataValueField("Value")
+                                    .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.PrintingEstimation.PrintingSteps))
+                                    )
+                    )
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <div class="row">
+        <div class="col-sm-1">
+        </div>
+
+        <div class="col-sm-4">
+            <div class="form-group">
+                <div class="k-label">
+                    <label for="Material">Printing Category Value</label>
+                </div>
+                <div>
+                    @(Html.Kendo().DropDownListFor(model => model.PrintingStepId)
+                                                                        .Name("PrintingStepId")
+                                                                        .ValuePrimitive(true)
+                                                                        .OptionLabel("Select Materials...")
+                                                                        .DataTextField("Name")
+                                                                        .OptionLabel("Select Printing Step Values...")
+                                                                        .DataTextField("Name")
+                                                                        .DataValueField("PrintingStepId")
+                                                                        .Filter("contains")
+                                                                        .DataSource(dataSource =>
+                                                                        {
+                                                                            dataSource.Read(read => read.Action("GetAllPrintingStepValues", "PrintingStep", new { area = "PrintingEstimation" })
+                                                                            .Data("filterPrintingSteps"))
+                                                                            .ServerFiltering(true);
+                                                                        })
+                                                                        .CascadeFrom("PrintingSteps")
+                                                                        .AutoBind(false)
+                                                                        .Enable(false))
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-1"> </div>
+
+        <div class="col-sm-4">
+            <div class="form-group">
+                <div class="k-label">
+                    <label for="WorkingTime">Work Hour</label>
+                </div>
+                <div>
+                    @(Html.Kendo().NumericTextBoxFor(model => model.WorkingTime))
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-1"> </div>
+
+        <div class="col-sm-4">
+            <div class="form-group">
+                <div class="k-label">
+                    <label for="CostPerHour">Cost PerHour</label>
+                </div>
+                <div>
+                    @(Html.Kendo().NumericTextBoxFor(model => model.CostPerHour))
+                </div>
+            </div>
+        </div>
+    </div>
+    @*<div class="row">
+            <div class="col-sm-1"> </div>
+            <div class="col-sm-4">
+                <div class="form-group">
+                    <div class="k-label">
+                        <label for="TotalCost">Total Cost</label>
+                    </div>
+                    <div>
+                        @(Html.Kendo().TextBoxFor(model => model.TotalCost))
+                    </div>
+                </div>
+            </div>
+        </div>*@
+
+</form>
+

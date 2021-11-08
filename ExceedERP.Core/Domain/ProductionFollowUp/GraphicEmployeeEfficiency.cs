@@ -1,5 +1,10 @@
-﻿using System;
+﻿using ExceedERP.Core.Domain.PrintingEstimation.Setting;
+using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace ExceedERP.Core.Domain.ProductionFollowUp
 {

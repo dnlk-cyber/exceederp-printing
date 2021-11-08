@@ -1,18 +1,12 @@
-﻿using System;
+﻿ using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations;
 using System.Linq;
-using System.Web.Mvc;
+using System.Text;
+using System.Threading.Tasks;
+ using System.Web.Mvc;
 
 namespace ExceedERP.Core.Domain.ProductionFollowUp
 {
-    public enum JobOrderMaterialType
-    {
-        [Display(Name = "Paper Type")]
-        PaperType = 1,
-        [Display(Name = "Film/Plate")]
-        FilmOrPlate = 2
-    }
     public enum Category
     {
         Printing = 1 ,
@@ -121,6 +115,12 @@ namespace ExceedERP.Core.Domain.ProductionFollowUp
         Dane = 6,
         Designing = 7,
         ColorPrint = 8
+    }
+    public enum ProductionFollowup
+    {
+        PrePrinting,
+        Printing,
+        Finishing
     }
 
     public static class Extensions

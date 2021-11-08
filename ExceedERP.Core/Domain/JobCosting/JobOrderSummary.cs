@@ -1,6 +1,12 @@
-﻿namespace ExceedERP.Core.Domain.JobCosting
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ExceedERP.Core.Domain.JobCosting
 {
-    public class JobOrderSummary
+   public class JobOrderSummary
     {
         public int JobOrderSummaryId { get; set; }
         public string JobId { get; set; }

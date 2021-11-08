@@ -7,8 +7,8 @@ using System.Web;
 using System.Web.Mvc;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
-using ExceedERP.Core.Domain.ProductionFollowUp;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Core.Domain.ProductionFollowUp;
 
 namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
 {
@@ -18,21 +18,53 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
 
         public ActionResult Index()
         {
+            ViewData["JobCategories"] = db.JobCategories.ToList();
+            ViewBag.data = GetData(); 
             return View();
         }
+        public JsonResult get()
+        {
+            var jobCategories = db.JobCategories.Where(q => q.HaveParent == false).ToList();
+            List<DropDownTreeItemModel> jobs = new List<DropDownTreeItemModel>();
+            foreach (var jobCategory in jobCategories)
+            {
+                int i = 0;
+                DropDownTreeItemModel jobType = new DropDownTreeItemModel();
+                List<DropDownTreeItemModel> jobTypes = new List<DropDownTreeItemModel>();
 
+                var childs = db.JobCategories.Where(q => q.ParentId == jobCategory.JobCategoryId).ToList();
+                foreach (var child in childs)
+                {
+                    i++;
+                    DropDownTreeItemModel prt = new DropDownTreeItemModel();
+                    prt.Text = child.JobName;
+                    prt.Selected = true;
+                    prt.HasChildren = false;
+                    prt.Value = child.JobCategoryId.ToString();
+                    jobTypes.Add(prt);
+                }
+                jobType.Text = jobCategory.JobName;
+
+                jobType.Value = jobCategory.JobCategoryId.ToString();
+                jobType.Items = jobTypes;
+                jobs.Add(jobType);
+
+
+            }
+
+
+
+            return Json(jobs, JsonRequestBehavior.AllowGet);
+        }
         public ActionResult ProformaItems_Read([DataSourceRequest]DataSourceRequest request, int id)
         {
             IQueryable<PFProformaItems> proformaitems = db.PFProformaItems.Where(x => x.ProformaId == id);
             DataSourceResult result = proformaitems.ToDataSourceResult(request, proformaItems => new
             {
-                ProformaItemsId = proformaItems.PFProformaItemsId,
+                PFProformaItemsId = proformaItems.PFProformaItemsId,
                 ProformaId = proformaItems.ProformaId,
                 JobTypeId = proformaItems.JobTypeId,
-                JobTypeItemId = proformaItems.JobTypeItemId,
-                SubCategory = proformaItems.SubCategory,
                 Quantity = proformaItems.Quantity,
-                Page = proformaItems.Page,
                 Size = proformaItems.Size,
                 UnitPrice = proformaItems.UnitPrice,
                 Tax = proformaItems.Tax,
@@ -44,18 +76,20 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
             return Json(result);
         }
 
+     
+
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult ProformaItems_Create([DataSourceRequest]DataSourceRequest request, PFProformaItems pFProformaItems, int idCreate)
+        public ActionResult ProformaItems_Create([DataSourceRequest]DataSourceRequest request, PFProformaItems proformaItems, int id)
         {
-            //var jobType = db.JobTypes.FirstOrDefault(x => x.JobTypeId == pFProformaItems.JobTypeId);
+            //var jobType = db.JobTypes.FirstOrDefault(x => x.JobTypeId == proformaItems.JobTypeId);
             //if (jobType != null)
             //{
             //    var tax = db.GLTaxRates.FirstOrDefault(x => x.GLTaxRateID == jobType.GLTaxRateID);
             //    if (tax != null)
             //    {
-            //        pFProformaItems.Tax = tax.Rate;
+            //        proformaItems.Tax = tax.Rate;
 
-            //        pFProformaItems.TotalPrice = (pFProformaItems.UnitPrice * pFProformaItems.Quantity) + (pFProformaItems.UnitPrice * pFProformaItems.Quantity * tax.CalculatedRate);
+            //        proformaItems.TotalPrice = (proformaItems.UnitPrice * proformaItems.Quantity) + (proformaItems.UnitPrice * proformaItems.Quantity * tax.CalculatedRate);
             //    }
             //    else
             //    {
@@ -71,49 +105,43 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
             {
                 var entity = new PFProformaItems
                 {
-                    ProformaId = idCreate,
-                    JobTypeId = pFProformaItems.JobTypeId,
-                    JobTypeItemId = pFProformaItems.JobTypeItemId,
-                    SubCategory = pFProformaItems.SubCategory,
-                    Quantity = pFProformaItems.Quantity,
-                    Page = pFProformaItems.Page,
-                    Size = pFProformaItems.Size,
-                    UnitPrice = pFProformaItems.UnitPrice,
-                    Tax = pFProformaItems.Tax,
-                    BeforeTax = pFProformaItems.BeforeTax,
-                    TotalPrice = pFProformaItems.TotalPrice,
-                    Description = pFProformaItems.Description
+                    PFProformaItemsId = proformaItems.PFProformaItemsId,
+                    ProformaId = id,
+                    JobTypeId = proformaItems.JobTypeId,
+                    Quantity = proformaItems.Quantity,
+                    Size = proformaItems.Size,
+                    UnitPrice = proformaItems.UnitPrice,
+                    Tax = proformaItems.Tax,
+                    BeforeTax = proformaItems.BeforeTax,
+                    TotalPrice = 12,
+                    Description = proformaItems.Description
                 };
 
                 db.PFProformaItems.Add(entity);
                 db.SaveChanges();
-                pFProformaItems.PFProformaItemsId = entity.PFProformaItemsId;
+                proformaItems.PFProformaItemsId = entity.PFProformaItemsId;
             }
-
-            return Json(new[] { pFProformaItems }.ToDataSourceResult(request, ModelState));
+            return Json(new[] { proformaItems }.ToDataSourceResult(request, ModelState));
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult ProformaItems_Update([DataSourceRequest]DataSourceRequest request, PFProformaItems pFProformaItems)
+        public ActionResult ProformaItems_Update([DataSourceRequest]DataSourceRequest request, PFProformaItems proformaItems)
         {
            
             if (ModelState.IsValid)
             {
                 var entity = new PFProformaItems
                 {
-                    PFProformaItemsId = pFProformaItems.PFProformaItemsId,
-                    ProformaId = pFProformaItems.ProformaId,
-                    JobTypeId = pFProformaItems.JobTypeId,
-                    JobTypeItemId = pFProformaItems.JobTypeItemId,
-                    SubCategory = pFProformaItems.SubCategory,
-                    Quantity = pFProformaItems.Quantity,
-                    Page = pFProformaItems.Page,
-                    Size = pFProformaItems.Size,
-                    UnitPrice = pFProformaItems.UnitPrice,
-                    Tax = pFProformaItems.Tax,
-                    BeforeTax = pFProformaItems.BeforeTax,
-                    TotalPrice = pFProformaItems.TotalPrice,
-                    Description = pFProformaItems.Description
+                    PFProformaItemsId = proformaItems.PFProformaItemsId,
+                    ProformaId = proformaItems.ProformaId,
+                    JobTypeId = proformaItems.JobTypeId,
+                    Quantity = proformaItems.Quantity,
+                    Size = proformaItems.Size,
+                    UnitPrice = proformaItems.UnitPrice,
+                    Tax = proformaItems.Tax,
+                    BeforeTax = proformaItems.BeforeTax,
+                    TotalPrice = proformaItems.TotalPrice,
+                    Description = proformaItems.Description
                 };
 
                 db.PFProformaItems.Attach(entity);
@@ -121,29 +149,26 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                 db.SaveChanges();
             }
 
-            return Json(new[] { pFProformaItems }.ToDataSourceResult(request, ModelState));
+            return Json(new[] { proformaItems }.ToDataSourceResult(request, ModelState));
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult ProformaItems_Destroy([DataSourceRequest]DataSourceRequest request, PFProformaItems pFProformaItems)
+        public ActionResult ProformaItems_Destroy([DataSourceRequest]DataSourceRequest request, PFProformaItems proformaItems)
         {
             if (ModelState.IsValid)
             {
                 var entity = new PFProformaItems
                 {
-                    PFProformaItemsId = pFProformaItems.PFProformaItemsId,
-                    ProformaId = pFProformaItems.ProformaId,
-                    JobTypeId = pFProformaItems.JobTypeId,
-                    JobTypeItemId = pFProformaItems.JobTypeItemId,
-                    SubCategory = pFProformaItems.SubCategory,
-                    Quantity = pFProformaItems.Quantity,
-                    Page = pFProformaItems.Page,
-                    Size = pFProformaItems.Size,
-                    UnitPrice = pFProformaItems.UnitPrice,
-                    Tax = pFProformaItems.Tax,
-                    BeforeTax = pFProformaItems.BeforeTax,
-                    TotalPrice = pFProformaItems.TotalPrice,
-                    Description = pFProformaItems.Description
+                    PFProformaItemsId = proformaItems.PFProformaItemsId,
+                    ProformaId = proformaItems.ProformaId,
+                    JobTypeId = proformaItems.JobTypeId,
+                    Quantity = proformaItems.Quantity,
+                    Size = proformaItems.Size,
+                    UnitPrice = proformaItems.UnitPrice,
+                    Tax = proformaItems.Tax,
+                    BeforeTax = proformaItems.BeforeTax,
+                    TotalPrice = proformaItems.TotalPrice,
+                    Description = proformaItems.Description
                 };
 
                 db.PFProformaItems.Attach(entity);
@@ -151,7 +176,7 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                 db.SaveChanges();
             }
 
-            return Json(new[] { pFProformaItems }.ToDataSourceResult(request, ModelState));
+            return Json(new[] { proformaItems }.ToDataSourceResult(request, ModelState));
         }
         public ActionResult GetBeforeVatAndTotalPerice(int jobTypeId, int quantity, double unitPrice)
         {
@@ -195,5 +220,40 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
             db.Dispose();
             base.Dispose(disposing);
         }
+        private IEnumerable<DropDownTreeItemModel> GetData()
+        {
+            var jobCategories = db.JobCategories.Where(q=>q.HaveParent== false).ToList();
+            List<DropDownTreeItemModel> jobs = new List<DropDownTreeItemModel>();
+            foreach (var jobCategory in jobCategories)
+            {
+                int i = 0;
+                DropDownTreeItemModel jobType = new DropDownTreeItemModel();
+                List<DropDownTreeItemModel> jobTypes = new List<DropDownTreeItemModel>();
+
+                var childs = db.JobCategories.Where(q => q.ParentId == jobCategory.JobCategoryId).ToList();
+                foreach (var child in childs)
+                {
+                    i++;
+                    DropDownTreeItemModel prt = new DropDownTreeItemModel();
+                    prt.Text = child.JobName;
+                    prt.Selected = true;
+                    prt.HasChildren = false;
+                    prt.Value = child.JobCategoryId.ToString();
+                    jobTypes.Add(prt);
+                }
+                jobType.Text = jobCategory.JobName;
+          
+                jobType.Value = jobCategory.JobCategoryId.ToString();
+                jobType.Items = jobTypes;
+                jobs.Add(jobType);
+
+
+            }
+
+
+
+            return jobs;
+        }
+
     }
 }

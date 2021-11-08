@@ -18,6 +18,8 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
 
         public ActionResult Index()
         {
+            ViewData["Customers"] = db.Customers.ToList();
+
             ViewData["JobOrder"] = db.Jobs.ToList();
             return View();
         }
@@ -28,6 +30,7 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
             DataSourceResult result = finishedgoodreceivings.ToDataSourceResult(request, finishedGoodReceiving => new {
                 FinishedGoodReceivingId = finishedGoodReceiving.FinishedGoodReceivingId,
                 VoucherNo = finishedGoodReceiving.VoucherNo,
+                CustomerId = finishedGoodReceiving.CustomerId,
                 Store = finishedGoodReceiving.Store,
                 JobId = finishedGoodReceiving.JobId,
                 DeliveredBy = finishedGoodReceiving.DeliveredBy,
@@ -43,9 +46,12 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
         {
             if (ModelState.IsValid)
             {
+                var jobOrder = db.Jobs.Find(finishedGoodReceiving.JobId);
+
                 var entity = new FinishedGoodReceiving
                 {
                     VoucherNo = finishedGoodReceiving.VoucherNo,
+                    CustomerId = jobOrder.CustomerId,
                     Store = finishedGoodReceiving.Store,
                     JobId = finishedGoodReceiving.JobId,
                     DeliveredBy = finishedGoodReceiving.DeliveredBy,
@@ -66,9 +72,11 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
         {
             if (ModelState.IsValid)
             {
+                var jobOrder = db.Jobs.Find(finishedGoodReceiving.JobId);
                 var entity = new FinishedGoodReceiving
                 {
                     FinishedGoodReceivingId = finishedGoodReceiving.FinishedGoodReceivingId,
+                    CustomerId = jobOrder.CustomerId,
                     VoucherNo = finishedGoodReceiving.VoucherNo,
                     Store = finishedGoodReceiving.Store,
                     JobId = finishedGoodReceiving.JobId,
@@ -94,6 +102,7 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                 {
                     FinishedGoodReceivingId = finishedGoodReceiving.FinishedGoodReceivingId,
                     VoucherNo = finishedGoodReceiving.VoucherNo,
+                    CustomerId = finishedGoodReceiving.CustomerId,
                     Store = finishedGoodReceiving.Store,
                     JobId = finishedGoodReceiving.JobId,
                     DeliveredBy = finishedGoodReceiving.DeliveredBy,

@@ -1,9 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace ExceedERP.Core.Domain.JobCosting
 {
-    public class JobOrderTimeSheet
+   public class JobOrderTimeSheet
     {
         public int JobOrderTimeSheetId { get; set; }
         public int JobOrderTimeRegistrationId { get; set; }

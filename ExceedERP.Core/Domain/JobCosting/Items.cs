@@ -1,10 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Security.Cryptography.X509Certificates;
 
 namespace ExceedERP.Core.Domain.JobCosting
-{
-    public class MasterItems
+{       
+        public class MasterItems
         {
             public int MasterItemsID { get; set; }
             public string RecordedBy { get; set; }

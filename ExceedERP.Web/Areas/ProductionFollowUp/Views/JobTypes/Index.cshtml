@@ -8,6 +8,9 @@
                   .Columns(columns =>
                   {
                       columns.Bound(c => c.Type);
+                      columns.Bound(c => c.VAT).Title("Vat(%)");
+                      columns.Bound(c => c.Margin).Title("Margin(%)");
+                      columns.Bound(c => c.Type);
           //  columns.Bound(c => c.VAT).ClientTemplate("<input type='checkbox' disabled = 'true' #=VAT ? checked='checked' :'' # >");
           columns.ForeignKey(c => c.GLTaxRateID, (IEnumerable)ViewData["TaxRate"], "GLTaxRateID", "TaxName").EditorTemplateName("TaxList");
 

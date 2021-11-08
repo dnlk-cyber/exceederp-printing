@@ -26,17 +26,17 @@ namespace ExceedERP.Reporting.Mega.DataSource
                 {
                     var proforma = new ProformaItemVM();
 
-                    if(pro.JobTypeItemId != null)
-                    {
-                        var item = db.JobTypeItems.FirstOrDefault(x => x.JobTypeId == pro.JobTypeId && x.JobTypeItemId == pro.JobTypeItemId);
-                        if (item != null)
-                        {
-                            proforma.Description = item.Name;
-                            proforma.ProformaItemId = pro.PFProformaItemsId;
+                    //if(pro.JobTypeItemId != null)
+                    //{
+                    //    var item = db.JobTypeItems.FirstOrDefault(x => x.JobTypeId == pro.JobTypeId && x.JobTypeItemId == pro.JobTypeItemId);
+                    //    if (item != null)
+                    //    {
+                    //        proforma.Description = item.Name;
+                    //        proforma.ProformaItemId = pro.ProformaItemsId;
 
-                            itemList.Add(proforma);
-                        }
-                    }                   
+                    //        itemList.Add(proforma);
+                    //    }
+                    //}                   
                 }
 
             }

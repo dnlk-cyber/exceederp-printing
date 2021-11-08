@@ -7,9 +7,11 @@ using System.Web;
 using System.Web.Mvc;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
-using ExceedERP.Core.Domain.ProductionFollowUp;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Web.Areas.ProductionFollowUp.Controllers.ViewModel;
+using ExceedERP.Core.Domain.ProductionFollowUp;
+using ExceedERP.Core.Domain.PrintingEstimation;
+using ExceedERP.Web.Areas.ProductionFollowUp.Models;
 
 namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
 {
@@ -21,10 +23,31 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
         {
             ViewData["Proforma"] = db.Proformas.ToList();
             ViewData["JobType"] = db.JobTypes.ToList();
+            ViewData["Customers"] = db.Customers.ToList();
             ViewData["JobTypeItem"] = db.JobTypeItems.ToList();
+            var selecteditems = db.InventoryItems.Select(
+               i => new
+               {
+                   Name = i.ItemCode + "_" + i.Name,
+                   Code = i.ItemCode
+               }).ToList();
+            var categories = db.ItemCategorys.Select(
+               i => new
+               {
+                   Name = i.ItemCategoryCode + "_" + i.Name,
+                   Code = i.ItemCategoryCode
+               }).ToList();
+            ViewData["InventoryItems"] = selecteditems;
+            ViewData["ItemCategorys"] = categories;
+            ViewBag.data = GetData();
+
             return View();
         }
-
+        public JsonResult GetAllJobOrders()
+        {
+            var data = db.Jobs;
+            return Json(data.Select(s => new { s.JobId, s.JobNo }), JsonRequestBehavior.AllowGet);
+        }
         public ActionResult Jobs_Read([DataSourceRequest]DataSourceRequest request)
         {
             IQueryable<Job> jobs = db.Jobs;
@@ -32,10 +55,13 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
             {
                 JobId = job.JobId,
                 Time = job.Time,
-                HaveProforma = job.HaveProforma,
+                hv = job.hv,
+                IsExistingCustomer = job.IsExistingCustomer,
                 ProformaId = job.ProformaId,
                 JobNo = job.JobNo,
                 CustomerName = job.CustomerName,
+                OrderType = job.OrderType,
+                CustomerId = job.CustomerId,
                 Estimatedby = job.Estimatedby,
                 Code = job.Code,
                 Approvedby = job.Approvedby,
@@ -43,8 +69,8 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                 ContactPhone = job.ContactPhone,
                 City = job.City,
                 SubCity = job.SubCity,
-                Wereda = job.Wereda,
-                Pobox = job.Pobox,
+                Woreda = job.Woreda,
+                POBox = job.POBox,
                 JobTypeId = job.JobTypeId,
                 JobTypeItemId = job.JobTypeItemId,
                 UnitPrice = job.UnitPrice,
@@ -86,98 +112,27 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
         {
             if (ModelState.IsValid)
             {
-                var entity = new Job
+                var proforma = new Proforma();
+                var customer = new Customer();
+                if (!job.hv && !proforma.IsExistingCustomer)
                 {
-                    Time = job.Time,
-                    ProformaId = job.ProformaId,
-                    HaveProforma = job.HaveProforma,
-                    JobNo = job.JobNo,
-                    CustomerName = job.CustomerName,
-                    ContactName = job.ContactName,
-                    ContactPhone = job.ContactPhone,
-                    Estimatedby = job.Estimatedby,
-                    Code = job.Code,
-                    Approvedby = job.Approvedby,
-                    City = job.City,
-                    SubCity = job.SubCity,
-                    Wereda = job.Wereda,
-                    Pobox = job.Pobox,
-                    JobTypeId = job.JobTypeId,
-                    JobTypeItemId = job.JobTypeItemId,
-                    BeforeTax = job.BeforeTax,
-                    UnitPrice = job.UnitPrice,
-                    Quant = job.Quant,
-                    Pages = job.Pages,
-                    Copies = job.Copies,
-                    TotalPrice = job.TotalPrice,
-                    Contract = job.Contract,
-                    TotalImpression = job.TotalImpression,
-                    DeliveryDate = job.DeliveryDate,
-                    TextWeight = job.TextWeight,
-                    CoverWeight = job.CoverWeight,
-                    ColorText = job.ColorText,
-                    Colorcover = job.Colorcover,
-                    FinishingSize = job.FinishingSize,
-                    PrintingLine = job.PrintingLine,
-                    PrintingMachine = job.PrintingMachine,
+                    customer = AddNewCustomer.Add(job);
+                    db.Customers.Add(customer);
 
-                    Sewing = job.Sewing,
-                    New = job.New,
-                    PerfectBinding = job.PerfectBinding,
-                    Repeat = job.Repeat,
-                    Lamnating = job.Lamnating,
-                    Varnish = job.Varnish,
-                    Perforate = job.Perforate,
-                    Camsur = job.Camsur,
+                }
+                else if (job.hv)
+                {
+                    proforma = db.Proformas.Find(job.ProformaId);
 
-                    GraphicDesignExpectedCompletetion = job.GraphicDesignExpectedCompletetion,
-                    PrintingExpectedCompletetion = job.PrintingExpectedCompletetion,
-                    FinishExpectedCompletetion = job.FinishExpectedCompletetion,
-                    Status = job.Status,
-                    FinishingWorkflow = job.FinishingWorkflow
-                };
+                }
+                job.CustomerId = job.hv ? proforma.CustomerId : customer.CustomerId| job.CustomerId;
+                var entity = (Job)this.GetObject(job);
 
                 db.Jobs.Add(entity);
                 db.SaveChanges();
-                job.JobId = entity.JobId;
-
-                #region
-
-                if (job.JobId.ToString().Length == 1)
-                {
-                    entity.JobNo = "jo-000000" + job.JobId;
-                }
-                else if (job.JobId.ToString().Length == 2)
-                {
-                    entity.JobNo = "jo-00000" + job.JobId;
-                }
-                else if (job.JobId.ToString().Length == 3)
-                {
-                    entity.JobNo = "jo-0000" + job.JobId;
-                }
-                else if (job.JobId.ToString().Length == 4)
-                {
-                    entity.JobNo = "jo-000" + job.JobId;
-                }
-                else if (job.JobId.ToString().Length == 5)
-                {
-                    entity.JobNo = "jo-00" + job.JobId;
-                }
-                else if (job.JobId.ToString().Length == 2)
-                {
-                    entity.JobNo = "jo-0" + job.JobId;
-                }
-                else if (job.JobId.ToString().Length == 2)
-                {
-                    entity.JobNo = "jo-" + job.JobId;
-                }
-
-                db.Entry(entity).State = EntityState.Modified;
-                db.SaveChanges();
-                #endregion
             }
-
-            return Json(new[] { job }.ToDataSourceResult(request, ModelState));
+                return Json(new[] { job }.ToDataSourceResult(request, ModelState));
+            
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
@@ -185,58 +140,33 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
         {
             if (ModelState.IsValid)
             {
-                var entity = new Job
-                {
-                    JobId = job.JobId,
-                    HaveProforma = job.HaveProforma,
-                    Time = job.Time,
-                    ProformaId = job.ProformaId,
-                    JobNo = job.JobNo,
-                    CustomerName = job.CustomerName,
-                    Estimatedby = job.Estimatedby,
-                    Code = job.Code,
-                    Approvedby = job.Approvedby,
-                    ContactName = job.ContactName,
-                    ContactPhone = job.ContactPhone,
-                    City = job.City,
-                    SubCity = job.SubCity,
-                    Wereda = job.Wereda,
-                    Pobox = job.Pobox,
-                    JobTypeId = job.JobTypeId,
-                    JobTypeItemId = job.JobTypeItemId,
-                    BeforeTax = job.BeforeTax,
-                    UnitPrice = job.UnitPrice,
-                    Quant = job.Quant,
-                    Pages = job.Pages,
-                    Copies = job.Copies,
-                    TotalPrice = job.TotalPrice,
-                    Contract = job.Contract,
-                    TotalImpression = job.TotalImpression,
-                    DeliveryDate = job.DeliveryDate,
-                    TextWeight = job.TextWeight,
-                    CoverWeight = job.CoverWeight,
-                    ColorText = job.ColorText,
-                    Colorcover = job.Colorcover,
-                    FinishingSize = job.FinishingSize,
-                    PrintingLine = job.PrintingLine,
-                    PrintingMachine = job.PrintingMachine,
-                    Sewing = job.Sewing,
-                    New = job.New,
-                    PerfectBinding = job.PerfectBinding,
-                    Repeat = job.Repeat,
-                    Lamnating = job.Lamnating,
-                    Varnish = job.Varnish,
-                    Perforate = job.Perforate,
-                    Camsur = job.Camsur,
-                    GraphicDesignExpectedCompletetion = job.GraphicDesignExpectedCompletetion,
-                    PrintingExpectedCompletetion = job.PrintingExpectedCompletetion,
-                    FinishExpectedCompletetion = job.FinishExpectedCompletetion,
-                    Status = job.Status,
-                    FinishingWorkflow = job.FinishingWorkflow
-                };
 
-                db.Jobs.Attach(entity);
-                db.Entry(entity).State = EntityState.Modified;
+                var proforma = new Proforma();
+                var customer = new Customer();
+                if (!job.hv && !proforma.IsExistingCustomer)
+                {
+                    customer = AddNewCustomer.Add(job);
+                    db.Customers.Add(customer);
+
+                }
+                else if (job.hv)
+                {
+                    proforma = db.Proformas.Find(job.ProformaId);
+
+                }
+                job.CustomerId = job.hv ? proforma.CustomerId : customer.CustomerId | job.CustomerId;
+                var entity = (Job)this.GetObject(job);
+                if(job.JobId!=0)
+                {
+                    db.Jobs.Attach(entity);
+                    db.Entry(entity).State = EntityState.Modified;
+                }
+                if(job.JobId==0)
+                {
+                    db.Jobs.Add(entity);
+
+                }
+
                 db.SaveChanges();
             }
 
@@ -248,56 +178,8 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
         {
             if (ModelState.IsValid)
             {
-                var entity = new Job
-                {
-                    JobId = job.JobId,
-                    HaveProforma = job.HaveProforma,
-                    Time = job.Time,
-                    ProformaId = job.ProformaId,
-                    JobNo = job.JobNo,
-                    CustomerName = job.CustomerName,
-                    Estimatedby = job.Estimatedby,
-                    Code = job.Code,
-                    Approvedby = job.Approvedby,
-                    ContactName = job.ContactName,
-                    ContactPhone = job.ContactPhone,
-                    City = job.City,
-                    SubCity = job.SubCity,
-                    Wereda = job.Wereda,
-                    Pobox = job.Pobox,
-                    JobTypeId = job.JobTypeId,
-                    JobTypeItemId = job.JobTypeItemId,
-                    BeforeTax = job.BeforeTax,
-                    UnitPrice = job.UnitPrice,
-                    Quant = job.Quant,
-                    Pages = job.Pages,
-                    Copies = job.Copies,
-                    TotalPrice = job.TotalPrice,
-                    Contract = job.Contract,
-                    TotalImpression = job.TotalImpression,
-                    DeliveryDate = job.DeliveryDate,
-                    TextWeight = job.TextWeight,
-                    CoverWeight = job.CoverWeight,
-                    ColorText = job.ColorText,
-                    Colorcover = job.Colorcover,
-                    FinishingSize = job.FinishingSize,
-                    PrintingLine = job.PrintingLine,
-                    PrintingMachine = job.PrintingMachine,
-                    Sewing = job.Sewing,
-                    New = job.New,
-                    PerfectBinding = job.PerfectBinding,
-                    Repeat = job.Repeat,
-                    Lamnating = job.Lamnating,
-                    Varnish = job.Varnish,
-                    Perforate = job.Perforate,
-                    Camsur = job.Camsur,
-                    GraphicDesignExpectedCompletetion = job.GraphicDesignExpectedCompletetion,
-                    PrintingExpectedCompletetion = job.PrintingExpectedCompletetion,
-                    FinishExpectedCompletetion = job.FinishExpectedCompletetion,
-                    Status = job.Status,
-                    FinishingWorkflow = job.FinishingWorkflow
-                };
 
+                var entity = (Job)this.GetObject(job);
                 db.Jobs.Attach(entity);
                 db.Jobs.Remove(entity);
                 db.SaveChanges();
@@ -438,10 +320,96 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
             return nodata;
 
         }
+        private object GetObject(Job job)
+        {
+            var entity = new Job
+            {
+                JobId = job.JobId,
+                hv = job.hv,
+                IsExistingCustomer = job.IsExistingCustomer,
+                Time = job.Time,
+                ProformaId = job.ProformaId,
+                JobNo = job.JobNo,
+                CustomerName = job.CustomerName,
+                CustomerId = job.CustomerId,
+                Estimatedby = job.Estimatedby,
+                Code = job.Code,
+                Approvedby = job.Approvedby,
+                JobTypeId = job.JobTypeId,
+                BeforeTax = job.BeforeTax,
+                UnitPrice = job.UnitPrice,
+                Quant = job.Quant,
+                Pages = job.Pages,
+                Copies = job.Copies,
+                TotalPrice = job.TotalPrice,
+                Contract = job.Contract,
+                TotalImpression = job.TotalImpression,
+                DeliveryDate = job.DeliveryDate,
+                TextWeight = job.TextWeight,
+                CoverWeight = job.CoverWeight,
+                ColorText = job.ColorText,
+                Colorcover = job.Colorcover,
+                FinishingSize = job.FinishingSize,
+                PrintingLine = job.PrintingLine,
+                PrintingMachine = job.PrintingMachine,
+                Sewing = job.Sewing,
+                New = job.New,
+                PerfectBinding = job.PerfectBinding,
+                Repeat = job.Repeat,
+                Lamnating = job.Lamnating,
+                Varnish = job.Varnish,
+                Perforate = job.Perforate,
+                Camsur = job.Camsur,
+                GraphicDesignExpectedCompletetion = job.GraphicDesignExpectedCompletetion,
+                PrintingExpectedCompletetion = job.PrintingExpectedCompletetion,
+                FinishExpectedCompletetion = job.FinishExpectedCompletetion,
+                Status = job.Status,
+                CustomerDescription = job.CustomerDescription,
+                OrderType = job.OrderType,
+                FinishingWorkflow = job.FinishingWorkflow
+            };
+            return entity;
+        }
+
+        private IEnumerable<DropDownTreeItemModel> GetData()
+        {
+            var jobCategories = db.JobCategories.Where(q => q.HaveParent == false).ToList();
+            List<DropDownTreeItemModel> jobs = new List<DropDownTreeItemModel>();
+            foreach (var jobCategory in jobCategories)
+            {
+                int i = 0;
+                DropDownTreeItemModel jobType = new DropDownTreeItemModel();
+                List<DropDownTreeItemModel> jobTypes = new List<DropDownTreeItemModel>();
+
+                var childs = db.JobCategories.Where(q => q.ParentId == jobCategory.JobCategoryId).ToList();
+                foreach (var child in childs)
+                {
+                    i++;
+                    DropDownTreeItemModel prt = new DropDownTreeItemModel();
+                    prt.Text = child.JobName;
+                    prt.HasChildren = false;
+                    prt.Value = child.JobCategoryId.ToString();
+                    jobTypes.Add(prt);
+                }
+                jobType.Text = jobCategory.JobName;
+
+                jobType.Value = jobCategory.JobCategoryId.ToString();
+                jobType.Items = jobTypes;
+                jobs.Add(jobType);
+
+
+            }
+
+
+
+            return jobs;
+        }
+
         protected override void Dispose(bool disposing)
         {
             db.Dispose();
             base.Dispose(disposing);
         }
+
     }
 }

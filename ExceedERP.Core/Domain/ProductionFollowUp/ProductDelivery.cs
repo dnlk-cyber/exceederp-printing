@@ -1,9 +1,16 @@
-﻿namespace ExceedERP.Core.Domain.ProductionFollowUp
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace ExceedERP.Core.Domain.ProductionFollowUp
 {
-    public class ProductDelivery
+   public class ProductDelivery
     {
         public int ProductDeliveryId { get; set; }
         public int JobId { get; set; }
+        public int CustomerId { get; set; }
         public string CustomerRefNo { get; set; }
         public string CreditSaleNo { get; set; }
         public string CashSaleNo { get; set; }

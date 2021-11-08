@@ -1,0 +1,122 @@
+﻿@model ExceedERP.Core.Domain.PrintingEstimation.MaterialCost
+@using ExceedERP.Core.Localization
+
+<form id="lineForm" method="post">
+
+    <div class="row">
+        <div class="col-sm-1">
+            <div class="k-label">
+                @Html.HiddenFor(model => model.MaterialCostId)
+            </div>
+        </div>
+
+        <div class="col-sm-4">
+            <div class="form-group">
+                <div class="k-label">
+                    <label for="Product">Inventory Category</label>
+                </div>
+                <div>
+                    @(Html.Kendo().DropDownListFor(m => m.InventoryCategoryId)
+                                          .OptionLabel(Resources.Select)
+                                          .DataTextField("Name")
+                                          .DataValueField("Code")
+                                          //    .BindTo((IEnumerable)ViewData["Items"])
+                                          .DataSource(dataSource =>
+                                          {
+                                              dataSource.Read(read => read.Action("GetSparePartMaterialCategory", "DataProvider", new { Area = "Inventory" }));
+                                              //.ServerFiltering(true);
+                                          })
+                                          .Filter("contains")
+                                          .MinLength(2)
+                                          .ValuePrimitive(true)
+                    )
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-1">
+        
+            </div>
+            <div class="col-sm-4">
+                <div class="form-group">
+                    <div class="k-label">
+                        <label for="Product">Inventory</label>
+                    </div>
+                    <div>
+                        @(Html.Kendo().DropDownListFor(model => model.InventoryId)
+                                                                                                                    .ValuePrimitive(true)
+                                                                                                                    .OptionLabel(Resources.Select)
+                                                                                                                    .DataTextField("Name")
+                                                                                                                    .DataValueField("Code")
+                                                                                                                    .Events(ev =>
+                                                                                                                    {
+                                                                                                                        ev.Change("selectProduct");
+
+                                                                                                                    })
+                                                                                                                                    //    .BindTo((IEnumerable)ViewData["Items"])
+                                                                                                                                    .DataSource(dataSource =>
+                                                                                                                                    {
+                                                                                                                                        dataSource.Read(read => read.Action("GetItemsUnderCategory", "DataProvider", new { Area = "Inventory" }).Data("filterCategories"))
+                                                                                                                                        .ServerFiltering(true);
+                                                                                                                                    })
+                                                                                                                                    .CascadeFrom("InventoryCategoryId")
+                                                                                                                                    //.Events(ev => {
+                                                                                                                                    //    ev.Change("materialChanged");
+                                                                                                                                    //})
+                                                                                                                                    .Filter("contains")
+                                                                                                                                    .MinLength(2)
+                                                                                                                                    .ValuePrimitive(true)
+                        )
+                    </div>
+                </div>
+            </div>
+        </div>
+    <div class="row">
+        <div class="col-sm-1"> </div>
+
+        <div class="col-sm-4">
+            <div class="form-group">
+                <div class="k-label">
+                    <label for="Quantity">Quantity</label>
+                </div>
+                <div>
+                    @(Html.Kendo().NumericTextBoxFor(model => model.Quantity)
+                                .Events(ev => ev.Change("onChange")))
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-1"> </div>
+
+        <div class="col-sm-4">
+            <div class="form-group">
+                <div class="k-label">
+                    <label for="UnitPrice">Unit Price</label>
+                </div>
+                <div>
+                    @(Html.Kendo().NumericTextBoxFor(model => model.UnitPrice)
+                                                           .Enable(false))
+
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="row">
+            <div class="col-sm-1"> </div>
+            <div class="col-sm-4">
+                <div class="form-group">
+                    <div class="k-label">
+                        <label for="TotalPrice">Total Price</label>
+                    </div>
+                    <div>
+                        @(Html.Kendo().NumericTextBoxFor(model => model.TotalPrice)
+                           .Enable(false))
+                    </div>
+                </div>
+            </div>
+        </div>
+
+</form>
+

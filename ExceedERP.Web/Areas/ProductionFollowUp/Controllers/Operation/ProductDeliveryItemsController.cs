@@ -29,7 +29,7 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                 ProductDeliveryId = productDeliveryItems.ProductDeliveryId,
                 ItemCode = productDeliveryItems.ItemCode,
                 Description = productDeliveryItems.Description,
-                Unit = productDeliveryItems.Unit,
+                UnitId = productDeliveryItems.UnitId,
                 Quantity = productDeliveryItems.Quantity,
                 UnitCost = productDeliveryItems.UnitCost,
                 TotalCost = productDeliveryItems.TotalCost
@@ -48,7 +48,7 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                     ProductDeliveryId = id,
                     ItemCode = productDeliveryItems.ItemCode,
                     Description = productDeliveryItems.Description,
-                    Unit = productDeliveryItems.Unit,
+                    UnitId = productDeliveryItems.UnitId,
                     Quantity = productDeliveryItems.Quantity,
                     UnitCost = productDeliveryItems.UnitCost,
                     TotalCost = productDeliveryItems.TotalCost
@@ -73,7 +73,7 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                     ProductDeliveryId = productDeliveryItems.ProductDeliveryId,
                     ItemCode = productDeliveryItems.ItemCode,
                     Description = productDeliveryItems.Description,
-                    Unit = productDeliveryItems.Unit,
+                    UnitId = productDeliveryItems.UnitId,
                     Quantity = productDeliveryItems.Quantity,
                     UnitCost = productDeliveryItems.UnitCost,
                     TotalCost = productDeliveryItems.TotalCost
@@ -98,7 +98,7 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                     ProductDeliveryId = productDeliveryItems.ProductDeliveryId,
                     ItemCode = productDeliveryItems.ItemCode,
                     Description = productDeliveryItems.Description,
-                    Unit = productDeliveryItems.Unit,
+                    UnitId = productDeliveryItems.UnitId,
                     Quantity = productDeliveryItems.Quantity,
                     UnitCost = productDeliveryItems.UnitCost,
                     TotalCost = productDeliveryItems.TotalCost

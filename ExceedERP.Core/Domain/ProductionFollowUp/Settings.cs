@@ -1,9 +1,11 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+
 
 namespace ExceedERP.Core.Domain.ProductionFollowUp
 {
-    public class Machine
+    public class Machine1
     {
         public int MachineId { get; set; }
         [Display(Name = "Machine Name")]
@@ -19,73 +21,73 @@ namespace ExceedERP.Core.Domain.ProductionFollowUp
         public string Description { get; set; }
     }
     //wait
-    public class Settings
-    {
-        public int SettingsId { get; set; }
+    //public class Settings
+    //{
+    //    public int SettingsId { get; set; }
 
-        [StringLength(150)]
-        [Required]
-        [Display(Name = "Company Name")]
-        public string CompanyName { get; set; }
+    //    [StringLength(150)]
+    //    [Required]
+    //    [Display(Name = "Company Name")]
+    //    public string CompanyName { get; set; }
 
-        [StringLength(15)]
-        [Required]
-        [Display(Name = "Company Address")]
-        public string CompanyAddress { get; set; }
+    //    [StringLength(15)]
+    //    [Required]
+    //    [Display(Name = "Company Address")]
+    //    public string CompanyAddress { get; set; }
 
-        [StringLength(15)]
-        [Required]
-        [Display(Name = "Company Phone")]
-        public string CompanyPhone { get; set; }
+    //    [StringLength(15)]
+    //    [Required]
+    //    [Display(Name = "Company Phone")]
+    //    public string CompanyPhone { get; set; }
 
-        [StringLength(50)]
-        [Required]
-        [Display(Name = "Company Email")]
-        public string CompanyEmail { get; set; }
+    //    [StringLength(50)]
+    //    [Required]
+    //    [Display(Name = "Company Email")]
+    //    public string CompanyEmail { get; set; }
 
-        [StringLength(50)]
-        [Required]
-        [Display(Name = "Company Mail")]
-        public string CompanyMail { get; set; }
+    //    [StringLength(50)]
+    //    [Required]
+    //    [Display(Name = "Company Mail")]
+    //    public string CompanyMail { get; set; }
 
-        [StringLength(50)]
-        [Required]
-        [Display(Name = "Company Vat No")]
-        public string CompanyVatNo { get; set; }
+    //    [StringLength(50)]
+    //    [Required]
+    //    [Display(Name = "Company Vat No")]
+    //    public string CompanyVatNo { get; set; }
 
-        [StringLength(50)]
-        [Required]
-        [Display(Name = "Company TIN")]
-        public string CompanyTIN { get; set; }
+    //    [StringLength(50)]
+    //    [Required]
+    //    [Display(Name = "Company TIN")]
+    //    public string CompanyTIN { get; set; }
 
-        [Required]
-        [Display(Name = "Company Logo")]
-        public byte[] CompanyLogo { get; set; }
+    //    [Required]
+    //    [Display(Name = "Company Logo")]
+    //    public byte[] CompanyLogo { get; set; }
 
-        [Required]
-        [Display(Name = "Company Screen")]
-        public byte[] CompanyScreen { get; set; }
+    //    [Required]
+    //    [Display(Name = "Company Screen")]
+    //    public byte[] CompanyScreen { get; set; }
 
-        [StringLength(15)]
-        [Required]
-        [Display(Name = "SMS Sender Status")]
-        public string SMSSenderStatus { get; set; }
+    //    [StringLength(15)]
+    //    [Required]
+    //    [Display(Name = "SMS Sender Status")]
+    //    public string SMSSenderStatus { get; set; }
 
-        [Required]
-        [Display(Name = "Edit Grace")]
-        public int EditGrace { get; set; }
+    //    [Required]
+    //    [Display(Name = "Edit Grace")]
+    //    public int EditGrace { get; set; }
 
-        [Required]
-        [Display(Name = "Fiscal Year Start")]
-        [DataType(DataType.Date)]
-        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
-        public DateTime FiscalYearStart { get; set; }
+    //    [Required]
+    //    [Display(Name = "Fiscal Year Start")]
+    //    [DataType(DataType.Date)]
+    //    [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+    //    public DateTime FiscalYearStart { get; set; }
 
-        [StringLength(50)]
-        [Required]
-        [Display(Name = "Dashboard Calendar")]
-        public string DashboardCalendar { get; set; }
-    }
+    //    [StringLength(50)]
+    //    [Required]
+    //    [Display(Name = "Dashboard Calendar")]
+    //    public string DashboardCalendar { get; set; }
+    //}
 
     public class CommertialItems
     {

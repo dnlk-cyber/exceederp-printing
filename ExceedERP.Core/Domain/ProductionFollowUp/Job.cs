@@ -1,6 +1,11 @@
-﻿using System;
+﻿using ExceedERP.Core.Domain.PrintingEstimation.Setting;
+using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace ExceedERP.Core.Domain.ProductionFollowUp
 {
@@ -11,11 +16,12 @@ namespace ExceedERP.Core.Domain.ProductionFollowUp
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         [Display(Name = "Recived Date")]
         public DateTime Time { get; set; }
-        [NotMapped]
-        [Display(Name = "Have Proforma ?")]
-        public bool HaveProforma { get; set; }
+
+        public bool hv { get; set; }
+        public bool IsExistingCustomer { get; set; }
         [Display(Name = "Proforma ")]
         public int? ProformaId { get; set; }
+        public int CustomerId { get; set; }
         // [RegularExpression(@"^(\d{5})$", ErrorMessage = "Enter a valid 5 digit Job No")]
         [Display(Name = "Job No.")]
         public string JobNo { get; set; }
@@ -33,9 +39,15 @@ namespace ExceedERP.Core.Domain.ProductionFollowUp
         public string City { get; set; }
         [Display(Name = "Sub City")]
         public string SubCity { get; set; }
-        public string Wereda { get; set; }
+        public string Woreda { get; set; }
+        public decimal? CustomerVAT { get; set; }
+        public decimal? CustomerMargin { get; set; }
+        public decimal? CustomerOverHead { get; set; }
         [Display(Name = "P.O. Box")]
-        public string Pobox { get; set; }
+        public string POBox { get; set; }
+        public string CustomerDescription { get; set; }
+        public PrintingOrderType OrderType { get; set; }
+
         [Display(Name = "Job Type")]
         public int JobTypeId { get; set; }
         [Display(Name = "Job Type Item")]
@@ -104,5 +116,6 @@ namespace ExceedERP.Core.Domain.ProductionFollowUp
         public string Reason { get; set; }
 
     }
+    
 
 }

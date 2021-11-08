@@ -37,7 +37,7 @@ namespace ExceedERP.Reporting.Mega.DataSource
                     if(job != null)
                     {
                         delivery.Tel1 = job.ContactPhone != null ? job.ContactPhone : "________"; 
-                        delivery.POBox = job.Pobox != null ? job.Pobox : "________";
+                        delivery.POBox = job.POBox != null ? job.POBox : "________";
                         delivery.CustomerName = job.CustomerName != null ? job.CustomerName : "________";
                         delivery.ContactName = job.ContactName != null ? job.ContactName : "________";
                         delivery.City = job.City != null ? job.City : "________";
@@ -50,11 +50,12 @@ namespace ExceedERP.Reporting.Mega.DataSource
                     var deliveryItems = db.ProductDeliveryItems.Where(x=>x.ProductDeliveryId == productDelivery.ProductDeliveryId).ToList();
                     foreach(var item in deliveryItems)
                     {
+                        var unit = db.Units.Find(item.UnitId);
                         var product = new ProductDeliveryItemsVM();
 
                         product.ItemCode = item.ItemCode;
                         product.Description = item.Description;
-                        product.Unit = item.Unit;
+                        product.Unit = unit.UOM;
                         product.UnitCost = item.UnitCost;
                         product.TotalPrice = item.TotalCost;
 

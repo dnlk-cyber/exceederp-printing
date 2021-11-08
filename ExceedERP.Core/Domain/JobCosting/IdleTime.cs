@@ -1,5 +1,9 @@
-﻿using System.Collections.Generic;
+﻿using ExceedERP.Core.Domain.Finance.GL;
+using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Web;
 
 namespace ExceedERP.Core.Domain.JobCosting
 {
@@ -8,10 +12,11 @@ namespace ExceedERP.Core.Domain.JobCosting
         public int IdleTimeID { get; set; }
         [Required]
         [UIHint("Year")]
-        public string Year { get; set; }
+        public int YearId { get; set; }
+        public GlFiscalYear Year { get; set; }
         [Required]
-        [UIHint("Month")]
-        public string Month { get; set; }
+        public int PeriodId { get; set; }
+        public GLPeriod Period { get; set; }
         public virtual ICollection<IdleTimeOT> IdleTimeOT { get; set; }
         public virtual ICollection<IdleTimeProductive> IdleTimeProductive { get; set; }
         public virtual ICollection<IdleTimeNonProductiveControllable> IdleTimeNonProductiveControllable { get; set; }
@@ -24,39 +29,39 @@ namespace ExceedERP.Core.Domain.JobCosting
         public int IdleTimeID { get; set; }
         public virtual IdleTime IdleTime { get; set; } 
         [Display(Name = "Manual")]
-        public decimal OTManualHour { get; set; }
+        public decimal? OTManualHour { get; set; }
         [Display(Name = "%")]
         public decimal OTManualPercentage { get; set; }
         [Display(Name = "Mechanical Composition")]
-        public decimal OTMechanicalHour { get; set; }
+        public decimal? OTMechanicalHour { get; set; }
         [Display(Name = "%")]
         public decimal OTMechanicalPercentage { get; set; }
         [Display(Name = "Camera")]
-        public decimal OTCameraHour { get; set; }
+        public decimal? OTCameraHour { get; set; }
         [Display(Name = "%")]
         public decimal OTCameraPercentage { get; set; }
         [Display(Name = "Offset")]
-        public decimal OTOffsetHour { get; set; }
+        public decimal? OTOffsetHour { get; set; }
         [Display(Name = "%")]
         public decimal OTOffsetPercentage { get; set; }
         [Display(Name = "Letter Press")]
-        public decimal OTLetterPressHour { get; set; }
+        public decimal? OTLetterPressHour { get; set; }
         [Display(Name = "%")]
         public decimal OTLetterPressPercentage { get; set; }
         [Display(Name = "Binding")]
-        public decimal OTBindingHour { get; set; }
+        public decimal? OTBindingHour { get; set; }
         [Display(Name = "%")]
         public decimal OTBindingPercentage { get; set; }
         [Display(Name = "Computer")]
-        public decimal OTComputerHour { get; set; }
+        public decimal? OTComputerHour { get; set; }
         [Display(Name = "%")]
         public decimal OTComputerPercentage { get; set; }
         [Display(Name = "Web Offset")]
-        public decimal OTWebHour { get; set; }
+        public decimal? OTWebHour { get; set; }
         [Display(Name = "%")]
         public decimal OTWebPercentage { get; set; }
         [Display(Name = "Total")]
-        public decimal OTTotalHour { get; set; }
+        public decimal? OTTotalHour { get; set; }
         [Display(Name = "%")]
         public decimal OTTotalPercentage { get; set; }
     }
@@ -66,39 +71,39 @@ namespace ExceedERP.Core.Domain.JobCosting
         public int IdleTimeID { get; set; }
         public virtual IdleTime IdleTime { get; set; } 
         [Display(Name = "Manual")]
-        public decimal ProductiveManualHour { get; set; }
+        public decimal? ProductiveManualHour { get; set; }
         [Display(Name = "%")]
         public decimal ProductiveManualPercentage { get; set; }
         [Display(Name = "Mechanical Composition")]
-        public decimal ProductiveMechanicalHour { get; set; }
+        public decimal? ProductiveMechanicalHour { get; set; }
         [Display(Name = "%")]
         public decimal ProductiveMechanicalPercentage { get; set; }
         [Display(Name = "Camera")]
-        public decimal ProductiveCameraHour { get; set; }
+        public decimal? ProductiveCameraHour { get; set; }
         [Display(Name = "%")]
         public decimal ProductiveCameraPercentage { get; set; }
         [Display(Name = "Offset")]
-        public decimal ProductiveOffsetHour { get; set; }
+        public decimal? ProductiveOffsetHour { get; set; }
         [Display(Name = "%")]
         public decimal ProductiveOffsetPercentage { get; set; }
         [Display(Name = "Letter Press")]
-        public decimal ProductiveLetterPressHour { get; set; }
+        public decimal? ProductiveLetterPressHour { get; set; }
         [Display(Name = "%")]
         public decimal ProductiveLetterPressPercentage { get; set; }
         [Display(Name = "Binding")]
-        public decimal ProductiveBindingHour { get; set; }
+        public decimal? ProductiveBindingHour { get; set; }
         [Display(Name = "%")]
         public decimal ProductiveBindingPercentage { get; set; }
         [Display(Name = "Computer")]
-        public decimal ProductiveComputerHour { get; set; }
+        public decimal? ProductiveComputerHour { get; set; }
         [Display(Name = "%")]
         public decimal ProductiveComputerPercentage { get; set; }
         [Display(Name = "Web Offset")]
-        public decimal ProductiveWebHour { get; set; }
+        public decimal? ProductiveWebHour { get; set; }
         [Display(Name = "%")]
         public decimal ProductiveWebPercentage { get; set; }
         [Display(Name = "Total")]
-        public decimal ProductiveTotalHour { get; set; }
+        public decimal? ProductiveTotalHour { get; set; }
         [Display(Name = "%")]
         public decimal ProductiveTotalPercentage { get; set; }
     }
@@ -109,41 +114,41 @@ namespace ExceedERP.Core.Domain.JobCosting
         public virtual IdleTime IdleTime { get; set; }
         [Required]
         [Display(Name = "Idle Time Description")]
-        public string IdleTimeType { get; set; }
+        public string IdleTimeCategoryId { get; set; }
         [Display(Name = "Manual")]
-        public decimal NPCManualHour { get; set; }
+        public decimal? NPCManualHour { get; set; }
         [Display(Name = "%")]
         public decimal NPCManualPercentage { get; set; }
         [Display(Name = "Mechanical Composition")]
-        public decimal NPCMechanicalHour { get; set; }
+        public decimal? NPCMechanicalHour { get; set; }
         [Display(Name = "%")]
         public decimal NPCMechanicalPercentage { get; set; }
         [Display(Name = "Camera")]
-        public decimal NPCCameraHour { get; set; }
+        public decimal? NPCCameraHour { get; set; }
         [Display(Name = "%")]
         public decimal NPCCameraPercentage { get; set; }
         [Display(Name = "Offset")]
-        public decimal NPCOffsetHour { get; set; }
+        public decimal? NPCOffsetHour { get; set; }
         [Display(Name = "%")]
         public decimal NPCOffsetPercentage { get; set; }
         [Display(Name = "Letter Press")]
-        public decimal NPCLetterPressHour { get; set; }
+        public decimal? NPCLetterPressHour { get; set; }
         [Display(Name = "%")]
         public decimal NPCLetterPressPercentage { get; set; }
         [Display(Name = "Binding")]
-        public decimal NPCBindingHour { get; set; }
+        public decimal? NPCBindingHour { get; set; }
         [Display(Name = "%")]
         public decimal NPCBindingPercentage { get; set; }
         [Display(Name = "Computer")]
-        public decimal NPCComputerHour { get; set; }
+        public decimal? NPCComputerHour { get; set; }
         [Display(Name = "%")]
         public decimal NPCComputerPercentage { get; set; }
         [Display(Name = "Web Offset")]
-        public decimal NPCWebHour { get; set; }
+        public decimal? NPCWebHour { get; set; }
         [Display(Name = "%")]
         public decimal NPCWebPercentage { get; set; }
         [Display(Name = "Total")]
-        public decimal NPCTotalHour { get; set; }
+        public decimal? NPCTotalHour { get; set; }
         [Display(Name = "%")]
         public decimal NPCTotalPercentage { get; set; }
     }
@@ -154,37 +159,37 @@ namespace ExceedERP.Core.Domain.JobCosting
         public virtual IdleTime IdleTime { get; set; }
         [Required]
         [Display(Name = "Idle Time Description")]
-        public string IdleTimeType { get; set; }
+        public string IdleTimeCategoryId { get; set; }
         [Display(Name = "Manual")]
-        public decimal NPNCManualHour { get; set; }
+        public decimal? NPNCManualHour { get; set; }
         [Display(Name = "%")]
         public decimal NPNCManualPercentage { get; set; }
         [Display(Name = "Mechanical Composition")]
-        public decimal NPNCMechanicalHour { get; set; }
+        public decimal? NPNCMechanicalHour { get; set; }
         [Display(Name = "%")]
         public decimal NPNCMechanicalPercentage { get; set; }
         [Display(Name = "Camera")]
-        public decimal NPNCCameraHour { get; set; }
+        public decimal? NPNCCameraHour { get; set; }
         [Display(Name = "%")]
         public decimal NPNCCameraPercentage { get; set; }
         [Display(Name = "Offset")]
-        public decimal NPNCOffsetHour { get; set; }
+        public decimal? NPNCOffsetHour { get; set; }
         [Display(Name = "%")]
         public decimal NPNCOffsetPercentage { get; set; }
         [Display(Name = "Letter Press")]
-        public decimal NPNCLetterPressHour { get; set; }
+        public decimal? NPNCLetterPressHour { get; set; }
         [Display(Name = "%")]
         public decimal NPNCLetterPressPercentage { get; set; }
         [Display(Name = "Binding")]
-        public decimal NPNCBindingHour { get; set; }
+        public decimal? NPNCBindingHour { get; set; }
         [Display(Name = "%")]
         public decimal NPNCBindingPercentage { get; set; }
         [Display(Name = "Computer")]
-        public decimal NPNCComputerHour { get; set; }
+        public decimal? NPNCComputerHour { get; set; }
         [Display(Name = "%")]
         public decimal NPNCComputerPercentage { get; set; }
         [Display(Name = "Web Offset")]
-        public decimal NPNCWebHour { get; set; }
+        public decimal? NPNCWebHour { get; set; }
         [Display(Name = "%")]
         public decimal NPNCWebPercentage { get; set; }
         [Display(Name = "Total")]
@@ -192,24 +197,24 @@ namespace ExceedERP.Core.Domain.JobCosting
         [Display(Name = "%")]
         public decimal NPNCTotalPercentage { get; set; }
     }
-    public class IdleTimeSetUp
-    {
-        public int IdleTimeSetUpID { get; set; }
-        public string IdleTimeName { get; set; }
-        public string IdleTimeDesc { get; set; }
-        public bool IsControllable { get; set; }
-    }
+    //public class IdleTimeSetUp
+    //{
+    //    public int IdleTimeSetUpID { get; set; }
+    //    public string IdleTimeName { get; set; }
+    //    public string IdleTimeDesc { get; set; }
+    //    public bool IsControllable { get; set; }
+    //}
 
     public class IdelTimeControllabelDescription
     {
         public int IdelTimeControllabelDescriptionID { get; set; }
-        public string name { get; set; }
-        public string discription { get; set; }
+        public string Name { get; set; }
+        public string Discription { get; set; }
     }
     public class IdelTimeControllabelNonDescription
     {
         public int IdelTimeControllabelNonDescriptionID { get; set; }
-        public string name { get; set; }
-        public string discription { get; set; }
+        public string Name { get; set; }
+        public string Discription { get; set; }
     }
 }

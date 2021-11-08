@@ -1,0 +1,8 @@
+﻿
+@(Html.Kendo().TextBoxFor(m => m)
+                   .Name("Quantity")
+                   .HtmlAttributes(new { onChange = "onChange();" })
+
+)
+@Html.ValidationMessageFor(m => m)
+

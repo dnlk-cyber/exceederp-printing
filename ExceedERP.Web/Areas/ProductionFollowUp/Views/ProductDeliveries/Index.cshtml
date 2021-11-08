@@ -7,7 +7,10 @@
               .Name("grid")
               .Columns(columns =>
               {
-                  columns.ForeignKey(c => c.JobId,(ICollection)ViewData["JobOrder"],"JobId","JobNo").EditorTemplateName("JobOrders");
+                  columns.ForeignKey(c => c.JobId,(ICollection)ViewData["JobOrder"],"JobId","JobNo").EditorTemplateName("JobOrders").Title("Job No");
+                  columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customers"], "CustomerId", "Name")
+                                                                 .Width("110px")
+                                                                 .Title("Customer");
                   columns.Bound(c => c.CustomerRefNo);
                   columns.Bound(c => c.CreditSaleNo);
                   columns.Bound(c => c.CashSaleNo);
@@ -24,6 +27,7 @@
               {
                   toolbar.Create();
               })
+              .Events(ev=>ev.BeforeEdit("hideColumn").Save("showColumn"))
               .Editable(editable => editable.Mode(GridEditMode.InLine))
             .Pageable(pageable => pageable
                                          .Input(true)
@@ -61,9 +65,10 @@
                         {
                             columns.Bound(c => c.ItemCode).Width(100);
                             columns.Bound(c => c.Description).Width(100);
-                            columns.Bound(c => c.Unit).Width(70);
-                            columns.Bound(c => c.Quantity).Width(70);
-                            columns.Bound(c => c.UnitCost).Width(70);
+                            columns.ForeignKey(c => c.UnitId, (ICollection)ViewData["Units"], "UnitId", "UOM")
+                            .EditorTemplateName("UOMMapping").Title("Unit").Width(100);
+                            columns.Bound(c => c.Quantity).Width(70).EditorTemplateName("NumericTextBox");
+                            columns.Bound(c => c.UnitCost).Width(70).EditorTemplateName("NumericTextBox");
                             columns.Bound(c => c.TotalCost).Width(70);
 
                             columns.Command(command =>
@@ -116,4 +121,21 @@
                                       );
 
                            }).ToClientTemplate())
+</script>
+<script>
+    function onChange() {
+           var unitCost =  $("#UnitCost").val();
+        var quantity = $("#Quantity").val();
+        console.log(unitCost);
+        $("#TotalCost").val(unitCost * quantity).trigger("change");
+    }
+
+    function hideColumn() {
+        var grid = $('#grid').data('kendoGrid');
+        grid.hideColumn('CustomerId');
+    }
+    function showColumn() {
+        var grid = $('#grid').data('kendoGrid');
+        grid.showColumn('CustomerId');
+    }
 </script>

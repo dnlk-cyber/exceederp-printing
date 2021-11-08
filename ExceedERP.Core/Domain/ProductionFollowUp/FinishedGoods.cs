@@ -1,6 +1,8 @@
-﻿namespace ExceedERP.Core.Domain.ProductionFollowUp
+﻿
+
+namespace ExceedERP.Core.Domain.ProductionFollowUp
 {
-    public class FinishedGoods
+   public class FinishedGoods
     {
         public int FinishedGoodsId { get; set; }
         public int FinishedGoodReceivingId { get; set; }

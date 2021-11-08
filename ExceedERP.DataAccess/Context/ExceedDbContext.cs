@@ -90,6 +90,9 @@ using ExceedERP.Core.Domain.HRM;
 using ExceedERP.Core.Domain.HRM.Templates;
 using ExceedERP.Core.Domain.Inventory.ArchiveModel;
 using ExceedERP.Core.Domain.ProductionFollowUp;
+using ExceedERP.Core.Domain.JobCosting.Setting;
+using ExceedERP.Core.Domain.JobCosting;
+using ExceedERP.Core.Domain.PrintingEstimation;
 
 namespace ExceedERP.DataAccess.Context
 {
@@ -996,7 +999,7 @@ namespace ExceedERP.DataAccess.Context
 
             modelBuilder.Configurations.Add(new CRMEntityConfiguration.TermEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new CRMEntityConfiguration.VoucherTermEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new CRMEntityConfiguration.TaxEntityTypeConfiguration());
+            //modelBuilder.Configurations.Add(new CRMEntityConfiguration.TaxEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new CRMEntityConfiguration.TaxTransactionEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new CRMEntityConfiguration.PriceEntityTypeConfiguration());
             //  modelBuilder.Configurations.Add(new LineItemEntityTypeConfiguration());
@@ -1423,28 +1426,60 @@ namespace ExceedERP.DataAccess.Context
 
             #endregion
 
-            #region Production Follow UP Entity Configuration
+            #region Printing Estimation
+            modelBuilder.Configurations.Add(new Context.CustomerEntityConfiguration());
+            modelBuilder.Configurations.Add(new Context.PrintingStepEntityConfiguration());
+            modelBuilder.Configurations.Add(new Context.EstimationFormEntityConfiguration());
+            modelBuilder.Configurations.Add(new Context.MaterialCostEntityConfiguration());
+            modelBuilder.Configurations.Add(new Context.LaborCostEntityConfiguration());
+            modelBuilder.Configurations.Add(new Context.OverallCostEntityConfiguration());
+            #endregion
 
+            #region Production Follow UP Entity Configuration
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.ProductFollowUpEntityConfiguration.ProformaEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.ProductFollowUpEntityConfiguration.GraphicEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.ProductFollowUpEntityConfiguration.JobEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.ProductFollowUpEntityConfiguration.JobStatusEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.ProductFollowUpEntityConfiguration.SettingsEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.ProductFollowUpEntityConfiguration.JobOrderMaterialEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.ProductFollowUpEntityConfiguration.FinishedGoodReceivingEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.ProductFollowUpEntityConfiguration.FinishedGoodsEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.ProductFollowUpEntityConfiguration.ProductDeliveryEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.ProductFollowUpEntityConfiguration.ProductDeliveryItemsEntityTypeConfiguration());
-
             #endregion
 
             #region Job Costing Entity Configuration
-
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobCostingEntityConfiguration.JobCategoryEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobCostingEntityConfiguration.UnitEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobCostingEntityConfiguration.IdleTimeCategoryEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobCostingEntityConfiguration.JobOrderTimeSheetEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobCostingEntityConfiguration.JobOrderTimeRegistrationEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobCostingEntityConfiguration.JobOrderSummaryEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobCostingEntityConfiguration.JobOrderSummaryCostCenterEntityTypeConfiguration());
+            //modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobCostingEntityConfiguration.GLChartOfAccountAccountEntityTypeConfiguration());
+            //modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobCostingEntityConfiguration.GLChartOfAccountCostCenterEntityTypeConfiguration());
+            //modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobCostingEntityConfiguration.PensionEntityTypeConfiguration());
+            //modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobCostingEntityConfiguration.GLFiscalYearEntityTypeConfiguration());
+            //modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobCostingEntityConfiguration.GLPeriodEntityTypeConfiguration());
+            //modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobCostingEntityConfiguration.GLTaxRateEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobCostingEntityConfiguration.YearlyOverHeadRateEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobCostingEntityConfiguration.MachineEntityTypeConfiguration());
+            //modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobCostingEntityConfiguration.MainCompanyEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobCostingEntityConfiguration.IdleTimeEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobCostingEntityConfiguration.IdleTimeProductiveEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobCostingEntityConfiguration.IdleTimeOTEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobCostingEntityConfiguration.IdleTimeNonProductiveControllableEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobCostingEntityConfiguration.IdleTimeNonProductiveNonControllableEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobCostingEntityConfiguration.JobCostEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobCostingEntityConfiguration.JobChangeOfOrderEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobCostingEntityConfiguration.JobMaterialCostEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobCostingEntityConfiguration.JobMaterialreturnEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobCostingEntityConfiguration.JobLaborCostEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobCostingEntityConfiguration.FinishedJobEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobCostingEntityConfiguration.DeliveredJobEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobCostingEntityConfiguration.DailyLaborRateEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobCostingEntityConfiguration.DLRSalaryEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobCostingEntityConfiguration.DLRHourEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobCostingEntityConfiguration.JobOrderSummaryCostCenterDetailEntityTypeConfiguration());
-
             #endregion
         }
         #region Common
@@ -2457,7 +2492,7 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<AdvancePaymentLine> AdvancePaymentLines { get; set; }
 
         public DbSet<VoucherTerm> VoucherTerms { get; set; }
-        public DbSet<Tax> Taxs { get; set; }
+        //public DbSet<Tax> Taxs { get; set; }
         public DbSet<TaxTransaction> TaxTransactions { get; set; }
         public DbSet<Price> Prices { get; set; }
 
@@ -3319,35 +3354,59 @@ namespace ExceedERP.DataAccess.Context
 
         #endregion
 
+        #region Printimg Estimation
+        public DbSet<Customer> Customers { get; set; }
+        public DbSet<PrintingStep> PrintingSteps { get; set; }
+        public DbSet<EstimationForm> EstimationForms { get; set; }
+        public DbSet<MaterialCost> MaterialCosts { get; set; }
+        public DbSet<LaborCost> LaborCosts { get; set; }
+        public DbSet<OverallCost> OverallCosts { get; set; }
+        #endregion
         #region Production Follow UP
         public DbSet<Proforma> Proformas { get; set; }
-        public System.Data.Entity.DbSet<ExceedERP.Core.Domain.ProductionFollowUp.JobType> JobTypes { get; set; }
-        public System.Data.Entity.DbSet<ExceedERP.Core.Domain.ProductionFollowUp.JobTypeItem> JobTypeItems { get; set; }
-        public System.Data.Entity.DbSet<ExceedERP.Core.Domain.ProductionFollowUp.PFProformaItems> PFProformaItems { get; set; }
-        public System.Data.Entity.DbSet<ExceedERP.Core.Domain.ProductionFollowUp.CommertialItems> CommertialItems { get; set; }
+        public DbSet<JobType> JobTypes { get; set; }
+        public DbSet<JobTypeItem> JobTypeItems { get; set; }
+        public DbSet<PFProformaItems> PFProformaItems { get; set; }
 
-        public System.Data.Entity.DbSet<ExceedERP.Core.Domain.ProductionFollowUp.Machine> Machines { get; set; }
+        public DbSet<Job> Jobs { get; set; }
+        public DbSet<JobStatus> JobStatuses { get; set; }
+        public DbSet<ChangeOrder> ChangeOrders { get; set; }
+        public DbSet<ExceedERP.Core.Domain.JobCosting.CostCenter> CostCenters { get; set; }
+        public DbSet<JobOrderMaterial> JobOrderMaterials { get; set; }
+        public DbSet<FinishedGoodReceiving> FinishedGoodReceivings { get; set; }
+        public DbSet<FinishedGoods> FinishedGoods { get; set; }
+        public DbSet<ProductDelivery> ProductDeliveries { get; set; }
 
-        public System.Data.Entity.DbSet<ExceedERP.Core.Domain.ProductionFollowUp.Job> Jobs { get; set; }
-        public System.Data.Entity.DbSet<ExceedERP.Core.Domain.ProductionFollowUp.ChangeOrder> ChangeOrders { get; set; }
-        public System.Data.Entity.DbSet<ExceedERP.Core.Domain.JobCosting.CostCenter> CostCenters { get; set; }
-        public System.Data.Entity.DbSet<ExceedERP.Core.Domain.ProductionFollowUp.JobOrderMaterial> JobOrderMaterials { get; set; }
-        public System.Data.Entity.DbSet<ExceedERP.Core.Domain.ProductionFollowUp.FinishedGoodReceiving> FinishedGoodReceivings { get; set; }
-        public System.Data.Entity.DbSet<ExceedERP.Core.Domain.ProductionFollowUp.FinishedGoods> FinishedGoods { get; set; }
-        public System.Data.Entity.DbSet<ExceedERP.Core.Domain.ProductionFollowUp.ProductDelivery> ProductDeliveries { get; set; }
-
-        public System.Data.Entity.DbSet<ExceedERP.Core.Domain.ProductionFollowUp.ProductDeliveryItems> ProductDeliveryItems { get; set; }
-
+        public DbSet<ProductDeliveryItems> ProductDeliveryItems { get; set; }
         #endregion
-
         #region Job Costing
-        public System.Data.Entity.DbSet<ExceedERP.Core.Domain.JobCosting.JobOrderTimeSheet> JobOrderTimeSheets { get; set; }
-        public System.Data.Entity.DbSet<ExceedERP.Core.Domain.JobCosting.JobOrderTimeRegistration> JobOrderTimeRegistrations { get; set; }
-        public System.Data.Entity.DbSet<ExceedERP.Core.Domain.JobCosting.JobOrderSummary> JobOrderSummarys { get; set; }
-        public System.Data.Entity.DbSet<ExceedERP.Core.Domain.JobCosting.JobOrderSummaryCostCenter> JobOrderSummaryCostCenters { get; set; }
-        public System.Data.Entity.DbSet<ExceedERP.Core.Domain.JobCosting.JobOrderSummaryCostCenterDetail> JobOrderSummaryCostCenterDetails { get; set; }
-
+        public DbSet<IdleTimeCategory> IdleTimeCategories { get; set; }
+        public DbSet<JobCategory> JobCategories { get; set; }
+        public DbSet<YearlyOverHeadRate> YearlyOverHeadRates { get; set; }
+        public DbSet<Machine> Machines { get; set; }
+        public DbSet<Unit> Units { get; set; }
+        public DbSet<IdleTime> IdleTimes { get; set; }
+        public DbSet<IdleTimeOT> IdleTimeOTs { get; set; }
+        public DbSet<IdleTimeProductive> IdleTimeProductives { get; set; }
+        public DbSet<IdleTimeNonProductiveControllable> IdleTimeNonProductiveControllables { get; set; }
+        public DbSet<IdleTimeNonProductiveNonControllable> IdleTimeNonProductiveNonControllables { get; set; }
+        public DbSet<JobCost> JobCosts { get; set; }
+        public DbSet<JobChangeOfOrder> JobChangeOfOrders { get; set; }
+        public DbSet<JobLaborCost> JobLaborCosts { get; set; }
+        public DbSet<JobMaterialCost> JobMaterialCosts { get; set; }
+        public DbSet<JobMaterialReturn> JobMaterialReturns { get; set; }
+        public DbSet<FinishedJob> FinishedJobs { get; set; }
+        public DbSet<DeliveredJob> DeliveredJobs { get; set; }
+        public DbSet<DailyLaborRate> DailyLaborRates { get; set; }
+        public DbSet<DLRSalary> DLRSalaries { get; set; }
+        public DbSet<DLRHour> DLRHours { get; set; }
+        public DbSet<JobOrderTimeSheet> JobOrderTimeSheets { get; set; }
+        public DbSet<JobOrderTimeRegistration> JobOrderTimeRegistrations { get; set; }
+        public DbSet<JobOrderSummary> JobOrderSummarys { get; set; }
+        public DbSet<JobOrderSummaryCostCenter> JobOrderSummaryCostCenters { get; set; }
+        public DbSet<JobOrderSummaryCostCenterDetail> JobOrderSummaryCostCenterDetails { get; set; }
         #endregion
+
         #region dashboard
         public DbSet<Core.Domain.Dashboard.InventoryItembalance> InventoryItembalances { get; set; }
         public DbSet<Core.Domain.Dashboard.DashboardDictionary> DashboardDictionaries { get; set; }

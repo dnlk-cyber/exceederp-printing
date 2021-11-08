@@ -35,7 +35,8 @@ namespace ExceedERP.Reporting.Mega.DataSource
                     if(job != null)
                     {
                         receival.JobOrderNo = job.JobNo;
-                        receival.CustomerName = job.CustomerName;
+                        var CustomerName = db.Customers.Find(job.CustomerId)?.Name;
+                        receival.CustomerName = CustomerName;
                     }
 
                     receival.FinishedGoods = new List<FinishedGoodsVM>();

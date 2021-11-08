@@ -1,0 +1,21 @@
+﻿@(Html.Kendo().DropDownListFor(m => m)
+                .Name("PrintingStepId")
+                .HtmlAttributes(new { @id = "pcv_#=EstimationFormId#" })
+                .ValuePrimitive(true)
+                .OptionLabel("Select Printing Step Values...")
+                .DataTextField("Name")
+                .DataValueField("PrintingStepId")
+                .Filter("contains")
+                .DataSource(dataSource =>
+                {
+                    dataSource.Read(read => read.Action("GetAllPrintingStepValues", "PrintingStep", new { area = "PrintingEstimation" })
+                   .Data("filterPrintingSteps"))
+                    .ServerFiltering(true);
+                })
+                .CascadeFrom("pc_#=EstimationFormId#")
+                .AutoBind(false)
+                .Enable(false)
+
+
+)
+@Html.ValidationMessageFor(m => m)

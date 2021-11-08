@@ -1,0 +1,144 @@
+﻿﻿using System;
+using System.Collections.Generic;
+using System.Data.Entity;
+using System.Linq;
+using System.Net;
+using System.Web;
+using System.Web.Mvc;
+using Kendo.Mvc.Extensions;
+using Kendo.Mvc.UI;
+using ExceedERP.Core.Domain.PrintingEstimation;
+using ExceedERP.DataAccess.Context;
+using System.Data.Entity.Core;
+using System.Data.Entity.Core.Objects;
+using ExceedERP.Web.Areas.PrintingEstimation.Models;
+
+namespace ExceedERP.Web.Areas.PrintingEstimation.Controllers
+{
+    public class MaterialCostController : Controller
+    {
+        private ExceedDbContext db = new ExceedDbContext();
+
+     
+
+        public ActionResult MaterialCosts_Read([DataSourceRequest]DataSourceRequest request, int estimationFormId)
+            
+        {
+            IQueryable<MaterialCost> materialcosts = db.MaterialCosts.Where(q=>q.EstimationFormId == estimationFormId).OrderByDescending(a => a.MaterialCostId);
+            DataSourceResult result = materialcosts.ToDataSourceResult(request, materialCost => new {
+                MaterialCostId = materialCost.MaterialCostId,
+                EstimationFormId = materialCost.EstimationFormId,
+                InventoryCategoryId = materialCost.InventoryCategoryId,
+                InventoryId = materialCost.InventoryId,
+                Quantity = materialCost.Quantity,
+                UnitPrice = materialCost.UnitPrice,
+                TotalPrice = materialCost.TotalPrice,
+                DateCreated = materialCost.DateCreated,
+                LastModified = materialCost.LastModified
+            });
+
+            return Json(result);
+        }
+
+        [AcceptVerbs(HttpVerbs.Post)]
+        public ActionResult MaterialCosts_Create([DataSourceRequest]DataSourceRequest request, MaterialCost materialCost, int parentId)
+        {
+
+            if (ModelState.IsValid)
+            {
+                var invs = db.MaterialCosts.Where(q => q.InventoryId == materialCost.InventoryId&&q.EstimationFormId==parentId).ToList();
+                if (invs.Any())
+                {
+                    ModelState.AddModelError("403", "Inventory already available");
+                }
+                materialCost.TotalPrice = this.totalPrice(materialCost.UnitPrice, materialCost.Quantity);
+                var entity = new MaterialCost
+                {
+                    //MaterialCostId = materialCost.MaterialCostId,
+                    EstimationFormId = parentId,
+                    InventoryCategoryId = materialCost.InventoryCategoryId,
+                    InventoryId = materialCost.InventoryId,
+                    Quantity = materialCost.Quantity,
+                    UnitPrice = materialCost.UnitPrice,
+                    TotalPrice = materialCost.TotalPrice
+                };
+
+                db.MaterialCosts.Add(entity);
+                db.SaveChanges();
+                var estimation = new UpdateOverallCost();
+                estimation.update(parentId);
+
+            }
+
+            
+            return Json(new[] { materialCost }.ToDataSourceResult(request, ModelState));
+        }
+
+        public decimal totalPrice(decimal UP, decimal Q)
+        {
+            return UP * Q;
+        }
+        [AcceptVerbs(HttpVerbs.Post)]
+        public ActionResult MaterialCosts_Update([DataSourceRequest]DataSourceRequest request, MaterialCost materialCost)
+        {
+            if (ModelState.IsValid)
+            {
+                materialCost.TotalPrice = this.totalPrice(materialCost.UnitPrice, materialCost.Quantity);
+
+                var entity = new MaterialCost
+                {
+                    MaterialCostId = materialCost.MaterialCostId,
+                    EstimationFormId = materialCost.EstimationFormId,
+                    InventoryCategoryId = materialCost.InventoryCategoryId,
+                    InventoryId = materialCost.InventoryId,
+                    Quantity = materialCost.Quantity,
+                    UnitPrice = materialCost.UnitPrice,
+                    TotalPrice = materialCost.TotalPrice
+                };
+
+                db.MaterialCosts.Attach(entity);
+                db.Entry(entity).State = EntityState.Modified;
+                db.SaveChanges();
+                var estimation = new UpdateOverallCost();
+                estimation.update(materialCost.EstimationFormId);
+            }
+
+            return Json(new[] { materialCost }.ToDataSourceResult(request, ModelState));
+        }
+
+        [AcceptVerbs(HttpVerbs.Post)]
+        public ActionResult MaterialCosts_Destroy([DataSourceRequest]DataSourceRequest request, MaterialCost materialCost)
+        {
+
+            if (ModelState.IsValid)
+            {
+                var entity = new MaterialCost
+                {
+                    MaterialCostId = materialCost.MaterialCostId,
+                    InventoryCategoryId = materialCost.InventoryCategoryId,
+                    InventoryId = materialCost.InventoryId,
+                    EstimationFormId = materialCost.EstimationFormId,
+                    Quantity = materialCost.Quantity,
+                    UnitPrice = materialCost.UnitPrice,
+                    TotalPrice = materialCost.TotalPrice
+
+                };
+
+                db.MaterialCosts.Attach(entity);
+                db.MaterialCosts.Remove(entity);
+                db.SaveChanges();
+                var estimation = new UpdateOverallCost();
+                estimation.update(materialCost.EstimationFormId);
+
+
+            }
+
+            return Json(new[] { materialCost }.ToDataSourceResult(request, ModelState));
+        }
+        protected override void Dispose(bool disposing)
+        {
+            db.Dispose();
+            base.Dispose(disposing);
+        }
+    }
+}

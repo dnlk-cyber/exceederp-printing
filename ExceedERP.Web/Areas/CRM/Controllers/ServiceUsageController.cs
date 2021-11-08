@@ -25,7 +25,7 @@ namespace ExceedERP.Web.Areas.CRM.Controllers
         public ActionResult Index()
         {
             ViewData["CustomerServices"] = db.CustomerServices;
-            ViewData["Tax"] = db.Taxs;
+            //ViewData["Tax"] = db.Taxs;
             return View();
         }
         public ActionResult ServiceUsages_Read([DataSourceRequest]DataSourceRequest request)

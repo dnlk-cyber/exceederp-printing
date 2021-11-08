@@ -112630,3 +112630,668 @@
 2021-11-01 11:00:35.9902|INFO|Hangfire.Server.BackgroundServerProcess|Server lenovo:14376:dcdcb8a1 successfully reported itself as stopped in 2.9434 ms
 2021-11-01 11:00:35.9902|INFO|Hangfire.Server.BackgroundServerProcess|Server lenovo:14376:dcdcb8a1 has been stopped in total 32.6705 ms
 2021-11-01 11:00:35.9902|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop BackgroundServerProcess:637074b1 stopped in 32.9279 ms
+2021-11-07 22:05:01.4890|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:05:31.4909|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:06:01.4961|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:06:31.5045|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:07:01.5055|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:07:31.5152|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:08:01.5258|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:08:31.4669|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2021-11-07 22:08:31.5278|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:09:01.5305|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:09:31.5332|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:10:01.5419|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:10:31.5441|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:11:01.5452|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:11:31.5486|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:12:01.5558|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:12:31.5592|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:13:01.5688|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:13:31.4797|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2021-11-07 22:13:31.5706|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:13:31.6387|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'AggregatedCounter' table...
+2021-11-07 22:13:31.6387|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Job' table...
+2021-11-07 22:13:31.6387|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'List' table...
+2021-11-07 22:13:31.6387|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Set' table...
+2021-11-07 22:13:31.6387|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Hash' table...
+2021-11-07 22:14:01.5745|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:14:31.5840|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:15:01.5932|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:15:31.5955|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:16:01.6045|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:16:31.6163|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:17:01.6250|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:17:31.6498|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:18:01.6536|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:18:31.4864|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2021-11-07 22:18:31.6554|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:19:01.6651|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:19:31.6755|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:20:01.6835|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:20:31.6856|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:21:01.6875|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:21:31.6902|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:22:01.6931|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:22:31.6963|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:23:01.6975|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:23:31.4916|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2021-11-07 22:23:31.6996|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:24:01.7026|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:24:31.7049|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:25:01.7059|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:25:31.7092|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:26:01.7111|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:26:31.7150|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:27:01.7161|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:27:31.7198|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:28:01.7213|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:28:31.4967|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2021-11-07 22:28:31.7237|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:29:01.7274|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:29:31.7288|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:30:01.7321|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:30:31.7344|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:31:01.7372|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:31:31.7399|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:32:01.7423|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:32:31.7450|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:33:01.7478|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:33:31.5017|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2021-11-07 22:33:31.7507|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:34:01.7545|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:34:31.7558|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:35:01.7585|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:35:31.7606|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:36:01.7644|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:36:31.7669|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:37:01.7684|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:37:31.7713|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:38:01.7741|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:38:31.5076|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2021-11-07 22:38:31.7766|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:39:01.7794|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:39:31.7820|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:40:01.7846|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:40:31.7867|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:41:01.7891|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:41:31.7922|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:42:01.7933|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:42:31.7958|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:43:01.7986|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:43:31.5132|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2021-11-07 22:43:31.6522|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'AggregatedCounter' table...
+2021-11-07 22:43:31.6522|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Job' table...
+2021-11-07 22:43:31.6522|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'List' table...
+2021-11-07 22:43:31.6522|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Set' table...
+2021-11-07 22:43:31.6522|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Hash' table...
+2021-11-07 22:43:31.8012|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:44:01.8025|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:44:31.8037|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:45:01.8051|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:45:31.8072|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:46:01.8097|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:46:31.8123|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:47:01.8151|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:47:31.8174|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:48:01.8203|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:48:31.5182|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2021-11-07 22:48:31.8233|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:49:01.8257|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:49:31.8279|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:50:01.8300|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:50:31.8329|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:51:01.8351|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:51:31.8380|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:52:01.8406|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:52:31.8430|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:53:01.8459|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:53:31.5224|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2021-11-07 22:53:31.8481|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:54:01.8505|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:54:31.8532|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:55:01.8565|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:55:31.8583|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:56:01.8610|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:56:31.8635|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:57:01.8657|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:57:31.8677|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:58:01.8696|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:58:31.5283|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2021-11-07 22:58:31.8717|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:59:01.8742|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 22:59:31.8762|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:00:01.8787|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:00:31.8819|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:01:01.8832|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:01:31.8859|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:02:01.8887|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:02:31.8914|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:03:01.8935|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:03:31.5334|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2021-11-07 23:03:31.8974|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:04:01.8991|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:04:31.9023|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:05:01.9034|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:05:31.9071|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:06:01.9086|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:06:31.9120|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:07:01.9147|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:07:31.9165|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:08:01.9186|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:08:31.5399|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2021-11-07 23:08:31.9210|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:09:01.9234|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:09:31.9254|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:10:01.9277|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:10:31.9316|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:11:01.9333|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:11:31.9362|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:12:01.9382|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:12:31.9399|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:13:01.9429|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:13:31.5455|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2021-11-07 23:13:31.6635|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'AggregatedCounter' table...
+2021-11-07 23:13:31.6665|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Job' table...
+2021-11-07 23:13:31.6665|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'List' table...
+2021-11-07 23:13:31.6665|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Set' table...
+2021-11-07 23:13:31.6665|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Hash' table...
+2021-11-07 23:13:31.9445|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:14:01.9467|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:14:31.9490|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:15:01.9518|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:15:31.9541|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:16:01.9552|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:16:31.9587|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:17:01.9614|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:17:31.9630|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:18:01.9661|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:18:31.5509|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2021-11-07 23:18:31.9679|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:19:01.9703|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:19:31.9714|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:20:01.9733|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:20:31.9757|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:21:01.9791|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:21:31.9808|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:22:01.9835|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:22:31.9870|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:23:01.9883|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:23:31.5563|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2021-11-07 23:23:31.9910|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:24:01.9939|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:24:31.9958|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:25:01.9988|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:25:32.0008|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:26:02.0043|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:26:32.0067|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:27:02.0082|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:27:32.0119|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:28:02.0137|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:28:31.5614|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2021-11-07 23:28:32.0164|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:29:02.0192|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:29:32.0230|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:30:02.0253|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:30:32.0267|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:31:02.0295|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:31:32.0329|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:32:02.0356|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:32:32.0384|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:33:02.0413|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:33:31.5672|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2021-11-07 23:33:32.0442|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:34:02.0470|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:34:32.0495|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:35:02.0529|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:35:32.0547|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:36:02.0573|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:36:32.0601|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:37:02.0624|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:37:32.0649|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:38:02.0677|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:38:31.5734|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2021-11-07 23:38:32.0708|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:39:02.0722|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:39:32.0742|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:40:02.0781|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:40:32.0800|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:41:02.0824|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:41:32.0861|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:42:02.0875|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:42:32.0909|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:43:02.0928|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:43:31.5787|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2021-11-07 23:43:31.6767|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'AggregatedCounter' table...
+2021-11-07 23:43:31.6767|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Job' table...
+2021-11-07 23:43:31.6817|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'List' table...
+2021-11-07 23:43:31.6817|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Set' table...
+2021-11-07 23:43:31.6817|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Hash' table...
+2021-11-07 23:43:32.0957|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:44:02.0985|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:44:32.1006|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:45:02.1025|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:45:32.1045|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:46:02.1077|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:46:32.1091|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:47:02.1102|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:47:32.1140|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:48:02.1162|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:48:31.5838|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2021-11-07 23:48:32.1184|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:49:02.1209|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:49:32.1232|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:50:02.1259|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:50:32.1288|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:51:02.1321|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:51:32.1334|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:52:02.1360|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:52:32.1389|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:53:02.1410|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:53:31.5891|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2021-11-07 23:53:32.1436|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:54:02.2144|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:54:32.2161|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:55:02.2187|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:55:32.2214|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:56:02.2242|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:56:32.2279|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:57:02.2297|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:57:32.2324|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:58:02.2361|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:58:31.5949|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2021-11-07 23:58:32.2379|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:59:02.2410|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-07 23:59:32.2426|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-08 00:00:02.2448|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-08 00:00:32.2472|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-08 00:01:02.2496|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-08 00:01:32.2530|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-08 00:02:02.2551|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-08 00:02:32.2568|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-08 00:03:02.2601|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-08 00:03:31.6026|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2021-11-08 00:03:32.2615|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-08 00:04:02.2637|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-08 00:04:32.2666|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-08 00:05:02.2705|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-08 00:05:32.2735|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-08 00:06:02.2761|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-08 00:06:32.2779|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-08 00:07:02.2818|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-08 00:07:32.2849|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-08 00:08:02.2878|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-08 00:08:31.6078|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2021-11-08 00:08:32.2907|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-08 00:09:02.2926|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-08 00:09:32.2959|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-08 00:10:02.2977|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-08 00:10:32.3001|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-08 00:11:02.3030|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-08 00:11:32.3050|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-08 00:12:02.3089|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-08 00:12:32.3117|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-08 00:13:02.3143|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-08 00:13:31.6130|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2021-11-08 00:13:31.6880|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'AggregatedCounter' table...
+2021-11-08 00:13:31.6880|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Job' table...
+2021-11-08 00:13:31.6880|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'List' table...
+2021-11-08 00:13:31.6970|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Set' table...
+2021-11-08 00:13:31.6970|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Hash' table...
+2021-11-08 00:13:32.3181|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-08 00:14:02.3208|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-08 00:14:32.3236|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-08 00:15:02.3253|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-08 00:15:32.3274|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-08 00:16:02.3302|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-08 00:16:32.3329|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-08 00:17:02.3345|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-08 00:17:32.3522|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-08 00:18:02.3550|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-08 00:18:31.6197|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2021-11-08 00:18:32.3587|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-08 00:19:02.3615|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-08 00:19:32.3633|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-08 00:20:02.3660|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-08 00:20:32.3688|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-08 00:21:02.3725|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-08 00:21:32.3742|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-08 00:22:02.3780|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:32181047 heartbeat successfully sent
+2021-11-08 00:22:10.2614|INFO|Hangfire.Server.BackgroundServerProcess|Server win-2gun874ur5g:9268:32181047 caught stopping signal...
+2021-11-08 00:22:10.2614|INFO|Hangfire.Server.BackgroundServerProcess|Server win-2gun874ur5g:9268:32181047 caught stopped signal...
+2021-11-08 00:22:10.2614|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:f15be856 stopped in 2.0308 ms
+2021-11-08 00:22:10.2614|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:9f86bb13 stopped in 2.7704 ms
+2021-11-08 00:22:10.2614|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop CountersAggregator:fe07938f stopped in 3.5438 ms
+2021-11-08 00:22:10.2614|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop DelayedJobScheduler:0f585ae6 stopped in 3.627 ms
+2021-11-08 00:22:10.2614|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:440a6a88 stopped in 2.7165 ms
+2021-11-08 00:22:10.2614|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:2ffc7840 stopped in 3.3863 ms
+2021-11-08 00:22:10.2614|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ExpirationManager:68e5085f stopped in 3.6275 ms
+2021-11-08 00:22:10.2614|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:6d8417c7 stopped in 4.2013 ms
+2021-11-08 00:22:10.2614|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:a8dd95be stopped in 9.0801 ms
+2021-11-08 00:22:10.2614|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:8d67199c stopped in 1.9641 ms
+2021-11-08 00:22:10.2614|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:f617c020 stopped in 1.9164 ms
+2021-11-08 00:22:10.2614|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:3e333dd6 stopped in 3.3806 ms
+2021-11-08 00:22:10.2614|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:50fc9d27 stopped in 3.5238 ms
+2021-11-08 00:22:10.2614|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:4baf0f7b stopped in 3.24 ms
+2021-11-08 00:22:10.2614|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop RecurringJobScheduler:19a7c551 stopped in 3.6691 ms
+2021-11-08 00:22:10.2614|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:9d75acc5 stopped in 3.6855 ms
+2021-11-08 00:22:10.2614|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ServerJobCancellationWatcher:99c281dd stopped in 3.5485 ms
+2021-11-08 00:22:10.2614|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:8692cabb stopped in 3.395 ms
+2021-11-08 00:22:10.2614|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ServerWatchdog:6d5cc92b stopped in 3.5551 ms
+2021-11-08 00:22:10.2614|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:50278319 stopped in 1.9923 ms
+2021-11-08 00:22:10.2614|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:4230093c stopped in 3.0737 ms
+2021-11-08 00:22:10.2614|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:572bf46a stopped in 3.3298 ms
+2021-11-08 00:22:10.2614|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:3f8274c3 stopped in 2.8145 ms
+2021-11-08 00:22:10.2614|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:57cf822e stopped in 3.2338 ms
+2021-11-08 00:22:10.2614|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:06fe8503 stopped in 3.0886 ms
+2021-11-08 00:22:10.2614|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:14b93f76 stopped in 3.4289 ms
+2021-11-08 00:22:10.2884|INFO|Hangfire.Server.BackgroundServerProcess|Server win-2gun874ur5g:9268:32181047 All dispatchers stopped
+2021-11-08 00:22:10.2905|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ServerHeartbeatProcess:bd737f36 stopped in 28.8776 ms
+2021-11-08 00:22:10.2905|INFO|Hangfire.Server.BackgroundServerProcess|Server win-2gun874ur5g:9268:32181047 successfully reported itself as stopped in 7.8001 ms
+2021-11-08 00:22:10.2905|INFO|Hangfire.Server.BackgroundServerProcess|Server win-2gun874ur5g:9268:32181047 has been stopped in total 40.4751 ms
+2021-11-08 00:22:10.2905|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop BackgroundServerProcess:2d142a29 stopped in 42.4259 ms
+2021-11-08 00:59:17.8675|INFO|Hangfire.SqlServer.SqlServerObjectsInstaller|Start installing Hangfire SQL objects...
+2021-11-08 00:59:17.9655|INFO|Hangfire.SqlServer.SqlServerObjectsInstaller|Hangfire SQL objects installed.
+2021-11-08 00:59:18.0375|INFO|Hangfire.BackgroundJobServer|Starting Hangfire Server using job storage: 'SQL Server: localhost@ExceedERP2021-MPE-PRO'
+2021-11-08 00:59:18.0375|INFO|Hangfire.BackgroundJobServer|Using the following options for SQL Server job storage: Queue poll interval: 00:00:15.
+2021-11-08 00:59:18.0375|INFO|Hangfire.BackgroundJobServer|Using the following options for Hangfire Server:
+    Worker count: 20
+    Listening queues: 'default'
+    Shutdown timeout: 00:00:15
+    Schedule polling interval: 00:00:15
+2021-11-08 00:59:18.0905|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop BackgroundServerProcess:2c8c40cf has started in 13.5006 ms
+2021-11-08 00:59:18.1685|INFO|Hangfire.Server.BackgroundServerProcess|Server win-2gun874ur5g:9268:dbf9f99c successfully announced in 62.767 ms
+2021-11-08 00:59:18.1685|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ServerHeartbeatProcess:875bbdf7 has started in 4.3178 ms
+2021-11-08 00:59:18.1805|INFO|Hangfire.Server.BackgroundServerProcess|Server win-2gun874ur5g:9268:dbf9f99c is starting the registered dispatchers: ServerWatchdog, ServerJobCancellationWatcher, ExpirationManager, CountersAggregator, Worker, DelayedJobScheduler, RecurringJobScheduler...
+2021-11-08 00:59:18.1805|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ServerWatchdog:27f7c705 has started in 1.63 ms
+2021-11-08 00:59:18.1805|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ServerJobCancellationWatcher:682a1ada has started in 1.6977 ms
+2021-11-08 00:59:18.1805|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ExpirationManager:2e6996d2 has started in 1.7778 ms
+2021-11-08 00:59:18.1805|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop CountersAggregator:209b7233 has started in 1.5273 ms
+2021-11-08 00:59:18.1805|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'AggregatedCounter' table...
+2021-11-08 00:59:18.1805|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2021-11-08 00:59:18.1805|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:afebc38b has started in 1.7958 ms
+2021-11-08 00:59:18.1965|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:759b2af4 has started in 2.31 ms
+2021-11-08 00:59:18.1965|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:f5c82901 has started in 3.434 ms
+2021-11-08 00:59:18.1965|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:7c769349 has started in 3.8985 ms
+2021-11-08 00:59:18.1965|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:f0f57627 has started in 4.52 ms
+2021-11-08 00:59:18.1965|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:b103d9ab has started in 5.0815 ms
+2021-11-08 00:59:18.1965|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:e6fe4dee has started in 5.8672 ms
+2021-11-08 00:59:18.1965|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:93db54b8 has started in 6.4082 ms
+2021-11-08 00:59:18.1965|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:2c10cf77 has started in 7.0405 ms
+2021-11-08 00:59:18.1965|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:fdf15790 has started in 7.6246 ms
+2021-11-08 00:59:18.1965|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:f062695d has started in 8.0854 ms
+2021-11-08 00:59:18.1965|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:e690e707 has started in 8.6736 ms
+2021-11-08 00:59:18.1965|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:576e9c32 has started in 9.4306 ms
+2021-11-08 00:59:18.1965|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:26e5ffd9 has started in 10.3704 ms
+2021-11-08 00:59:18.1965|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:bb644f23 has started in 11.0976 ms
+2021-11-08 00:59:18.1965|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:85e2cedd has started in 11.6026 ms
+2021-11-08 00:59:18.1965|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:8bcfb6f7 has started in 12.3822 ms
+2021-11-08 00:59:18.1965|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:4745eba0 has started in 13.1485 ms
+2021-11-08 00:59:18.1965|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:34020633 has started in 13.7752 ms
+2021-11-08 00:59:18.1965|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:e9646b0d has started in 14.3135 ms
+2021-11-08 00:59:18.1965|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop DelayedJobScheduler:04589999 has started in 1.7219 ms
+2021-11-08 00:59:18.2135|INFO|Hangfire.Server.BackgroundServerProcess|Server win-2gun874ur5g:9268:dbf9f99c all the dispatchers started
+2021-11-08 00:59:18.2135|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop RecurringJobScheduler:e4feda66 has started in 1.7603 ms
+2021-11-08 00:59:18.2435|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Job' table...
+2021-11-08 00:59:18.3055|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'List' table...
+2021-11-08 00:59:18.3055|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Set' table...
+2021-11-08 00:59:18.3055|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Hash' table...
+2021-11-08 00:59:48.1952|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:00:18.1974|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:00:48.2003|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:01:18.2030|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:01:48.3098|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:02:18.3235|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:02:48.3268|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:03:18.3295|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:03:48.3322|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:04:18.2060|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2021-11-08 01:04:18.3340|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:04:48.3367|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:05:18.3390|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:05:48.3428|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:06:18.3453|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:06:48.3481|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:07:18.3508|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:07:48.3535|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:08:18.3563|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:08:48.3590|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:09:18.2108|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2021-11-08 01:09:18.3608|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:09:48.3635|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:10:18.3663|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:10:48.3690|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:11:18.3718|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:11:48.3731|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:12:18.3768|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:12:48.3795|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:13:18.3813|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:13:48.3836|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:14:18.2143|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2021-11-08 01:14:18.3864|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:14:48.3901|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:15:18.3928|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:15:48.3953|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:16:18.3980|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:16:48.4008|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:17:18.4035|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:17:48.4073|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:18:18.4090|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:18:48.4125|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:19:18.2184|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2021-11-08 01:19:18.4154|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:19:48.4181|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:20:18.4216|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:20:48.4243|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:21:18.4261|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:21:48.4298|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:22:18.4316|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:22:48.4343|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:23:18.4371|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:23:48.4398|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:24:18.2225|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2021-11-08 01:24:18.4426|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:24:48.4463|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:25:18.4720|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:25:48.4738|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:26:18.4765|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:26:48.4793|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:27:18.4820|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:27:48.4848|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:28:18.4875|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:28:48.4912|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:29:18.2270|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2021-11-08 01:29:18.3140|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'AggregatedCounter' table...
+2021-11-08 01:29:18.3140|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Job' table...
+2021-11-08 01:29:18.3140|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'List' table...
+2021-11-08 01:29:18.3220|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Set' table...
+2021-11-08 01:29:18.3220|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Hash' table...
+2021-11-08 01:29:18.4930|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:29:48.4967|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:30:18.4985|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:30:48.5012|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:31:18.5030|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:31:48.5067|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:32:18.5085|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:32:48.5122|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:33:18.5149|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:33:48.5169|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:34:18.2314|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2021-11-08 01:34:18.5183|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:34:48.5207|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:35:18.5236|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:35:48.5259|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:36:18.5304|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:36:48.5319|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:37:18.5351|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:37:48.5363|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:38:18.5398|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:38:48.5419|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:39:18.2367|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2021-11-08 01:39:18.5447|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:39:48.5467|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:40:18.5492|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:40:48.5512|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:41:18.5540|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:41:48.5563|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:42:18.5587|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:42:48.5609|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:43:18.5634|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:43:48.5656|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:44:18.2417|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2021-11-08 01:44:18.5685|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:44:48.5703|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:45:18.5732|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:45:48.5757|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:46:18.5780|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:46:48.5791|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:47:18.5819|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:47:48.5857|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:48:18.5873|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:48:48.5894|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:49:18.2465|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2021-11-08 01:49:18.5915|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:49:48.5951|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:50:18.5970|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:50:48.5992|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:51:18.6017|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:51:48.6041|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:52:18.6056|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:52:48.6094|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:53:18.6109|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:53:48.6136|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:54:18.2526|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2021-11-08 01:54:18.6157|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:54:48.6194|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:55:18.6209|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:55:48.6239|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:56:18.6256|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:56:48.6282|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:57:18.6321|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:57:48.6344|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:58:18.6371|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:58:48.6394|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:59:18.2579|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2021-11-08 01:59:18.3279|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'AggregatedCounter' table...
+2021-11-08 01:59:18.3279|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Job' table...
+2021-11-08 01:59:18.3279|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'List' table...
+2021-11-08 01:59:18.3369|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Set' table...
+2021-11-08 01:59:18.3369|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Hash' table...
+2021-11-08 01:59:18.6407|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 01:59:48.6436|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:00:18.6472|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:00:48.6487|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:01:18.6512|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:01:48.6537|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:02:18.6572|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:02:48.6582|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:03:18.6617|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:03:48.6641|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:04:18.2631|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2021-11-08 02:04:18.6667|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:04:48.6699|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:05:18.6718|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:05:48.6751|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:06:18.6780|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:06:48.6803|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:07:18.6830|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:07:48.6841|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:08:18.6879|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:08:48.6894|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:09:18.2688|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2021-11-08 02:09:18.6933|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:09:48.6956|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:10:18.6981|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:10:48.7005|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:11:18.7026|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:11:48.7053|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:12:18.7078|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:12:48.7107|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:13:18.7140|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:13:48.7166|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:14:18.2743|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2021-11-08 02:14:18.7191|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:14:48.7214|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:15:18.7231|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:15:48.7257|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:16:18.7296|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:16:48.7336|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:17:18.7354|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:17:48.7393|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:18:18.7432|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:18:48.7451|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:19:18.2801|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2021-11-08 02:19:18.7473|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:19:48.7504|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:20:18.7527|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:20:48.7549|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:21:18.7566|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:21:48.7605|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:22:18.7626|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:22:48.7647|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:23:18.7671|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:23:48.7683|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:24:18.2855|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2021-11-08 02:24:18.7710|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:24:48.7732|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:25:18.7767|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:25:48.7787|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:26:18.7815|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:26:48.7826|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:27:18.7862|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:27:48.7881|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:28:18.7912|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:28:48.7950|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:29:18.2899|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2021-11-08 02:29:18.3429|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'AggregatedCounter' table...
+2021-11-08 02:29:18.3429|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Job' table...
+2021-11-08 02:29:18.3429|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'List' table...
+2021-11-08 02:29:18.3429|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Set' table...
+2021-11-08 02:29:18.3549|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Hash' table...
+2021-11-08 02:29:18.7977|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:29:48.8000|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:30:18.8012|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:30:48.8043|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:31:18.8059|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:31:48.8088|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:32:18.8117|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:32:48.8143|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:33:18.8163|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:33:48.8191|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:34:18.2955|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2021-11-08 02:34:18.8214|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:34:48.8241|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:35:18.8269|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:35:48.8300|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:36:18.8329|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:36:48.8351|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:37:18.8379|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:37:48.8403|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:38:18.8424|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:38:48.8450|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:39:18.3011|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2021-11-08 02:39:18.8464|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:39:48.8496|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:40:18.8513|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:40:48.8538|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:41:18.8567|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:41:48.8604|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:42:18.8627|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:42:48.8643|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:43:18.8679|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:43:48.8689|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:44:18.3065|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2021-11-08 02:44:18.8722|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:44:48.8750|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:45:18.8773|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:45:48.8796|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:46:18.8819|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:46:48.8840|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:47:18.8874|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:47:48.8894|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:48:18.8909|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:48:48.8946|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:49:18.3121|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2021-11-08 02:49:18.8971|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:49:48.8997|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent
+2021-11-08 02:50:18.9026|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server win-2gun874ur5g:9268:dbf9f99c heartbeat successfully sent

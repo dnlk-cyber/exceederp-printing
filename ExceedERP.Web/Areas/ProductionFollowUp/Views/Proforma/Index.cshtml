@@ -1,0 +1,389 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.ProductionFollowUp.Proforma>()
+                                  .Name("ProformaGrid")
+                                  .Columns(columns =>
+                                  {
+                                      columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customers"], "CustomerId", "Name")
+                                           .Width("110px")
+                                           .Title("Customer");
+                                      columns.Bound(c => c.ProformaNo).Width(100).Title("Proforma No");
+                                      columns.ForeignKey(c => c.EstimationFormId, (IEnumerable)ViewData["EstimationForms"], "EstimationFormId", "JobNumber")
+                                                // .EditorTemplateName("PaymentTermForeignKey")
+                                                .Title("Est. No").Width(100);
+                                      columns.Bound(c => c.InvoiceNo).Width(100).Title("Invoice No");
+                                      columns.Bound(c => c.InvoiceDate).Width(110).EditorTemplateName("Date").Title("Invoice Date").Format("{0:yyyy-MM-dd}");
+                                      columns.Bound(c => c.DeliveryDate).Width(110).EditorTemplateName("Date").Title("Delivery Date").Format("{0:yyyy-MM-dd}");
+                                      columns.Bound(c => c.ValidityDate).Width(110).EditorTemplateName("Date").Title("Validity Date").Format("{0:yyyy-MM-dd}");
+                                      //  columns.Bound(c => c.CustomerName).Width(90).Title("Customer Name");
+                                      // columns.Bound(c => c.ContactName).Width(90).Title("Contact Name");
+                                      //columns.Bound(c => c.ContactPhone).Width(90).Title("Contact Phone");
+                                      columns.Bound(c => c.PaymentTerm).Title("Payment Term").Width(100);
+                                      columns.Command(command =>
+                                      {
+                                          command.Edit();
+                                          command.Destroy();
+                                      }).Width(200);
+                                  })
+                                  .ToolBar(toolbar =>
+                                  {
+                                      toolbar.Create();
+                                  })
+                                  .Editable(editable => editable.Mode(GridEditMode.PopUp)
+                                  .TemplateName("ProformaTemplate")
+                                  .Window(w=>w.Width(900).Title("Proforma Form")))
+                                 .Pageable(pageable => pageable
+                                                     .Input(true)
+                                                     .Numeric(false)
+                                                     .Refresh(true)
+                                                     .PageSizes(true)
+                                                     .ButtonCount(5))
+                              .Filterable()
+                               .Scrollable(h => h.Height(500))
+                               .Events(ev=>ev.Edit("EnableDisableEstimation"))
+                                  .DataSource(dataSource => dataSource
+                                      .Ajax()
+                                           .Events(events =>
+                                           {
+                                               events.Error("error_handler(\"ProformaGrid\")");
+                                               events.RequestStart("onRequestStart(\"ProformaGrid\")");
+                                               events.RequestEnd("onRequestEnd(\"ProformaGrid\")");
+                                           })
+
+                                      .Model(model => model.Id(p => p.ProformaId))
+                                      .Read(read => read.Action("Proformas_Read", "Proforma"))
+                                      .Create(create => create.Action("Proformas_Create", "Proforma"))
+                                      .Update(update => update.Action("Proformas_Update", "Proforma"))
+                                      .Destroy(destroy => destroy.Action("Proformas_Destroy", "Proforma"))
+                                  .Sort(sort =>
+                                        {
+                                            sort.Add(e => e.InvoiceDate).Descending();
+
+                                        })
+                                      )
+                                  .ClientDetailTemplateId("Detail")
+)
+
+
+<script id="Detail" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                                           .Name("tabstrip2_#=ProformaId#")
+                                          .SelectedIndex(0)
+                                          .Items(items =>
+                                          {
+
+                                              items.Add().Text("Items").Content(
+                            @<text>
+
+                                <a href='@Url.Action("ProformaPrint", "ReportProductionFollowUp")/?id=#=ProformaId#' target="_blank" title="Print Proforma"><i class="fa fa-print fa-2x"></i></a>
+
+                                @(Html.Kendo().Grid<ExceedERP.Core.Domain.ProductionFollowUp.ProformaItems>()
+                                                                       .Name("ProformaItems#=ProformaId#")
+                                                           .Columns(columns =>
+                                                           {
+                                                              // columns.ForeignKey(c => c.JobTypeId, (IEnumerable)ViewData["JobCategories"], "JobCategoryId", "JobName").Width(100);
+                                                               columns.Bound(c => c.Quantity);
+                                                               columns.Bound(c => c.Size);
+                                                               columns.Bound(c => c.UnitPrice);
+                                                               columns.Bound(c => c.BeforeTax);
+                                                               columns.Bound(c => c.Tax);
+                                                               columns.Bound(c => c.TotalPrice);
+                                                               columns.Bound(c => c.Description);
+
+                                                               columns.Command(command =>
+                                                               {
+
+                                                                   command.Edit();
+
+                                                                   command.Destroy();
+
+
+                                                               }).Width(250);
+                                                           })
+                                                           .ToolBar(toolbar =>
+                                                           {
+
+                                                               toolbar.Create();
+
+                                                           })
+                                                                  //.NoRecords("No Data Registered")
+                                                               .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("ProformaItems").Window(window =>
+                                                               {
+
+                                                                   window.Scrollable(false);
+                                                                   window.Width(600);
+                                                                   window.Title("Proforma Items");
+                                                               }))
+                                                                   .Pageable(pageable => pageable
+                                                                     .Refresh(true)
+                                                                     )
+
+                                                              .Scrollable(h => h.Height(250))
+
+                                                              .DataSource(dataSource => dataSource
+                                                                  .Ajax()
+                                                                  .ServerOperation(false)
+                                                                          //  .Sort(s => s.Add(x => x.ProformaId).Descending())
+                                                                          .Events(events =>
+                                                                          {
+                                                                              events.Error("error_handler(\"ProformaItems#=ProformaId#\")");
+                                                                              events.RequestStart("onRequestStart(\"ProformaItems#=ProformaId#\")");
+                                                                              events.RequestEnd("onRequestEnd(\"ProformaItems#=ProformaId#\")");
+                                                                          }
+                                                                                                    )
+
+                                                                           .Model(model => model.Id(p => p.ProformaItemsId))
+
+
+                                                                                          .Read(read => read.Action("ProformaItems_Read", "ProformaItems", new { id = "#=ProformaId#" }))
+                                                                                          .Create(create => create.Action("ProformaItems_Create", "ProformaItems", new { id = "#=ProformaId#" }))
+                                                                                          .Update(update => update.Action("ProformaItems_Update", "ProformaItems"))
+                                                                                          .Destroy(destroy => destroy.Action("ProformaItems_Destroy", "ProformaItems"))
+                                                                              ).ToClientTemplate()
+                                )
+                            </text>
+                                                                              );
+
+
+
+                                                  }).ToClientTemplate())
+</script>
+<script>
+
+
+    function onChangeEstimation() {
+
+        var proformaId = this.dataItem().ProformaId;
+
+        $("#JobTypeId").data("kendoDropDownList").dataSource.read();
+
+
+          $.ajax({
+            url: '@Url.Action("GetCustomer", "JobOrders")',
+
+              data: { proformaId: proformaId },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                r = result;
+
+                $("#CustomerName").val(r.CustomerName).trigger("change");
+                $("#ContactName").val(r.ContactName).trigger("change");
+                $("#ContactPhone").val(r.ContactPhone).trigger("change");
+               // $("#CustomerName").trigger("change");
+
+            }
+
+        });
+
+    }
+
+    function filterJobTypeByProforma() {
+        return {
+            proformaId: $("#ProformaId").val()
+        };
+    }
+</script>
+<script>
+
+    function EnableDisableEstimation(e) {
+        var x = $('#HaveEstimation').is(':checked');
+        console.log(x);
+
+        if (x == true) {
+
+            $("#EstimationFormId").data("kendoDropDownList").enable(true);
+            $("#CustomerId").data("kendoDropDownList").enable(false);
+            $("#IsExistingCustomer").attr("disabled", true);
+            $("#CustomerName").prop("readonly", true);
+            $("#ContactName").prop("readonly", true);
+            $("#ContactPhone").prop("readonly", true);
+            $("#CustomerVAT").data("kendoNumericTextBox").enable(false);
+            $("#CustomerMargin").data("kendoNumericTextBox").enable(false);
+            $("#CustomerOverHead").data("kendoNumericTextBox").enable(false);
+            $("#POBox").prop("readonly", true);
+            $("#City").prop("readonly", true);
+            $("#SubCity").prop("readonly", true);
+            $("#Woreda").prop("readonly", true);
+            $("#CustomerDescription").prop("readonly", true);
+        }
+        else {
+            $("#IsExistingCustomer").attr("disabled", false);
+            $("#EstimationFormId").data("kendoDropDownList").enable(false);
+
+            var y = $('#IsExistingCustomer').is(':checked');
+            if (y == true) {
+
+                $("#CustomerId").data("kendoDropDownList").enable(true);
+                $("#HaveEstimation").attr("disabled", true);
+                $("#CustomerName").prop("readonly", true);
+                $("#ContactName").prop("readonly", true);
+                $("#ContactPhone").prop("readonly", true);
+                $("#CustomerVAT").data("kendoNumericTextBox").enable(false);
+                $("#CustomerMargin").data("kendoNumericTextBox").enable(false);
+                $("#CustomerOverHead").data("kendoNumericTextBox").enable(false);
+                $("#POBox").prop("readonly", true);
+                $("#City").prop("readonly", true);
+                $("#SubCity").prop("readonly", true);
+                $("#Woreda").prop("readonly", true);
+                $("#CustomerDescription").prop("readonly", true);
+            }
+            else {
+
+                $("#CustomerId").data("kendoDropDownList").enable(false);
+                $("#HaveEstimation").attr("disabled", false);
+                $("#CustomerName").prop("readonly", false);
+                $("#ContactName").prop("readonly", false);
+                $("#ContactPhone").prop("readonly", false);
+                $("#CustomerVAT").data("kendoNumericTextBox").enable(true);
+                $("#CustomerMargin").data("kendoNumericTextBox").enable(true);
+                $("#CustomerOverHead").data("kendoNumericTextBox").enable(true);
+                $("#POBox").prop("readonly", false);
+                $("#City").prop("readonly", false);
+                $("#SubCity").prop("readonly", false);
+                $("#Woreda").prop("readonly", false);
+                $("#CustomerDescription").prop("readonly", false);
+
+                $("#EstimationId").data("kendoDropDownList").value(0);//.trigger("change");
+                $("#CustomerName").val("");
+                $("#ContactName").val("");
+                $("#ContactPhone").val("");
+            }
+
+
+
+        }
+    }
+    function EnableDisableCustomer(e) {
+        var x = $('#IsExistingCustomer').is(':checked');;
+        if (x == true) {
+
+            $("#CustomerId").data("kendoDropDownList").enable(true);
+            $("#CustomerName").prop("readonly", true);
+            $("#ContactName").prop("readonly", true);
+            $("#ContactPhone").prop("readonly", true);
+            $("#CustomerVAT").data("kendoNumericTextBox").enable(false);
+            $("#CustomerMargin").data("kendoNumericTextBox").enable(false);
+            $("#CustomerOverHead").data("kendoNumericTextBox").enable(false);
+            $("#POBox").prop("readonly", true);
+            $("#City").prop("readonly", true);
+            $("#SubCity").prop("readonly", true);
+            $("#Woreda").prop("readonly", true);
+            $("#CustomerDescription").prop("readonly", true);
+        }
+        else {
+
+            $("#CustomerId").data("kendoDropDownList").enable(false);
+            $("#CustomerName").prop("readonly", false);
+            $("#ContactName").prop("readonly", false);
+            $("#ContactPhone").prop("readonly", false);
+            $("#CustomerVAT").data("kendoNumericTextBox").enable(true);
+            $("#CustomerMargin").data("kendoNumericTextBox").enable(true);
+            $("#CustomerOverHead").data("kendoNumericTextBox").enable(true);
+            $("#POBox").prop("readonly", false);
+            $("#City").prop("readonly", false);
+            $("#SubCity").prop("readonly", false);
+            $("#Woreda").prop("readonly", false);
+            $("#CustomerDescription").prop("readonly", false);
+
+            $("#EstimationFormId").data("kendoDropDownList").value(0);//.trigger("change");
+            $("#CustomerName").val("");
+            $("#ContactName").val("");
+            $("#ContactPhone").val("");
+        }
+
+
+
+    }
+</script>
+<style>
+    div.k-edit-form-container {
+        width: auto;
+    }
+    .row .col-sm-2 {
+        width: 170px;
+    }
+    .row .col-sm-3 {
+        width: 250px;
+    } 
+    
+    .row {
+        margin-bottom: 5px;
+    }
+
+    .k-textbox,
+    .k-numerictextbox,
+    .k-dropdown,
+    .k-dropdowntree,
+    .k-datepicker,
+    .k-upload {
+        width: 90%;
+    }
+
+        .k-picker-wrap .k-input,
+        .k-dropdown .k-dropdown-wrap,
+        .k-dropdowntree .k-dropdown-wrap,
+        .k-numerictextbox .k-input {
+            height: 2.70em;
+        }
+
+    input.k-textbox {
+        height: 2.80em;
+    }
+
+    .k-editor .k-content {
+        height: 70px;
+    }
+</style>
+
+<script>
+    function filterJobTypeItem() {
+        return {
+            JobTypeId: $("#JobTypeId").val()
+        };
+    }
+</script>
+
+
+
+<script>
+    function error_handler(e) {
+        if (e.errors) {
+            var message = "Errors:\n";
+            $.each(e.errors, function (key, value) {
+                if ('errors' in value) {
+                    $.each(value.errors, function () {
+                        message += this + "\n";
+                    });
+                }
+            });
+            alert(message);
+        }
+    }
+    function onChange() {
+
+        var unitPrice = $("#UnitPrice").val();
+        var quantity = $("#Quantity").val();
+        var jobTypeId = $("#JobTypeId").val();
+
+        if (quantity != 0 && unitPrice != 0 && jobTypeId !== "") {
+
+            $.ajax({
+                url: '@Url.Action("GetBeforeVatAndTotalPerice", "ProformaItems")',
+
+                data: { jobTypeId: jobTypeId, quantity: quantity, unitPrice: unitPrice },
+                type: 'POST',
+                cache: false,
+                success: function (result) {
+                    $("#Tax").val(result.Tax).trigger("change");
+                    $("#BeforeTax").val(result.BeforeTax).trigger("change");
+                    $("#TotalPrice").val(result.TotalPrice).trigger("change");
+                    console.log(result.TotalPrice);
+                  
+                }
+
+            });
+        }
+
+    }
+</script>
+

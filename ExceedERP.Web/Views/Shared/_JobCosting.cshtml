@@ -3,30 +3,146 @@
 
 <li class="">
     <a href="#" class="dropdown-toggle">
-        <i class="menu-icon fa fa-briefcase"></i>
-        <span class="menu-text">
-           Job Costing
-        </span>
-
+        <i class="menu-icon fa fa-lastfm-square"></i>
+        Job Costing
         <b class="arrow fa fa-angle-down"></b>
     </a>
-
     <b class="arrow"></b>
-
     <ul class="submenu">
-
         <li class="">
             <a href="#" class="dropdown-toggle">
                 <i class="menu-icon fa fa-caret-right"></i>
-                Costing
+                Operation
+                <b class="arrow fa fa-angle-down"></b>
+            </a>
+            <b class="arrow"></b>
+            <ul class="submenu">
+                <li class="">
+                    <a href="#" class="dropdown-toggle">
+                        <i class="menu-icon fa fa-caret-right"></i>
+                        Job Cost
+                        <b class="arrow fa fa-angle-down"></b>
+                    </a>
+                    <b class="arrow"></b>
+                    <ul class="submenu">
+                        <li id="JobCosting00100100871" class="actionlinlk">
+                            @Html.ActionLink("Job Cost", "Index", "JobCost", new { area = "JobCosting" }, null)<b class="arrow"></b>
+                        </li>
+                    </ul>
+                </li>
+                <li class="">
+                    <a href="#" class="dropdown-toggle">
+                        <i class="menu-icon fa fa-caret-right"></i>
+                        Idle Time
+                        <b class="arrow fa fa-angle-down"></b>
+                    </a>
+                    <b class="arrow"></b>
+                    <ul class="submenu">
+                        <li id="JobCosting00100100871" class="actionlinlk">
+                            @Html.ActionLink("Idle Time", "Index", "IdleTime", new { area = "JobCosting" }, null)<b class="arrow"></b>
+                        </li>
+                    </ul>
+                </li>
+                <li class="">
+                    <a href="#" class="dropdown-toggle">
+                        <i class="menu-icon fa fa-caret-right"></i>
+                        DLR
+                        <b class="arrow fa fa-angle-down"></b>
+                    </a>
+                    <b class="arrow"></b>
+                    <ul class="submenu">
+
+                        <li id="JobCosting00100100871" class="actionlinlk">
+                            @Html.ActionLink("Daily Labor Rate", "Index", "DailyLaborRate", new { area = "JobCosting" }, null)<b class="arrow"></b>
+                        </li>
+                        <li id="JobCosting00100100871" class="actionlinlk">
+                            @Html.ActionLink("Permanent DLR", "Index", "PermanentDLR", new { area = "JobCosting" }, null)<b class="arrow"></b>
+                        </li>
+                        <li id="JobCosting00100100871" class="actionlinlk">
+                            @Html.ActionLink("Contrat DLR", "Index", "ContratDLR", new { area = "JobCosting" }, null)<b class="arrow"></b>
+                        </li>
+                    </ul>
+                </li>
+
+
+                <li id="JobCostineg0010010re0898" class="actionlinlk">
+                    @Html.ActionLink("Job Order Summary By Cost Center", "Index", "JobOrderSummaryCostCenters", new { area = "JobCosting" }, null)<b class="arrow"></b>
+                </li>
+                <li id="JobCostineg0010010re0871" class="actionlinlk">
+                    @Html.ActionLink("Job Order Summary", "Index", "JobOrderSummaries", new { area = "JobCosting" }, null)<b class="arrow"></b>
+                </li>
+
+            </ul>
+        </li>
+        <li class="">
+            <a href="#" class="dropdown-toggle">
+                <i class="menu-icon fa fa-caret-right"></i>
+                Reports
                 <b class="arrow fa fa-angle-down"></b>
             </a>
             <b class="arrow"></b>
             <ul class="submenu">
 
                 <li id="JobCosting00100100871" class="actionlinlk">
-                    @Html.ActionLink("Job Time Sheet", "Index", "JobOrderTimeRegistrations", new { area = "JobCosting" }, null)<b class="arrow"></b>
+                    @Html.ActionLink("Job Cost", "Index", "JobCost", new { area = "JobCosting" }, null)<b class="arrow"></b>
                 </li>
+                <li id="JobCosting00100100871" class="actionlinlk">
+                    @Html.ActionLink("Idle Time", "Index", "IdleTime", new { area = "JobCosting" }, null)<b class="arrow"></b>
+                </li>
+
+                <li id="JobCosting00100100871" class="actionlinlk">
+                    @Html.ActionLink("Permanent DLR", "Index", "PermanentDLR", new { area = "JobCosting" }, null)<b class="arrow"></b>
+                </li>
+                <li id="JobCosting00100100871" class="actionlinlk">
+                    @Html.ActionLink("Contrat DLR", "Index", "ContratDLR", new { area = "JobCosting" }, null)<b class="arrow"></b>
+                </li>
+            </ul>
+        </li>
+        <li class="">
+            <a href="#" class="dropdown-toggle">
+                <i class="menu-icon fa fa-caret-right"></i>
+                Settings
+                <b class="arrow fa fa-angle-down"></b>
+            </a>
+            <b class="arrow"></b>
+            <ul class="submenu">
+
+                <li id="JobCosting00100100871" class="actionlinlk">
+                    @Html.ActionLink("Job Category", "Index", "JobCategory", new { area = "JobCosting" }, null)<b class="arrow"></b>
+                </li>
+                <li id="JobCosting00100100871" class="actionlinlk">
+                    @Html.ActionLink("Cost Center", "Index", "GLChartOfAccountCostCenter", new { area = "Finance" }, null)<b class="arrow"></b>
+                </li>
+                <li id="JobCosting00100100871" class="actionlinlk">
+                    @Html.ActionLink("Idle Time Category", "Index", "IdleTimeCategory", new { area = "JobCosting" }, null)<b class="arrow"></b>
+                </li>
+                <li id="JobCosting00100100871" class="actionlinlk">
+                    @Html.ActionLink("Year Setup", "Index", "GlFiscalYear", new { area = "Finance" }, null)<b class="arrow"></b>
+                </li>
+                <li id="JobCosting00100100871" class="actionlinlk">
+                    @Html.ActionLink("Yearly Overhead Rate", "Index", "YearlyOverHeadRate", new { area = "JobCosting" }, null)<b class="arrow"></b>
+                </li>
+                <li id="JobCosting00100100871" class="actionlinlk">
+                    @Html.ActionLink("Tax Rate", "Index", "GLTaxRate", new { area = "Finance" }, null)<b class="arrow"></b>
+                </li>
+                <li id="JobCosting00100100871" class="actionlinlk">
+                    @Html.ActionLink("Pension", "Index", "Pension", new { area = "Finance" }, null)<b class="arrow"></b>
+                </li>
+                <li id="JobCosting00100100871" class="actionlinlk">
+                    @Html.ActionLink("Machine Type", "Index", "MachineType", new { area = "JobCosting" }, null)<b class="arrow"></b>
+                </li>
+                <li id="JobCosting00100100871" class="actionlinlk">
+                    @Html.ActionLink("Machine Details", "Index", "Machine", new { area = "JobCosting" }, null)<b class="arrow"></b>
+                </li>
+                <li id="JobCosting00100100871" class="actionlinlk">
+                    @Html.ActionLink("Company", "Index", "MainCompany", new { area = "JobCosting" }, null)<b class="arrow"></b>
+                </li>
+                <li id="JobCosting00100100871" class="actionlinlk">
+                    @Html.ActionLink("UOM", "Index", "Unit", new { area = "JobCosting" }, null)<b class="arrow"></b>
+                </li>
+
+
+
                 <li id="JobCostineg0010010re0898" class="actionlinlk">
                     @Html.ActionLink("Job Order Summary By Cost Center", "Index", "JobOrderSummaryCostCenters", new { area = "JobCosting" }, null)<b class="arrow"></b>
                 </li>
@@ -37,8 +153,6 @@
             </ul>
         </li>
 
-
-       
 
     </ul>
 </li>

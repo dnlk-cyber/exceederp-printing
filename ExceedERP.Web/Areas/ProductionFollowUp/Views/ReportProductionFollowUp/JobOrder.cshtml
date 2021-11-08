@@ -11,6 +11,8 @@
 <head>
     <title>Job Order</title>
 
+
+
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
 
     <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
@@ -20,16 +22,23 @@
     <link href="~/ReportViewer/css/kendo.blueopal.min.css" rel="stylesheet" />
     <script src="@Url.Content("~/ReportViewer/js/telerikReportViewer.kendo-12.2.18.912.min.js")"></script>
 
-    @* <script src="~/Scripts/jquery-1.11.2.min.js"></script>*@
     <script src="~/Scripts/kendo/2018.3.911/kendo.all.min.js"></script>
     <script src="~/Scripts/kendo/2018.3.911/kendo.aspnetmvc.min.js"></script>
-    <!--kendo.web.min.js or kendo.all.min.js can be used as well instead of the following custom Kendo UI-->
-    @*<script src="@Url.Content("~/ReportViewer/js/telerikReportViewer.kendo-12.2.18.912.min.js")"></script>*@
     <script src="@Url.Content("~/ReportViewer/js/telerikReportViewer-12.2.18.912.min.js")"></script>
 
-
-
     <script src="~/Scripts/Exceed/KendoReport.js"></script>
+
+    <style>
+        #reportViewer1 {
+            position: relative;
+            width: 1300px;
+            height: 900px;
+            font-family: Verdana, Arial;
+        }
+    </style>
+
+
+
 
 </head>
 <body>

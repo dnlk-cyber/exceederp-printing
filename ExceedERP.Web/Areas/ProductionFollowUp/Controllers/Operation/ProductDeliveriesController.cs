@@ -18,7 +18,9 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
 
         public ActionResult Index()
         {
+            ViewData["Customers"] = db.Customers.ToList();
             ViewData["JobOrder"] = db.Jobs.ToList();
+            ViewData["Units"] = db.Units.ToList();
             return View();
         }
 
@@ -27,6 +29,7 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
             IQueryable<ProductDelivery> productdeliveries = db.ProductDeliveries;
             DataSourceResult result = productdeliveries.ToDataSourceResult(request, productDelivery => new {
                 ProductDeliveryId = productDelivery.ProductDeliveryId,
+                CustomerId = productDelivery.CustomerId,
                 CustomerRefNo = productDelivery.CustomerRefNo,
                 CreditSaleNo = productDelivery.CreditSaleNo,
                 CashSaleNo = productDelivery.CashSaleNo,
@@ -44,10 +47,12 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
         {
             if (ModelState.IsValid)
             {
+                var finishedGood = db.Jobs.Find(productDelivery.JobId);
                 var entity = new ProductDelivery
                 {
                     CustomerRefNo = productDelivery.CustomerRefNo,
                     CreditSaleNo = productDelivery.CreditSaleNo,
+                    CustomerId = finishedGood.CustomerId,
                     CashSaleNo = productDelivery.CashSaleNo,
                     PreparedBy = productDelivery.PreparedBy,
                     ApprovedBy = productDelivery.ApprovedBy,
@@ -68,10 +73,13 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
         {
             if (ModelState.IsValid)
             {
+                var finishedGood = db.Jobs.Find(productDelivery.JobId);
+
                 var entity = new ProductDelivery
                 {
                     ProductDeliveryId = productDelivery.ProductDeliveryId,
                     CustomerRefNo = productDelivery.CustomerRefNo,
+                    CustomerId = finishedGood.CustomerId,
                     CreditSaleNo = productDelivery.CreditSaleNo,
                     CashSaleNo = productDelivery.CashSaleNo,
                     PreparedBy = productDelivery.PreparedBy,
@@ -96,6 +104,7 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                 var entity = new ProductDelivery
                 {
                     ProductDeliveryId = productDelivery.ProductDeliveryId,
+                    CustomerId = productDelivery.CustomerId,
                     CustomerRefNo = productDelivery.CustomerRefNo,
                     CreditSaleNo = productDelivery.CreditSaleNo,
                     CashSaleNo = productDelivery.CashSaleNo,

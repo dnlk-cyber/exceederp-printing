@@ -18,6 +18,8 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
 
         public ActionResult Index()
         {
+            ViewData["Customers"] = db.Customers.ToList();
+
             return View();
         }
 

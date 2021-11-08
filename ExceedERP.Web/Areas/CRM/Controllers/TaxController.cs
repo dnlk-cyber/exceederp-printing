@@ -26,123 +26,123 @@ namespace ExceedERP.Web.Areas.CRM.Controllers
             return View();
         }
 
-        public ActionResult Taxs_Read([DataSourceRequest]DataSourceRequest request)
-        {
-            IQueryable<Tax> taxs = db.Taxs;
-            DataSourceResult result = taxs.ToDataSourceResult(request, tax => new {
-                TaxID = tax.TaxID,
-                Category = tax.Category,
-                Description = tax.Description,
-                Amount = tax.Amount,
-                CreatedBy = tax.CreatedBy,
-                DateCreated = tax.DateCreated,
-                LastModified = tax.LastModified,
-                ModifiedBy = tax.ModifiedBy,
-                OrgBranchName = tax.OrgBranchName,
-                Remark = tax.Remark
-            });
+        //public ActionResult Taxs_Read([DataSourceRequest]DataSourceRequest request)
+        //{
+        //    IQueryable<Tax> taxs = db.Taxs;
+        //    DataSourceResult result = taxs.ToDataSourceResult(request, tax => new {
+        //        TaxID = tax.TaxID,
+        //        Category = tax.Category,
+        //        Description = tax.Description,
+        //        Amount = tax.Amount,
+        //        CreatedBy = tax.CreatedBy,
+        //        DateCreated = tax.DateCreated,
+        //        LastModified = tax.LastModified,
+        //        ModifiedBy = tax.ModifiedBy,
+        //        OrgBranchName = tax.OrgBranchName,
+        //        Remark = tax.Remark
+        //    });
 
-            return Json(result);
-        }
+        //    return Json(result);
+        //}
 
-        [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult Taxs_Create([DataSourceRequest]DataSourceRequest request, Tax tax)
-        {
-            List<Tax> taxLists = db.Taxs.Where(ocl => ocl.Description == tax.Description).ToList();
+        //[AcceptVerbs(HttpVerbs.Post)]
+        //public ActionResult Taxs_Create([DataSourceRequest]DataSourceRequest request, Tax tax)
+        //{
+        //    List<Tax> taxLists = db.Taxs.Where(ocl => ocl.Description == tax.Description).ToList();
 
-            if (taxLists.Any())
-            {
-                ModelState.AddModelError("Invalid Index Value", "Tax Already Exists!");
-            }
-            else
-            {
-                if (ModelState.IsValid)
-                {
-                    var entity = new Tax
-                    {
-                        Category = tax.Category,
-                        Description = tax.Description,
-                        Amount = tax.Amount,
-                        CreatedBy = User.Identity.Name,
-                        DateCreated = DateTime.Now,
-                        Remark = tax.Remark
-                    };
+        //    if (taxLists.Any())
+        //    {
+        //        ModelState.AddModelError("Invalid Index Value", "Tax Already Exists!");
+        //    }
+        //    else
+        //    {
+        //        if (ModelState.IsValid)
+        //        {
+        //            var entity = new Tax
+        //            {
+        //                Category = tax.Category,
+        //                Description = tax.Description,
+        //                Amount = tax.Amount,
+        //                CreatedBy = User.Identity.Name,
+        //                DateCreated = DateTime.Now,
+        //                Remark = tax.Remark
+        //            };
 
-                    db.Taxs.Add(entity);
-                    db.SaveChanges();
-                    tax.TaxID = entity.TaxID;
-                }
-            }
-            return Json(new[] { tax }.ToDataSourceResult(request, ModelState));
-        }
+        //            db.Taxs.Add(entity);
+        //            db.SaveChanges();
+        //            tax.TaxID = entity.TaxID;
+        //        }
+        //    }
+        //    return Json(new[] { tax }.ToDataSourceResult(request, ModelState));
+        //}
 
-        [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult Taxs_Update([DataSourceRequest]DataSourceRequest request, Tax tax)
-        {
-            List<Tax> taxLists = db.Taxs.Where(ocl => ocl.Description == tax.Description).ToList();
+        //[AcceptVerbs(HttpVerbs.Post)]
+        //public ActionResult Taxs_Update([DataSourceRequest]DataSourceRequest request, Tax tax)
+        //{
+        //    List<Tax> taxLists = db.Taxs.Where(ocl => ocl.Description == tax.Description).ToList();
 
-            if (taxLists.Any())
-            {
-                ModelState.AddModelError("Invalid Index Value", "Tax Already Exists!");
-            }
-            else
-            {
-                if (ModelState.IsValid)
-                {
-                    var entity = new Tax
-                    {
-                        TaxID = tax.TaxID,
-                        Category = tax.Category,
-                        Description = tax.Description,
-                        Amount = tax.Amount,
-                        Remark = tax.Remark
-                    };
+        //    if (taxLists.Any())
+        //    {
+        //        ModelState.AddModelError("Invalid Index Value", "Tax Already Exists!");
+        //    }
+        //    else
+        //    {
+        //        if (ModelState.IsValid)
+        //        {
+        //            var entity = new Tax
+        //            {
+        //                TaxID = tax.TaxID,
+        //                Category = tax.Category,
+        //                Description = tax.Description,
+        //                Amount = tax.Amount,
+        //                Remark = tax.Remark
+        //            };
 
-                    db.Taxs.Attach(entity);
-                    db.Entry(entity).State = EntityState.Modified;
-                    db.SaveChanges();
-                }
-            }
+        //            db.Taxs.Attach(entity);
+        //            db.Entry(entity).State = EntityState.Modified;
+        //            db.SaveChanges();
+        //        }
+        //    }
 
-            return Json(new[] { tax }.ToDataSourceResult(request, ModelState));
-        }
+        //    return Json(new[] { tax }.ToDataSourceResult(request, ModelState));
+        //}
 
-        [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult Taxs_Destroy([DataSourceRequest]DataSourceRequest request, Tax tax)
-        {
-            if (ModelState.IsValid)
-            {
-                var entity = new Tax
-                {
-                    TaxID = tax.TaxID,
-                    Category = tax.Category,
-                    Description = tax.Description,
-                    Amount = tax.Amount,
-                    Remark = tax.Remark
-                };
+        //[AcceptVerbs(HttpVerbs.Post)]
+        //public ActionResult Taxs_Destroy([DataSourceRequest]DataSourceRequest request, Tax tax)
+        //{
+        //    if (ModelState.IsValid)
+        //    {
+        //        var entity = new Tax
+        //        {
+        //            TaxID = tax.TaxID,
+        //            Category = tax.Category,
+        //            Description = tax.Description,
+        //            Amount = tax.Amount,
+        //            Remark = tax.Remark
+        //        };
 
-                db.Taxs.Attach(entity);
-                db.Taxs.Remove(entity);
-                db.SaveChanges();
-                UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted  Tax number " + tax.TaxID);
+        //        db.Taxs.Attach(entity);
+        //        db.Taxs.Remove(entity);
+        //        db.SaveChanges();
+        //        UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted  Tax number " + tax.TaxID);
       
-            }
+        //    }
 
-            return Json(new[] { tax }.ToDataSourceResult(request, ModelState));
-        }
+        //    return Json(new[] { tax }.ToDataSourceResult(request, ModelState));
+        //}
 
 
-        public ActionResult TaxDDBind()
-        {
+        //public ActionResult TaxDDBind()
+        //{
 
-            var customers = db.Taxs.Select(s => new BindingModel
-            {
-                Name = s.Description,
-                Id = s.TaxID.ToString()
-            });
+        //    var customers = db.Taxs.Select(s => new BindingModel
+        //    {
+        //        Name = s.Description,
+        //        Id = s.TaxID.ToString()
+        //    });
 
-            return Json(customers, JsonRequestBehavior.AllowGet);
-        }
+        //    return Json(customers, JsonRequestBehavior.AllowGet);
+        //}
         protected override void Dispose(bool disposing)
         {
             db.Dispose();

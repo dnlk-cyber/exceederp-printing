@@ -1,9 +1,14 @@
 ﻿using ExceedERP.Core.Domain.ProductionFollowUp;
+using System;
+using System.Collections.Generic;
 using System.Data.Entity.ModelConfiguration;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace ExceedERP.DataAccess.Context
 {
-    public class ProductFollowUpEntityConfiguration
+   public class ProductFollowUpEntityConfiguration
     {
         public class ProformaEntityTypeConfiguration : EntityTypeConfiguration<Proforma>
         {
@@ -32,6 +37,14 @@ namespace ExceedERP.DataAccess.Context
             {
                 this.ToTable("Job", "ProductFollowUp");
                 this.HasKey<int>(t => t.JobId);
+            }
+        }
+        public class JobStatusEntityTypeConfiguration : EntityTypeConfiguration<JobStatus>
+        {
+            public JobStatusEntityTypeConfiguration()
+            {
+                this.ToTable("JobStatusEntityTypeConfiguration", "ProductFollowUp");
+                this.HasKey<int>(t => t.JobStatusId);
             }
         }
 

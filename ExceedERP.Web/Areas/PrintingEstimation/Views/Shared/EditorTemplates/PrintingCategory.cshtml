@@ -1,0 +1,12 @@
+﻿@(Html.Kendo().DropDownListFor(m => m)
+            //.Name("pc_#=EstimationFormId#")
+                        .OptionLabel("Select Print Category...")
+                            .HtmlAttributes(new { @id = "pc_#=EstimationFormId#" })
+
+            .DataTextField("Text")
+                    .DataValueField("Value")
+
+                .BindTo(ExceedERP.Helpers.Common.EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.PrintingEstimation.PrintingSteps))
+                )
+)
+

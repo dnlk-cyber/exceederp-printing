@@ -132,30 +132,30 @@ namespace ExceedERP.Core.Domain.Construction
 
     }
 
-    public class DirectCost
-    {
-        [Key]
-        public int DirectCostId { get; set; }
-        public virtual WorkCategory WorkCategory { get; set; }
-        //  public virtual WorkItem WorkItem { get; set;  }
-        public virtual ICollection<DirectLabourCost> DirectLabourCosts { get; set; }
-        public virtual ICollection<IndirectLabourCost> IndirectLabourCosts { get; set; }
-        public virtual ICollection<MaterialCost> MaterialCosts { get; set; }
-        public virtual ICollection<EquipmentCost> EquipmentCosts { get; set; }
+    //public class DirectCost
+    //{
+    //    [Key]
+    //    public int DirectCostId { get; set; }
+    //    public virtual WorkCategory WorkCategory { get; set; }
+    //    //  public virtual WorkItem WorkItem { get; set;  }
+    //    public virtual ICollection<DirectLabourCost> DirectLabourCosts { get; set; }
+    //    public virtual ICollection<IndirectLabourCost> IndirectLabourCosts { get; set; }
+    //    public virtual ICollection<MaterialCost> MaterialCosts { get; set; }
+    //    public virtual ICollection<EquipmentCost> EquipmentCosts { get; set; }
 
-    }
-    public class MaterialCost
-    {
-        [Key]
-        public int MaterialCostId { get; set; }
-        public int ItemNumber { get; set; }
-        [Display(Name = "Unit")]
-        public int LookupId { get; set; }
-        public virtual Lookup Lookup { get; set; }
-        [Range(1, int.MaxValue, ErrorMessage = "Please enter valid  Number")]
-        public int Quantity { get; set; }
-        public decimal UnitCost { get; set; }
-    }
+    //}
+    //public class MaterialCost
+    //{
+    //    [Key]
+    //    public int MaterialCostId { get; set; }
+    //    public int ItemNumber { get; set; }
+    //    [Display(Name = "Unit")]
+    //    public int LookupId { get; set; }
+    //    public virtual Lookup Lookup { get; set; }
+    //    [Range(1, int.MaxValue, ErrorMessage = "Please enter valid  Number")]
+    //    public int Quantity { get; set; }
+    //    public decimal UnitCost { get; set; }
+    //}
 
     public class Coefficient
     {

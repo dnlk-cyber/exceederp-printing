@@ -1,8 +1,14 @@
-﻿using System.ComponentModel.DataAnnotations.Schema;
+﻿using ExceedERP.Core.Domain.PrintingEstimation.Setting;
+using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace ExceedERP.Core.Domain.ProductionFollowUp
 {
-    public class JobOrderMaterial
+   public class JobOrderMaterial
     {
         public int JobOrderMaterialId { get; set; }
         public int JobId { get; set; }

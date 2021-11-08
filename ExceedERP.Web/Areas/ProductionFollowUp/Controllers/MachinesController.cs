@@ -9,6 +9,7 @@ using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using ExceedERP.Core.Domain.ProductionFollowUp;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Core.Domain.JobCosting.Setting;
 
 namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers
 {

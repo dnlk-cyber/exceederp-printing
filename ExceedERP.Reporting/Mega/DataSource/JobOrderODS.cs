@@ -1,4 +1,5 @@
 ﻿using ExceedERP.Core.Domain.ProductionFollowUp;
+using ExceedERP.Core.Domain.PrintingEstimation.Setting;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Reporting.Mega.ViewModel;
 using System;
@@ -33,8 +34,8 @@ namespace ExceedERP.Reporting.Mega.DataSource
                 jobOrder.ContactPhone = job.ContactPhone;
                 jobOrder.City = job.City;
                 jobOrder.SubCity = job.SubCity;
-                jobOrder.Wereda = job.Wereda;
-                jobOrder.Pobox = job.Pobox;             
+                jobOrder.Wereda = job.Woreda;
+                jobOrder.Pobox = job.POBox;             
               
                
                 jobOrder.Quantity = job.Quant;
@@ -46,12 +47,9 @@ namespace ExceedERP.Reporting.Mega.DataSource
                 jobOrder.PrintingLine = job.PrintingLine;
                 jobOrder.PrintingMachine = job.PrintingMachine;
                 jobOrder.Sewing = job.Sewing;
-                jobOrder.GraphicDesignExpectedCompletetion = job.GraphicDesignExpectedCompletetion;
-                jobOrder.PrintingExpectedCompletetion = job.PrintingExpectedCompletetion;
-                jobOrder.FinishExpectedCompletetion = job.FinishExpectedCompletetion;
+               
                 jobOrder.NoOfPage = job.Pages;
                
-                jobOrder.DeliveryDate = job.DeliveryDate;
                 jobOrder.CoverWeight = job.CoverWeight;
                 jobOrder.ColorCover = job.Colorcover;
                 jobOrder.New = job.New;

@@ -8,7 +8,10 @@
                       .Name("grid")
                       .Columns(columns =>
                       {
-                          columns.ForeignKey(c => c.JobId, (IEnumerable)ViewData["JobOrder"], "JobId", "JobNo").EditorTemplateName("JobOrders");
+                          columns.ForeignKey(c => c.JobId, (IEnumerable)ViewData["JobOrder"], "JobId", "JobNo").EditorTemplateName("JobOrders").Title("Job No");
+                          columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customers"], "CustomerId", "Name")
+                                                                 .Width("110px")
+                                                                 .Title("Customer");
                           columns.Bound(c => c.VoucherNo);
                           columns.Bound(c => c.Store);
                           columns.Bound(c => c.DeliveredBy);
@@ -33,8 +36,14 @@
                                          .ButtonCount(5))
                                    .Filterable()
                                    .Scrollable(h => h.Height(500))
+                                   .Events(ev => ev.BeforeEdit("hideColumn").Save("showColumn"))
+
                       .DataSource(dataSource => dataSource
                           .Ajax()
+                          .Events(ev => ev.Error("error_handler(\"grid\")")
+                    .RequestStart("onRequestStart(\"grid\")")
+                    .RequestEnd("onRequestEnd(\"grid\")"))
+                    .ServerOperation(false)
                           .Model(model => model.Id(p => p.FinishedGoodReceivingId))
                           .Read(read => read.Action("FinishedGoodReceivings_Read", "FinishedGoodReceivings"))
                           .Create(create => create.Action("FinishedGoodReceivings_Create", "FinishedGoodReceivings"))
@@ -117,4 +126,15 @@
 
 
                                         }).ToClientTemplate())
+</script>
+
+<script>
+    function hideColumn() {
+        var grid = $('#grid').data('kendoGrid');
+        grid.hideColumn('CustomerId');
+    }
+    function showColumn() {
+        var grid = $('#grid').data('kendoGrid');
+        grid.showColumn('CustomerId');
+    }
 </script>

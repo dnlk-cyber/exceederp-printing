@@ -1,0 +1,21 @@
+﻿
+@(Html.Kendo().DropDownListFor(m => m)
+            .Name("GLPeriodId")
+            .ValuePrimitive(true)
+            .OptionLabel("--Months--")
+            .DataTextField("Name")
+            .DataValueField("GLPeriodId")
+            .CascadeFrom("GlFiscalYearId")
+            .DataSource(dataSource =>
+            {
+                dataSource.Read(read => read.Action("GetAllPeriods", "GlPeriod", new { area = "Finance" })
+                .Data("filterPeriods"))
+                
+                .ServerFiltering(true);
+            })
+            .AutoBind(false)
+            .Enable(false)
+
+)
+@Html.ValidationMessageFor(m => m)
+

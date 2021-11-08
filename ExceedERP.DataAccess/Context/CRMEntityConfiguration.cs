@@ -10,290 +10,290 @@ using System.Threading.Tasks;
 
 namespace ExceedERP.DataAccess.Context
 {
-        public  class CRMEntityConfiguration
+    public class CRMEntityConfiguration
     {
 
-            public class CashSalesPartialLineItemEntityTypeConfiguration : EntityTypeConfiguration<CashSalesPartialLineItem>
+        public class CashSalesPartialLineItemEntityTypeConfiguration : EntityTypeConfiguration<CashSalesPartialLineItem>
+        {
+
+            public CashSalesPartialLineItemEntityTypeConfiguration()
             {
+                this.ToTable("CashSalesPartialLineItem", "CRM");
+                this.HasKey<int>(t => t.CashSalesPartialLineItemId);
 
-                public CashSalesPartialLineItemEntityTypeConfiguration()
-                {
-                    this.ToTable("CashSalesPartialLineItem", "CRM");
-                    this.HasKey<int>(t => t.CashSalesPartialLineItemId);
-
-                }
             }
+        }
 
-            public class AdvancePaymentLogEntityTypeConfiguration : EntityTypeConfiguration<AdvancePaymentLog>
+        public class AdvancePaymentLogEntityTypeConfiguration : EntityTypeConfiguration<AdvancePaymentLog>
+        {
+
+            public AdvancePaymentLogEntityTypeConfiguration()
             {
+                this.ToTable("AdvancePaymentLog", "CRM");
+                this.HasKey<int>(t => t.AdvancePaymentLogId);
 
-                public AdvancePaymentLogEntityTypeConfiguration()
-                {
-                    this.ToTable("AdvancePaymentLog", "CRM");
-                    this.HasKey<int>(t => t.AdvancePaymentLogId);
-
-                }
             }
-            public class CashSalesPartialItemEntityTypeConfiguration : EntityTypeConfiguration<CashSalesPartialItem>
+        }
+        public class CashSalesPartialItemEntityTypeConfiguration : EntityTypeConfiguration<CashSalesPartialItem>
+        {
+
+            public CashSalesPartialItemEntityTypeConfiguration()
             {
+                this.ToTable("CashSalesPartialItem", "CRM");
+                this.HasKey<int>(t => t.CashSalesPartialItemId);
 
-                public CashSalesPartialItemEntityTypeConfiguration()
-                {
-                    this.ToTable("CashSalesPartialItem", "CRM");
-                    this.HasKey<int>(t => t.CashSalesPartialItemId);
-
-                }
             }
-            public class SupportGroupEntityTypeConfiguration : EntityTypeConfiguration<SupportGroup>
+        }
+        public class SupportGroupEntityTypeConfiguration : EntityTypeConfiguration<SupportGroup>
+        {
+
+            public SupportGroupEntityTypeConfiguration()
             {
+                this.ToTable("SupportGroup", "CRM");
+                this.HasKey<int>(t => t.SupportGroupId);
 
-                public SupportGroupEntityTypeConfiguration()
-                {
-                    this.ToTable("SupportGroup", "CRM");
-                    this.HasKey<int>(t => t.SupportGroupId);
-
-                }
             }
+        }
 
-            
 
-                  public class AdvancePaymentDistibutionEntityTypeConfiguration : EntityTypeConfiguration<AdvancePaymentDistibution>
+
+        public class AdvancePaymentDistibutionEntityTypeConfiguration : EntityTypeConfiguration<AdvancePaymentDistibution>
+        {
+
+            public AdvancePaymentDistibutionEntityTypeConfiguration()
             {
+                this.ToTable("AdvancePaymentDistibution", "CRM");
+                this.HasKey<int>(t => t.AdvancePaymentDistibutionId);
 
-                      public AdvancePaymentDistibutionEntityTypeConfiguration()
-                {
-                    this.ToTable("AdvancePaymentDistibution", "CRM");
-                    this.HasKey<int>(t => t.AdvancePaymentDistibutionId);
-
-                }
             }
-            public class SalesInvoicePaymentDistibutionEntityTypeConfiguration : EntityTypeConfiguration<SalesInvoicePaymentDistibution>
+        }
+        public class SalesInvoicePaymentDistibutionEntityTypeConfiguration : EntityTypeConfiguration<SalesInvoicePaymentDistibution>
+        {
+
+            public SalesInvoicePaymentDistibutionEntityTypeConfiguration()
             {
+                this.ToTable("SalesInvoicePaymentDistibution", "CRM");
+                this.HasKey<int>(t => t.SalesInvoicePaymentDistibutionId);
 
-                public SalesInvoicePaymentDistibutionEntityTypeConfiguration()
-                {
-                    this.ToTable("SalesInvoicePaymentDistibution", "CRM");
-                    this.HasKey<int>(t => t.SalesInvoicePaymentDistibutionId);
-
-                }
             }
-            public class TicketStatusLogEntityTypeConfiguration : EntityTypeConfiguration<TicketStatusLog>
+        }
+        public class TicketStatusLogEntityTypeConfiguration : EntityTypeConfiguration<TicketStatusLog>
+        {
+
+            public TicketStatusLogEntityTypeConfiguration()
             {
+                this.ToTable("TicketStatusLog", "CRM");
+                this.HasKey<int>(t => t.TicketStatusLogId);
 
-                public TicketStatusLogEntityTypeConfiguration()
-                {
-                    this.ToTable("TicketStatusLog", "CRM");
-                    this.HasKey<int>(t => t.TicketStatusLogId);
-
-                }
             }
-            public class SupportGroupDetailEntityTypeConfiguration : EntityTypeConfiguration<SupportGroupDetail>
+        }
+        public class SupportGroupDetailEntityTypeConfiguration : EntityTypeConfiguration<SupportGroupDetail>
+        {
+
+            public SupportGroupDetailEntityTypeConfiguration()
             {
+                this.ToTable("SupportGroupDetail", "CRM");
+                this.HasKey<int>(t => t.SupportGroupDetailId);
 
-                public SupportGroupDetailEntityTypeConfiguration()
-                {
-                    this.ToTable("SupportGroupDetail", "CRM");
-                    this.HasKey<int>(t => t.SupportGroupDetailId);
-
-                }
             }
-            public class StatusTypeEntityTypeConfiguration : EntityTypeConfiguration<StatusType>
+        }
+        public class StatusTypeEntityTypeConfiguration : EntityTypeConfiguration<StatusType>
+        {
+
+            public StatusTypeEntityTypeConfiguration()
             {
+                this.ToTable("StatusType", "CRM");
+                this.HasKey<int>(t => t.StatusTypeId);
 
-                public StatusTypeEntityTypeConfiguration()
-                {
-                    this.ToTable("StatusType", "CRM");
-                    this.HasKey<int>(t => t.StatusTypeId);
-
-                }
             }
-            public class PriorityTypeEntityTypeConfiguration : EntityTypeConfiguration<PriorityType>
+        }
+        public class PriorityTypeEntityTypeConfiguration : EntityTypeConfiguration<PriorityType>
+        {
+
+            public PriorityTypeEntityTypeConfiguration()
             {
+                this.ToTable("PriorityType", "CRM");
+                this.HasKey<int>(t => t.PriorityTypeId);
 
-                public PriorityTypeEntityTypeConfiguration()
-                {
-                    this.ToTable("PriorityType", "CRM");
-                    this.HasKey<int>(t => t.PriorityTypeId);
-
-                }
             }
-            public class AssignTicketEntityTypeConfiguration : EntityTypeConfiguration<AssignTicket>
+        }
+        public class AssignTicketEntityTypeConfiguration : EntityTypeConfiguration<AssignTicket>
+        {
+
+            public AssignTicketEntityTypeConfiguration()
             {
+                this.ToTable("AssignTicket", "CRM");
+                this.HasKey<int>(t => t.AssignTicketId);
 
-                public AssignTicketEntityTypeConfiguration()
-                {
-                    this.ToTable("AssignTicket", "CRM");
-                    this.HasKey<int>(t => t.AssignTicketId);
-
-                }
             }
-            public class VarietyEntityTypeConfiguration : EntityTypeConfiguration<Variety>
+        }
+        public class VarietyEntityTypeConfiguration : EntityTypeConfiguration<Variety>
+        {
+
+            public VarietyEntityTypeConfiguration()
             {
+                this.ToTable("Variety", "CRM");
+                this.HasKey<int>(t => t.VarietyID);
 
-                public VarietyEntityTypeConfiguration()
-                {
-                    this.ToTable("Variety", "CRM");
-                    this.HasKey<int>(t => t.VarietyID);
-
-                }
             }
+        }
 
 
-            public class AdvancePaymentLineEntityTypeConfiguration : EntityTypeConfiguration<AdvancePaymentLine>
+        public class AdvancePaymentLineEntityTypeConfiguration : EntityTypeConfiguration<AdvancePaymentLine>
+        {
+
+            public AdvancePaymentLineEntityTypeConfiguration()
             {
+                this.ToTable("AdvancePaymentLine", "CRM");
+                this.HasKey<int>(t => t.AdvancePaymentLineId);
 
-                public AdvancePaymentLineEntityTypeConfiguration()
-                {
-                    this.ToTable("AdvancePaymentLine", "CRM");
-                    this.HasKey<int>(t => t.AdvancePaymentLineId);
-
-                }
             }
+        }
 
 
-            public class AdvancePaymentEntityTypeConfiguration : EntityTypeConfiguration<AdvancePayment>
+        public class AdvancePaymentEntityTypeConfiguration : EntityTypeConfiguration<AdvancePayment>
+        {
+
+            public AdvancePaymentEntityTypeConfiguration()
             {
+                this.ToTable("AdvancePayment", "CRM");
+                this.HasKey<int>(t => t.AdvancePaymentId);
 
-                public AdvancePaymentEntityTypeConfiguration()
-                {
-                    this.ToTable("AdvancePayment", "CRM");
-                    this.HasKey<int>(t => t.AdvancePaymentId);
-
-                }
             }
+        }
 
 
-            public class CampaignProductEntityTypeConfiguration : EntityTypeConfiguration<CampaignProduct>
+        public class CampaignProductEntityTypeConfiguration : EntityTypeConfiguration<CampaignProduct>
+        {
+
+            public CampaignProductEntityTypeConfiguration()
             {
+                this.ToTable("CampaignProduct", "CRM");
+                this.HasKey<int>(t => t.CampaignProductID);
 
-                public CampaignProductEntityTypeConfiguration()
-                {
-                    this.ToTable("CampaignProduct", "CRM");
-                    this.HasKey<int>(t => t.CampaignProductID);
-
-                }
             }
-            public class CreditSettingEntityTypeConfiguration : EntityTypeConfiguration<CreditSetting>
+        }
+        public class CreditSettingEntityTypeConfiguration : EntityTypeConfiguration<CreditSetting>
+        {
+
+            public CreditSettingEntityTypeConfiguration()
             {
+                this.ToTable("CreditSetting", "CRM");
+                this.HasKey<int>(t => t.CreditSettingID);
 
-                public CreditSettingEntityTypeConfiguration()
-                {
-                    this.ToTable("CreditSetting", "CRM");
-                    this.HasKey<int>(t => t.CreditSettingID);
-
-                }
             }
-            public class CreditSettlementEntityTypeConfiguration : EntityTypeConfiguration<CreditSettlement>
+        }
+        public class CreditSettlementEntityTypeConfiguration : EntityTypeConfiguration<CreditSettlement>
+        {
+
+            public CreditSettlementEntityTypeConfiguration()
             {
+                this.ToTable("CreditSettlement", "CRM");
+                this.HasKey<int>(t => t.CreditSettlementId);
 
-                public CreditSettlementEntityTypeConfiguration()
-                {
-                    this.ToTable("CreditSettlement", "CRM");
-                    this.HasKey<int>(t => t.CreditSettlementId);
-
-                }
             }
-            public class LineCreditSettlementEntityTypeConfiguration : EntityTypeConfiguration<LineCreditSettlement>
+        }
+        public class LineCreditSettlementEntityTypeConfiguration : EntityTypeConfiguration<LineCreditSettlement>
+        {
+
+            public LineCreditSettlementEntityTypeConfiguration()
             {
+                this.ToTable("LineCreditSettlement", "CRM");
+                this.HasKey<int>(t => t.LineCreditSettlementId);
 
-                public LineCreditSettlementEntityTypeConfiguration()
-                {
-                    this.ToTable("LineCreditSettlement", "CRM");
-                    this.HasKey<int>(t => t.LineCreditSettlementId);
-
-                }
             }
-            public class ServiceLineItemEntityTypeConfiguration : EntityTypeConfiguration<ServiceLineItem>
+        }
+        public class ServiceLineItemEntityTypeConfiguration : EntityTypeConfiguration<ServiceLineItem>
+        {
+
+            public ServiceLineItemEntityTypeConfiguration()
             {
+                this.ToTable("ServiceLineItem", "CRM");
+                this.HasKey<int>(t => t.ServiceLineItemId);
 
-                public ServiceLineItemEntityTypeConfiguration()
-                {
-                    this.ToTable("ServiceLineItem", "CRM");
-                    this.HasKey<int>(t => t.ServiceLineItemId);
-
-                }
             }
+        }
 
 
 
 
-            public class ServiceUsageEntityTypeConfiguration : EntityTypeConfiguration<ServiceUsage>
+        public class ServiceUsageEntityTypeConfiguration : EntityTypeConfiguration<ServiceUsage>
+        {
+
+            public ServiceUsageEntityTypeConfiguration()
             {
+                this.ToTable("ServiceUsage", "CRM");
+                this.HasKey<int>(t => t.ServiceUsageId);
 
-                public ServiceUsageEntityTypeConfiguration()
-                {
-                    this.ToTable("ServiceUsage", "CRM");
-                    this.HasKey<int>(t => t.ServiceUsageId);
-
-                }
             }
+        }
 
 
-       
 
-         
-            public class ServiceUsageApprovalEntityTypeConfiguration : EntityTypeConfiguration<ServiceUsageApproval>
+
+
+        public class ServiceUsageApprovalEntityTypeConfiguration : EntityTypeConfiguration<ServiceUsageApproval>
+        {
+
+            public ServiceUsageApprovalEntityTypeConfiguration()
             {
+                this.ToTable("ServiceUsageApproval", "CRM");
+                this.HasKey<int>(t => t.ServiceUsageApprovalId);
 
-                public ServiceUsageApprovalEntityTypeConfiguration()
-                {
-                    this.ToTable("ServiceUsageApproval", "CRM");
-                    this.HasKey<int>(t => t.ServiceUsageApprovalId);
-
-                }
             }
+        }
 
 
-             
-            public class CRMHolidayEntityTypeConfiguration : EntityTypeConfiguration<CRMHoliday>
+
+        public class CRMHolidayEntityTypeConfiguration : EntityTypeConfiguration<CRMHoliday>
+        {
+
+            public CRMHolidayEntityTypeConfiguration()
             {
+                this.ToTable("CRMHoliday", "CRM");
+                this.HasKey<int>(t => t.CRMHolidayID);
 
-                public CRMHolidayEntityTypeConfiguration()
-                {
-                    this.ToTable("CRMHoliday", "CRM");
-                    this.HasKey<int>(t => t.CRMHolidayID);
-
-                }
             }
+        }
 
-                 
-            public class CustomerServiceEntityTypeConfiguration : EntityTypeConfiguration<CustomerService>
+
+        public class CustomerServiceEntityTypeConfiguration : EntityTypeConfiguration<CustomerService>
+        {
+
+            public CustomerServiceEntityTypeConfiguration()
             {
+                this.ToTable("CustomerService", "CRM");
+                this.HasKey<int>(t => t.CustomerServiceId);
 
-                public CustomerServiceEntityTypeConfiguration()
-                {
-                    this.ToTable("CustomerService", "CRM");
-                    this.HasKey<int>(t => t.CustomerServiceId);
-
-                }
             }
+        }
 
 
-            public class HolidayDefinitionEntityTypeConfiguration : EntityTypeConfiguration<HolidayDefinition>
+        public class HolidayDefinitionEntityTypeConfiguration : EntityTypeConfiguration<HolidayDefinition>
+        {
+
+            public HolidayDefinitionEntityTypeConfiguration()
             {
+                this.ToTable("HolidayDefinition", "CRM");
+                this.HasKey<int>(t => t.HolidayDefinitionID);
 
-                public HolidayDefinitionEntityTypeConfiguration()
-                {
-                    this.ToTable("HolidayDefinition", "CRM");
-                    this.HasKey<int>(t => t.HolidayDefinitionID);
-
-                }
             }
+        }
 
-          
-               public class ReceiveMethodEntityTypeConfiguration : EntityTypeConfiguration<ReceiveMethod>
+
+        public class ReceiveMethodEntityTypeConfiguration : EntityTypeConfiguration<ReceiveMethod>
+        {
+
+            public ReceiveMethodEntityTypeConfiguration()
             {
+                this.ToTable("ReceiveMethod", "CRM");
+                this.HasKey<int>(t => t.ReceiveMethodID);
 
-                public ReceiveMethodEntityTypeConfiguration()
-                {
-                    this.ToTable("ReceiveMethod", "CRM");
-                    this.HasKey<int>(t => t.ReceiveMethodID);
-
-                }
             }
+        }
 
-         
-            public class TermEntityTypeConfiguration : EntityTypeConfiguration<Term>
+
+        public class TermEntityTypeConfiguration : EntityTypeConfiguration<Term>
         {
 
             public TermEntityTypeConfiguration()
@@ -305,17 +305,17 @@ namespace ExceedERP.DataAccess.Context
         }
 
 
-            public class InventoryCateoryMapEntityTypeConfiguration : EntityTypeConfiguration<InventoryCateoryMap>
+        public class InventoryCateoryMapEntityTypeConfiguration : EntityTypeConfiguration<InventoryCateoryMap>
+        {
+
+            public InventoryCateoryMapEntityTypeConfiguration()
             {
+                this.ToTable("InventoryCateoryMap", "CRM");
+                this.HasKey<Guid>(t => t.InventoryCateoryMapId);
 
-                public InventoryCateoryMapEntityTypeConfiguration()
-                {
-                    this.ToTable("InventoryCateoryMap", "CRM");
-                    this.HasKey<Guid>(t => t.InventoryCateoryMapId);
-
-                }
             }
-            public class VoucherDefinitionEntityTypeConfiguration : EntityTypeConfiguration<VoucherDefinition>
+        }
+        public class VoucherDefinitionEntityTypeConfiguration : EntityTypeConfiguration<VoucherDefinition>
         {
 
             public VoucherDefinitionEntityTypeConfiguration()
@@ -327,7 +327,7 @@ namespace ExceedERP.DataAccess.Context
         }
 
 
-            public class VoucherTermEntityTypeConfiguration : EntityTypeConfiguration<VoucherTerm>
+        public class VoucherTermEntityTypeConfiguration : EntityTypeConfiguration<VoucherTerm>
         {
 
             public VoucherTermEntityTypeConfiguration()
@@ -338,16 +338,16 @@ namespace ExceedERP.DataAccess.Context
             }
         }
 
-            public class TaxEntityTypeConfiguration : EntityTypeConfiguration<Tax>
-        {
+        //public class TaxEntityTypeConfiguration : EntityTypeConfiguration<Tax>
+        //{
 
-            public TaxEntityTypeConfiguration()
-            {
-                this.ToTable("Tax", "CRM");
-                this.HasKey<int>(t => t.TaxID);
+        //    public TaxEntityTypeConfiguration()
+        //    {
+        //        this.ToTable("Tax", "CRM");
+        //        this.HasKey<int>(t => t.TaxID);
 
-            }
-        }
+        //    }
+        //}
 
         public class TaxTransactionEntityTypeConfiguration : EntityTypeConfiguration<TaxTransaction>
         {
@@ -763,7 +763,7 @@ namespace ExceedERP.DataAccess.Context
 
             public ThingCategoryEntityTypeConfiguration()
             {
-             
+
                 this.Property(p => p.Index)
                 .HasColumnAnnotation(
            IndexAnnotation.AnnotationName,

@@ -77,6 +77,7 @@
     <Compile Include="Context\InfoDeskEntityConfiguration.cs" />
     <Compile Include="Context\InventoryEntityConfiguration.cs" />
     <Compile Include="Context\JobCostingEntityConfiguration.cs" />
+    <Compile Include="Context\PrintingEstimationEntityConfiguration.cs" />
     <Compile Include="Context\ProductFollowUpEntityConfiguration.cs" />
     <Compile Include="Context\ProductionEntityConfiguration.cs" />
     <Compile Include="Context\ReligionEntityTypeConfiguration.cs" />
@@ -96,6 +97,10 @@
     <Compile Include="Migrations\202111040843067_payroll-hr.cs" />
     <Compile Include="Migrations\202111040843067_payroll-hr.Designer.cs">
       <DependentUpon>202111040843067_payroll-hr.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202111080851507_PrintingModulesMerged.cs" />
+    <Compile Include="Migrations\202111080851507_PrintingModulesMerged.Designer.cs">
+      <DependentUpon>202111080851507_PrintingModulesMerged.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -127,6 +132,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202111040843067_payroll-hr.resx">
       <DependentUpon>202111040843067_payroll-hr.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202111080851507_PrintingModulesMerged.resx">
+      <DependentUpon>202111080851507_PrintingModulesMerged.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

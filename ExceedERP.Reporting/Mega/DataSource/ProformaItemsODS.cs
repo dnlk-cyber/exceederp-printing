@@ -43,18 +43,18 @@ namespace ExceedERP.Reporting.Mega.DataSource
              
                // proforma.Description = pro.Description;
                 proforma.Size = pro.Size;
-                proforma.Page = pro.Page;
+                //proforma.Page = pro.Page;
 
                 var jobType = db.JobTypes.FirstOrDefault(x => x.JobTypeId == pro.JobTypeId);
                 if (jobType != null)
                 {
                     proforma.Description = jobType.Type;
 
-                    var jobTypeItem = db.JobTypeItems.FirstOrDefault(x => x.JobTypeItemId == pro.JobTypeItemId);
-                    if (jobTypeItem != null)
-                    {
-                        proforma.Description = proforma.Description + " - " + jobTypeItem.Name;
-                    }
+                    //var jobTypeItem = db.JobTypeItems.FirstOrDefault(x => x.JobTypeItemId == pro.JobTypeItemId);
+                    //if (jobTypeItem != null)
+                    //{
+                    //    proforma.Description = proforma.Description + " - " + jobTypeItem.Name;
+                    //}
 
                     var tax = db.GLTaxRates.FirstOrDefault(x=>x.GLTaxRateID == jobType.GLTaxRateID);
                     if(tax != null)
