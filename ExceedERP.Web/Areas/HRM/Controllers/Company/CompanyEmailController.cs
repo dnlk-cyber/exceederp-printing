@@ -66,7 +66,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
                     MainCompanyId = idTwo,
                     CompanyEmailId = CompanyEmail.CompanyEmailId,
                     EmailAddress = CompanyEmail.EmailAddress,
-                    Password = Encrypt.EncryptString(CompanyEmail.EmailAddress, CompanyEmail.Password),
+                   // Password = Encrypt.EncryptString(CompanyEmail.EmailAddress, CompanyEmail.Password),
                     ServerType = CompanyEmail.ServerType,
                 };
                 if (entity.EmailAddress.Contains("gmail"))

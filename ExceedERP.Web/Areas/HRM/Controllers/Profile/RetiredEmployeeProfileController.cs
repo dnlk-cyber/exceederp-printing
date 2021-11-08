@@ -515,37 +515,40 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
             List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
             //List<string> employees = inputs.GetUserBranchEmployees(User.Identity.Name);
             IQueryable<Person_Employee> person_employees = db.Person_Employee.Where(x => mybraches.Contains(x.OrgBranchName.ToString()) && x.IsActive == false && x.Remark.Contains("Retirement"));
-            string searchedValue = "";
 
-            if (request.Filters != null)
-            {
-                dd: if (request.Filters.Any())
-                {
-                    foreach (var filter in request.Filters)
-                    {
-                        var descriptor = filter as FilterDescriptor;
-                        if (descriptor != null)
-                        {
-                            if (descriptor.Member == "LastName" || descriptor.Member == "EmployeeCode" || descriptor.Member == "MiddleName" || descriptor.Member == "FirstName")
-                            {
-                                person_employees = ModifyFilters(request.Filters, person_employees).AsQueryable();
+            #region Commented
+            //string searchedValue = "";
 
-                            }
+            //if (request.Filters != null)
+            //{
+            //    dd: if (request.Filters.Any())
+            //    {
+            //        foreach (var filter in request.Filters)
+            //        {
+            //            var descriptor = filter as FilterDescriptor;
+            //            if (descriptor != null)
+            //            {
+            //                if (descriptor.Member == "LastName" || descriptor.Member == "EmployeeCode" || descriptor.Member == "MiddleName" || descriptor.Member == "FirstName")
+            //                {
+            //                    person_employees = ModifyFilters(request.Filters, person_employees).AsQueryable();
 
-                        }
-                        else if (filter is CompositeFilterDescriptor)
-                        {
+            //                }
 
-                            request.Filters = ((CompositeFilterDescriptor)filter).FilterDescriptors;
-                            goto dd;
-                            //ModifyFilters(((CompositeFilterDescriptor) filter).FilterDescriptors, person_employee);
+            //            }
+            //            else if (filter is CompositeFilterDescriptor)
+            //            {
 
-                        }
-                    }
-                    //request.Filters.Clear();
-                }
-            }
+            //                request.Filters = ((CompositeFilterDescriptor)filter).FilterDescriptors;
+            //                goto dd;
+            //                //ModifyFilters(((CompositeFilterDescriptor) filter).FilterDescriptors, person_employee);
 
+            //            }
+            //        }
+            //        //request.Filters.Clear();
+            //    }
+            //}
+
+            #endregion
 
             DataSourceResult result = person_employees.ToDataSourceResult(request, person_Employee => new
             {
@@ -1448,77 +1451,77 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
             return Json(emps.Select(p => new { Name = p.FirstName, Id = p.EmployeeId }), JsonRequestBehavior.AllowGet);
 
         }
-        [HttpPost]
-        public ActionResult EmployeeChart([DataSourceRequest]DataSourceRequest request, int id)
-        {
-            var leaveList = db.Leaves.Where(x => x.EmployeeId == id).Count();
-            int internalExpriance = 0;
-            int externalExpriance = 0;
-            var displineList = db.DisciplinaryCases.Where(x => x.EmployeeId == id).Count();
-            var abcentList = db.EmpPayrollNoDaysWorkeds.Where(x => x.EmployeeId == id).Count();
-            var externalExpriances = db.Experiences.Where(x => x.EmployeeId == id);
-            if (externalExpriances.Any())
-            {
-                externalExpriance = Convert.ToInt32(externalExpriances.Sum(x => x.TotalDuration));
-            }
-            var employee = db.Person_Employee.Where(x => x.EmployeeId == id).FirstOrDefault();
-            if (employee != null)
-            {
-                internalExpriance = (DateTime.Now.Year - employee.HiredDate.Year);
-            }
+        //[HttpPost]
+        //public ActionResult EmployeeChart([DataSourceRequest]DataSourceRequest request, int id)
+        //{
+        //    var leaveList = db.Leaves.Where(x => x.EmployeeId == id).Count();
+        //    int internalExpriance = 0;
+        //    int externalExpriance = 0;
+        //    var displineList = db.DisciplinaryCases.Where(x => x.EmployeeId == id).Count();
+        //    var abcentList = db.EmpPayrollNoDaysWorkeds.Where(x => x.EmployeeId == id).Count();
+        //    var externalExpriances = db.Experiences.Where(x => x.EmployeeId == id);
+        //    if (externalExpriances.Any())
+        //    {
+        //        externalExpriance = Convert.ToInt32(externalExpriances.Sum(x => x.TotalDuration));
+        //    }
+        //    var employee = db.Person_Employee.Where(x => x.EmployeeId == id).FirstOrDefault();
+        //    if (employee != null)
+        //    {
+        //        internalExpriance = (DateTime.Now.Year - employee.HiredDate.Year);
+        //    }
 
-            var viewModel = new List<EmployeeChartModel>();
-            var data = new EmployeeChartModel();
-            if (leaveList > 0)
-            {
-                //data.EmployeeChartModels = new List<EmployeeChartModel>();
+        //    var viewModel = new List<EmployeeChartModel>();
+        //    var data = new EmployeeChartModel();
+        //    if (leaveList > 0)
+        //    {
+        //        //data.EmployeeChartModels = new List<EmployeeChartModel>();
 
-                data.Category = "Leave";
-                data.Value = leaveList;
-                data.Color = "SteelBlue";
-                //data.EmployeeChartModels.Add(data);
-                viewModel.Add(data);
-            }
-            if (displineList > 0)
-            {
-                data = new EmployeeChartModel();
-                //data.EmployeeChartModels = new List<EmployeeChartModel>();
-                data.Category = "Dcipline";
-                data.Value = displineList;
+        //        data.Category = "Leave";
+        //        data.Value = leaveList;
+        //        data.Color = "SteelBlue";
+        //        //data.EmployeeChartModels.Add(data);
+        //        viewModel.Add(data);
+        //    }
+        //    if (displineList > 0)
+        //    {
+        //        data = new EmployeeChartModel();
+        //        //data.EmployeeChartModels = new List<EmployeeChartModel>();
+        //        data.Category = "Dcipline";
+        //        data.Value = displineList;
 
-                data.Color = "LimeGreen";
-                //data.EmployeeChartModels.Add(data);
-                viewModel.Add(data);
-            }
-            if (abcentList > 0)
-            {
-                data = new EmployeeChartModel();
-                //data.EmployeeChartModels = new List<EmployeeChartModel>();
-                data.Category = "Abcent";
-                data.Value = abcentList;
+        //        data.Color = "LimeGreen";
+        //        //data.EmployeeChartModels.Add(data);
+        //        viewModel.Add(data);
+        //    }
+        //    if (abcentList > 0)
+        //    {
+        //        data = new EmployeeChartModel();
+        //        //data.EmployeeChartModels = new List<EmployeeChartModel>();
+        //        data.Category = "Abcent";
+        //        data.Value = abcentList;
 
-                data.Color = "OrangeRed";
-                viewModel.Add(data);
-                //data.EmployeeChartModels.Add(data);
-            }
-            data = new EmployeeChartModel();
-            //data.EmployeeChartModels = new List<EmployeeChartModel>();
-            data.Category = "Internal Expriance";
-            data.Value = internalExpriance;
+        //        data.Color = "OrangeRed";
+        //        viewModel.Add(data);
+        //        //data.EmployeeChartModels.Add(data);
+        //    }
+        //    data = new EmployeeChartModel();
+        //    //data.EmployeeChartModels = new List<EmployeeChartModel>();
+        //    data.Category = "Internal Expriance";
+        //    data.Value = internalExpriance;
 
-            data.Color = "MediumSlateBlue";
-            //data.EmployeeChartModels.Add(data);
-            viewModel.Add(data);
-            data = new EmployeeChartModel();
-            //data.EmployeeChartModels = new List<EmployeeChartModel>();
-            data.Category = "External Expriance";
-            data.Value = externalExpriance;
+        //    data.Color = "MediumSlateBlue";
+        //    //data.EmployeeChartModels.Add(data);
+        //    viewModel.Add(data);
+        //    data = new EmployeeChartModel();
+        //    //data.EmployeeChartModels = new List<EmployeeChartModel>();
+        //    data.Category = "External Expriance";
+        //    data.Value = externalExpriance;
 
-            data.Color = "Chocolate";
-            //data.EmployeeChartModels.Add(data);
-            viewModel.Add(data);
-            return Json(viewModel);
-        }
+        //    data.Color = "Chocolate";
+        //    //data.EmployeeChartModels.Add(data);
+        //    viewModel.Add(data);
+        //    return Json(viewModel);
+        //}
         protected override void Dispose(bool disposing)
         {
             db.Dispose();

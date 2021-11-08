@@ -4,6 +4,7 @@ using System.Linq;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Common.HRM;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Helpers.HR;
 using ExceedERP.Reporting.HRM.HRM.HRMViewModel;
 
@@ -19,71 +20,45 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
         {
             VacantPostions VacantPostions = new VacantPostions();
             List<Person_Employee> employees;
-            
+
             VacantPostions = new VacantPostions();
-           
+
             employees = HrHelper.PersonEmployeesOneBranch(branchId, org, "");
 
-            var toBepostions =db.JobTitleMapping.ToList();
+            var toBepostions = db.JobTitleMapping.ToList();
             var currentStaff = db.Placements.Where(x => x.isCurrent).ToList();
-            //list.Add(VacantPostions);
 
-            if (org != null )
+            if(branchId != null)
             {
-                //var lookups = db.Lookups.Where(x => x.LookupId.ToString() == title).FirstOrDefault().LookupId;
-                //var Org = db.MainCompanyStructures.Where(x => x.OrgStructureId.ToString () == org).FirstOrDefault().OrgStructureId;
-
-
-                toBepostions =
-                    toBepostions.Where(x => x.OrgStructureId.ToString() == org )
-                        .ToList();
-                currentStaff =
-                    currentStaff.Where(x => x.OrgStructureId.ToString() == org )
-                        .ToList();
-                int quntity = 0;
+                int.TryParse(branchId, out int braId);
+                currentStaff = EmployeeHelper.GetEmployees_ByBranch_FromPlacement(currentStaff, braId);
+                toBepostions = toBepostions.Where(x=>x.BranchId == braId).ToList();
             }
-            if (title != null)
+            if(org != null)
             {
-                //var lookups = db.Lookups.Where(x => x.LookupId.ToString() == title).FirstOrDefault().LookupId;
-                //var Org = db.MainCompanyStructures.Where(x => x.OrgStructureId.ToString () == org).FirstOrDefault().OrgStructureId;
-
-
-                toBepostions =
-                    toBepostions.Where(x =>   x.LookupId.ToString() == title)
-                        .ToList();
-                currentStaff =
-                    currentStaff.Where(x =>  x.LookupId.ToString() == title)
-                        .ToList();
-                int quntity = 0;
+                int.TryParse(org, out int orgId);
+                currentStaff = EmployeeHelper.GetEmployees_ByDepartment_WithCaseTeam_FromPlacement(currentStaff, orgId);
+                toBepostions = toBepostions.Where(x=>x.OrgStructureId == orgId).ToList();
             }
-            if (toBepostions.Any())
-                {
-                    foreach (var to in toBepostions)
-                    {
-                          VacantPostions.ToBeStaff += to.Quntity;
-                    }
-                  
+            if(title != null)
+            {
+                int.TryParse(title, out int lookupId);
+                currentStaff = EmployeeHelper.GetEmployees_ByJobTitle_FromPlacement(currentStaff, lookupId);
+                toBepostions = toBepostions.Where(x=>x.LookupId == lookupId).ToList();
+            }
 
-                }
-                if (currentStaff.Any())
-                {
-                    var assignedEmployee = from c in currentStaff
-                        join e in employees
-                            on c.EmployeeId equals e.EmployeeId
-                        select (new {e.Gender});
+            VacantPostions.ToBeStaff = toBepostions.Sum(x=>x.Quntity);
 
-                    VacantPostions.NumberOfMaleEmployee = assignedEmployee.ToList().Where(x => x.Gender == Gender.MALE).Count();
-                    
-                  
-                          VacantPostions.NumberOfFemaleEmployee = assignedEmployee.ToList().Where(x => x.Gender == Gender.FEMALE).Count();
+            var males = EmployeeHelper.Get_Male_EmployeesFrom_Placement(currentStaff).Select(x => x.EmployeeId);
+            var females = EmployeeHelper.Get_Female_EmployeesFrom_Placement(currentStaff).Select(x=>x.EmployeeId);
+
+            VacantPostions.NumberOfMaleEmployee = currentStaff.Where(x => males.Contains(x.EmployeeId)).Count();
+            VacantPostions.NumberOfFemaleEmployee = currentStaff.Where(x => females.Contains(x.EmployeeId)).Count();
                        
-                    
-                }
-                VacantPostions.TotalEmployee = VacantPostions.NumberOfFemaleEmployee + VacantPostions.NumberOfMaleEmployee;
-                VacantPostions.VacantPos = VacantPostions.ToBeStaff -
-                                           (VacantPostions.TotalEmployee);
-            
-           
+
+            VacantPostions.TotalEmployee = VacantPostions.NumberOfFemaleEmployee + VacantPostions.NumberOfMaleEmployee;
+            VacantPostions.VacantPos = VacantPostions.ToBeStaff - VacantPostions.TotalEmployee;
+
             return VacantPostions;
         }
     }

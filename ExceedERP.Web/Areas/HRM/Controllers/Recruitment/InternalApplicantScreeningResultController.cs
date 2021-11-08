@@ -1,4 +1,4 @@
-﻿﻿using System;
+﻿using System;
 using System.Collections.Generic;
 
 using System.Data.Entity;
@@ -6,35 +6,27 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
- using ExceedERP.Core.Domain;
- using ExceedERP.Core.Domain.Common;
-﻿using Kendo.Mvc.Extensions;
+using ExceedERP.Core.Domain;
+using ExceedERP.Core.Domain.Common;
+using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using ExceedERP.Core.Domain.HRM;
 using ExceedERP.Core.Domain.HRM.RecruitmentManagment;
 using ExceedERP.Core.Domain.HRM.SelfCare;
 using ExceedERP.DataAccess.Context;
-﻿using ExceedERP.Web.Areas.HRM.Controllers.Profile;
+using ExceedERP.Web.Areas.HRM.Controllers.Profile;
 using ExceedERP.Web.Controllers;
 using ExceedERP.Web.Helpers;
 using ExceedERP.Helpers.Common;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
 {
-   
+
     [AuthorizeRoles(HrmConstants.HRRecruitmentAdmin, HrmConstants.HRAdmin, HrmConstants.HRRecruitmentUser)]
     public class InternalApplicantScreeningResultController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();
-        public static decimal EduLevel { get; set; }
-        public static decimal EduField { get; set; }
-        public static decimal RelevantExp { get; set; }
-        public static decimal RelatedExp { get; set; }
-        public static decimal Gender { get; set; }
-        public static decimal Disabliy { get; set; }
-        public static decimal Profile { get; set; }
-        public static decimal Training { get; set; }
-        public static decimal Dicipline { get; set; }
+
         public ActionResult Index()
         {
             PopulateViewData();
@@ -44,10 +36,12 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
         {
             HRMInputs inputs = new HRMInputs();
 
-            var listt = inputs.GetEmployees(User.Identity.Name);
-            ViewData["EmployeeList"] = listt.Where(x => x.IsActive);
+            // var listt = inputs.GetEmployees(User.Identity.Name);
+            ViewData["EmployeeList"] = db.Person_Employee.ToList();//listt.Where(x => x.IsActive);
             var recruitment = db.RecruitmentVacancy.ToList();
+            ViewData["Department"] = db.MainCompanyStructures.ToList();
             ViewData["recruitmentVacancy"] = recruitment;
+            ViewData["Vacancy"] = db.VaccancyPlans.ToList();
             var appTypes = Enum.GetValues(typeof(ApplicationType))
                .Cast<ApplicationType>().ToList();
             var media = db.Lookups.Where(x => x.LookupType == LookUpTypes.MEDIA);
@@ -58,378 +52,488 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
             ViewData["EduLevelList"] = levels;
             var ranks = db.Ranks.ToList();
             ViewData["RankList"] = ranks;
-            List<Vacancy> list = new List<Vacancy>();
-            var vacancies = db.RecruitmentVacancy.ToList();
-            if (vacancies.Any())
-            {
-                var recruit = db.VaccancyPlans.ToList();
-                var vac = new Vacancy();
-                foreach (var r in recruit)
-                {
-                    foreach (var v in vacancies)
-                    {
-                        var vacancydetail = db.VaccancyPlans.Where(x => x.VacancyId == v.VacancyId).FirstOrDefault();
-                        if (vacancydetail != null)
-                        {
-                            if (vacancydetail.RecruSource == RecruitmentSource.INTERNAL)
-                            {
-                                if (v.VacancyId == r.VacancyId)
-                                {
-                                    vac = new Vacancy();
-                                    vac = vacancydetail;
-                                    list.Add(vac);
-                                }
-                            }
-                        }
-                    }
-                }
 
-            }
+
             var jobtitles = db.Lookups.Where(x => x.LookupType == LookUpTypes.JOB_TITLE).ToList();
             ViewData["JobTitle"] = jobtitles;
-            ViewData["Vacancy"] = list;
+            ViewData["Vacancy"] = db.VaccancyPlans.ToList();
         }
-        private void SetSettingValues()
-        {
-            var settings =
-                db.Configurations.Where(x => x.Category == "Recruitment" && x.Reference == "Recruitment").ToList();
-            if (settings.Any())
-            {
-                foreach (var s in settings)
-                {
-                    switch (s.Attribute)
-                    {
-                        case "EDUCATION_LEVEL":
-                            EduLevel = Convert.ToDecimal(s.CurrentValue);
-                            break;
 
-                        case "EDUCATIONAL_FIELD":
-
-                            EduField = Convert.ToDecimal(s.CurrentValue);
-                            break;
-                        case "RELATED_EXPERIENCE":
-
-                            RelatedExp = Convert.ToDecimal(s.CurrentValue);
-                            break;
-                        case "RELEVANT_EXPERIENCE":
-
-                            RelevantExp = Convert.ToDecimal(s.CurrentValue);
-                            break;
-                        case "GENDER":
-
-                            Gender = Convert.ToDecimal(s.CurrentValue);
-                            break;
-                        case "DISABILITY":
-
-                            Disabliy = Convert.ToDecimal(s.CurrentValue);
-                            break;
-                        case "PROFILE":
-
-                            Profile = Convert.ToDecimal(s.CurrentValue);
-                            break;
-                        case "TRAINING":
-
-                            Training = Convert.ToDecimal(s.CurrentValue);
-                            break;
-                        case "DISCIPLINE ":
-
-                            Dicipline = Convert.ToDecimal(s.CurrentValue);
-                            break;
-                    }
-                }
-
-            }
-        }
-   
         [AuthorizeRoles(HrmConstants.HRRecruitmentAdmin, HrmConstants.HRRecruitmentUser)]
-        public ActionResult ApplicantionFormes_Read([DataSourceRequest]DataSourceRequest request, string id)
+        public int GetBranch(int id)
         {
-            SetSettingValues();
-            var mediaCode = "";
-            decimal screenSum = 0;
-            List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
-            IQueryable<ApplicantionForm> applicantionformes = db.ApplicantionFormes.Where(x => mybraches.Contains(x.OrgBranchName));
-            List<ApplicantionForm> applicantRegi = new List<ApplicantionForm>();
-            var SettingSum = EduField + EduLevel + RelatedExp + RelevantExp + Disabliy + Gender + Profile + Training + Dicipline;
-
-            if (id == "Screen")
+            var vacancy = db.VaccancyPlans.FirstOrDefault(x => x.VacancyId == id);
+            if (vacancy != null)
             {
-                foreach (var a in applicantionformes)
+                var branch = db.Branch.FirstOrDefault(x => x.BranchId == vacancy.BranchId);
+                if (branch != null)
                 {
-                    db = new ExceedDbContext();
-                    var screen =
-                        db.ApplicantScreeningResult.Where(
-                            x => x.ApplicantRegistrationId == a.ApplicantionFormId && x.ReferenceType == "Internal")
-                            .ToList();
-                    if (screen != null)
-                    {
-
-                        screenSum = Convert.ToDecimal(screen.Sum(x => x.CurrentResult));
-                        a.TotalResult = screenSum;
-                        var exam =
-                            db.ApplicantExamResult.Where(
-                                x => x.ApplicantRegistrationId == a.ApplicantionFormId && x.ReferenceType == "Internal")
-                                .ToList();
-                        if (exam != null)
-                        {
-                            decimal exmSum = Convert.ToDecimal(exam.Sum(x => x.CurrentResult));
-                        }
-                        if (screenSum >= SettingSum)
-                        {
-                            applicantRegi.Add(a);
-
-
-                        }
-                    }
-
-                }
-                applicantionformes = applicantRegi.AsQueryable();
-            }
-            else
-            {
-                foreach (var a in applicantionformes)
-                {
-                    db = new ExceedDbContext();
-                    var screen =
-                        db.ApplicantScreeningResult.Where(x => x.ApplicantRegistrationId == a.ApplicantionFormId && x.ReferenceType == "Internal")
-                            .ToList();
-                    if (screen.Any())
-                    {
-
-                        screenSum = Convert.ToDecimal(screen.Sum(x => x.CurrentResult));
-                        a.TotalResult = screenSum;
-                        var exam =
-                           db.ApplicantExamResult.Where(
-                               x => x.ApplicantRegistrationId == a.ApplicantionFormId && x.ReferenceType == "Internal")
-                               .ToList();
-                        if (exam.Any())
-                        {
-                            decimal exmSum = Convert.ToDecimal(exam.Sum(x => x.CurrentResult));
-                            a.TotalResult = a.TotalResult + exmSum;
-                            screenSum = a.TotalResult + exmSum;
-                        }
-                        applicantRegi.Add(a);
-                    }
-
-
-                    var vacancyPlanforMedia = db.VaccancyPlans.FirstOrDefault(x => x.VacancyId == a.VacancyId);
-                    var recruitmentMediaCode = db.RecruitmentVacancy.FirstOrDefault(x => x.VacancyId == vacancyPlanforMedia.VacancyId);
-                    if (recruitmentMediaCode != null)
-                    {
-                        mediaCode = recruitmentMediaCode.MediaVacancyCode;
-                    }
-
+                    return branch.BranchId;
                 }
             }
-
-            applicantionformes = applicantionformes;
-
-            DataSourceResult result = applicantionformes.ToDataSourceResult(request, applicantionForm => new
-            {
-                ApplicantionFormId = applicantionForm.ApplicantionFormId,
-                EmployeeId = applicantionForm.EmployeeId,
-                ApplicationType = applicantionForm.ApplicationType,
-                VacancyId = applicantionForm.VacancyId,
-                TotalResult = applicantionForm.TotalResult,
-                Remark = applicantionForm.Remark,
-                MediaVacancyCode = mediaCode,
-                EmployeeCode = applicantionForm.EmployeeCode,
-                LookupId = applicantionForm.LookupId,
-            });
-
-            return Json(result);
+            return 0;
         }
-        private void Configartion(int applicationId)
-        {
-            ApplicantScreeningResult applicantScreeningResult = new ApplicantScreeningResult();
-            List<ApplicantScreeningResult> applicantScreeningResultes = new List<ApplicantScreeningResult>();
-            var setingvalues = db.Configurations.Where(x => x.Reference == "Recruitment" && x.Category == "Recruitment").ToList();
-            var recruitmentSetting = Enum.GetValues(typeof(RecruitmentSetting))
-                           .Cast<RecruitmentSetting>()
-                           .ToList();
-            if (recruitmentSetting.Any())
-            {
-                foreach (var p in recruitmentSetting)
-                {
-                    if (p.ToString() != "THEORY_EXAM" && p.ToString() != "PRACTICAL_EXAM" && p.ToString() != "INTERVIEW")
-                    {
-
-                        applicantScreeningResult = new ApplicantScreeningResult();
-                        applicantScreeningResult.Criteria = p.ToString();
-                        if (setingvalues.Any())
-                        {
-                            var oneValue = setingvalues.Where(x => x.Attribute == p.ToString()).FirstOrDefault();
-                            if (oneValue != null)
-                            {
-                                applicantScreeningResult.SettingValue = Convert.ToDecimal(oneValue.CurrentValue);
-                            }
-                        }
-                        if (applicantScreeningResult.Criteria == "GENDER")
-                        {
-                            applicantScreeningResult.CurrentResult = GenderSetting(applicationId);
-                        }
-                        else
-                        { applicantScreeningResult.CurrentResult = 0; }
-                        applicantScreeningResult.ReferenceType = "Internal";
-
-                        applicantScreeningResult.TotalResult = 0;
-                        applicantScreeningResult.ApplicantRegistrationId = applicationId;
-                        applicantScreeningResultes.Add(applicantScreeningResult);
-                    }
-                }
-            }
-            db = new ExceedDbContext();
-            db.ApplicantScreeningResult.AddRange(applicantScreeningResultes);
-            db.SaveChanges();
-        }
-      
         [AuthorizeRoles(HrmConstants.HRRecruitmentAdmin, HrmConstants.HRAdmin, HrmConstants.HRRecruitmentUser)]
-        public ActionResult ApplicantScreeningResult_Read([DataSourceRequest]DataSourceRequest request, int id)
+        public ActionResult InternalApplicantScreeningResult_Read([DataSourceRequest]DataSourceRequest request)
         {
-            var applicant = db.ApplicantionFormes.Where(x => x.ApplicantionFormId == id).FirstOrDefault().EmployeeId;
-            var personemployee = db.Person_Employee.Where(x => x.EmployeeId == applicant).FirstOrDefault().Gender;
-            decimal genderSetting = 0;
-            var settings =
-                db.Configurations.Where(x => x.Category == "Recruitment" && x.Attribute == "GENDER").FirstOrDefault();
-            if (settings != null)
+            var applicants = db.InternalApplicantScreeningResults.ToList();
+
+            DataSourceResult result = applicants.ToDataSourceResult(request, applicantExamResult => new
             {
-                if (personemployee == ExceedERP.Core.Domain.Common.Gender.FEMALE)
-                {
-                    genderSetting = Convert.ToDecimal(settings.CurrentValue);
-                }
-            }
-            IQueryable<ApplicantScreeningResult> applicantexamresult = db.ApplicantScreeningResult.Where(x => x.ApplicantRegistrationId == id && x.ReferenceType == "Internal");
-            if (!applicantexamresult.Any())
-            {
-                Configartion(id);
-                applicantexamresult = db.ApplicantScreeningResult.Where(x => x.ApplicantRegistrationId == id && x.ReferenceType == "Internal");
-            }
-            DataSourceResult result = applicantexamresult.ToDataSourceResult(request, applicantExamResult => new
-            {
-                ScreeningResultId = applicantExamResult.ScreeningResultId,
-                ApplicantRegistrationId = applicantExamResult.ApplicantRegistrationId,
-                Criteria = applicantExamResult.Criteria,
-                SettingValue = applicantExamResult.SettingValue,
-                CurrentResult = applicantExamResult.CurrentResult,
-                Remark = applicantExamResult.Remark
-                    ,
-                ReferenceType = "Internal"
+                InternalApplicantScreeningResultId = applicantExamResult.InternalApplicantScreeningResultId,
+                ApplicationFormId = applicantExamResult.ApplicationFormId,
+                VacancyId = applicantExamResult.VacancyId,
+                Remark = applicantExamResult.Remark,
+
             });
 
             return Json(result);
         }
-        private decimal GenderSetting(int id)
+        public decimal TotalResult(int id)
         {
-            var applicant = db.ApplicantionFormes.Where(x => x.ApplicantionFormId == id).FirstOrDefault().EmployeeId;
-            decimal genderSetting = 0;
-            var settings =
-                db.Configurations.Where(x => x.Category == "Recruitment" && x.Attribute == "GENDER").FirstOrDefault();
-            if (settings != null)
-            {
-                var person = db.Person_Employee.Where(x => x.EmployeeId == applicant).FirstOrDefault();
-                if (person != null)
-                {
-                    if (person.Gender == ExceedERP.Core.Domain.Common.Gender.FEMALE)
-                    {
-                        genderSetting = Convert.ToDecimal(settings.CurrentValue);
-                    }
-                }
-            }
-            return genderSetting;
+            var applicant = db.InternalApplicantExamResults.Where(x => x.InternalApplicantScreeningId == id).ToList().Sum(x => x.CurrentResult);
+
+            return applicant;
         }
-     
+
         [AuthorizeRoles(HrmConstants.HRRecruitmentUser)]
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult ApplicantScreeningResult_Create([DataSourceRequest]DataSourceRequest request, ApplicantScreeningResult applicantScreeningResult, int id)
+        public ActionResult InternalApplicantScreeningResult_Create([DataSourceRequest]DataSourceRequest request, InternalApplicantScreeningResult applicantScreeningResult, int id)
         {
             if (ModelState.IsValid)
             {
-                if (applicantScreeningResult.SettingValue < applicantScreeningResult.CurrentResult)
+
+                var entity = new InternalApplicantScreeningResult
                 {
-                    return new JavaScriptResult() { Script = "alert('" + " The result must be less or equal to the setting value!!" + "');" };
-                }
-                var entity = new ApplicantScreeningResult
-                {
-                    ApplicantRegistrationId = id,
-                    Criteria = applicantScreeningResult.Criteria,
-                    SettingValue = applicantScreeningResult.SettingValue,
-                    CurrentResult = applicantScreeningResult.CurrentResult,
-                    Remark = applicantScreeningResult.Remark,
-                    TotalResult = applicantScreeningResult.TotalResult,
-                    ReferenceType = "Internal"
+
                 };
 
-                db.ApplicantScreeningResult.Add(entity);
+                db.InternalApplicantScreeningResults.Add(entity);
                 db.SaveChanges();
-                applicantScreeningResult.ScreeningResultId = entity.ScreeningResultId;
+                applicantScreeningResult.InternalApplicantScreeningResultId = entity.InternalApplicantScreeningResultId;
             }
 
             return Json(new[] { applicantScreeningResult }.ToDataSourceResult(request, ModelState));
         }
-     
-        [AuthorizeRoles( HrmConstants.HRRecruitmentUser)]
+
+        [AuthorizeRoles(HrmConstants.HRRecruitmentUser)]
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult ApplicantScreeningResult_Update([DataSourceRequest]DataSourceRequest request, ApplicantScreeningResult applicantScreeningResult)
+        public ActionResult InternalApplicantScreeningResult_Update([DataSourceRequest]DataSourceRequest request, InternalApplicantScreeningResult applicantScreeningResult)
         {
             ModelState.Clear();
+
+
             if (ModelState.IsValid)
             {
-                if (applicantScreeningResult.SettingValue < applicantScreeningResult.CurrentResult)
+                var entity = new InternalApplicantScreeningResult
                 {
-                    return new JavaScriptResult() { Script = "alert('" + " The result must be less or equal to the setting value!!" + "');" };
-                }
-                var entity = new ApplicantScreeningResult
-                {
-                    ScreeningResultId = applicantScreeningResult.ScreeningResultId,
-                    ApplicantRegistrationId = applicantScreeningResult.ApplicantRegistrationId,
-                    Criteria = applicantScreeningResult.Criteria,
-                    SettingValue = applicantScreeningResult.SettingValue,
-                    CurrentResult = applicantScreeningResult.CurrentResult,
-                    Remark = applicantScreeningResult.Remark,
-                    TotalResult = applicantScreeningResult.CurrentResult,
-                    ReferenceType = "Internal"
+                    InternalApplicantScreeningResultId = applicantScreeningResult.InternalApplicantScreeningResultId
                 };
 
-                db.ApplicantScreeningResult.Attach(entity);
+                db.InternalApplicantScreeningResults.Attach(entity);
                 db.Entry(entity).State = EntityState.Modified;
                 db.SaveChanges();
 
-
             }
 
             return Json(new[] { applicantScreeningResult }.ToDataSourceResult(request, ModelState));
         }
-      
+
         [AuthorizeRoles(HrmConstants.HRRecruitmentAdmin, HrmConstants.HRAdmin)]
 
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult ApplicantScreeningResult_Destroy([DataSourceRequest]DataSourceRequest request, ApplicantScreeningResult applicantScreeningResult)
+        public ActionResult InternalApplicantScreeningResult_Destroy([DataSourceRequest]DataSourceRequest request, InternalApplicantScreeningResult applicantScreeningResult)
         {
             if (ModelState.IsValid)
             {
-                var entity = new ApplicantScreeningResult
+                var entity = new InternalApplicantScreeningResult
                 {
-                    ScreeningResultId = applicantScreeningResult.ScreeningResultId,
-                    ApplicantRegistrationId = applicantScreeningResult.ApplicantRegistrationId,
-                    Criteria = applicantScreeningResult.Criteria,
-                    SettingValue = applicantScreeningResult.SettingValue,
-                    CurrentResult = applicantScreeningResult.CurrentResult,
-                    Remark = applicantScreeningResult.Remark
-                    ,
-                    TotalResult = applicantScreeningResult.CurrentResult,
-                    ReferenceType = "Internal"
+                    InternalApplicantScreeningResultId = applicantScreeningResult.InternalApplicantScreeningResultId,
+
                 };
                 #region delete log
-                UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted internal screeining result information of applicant  " + applicantScreeningResult.ApplicantRegistrationId);
+                UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted internal screeining result information of applicant  " + applicantScreeningResult.InternalApplicantScreeningResultId);
                 #endregion
-                db.ApplicantScreeningResult.Attach(entity);
-                db.ApplicantScreeningResult.Remove(entity);
+                db.InternalApplicantScreeningResults.Attach(entity);
+                db.InternalApplicantScreeningResults.Remove(entity);
                 db.SaveChanges();
             }
 
             return Json(new[] { applicantScreeningResult }.ToDataSourceResult(request, ModelState));
         }
+        // //////////
+        /// <summary>
+        /// /////////   Internal Applicant Screenings
+        /// </summary>
+        /// <param name="vacancyId"></param>
+        /// <returns></returns>
+        /// 
 
+        public string GetApplicantName(int id)
+        {
+            var internalApplicant = db.InternalApplicants.FirstOrDefault(x => x.InternalApplicantsId == id);
+            if (internalApplicant != null)
+            {
+                if (internalApplicant.EmployeeId != null)
+                {
+                    var person = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == internalApplicant.EmployeeId);
+                    if (person != null)
+                    {
+                        return person.FullNameaEnglish;
+                    }
+                }
+                else
+                {
+                    return internalApplicant.ApplicantName;
+                }
+            }
+            return "";
+        }
+        public string PassOrFail(int applicantScreeningId, int vacancyId)
+        {
+            var applicantExam = db.InternalApplicantExamResults.Where(x => x.InternalApplicantScreeningId == applicantScreeningId).ToList();
+
+            if (applicantExam.Any())
+            {
+                var sum = applicantExam.Sum(x => x.CurrentResult);
+
+                var passScore = db.RecruitmentApplicantPassSettings.FirstOrDefault(x => x.VacancyId == vacancyId);
+                if (passScore != null)
+                {
+                    if (sum >= Convert.ToDecimal(passScore.PassScore))
+                    {
+                        return "Pass";
+                    }
+                    else
+                    {
+                        return "Fail";
+                    }
+                }
+            }
+            return "Check Pass Setting";
+        }
+
+        public int GetVacancyId(int applicantScreenResultId)
+        {
+
+            var appScreenResult = db.InternalApplicantScreeningResults.FirstOrDefault(x => x.InternalApplicantScreeningResultId == applicantScreenResultId);
+            if (appScreenResult != null)
+            {
+                return appScreenResult.VacancyId;
+            }
+
+            return 0;
+        }
+
+        public decimal GetTotalResult(int id)
+        {
+            var applicantExam = db.InternalApplicantExamResults.Where(x => x.InternalApplicantScreeningId == id).ToList();
+
+            if (applicantExam.Any())
+            {
+                return applicantExam.Sum(x => x.CurrentResult);
+            }
+            return 0;
+        }
+        public string GetDepartmentName(int employeeId)
+        {
+            var placement = db.Placements.FirstOrDefault(x => x.EmployeeId == employeeId && x.isCurrent);
+            if (placement != null)
+            {
+                var company = db.MainCompanyStructures.FirstOrDefault(x => x.OrgStructureId == placement.OrgStructureId);
+                if (company != null)
+                {
+                    return company.Name;
+                }
+            }
+
+            return null;
+        }
+        public ActionResult InternalApplicantScreening_Read([DataSourceRequest]DataSourceRequest request, int id)
+        {
+            var applicants = db.InternalApplicantScreenings.Where(x => x.InternalApplicantScreeningResultId == id).ToList();
+
+            DataSourceResult result = applicants.ToDataSourceResult(request, applicant => new
+            {
+                InternalApplicantScreeningResultId = applicant.InternalApplicantScreeningResultId,
+                EmployeeId = applicant.EmployeeId,
+                Department = GetDepartmentName(applicant.EmployeeId),
+                InternalApplicantScreeningId = applicant.InternalApplicantScreeningId,
+                TotalResult = GetTotalResult(applicant.InternalApplicantScreeningId),
+                PassOrFail = PassOrFail(applicant.InternalApplicantScreeningId, GetVacancyId(applicant.InternalApplicantScreeningResultId))
+            });
+
+            return Json(result);
+        }
+
+        //public string GenerateApplicants(string vacancyId)
+        //{
+        //    int vacId = Convert.ToInt32(vacancyId);
+        //    var applicationForms = db.ApplicantionFormes.Where(x => x.VacancyId == vacId).ToList();
+        //    var checkEx = db.InternalApplicantScreeningResults.Where(x => x.VacancyId == vacId).ToList();
+
+        //    if (applicationForms.Count() > checkEx.Count())
+        //    {
+        //        foreach (var app in applicationForms)
+        //        {
+        //            var checkExistance = db.InternalApplicantScreenings.FirstOrDefault(x => x.ApplicantionFormId == app.ApplicantionFormId);
+        //            if (checkExistance == null)
+        //            {
+        //                var applicant = new InternalApplicantScreening();
+
+        //                applicant.ApplicantionFormId = app.ApplicantionFormId;
+        //                applicant.EmployeeId = app.EmployeeId;
+
+        //                db.InternalApplicantScreenings.Add(applicant);
+        //                db.SaveChanges();
+        //            }
+        //        }
+        //        return "successfully generated";
+        //    }
+        //    else
+        //    {
+        //        return "applicants generated before for this vacancy";
+        //    }
+        //}
+        public ActionResult ScreenAndGenerateApplicants(int vacancyId)
+        {
+            var result = new
+            {
+                status = "Fail",
+                message = "Can't find screening setting"
+            };
+
+            List<ApplicantionForm> applicationForms = new List<ApplicantionForm>();
+
+            var screeningSetting = db.ScreeningSettings.FirstOrDefault(x => x.VacancyId == vacancyId);
+
+            if (screeningSetting != null)
+            {
+                var applicants = db.ApplicantionFormes.Where(x => x.VacancyId == screeningSetting.VacancyId).ToList();
+
+                if (screeningSetting.Gender == Gender.MALE || screeningSetting.Gender == Gender.FEMALE)
+                {
+                    var employeeByGender = db.Person_Employee.Where(x => x.Gender == screeningSetting.Gender)?.Select(x => x.EmployeeId).ToList();
+
+                    if (employeeByGender.Any())
+                    {
+                        applicants = applicants.Where(x => employeeByGender.Contains(x.EmployeeId)).ToList();
+                    }
+                }
+
+                var eduLevelScreening = db.ScreeningEducationLevels.Where(x => x.ScreeingSettingId == screeningSetting.ScreeningSettingId).ToList().Select(x => x.EducationLevelId);
+                var eduFieldScreening = db.ScreeningEducationFields.Where(x => x.ScreeingSettingId == screeningSetting.ScreeningSettingId).ToList().Select(x => x.EducationFieldId);
+                var expJobtitle = db.ScreeningExperienceJobtitleForInternals.Where(x => x.ScreeingSettingId == screeningSetting.ScreeningSettingId).ToList().Select(x => x.ExperienceJobTitleId);
+
+                foreach (var app in applicants)
+                {
+                    double sumOfExp = 0;
+                    double expYear = 0;
+
+                    var appEducations = db.Education.Where(x => x.EmployeeId == app.EmployeeId && eduLevelScreening.Contains(x.EduLevel) && eduFieldScreening.Contains(x.EduField)).ToList();
+
+                    if (appEducations.Any())
+                    {
+                        var person = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == app.EmployeeId);
+
+                        if (person != null)
+                        {
+                            sumOfExp = DateTime.Now.Subtract(person.HiredDate).TotalDays;
+
+                            var empExps = db.Experiences.Where(x => x.EmployeeId == person.EmployeeId && expJobtitle.Contains(x.JobTitleId)).ToList();
+
+                            foreach (var ex in empExps)
+                            {
+                                sumOfExp = sumOfExp + ex.To.Subtract(ex.From).TotalDays;
+                            }
+                        }
+
+                        expYear = sumOfExp / 365;
+
+                        if (screeningSetting.ExperienceYear <= expYear)
+                        {
+                            applicationForms.Add(app);
+
+                        }
+                    }
+                }
+
+                if (applicationForms.Any())
+                {
+                    var checkExit = db.InternalApplicantScreeningResults.FirstOrDefault(x => x.VacancyId == screeningSetting.VacancyId);
+                    if (checkExit != null)
+                    {
+                        checkExit.VacancyId = screeningSetting.VacancyId;
+
+                        db.Entry(checkExit).State = EntityState.Modified;
+                        db.SaveChanges();
+
+                        foreach (var app in applicationForms)
+                        {
+                            var checkApp = db.InternalApplicantScreenings.FirstOrDefault(x => x.InternalApplicantScreeningResultId == checkExit.InternalApplicantScreeningResultId && x.EmployeeId == app.EmployeeId);
+
+                            if (checkApp != null)
+                            {
+                                //checkApp.InternalApplicantScreeningResultId = checkExit.InternalApplicantScreeningResultId;
+                                //checkApp.InternalApplicantsId = app.InternalApplicantsId;
+                                //checkApp.ApplicantName = app.ApplicantName;
+                                //checkApp.Address = app.Address;
+                                //checkApp.Sex = app.Gender.ToString();
+                                //checkApp.Age = app.Age;
+
+
+                                //db.Entry(checkApp).State = EntityState.Modified;
+                                //db.SaveChanges();
+
+                                int countExamTypes = Enum.GetNames(typeof(ExamType)).Length;
+
+                                for (int i = 0; i < countExamTypes; i++)
+                                {
+                                    var settingValue = db.ExamTypeSettings.FirstOrDefault(x => x.ExamType == (ExamType)i && x.ExamSource == RecruitmentSource.INTERNAL);
+
+                                    if (settingValue != null)
+                                    {
+                                        var appExam = db.InternalApplicantExamResults.FirstOrDefault(x => x.ExamType == (ExamType)i && x.InternalApplicantScreeningId == checkApp.InternalApplicantScreeningId);
+                                        if (appExam != null)
+                                        {
+                                            appExam.InternalApplicantScreeningId = checkApp.InternalApplicantScreeningId;
+                                            appExam.ExamType = (ExamType)i;
+                                            appExam.SettingValue = settingValue.SettingVlaue;
+
+                                            db.Entry(appExam).State = EntityState.Modified;
+                                            db.SaveChanges();
+                                        }
+                                        else
+                                        {
+                                            var aer = new InternalApplicantExamResult();
+
+                                            aer.InternalApplicantScreeningId = checkApp.InternalApplicantScreeningId;
+                                            aer.ExamType = (ExamType)i;
+                                            aer.SettingValue = settingValue.SettingVlaue;
+
+                                            db.InternalApplicantExamResults.Add(aer);
+                                            db.SaveChanges();
+                                        }
+
+                                    }
+
+                                }
+
+                            }
+                            else
+                            {
+                                var asd = new InternalApplicantScreening();
+
+                                asd.InternalApplicantScreeningResultId = checkExit.InternalApplicantScreeningResultId;
+                                asd.EmployeeId = app.EmployeeId;
+
+                                db.InternalApplicantScreenings.Add(asd);
+                                db.SaveChanges();
+
+                                int countExamTypes = Enum.GetNames(typeof(ExamType)).Length;
+
+                                for (int i = 0; i < countExamTypes; i++)
+                                {
+                                    var aer = new InternalApplicantExamResult();
+
+                                    var settingValue = db.ExamTypeSettings.FirstOrDefault(x => x.ExamType == (ExamType)i && x.ExamSource == RecruitmentSource.INTERNAL);
+
+                                    if (settingValue != null)
+                                    {
+                                        aer.InternalApplicantScreeningId = asd.InternalApplicantScreeningId;
+                                        aer.ExamType = (ExamType)i;
+                                        aer.SettingValue = settingValue.SettingVlaue;
+
+                                        db.InternalApplicantExamResults.Add(aer);
+                                        db.SaveChanges();
+                                    }
+
+                                }
+                            }
+                        }
+
+                        result = new
+                        {
+                            status = "OK",
+                            message = "Successfull Updated"
+                        };
+
+                    }
+                    else
+                    {
+                        var asr = new InternalApplicantScreeningResult();
+
+                        asr.VacancyId = screeningSetting.VacancyId;
+
+                        db.InternalApplicantScreeningResults.Add(asr);
+                        db.SaveChanges();
+
+                        foreach (var app in applicationForms)
+                        {
+                            var checkApp = db.InternalApplicantScreenings.FirstOrDefault(x => x.InternalApplicantScreeningResultId == asr.InternalApplicantScreeningResultId && x.EmployeeId == app.EmployeeId);
+
+                            if (checkApp == null)
+                            {
+                                var asd = new InternalApplicantScreening();
+
+                                asd.InternalApplicantScreeningResultId = asr.InternalApplicantScreeningResultId;
+                                asd.EmployeeId = app.EmployeeId;
+
+                                db.InternalApplicantScreenings.Add(asd);
+                                db.SaveChanges();
+
+                                int countExamTypes = Enum.GetNames(typeof(ExamType)).Length;
+
+                                for (int i = 0; i < countExamTypes; i++)
+                                {
+                                    var aer = new InternalApplicantExamResult();
+
+                                    var settingValue = db.ExamTypeSettings.FirstOrDefault(x => x.ExamType == (ExamType)i && x.ExamSource == RecruitmentSource.INTERNAL);
+
+                                    if (settingValue != null)
+                                    {
+                                        aer.InternalApplicantScreeningId = asd.InternalApplicantScreeningId;
+                                        aer.ExamType = (ExamType)i;
+                                        aer.SettingValue = settingValue.SettingVlaue;
+
+                                        db.InternalApplicantExamResults.Add(aer);
+                                        db.SaveChanges();
+                                    }
+                                }
+                            }
+                        }
+
+                        result = new
+                        {
+                            status = "OK",
+                            message = "Successfull Generated"
+                        };
+                    }
+
+                }
+                else
+                {
+                    result = new
+                    {
+                        status = "Fail",
+                        message = "No applicant pass the screening"
+                    };
+
+                    return Json(result);
+                }
+
+            }
+            else
+            {
+                result = new
+                {
+                    status = "Fail",
+                    message = "No screening setting defined for this vacancy"
+                };
+            }
+
+            return Json(result);
+        }
         protected override void Dispose(bool disposing)
         {
             db.Dispose();

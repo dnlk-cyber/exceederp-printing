@@ -1,0 +1,170 @@
+﻿
+@using System.Collections
+@using ExceedERP.Core.Domain.HRM.Attendance
+@using ExceedERP.Core.Localization
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.HRM.Attendance.AttendanceNew>()
+                      .Name("grid")
+                      .Columns(columns =>
+                      {
+                          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameaEnglish").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
+                          columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["Department"], "OrgStructureId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(200);
+                          // columns.Bound(c => c.Date);
+                          columns.Bound(c => c.DateAm).Width(120);
+
+                          columns.Group(group => group
+
+                            .Title("Day")
+
+                          .Columns(info =>
+                          {
+                              info.Bound(x => x.IsPresentMorning).ClientTemplate("<input type='checkbox' disabled='true' value='#=IsPresentMorning #' " + " # if (IsPresentMorning) { #" + "checked='checked'" + "# } #" + " />").Width(130).Title("Morning");
+                              info.Bound(x => x.IsPresentAfternoon).ClientTemplate("<input type='checkbox' disabled='true' value='#=IsPresentAfternoon #' " + " # if (IsPresentAfternoon) { #" + "checked='checked'" + "# } #" + " />").Width(130).Title("Afternoon");
+                          }));
+                          columns.Bound(c => c.IsDepartmentApproved).ClientTemplate("<input type='checkbox' disabled = 'true' #=IsDepartmentApproved ? checked='checked' :'' # >").Width(100);
+
+                          columns.Bound(c => c.IsApproved).ClientTemplate("<input type='checkbox' disabled = 'true' #=IsApproved ? checked='checked' :'' # >").Width(100);
+
+                          columns.Command(command =>
+                          {
+                              //command.Edit();
+                              //command.Destroy();
+                          }).Width(180);
+                      })
+
+                          .ToolBar(toolbar =>
+                          {
+                          // toolbar.Create();
+                          //toolbar.Save();
+
+                          toolbar.Template(@<text>
+
+                                @*@item.SaveButton()*@
+
+                                @Html.TextBox("AttendanceDate", "", new { disabled = "disabled", @class = "et-popup-picker" });<img src="~/Scripts/etp/images/calendar-blue.gif" onclick="SelectDate(this)" />
+
+                                @(Html.Kendo().Button()
+                                            .Name("btnGetAttendance")
+                                             .HtmlAttributes(new { type = "button", @class = "k-primary" })
+                                               .Events(e => e.Click("GetAttendance"))
+                                                    .Content("Get Attendance"))
+
+                                @(Html.Kendo().Button()
+                                            .Name("btnApproveAttendance")
+                                             .HtmlAttributes(new { type = "button", @class = "btn-danger",style="float:right;margin-right:50px;color:white;" })
+                                               .Events(e => e.Click("ApproveAttendance"))
+                                                    .Content("Approve Attendance"))
+
+                        </text>);
+
+                          })
+       .Events(e =>
+       {
+           e.Save("GetDate");
+           e.Edit("GetDate");
+       })
+
+          .Editable(editable => editable.Mode(GridEditMode.InLine))
+          .Scrollable(h => h.Height(500))
+
+
+                                          // .Groupable()
+                                          .Sortable(sortable =>
+                                          {
+                                              sortable.SortMode(GridSortMode.SingleColumn);
+                                          })
+                          .Filterable()
+                              .Selectable()
+                                 .Pageable(pageable => pageable
+                                          .Input(true)
+                                          .Numeric(false)
+                                          .Refresh(true)
+                                             .PageSizes(true)
+                                                 .PageSizes(new int[] { 10, 20, 30, 50, 100, 200 })
+                                      .ButtonCount(5))
+          .DataSource(dataSource => dataSource
+              .Ajax()
+             .Model(model =>
+             {
+                 model.Id(p => p.AttendanceNewId);
+                 model.Field(p => p.EmployeeId).Editable(false);
+                 model.Field(p => p.OrgStructureId).Editable(false);
+                 model.Field(p => p.Date).Editable(false);
+                 model.Field(p => p.DateAm).Editable(false);
+                 model.Field(p => p.IsApproved).Editable(false);
+                 model.Field(p => p.IsDepartmentApproved).Editable(false);
+             })
+              .Read(read => read.Action("AttendanceNews_Read", "AttendanceNewHR"))
+          )
+)
+
+
+
+<script>
+    function GetDate() {
+
+        $("#AttendanceDate").trigger("change");
+
+    }
+</script>
+
+<script>
+    function filterData() {
+        $("#AttendanceDate").trigger("change");
+        var attendanceDate = $("#AttendanceDate").val();
+
+        return {
+            date: attendanceDate
+        };
+
+    }
+</script>
+
+<script>
+    function GetAttendance() {
+
+        var grid = $("#grid").data("kendoGrid");
+
+        grid.dataSource.read();
+    }
+</script>
+
+<script>
+    function ApproveAttendance() {
+
+        $("#AttendanceDate").trigger("change");
+        var attendanceDate = $("#AttendanceDate").val();
+
+        if (attendanceDate == null || attendanceDate == "") {
+            alert("Please select the date first to approve");
+        }
+        else {
+            var grid = $("#grid").data("kendoGrid");
+
+            grid.dataSource.read();
+
+            if (confirm("Are you sure to approve this attendance ?")) {
+
+                   $.ajax({
+                         url: '@Url.Action("ApproveAttendance", "AttendanceNewHR")',
+                         //contentType: "application/json; charset=utf-8",
+                       data: { date: attendanceDate },
+                         type: 'POST',
+                         cache: false,
+                         success: function (result) {
+                             r = result;
+                             alert(r.Message);
+                             grid.dataSource.read();
+                         }
+
+                   });
+
+            }
+        }
+
+    }
+</script>

@@ -1,0 +1,12 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.HRM.Payroll 
+@(Html.Kendo().DropDownListFor(m => m)
+                        .DataTextField("SalaryAmount")
+                         .DataValueField("SalaryStructureId")
+      .DataSource(dataSource =>
+      {
+          dataSource.Read(read => read.Action("GetSalary", "HRMDataProvider", new { area = "HRM" }))
+              .ServerFiltering(false);
+      })
+                   .ValuePrimitive(true)
+)

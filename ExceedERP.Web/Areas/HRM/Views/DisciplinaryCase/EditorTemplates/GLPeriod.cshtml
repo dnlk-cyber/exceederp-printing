@@ -5,10 +5,10 @@
 .OptionLabel( Resources.Select)
          .DataTextField("Name")
                     .DataValueField("GLPeriodId")
-                          .DataSource(dataSource =>
-                          {
-                              dataSource.Read(read => read.Action("GetPeriod", "Addition", new { area = "HRM" }))
-                                                    .ServerFiltering(false);
-                          })
-                         .ValuePrimitive(true)
+           .DataSource(dataSource =>
+           {
+               dataSource.Read(read => read.Action("GetPeriod", "Addition", new { area = "HRM" }))
+                 .ServerFiltering(false);
+           })
+          .ValuePrimitive(true)
 )

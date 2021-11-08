@@ -106,6 +106,7 @@ namespace ExceedERP.Reporting.HRM.HRM.Letters
 
             EmployeeInfo.Date = XAPI.EthiopicDateTime.GetEthiopicDate(DateTime.Now.Day,DateTime.Now.Month,DateTime.Now.Year);
 
+            
             var leaveRequest = db.LeaveRequest.FirstOrDefault(x=>x.LeaveRequestId.ToString() == id);
             if(leaveRequest != null)
             {

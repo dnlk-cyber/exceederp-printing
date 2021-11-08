@@ -1,4 +1,4 @@
-﻿
+
 <li class="">
 <a href="#" class="dropdown-toggle">
 	<i class="menu-icon fa fa-user"></i>
@@ -25,75 +25,74 @@
 
         <ul class="submenu">
             <li id="hrm001001001" class="actionlinlk">
-                @Html.ActionLink(ExceedERP.Core.Localization.Resources.Navigator_Company_MaintianCompany, "Index", "Company", new { area = "HRM" }, null)<b class="arrow"></b>
+                @Html.ActionLink(ExceedERP.Core.Localization.Resources.Navigator_Company_MaintianCompany, "Index", "MaintainStructure", new { area = "HRM" }, null)<b class="arrow"></b>
             </li>
-            <li id="hrm002200100" class="actionlinlk">
-                @Html.ActionLink(ExceedERP.Core.Localization.Resources.Navigator_Company_MaintainStructure, "Index", "Structure", new { area = "HRM" }, null)<b class="arrow"></b>
-            </li>
+            @*<li id="hrm002200100" class="actionlinlk">
+            @Html.ActionLink(ExceedERP.Core.Localization.Resources.Navigator_Company_MaintainStructure, "Index", "Structure", new { area = "HRM" }, null)<b class="arrow"></b>
+        </li>
 
-            <li id="hrm00300100" class="actionlinlk">
-                @Html.ActionLink(ExceedERP.Core.Localization.Resources.Navigator_Company_MaintainCompanyStructure, "Index", "CreateStructure", new { area = "HRM" }, null)<b class="arrow"></b>
-            </li>
+        <li id="hrm00300100" class="actionlinlk">
+            @Html.ActionLink(ExceedERP.Core.Localization.Resources.Navigator_Company_MaintainCompanyStructure, "Index", "CreateStructure", new { area = "HRM" }, null)<b class="arrow"></b>
+        </li>*@
 
-            <li id="hrm00400100" class="actionlinlk">
-                @Html.ActionLink(ExceedERP.Core.Localization.Resources.Navigator_Company_MaintainJobTitle, "Index", "JobTitle", new { area = "HRM" }, null)<b class="arrow"></b>
+            <li id="hrm00900100" class="actionlinlk">
+                @Html.ActionLink(ExceedERP.Core.Localization.Resources.Navigator_Company_CompanyChart, "Index", "CompanyChart", new { area = "HRM" }, null)<b class="arrow"></b>
             </li>
 
             <li id="hrm00500100" class="actionlinlk">
                 @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorCompany_ProjectType, "Index", "ProjectType", new { area = "HRM" }, null)<b class="arrow"></b>
             </li>
 
-            <li id="hrm00600100" class="actionlinlk">
-                @Html.ActionLink(ExceedERP.Core.Localization.Resources.Navigator_Company_JobTitleMappingTemp, "Index", "JobTitleMappingTemp", new { area = "HRM" }, null)<b class="arrow"></b>
+            <li id="hrm0067800100" class="actionlinlk">
+                @Html.ActionLink("Man Power Planning", "Index", "ManPowerPlanning", new { area = "HRM" }, null)<b class="arrow"></b>
             </li>
+
+            @*<li id="hrm00600100" class="actionlinlk">
+            @Html.ActionLink(ExceedERP.Core.Localization.Resources.Navigator_Company_JobTitleMappingTemp, "Index", "JobTitleMappingTemp", new { area = "HRM" }, null)<b class="arrow"></b>
+        </li>*@
 
             <li id="hrm00700100" class="actionlinlk">
                 @Html.ActionLink(ExceedERP.Core.Localization.Resources.Navigator_Company_MaintainBranch, "Index", "Branch", new { area = "HRM" }, null) <b class="arrow"></b>
             </li>
 
-            <li id="hrm00800100" class="actionlinlk">
-                @Html.ActionLink(ExceedERP.Core.Localization.Resources.Navigator_Company_JobTitleMapping, "Index", "JobTitleMapping", new { area = "HRM" }, null)<b class="arrow"></b>
-            </li>
+            @*<li id="hrm00800100" class="actionlinlk">
+            @Html.ActionLink(ExceedERP.Core.Localization.Resources.Navigator_Company_JobTitleMapping, "Index", "JobTitleMapping", new { area = "HRM" }, null)<b class="arrow"></b>
+        </li>*@
             <li id="hrm205" class="actionlinlk">
-            @Html.ActionLink("Manpower Planning Requests", "Index", "ManPowerPlanningRequests", new { area = "HRM" }, null)<b class="arrow"></b>
+                @Html.ActionLink("Manpower Planning Requests", "Index", "ManPowerPlanningRequests", new { area = "HRM" }, null)<b class="arrow"></b>
             </li>
-            <li id="hrm00900100" class="actionlinlk">
-                @Html.ActionLink(ExceedERP.Core.Localization.Resources.Navigator_Company_CompanyChart, "Index", "CompanyChart", new { area = "HRM" }, null)<b class="arrow"></b>
-            </li>
-            <li id="hrm01000100" class="actionlinlk">
-                @Html.ActionLink(ExceedERP.Core.Localization.Resources.Navigator_Company_OrganizationChart, "Index", "OrganizationChart", new { area = "HRM" }, null)<b class="arrow"></b>
-            </li>
+
             <li id="hrm01100100" class="actionlinlk">
                 @Html.ActionLink(ExceedERP.Core.Localization.Resources.Navigator_Company_BranchCostCenter, "Index", "BranchCostCenter", new { area = "HRM" }, null)<b class="arrow"></b>
             </li>
-
             <li id="hrm01200100" class="actionlinlk">
-                @Html.ActionLink(ExceedERP.Core.Localization.Resources.Navigator_Company_Ranks, "Index", "Rank", new { area = "HRM" }, null)<b class="arrow"></b>
+                @Html.ActionLink("Job Title and Salary", "Index", "JobTitleAndSalary", new { area = "HRM" }, null)<b class="arrow"></b>
             </li>
-            <li id="hrm01300100" class="actionlinlk">
-                @Html.ActionLink(ExceedERP.Core.Localization.Resources.Navigator_Company_Steps, "Index", "Step", new { area = "HRM" }, null)<b class="arrow"></b>
-            </li>
-            @*<li id="hrm013" class="actionlinlk">
-            @Html.ActionLink(ExceedERP.Core.Localization.Resources.Navigator_Company_SalaryStructures, "Index", "Salary", new { area = "HRM" }, null)<b class="arrow"></b>
+            @*<li id="hrm01200100" class="actionlinlk">
+            @Html.ActionLink(ExceedERP.Core.Localization.Resources.Navigator_Company_Ranks, "Index", "Rank", new { area = "HRM" }, null)<b class="arrow"></b>
+        </li>
+        <li id="hrm01300100" class="actionlinlk">
+            @Html.ActionLink(ExceedERP.Core.Localization.Resources.Navigator_Company_Steps, "Index", "Step", new { area = "HRM" }, null)<b class="arrow"></b>
+        </li>
+
+        <li id="hrm01400100" class="actionlinlk">
+            @Html.ActionLink(ExceedERP.Core.Localization.Resources.Navigator_Company_JobTitleSalary, "Index", "SalaryJobTitle", new { area = "HRM" }, null)<b class="arrow"></b>
         </li>*@
-            <li id="hrm01400100" class="actionlinlk">
-                @Html.ActionLink(ExceedERP.Core.Localization.Resources.Navigator_Company_JobTitleSalary, "Index", "SalaryJobTitle", new { area = "HRM" }, null)<b class="arrow"></b>
-            </li>
             <li id="hrm01500100" class="actionlinlk">
                 @Html.ActionLink(ExceedERP.Core.Localization.Resources.Navigator_Company_ClearanceProvider, "Index", "ClearanceProvider", new { area = "HRM" }, null)<b class="arrow"></b>
             </li>
             <li id="hrm01600100" class="actionlinlk">
                 @Html.ActionLink(ExceedERP.Core.Localization.Resources.Navigator_Company_Committee, "Index", "Committee", new { area = "HRM" }, null)<b class="arrow"></b>
             </li>
-            @*<li id="hrm017" class="actionlinlk">
-            @Html.ActionLink(ExceedERP.Core.Localization.Resources.Navigator_Company_CommitteeMinute, "Index", "CommitteMinuteDetail", new { area = "HRM" }, null)<b class="arrow"></b>
-        </li>*@
             <li id="hrm01800100" class="actionlinlk">
+                @Html.ActionLink("Off Day", "Index", "OffDay", new { area = "HRM" }, null)<b class="arrow"></b>
+            </li>
+            @*<li id="hrm01800100" class="actionlinlk">
                 @Html.ActionLink(ExceedERP.Core.Localization.Resources.Navigator_Holiday, "Index", "Holiday", new { area = "HRM" }, null)<b class="arrow"></b>
             </li>
             <li id="hrm01900100" class="actionlinlk">
                 @Html.ActionLink(ExceedERP.Core.Localization.Resources.Navigator_Weekend, "Index", "Weekend", new { area = "HRM" }, null)<b class="arrow"></b>
-            </li>
+            </li>*@
 
             @*<li id="hrm020" class="actionlinlk">
             @Html.ActionLink(ExceedERP.Core.Localization.Resources.Navigator_Company_UploadDocument, "Index", "UploadDocument", new { area = "HRM" }, null)<b class="arrow"></b>
@@ -156,15 +155,13 @@
             <li id="hrm02200100456" class="actionlinlk">
                 @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorHRMSetting, "Index", "HRMSetting", new { area = "HRM" }, null)<b class="arrow"></b>
             </li>
-            <li id="hrm02200100456" class="actionlinlk">
+            @*<li id="hrm02200100456" class="actionlinlk">
                 @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorEmployeeCodeSetting, "Index", "EmployeeCodeSetting", new { area = "HRM" }, null)<b class="arrow"></b>
             </li>
             <li id="hrm02200100456" class="actionlinlk">
                 @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorEmployeeCodeSequence, "Index", "EmployeeCodeSequence", new { area = "HRM" }, null)<b class="arrow"></b>
-            </li>
-            <li id="hrm0220010045600" class="actionlinlk">
-                @Html.ActionLink("Employee Types", "Index", "EmployeeTypes", new { area = "HRM" }, null)<b class="arrow"></b>
-            </li>
+            </li>*@
+
         </ul>
 	</li>
 
@@ -183,59 +180,103 @@
 		<b class="arrow"></b>
 
         <ul class="submenu">
-            @if (HttpContext.Current.User.IsInRole("HR_Recruitment_Admin") || HttpContext.Current.User.IsInRole("HR_Admin"))
-            {
-                <li id="hrm02800100" class="actionlinlk">
-                    @Html.ActionLink(ExceedERP.Core.Localization.Resources.Navigator_Recruitment_GeneralSetting, "Index", "GeneralSetting", new { area = "HRM" }, null)<b class="arrow"></b>
-                </li>
-                <li id="hrm02900100" class="actionlinlk">
-                    @Html.ActionLink(ExceedERP.Core.Localization.Resources.Navigator_Recruitment_InternalSetting, "Index", "RecruitmentSetting", new { area = "HRM" }, null)<b class="arrow"></b>
-                </li>
-                <li id="hrm03000100" class="actionlinlk">
-                    @Html.ActionLink(ExceedERP.Core.Localization.Resources.Navigator_Recruitment_ExternalSetting, "Index", "RecruitmentSettingExternal", new { area = "HRM" }, null)<b class="arrow"></b>
-                </li>
-            }
-            @if (HttpContext.Current.User.IsInRole("HR_Recruitment_Admin") || HttpContext.Current.User.IsInRole("HR_Recruitment_User") || HttpContext.Current.User.IsInRole("HR_Recruitment_Report") || HttpContext.Current.User.IsInRole("HR_Admin"))
-            {
-                <li id="hrm03100100" class="actionlinlk">
-                    @Html.ActionLink(ExceedERP.Core.Localization.Resources.Navigator_Recruitment_RecruitmentPlan, "Index", "RecruitmentPlan", new { area = "HRM" }, null)<b class="arrow"></b>
-                </li>
-                <li id="hrm03200100" class="actionlinlk">
-                    @Html.ActionLink(ExceedERP.Core.Localization.Resources.Navigator_Recruitment_Vacancy, "Index", "Vacancy", new { area = "HRM" }, null)<b class="arrow"></b>
-                </li>
-                <li id="hrm03300100" class="actionlinlk">
-                    @Html.ActionLink(ExceedERP.Core.Localization.Resources.Navigator_Recruitment_RecruitmentVacancy, "Index", "RecruitmentVacancy", new { area = "HRM" }, null)<b class="arrow"></b>
-                </li>
-                <li id="hrm03400100" class="actionlinlk">
-                    @Html.ActionLink(ExceedERP.Core.Localization.Resources.Navigator_Recruitment_ApplicantRegistration, "Index", "ApplicantRegistration", new { area = "HRM" }, null)<b class="arrow"></b>
-                </li>
+             @if (HttpContext.Current.User.IsInRole("HR_Recruitment_Admin") || HttpContext.Current.User.IsInRole("HR_Admin"))
+                {
+                    <li>
+                        <a href="#" class="dropdown-toggle">
+                            <i class="menu-icon fa fa-caret-right"></i>
+                            Settings
 
-                <li id="hrm03500100" class="actionlinlk">
-                    @Html.ActionLink(ExceedERP.Core.Localization.Resources.Navigator_Recruitment_ApplicantScreeningResult, "Index", "ApplicantScreeningResult", new { area = "HRM" }, null)<b class="arrow"></b>
-                </li>
+                            <b class="arrow fa fa-angle-down"></b>
+                        </a>
 
+                        <b class="arrow"></b>
+                        <ul class="submenu">
+                            <li id="hrm02800100" class="actionlinlk">
+                                @Html.ActionLink("Pass Setting", "Index", "PassSetting", new { area = "HRM" }, null)<b class="arrow"></b>
+                            </li>
+                            @*<li id="hrm02900100" class="actionlinlk">
+            @Html.ActionLink(ExceedERP.Core.Localization.Resources.Navigator_Recruitment_InternalSetting, "Index", "RecruitmentSetting", new { area = "HRM" }, null)<b class="arrow"></b>
+        </li>
+        <li id="hrm03000100" class="actionlinlk">
+            @Html.ActionLink(ExceedERP.Core.Localization.Resources.Navigator_Recruitment_ExternalSetting, "Index", "RecruitmentSettingExternal", new { area = "HRM" }, null)<b class="arrow"></b>
+        </li>*@
+                            <li id="hrm03000100" class="actionlinlk">
+                                @Html.ActionLink("Exam Type Setting", "Index", "ExamTypeSetting", new { area = "HRM" }, null)<b class="arrow"></b>
+                            </li>
+                            @*<li id="hrm03dfgh00fg0100" class="actionlinlk">
+                                @Html.ActionLink("Education Level", "Index", "EducationLevelSettings", new { area = "HRM" }, null)<b class="arrow"></b>
+                            </li>
+                            <li id="hrmhh03dfdfdfg00fg0100" class="actionlinlk">
+                                @Html.ActionLink("Education Field", "Index", "EducationFieldSettings", new { area = "HRM" }, null)<b class="arrow"></b>
+                            </li>*@
+                            <li id="hrm03df00fg0100" class="actionlinlk">
+                                @Html.ActionLink("Experience Organization", "Index", "ExperienceOrganizationTypeSettings", new { area = "HRM" }, null)<b class="arrow"></b>
+                            </li>
+                            @*<li id="hrm03df00fg0100" class="actionlinlk">
+            @Html.ActionLink("Experience Jobtitle", "Index", "ExperienceJobTitles", new { area = "HRM" }, null)<b class="arrow"></b>
+        </li>*@
+                            <li id="hrm03df00fg0100" class="actionlinlk">
+                                @Html.ActionLink("Screening Setting", "Index", "ScreeningSettings", new { area = "HRM" }, null)<b class="arrow"></b>
+                            </li>
+                            @*<li id="hrm03df00fg0100" class="actionlinlk">
+                                @Html.ActionLink("Recruitment Plan", "Index", "RecruitmentPlan", new { area = "HRM" }, null)<b class="arrow"></b>
+                            </li>*@
+                        </ul>
+                    </li>
+                }
+                @if (HttpContext.Current.User.IsInRole("HR_Recruitment_Admin") || HttpContext.Current.User.IsInRole("HR_Recruitment_User") || HttpContext.Current.User.IsInRole("HR_Recruitment_Report") || HttpContext.Current.User.IsInRole("HR_Admin"))
+                {
+                    <li>
+                        <a href="#" class="dropdown-toggle">
+                            <i class="menu-icon fa fa-caret-right"></i>
+                            Process
 
-                <li id="hrm03600100" class="actionlinlk">
-                    @Html.ActionLink(ExceedERP.Core.Localization.Resources.Navigator_Recruitment_InternalApplicantScreeningResult, "Index", "InternalApplicantScreeningResult", new { area = "HRM" }, null)<b class="arrow"></b>
-                </li>
+                            <b class="arrow fa fa-angle-down"></b>
+                        </a>
 
+                        <b class="arrow"></b>
+                        <ul class="submenu">
+                            @*<li id="hrm03100100" class="actionlinlk">
+            @Html.ActionLink(ExceedERP.Core.Localization.Resources.Navigator_Recruitment_RecruitmentPlan, "Index", "RecruitmentPlan", new { area = "HRM" }, null)<b class="arrow"></b>
+        </li>*@
+                            <li id="hrm03200100" class="actionlinlk">
+                                @Html.ActionLink(ExceedERP.Core.Localization.Resources.Navigator_Recruitment_Vacancy, "Index", "Vacancy", new { area = "HRM" }, null)<b class="arrow"></b>
+                            </li>
+                            @*<li id="hrm0fgdg32001gftrack00" class="actionlinlk">
+            @Html.ActionLink("VacancyTracking", "Index", "VacancyTracking", new { area = "HRM" }, null)<b class="arrow"></b>
+        </li>*@
+                            <li id="hrm03300100" class="actionlinlk">
+                                @Html.ActionLink(ExceedERP.Core.Localization.Resources.Navigator_Recruitment_RecruitmentVacancy, "Index", "RecruitmentVacancy", new { area = "HRM" }, null)<b class="arrow"></b>
+                            </li>
+                            <li id="hrm03400100" class="actionlinlk">
+                                @Html.ActionLink(ExceedERP.Core.Localization.Resources.Navigator_Recruitment_ApplicantRegistration, "Index", "ApplicantRegistration", new { area = "HRM" }, null)<b class="arrow"></b>
+                            </li>
 
-                <li id="hrm03800100" class="actionlinlk">
-                    @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorRecruitment_Cosign, "Index", "EmployeeCosign", new { area = "HRM" }, null)<b class="arrow"></b>
-                </li>
-                <li id="hrm03900100" class="actionlinlk">
-                    @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorRecruitment_Prohabition, "Index", "EmployeeProbation", new { area = "HRM" }, null)<b class="arrow"></b>
-                </li>
-            }
+                            <li id="hrm03500100" class="actionlinlk">
+                                @Html.ActionLink(ExceedERP.Core.Localization.Resources.Navigator_Recruitment_ApplicantScreeningResult, "Index", "ApplicantScreeningResult", new { area = "HRM" }, null)<b class="arrow"></b>
+                            </li>
 
-            @if (HttpContext.Current.User.IsInRole("HR_Recruitment_Report"))
-            {
-                <li id="hrm03700100" class="actionlinlk">@Html.ActionLink(ExceedERP.Core.Localization.Resources.Navigator_Recruitment_SummaryReport, "SummaryReport", "Vacancy", new { area = "HRM" }, null)<b class="arrow"></b></li>
-            }
-            @if (HttpContext.Current.User.IsInRole("HR_Recruitment_Admin") || HttpContext.Current.User.IsInRole("HR_Recruitment_Approver"))
-            {
-                <li id="hrm04000100" class="actionlinlk">@Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorRecruitment_RecruitmentRequests, "Index", "RecruitmentRequestStatus", new { area = "HRM" }, null)<b class="arrow"></b></li>
-            }
+                            <li id="hrm036t00100" class="actionlinlk">
+                                @Html.ActionLink("Internal Applicants", "Index", "AllInternalApplicants", new { area = "HRM" }, null)<b class="arrow"></b>
+                            </li>
+
+                            <li id="hrm0360t0100" class="actionlinlk">
+                                @Html.ActionLink(ExceedERP.Core.Localization.Resources.Navigator_Recruitment_InternalApplicantScreeningResult, "Index", "InternalApplicantScreeningResult", new { area = "HRM" }, null)<b class="arrow"></b>
+                            </li>
+
+                            <li id="hrm036001uy00" class="actionlinlk">
+                                @Html.ActionLink("Recruitment Requests", "Index", "RecruitmentRequestStatus", new { area = "HRM" }, null)<b class="arrow"></b>
+                            </li> 
+                            <li id="hrm03600100ui" class="actionlinlk">
+                                @Html.ActionLink("Recruitment Summary", "SummaryReport", "Vacancy", new { area = "HRM" }, null)<b class="arrow"></b>
+                            </li>
+                            <li id="hrm03600100ui" class="actionlinlk">
+                                @Html.ActionLink("Application Form", "Index", "ApplicationFormHr", new { area = "HRM" }, null)<b class="arrow"></b>
+                            </li>
+                        </ul>
+                    </li>
+                }
         </ul>
 	</li>
 
@@ -258,7 +299,7 @@
         <ul class="submenu">
 
             <li id="hrm04100100" class="actionlinlk">
-                @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorPlacment_EmployeePlacment, "Index", "EmployeePlacmentWithJ", new { area = "HRM" }, null)<b class="arrow"></b>
+                @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorPlacment_EmployeePlacment, "Index", "EmployeePlacmentManual", new { area = "HRM" }, null)<b class="arrow"></b>
             </li>
            
             @*<li id="hrm042" class="actionlinlk">
@@ -311,15 +352,15 @@
 		<b class="arrow"></b>
 
         <ul class="submenu">
-            <li id="hrm04500100" class="actionlinlk">
+            @*<li id="hrm04500100" class="actionlinlk">
                 @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorAttendance_WeeklyAttendance, "Index", "WeeklyAttendanceHR", new { area = "HRM" }, null)<b class="arrow"></b>
-            </li>
-            <li id="hrm04500100" class="actionlinlk">
+            </li>*@
+            @*<li id="hrm04500100" class="actionlinlk">
                 @Html.ActionLink("Guards Attendance", "Index", "GuardAttendance", new { area = "HRM" }, null)<b class="arrow"></b>
+            </li>*@
+            <li id="hrm045" class="actionlinlk">
+                @Html.ActionLink("Attendance", "Index", "AttendanceNewHR", new {area = "HRM"}, null)<b class="arrow"></b>
             </li>
-            @*<li id="hrm045" class="actionlinlk">
-            @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorAttendance_Absence, "Index", "Absence", new {area = "HRM"}, null)<b class="arrow"></b>
-        </li>*@
             <li id="hrm04600100" class="actionlinlk">
                 @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorAttendance_LateComming, "Index", "LateComming", new { area = "HRM" }, null)<b class="arrow"></b>
             </li>
@@ -439,27 +480,30 @@
 		<a href="#" class="dropdown-toggle">
 			<i class="menu-icon fa fa-caret-right"></i>
 			@ExceedERP.Core.Localization.Resources.NavigatorTraining_Training
-
+            
 			<b class="arrow fa fa-angle-down"></b>
 		</a>
 
 		<b class="arrow"></b>
 
         <ul class="submenu">
-            @if (HttpContext.Current.User.IsInRole("HR_Training_User") || HttpContext.Current.User.IsInRole("HR_Admin"))
+            @if (HttpContext.Current.User.IsInRole("HR_Training_User") || HttpContext.Current.User.IsInRole("HR_Admin") || HttpContext.Current.User.IsInRole("HR_Training_Approver"))
             {
                 <li id="hrm06000100" class="actionlinlk">
                     @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorTraining_TrainingProvider, "Index", "TrainingProvider", new { area = "HRM" }, null)<b class="arrow"></b>
                 </li>
-                <li id="hrm06100100" class="actionlinlk">
-                    @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorTraining_NeedAssessment, "Index", "NeedAssessment", new { area = "HRM" }, null)<b class="arrow"></b>
+                <li id="hrm06000100" class="actionlinlk">
+                    @Html.ActionLink("Training & Need Assessment", "Index", "NeedAssessment", new { area = "HRM" }, null)<b class="arrow"></b>
                 </li>
+                @*<li id="hrm06100100" class="actionlinlk">
+                    @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorTraining_DepartmentTrainingPlan, "Index", "NeedAssessment", new { area = "HRM" }, null)<b class="arrow"></b>
+                </li>*@
                 <li id="hrm06200100" class="actionlinlk">
                     @Html.ActionLink(ExceedERP.Core.Localization.Resources.Training_Assessement_Transfer, "Index", "TrainingAssessment", new { area = "HRM" }, null)<b class="arrow"></b>
                 </li>
-                <li id="hrm06300100" class="actionlinlk">
+                @*<li id="hrm06300100" class="actionlinlk">
                     @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorTraining_TrainingPlan, "Index", "TrainingPlan", new { area = "HRM" }, null)<b class="arrow"></b>
-                </li>
+                </li>*@
 
                 <li id="hrm06400100" class="actionlinlk">
                     @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorTraining_CourseTracking, "Index", "CourseTracking", new { area = "HRM" }, null)<b class="arrow"></b>
@@ -472,10 +516,13 @@
                     @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorTraining_EducationRequests, "Index", "EducationRequestStatus", new { area = "HRM" }, null)<b class="arrow"></b>
                 </li>
                 <li id="hrm06600100" class="actionlinlk">
-            @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorTraining_TrainingApplicantStatus, "Index", "TrainingApplicantStatus", new { area = "HRM" }, null)<b class="arrow"></b>
+                    @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorTraining_TrainingApplicantStatus, "Index", "TrainingApplicantStatus", new { area = "HRM" }, null)<b class="arrow"></b>
                 </li>
 
             }
+            <li id="hrm065s00df100" class="actionlinlk">
+                @Html.ActionLink("Training Evaluation Settings", "Index", "TrainingEvaluationCriteriaCategories", new { area = "HRM" }, null)<b class="arrow"></b>
+            </li>
 
         </ul>
 	</li>
@@ -638,7 +685,7 @@
                 @Html.ActionLink(ExceedERP.Core.Localization.Resources.Navigator_Hospital, "Index", "Hospital", new { area = "HRM" }, null)<b class="arrow"></b>
             </li>
             <li id="hrm0410010fg0" class="actionlinlk">
-                @Html.ActionLink("Template", "Index", "Template", new { area = "HRM" }, null)<b class="arrow"></b>
+                @Html.ActionLink("Templates", "Index", "Templates", new { area = "HRM" }, null)<b class="arrow"></b>
             </li>
 
         </ul>
@@ -720,7 +767,7 @@
                         <li id="hrm1400fg0fg100" class="actionlinlk">@Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorReport_Summary_VacantPostion, "VacantPostionDetail", "RecruitmentReport", new { area = "HRM" }, null)<b class="arrow"></b></li>
                     }
                     <li id="hdfgrm14100100" class="actionlinlk">@Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorReport_Detail_EmployeeSalary, "EmployeeSalary", "EmployeeReport", new { area = "HRM" }, null)<b class="arrow"></b></li>
-                    <li id="hrm14100fdg100" class="actionlinlk">@Html.ActionLink("Monthly Salary Per Period", "MonthlySalaryPerPeriod", "EmployeeReport", new { area = "HRM" }, null)<b class="arrow"></b></li>
+                    @*<li id="hrm14100fdg100" class="actionlinlk">@Html.ActionLink("Monthly Salary Per Period", "MonthlySalaryPerPeriod", "EmployeeReport", new { area = "HRM" }, null)<b class="arrow"></b></li>*@
                     <li id="hrm14200dfg100" class="actionlinlk">@Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorReport_Detail_EmployeePensionNumber, "EmployeePension", "EmployeeReport", new { area = "HRM" }, null)<b class="arrow"></b></li>
                     @if (HttpContext.Current.User.IsInRole("HR_Recruitment_Report"))
                     {
@@ -748,10 +795,10 @@
                     }
 
                     <li id="hrm15400100" class="actionlinlk">
-                        @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorReport_Detail_EmployeePromotionPerYear, "EmployeePromotionPerYear", "EmployeeReport", new { area = "HRM" }, null)<b class="arrow"></b>
+                        @Html.ActionLink("Promoted Employees", "EmployeePromotionPerYear", "EmployeeReport", new { area = "HRM" }, null)<b class="arrow"></b>
                     </li>
 
-                    <li id="hrm15600100" class="actionlinlk">
+                    @*<li id="hrm15600100" class="actionlinlk">
                         @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorReport_Detail_VehicleInsurance, "VehicleInsuranceReport", "InsuranceReport", new { area = "HRM" }, null)<b class="arrow"></b>
                     </li>
                     <li id="hrm15700100" class="actionlinlk">
@@ -759,7 +806,7 @@
                     </li>
                     <li id="hrm15800100" class="actionlinlk">
                         @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorReport_Detail_InsurancePayment, "InsurancePayment", "InsuranceReport", new { area = "HRM" }, null)<b class="arrow"></b>
-                    </li>
+                    </li>*@
                     <li id="hrm15900100" class="actionlinlk">
                         @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorReport_Detail_EmployeeRestitution, "EmployeeRestitution", "InsuranceReport", new { area = "HRM" }, null)<b class="arrow"></b>
                     </li>
@@ -782,7 +829,7 @@
                         @Html.ActionLink("Company Structure", "CompanyStructure", "EmployeeReport", new { area = "HRM" }, null)<b class="arrow"></b>
                     </li>
                     <li id="hrm16100100" class="actionlinlk">
-                        @Html.ActionLink("UnPlaced Employees", "NotPlacedEmployees", "EmployeeReport", new { area = "HRM" }, null)<b class="arrow"></b>
+                        @Html.ActionLink("InCorrect Employees Data", "NotPlacedEmployees", "EmployeeReport", new { area = "HRM" }, null)<b class="arrow"></b>
                     </li>
                 </ul>
 			</li>

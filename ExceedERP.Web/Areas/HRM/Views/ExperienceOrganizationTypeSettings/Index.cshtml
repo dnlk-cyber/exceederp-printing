@@ -1,0 +1,91 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.Common.HRM
+@using ExceedERP.Core.Domain.HRM.RecruitmentManagment
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Expereince Organization</legend>
+@(Html.Kendo().Grid<ExperienceOrganizationTypeSetting>()
+          .Name("ConfigurationGrid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.OrganizationType).Width(150);
+          columns.Bound(c => c.Remark).Width(150);
+          // columns.Bound(c => c.PreviousValue);
+          //columns.Bound(c => c.Remark);
+          columns.Command(command =>
+          {
+              command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+              command.Destroy().Text(Resources.ActionButton_Cancel);
+          }).Width(150);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+          .Scrollable(h => h.Height(500))
+                 .Groupable()
+                          .Sortable(sortable =>
+                          {
+                              sortable.SortMode(GridSortMode.SingleColumn);
+                          })
+              .Filterable()
+                 .Pageable(pageable => pageable
+                                            .Input(true)
+                                            .Numeric(false)
+                                            .Refresh(true)
+                                            .PageSizes(true)
+                                            .ButtonCount(5))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+              .Events(events =>
+              {
+
+                  events.Error("error_handler(\"ConfigurationGrid\")");
+                  events.RequestStart("onRequestStart(\"ConfigurationGrid\")");
+                  events.RequestEnd("onRequestEnd(\"ConfigurationGrid\")");
+              })
+
+          .Model(model => model.Id(p => p.ExperienceOrganizationTypeSettingId))
+                  .Read(read => read.Action("ExperienceOrganizationTypeSettings_Read", "ExperienceOrganizationTypeSettings"))
+                      .Create(create => create.Action("ExperienceOrganizationTypeSettings_Create", "ExperienceOrganizationTypeSettings"))
+                  .Update(update => update.Action("ExperienceOrganizationTypeSettings_Update", "ExperienceOrganizationTypeSettings"))
+                  .Destroy(destroy => destroy.Action("ExperienceOrganizationTypeSettings_Destroy", "ExperienceOrganizationTypeSettings"))
+      )
+)
+
+<script>
+    function filterCategories() {
+        return {
+            Reference: $("#Reference").val()
+        };
+    }
+</script>
+<script>
+    function filterAttributes() {
+        return {
+            Attribute: $("#Attribute").val()
+        };
+    }
+
+
+</script>
+<script>
+    function filterCurrentValue() {
+        return {
+            Attribute: $("#CurrentValue").val()
+        };
+    }
+
+
+</script>
+<script>
+
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+</script>

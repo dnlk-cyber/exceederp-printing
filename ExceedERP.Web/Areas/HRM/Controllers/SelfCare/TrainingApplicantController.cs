@@ -215,6 +215,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                 TrainingApplicantId = trainingApplicant.TrainingApplicantId,
                 OrgStructureId = trainingApplicant.OrgStructureId,
                 LookupId = trainingApplicant.LookupId,
+                TrainingRequestType = trainingApplicant.TrainingRequestType,
                 NoofTrainee = trainingApplicant.NoofTrainee,
                 Remark = trainingApplicant.Remark,
                 Date = trainingApplicant.Date,
@@ -228,7 +229,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                 OnlineApprovedBy = trainingApplicant.OnlineApprovedBy,
                 OnlineApprovedTime = trainingApplicant.OnlineApprovedTime,
                 IsOnlineApproved = trainingApplicant.IsOnlineApproved,
-
+                GlFisicalYearId = trainingApplicant.GlFisicalYearId,
 
             });
 
@@ -240,56 +241,88 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
             string messages = "";
             ModelState.Clear();
 
-            var plans =
-                   db.TrainingPlans.FirstOrDefault(x => x.Course == trainingApplicant.LookupId && x.WorkUnit == trainingApplicant.OrgStructureId);
-            if (plans != null)
+            if (trainingApplicant.DateAmharic != null)
             {
-                var employee = db.TrainingApplicants.FirstOrDefault(x => x.TrainingApplicantId == trainingApplicant.TrainingApplicantId);
-
-                if (trainingApplicant.NoofTrainee > plans.NoofTrainee)
-                {
-                    // messages = "The Request is denied B/c the requested number of trainee is greater that the plan!!";
-
-                    //ModelState.AddModelError("Training Request", messages);
-                    //return new JavaScriptResult() { Script = "alert('" + messages + "');" };
-                    ModelState.AddModelError("", "Maximum No of trainee are registered so cannot register more");
-                }
+                var splitDate = trainingApplicant.DateAmharic.Split('/');
+                trainingApplicant.Date = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
 
             }
-            if(plans==null)
-            {
-                messages = "Please set the plan first!!";
-                ModelState.AddModelError("Training Request", messages);
-                //return new JavaScriptResult() { Script = "alert('" + messages + "');" };
-            }
-            if (DateAmharic == null)
+            else
             {
                 ModelState.AddModelError("", "Date is mandatory!!");
             }
-            if (Date.Date > DateTime.Now.Date)
+            if (trainingApplicant.Date > DateTime.Now)
             {
-
                 ModelState.AddModelError("", "Date should be less or equal to the current date!!");
             }
+            if (trainingApplicant.TrainingRequestType == TrainingRequestType.With_Plan)
+            {
 
+                var plans = db.TrainingPlans.FirstOrDefault(x => x.Course == trainingApplicant.LookupId && x.WorkUnit == trainingApplicant.OrgStructureId && x.GlFiscalYearId == trainingApplicant.GlFisicalYearId);
+                if (plans != null)
+                {
+                    if (trainingApplicant.NoofTrainee > plans.NoofTrainee)
+                    {
+                        ModelState.AddModelError("", "Maximum No of trainee are registered so cannot register more");
+                    }
+                }
+                if (plans == null)
+                {
+                    string cource = "";
+                    string dep = "";
+
+                    var lookUp = db.Lookups.FirstOrDefault(x => x.LookupId == trainingApplicant.LookupId && x.LookupType == LookUpTypes.COURSE);
+                    if (lookUp != null)
+                    {
+                        cource = lookUp.Description;
+                    }
+                    var mainCompanyStructure = db.MainCompanyStructures.FirstOrDefault(x => x.OrgStructureId == trainingApplicant.OrgStructureId);
+                    if (mainCompanyStructure != null)
+                    {
+                        dep = mainCompanyStructure.Name;
+                    }
+
+                    ModelState.AddModelError("Training Request", "Please set the plan first " + "Department " + dep + ", Course " + cource);
+                    //return new JavaScriptResult() { Script = "alert('" + messages + "');" };
+                }
+            }
+
+            var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
+
+            var placement = db.Placements.FirstOrDefault(x=>x.EmployeeId == empId && x.isCurrent);
+            if(placement != null)
+            {
+                trainingApplicant.OrgStructureId = placement.OrgStructureId;
+            }
+            else
+            {
+                ModelState.AddModelError("", "Please add current placement for this employee");
+            }
+
+            var fiscalYear = db.GLFiscalYears.FirstOrDefault(x=>x.DateFrom <= trainingApplicant.Date && x.DateTo >= trainingApplicant.Date);
+            if(fiscalYear != null)
+            {
+                trainingApplicant.GlFisicalYearId = fiscalYear.GlFiscalYearId;
+            }
 
             if (ModelState.IsValid)
             {
-               
-                    var entity = new TrainingApplicant
-                    {
-                        OrgStructureId = trainingApplicant.OrgStructureId,
-                        LookupId = trainingApplicant.LookupId,
-                        Remark = trainingApplicant.Remark,
-                        NoofTrainee = trainingApplicant.NoofTrainee,
-                        Date = Date,
-                        DateAmharic = DateAmharic,
+                var entity = new TrainingApplicant
+                {
+                    OrgStructureId = trainingApplicant.OrgStructureId,
+                    LookupId = trainingApplicant.LookupId,
+                    TrainingRequestType = trainingApplicant.TrainingRequestType,
+                    Remark = trainingApplicant.Remark,
+                    NoofTrainee = trainingApplicant.NoofTrainee,
+                    Date = Date,
+                    DateAmharic = DateAmharic,
+                    GlFisicalYearId = trainingApplicant.GlFisicalYearId,
 
-                    };
+                };
 
-                    db.TrainingApplicants.Add(entity);
-                    db.SaveChanges();
-                    trainingApplicant.TrainingApplicantId = entity.TrainingApplicantId;
+                db.TrainingApplicants.Add(entity);
+                db.SaveChanges();
+                trainingApplicant.TrainingApplicantId = entity.TrainingApplicantId;
 
                 #region operation log
 
@@ -337,43 +370,56 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
         public ActionResult TrainingApplicants_Update([DataSourceRequest]DataSourceRequest request, TrainingApplicant trainingApplicant)
         {
             ModelState.Clear();
+
+            if (trainingApplicant.DateAmharic == null)
+            {
+                var splitDate = trainingApplicant.DateAmharic.Split('/');
+                trainingApplicant.Date = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
+
+            }
+            else
+            {
+                ModelState.AddModelError("", "Date is mandatory!!");
+            }
+
+            if (trainingApplicant.Date > DateTime.Now)
+            {
+                ModelState.AddModelError("", "Date should be less or equal to the current date!!");
+            }
+
+            var fiscalYear = db.GLFiscalYears.FirstOrDefault(x => x.DateFrom <= trainingApplicant.Date && x.DateTo >= trainingApplicant.Date);
+            if (fiscalYear != null)
+            {
+                trainingApplicant.GlFisicalYearId = fiscalYear.GlFiscalYearId;
+            }
+
             if (ModelState.IsValid)
             {
-                if (DateAmharic == null)
+
+                var entity = new TrainingApplicant
                 {
-                    DateAmharic = trainingApplicant.DateAmharic;
-                    var splitDate = DateAmharic.Split('/');
-                    Date = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
-                }
-                if (Date.Date > DateTime.Now.Date)
-                {
+                    TrainingApplicantId = trainingApplicant.TrainingApplicantId,
+                    OrgStructureId = trainingApplicant.OrgStructureId,
+                    LookupId = trainingApplicant.LookupId,
+                    TrainingRequestType = trainingApplicant.TrainingRequestType,
+                    Remark = trainingApplicant.Remark,
+                    NoofTrainee = trainingApplicant.NoofTrainee,
+                    Date = Date,
+                    DateAmharic = DateAmharic,
+                    GlFisicalYearId = trainingApplicant.GlFisicalYearId,
 
-                    ModelState.AddModelError("", "Date should be less or equal to the current date!!");
-                }
-                else
-                {
-                    var entity = new TrainingApplicant
-                    {
-                        TrainingApplicantId = trainingApplicant.TrainingApplicantId,
-                        OrgStructureId = trainingApplicant.OrgStructureId,
-                        LookupId = trainingApplicant.LookupId,
-                        Remark = trainingApplicant.Remark,
-                        NoofTrainee = trainingApplicant.NoofTrainee,
-                        Date = Date,
-                        DateAmharic = DateAmharic,
+                };
 
-                    };
+                db.TrainingApplicants.Attach(entity);
+                db.Entry(entity).State = EntityState.Modified;
+                db.SaveChanges();
 
-                    db.TrainingApplicants.Attach(entity);
-                    db.Entry(entity).State = EntityState.Modified;
-                    db.SaveChanges();
+                #region operation log
 
-                    #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "TrainingApplicant ", "Success", User.Identity.Name, User.Identity.Name + " update Training Request at date " + DateTime.Today.ToShortDateString(), Modules.HRM);
 
-                    UserHelper.OperationLog(Request.UserHostAddress, "TrainingApplicant ", "Success", User.Identity.Name, User.Identity.Name + " update Training Request at date " + DateTime.Today.ToShortDateString(), Modules.HRM);
+                #endregion
 
-                    #endregion
-                }
             }
 
             return Json(new[] { trainingApplicant }.ToDataSourceResult(request, ModelState));
@@ -389,10 +435,11 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                     TrainingApplicantId = trainingApplicant.TrainingApplicantId,
                     OrgStructureId = trainingApplicant.OrgStructureId,
                     LookupId = trainingApplicant.LookupId,
+                    TrainingRequestType = trainingApplicant.TrainingRequestType,
                     Remark = trainingApplicant.Remark,
                     NoofTrainee = trainingApplicant.NoofTrainee,
                     Date = trainingApplicant.Date,
-
+                    GlFisicalYearId = trainingApplicant.GlFisicalYearId,
                     DateAmharic = trainingApplicant.DateAmharic,
                 };
                 #region delete log

@@ -218,7 +218,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Report
         {
             ViewBag.Dept = 0;
             ViewBag.UserName = User.Identity.Name;
+
             var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
+            ViewBag.BossEmpId = empId;
             var placment = db.Placements.FirstOrDefault(x => x.isCurrent && x.isCurrent && x.EmployeeId == empId);
             if (placment!=null)
             {
@@ -275,12 +277,10 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Report
         {
             return View();
         }
-
         public ActionResult TrainingRequestReport()
         {
             return View();
         }
-
         public ActionResult NotPlacedEmployees()
         {
             return View();

@@ -649,7 +649,10 @@ namespace ExceedERP.Core.Domain.Common
         [Display(Name = "Enum_LookUpTypes_Person_Title", ResourceType = typeof(Resources))]
         PERSON_TITLE,
         [Display(Name = "Enum_LookUpTypes_PROBATION_MEASUREMENT", ResourceType = typeof(Resources))]
-        PROBATION_MEASUREMENT
+        PROBATION_MEASUREMENT,
+        [Display(Name = "Enum_LookUpTypes_OLD_JOB_TITLE", ResourceType = typeof(Resources))]
+        OLD_JOB_TITLE,
+        Jobtitle_External_Experience
 
 
     }
@@ -927,7 +930,7 @@ namespace ExceedERP.Core.Domain.Common
         [Display(Name = "Enum_Region_AMHARA", ResourceType = typeof(Resources))]
         AMHARA,
         [Display(Name = "Enum_Region_OROMO", ResourceType = typeof(Resources))]
-        OROMO,
+        OROMIA,
         [Display(Name = "Enum_Region_SOMALIA", ResourceType = typeof(Resources))]
         SOMALIA,
         [Display(Name = "Enum_Region_SOUTH_NATION_AND_NATIONALITIES", ResourceType = typeof(Resources))]
@@ -1150,5 +1153,58 @@ namespace ExceedERP.Core.Domain.Common
         Other
     }
 
-
+    // new enums
+    public enum ExamType
+    {
+        [Display(Name = "Enum_RecruitmentSetting_THEORY_EXAM", ResourceType = typeof(Resources))]
+        THEORY_EXAM,
+        [Display(Name = "Enum_RecruitmentSetting_PRACTICAL_EXAM", ResourceType = typeof(Resources))]
+        PRACTICAL_EXAM,
+        [Display(Name = "Enum_RecruitmentSetting_INTERVIEW", ResourceType = typeof(Resources))]
+        INTERVIEW,
+    }
+    public enum TrainingScore
+    {
+        በጣም_ከፍተኛ = 1,
+        ከፍተኛ = 2,
+        መካከለኛ = 3,
+        ዝቅተኛ = 4,
+        በጣም_ዝቅተኛ = 5
+    }
+    public enum OrganizationType
+    {
+        All = 0,
+        NGO = 1,
+        Govermental = 2,
+        Private = 3
+    }
+    public enum Languages
+    {
+        Not_Required = 1,
+        አማርኛ = 2,
+        ኦሮምኛ = 3,
+        ትግሬኛ = 4,
+        ሶማሊኛ = 5,
+    }
+    public enum ExperienceLevel
+    {
+        Fresh = 1,
+        Junior = 2,
+        Senior = 3
+    }
+    public enum TrainingRequestType
+    {
+        With_Plan,
+        Without_Plan
+    }
+    public enum LetterLang
+    {
+        English,
+        Amharic
+    }
+    public enum DataSource
+    {
+        Profile = 1,
+        Placement = 2
+    }
 }

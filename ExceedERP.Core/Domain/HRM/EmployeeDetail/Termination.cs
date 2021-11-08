@@ -2,6 +2,7 @@
 using System.ComponentModel.DataAnnotations;
 using ExceedERP.Core.Domain.Common.HRM;
 using ExceedERP.Core.Domain.Common;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace ExceedERP.Core.Domain.HRM.EmployeeDetail
 {
@@ -47,10 +48,16 @@ namespace ExceedERP.Core.Domain.HRM.EmployeeDetail
         /// <summary>
         /// IsDirect Field is added to check if the termination is direct or with request 
         /// if it is from request all the button are hidden
-        /// it it is direct the button being hide after approval 
+        /// if it is direct the button being hide after approval 
         /// </summary>
         public bool IsDirect { get; set; }
 
+        /// <summary>
+        /// //this field is added to check the employee active or not , if he is 'InActive' we will hide 'Force Terminate' Button
+        /// </summary>
+        /// 
+        [NotMapped]
+        public bool IsActive { get; set; }
 
     }
 }

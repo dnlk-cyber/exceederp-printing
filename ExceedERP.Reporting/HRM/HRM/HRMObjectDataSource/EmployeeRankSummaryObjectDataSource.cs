@@ -16,7 +16,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
         private ExceedDbContext db = new ExceedDbContext();
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<EmployeeSummary> GetEmployeeRankSummary(string branchId, string orgStructureId,string status, string job = "")
+        public List<EmployeeSummary> GetEmployeeRankSummary(string branchId, string orgStructureId, string status, string job = "")
         {
 
             List<EmployeeSummary> list = new List<EmployeeSummary>();
@@ -24,113 +24,51 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             db = new ExceedDbContext();
             var lookups = db.Lookups.ToList();
             List<Person_Employee> employees;
-            if (branchId != null && orgStructureId != null)
-            {
-                employees = EmployeeHelper.GetAllEmployeesByBranchAndWorkUnit(Convert.ToInt32(branchId), Convert.ToInt32(orgStructureId)).ToList();
-            }
-            else if (branchId != null && orgStructureId == null)
-            {
-                employees = EmployeeHelper.GetAllEmployeesByBranch(Convert.ToInt32(branchId)).ToList();
-            }
-            else if (branchId == null && orgStructureId != null)
-            {
-                employees = EmployeeHelper.GetAllEmployeesByWorkUnit(Convert.ToInt32(orgStructureId)).ToList();
-            }
-            else
-            {
 
-                employees = db.Person_Employee.ToList();
+            var placements = db.Placements.ToList();
 
+            if (branchId != null)
+            {
+                int.TryParse(branchId, out int braId);
+                placements = EmployeeHelper.GetEmployees_ByBranch_FromPlacement(placements, braId);
             }
+            if (orgStructureId != null)
+            {
+                int.TryParse(orgStructureId, out int orgId);
+                placements = EmployeeHelper.GetEmployees_ByDepartment_WithCaseTeam_FromPlacement(placements, orgId);
+            }
+
             if (status == "Active")
             {
-                employees = employees.Where(x => x.IsActive).ToList();
+                placements = EmployeeHelper.Get_Active_EmployeesFrom_Placement(placements);
             }
             if (status == "InActive")
             {
-                employees = employees.Where(x => !x.IsActive).ToList();
+                placements = EmployeeHelper.Get_InActive_EmployeesFrom_Placement(placements);
             }
-            #region All Rank
 
-            #region Rank
+            var rankList = db.Ranks.ToList();
 
             if (job != null)
             {
-                db = new ExceedDbContext();
-                var rankList = db.Ranks.Where(x => x.RankId.ToString() == job).ToList();
-                foreach (var r in rankList)
-                {
-                    employee = new EmployeeSummary();
-                    employee.Criteria = "Rank";
-
-                    employee.SummaryName = r.RankName;
-                    var palcementList = db.Placements.Where(x => x.RankId == r.RankId).ToList();
-                    foreach (var l in palcementList)
-                    {
-                        var emplist = employees.FirstOrDefault(x => x.EmployeeId == l.EmployeeId && x.IsActive);
-                        if (emplist != null)
-                        {
-                            if (emplist.Gender == Gender.FEMALE)
-                            {
-                                employee.NumberOfFemaleEmployee += 1; 
-
-                            }
-                            if (emplist.Gender == Gender.MALE)
-                            {
-                                employee.NumberOfMaleEmployee += 1;
-
-                            }
-
-                        }
-
-                    }
-                    employee.TotalEmployee = employee.NumberOfFemaleEmployee + employee.NumberOfMaleEmployee;
-                    list.Add(employee);
-                }
-
-
+                int.TryParse(job, out int rankId);
+                rankList = rankList.Where(x => x.RankId == rankId).ToList();
             }
-            else
+
+            foreach (var r in rankList)
             {
+                employee = new EmployeeSummary();
+                employee.Criteria = "Rank";
 
-                db = new ExceedDbContext();
-                var rankList = db.Ranks.ToList();
-                foreach (var r in rankList)
-                {
-                    employee = new EmployeeSummary();
-                    employee.Criteria = "Rank";
+                employee.SummaryName = r.RankName;
 
-                    employee.SummaryName = r.RankName;
-                    var palcementList = db.Placements.Where(x => x.RankId == r.RankId && x.isCurrent).ToList();
-                    foreach (var l in palcementList)
-                    {
-                        var emplist = employees.FirstOrDefault(x => x.EmployeeId == l.EmployeeId && x.IsActive);
-                        if (emplist != null)
-                        {
-                            if (emplist.Gender == Gender.FEMALE)
-                            {
-                                employee.NumberOfFemaleEmployee += 1;
+                employee.NumberOfMaleEmployee = EmployeeHelper.Get_Male_EmployeesFrom_Placement(placements).Where(x => x.RankId == r.RankId).OrderByDescending(x=>x.AssignmentDate).DistinctByField(x=>x.EmployeeId).Count();
+                employee.NumberOfFemaleEmployee = EmployeeHelper.Get_Female_EmployeesFrom_Placement(placements).Where(x => x.RankId == r.RankId).OrderByDescending(x => x.AssignmentDate).DistinctByField(x => x.EmployeeId).Count();
 
-                            }
-                            if (emplist.Gender == Gender.MALE)
-                            {
-                                employee.NumberOfMaleEmployee += 1;
+                employee.TotalEmployee = employee.NumberOfMaleEmployee + employee.NumberOfFemaleEmployee;
 
-                            }
-                        }
-
-
-                    }
-                    employee.TotalEmployee = employee.NumberOfMaleEmployee + employee.NumberOfFemaleEmployee;
-                    list.Add(employee);
-                }
+                list.Add(employee);
             }
-
-            #endregion
-
-            #endregion
-
-
 
             return list;
         }

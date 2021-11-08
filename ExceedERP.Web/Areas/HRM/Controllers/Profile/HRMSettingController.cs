@@ -18,8 +18,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
     {
         private ExceedDbContext db = new ExceedDbContext();
         public ActionResult Index()
-        {
-          
+        {          
             return View();
         }
        

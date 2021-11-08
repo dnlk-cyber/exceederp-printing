@@ -51,7 +51,11 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                             var dept = placemts.Where(x => x.EmployeeId == onePatinet.EmployeeId).FirstOrDefault();
                             if (dept != null)
                             {
-                                ReferralSheet.Departement = dept.MainCompanyStructure.Name;
+                                var mainCompany = db.MainCompanyStructures.FirstOrDefault(x=>x.OrgStructureId == dept.OrgStructureId);
+                                if(mainCompany != null)
+                                {
+                                    ReferralSheet.Departement = mainCompany.Name;
+                                }                               
                             }
                             ReferralSheet.Date = p.DateAmharic;
                             ReferralSheetList.Add(ReferralSheet);

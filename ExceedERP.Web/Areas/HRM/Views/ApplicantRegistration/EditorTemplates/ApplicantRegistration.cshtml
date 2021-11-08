@@ -15,87 +15,102 @@
         <div class="col-md-3">
             <div>
                 @Html.LabelFor(model => model.VacancyId, htmlAttributes: new { @class = "control-label col-md-8" })
+
+                <div class="form-group">
+                    @(Html.Kendo().DropDownListFor(model => model.MediaVacancyCode)
+                                                       .ValuePrimitive(true)
+                                              .OptionLabel(Resources.Select)
+                                              .DataTextField("VaccancyCode")
+                                               .DataValueField("MediaVacancyCode")
+                                          .Filter("contains")
+                                          .DataSource(dataSource =>
+                                          {
+                                              dataSource.Read(read => read.Action("GetMediaVacancyCode", "HRMDataProvider", new { area = "HRM" }))
+                                                  .ServerFiltering(false);
+                                          })
+                    )
+                </div>
             </div>
-            <div class="form-group">
-                @(Html.Kendo().DropDownListFor(model => model.MediaVacancyCode)
-                                   .ValuePrimitive(true)
-                          .OptionLabel(Resources.Select)
-                          .DataTextField("VaccancyCode")
-                           .DataValueField("MediaVacancyCode")
-                      .Filter("contains")
-                      .DataSource(dataSource =>
-                      {
-                          dataSource.Read(read => read.Action("GetMediaVacancyCode", "HRMDataProvider", new { area = "HRM" }))
-                              .ServerFiltering(false);
-                      })
-                )
-            </div>
-        </div>
-        <div class="col-md-3">
             <div>
-                @Html.LabelFor(model => model.LookupId, htmlAttributes: new { @class = "control-label col-md-8" })
+                @Html.LabelFor(model => model.ApplicantName, htmlAttributes: new { @class = "control-label col-md-8" })
+
+                <div class="form-group">
+
+                    @Html.Kendo().TextBoxFor(model => model.ApplicantName)
+                    @Html.ValidationMessageFor(model => model.ApplicantName, "", new { @class = "text-danger" })
+                </div>
             </div>
-            <div class="form-group">
-
-                @(Html.Kendo().DropDownListFor(model => model.IDAndTitle)
-                                   .ValuePrimitive(true)
-                                 .OptionLabel(Resources.Select)
-                                  .CascadeFrom("MediaVacancyCode")
-                                 .Filter("contains")
-                                  .DataTextField("Description")
-                                 .DataValueField("LookupId")
-                                           .DataSource(source =>
-                                           {
-                                               source.Read(read =>
-                                               {
-                                                   read.Action("GetJobTitleMapping", "HRMDataProvider")
-                                                   .Data("filterCategories");
-                                               })
-                                               .ServerFiltering(true);
-                                           })
-
-                )
-                @Html.ValidationMessageFor(model => model.IDAndTitle, "", new { @class = "text-danger" })
-
-                @*@(Html.Kendo().DropDownListFor(model => model.LookupId)
-                                   .ValuePrimitive(true)
-                                 .OptionLabel(Resources.Select)
-                                  .CascadeFrom("MediaVacancyCode")
-                                 .Filter("contains")
-                                  .DataTextField("Description")
-                                 .DataValueField("LookupId")
-                                           .DataSource(source =>
-                                        {
-                                            source.Read(read =>
-                                            {
-                                                read.Action("GetJobTitleMapping", "HRMDataProvider")
-                                                .Data("filterCategories");
-                                            })
-                                            .ServerFiltering(true);
-                                        })
-                                                          
-                      //.DataSource(dataSource =>
-                      //{
-                      //    dataSource.Read(read => read.Action("GetJobTitleSelected", "HRMDataProvider", new { area = "HRM" }).Data("filterCategories"))
-                      //        .ServerFiltering(false);
-                      //})
-                )
-                @Html.ValidationMessageFor(model => model.LookupId, "", new { @class = "text-danger" })*@
-            </div>
-        </div>
-        <div class="col-md-3">
             <div>
                 @Html.LabelFor(model => model.Age, htmlAttributes: new { @class = "control-label col-md-8" })
 
-            </div>
-            <div class="form-group">
+                <div class="form-group">
 
-                @Html.Kendo().TextBoxFor(model => model.Age)
-                @Html.ValidationMessageFor(model => model.Age, "", new { @class = "text-danger" })
+                    @Html.Kendo().TextBoxFor(model => model.Age)
+                    @Html.ValidationMessageFor(model => model.Age, "", new { @class = "text-danger" })
+                </div>
             </div>
         </div>
+        <div class="col-md-3">
+           
+            <div>
+                @Html.LabelFor(model => model.RegistrationDate, htmlAttributes: new { @class = "control-label col-md-8" })
 
-      
+                <div class="form-group">
+
+                    @Html.Kendo().DatePickerFor(model => model.RegistrationDate)
+                    @Html.ValidationMessageFor(model => model.RegistrationDate, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div>
+                @Html.LabelFor(model => model.RegistrationPalce, htmlAttributes: new { @class = "control-label col-md-8" })
+
+                <div class="form-group">
+
+                    @Html.Kendo().TextBoxFor(model => model.RegistrationPalce)
+                    @Html.ValidationMessageFor(model => model.RegistrationPalce, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div>
+                @Html.LabelFor(model => model.JobtitleName, htmlAttributes: new { @class = "control-label col-md-8" })
+
+                <div class="form-group">
+
+                    @Html.Kendo().TextBoxFor(model => model.Age)
+                    @Html.ValidationMessageFor(model => model.Age, "", new { @class = "text-danger" })
+                </div>
+            </div>
+           
+        </div>
+        <div class="col-md-3">
+            <div>
+                @Html.LabelFor(model => model.JobtitleName, htmlAttributes: new { @class = "control-label col-md-8" })
+
+                <div class="form-group">
+
+                    @Html.Kendo().TextBoxFor(model => model.Age)
+                    @Html.ValidationMessageFor(model => model.Age, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div>
+                @Html.LabelFor(model => model.JobtitleName, htmlAttributes: new { @class = "control-label col-md-8" })
+
+                <div class="form-group">
+
+                    @Html.Kendo().TextBoxFor(model => model.Age)
+                    @Html.ValidationMessageFor(model => model.Age, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div>
+                @Html.LabelFor(model => model.JobtitleName, htmlAttributes: new { @class = "control-label col-md-8" })
+
+                <div class="form-group">
+
+                    @Html.Kendo().TextBoxFor(model => model.Age)
+                    @Html.ValidationMessageFor(model => model.Age, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+        </div>  
        
 
 
@@ -103,7 +118,7 @@
 
 
 <br/>
-    <div class="row">
+    @*<div class="row">
         <div class="col-md-1">
 
         </div>
@@ -149,21 +164,21 @@
                 @Html.ValidationMessageFor(model => model.LastName, "", new { @class = "text-danger" })
 
             </div>
-        </div>
+        </div>*@
 
 
 
 
 
 
-    </div>
+    @*</div>*@
     <br />
 
 <div class="row">
     <div class="col-md-1">
 
     </div>
-    <div class="col-md-3">
+    @*<div class="col-md-3">
         <div>
             @Html.LabelFor(model => model.RegistrationPalce, htmlAttributes: new { @class = "control-label col-md-8" })
 
@@ -176,8 +191,8 @@
             @Html.ValidationMessageFor(model => model.RegistrationPalce, "", new { @class = "text-danger" })
 
         </div>
-    </div>
-    <div class="col-md-3">
+    </div>*@
+    @*<div class="col-md-3">
         <div>
             @Html.LabelFor(model => model.Sex, htmlAttributes: new { @class = "control-label col-md-8" })
         </div>
@@ -187,9 +202,9 @@
             
             @Html.ValidationMessageFor(model => model.Sex, "", new { @class = "text-danger" })
         </div>
-    </div>
+    </div>*@
 
-    <div class="col-md-3">
+    @*<div class="col-md-3">
         <div>
             @Html.LabelFor(model => model.RegistrationDateAm, htmlAttributes: new { @class = "control-label col-md-8" })
 
@@ -202,7 +217,7 @@
             @Html.ValidationMessageFor(model => model.RegistrationDateAm, "", new { @class = "text-danger" })
 
         </div>
-    </div>
+    </div>*@
    
    
    
@@ -223,7 +238,7 @@
 
     </div>
        
-    <div class="col-md-3">
+    @*<div class="col-md-3">
         <div>
             @Html.LabelFor(model => model.RegisterBy, htmlAttributes: new { @class = "control-label col-md-8" })
         </div>
@@ -233,7 +248,7 @@
                             .Enable (false))
             @Html.ValidationMessageFor(model => model.RegisterBy, "", new { @class = "text-danger" })
         </div>
-    </div>
+    </div>*@
     </div>
 
 

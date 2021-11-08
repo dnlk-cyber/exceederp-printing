@@ -31,6 +31,7 @@ namespace ExceedERP.Core.Domain.HRM.Discipline
         public string Evidence { get; set; }
         [Display(Name = "Remark", ResourceType = typeof(Localization.Resources))]
         public string Remark { get; set; }
+        public bool IsActive { get; set; }
         //public string Status { get; set; }
         //public bool isSendForApproval { get; set; }
         //public bool isOnlineApproved { get; set; }

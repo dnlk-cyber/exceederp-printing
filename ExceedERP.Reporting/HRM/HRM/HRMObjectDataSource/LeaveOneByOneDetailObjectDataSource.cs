@@ -2,10 +2,8 @@
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using ExceedERP.Core.Domain.Common;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Reporting.HRM.HRM.HRMViewModel;
-using ExceedERP.Reporting.HRM.Payroll;
 
 //using ExceedERP.Reporting.HRM.Payroll;
 
@@ -47,9 +45,9 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                             db.Leaves.Where(
                                     x => x.GlFiscalYearId == period && x.EmployeeId == id /*&& x.LeaveType == LeaveType.ANNUAL*/)
                                 .ToList();
-                        var employees = db.Person_Employee.FirstOrDefault(x=>x.EmployeeId == id);
-                            //ListOfEmployeeIdView.GetEmployees().FirstOrDefault(x => x.PersonId == id);
-                        var tranferedList = db.LeaveTransfer.Where(x => x.To == period && x.EmployeeId == id && x.Check).ToList();
+                        var employees = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == id);
+                        //ListOfEmployeeIdView.GetEmployees().FirstOrDefault(x => x.PersonId == id);
+                     //   var tranferedList = db.LeaveTransfer.Where(x => x.To == period && x.EmployeeId == id && x.Check).ToList();
                         var periods = db.GLFiscalYears.ToList();
                         var paidIncash = db.LeavePaid.Where(x => x.GlFiscalYearId == period && x.EmployeeId == id).ToList();
                         var periodName = periods.FirstOrDefault(x => x.GlFiscalYearId == period);
@@ -63,10 +61,10 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                         {
                             sum.LeavePeriod = sum.LeavePeriod + periodName.Name + ", ";
                         }
-                        if (tranferedList.Any())
-                        {
-                            sum.TransferedFrom = tranferedList.Sum(x => x.Amount);
-                        }
+                        //if (tranferedList.Any())
+                        //{
+                        //    sum.TransferedFrom = tranferedList.Sum(x => x.Amount);
+                        //}
                         if (paidIncash.Any())
                         {
                             sum.LeavePaidInCash = Convert.ToDecimal(paidIncash.Sum(x => x.Amount));
@@ -78,7 +76,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                             totalEntitle = entitles.Sum(x => x.Balance);
                         }
                         if (entitlew != null) sum.Entitlment = totalEntitle;// entitlew.Amount;
-                        sum.TotalAmountTaken = taken.Where(x=>x.LeaveType == LeaveType.ANNUAL).Sum(x => x.Amount);
+                      //  sum.TotalAmountTaken = taken.Where(x => x.LeaveType == LeaveType.ANNUAL).Sum(x => x.Amount);
                         decimal subtract = sum.TotalAmountTaken + sum.LeavePaidInCash;
                         sum.Balance = totalEntitle;// - Convert.ToDecimal(paidIncash.Sum(x => x.Amount)) - taken.Sum(x => x.Amount);// - subtract; //(sum.Entitlment + sum.TransferedFrom) - subtract;
 
@@ -137,15 +135,15 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                             takenDetail.LeaveTakenDateTo = XAPI.EthiopicDateTime.GetEthiopicDate(t.To.Day, t.To.Month, t.To.Year);//t.To.ToShortDateString();
                             if (t.RequestId != null)
                             {
-                                var requestStatus = db.RequestesStatus.FirstOrDefault(x => x.RequestId == t.RequestId && x.Status == RequestStatus.DEPARTMENT_APPROVAL && x.ReferenceType == "Leave");
-                                if (requestStatus != null)
-                                {
-                                    var person = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == requestStatus.ApproverId);
-                                    if (person != null)
-                                    {
-                                        takenDetail.Approver = person.FullNameaEnglish;
-                                    }
-                                }
+                                //var requestStatus = db.RequestesStatus.FirstOrDefault(x => x.RequestId == t.RequestId && x.Status == RequestStatus.DEPARTMENT_APPROVAL && x.ReferenceType == "Leave");
+                                //if (requestStatus != null)
+                                //{
+                                //    var person = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == requestStatus.ApproverId);
+                                //    if (person != null)
+                                //    {
+                                //        takenDetail.Approver = person.FullNameaEnglish;
+                                //    }
+                                //}
 
                             }
                             //var requestStatus = db.RequestesStatus.FirstOrDefault(x=>x. == );

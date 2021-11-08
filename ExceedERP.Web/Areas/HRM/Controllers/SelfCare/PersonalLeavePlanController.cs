@@ -105,11 +105,11 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                         x => x.GlFiscalYearId == leavePlan.GlFiscalYearId && x.EmployeeId == EmployeeId)
                         .ToList()
                         .Sum(x => x.Amount);
-                var tranferedList =
-                    db.LeaveTransfer.Where(x => x.To == leavePlan.GlFiscalYearId && x.EmployeeId == EmployeeId)
-                        .ToList()
-                        .Sum(x => x.Amount);
-                var total = entitlew + tranferedList - taken;
+                //var tranferedList =
+                //    db.LeaveTransfer.Where(x => x.To == leavePlan.GlFiscalYearId && x.EmployeeId == EmployeeId)
+                //        .ToList()
+                //        .Sum(x => x.Amount);
+                var total = entitlew/* + tranferedList */- taken;
                 if (leavePlan.LeaveAmount > total)
                 {
                     ModelState.AddModelError("", "You can not plan such amount of leave!!");

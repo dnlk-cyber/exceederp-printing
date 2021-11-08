@@ -11,16 +11,18 @@
       .Columns(columns =>
       {
           columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["Depo"], "OrgStructureId", "Name").EditorTemplateName("Department").Filterable(ftb => ftb.Multi(true).Search(true)).Width(200);
-        columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["CourseList"], "LookupId", "Description").EditorTemplateName("Course").Width(150);
-        columns.Bound(c => c.DateAmharic).Width(150);
-        columns.Bound(c => c.Remark).Width (150);
-        //columns.Command(command =>
-        //{
-        //    command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel);
-        //}).Width(180);
+          columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["CourseList"], "LookupId", "Description").EditorTemplateName("Course").Width(150);
+          columns.Bound(c => c.NoofTrainee).Width(150);
+          columns.Bound(c => c.DateAmharic).Width(150);
+          columns.Bound(c => c.TrainingRequestType).EditorTemplateName("Enum").Width(150);
+          columns.Bound(c => c.Remark).Width (150);
+          //columns.Command(command =>
+          //{
+          //    command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel);
+          //}).Width(180);
       })
       .ToolBar(toolbar => {
-           // toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+          // toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
       })
             .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("TrainingRequest").Window(window => { window.Title("Training Request"); window.Scrollable(false); }))
          .Selectable(selectable =>
@@ -50,12 +52,12 @@
           .Ajax()
               //.Sort(sort => sort.Add("DateCreated").Descending()) 
               .Events(events =>
-                             {
-                                 events.Error("error_handler(\"TrainingApplicantgrid\")");
-                                 events.RequestStart("onRequestStart(\"TrainingApplicantgrid\")");
-                                 events.RequestEnd("onRequestEnd(\"TrainingApplicantgrid\")");
-                             })
-                      
+              {
+                  events.Error("error_handler(\"TrainingApplicantgrid\")");
+                  events.RequestStart("onRequestStart(\"TrainingApplicantgrid\")");
+                  events.RequestEnd("onRequestEnd(\"TrainingApplicantgrid\")");
+              })
+
           .Model(model => model.Id(p => p.TrainingApplicantId))
               .Read(read => read.Action("TrainingApplicants_Read", "TrainingApplicantStatus"))
               .Create(create => create.Action("TrainingApplicants_Create", "TrainingApplicantStatus"))
@@ -80,7 +82,7 @@
                           {
                               //columns.Bound(c => c.RequestId);
                               columns.Bound(c => c.DateReqStatAm).Width(150);
-                              columns.Bound(c => c.Status).EditorTemplateName("Enum").Width(300);
+                              columns.Bound(c => c.Status).EditorTemplateName("EnumWithoutDepApprove").Width(300);
                               columns.ForeignKey(c => c.ApproverId, (IEnumerable)ViewData["EmployeeName"], "EmployeeId", "FullNameAmharic").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
                               columns.ForeignKey(c => c.ApproverDepartment, (IEnumerable)ViewData["Depo"], "OrgStructureId", "Name").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
                               columns.Bound(c => c.Remark).Width(150);

@@ -104,6 +104,11 @@ namespace ExceedERP.Core.Domain.Common.HRM
         [Display(Name ="Employee Type")]
         public int EmployeeTypeId { get; set; }
 
-
+        [NotMapped]
+        public int? ContratLeftDay { get; set; }
+        public string PhoneNo { get; set; }
+        public string City { get; set; }
+        public string SubCity { get; set; }
+        public string Wereda { get; set; }
     }
 }

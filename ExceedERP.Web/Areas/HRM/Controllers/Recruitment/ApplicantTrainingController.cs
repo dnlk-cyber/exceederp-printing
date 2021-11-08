@@ -15,7 +15,6 @@ using ExceedERP.Core.Domain.HRM;
 using ExceedERP.Web.Controllers;
 using ExceedERP.Helpers.Common;
  using ExceedERP.Web.Helpers;
-using ExceedERP.Core.Domain.Global;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
 {
@@ -59,18 +58,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
                 db.ApplicantTraining.Add(entity);
                 db.SaveChanges();
                 applicantTraining.ApplicantTrainingId = entity.ApplicantTrainingId;
-
-                #region operation log
-
-                var applicant = db.ApplicantRegistration.FirstOrDefault(x => x.ApplicantRegistrationId == entity.ApplicantRegistrationId);
-                if (applicant != null)
-                {
-                        UserHelper.OperationLog(Request.UserHostAddress, "Applicant Training ", "Success", User.Identity.Name, User.Identity.Name + " add applicant training Info for " + applicant.ApplicantName + " date " + DateTime.Today.ToShortDateString(),Modules.HRM);
-                    
-                }
-
-                #endregion
-
             }
 
             return Json(new[] { applicantTraining }.ToDataSourceResult(request, ModelState));
@@ -93,18 +80,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
                 db.ApplicantTraining.Attach(entity);
                 db.Entry(entity).State = EntityState.Modified;
                 db.SaveChanges();
-
-                #region operation log
-
-                var applicant = db.ApplicantRegistration.FirstOrDefault(x => x.ApplicantRegistrationId == entity.ApplicantRegistrationId);
-                if (applicant != null)
-                {
-                        UserHelper.OperationLog(Request.UserHostAddress, "Applicant Training ", "Success", User.Identity.Name, User.Identity.Name + " update applicant training Info of " + applicant.ApplicantName + " date " + DateTime.Today.ToShortDateString(),Modules.HRM);
-                    
-                }
-
-                #endregion
-
             }
 
             return Json(new[] { applicantTraining }.ToDataSourceResult(request, ModelState));

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Common.HRM;
 using ExceedERP.Core.Domain.Finance.GL;
@@ -39,6 +40,10 @@ namespace ExceedERP.Core.Domain.HRM.LeaveManagment
         public DateTime? ReversedDate { get; set; }
         public string Void { get; set; }
         public bool IsAdded { get; set; }
-        
+        // sum of active balances or sum of not exprired balances
+        [NotMapped]
+        public decimal SumOfBalances { get; set; }
+        [NotMapped]
+        public string HireDate { get; set; }
     }
 }

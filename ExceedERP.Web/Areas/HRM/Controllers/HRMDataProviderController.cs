@@ -6,9 +6,7 @@ using System.Web.Mvc;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Common.HRM;
 using ExceedERP.Core.Domain.Finance.GL;
-using ExceedERP.Core.Domain.HRM.LeaveManagment;
 using ExceedERP.Core.Domain.HRM.RecruitmentManagment;
-using ExceedERP.Core.Domain.HRM.SelfCare;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Web.Helpers;
 using ExceedERP.Web.Models;
@@ -18,14 +16,10 @@ using ExceedERP.Helpers.Common;
 using ExceedERP.Core.Domain.HRM.EmployeeDetail;
 using ExceedERP.Web.Areas.HRM.Controllers.Company;
 using ExceedERP.Core.Domain.HRM.HealthAndInsurance;
-using ExceedERP.Core.Domain.HRM.Company;
 using ExceedERP.Core.Domain.HRM.HRMPlan;
 using System.Net;
-using ExceedERP.Core.Domain.HRM.ArchiveManagement;
 using ExceedERP.Core.Domain.HRM;
 using ExceedERP.Core.Domain.Common.ViewModel;
-using ExceedERP.Core.Domain.HRM.Payroll.Vm;
-using ExceedERP.Helpers.Finance;
 using ExceedERP.Core.Domain.Finance.GL.Dynamic;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers
@@ -37,6 +31,17 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
         ExceedDbContext db = new ExceedDbContext();
         //new
         private HRMInputs inputs = new HRMInputs();
+
+        public JsonResult GetOldandNewJobTitles()
+        {
+            var oldJobTitle = db.Lookups.Where(x => x.LookupType == LookUpTypes.OLD_JOB_TITLE || x.LookupType == LookUpTypes.JOB_TITLE).ToList();
+
+            return Json(oldJobTitle.Select(p => new
+            {
+                LookupId = p.LookupId,
+                Description = p.Description,
+            }), JsonRequestBehavior.AllowGet);
+        }
         public JsonResult GetPeriod()
         {
 
@@ -71,9 +76,21 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
             return Json(listt.Select(x => x.g), JsonRequestBehavior.AllowGet);
 
         }
-        public JsonResult GetFisicalYear()
+
+        public JsonResult GetAllEmployeesForPlacement()
         {
 
+            var employees = db.Person_Employee.Select(x => new { x.EmployeeId, x.EmployeeCode, x.FirstName, x.MiddleName, x.LastName, x.FirstNameEnglish, x.MiddleNameEnglish, x.LastNameEnglish }).ToList();
+
+            return Json(employees.Select(p => new
+            {
+                EmployeeId = p.EmployeeId,
+                FullNameaEnglish = p.EmployeeCode + " - " + p.FirstNameEnglish + " " + p.MiddleNameEnglish + " " + p.LastNameEnglish,
+                FullNameAmharic = p.EmployeeCode + " - " + p.FirstName + " " + p.MiddleName + " " + p.LastName,
+            }), JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult GetFisicalYear()
+        {
             var periodList = db.GLFiscalYears.ToList();
             var fisicalYear = periodList != null ? periodList.ToList() : new List<GlFiscalYear>();
 
@@ -84,7 +101,22 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
             }), JsonRequestBehavior.AllowGet);
 
         }
+        public JsonResult GetCurrentPeriods()
+        {
+            List<GLPeriod> glPeriods = new List<GLPeriod>();
+            var year = db.GLFiscalYears.FirstOrDefault(x => x.DateFrom <= DateTime.Today && x.DateTo >= DateTime.Today);
+            if (year != null)
+            {
+                var periods = db.GLPeriods.Where(x => x.GlFiscalYearId == year.GlFiscalYearId).ToList();
+                glPeriods.AddRange(periods);
+            }
 
+            return Json(glPeriods.Select(p => new
+            {
+                GLPeriodId = p.GLPeriodId,
+                Name = p.Name
+            }), JsonRequestBehavior.AllowGet);
+        }
         public JsonResult GetPeriods(string GlFiscalYearId)
         {
             List<GLPeriod> periodList = new List<GLPeriod>();
@@ -103,7 +135,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
         }
         public JsonResult GetGlPeriod()
         {
-
             var periodList = db.GLPeriods.OrderByDescending(x => x.GLPeriodId).ToList();
             //var fisicalYear = periodList != null ? periodList.ToList() : new List<GlFiscalYear>();
 
@@ -248,11 +279,98 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
                 Description = p.Description,
             }), JsonRequestBehavior.AllowGet);
         }
-        public JsonResult GetJobTitle()
+        public JsonResult GetRequestStatus()
         {
-            var jobTitle = db.Lookups.Where(x => x.LookupType == LookUpTypes.JOB_TITLE && x.IsActive).ToList();
+            var requests = Enum.GetValues(typeof(RequestStatus))
+                         .Cast<RequestStatus>()
+                         .Select(v => v).Where(item => item != RequestStatus.DEPARTMENT_APPROVAL && item != RequestStatus.PEND)
+                         .ToList();
+            //foreach (var kk in requests)
+            //{
+            //    int ii = (int)kk;
+            //    string ll = kk.ToString();
+            //}
+            return Json(requests.Select(p => new
+            {
+                Value = (int)p,
+                Text = p.ToString(),
+            }), JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult GetDepartments(int BranchId)
+        {
+            var jobTitleMappings = db.JobTitleMapping.Where(x => x.BranchId == BranchId).ToList();
+            if (jobTitleMappings.Any())
+            {
+                var orgIds = jobTitleMappings.Select(x => x.OrgStructureId).ToList();
+                if (orgIds.Any())
+                {
+                    var structures = db.MainCompanyStructures.Where(x => orgIds.Contains(x.OrgStructureId)).AsQueryable();
+                    return Json(structures.Select(p => new
+                    {
+                        OrgStructureId = p.OrgStructureId,
+                        Name = p.Name
 
-            return Json(jobTitle.Select(p => new
+                    }), JsonRequestBehavior.AllowGet);
+                }
+            }
+
+            return null;
+        }
+
+        public JsonResult GetDepartmentsForPlacement()
+        {
+            var structures = db.MainCompanyStructures.AsQueryable();
+            return Json(structures.Select(p => new
+            {
+                OrgStructureId = p.OrgStructureId,
+                Name = p.Name
+
+            }), JsonRequestBehavior.AllowGet);
+
+        }
+        public JsonResult GetDepartmentsToMakeParent()
+        {
+            var structures = db.MainCompanyStructures.AsQueryable();
+
+            return Json(structures.Select(p => new
+            {
+                OrgStructureId = p.OrgStructureId,
+                Name = p.Name
+            }), JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult GetJobTitle(int BranchId, int OrgStructureId)
+        {
+            var manPowerPlannings = db.JobTitleMapping.Where(x => x.BranchId == BranchId && x.OrgStructureId == OrgStructureId).ToList();
+
+            if (manPowerPlannings.Any())
+            {
+                var jobIds = manPowerPlannings.Select(x => x.LookupId).ToList();
+
+                var jobTitle = db.Lookups.Where(x => jobIds.Contains(x.LookupId) && x.LookupType == LookUpTypes.JOB_TITLE && x.IsActive).ToList();
+
+                return Json(jobTitle.Select(p => new
+                {
+                    LookupId = p.LookupId,
+                    Description = p.Description,
+                }), JsonRequestBehavior.AllowGet);
+            }
+            return null;
+        }
+        public JsonResult GetOldJobTitles()
+        {
+            var oldJobTitle = db.Lookups.Where(x => x.LookupType == LookUpTypes.OLD_JOB_TITLE && x.IsActive).ToList();
+
+            return Json(oldJobTitle.Select(p => new
+            {
+                LookupId = p.LookupId,
+                Description = p.Description,
+            }), JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult GetJobTitleForExternalExperience()
+        {
+            var externalJobtitle = db.Lookups.Where(x => x.LookupType == LookUpTypes.Jobtitle_External_Experience && x.IsActive).ToList();
+
+            return Json(externalJobtitle.Select(p => new
             {
                 LookupId = p.LookupId,
                 Description = p.Description,
@@ -265,7 +383,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
             //var jobTitle = db.RecruitmentPlans.Where(x => x.WorkUnitId.ToString() == OrgStructureId && x.JobtitleName.ToUpper(XAPI.Common.exceedculture).Contains(searchText.ToUpper(XAPI.Common.exceedculture)));
 
             //var jobTitle = db.RecruitmentPlans.Where(x => x.OrgStructureId.ToString() == OrgStructureId).ToList();
-            var jobTitles = db.JobTitleMapping.Where(x => x.OrgStructureId.ToString() == OrgStructureId).ToList();
+
+            int.TryParse(OrgStructureId, out int orgStructId);
+            var jobTitles = db.JobTitleMapping.Where(x => x.OrgStructureId == orgStructId).ToList();
             foreach (var jj in jobTitles)
             {
                 var job = new Jobs();
@@ -446,7 +566,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
                 foreach (var p in plans)
                 {
                     appRegister = new ApplicantRegistrationViewModel();
-                    var vacancy = db.VaccancyPlans.FirstOrDefault(x => x.VacancyId == p.VacancyId && x.RecruSource == RecruitmentSource.EXTERNAL && x.IsActive && !x.IsComplete);
+                    var vacancy = db.VaccancyPlans.FirstOrDefault(x => x.VacancyId == p.VacancyId && x.RecruSource == RecruitmentSource.EXTERNAL && x.IsActive /*&& !x.IsComplete*/);
                     if (vacancy != null)
                     {
 
@@ -487,16 +607,16 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
                 Description = p.Description,
             }), JsonRequestBehavior.AllowGet);
         }
-        public JsonResult GetAssetLists()
-        {
+        //public JsonResult GetAssetLists()
+        //{
 
-            var assetList = db.Fleets;
-            return Json(assetList.Select(p => new
-            {
-                FleetsID = p.FleetsID,
-                Name = p.EquipmentName,
-            }), JsonRequestBehavior.AllowGet);
-        }
+        //    var assetList = db.Fleets;
+        //    return Json(assetList.Select(p => new
+        //    {
+        //        FleetsID = p.FleetsID,
+        //        Name = p.EquipmentName,
+        //    }), JsonRequestBehavior.AllowGet);
+        //}
         public JsonResult GetEducationFieldList()
         {
 
@@ -547,6 +667,16 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
                 FullNameaEnglish = p.EmployeeCode + "-" + p.FullNameaEnglish,
             }), JsonRequestBehavior.AllowGet);
         }
+        public JsonResult GetAllActiveEmployees()
+        {
+
+            var employees = db.Person_Employee.Where(x => x.IsActive).ToList();
+            return Json(employees.Select(p => new
+            {
+                EmployeeId = p.EmployeeId,
+                FullNameaEnglish = p.EmployeeCode + "-" + p.FullNameaEnglish,
+            }), JsonRequestBehavior.AllowGet);
+        }
         public JsonResult GetTotalEmployees()
         {
 
@@ -576,24 +706,24 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
                 LookupId = p.LookupId,
             }), JsonRequestBehavior.AllowGet);
         }
-        public JsonResult GetZone()
-        {
-            var zone = db.Zone.AsQueryable();
-            return Json(zone.Select(p => new
-            {
-                ZoneId = p.ZoneId,
-                ZoneName = p.ZoneName,
-            }), JsonRequestBehavior.AllowGet);
-        }
-        public JsonResult GetInstitutionType()
-        {
-            var institution = db.InstitutionType.AsQueryable();
-            return Json(institution.Select(p => new
-            {
-                InstitutionName = p.InstitutionName,
-                InstitutionTypeId = p.InstitutionTypeId,
-            }), JsonRequestBehavior.AllowGet);
-        }
+        //public JsonResult GetZone()
+        //{
+        //    var zone = db.Zone.AsQueryable();
+        //    return Json(zone.Select(p => new
+        //    {
+        //        ZoneId = p.ZoneId,
+        //        ZoneName = p.ZoneName,
+        //    }), JsonRequestBehavior.AllowGet);
+        //}
+        //public JsonResult GetInstitutionType()
+        //{
+        //    var institution = db.InstitutionType.AsQueryable();
+        //    return Json(institution.Select(p => new
+        //    {
+        //        InstitutionName = p.InstitutionName,
+        //        InstitutionTypeId = p.InstitutionTypeId,
+        //    }), JsonRequestBehavior.AllowGet);
+        //}
         public JsonResult GetInsuranceCategory(string InsuranceTypeId)
         {
 
@@ -648,9 +778,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
                 InsuranceTypeId = p.InsuranceTypeId,
             }), JsonRequestBehavior.AllowGet);
         }
-        public JsonResult GetMonths()
+        public JsonResult GetMonths(int DetailMeasuresId)
         {
-            var months = db.DisciplineMeasuresType.ToList();
+            var months = db.DisciplineMeasuresType.Where(X => X.DetailMeasuresId == DetailMeasuresId).ToList();
             return Json(months.Select(p => new
             {
                 ExpireYear = p.ExpireYear
@@ -735,19 +865,17 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
                 FullNameaEnglish = p.FullNameaEnglish,
             }), JsonRequestBehavior.AllowGet);
         }
-        public JsonResult GetMeasureDetails()
+        public JsonResult GetMeasureDetails(int MeasuresId)
         {
-
-            var measureDetails = db.DisciplineMeasuresDetail;
+            var measureDetails = db.DisciplineMeasuresDetail.Where(x => x.MeasuresId == MeasuresId);
             return Json(measureDetails.Select(p => new
             {
-                MeasuresId = p.DetailMeasuresId,
+                DetailMeasuresId = p.DetailMeasuresId,
                 Description = p.Description,
             }), JsonRequestBehavior.AllowGet);
         }
         public JsonResult GetMeasures()
         {
-
             var measurs = db.DisciplineMeasures;
             return Json(measurs.Select(p => new
             {
@@ -801,6 +929,17 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
                 Name = p.Name,
             }), JsonRequestBehavior.AllowGet);
         }
+        public JsonResult GetAllBranchs()
+        {
+            var branches = db.Branch.ToList();
+
+
+            return Json(branches.DistinctByField(x => x.BranchId).Select(p => new
+            {
+                BranchId = p.BranchId,
+                Name = p.Name,
+            }), JsonRequestBehavior.AllowGet);
+        }
         public JsonResult GetBranches()
         {
 
@@ -811,6 +950,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
                 Name = p.AmharicName,
             }), JsonRequestBehavior.AllowGet);
         }
+
         public JsonResult GetAllWorkUnit()
         {
             List<RecruitmentPlan> planList = new List<RecruitmentPlan>();
@@ -827,7 +967,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
 
             return Json(vacancies.Select(p => new
             {
-                WorkUnitId = p.WorkUnitId,
+                WorkUnitId = p.VacancyId,
                 RecruitmentPlan = planList.FirstOrDefault(x => x.RecruitmentPlanId == p.RecruitmentPlanId)
             }), JsonRequestBehavior.AllowGet);
         }
@@ -883,7 +1023,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
             var vacancies = db.VaccancyPlans.Where(x => x.RecruSource == RecruitmentSource.EXTERNAL).ToList();
             return Json(vacancies.Select(p => new
             {
-                VaccancyCode = p.LookupId,
+                VaccancyCode = p.VacancyId,
                 Name = p.VaccancyCode,
             }), JsonRequestBehavior.AllowGet);
         }
@@ -905,7 +1045,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
                 foreach (var recruitmentVacancy in vacancies)
                 {
                     var vacany = db.VaccancyPlans.FirstOrDefault(x =>
-                        x.VacancyId == recruitmentVacancy.VacancyId && x.IsActive && !x.IsComplete && x.RecruSource == RecruitmentSource.EXTERNAL);
+                        x.VacancyId == recruitmentVacancy.VacancyId && x.IsActive /*&& !x.IsComplete*/ && x.RecruSource == RecruitmentSource.EXTERNAL);
                     if (vacany != null)
                     {
                         recruit.Add(recruitmentVacancy);
@@ -927,7 +1067,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
                 foreach (var recruitmentVacancy in vacancies)
                 {
                     var vacany = db.VaccancyPlans.FirstOrDefault(x =>
-                        x.VacancyId == recruitmentVacancy.VacancyId && x.IsActive && !x.IsComplete && x.RecruSource == RecruitmentSource.INTERNAL);
+                        x.VacancyId == recruitmentVacancy.VacancyId && x.IsActive /*&& !x.IsComplete*/ && x.RecruSource == RecruitmentSource.INTERNAL);
                     if (vacany != null)
                     {
                         recruit.Add(recruitmentVacancy);
@@ -1008,27 +1148,13 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
             List<RecruitmentPlanJob> lookupL = new List<RecruitmentPlanJob>();
             if (OrgStructureId != "undefined-undefined")
             {
-
                 int branchId = Convert.ToInt32(OrgStructureId.Split('-')[0]);
                 int orgId = Convert.ToInt32(OrgStructureId.Split('-')[1]);
+
                 var recruit = db.RecruitmentPlans
-                    .Where(x => x.BranchId == branchId && x.OrgStructureId == orgId && x.To >= DateTime.Now &&
-                                x.NoOfVacantPost > 0).DistinctByField(x => x.LookupId);
+                             .Where(x => x.BranchId == branchId && x.OrgStructureId == orgId && x.To >= DateTime.Now &&
+                              x.NoOfVacantPost > 0).DistinctByField(x => x.LookupId);
 
-                //var recruit = db.JobTitleMapping
-                //.Where(x => x.BranchId == branchId && x.OrgStructureId == orgId && x.Quntity > 0).DistinctByField(x => x.LookupId);
-                //var lookups = db.Lookups.Where(x => x.LookupType == LookUpTypes.JOB_TITLE).ToList();
-
-
-                //var lookupList = from r in recruit
-                //                 join l in lookups
-                //                     on r.LookupId equals l.LookupId
-                //                 select (new
-                //                 {
-                //                     r.LookupId,
-                //                     l.Description
-
-                //                 });
 
                 List<RecruitmentPlanJob> planLists = new List<RecruitmentPlanJob>();
 
@@ -1056,6 +1182,40 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
 
             return Json(lookupL);
         }
+
+        public JsonResult GetJobTitleFromManPowerToVacancy(string OrgStructureId)
+        {
+            List<ManPowerPlanningJob> manPowerList = new List<ManPowerPlanningJob>();
+
+            if (OrgStructureId != "undefined-undefined")
+            {
+                int branchId = Convert.ToInt32(OrgStructureId.Split('-')[0]);
+                int orgId = Convert.ToInt32(OrgStructureId.Split('-')[1]);
+
+                var manPowerPlannings = db.JobTitleMapping.Where(x => x.BranchId == branchId && x.OrgStructureId == orgId).ToList();
+
+                foreach (var plan in manPowerPlannings)
+                {
+                    var manPower = new ManPowerPlanningJob();
+
+                    var lookup = db.Lookups.FirstOrDefault(x => x.LookupId == plan.LookupId && x.LookupType == LookUpTypes.JOB_TITLE);
+                    if (lookup != null)
+                    {
+                        manPower.JobTitleName = lookup.Description;
+                        manPower.LookupId = lookup.LookupId;
+                    }
+
+                    manPowerList.Add(manPower);
+                }
+                return Json(manPowerList.Select(p => new
+                {
+                    LookupId = p.LookupId,
+                    JobTitleName = p.JobTitleName,
+                }), JsonRequestBehavior.AllowGet);
+            }
+            return null;
+        }
+
         public JsonResult GetEmployeAllowance()
         {
             var alloanceList = db.AllowanceDefinations.AsQueryable();
@@ -1084,6 +1244,17 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
             {
                 PersonId = p.PersonId,
                 FullNameWithOutCode = p.FullNameWithOutCode
+            }), JsonRequestBehavior.AllowGet);
+        }
+        public ActionResult GetActiveEmployees()
+        {
+            var list = db.Person_Employee.Where(x => x.IsActive).ToList();
+
+            return Json(list.Select(p => new
+            {
+                EmployeeId = p.EmployeeId,
+                FullNameaEnglish = p.FullNameaEnglish,
+                FullNameAmharic = p.FullNameAmharic
             }), JsonRequestBehavior.AllowGet);
         }
 
@@ -1291,17 +1462,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
                 Name = p.Description,
             }), JsonRequestBehavior.AllowGet);
         }
-        public JsonResult GetDepartments()
-        {
-            var structures = db.MainCompanyStructures.AsQueryable();
-            return Json(structures.Select(p => new
-            {
-                OrgStructureId = p.OrgStructureId,
-                Name = p.Name
-
-            }), JsonRequestBehavior.AllowGet);
-
-        }
         public JsonResult GetTrainingPlan()
         {
             var structures = db.TrainingPlans.AsQueryable();
@@ -1364,7 +1524,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
         }
         public JsonResult GetDepartmentOfHeads()
         {
-
             List<MainCompanyStructure> allDepartment = new List<MainCompanyStructure>();
 
             var employeeId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
@@ -1375,16 +1534,17 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
                 var workunits = db.MainCompanyStructures.FirstOrDefault(x => x.OrgStructureId == employeePlacement.OrgStructureId);
                 if (workunits != null)
                 {
-
-                    var companyStructure = db.MainCompanyStructures.Find(workunits.OrgStructureId);
-                    allDepartment.Add(companyStructure);
+                    // var companyStructure = db.MainCompanyStructures.Find(workunits.OrgStructureId);
+                    allDepartment.Add(workunits);
                     var heads = db.MainCompanyStructures.Where(x => x.Parent == workunits.OrgStructureId).AsEnumerable().DistinctByField(x => x.OrgStructureId).ToList();
                     if (heads.Any())
                     {
                         foreach (var lowh in heads)
                         {
-                            companyStructure = new MainCompanyStructure();
+                            var companyStructure = new MainCompanyStructure();
+
                             companyStructure = db.MainCompanyStructures.Find(lowh.OrgStructureId);
+
                             allDepartment.Add(companyStructure);
                         }
                     }
@@ -1500,66 +1660,66 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
 
         }
 
-        public JsonResult GetCostCenter(int BranchId)
-        {
+        //public JsonResult GetCostCenter(int BranchId)
+        //{
 
-            GlCostCenterTypes type;
-            List<SelectorVm> costcenterList = new List<SelectorVm>();
-            var branch = db.Branch.FirstOrDefault(x => x.BranchId == BranchId);
-            if (branch != null)
-            {
-                if (branch.BranchTypes == BranchTypes.HEAD_OFFICE)
-                {
-                    type = GlCostCenterTypes.HeadOffice;
-                }
-                else
-                {
-                    type = GlCostCenterTypes.Project;
-                }
-                AccountHelper accountHelper = new AccountHelper();
-                if (accountHelper.IsDynamicCoA())
-                {
-                    var glCostCenterSeg = db.GlSegmentSetups.Where(x => x.SegmentType == DynamicSegmentTypes.CostCenter).FirstOrDefault();
-                    if (glCostCenterSeg != null)
-                    {
-                        var glcostcenters=db.GlChartOfAccountSegments.Where(x=>x.GLSegmentSetupId== glCostCenterSeg.GLSegmentSetupId).Where(x=> x.Enable && !x.Parent).ToList();
-                        foreach(var item in glcostcenters)
-                        {
-                            var record = new SelectorVm
-                            {
-                                Code = item.Values,
-                                Name = item.Description
-                            };
-                            costcenterList.Add(record);
-                        }
-                    }
-                }
-                else
-                {
-                    var staticcostcenters = db.GLChartOfAccountCostCenters
-                        .Where(x => x.Type == type && x.Enable && !x.Parent)
-                       .ToList();
-                    foreach (var item in staticcostcenters)
-                    {
-                        var record = new SelectorVm
-                        {
-                            Code = item.Values,
-                            Name = item.Description
-                        };
-                        costcenterList.Add(record);
-                    }
-                }
-                
-            }
+        //    GlCostCenterTypes type;
+        //    List<SelectorVm> costcenterList = new List<SelectorVm>();
+        //    var branch = db.Branch.FirstOrDefault(x => x.BranchId == BranchId);
+        //    if (branch != null)
+        //    {
+        //        if (branch.BranchTypes == BranchTypes.HEAD_OFFICE)
+        //        {
+        //            type = GlCostCenterTypes.HeadOffice;
+        //        }
+        //        else
+        //        {
+        //            type = GlCostCenterTypes.Project;
+        //        }
+        //        AccountHelper accountHelper = new AccountHelper();
+        //        if (accountHelper.IsDynamicCoA())
+        //        {
+        //            var glCostCenterSeg = db.GlSegmentSetups.Where(x => x.SegmentType == DynamicSegmentTypes.CostCenter).FirstOrDefault();
+        //            if (glCostCenterSeg != null)
+        //            {
+        //                var glcostcenters=db.GlChartOfAccountSegments.Where(x=>x.GLSegmentSetupId== glCostCenterSeg.GLSegmentSetupId).Where(x=> x.Enable && !x.Parent).ToList();
+        //                foreach(var item in glcostcenters)
+        //                {
+        //                    var record = new SelectorVm
+        //                    {
+        //                        Code = item.Values,
+        //                        Name = item.Description
+        //                    };
+        //                    costcenterList.Add(record);
+        //                }
+        //            }
+        //        }
+        //        else
+        //        {
+        //            var staticcostcenters = db.GLChartOfAccountCostCenters
+        //                .Where(x => x.Type == type && x.Enable && !x.Parent)
+        //               .ToList();
+        //            foreach (var item in staticcostcenters)
+        //            {
+        //                var record = new SelectorVm
+        //                {
+        //                    Code = item.Values,
+        //                    Name = item.Description
+        //                };
+        //                costcenterList.Add(record);
+        //            }
+        //        }
 
-            return Json(costcenterList.Select(p => new
-            {
-                Values = p.Code,
-                Description = p.Name
-            }), JsonRequestBehavior.AllowGet);
+        //    }
+
+        //    return Json(costcenterList.Select(p => new
+        //    {
+        //        Values = p.Code,
+        //        Description = p.Name
+        //    }), JsonRequestBehavior.AllowGet);
 
 
-        }
+        //}
         public JsonResult GetVacancyPlan()
         {
             var list = db.VaccancyPlans.ToList();
@@ -1619,11 +1779,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
                 Description = p.Description
             }), JsonRequestBehavior.AllowGet);
         }
-        public JsonResult GetEmployeeTypes()
-        {
-            var data = db.EmployeeTypes;
-            return Json(data.Select(p => new { p.EmployeeTypeId, p.Name }), JsonRequestBehavior.AllowGet);
-        }
         public JsonResult GetPersonTitle()
         {
             var lookups = db.Lookups.Where(l => l.LookupType == LookUpTypes.PERSON_TITLE && l.IsActive).AsQueryable();
@@ -1634,24 +1789,24 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
                 Description = p.Description
             }), JsonRequestBehavior.AllowGet);
         }
-        public JsonResult GetLaboratoryCatagories()
-        {
-            var catagories = db.LaboratoryCatagories.AsQueryable();
-            return Json(catagories.Select(p => new
-            {
-                LaboratoryCatagoryId = p.LaboratoryCatagoryId,
-                Catagory = p.Catagory
-            }), JsonRequestBehavior.AllowGet);
-        }
-        public JsonResult GetLaboratoryTests()
-        {
-            var tests = db.LaboratoryTests.AsQueryable();
-            return Json(tests.Select(p => new
-            {
-                LaboratoryTestsId = p.LaboratoryTestsId,
-                Test = p.Test
-            }), JsonRequestBehavior.AllowGet);
-        }
+        //public JsonResult GetLaboratoryCatagories()
+        //{
+        //    var catagories = db.LaboratoryCatagories.AsQueryable();
+        //    return Json(catagories.Select(p => new
+        //    {
+        //        LaboratoryCatagoryId = p.LaboratoryCatagoryId,
+        //        Catagory = p.Catagory
+        //    }), JsonRequestBehavior.AllowGet);
+        //}
+        //public JsonResult GetLaboratoryTests()
+        //{
+        //    var tests = db.LaboratoryTests.AsQueryable();
+        //    return Json(tests.Select(p => new
+        //    {
+        //        LaboratoryTestsId = p.LaboratoryTestsId,
+        //        Test = p.Test
+        //    }), JsonRequestBehavior.AllowGet);
+        //}
         public JsonResult GetRank()
         {
             var ranks = db.Ranks.AsQueryable();
@@ -1672,15 +1827,15 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
                 StepName = p.StepName
             }), JsonRequestBehavior.AllowGet);
         }
-        public JsonResult GetContributionType()
-        {
-            var ConrtibutionTypes = db.ContributionTypes.Where(x => x.ContributionCategory == ContributionCategory.FIXED);
-            return Json(ConrtibutionTypes.Select(p => new
-            {
-                Description = p.Description,
-                ContributionTypeId = p.ContributionTypeId
-            }), JsonRequestBehavior.AllowGet);
-        }
+        //public JsonResult GetContributionType()
+        //{
+        //    var ConrtibutionTypes = db.ContributionTypes.Where(x => x.ContributionCategory == ContributionCategory.FIXED);
+        //    return Json(ConrtibutionTypes.Select(p => new
+        //    {
+        //        Description = p.Description,
+        //        ContributionTypeId = p.ContributionTypeId
+        //    }), JsonRequestBehavior.AllowGet);
+        //}
         public JsonResult GetWorkUnit()
         {
             List<MainCompanyStructure> workUnits = new List<MainCompanyStructure>();
@@ -1716,42 +1871,36 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
                 OrgStructureId = p.OrgStructureId
             }), JsonRequestBehavior.AllowGet);
         }
-        public JsonResult GetPeriodForOvertime()
-        {
-            var periodList = db.PayrollPeriods.Where(x => x.Status == FiscalYearStatus.Open);
-            //var list = from p in periodList
-            //           join g in db.GLPeriods
-            //               on p.Name equals g.Name
-            //           select (new
-            //           {
-            //               g
-            //           });
-            ViewData["PeriodList"] = periodList.Select(x => x.Name).ToList(); //!= null ? list.ToList() : new List<PayrollPeriod>();
+        //public JsonResult GetPeriodForOvertime()
+        //{
+        //    var periodList = db.PayrollPeriods.Where(x => x.Status == FiscalYearStatus.Open);
+        //    //var list = from p in periodList
+        //    //           join g in db.GLPeriods
+        //    //               on p.Name equals g.Name
+        //    //           select (new
+        //    //           {
+        //    //               g
+        //    //           });
+        //    ViewData["PeriodList"] = periodList.Select(x => x.Name).ToList(); //!= null ? list.ToList() : new List<PayrollPeriod>();
 
-            return Json(periodList.Select(p => new
-            {
-                GLPeriodId = p.GLPeriodId,
-                Name = p.Name
-            }), JsonRequestBehavior.AllowGet);
-        }
+        //    return Json(periodList.Select(p => new
+        //    {
+        //        GLPeriodId = p.GLPeriodId,
+        //        Name = p.Name
+        //    }), JsonRequestBehavior.AllowGet);
+        //}
         public JsonResult GetWorkUnitFromVacancy(string mediacode)
         {
             List<MainCompanyStructure> workUnitsList = new List<MainCompanyStructure>();
 
-            var recruitmentVacancy = db.RecruitmentVacancy.Where(x => x.MediaVacancyCode == mediacode).ToList();
-            foreach (var recruitment in recruitmentVacancy)
+            var vacancyIds = db.RecruitmentVacancy.Where(x => x.MediaVacancyCode == mediacode).Select(x => x.VacancyId).ToList();
+
+            var departments = db.VaccancyPlans.Where(x => vacancyIds.Contains(x.VacancyId) && x.IsActive).Select(x => x.Department).ToList();
+
+            if (departments.Any())
             {
-                var vacancy = db.VaccancyPlans.FirstOrDefault(x => x.VacancyId == recruitment.VacancyId && x.From == recruitment.From && x.To == recruitment.To && x.IsActive && !x.IsComplete);
-                if (vacancy != null)
-                {
-                    var mainCompanyStructure =
-                        db.MainCompanyStructures.FirstOrDefault(x => x.OrgStructureId == vacancy.OrgStructureId);
-                    workUnitsList.Add(mainCompanyStructure);
-                }
-
-
+                workUnitsList = db.MainCompanyStructures.Where(x => departments.Contains(x.OrgStructureId)).ToList();
             }
-
 
             return Json(workUnitsList.DistinctByField(x => x.OrgStructureId).Select(p => new
             {
@@ -1759,34 +1908,39 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
                 OrgStructureId = p.OrgStructureId
             }), JsonRequestBehavior.AllowGet);
         }
-        public JsonResult GetJobTitleFromVacancy(string OrgStructureId)
+        public JsonResult GetJobTitleFromVacancy(int OrgStructureId, string MediaVacancyCode)
         {
             List<ApplicantRegistrationViewModel> titleList = new List<ApplicantRegistrationViewModel>();
             ApplicantRegistrationViewModel appRegister = new ApplicantRegistrationViewModel();
 
-            var vacancy = db.VaccancyPlans.Where(x => x.OrgStructureId.ToString() == OrgStructureId && x.IsActive && !x.IsComplete).ToList();
-            foreach (var vacancy1 in vacancy)
-            {
-                var recruitmentPlan =
-                    db.RecruitmentPlans.FirstOrDefault(x => x.RecruitmentPlanId == vacancy1.RecruitmentPlanId);
-                if (recruitmentPlan != null)
-                {
-                    var lookup = db.Lookups.FirstOrDefault(x =>
-                        x.LookupId == recruitmentPlan.LookupId && x.LookupType == LookUpTypes.JOB_TITLE);
-                    if (lookup != null)
-                    {
-                        appRegister.LookUpId = lookup.LookupId;
-                        appRegister.VacancyId = vacancy1.VacancyId;
-                        appRegister.Description = lookup.Description;
-                        titleList.Add(appRegister);
-                    }
-                }
-            }
+            var vacancyIds = db.RecruitmentVacancy.Where(x => x.MediaVacancyCode == MediaVacancyCode).Select(x => x.VacancyId).ToList();
 
+            var vacancyJobtitleIds = db.VaccancyPlans.Where(x => vacancyIds.Contains(x.VacancyId) && x.Department == OrgStructureId).Select(x => x.JobTitle).ToList();
 
-            return Json(titleList.DistinctByField(x => x.LookUpId).Select(p => new
+            var lookups = db.Lookups.Where(x => vacancyJobtitleIds.Contains(x.LookupId)).ToList();
+
+            //var vacancy = db.VaccancyPlans.Where(x => x.OrgStructureId.ToString() == OrgStructureId && x.IsActive && !x.IsComplete).ToList();
+            //foreach (var vacancy1 in vacancy)
+            //{
+            //    var recruitmentPlan =
+            //        db.RecruitmentPlans.FirstOrDefault(x => x.RecruitmentPlanId == vacancy1.RecruitmentPlanId);
+            //    if (recruitmentPlan != null)
+            //    {
+            //        var lookup = db.Lookups.FirstOrDefault(x =>
+            //            x.LookupId == recruitmentPlan.LookupId && x.LookupType == LookUpTypes.JOB_TITLE);
+            //        if (lookup != null)
+            //        {
+            //            appRegister.LookUpId = lookup.LookupId;
+            //            appRegister.VacancyId = vacancy1.VacancyId;
+            //            appRegister.Description = lookup.Description;
+            //            titleList.Add(appRegister);
+            //        }
+            //    }
+            //}
+
+            return Json(lookups.Select(p => new
             {
-                LookupId = p.LookUpId + "-" + p.VacancyId,
+                LookupId = p.LookupId,
                 Description = p.Description
             }), JsonRequestBehavior.AllowGet);
 
@@ -1896,33 +2050,33 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
                 FullNameaEnglish = p.FullNameaEnglish
             }), JsonRequestBehavior.AllowGet);
         }
-        public JsonResult GetSubjectType()
-        {           
-            IQueryable<SubjectType> subjectTypes = db.SubjectTypes;
-            return Json(subjectTypes.Select(p => new
-            {
-                SubjectTypeId = p.SubjectTypeId,
-                SubjectTypeName = p.SubjectTypeName
-            }), JsonRequestBehavior.AllowGet);
-        }
-        public ActionResult GetPayrollEmployeeList([DataSourceRequest] DataSourceRequest request)
-        {
-            List<EmployeeSelectorVm> list = new List<EmployeeSelectorVm>();
-            db = new ExceedDbContext();
-            var employees = inputs.GetPayrollPlacmentEmployees(User.Identity.Name);
+        //public JsonResult GetSubjectType()
+        //{           
+        //    IQueryable<SubjectType> subjectTypes = db.SubjectTypes;
+        //    return Json(subjectTypes.Select(p => new
+        //    {
+        //        SubjectTypeId = p.SubjectTypeId,
+        //        SubjectTypeName = p.SubjectTypeName
+        //    }), JsonRequestBehavior.AllowGet);
+        //}
+        //public ActionResult GetPayrollEmployeeList([DataSourceRequest] DataSourceRequest request)
+        //{
+        //    List<EmployeeSelectorVm> list = new List<EmployeeSelectorVm>();
+        //    db = new ExceedDbContext();
+        //    var employees = inputs.GetPayrollPlacmentEmployees(User.Identity.Name);
 
-            foreach (var emp in employees)
-            {
+        //    foreach (var emp in employees)
+        //    {
 
-                var record = new EmployeeSelectorVm();
-                record.PersonId = emp.PersonId;
-                record.FullName = emp.FullName;
-                list.Add(record);
+        //        var record = new EmployeeSelectorVm();
+        //        record.PersonId = emp.PersonId;
+        //        record.FullName = emp.FullName;
+        //        list.Add(record);
 
-            }
+        //    }
 
-            return Json(list.ToDataSourceResult(request), JsonRequestBehavior.AllowGet);
-        }
+        //    return Json(list.ToDataSourceResult(request), JsonRequestBehavior.AllowGet);
+        //}
         public ActionResult PayrollEmployee_ValueMapper(string value)
         {
 
@@ -1947,9 +2101,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
         public ActionResult DownloadFile(int filename, string type)
         {
             string referenceType = "";
-
-
-
 
             db = new ExceedDbContext();
             try
@@ -2014,70 +2165,70 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
         }
         public ActionResult DownloadFileFromAttachmentArchive(int filename, string type)
         {
-            string referenceType = "";
+            //string referenceType = "";
 
 
 
 
-            db = new ExceedDbContext();
-            try
-            {
-                var attachment = db.AttachmentArchives.FirstOrDefault(x => x.AttachmentArchiveId == filename);
-                if (attachment != null)
-                {
-                    switch (type)
-                    {
-                        case "Photo":
-                            referenceType = AttachmentType.PHOTO.ToString();
-                            break;
-                        case "Logo":
-                            referenceType = AttachmentType.LOGO.ToString();
-                            break;
-                        case "Doc":
-                            referenceType = AttachmentType.DOCUMENT.ToString();
-                            break;
-                        case "Cosign":
-                            referenceType = AttachmentType.COSIGN.ToString();
-                            break;
-                        case "Clearance":
-                            referenceType = AttachmentType.CLEARANCE.ToString();
-                            break;
-                        case "Minute":
-                            referenceType = AttachmentType.MINUTE.ToString();
-                            break;
-                        case "Incoming":
-                            referenceType = AttachmentType.INCOMING_LETTER.ToString();
-                            break;
-                        case "Outgoing":
-                            referenceType = AttachmentType.OUTGOING_LETTER.ToString();
-                            break;
-                        case "Letter":
-                            referenceType = AttachmentType.LETTER.ToString();
-                            break;
+            //db = new ExceedDbContext();
+            //try
+            //{
+            //    var attachment = db.AttachmentArchives.FirstOrDefault(x => x.AttachmentArchiveId == filename);
+            //    if (attachment != null)
+            //    {
+            //        switch (type)
+            //        {
+            //            case "Photo":
+            //                referenceType = AttachmentType.PHOTO.ToString();
+            //                break;
+            //            case "Logo":
+            //                referenceType = AttachmentType.LOGO.ToString();
+            //                break;
+            //            case "Doc":
+            //                referenceType = AttachmentType.DOCUMENT.ToString();
+            //                break;
+            //            case "Cosign":
+            //                referenceType = AttachmentType.COSIGN.ToString();
+            //                break;
+            //            case "Clearance":
+            //                referenceType = AttachmentType.CLEARANCE.ToString();
+            //                break;
+            //            case "Minute":
+            //                referenceType = AttachmentType.MINUTE.ToString();
+            //                break;
+            //            case "Incoming":
+            //                referenceType = AttachmentType.INCOMING_LETTER.ToString();
+            //                break;
+            //            case "Outgoing":
+            //                referenceType = AttachmentType.OUTGOING_LETTER.ToString();
+            //                break;
+            //            case "Letter":
+            //                referenceType = AttachmentType.LETTER.ToString();
+            //                break;
 
-                    }
-                    WebClient req = new WebClient();
-                    HttpResponse response = System.Web.HttpContext.Current.Response;
-                    response.Clear();
-                    response.ClearContent();
-                    response.ClearHeaders();
-                    response.Buffer = true;
-                    response.AddHeader("Content-Disposition",
-                        "attachment;filename=\"" + attachment.Description + "\"");
-                    byte[] datas = req.DownloadData(Server.MapPath("~/Content/Images/" + attachment.Reference + "-" + referenceType + "/" + attachment.Description));
+            //        }
+            //        WebClient req = new WebClient();
+            //        HttpResponse response = System.Web.HttpContext.Current.Response;
+            //        response.Clear();
+            //        response.ClearContent();
+            //        response.ClearHeaders();
+            //        response.Buffer = true;
+            //        response.AddHeader("Content-Disposition",
+            //            "attachment;filename=\"" + attachment.Description + "\"");
+            //        byte[] datas = req.DownloadData(Server.MapPath("~/Content/Images/" + attachment.Reference + "-" + referenceType + "/" + attachment.Description));
 
-                    response.BinaryWrite(datas);
-                    response.End();
-                    HRMInputs.SelectedFile = 0;
-                    return File(attachment.Reference, attachment.FileType);
-                }
-            }
-            catch (Exception e)
-            {
+            //        response.BinaryWrite(datas);
+            //        response.End();
+            //        HRMInputs.SelectedFile = 0;
+            //        return File(attachment.Reference, attachment.FileType);
+            //    }
+            //}
+            //catch (Exception e)
+            //{
 
 
-            }
-            HRMInputs.SelectedFile = 0;
+            //}
+            //HRMInputs.SelectedFile = 0;
             return null;
         }
 
@@ -2108,11 +2259,218 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
                 Code = x.Code
             }), JsonRequestBehavior.AllowGet);
         }
-    
 
+        //////// Recruitment New ////////////////////
+        public JsonResult GetAllVacacy()
+        {
+            var vacancies = db.VaccancyPlans.ToList();
+            return Json(vacancies.Select(p => new
+            {
+                VacancyId = p.VacancyId,
+                VaccancyCode = p.VaccancyCode,
+            }), JsonRequestBehavior.AllowGet);
+        }
+        public ActionResult GetVacancyLists()
+        {
+            var vacancies = db.VaccancyPlans.ToList();
+            return Json(vacancies.Select(p => new
+            {
+                VacancyId = p.VacancyId,
+                VaccancyCode = p.VaccancyCode
+            }), JsonRequestBehavior.AllowGet);
+        }
+        public ActionResult GetEducationLevelLists()
+        {
+            var educationLevels = db.Lookups.Where(x => x.LookupType == LookUpTypes.EDUCATION_LEVEL).ToList();
+            return Json(educationLevels.Select(p => new
+            {
+                LookupId = p.LookupId,
+                Description = p.Description
+            }), JsonRequestBehavior.AllowGet);
+        }
 
-}
-public class Jobs
+        public ActionResult GetEducationFieldLists()
+        {
+            var educationFields = db.Lookups.Where(x => x.LookupType == LookUpTypes.EDUCATION_FIELD).ToList();
+            return Json(educationFields.Select(p => new
+            {
+                LookupId = p.LookupId,
+                Description = p.Description
+            }), JsonRequestBehavior.AllowGet);
+        }
+
+        public ActionResult GetLookupJobtitle()
+        {
+            var experienceJobtitles = db.Lookups.Where(x => x.LookupType == LookUpTypes.JOB_TITLE).ToList();
+            return Json(experienceJobtitles.Select(p => new
+            {
+                LookupId = p.LookupId,
+                Description = p.Description
+            }), JsonRequestBehavior.AllowGet);
+        }
+        //
+        public ActionResult GetLookupJobtitleForInternal()
+        {
+            // this "Jobtitle External Experience" is for internal applicants that they have external experiences registered in profile
+            var experienceJobtitles = db.Lookups.Where(x => x.LookupType == LookUpTypes.Jobtitle_External_Experience).ToList();
+            return Json(experienceJobtitles.Select(p => new
+            {
+                LookupId = p.LookupId,
+                Description = p.Description
+            }), JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult GetEducationLevels()
+        {
+            var educationLevels = db.Lookups.Where(x => x.LookupType == LookUpTypes.EDUCATION_LEVEL).ToList();
+
+            return Json(educationLevels.Select(p => new
+            {
+                LookupId = p.LookupId,
+                Description = p.Description,
+            }), JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult GetEducationFields()
+        {
+            var educationFields = db.Lookups.Where(x => x.LookupType == LookUpTypes.EDUCATION_FIELD).ToList();
+
+            return Json(educationFields.Select(p => new
+            {
+                LookupId = p.LookupId,
+                Description = p.Description,
+            }), JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult GetVacancyExternal()
+        {
+            var vacancies = db.VaccancyPlans.Where(x => x.RecruSource == RecruitmentSource.EXTERNAL && x.IsActive).ToList();
+            return Json(vacancies.Select(p => new
+            {
+                VacancyId = p.VacancyId,
+                VaccancyCode = p.VaccancyCode,
+            }), JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult GetVacancyInternal()
+        {
+            var vacancies = db.VaccancyPlans.Where(x => x.RecruSource == RecruitmentSource.INTERNAL && x.IsActive).ToList();
+            return Json(vacancies.Select(p => new
+            {
+                VacancyId = p.VacancyId,
+                VaccancyCode = p.VaccancyCode,
+            }), JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult GetVacancyCodeForInternalApplicant()
+        {
+            var vacancies = db.VaccancyPlans.Where(x => x.RecruSource == RecruitmentSource.INTERNAL && x.IsActive).ToList();
+            return Json(vacancies.Select(p => new
+            {
+                VacancyId = p.VacancyId,
+                VaccancyCode = p.VaccancyCode,
+            }), JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult GetDepartmentsByVacancy(int VacancyId)
+        {
+            List<MainCompanyStructure> mainCompanys = new List<MainCompanyStructure>();
+
+            var vacancy = db.VaccancyPlans.FirstOrDefault(x => x.VacancyId == VacancyId);
+            if (vacancy != null)
+            {
+                var mainCompanyStructure = db.MainCompanyStructures.Where(x => x.OrgStructureId == vacancy.Department).ToList();
+
+                mainCompanys.AddRange(mainCompanyStructure);
+            }
+            return Json(mainCompanys.Select(p => new
+            {
+                OrgStructureId = p.OrgStructureId,
+                Name = p.Name,
+            }), JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult GetJobtitlesByVacancy(int VacancyId)
+        {
+            List<Lookup> jobTitles = new List<Lookup>();
+
+            var vacancy = db.VaccancyPlans.FirstOrDefault(x => x.VacancyId == VacancyId);
+            if (vacancy != null)
+            {
+                var jobTitle = db.Lookups.Where(x => x.LookupId == vacancy.JobTitle).ToList();
+
+                jobTitles.AddRange(jobTitle);
+            }
+            return Json(jobTitles.Select(p => new
+            {
+                LookupId = p.LookupId,
+                Description = p.Description,
+            }), JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult GetAllDepartments()
+        {
+            var departments = db.MainCompanyStructures.ToList();
+
+            return Json(departments.Select(p => new
+            {
+                OrgStructureId = p.OrgStructureId,
+                Name = p.Name
+            }), JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult GetTrainingCriterias()
+        {
+            var criterias = db.TrainingEvaluationCriterias.ToList();
+
+            return Json(criterias.Select(p => new
+            {
+                TrainingEvaluationCriteriaId = p.TrainingEvaluationCriteriaId,
+                Criteria = p.Criteria
+            }), JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult GetEmployeesInSelectedDepartment(int OrgStructureId)
+        {
+            var empIds = db.Placements.Where(x => x.OrgStructureId == OrgStructureId && x.isCurrent).Select(x => x.EmployeeId).ToList();
+
+            var employees = db.Person_Employee.Where(x => empIds.Contains(x.EmployeeId)).ToList();
+
+            return Json(employees.Select(p => new
+            {
+                EmployeeId = p.EmployeeId,
+                FullNameAmharic = p.FullNameAmharic
+            }), JsonRequestBehavior.AllowGet);
+        }
+        //////
+        public JsonResult GetEnumWithOutApproveOption()
+        {
+
+            var statuses = Enum.GetValues(typeof(RequestStatus))
+                           .Cast<RequestStatus>()
+                           .Where(x => x != RequestStatus.APPROVE)
+                           .Select(v => v)
+                           .ToList();
+
+            return Json(statuses.Select(p => new
+            {
+                Value = Convert.ToInt32(p),
+                Display = p.ToString()
+            }), JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult GetEnumWithOutWaitingForApprovalandDepartmentApproveOption()
+        {
+
+            var statuses = Enum.GetValues(typeof(RequestStatus))
+                           .Cast<RequestStatus>()
+                           .Where(x => x != RequestStatus.WAITING_FOR_APPROVAL && x != RequestStatus.DEPARTMENT_APPROVAL)
+                           .Select(v => v)
+                           .ToList();
+
+            return Json(statuses.Select(p => new
+            {
+                Value = Convert.ToInt32(p),
+                Display = p.ToString()
+            }), JsonRequestBehavior.AllowGet);
+        }
+    }
+    public class Jobs
     {
         public string Description { get; set; }
         public int LookupId { get; set; }
@@ -2121,5 +2479,11 @@ public class Jobs
     {
         public int RecruitmentPlanId { get; set; }
         public string JobTitle { get; set; }
+    }
+
+    public class ManPowerPlanningJob
+    {
+        public string JobTitleName { get; set; }
+        public int LookupId { get; set; }
     }
 }

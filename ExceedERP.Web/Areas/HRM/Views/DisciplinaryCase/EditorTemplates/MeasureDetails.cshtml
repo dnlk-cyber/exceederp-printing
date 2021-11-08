@@ -4,11 +4,12 @@
 @(Html.Kendo().DropDownListFor(m => m)
     .OptionLabel(Resources.Select)
                      .DataTextField("Description")
-                     .DataValueField("MeasuresId")
+                     .DataValueField("DetailMeasuresId")
+                     .CascadeFrom("MeasuresId")
       .DataSource(dataSource =>
       {
-          dataSource.Read(read => read.Action("GetMeasureDetails", "HRMDataProvider", new { area = "HRM" }))
-              .ServerFiltering(false);
+          dataSource.Read(read => read.Action("GetMeasureDetails", "HRMDataProvider", new { area = "HRM" }).Data("filterMeasure"))
+              .ServerFiltering(true);
       })
                  .ValuePrimitive(true)
 )

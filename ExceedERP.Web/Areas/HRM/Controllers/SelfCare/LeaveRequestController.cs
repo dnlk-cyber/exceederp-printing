@@ -966,19 +966,19 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
 
 
             var entitles = db.LeavesEntitle.FirstOrDefault(x => x.EmployeeId == empId && x.GlFiscalYearId == period);
-            if (entitles != null)
-            {
-                var takenLeave = db.Leaves.Where(x => x.EmployeeId == empId && x.GlFiscalYearId == period).ToList();
-                var tranferedList = db.LeaveTransfer.Where(x => x.To == period && x.EmployeeId == empId && x.Check).ToList();
-                var paidIncash = db.LeavePaid.Where(x => x.GlFiscalYearId == period && x.EmployeeId == empId).ToList();
-                decimal sumoftaken = takenLeave.Sum(x => x.Amount);
-                decimal sumoftransfer = tranferedList.Sum(x => x.Amount);
-                decimal sumofEntitle = entitles.Amount;
-                decimal sumofpaid = Convert.ToDecimal(paidIncash.Sum(x => x.Amount));
-                decimal subtract = sumoftaken + sumofpaid;
+            //if (entitles != null)
+            //{
+            //    var takenLeave = db.Leaves.Where(x => x.EmployeeId == empId && x.GlFiscalYearId == period).ToList();
+            //    var tranferedList = db.LeaveTransfer.Where(x => x.To == period && x.EmployeeId == empId && x.Check).ToList();
+            //    var paidIncash = db.LeavePaid.Where(x => x.GlFiscalYearId == period && x.EmployeeId == empId).ToList();
+            //    decimal sumoftaken = takenLeave.Sum(x => x.Amount);
+            //    decimal sumoftransfer = tranferedList.Sum(x => x.Amount);
+            //    decimal sumofEntitle = entitles.Amount;
+            //    decimal sumofpaid = Convert.ToDecimal(paidIncash.Sum(x => x.Amount));
+            //    decimal subtract = sumoftaken + sumofpaid;
 
-                Total = (sumofEntitle + sumoftransfer) - subtract;
-            }
+            //    Total = (sumofEntitle + sumoftransfer) - subtract;
+            //}
             return Total;
         }
         public decimal GetAmount(int period, int empId)

@@ -34,7 +34,7 @@ namespace ExceedERP.Reporting.HRM.HRM
                  this.IdNum.Value = Resources.ResourceManager.GetString("Rpt_IDNumber", cultures);
                  this.FullName.Value = Resources.ResourceManager.GetString("Rpt_Name", cultures);
                  this.Sex.Value = Resources.ResourceManager.GetString("Rpt_Sex", cultures);
-                 this.RemainingYear.Value = Resources.ResourceManager.GetString("Rpt_RemainingYear", cultures);
+                // this.RemainingYear.Value = Resources.ResourceManager.GetString("Rpt_RemainingYear", cultures);
                  this.RetirementDate.Value = Resources.ResourceManager.GetString("Rpt_RetirementDate", cultures);
                  this.RetirementNotification.Value = Resources.ResourceManager.GetString("Rpt_RetirementNotification", cultures);
                  var firstOrDefault = this.ReportParameters.FirstOrDefault(x => x.Name == "value");

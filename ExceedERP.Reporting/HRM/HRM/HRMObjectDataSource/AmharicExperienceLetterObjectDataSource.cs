@@ -263,7 +263,12 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
 
                         currentEmployeeExpriance.JobTitleName = empCurrrEx[e].JobTitleName;
-                        currentEmployeeExpriance.Branch = empCurrrEx[e].Branch.AmharicName;
+                       
+                        var bra = db.Branch.FirstOrDefault(x=>x.BranchId == empCurrrEx[e].BranchId);
+                        if(bra != null)
+                        {
+                            currentEmployeeExpriance.Branch = bra.AmharicName;
+                        }
                         currentEmployeeExpriance.RecruitmentType = Helpers.HR.HrHelper.GetEmployeeStatus(empCurrrEx[e].EmployementType);
                         currentEmployeeExpriance.Year = XAPI.Common.GetConcatinatedValue(year.ToString(), month.ToString(), days.ToString());
                         TotalYear += year;
@@ -500,7 +505,12 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
 
                                 currentEmployeeExpriance.JobTitleName = empCurrrEx[e].JobTitleName;
-                                currentEmployeeExpriance.Branch = empCurrrEx[e].Branch.AmharicName;
+                               // currentEmployeeExpriance.Branch = empCurrrEx[e].Branch.AmharicName;
+                                var bra = db.Branch.FirstOrDefault(x => x.BranchId == empCurrrEx[e].BranchId);
+                                if (bra != null)
+                                {
+                                    currentEmployeeExpriance.Branch = bra.AmharicName;
+                                }
                                 currentEmployeeExpriance.RecruitmentType = Helpers.HR.HrHelper.GetEmployeeStatus(empCurrrEx[e].EmployementType);
                                 currentEmployeeExpriance.Year = XAPI.Common.GetConcatinatedValue(year.ToString(), month.ToString(), days.ToString());
                                 TotalYear += year;

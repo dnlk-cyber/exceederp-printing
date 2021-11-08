@@ -14,6 +14,8 @@ using ExceedERP.Reporting.SharedDataSources;
 using ExceedERP.Core.Domain.HRM.RecruitmentManagment;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Core.Domain.Common.HRM;
+using ExceedERP.Core.Domain.HRM;
+using System.Web.Mvc;
 
 namespace ExceedERP.Reporting.HRM.HRM.Letters
 {
@@ -254,202 +256,206 @@ namespace ExceedERP.Reporting.HRM.HRM.Letters
         private ExceedDbContext db = new ExceedDbContext();
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<EmployeeRecruitmentExternalVaccLetter> GetEmployeeRecruitmentVacc(string id, bool header)
+        public List<RecruitmentExtLetterVM> GetEmployeeRecruitmentVacc(string id, bool header)
         {
             List<EmployeeRecruitmentExternalVaccLetter> EmployeeInfoList = new List<EmployeeRecruitmentExternalVaccLetter>();
             EmployeeRecruitmentExternalVaccLetter EmployeeInfo = new EmployeeRecruitmentExternalVaccLetter();
-            var Organization = db.Companies.Where(x => x.Category == "0").FirstOrDefault();
 
-            var personEmployee = db.Person_Employee.Where(x => x.EmployeeCode == id).FirstOrDefault();
+            var Organization = db.Companies.FirstOrDefault(x => x.Category == "0");
 
-            if (personEmployee != null)
+            if (header)
             {
-                if (header)
+                if (Organization != null)
                 {
-                    if (Organization != null)
+                    EmployeeInfo.Name = Organization.TradeName;
+                    EmployeeInfo.AmharicName = Organization.AmharicName;
+                    EmployeeInfo.Abbreviation = Organization.Abbreviation;
+                    var address =
+                        db.Addresses.Where(
+                            a =>
+                                a.Reference == Organization.MainCompanyId.ToString() &&
+                                a.ReferenceType.ToLower() == "company").ToList();
+                    if (address.Any())
                     {
-                        EmployeeInfo.Name = Organization.TradeName;
-                        EmployeeInfo.AmharicName = Organization.AmharicName;
-                        EmployeeInfo.Abbreviation = Organization.Abbreviation;
-                        var address =
-                            db.Addresses.Where(
-                                a =>
-                                    a.Reference == Organization.MainCompanyId.ToString() &&
-                                    a.ReferenceType.ToLower() == "company").ToList();
-                        if (address.Any())
+                        foreach (var a in address)
                         {
-                            foreach (var a in address)
+                            if (a.Category == AddressType.KIFLEKETEMA)
                             {
-                                if (a.Category == AddressType.KIFLEKETEMA)
+                                EmployeeInfo.Address = "Subcity: " + a.Value + " ";
+                            }
+                            if (a.Category == AddressType.KEBELE)
+                            {
+                                EmployeeInfo.Address += "Kebele: " + a.Value + " ";
+                            }
+                            if (a.Category == AddressType.CITYPROVINCE)
+                            {
+                                if (EmployeeInfo.Address == null)
                                 {
-                                    EmployeeInfo.Address = "Subcity: " + a.Value + " ";
-                                }
-                                if (a.Category == AddressType.KEBELE)
-                                {
-                                    EmployeeInfo.Address += "Kebele: " + a.Value + " ";
-                                }
-                                if (a.Category == AddressType.CITYPROVINCE)
-                                {
-                                    if (EmployeeInfo.Address == null)
-                                    {
-                                        EmployeeInfo.Address += a.Value + " -Ethiopia";
-                                    }
-                                }
-                                else if (a.Category == AddressType.POBOX)
-                                {
-
-                                    EmployeeInfo.Pobox = "P.O.Box: " + a.Value;
-
-                                }
-                                else if (a.Category == AddressType.OFFICE_EMAIL)
-                                {
-
-                                    EmployeeInfo.Email = "Email: " + a.Value;
-
-                                }
-                                else if (a.Category == AddressType.WEBSITE)
-                                {
-
-                                    EmployeeInfo.WebSite = "Website: " + a.Value;
-
-                                }
-                                else if (a.Category == AddressType.FAX)
-                                {
-
-                                    EmployeeInfo.Fax = "Fax:  " + a.Value;
-
-                                }
-                                else if (a.Category == AddressType.OFFICE_PHONE)
-                                {
-
-                                    EmployeeInfo.Tel = "Tel:  " + a.Value;
-
+                                    EmployeeInfo.Address += a.Value + " -Ethiopia";
                                 }
                             }
+                            else if (a.Category == AddressType.POBOX)
+                            {
 
+                                EmployeeInfo.Pobox = "P.O.Box: " + a.Value;
+
+                            }
+                            else if (a.Category == AddressType.OFFICE_EMAIL)
+                            {
+
+                                EmployeeInfo.Email = "Email: " + a.Value;
+
+                            }
+                            else if (a.Category == AddressType.WEBSITE)
+                            {
+
+                                EmployeeInfo.WebSite = "Website: " + a.Value;
+
+                            }
+                            else if (a.Category == AddressType.FAX)
+                            {
+
+                                EmployeeInfo.Fax = "Fax:  " + a.Value;
+
+                            }
+                            else if (a.Category == AddressType.OFFICE_PHONE)
+                            {
+
+                                EmployeeInfo.Tel = "Tel:  " + a.Value;
+
+                            }
                         }
-                        var logo =
-                            db.Attachments.Where(
-                                a =>
-                                    a.Reference == Organization.MainCompanyId.ToString() &&
-                                    a.ReferenceType == AttachmentType.LOGO).FirstOrDefault();
-                        if (logo != null)
-                        {
-                            EmployeeInfo.LogoFileName = OrganizationObjectDataSource.ByteArrayToImage(logo.BinaryFile);
-                        }
+
+                    }
+                    var logo =
+                        db.Attachments.Where(
+                            a =>
+                                a.Reference == Organization.MainCompanyId.ToString() &&
+                                a.ReferenceType == AttachmentType.LOGO).FirstOrDefault();
+                    if (logo != null)
+                    {
+                        EmployeeInfo.LogoFileName = OrganizationObjectDataSource.ByteArrayToImage(logo.BinaryFile);
                     }
                 }
-                db = new ExceedDbContext();
-                var employee = db.Person_Employee.Where(x => x.EmployeeId == personEmployee.EmployeeId && x.IsActive).FirstOrDefault();
-                if (employee != null)
+            }
+
+            if (id != null)
+            {
+                int.TryParse(id, out int empId);
+
+                var person = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == empId);
+
+                if (person != null)
                 {
-                    db = new ExceedDbContext();
-                    var structurtes =
-                        db.MainCompanyStructures.ToList();
-                    db = new ExceedDbContext();
-                    var jobs = db.Lookups.ToList();
-                    db = new ExceedDbContext();
-                    var ranks = db.Ranks;
-                    db = new ExceedDbContext();
-                    var branches = db.Branch;
-                    db = new ExceedDbContext();
-                    var placements = db.Placements.Where(y => y.EmployeeId == employee.EmployeeId)
-                        .ToList()
-                        .OrderBy(x => x.AssignmentDate);
-                    db = new ExceedDbContext();
-                    var expriance = db.Experiences.Where(y => y.EmployeeId == employee.EmployeeId && y.IsPrivate == false).OrderBy(x => x.To).ToList();
-                    var emplist = db.Person_Employee.Where(x => x.EmployeeId == employee.EmployeeId && x.IsActive).ToList();
 
-                    db = new ExceedDbContext();
+                    var expriance = db.Experiences.Where(y => y.EmployeeId == person.EmployeeId && y.IsPrivate == false).OrderBy(x => x.To).ToList();
+
+                    EmployeeInfo.FullName = person.FullNameAmharic;
+                    EmployeeInfo.BirthDate = person.DateOfBirthAm;
+                    EmployeeInfo.HireDate = person.HiredDateAmharic;
 
 
-                    if (emplist.Any())
+                    var placement = db.Placements.FirstOrDefault(x => x.EmployeeId == person.EmployeeId && x.isCurrent);
+
+                    if (placement != null)
                     {
+                        EmployeeInfo.Salary = placement.Salary;
 
-                        foreach (var e in emplist)
+                        var job = db.Lookups.FirstOrDefault(x => x.LookupId == placement.LookupId);
+                        if (job != null)
                         {
+                            EmployeeInfo.JobTitle = job.Description;
+                        }
 
-                            EmployeeInfo.FullName = e.FirstName + " " + e.MiddleName + " " + e.LastName;
-                            EmployeeInfo.BirthDate = e.DateOfBirth.ToShortDateString();
-                            EmployeeInfo.HireDate = e.HiredDate.ToShortDateString();
+                        var structure = db.MainCompanyStructures.FirstOrDefault(x => x.OrgStructureId == placement.Department);
+                        if (structure != null)
+                        {
+                            EmployeeInfo.Department = structure.Name;
+                        }
 
-                            if (placements.Count() > 0)
-                            {
-                                var placement = placements.Where(x => x.isCurrent).FirstOrDefault();
+                        var rank = db.Ranks.FirstOrDefault(x => x.RankId == placement.RankId);
+                        if (rank != null)
+                        {
+                            EmployeeInfo.RankName = rank.RankName;
+                        }
 
-                                if (placement != null)
-                                {
-                                    EmployeeInfo.Salary = placement.Salary;
-                                    EmployeeInfo.JobTitle =
-                                        jobs.Where(x => x.LookupId == placement.LookupId).FirstOrDefault().Description;
-                                    if (structurtes != null)
-                                    {
-                                        EmployeeInfo.Department =
-                                            structurtes.Where(x => x.OrgStructureId == placement.Department)
-                                                .FirstOrDefault()
-                                                .Name;
-                                    }
-                                    if (ranks.Count() > 0)
-                                    {
-
-                                        EmployeeInfo.RankName = ranks.
-                                            Where(x => x.RankId == placement.RankId).FirstOrDefault().RankName;
-                                    }
-                                    if (branches.Count() > 0)
-                                    {
-                                        if (placement.BranchId != 0)
-                                        {
-
-                                            EmployeeInfo.Branch =
-                                                branches.Where(x => x.BranchId == placement.BranchId).FirstOrDefault().AmharicName;
-                                        }
-                                    }
-
-                                }
-                            }
-                            EmployeeInfo.CurrentDateAmh = XAPI.EthiopicDateTime.GetEthiopicDate(DateTime.Now.Day, DateTime.Now.Month, DateTime.Now.Year);
-
-
-                            EmployeeInfoList.Add(EmployeeInfo);
+                        var branch = db.Branch.FirstOrDefault(x => x.BranchId == placement.BranchId);
+                        if (branch != null)
+                        {
+                            EmployeeInfo.Branch = branch.AmharicName;
                         }
 
                     }
 
+
+                    EmployeeInfo.CurrentDateAmh = XAPI.EthiopicDateTime.GetEthiopicDate(DateTime.Now.Day, DateTime.Now.Month, DateTime.Now.Year);
+
+                    EmployeeInfoList.Add(EmployeeInfo);
 
                 }
 
             }
 
-            return EmployeeInfoList;
+            List<RecruitmentExtLetterVM> recruitmentList = new List<RecruitmentExtLetterVM>();
+
+            foreach (var rec in EmployeeInfoList)
+            {
+                var letter = new RecruitmentExtLetterVM();
+
+                var template = db.Templates.FirstOrDefault(x => x.TemplateType == TemplateTypes.RecruitmentExternalLetterAm);
+
+                if (template != null)
+                {
+                    string doc = "";
+
+                    doc = template.Document.Replace("-Department-", rec.Department);
+                    doc = doc.Replace("-JobTitle-", rec.JobTitle);
+                    doc = doc.Replace("-Rank-", rec.RankName);
+                    doc = doc.Replace("-Salary-", rec.Salary.ToString());
+                    doc = doc.Replace("-HireDate-", rec.HireDate);
+
+                    letter.RecruitmentLetter = doc;
+
+                    letter.FullName = rec.FullName;
+                    letter.AmharicName = rec.AmharicName;
+                    letter.Address = rec.Address;
+
+                    recruitmentList.Add(letter);
+                }
+            }
+
+            return recruitmentList;
         }
 
 
     }
-    #endregion
 
-    #region
+    public class RecruitmentExtLetterVM
+    {
+        [AllowHtml]
+        public string RecruitmentLetter { get; set; }
+        public string FullName { get; set; }
 
-    
-
-    #endregion
-
-    #region Experience
-
-
-
-
-
-
-    #endregion
-
-    #region Termination
-
-
-
-
-   
-
-
+        public string Name { get; set; }
+        public string Address { get; set; }
+        public Image LogoFileName { get; set; }
+        public string Department { get; set; }
+        public string BirthDate { get; set; }
+        public string HireDate { get; set; }
+        public string CurrentDateAmh { get; set; }
+        public string JobTitle { get; set; }
+        public string RankName { get; set; }
+        public string Branch { get; set; }
+        public decimal Salary { get; set; }
+        public string Email { get; set; }
+        public string WebSite { get; set; }
+        public string City { get; set; }
+        public string Fax { get; set; }
+        public string Tel { get; set; }
+        public string Pobox { get; set; }
+        public string AmharicName { get; set; }
+        public string Abbreviation { get; set; }
+    }
 
     #endregion
 
@@ -529,7 +535,7 @@ namespace ExceedERP.Reporting.HRM.HRM.Letters
 
             foreach (var recruitmentVacancy in recruitementVacancies)
             {
-                var vacancy = db.VaccancyPlans.FirstOrDefault(x => x.VacancyId == recruitmentVacancy.VacancyId && !x.IsComplete);
+                var vacancy = db.VaccancyPlans.FirstOrDefault(x => x.VacancyId == recruitmentVacancy.VacancyId);
                 if (vacancy != null && vacancy.RecruSource == RecruitmentSource.INTERNAL)
                 {
                     recruit = new RecruitmentVacancy();
@@ -594,7 +600,7 @@ namespace ExceedERP.Reporting.HRM.HRM.Letters
 
             foreach (var recruitmentVacancy in recruitementVacancies)
             {
-                var vacancy = db.VaccancyPlans.FirstOrDefault(x => x.VacancyId == recruitmentVacancy.VacancyId && !x.IsComplete);
+                var vacancy = db.VaccancyPlans.FirstOrDefault(x => x.VacancyId == recruitmentVacancy.VacancyId);
                 if (vacancy != null && vacancy.RecruSource == RecruitmentSource.EXTERNAL)
                 {
                     recruit = new RecruitmentVacancy();

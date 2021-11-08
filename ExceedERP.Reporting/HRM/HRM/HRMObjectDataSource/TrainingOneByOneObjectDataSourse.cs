@@ -1,5 +1,6 @@
 ﻿using ExceedERP.Core.Domain.Common;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Reporting.HRM.HRM.HRMViewModel;
 using System;
 using System.Collections.Generic;
@@ -16,10 +17,10 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
         private ExceedDbContext db = new ExceedDbContext();
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<TrainingOneByeOneViewModel> GetTrainingsOneByOne(string year, string trainingType, string training, string branch)
+        public List<TrainingOneByeOneViewModel> GetTrainingsOneByOne(string year, string trainingType, string training, string branch, string orgId, string provider)
         {
             List<TrainingOneByeOneViewModel> trainingLists = new List<TrainingOneByeOneViewModel>();
-
+            
             TrainingType? tType = null;
             switch(trainingType)
             {
@@ -33,9 +34,11 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             }
 
             var trainings = db.CourseTrackings.ToList();
+
             if (year != null)
             {
-                trainings = trainings.Where(x => x.GlFiscalYearId.ToString() == year).ToList();
+                int.TryParse(year, out int GlFisicalYearId);
+                trainings = trainings.Where(x => x.GlFiscalYearId == GlFisicalYearId).ToList();
             }
             if (tType != null)
             {
@@ -43,11 +46,17 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             }
             if (training != null)
             {
-                trainings = trainings.Where(x => x.LookupId.ToString() == training).ToList();
+                int.TryParse(training, out int LookupId);
+                trainings = trainings.Where(x => x.LookupId == LookupId).ToList();
             }
             if(branch != null)
             {
-                trainings = trainings.Where(x => x.OrgBranchName.ToString() == branch).ToList() ;
+                trainings = trainings.Where(x => x.OrgBranchName == branch).ToList() ;
+            }
+            if(provider != null)
+            {
+                int.TryParse(provider, out int mainCompanyId);
+                trainings = trainings.Where(x=>x.MainCompanyId == mainCompanyId).ToList();
             }
            
             foreach (var train in trainings)
@@ -64,12 +73,29 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                 {
                     tr.Year = fiscalYear.Name;
                 }
+                var prov = db.Companies.FirstOrDefault(x => x.MainCompanyId == train.MainCompanyId);
+                if(prov != null)
+                {
+                    tr.Provider = prov.TradeName;
+                }
+
+                tr.Cost = train.Cost;
+
                 tr.TrainingEmployees = new List<TrainingEmployee>();
 
                 var trainees = db.Trainee.Where(x => x.CourseTrackingId == train.CourseTrackingId).ToList();
+                if (orgId != null)
+                {
+                    int.TryParse(orgId, out int orgStructureId);
+                    var empIds = EmployeeHelper.GetEmployees_ByDepartment_WithCaseTeam_FromPlacement(db.Placements.ToList(),orgStructureId).Select(x=>x.EmployeeId).ToList();
+                    trainees = trainees.Where(x => empIds.Contains(x.EmployeeId)).ToList();
+                }
+               
                 foreach (var tra in trainees)
                 {
                     var trainee = new TrainingEmployee();
+
+                    trainee.CostSingle = tr.Cost/trainees.Count;
 
                     var person = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == tra.EmployeeId);
                     if (person != null)
@@ -91,10 +117,24 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                         }
                     }
 
+                    bool check = tra.IsCompleteTraining;
+                    if(check)
+                    {
+                        trainee.Status = "Complete";
+                    }
+                    else
+                    {
+                        trainee.Status = "In Complete";
+                    }                   
+
                     tr.TrainingEmployees.Add(trainee);
                 }
 
-                trainingLists.Add(tr);
+                if(tr.TrainingEmployees.Any())
+                {
+                    tr.TotalEmployee = tr.TrainingEmployees.Count;
+                    trainingLists.Add(tr);
+                }             
             }
 
             return trainingLists;

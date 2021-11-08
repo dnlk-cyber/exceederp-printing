@@ -1,6 +1,7 @@
 ﻿@using System.Collections
 @using ExceedERP.Core.Domain.HRM.SelfCare
 @using ExceedERP.Core.Localization
+@using ExceedERP.Core.Domain.HRM.LeaveManagment
 
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
@@ -84,74 +85,158 @@
 
 <script id="template" type="text/kendo-tmpl">
     @(Html.Kendo().TabStrip()
-                                                                                                  .Name("tabstrip_#=LeaveRequestId#")
-                                                                                  .SelectedIndex(0)
-                                                                                  .Items(items =>
-                                                                                  {
-                                                                                      items.Add().Text(Resources.HR_RequestStatus).Content(
-                                                                                        @<text>
-                                                                                            @* <legend>Status</legend>*@
+                          .Name("tabstrip_#=LeaveRequestId#")
+              .SelectedIndex(0)
+              .Items(items =>
+              {
+                  items.Add().Text(Resources.HR_RequestStatus).Content(
+                    @<text>
+                        @* <legend>Status</legend>*@
 
-                                                                                            @(Html.Kendo().Grid<RequestesStatus>()
-                                                                                                                                                                                  .Name("RequestesStatusgrid_#=LeaveRequestId#")
-                                                                                                                                                                          .Columns(columns =>
-                                                                                                                                                                          {
-                                                                                                                                                                          //columns.Bound(c => c.RequestId);
-                                                                                                                                                                          columns.Bound(c => c.DateReqStatAm).Width(120);
-                                                                                                                                                                                      columns.Bound(c => c.Status).EditorTemplateName("Enum").Width(200);
-                                                                                                                                                                          //columns.ForeignKey(c => c.ApproverId, (IEnumerable)ViewData["UserName"], "EmployeeId", "UserName").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
-                                                                                                                                                                          columns.ForeignKey(c => c.ApproverId, (IEnumerable)ViewData["EmployeeName"], "EmployeeId", "FullNameAmharic").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
-                                                                                                                                                                                      columns.ForeignKey(c => c.ApproverDepartment, (IEnumerable)ViewData["Department"], "OrgStructureId", "Name").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
-                                                                                                                                                                                      columns.Bound(c => c.Remark).Width(100);
-                                                                                                                                                                                      columns.Command(command =>
-                                                                                                                                      {
-                                                                                                                                                              command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
-                                                                                                                                                              command.Destroy().Text(Resources.ActionButton_Cancel);
-                                                                                                                                                          }).Width(400);
-                                                                                                                                                                                  })
-                                                                                                                                                                          .ToolBar(toolbar =>
-                                                                                                                                                                          {
-                                                                                                                                                                          // toolbar.Custom().Action("SendForApproval", "LeaveRequestPersonal").Text(Resources.HR_Send_For_Approval);
-                                                                                                                                                                          //toolbar.Custom().Action("LeaveRequestLetter", "PrintableLetter", new { id = "#=LeaveRequestId#"}).Text("Print");
+                        @(Html.Kendo().Grid<RequestesStatus>()
+                                                 .Name("RequestesStatusgrid_#=LeaveRequestId#")
+                                         .Columns(columns =>
+                                         {
+                                             //columns.Bound(c => c.RequestId);
+                                             columns.Bound(c => c.DateReqStatAm).Width(120);
+                                             columns.Bound(c => c.Status).EditorTemplateName("EnumWithoutApprove").Width(200);
+                                             //columns.ForeignKey(c => c.ApproverId, (IEnumerable)ViewData["UserName"], "EmployeeId", "UserName").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
+                                             columns.ForeignKey(c => c.ApproverId, (IEnumerable)ViewData["EmployeeName"], "EmployeeId", "FullNameAmharic").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
+                                             columns.ForeignKey(c => c.ApproverDepartment, (IEnumerable)ViewData["Department"], "OrgStructureId", "Name").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
+                                             columns.Bound(c => c.Remark).Width(100);
 
-                                                                                                                                                                      })
+                                             columns.Command(command =>
+                                             {
+                                                 command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                                 command.Destroy().Text(Resources.ActionButton_Cancel);
+                                             }).Width(400);
+                                         })
+                                            .ToolBar(toolbar =>
+                                            {
+                                                // toolbar.Custom().Action("SendForApproval", "LeaveRequestPersonal").Text(Resources.HR_Send_For_Approval);
+                                                //toolbar.Custom().Action("LeaveRequestLetter", "PrintableLetter", new { id = "#=LeaveRequestId#"}).Text("Print");
 
-
-                                                                                                                                                                          .Editable(editable => editable.Mode(GridEditMode.InLine))
-                                                                                                                                                                          .Scrollable()
-                                                                                                                                                                          .DataSource(dataSource => dataSource
-                                                                                                                                                                              .Ajax()
-                                                                                                                                                                                         .Events(events =>
-                                                                                                                                                                                         {
-                                                                                                                                                                                                     events.Error("error_handler(\"RequestesStatusgrid_#=LeaveRequestId#\")");
-                                                                                                                                                                                                     events.RequestStart("onRequestStart(\"RequestesStatusgrid_#=LeaveRequestId#\")");
-                                                                                                                                                                                                     events.RequestEnd("onRequestEnd(\"RequestesStatusgrid_#=LeaveRequestId#\")");
-                                                                                                                                                                                                 })
-
-                                                                                                                                                           .Model(model =>
-                                                                                                                                                           {
-                                                                                                                                                                       model.Id(p => p.RequestStatusId);
-                                                                                                                                                                       model.Field(p => p.Date).Editable(false).DefaultValue(DateTime.Today);
-                                                                                                                                                                       model.Field(p => p.ApproverId).Editable(false);
-                                                                                                                                                                       model.Field(p => p.ApproverDepartment).Editable(false);
-                                                                                                                                                                   })
-                                                                                                                                                                                                    .Read(read => read.Action("RequestesStatus_Read", "RequestesStatus", new { id = "#=LeaveRequestId#", referenceType = "Leave" }))
-                                                                                                                                                                                                .Create(create => create.Action("RequestesStatus_Create", "RequestesStatus", new { id = "#=LeaveRequestId#", referenceType2 = "Leave" }))
-                                                                                                                                                                                                  .Update(update => update.Action("RequestesStatus_Update", "RequestesStatus"))
-                                                                                                                                                                                                  .Destroy(destroy => destroy.Action("RequestesStatus_Destroy", "RequestesStatus"))
-                                                                                                                                                                          ).ToClientTemplate()
-                                                                                            )
-                                                                                            @*<a onclick='return sendForApproval("#=IssueID#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>*@
-                                                                                            <a onclick='return sendForApproval("#=LeaveRequestId#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>&nbsp;&nbsp;&nbsp;
-                                                                                            <a href='@Url.Action("LeaveRequestLetter", "PrintableLetter")/?id=#=LeaveRequestId#' title="Print"><i class="fa fa-print fa-2x"></i></a>
-                                                                                        </text>
-                                                                                                                );
+                                            })
 
 
-                                                                                  //*****************************************************************************************************//
+                                            .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                            .Scrollable()
+                                            .DataSource(dataSource => dataSource
+                                                .Ajax()
+                                                           .Events(events =>
+                                                           {
+                                                               events.Error("error_handler(\"RequestesStatusgrid_#=LeaveRequestId#\")");
+                                                               events.RequestStart("onRequestStart(\"RequestesStatusgrid_#=LeaveRequestId#\")");
+                                                               events.RequestEnd("onRequestEnd(\"RequestesStatusgrid_#=LeaveRequestId#\")");
+                                                           })
 
-                                                                              }).ToClientTemplate())
+                                                                     .Model(model =>
+                                                                     {
+                                                                         model.Id(p => p.RequestStatusId);
+                                                                         model.Field(p => p.Date).Editable(false).DefaultValue(DateTime.Today);
+                                                                         model.Field(p => p.ApproverId).Editable(false);
+                                                                         model.Field(p => p.ApproverDepartment).Editable(false);
+                                                                     })
+                                                                .Read(read => read.Action("RequestesStatus_Read", "RequestesStatus", new { id = "#=LeaveRequestId#", referenceType = "Leave" }))
+                                                            .Create(create => create.Action("RequestesStatus_Create", "RequestesStatus", new { id = "#=LeaveRequestId#", referenceType2 = "Leave" }))
+                                                              .Update(update => update.Action("RequestesStatus_Update", "RequestesStatus"))
+                                                              .Destroy(destroy => destroy.Action("RequestesStatus_Destroy", "RequestesStatus"))
+                                           ).ToClientTemplate()
+                        )
+                        @*<a onclick='return sendForApproval("#=IssueID#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>*@
+                        <a onclick='return sendForApproval("#=LeaveRequestId#")' href=' \#' title="Send for Approval"><i class="fa fa-share-square fa-2x"></i></a>&nbsp;&nbsp;&nbsp;
+                        <a href='@Url.Action("LeaveRequestLetter", "PrintableLetter")/?id=#=LeaveRequestId#' title="Print"><i class="fa fa-print fa-2x"></i></a>
+                    </text>
+                                                                    );
+
+
+              //*****************************************************************************************************//
+
+
+              items.Add().Text("Leave Return").Content(
+                @<text>
+                    @* <legend>Status</legend>*@
+
+                    @(Html.Kendo().Grid<LeaveReturn>()
+                              .Name("LeaveReturngrid#=LeaveRequestId#")
+                          .Columns(columns =>
+                          {
+                              //  columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeName"], "EmployeeId", "FullNameAmharic").EditorTemplateName("ListOfEmployee").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
+
+                              // columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["PeriodList"], "GlFiscalYearId", "Name").EditorTemplateName("GLFPeriod").Width(80);
+                              columns.Bound(c => c.FromAm).EditorTemplateName("Calander").Width(80);
+                              columns.Bound(c => c.ToAm).EditorTemplateName("Calander").Width(80);
+                              columns.Bound(c => c.Amount).Width(60);
+                              //columns.Bound(c => c.LeaveRequestId);
+                              columns.Command(command =>
+                              {
+                                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                  command.Destroy().Text(Resources.ActionButton_Cancel);
+                                  //  command.Custom("Print").Text("Print");
+                              }).Width(250);
+
+                          })
+                          .ToolBar(toolbar =>
+                          {
+
+                              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                          })
+
+                      .Editable(editable => editable.Mode(GridEditMode.InLine).TemplateName("LeaveReturn").Window(window => { window.Title("Leave Void"); window.Scrollable(false); }))
+
+                        .Scrollable(h => h.Height(500))
+                                          //  .Groupable()
+                                          .Sortable(sortable =>
+                                          {
+                                              sortable.SortMode(GridSortMode.SingleColumn);
+                                          })
+                              .Filterable()
+                                   .Events(e =>
+                                   {
+                                       e.Save("GetDateForVoid");
+                                       e.Edit("GetDateForVoid");
+                                       //e.DataBound("onDataBound");
+                                   })
+
+                                 .Pageable(pageable => pageable
+                                                            .Input(true)
+                                                            .Numeric(false)
+                                                            .Refresh(true)
+                                                            .PageSizes(true)
+                                                            .ButtonCount(5))
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+                                // .Sort(sort => sort.Add("LeaveReturnId").Descending())
+                                .Events(events =>
+                                {
+                                    events.Error("error_handler(\"LeaveReturngrid#=LeaveRequestId#\")");
+                                    events.RequestStart("onRequestStart(\"LeaveReturngrid#=LeaveRequestId#\")");
+                                    events.RequestEnd("onRequestEnd(\"LeaveReturngrid#=LeaveRequestId#\")");
+                                })
+
+                           .Model(model =>
+                           {
+                               model.Id(p => p.LeaveReturnId);
+                               model.Field(p => p.Amount).Editable(false);
+                           })
+                          .Read(read => read.Action("LeaveReturnPersonal_Read", "LeaveReturnPersonal", new { id = "#=LeaveRequestId#" }))
+                          .Create(create => create.Action("LeaveReturnPersonal_Create", "LeaveReturnPersonal", new { id = "#=LeaveRequestId#" }))
+                          .Update(update => update.Action("LeaveReturnPersonal_Update", "LeaveReturnPersonal"))
+                          .Destroy(destroy => destroy.Action("LeaveReturnPersonal_Destroy", "LeaveReturnPersonal"))
+                                        ).ToClientTemplate()
+                    )
+                  
+                </text>
+                             );
+
+
+                  }).ToClientTemplate())
 </script>
+
+
+
+
+
 <style type="text/css">
     div.k-edit-form-container {
         width: 850px;
@@ -201,12 +286,17 @@
     }
 </script>
 <script>
+    function GetDateForVoid() {
+        $("#FromAm").trigger("change");
+        $("#ToAm").trigger("change");
+    }
     function GetDate() {
 
         var x = AssignDate();
         var y = x;
         $("#FromAmharic").trigger("change");
         $("#ToAmharic").trigger("change");
+       
         for (var o in y) {
             $.ajax({
                 contentType: "application/json; charset=utf-8",
@@ -572,3 +662,5 @@
         });
     }
 </script>
+
+

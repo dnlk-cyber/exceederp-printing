@@ -16,7 +16,7 @@ namespace ExceedERP.Core.Domain.HRM.EmployeeDetail
 		[Display(Name = "HR_EmployeeDetail_Emergency_Relationship", ResourceType = typeof(Localization.Resources))]
 		 
 		public int LookupId { get; set; }
-		public virtual Lookup Lookup { get; set; }
+		//public virtual Lookup Lookup { get; set; }
 		[Display(Name = "HR_EmployeeDetail_Emergency_HomePhoneNo", ResourceType = typeof(Localization.Resources))]
 		//[RegularExpression(@"^[0-9]+$", ErrorMessage = "Please enter a valid home phone no")]
 		public string HomePhoneNo { get; set; }

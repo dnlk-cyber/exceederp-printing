@@ -40,10 +40,6 @@ namespace ExceedERP.Reporting.HRM.Payroll
             this.textBox11 = new Telerik.Reporting.TextBox();
             this.bonusBankPaymentObjectDataSource = new Telerik.Reporting.ObjectDataSource();
             this.pageHeaderSection1 = new Telerik.Reporting.PageHeaderSection();
-            this.pageFooterSection1 = new Telerik.Reporting.PageFooterSection();
-            this.textBox10 = new Telerik.Reporting.TextBox();
-            this.reportHeaderSection1 = new Telerik.Reporting.ReportHeaderSection();
-            this.Organization = new Telerik.Reporting.ObjectDataSource();
             this.panel1 = new Telerik.Reporting.Panel();
             this.txtOrgName = new Telerik.Reporting.TextBox();
             this.pbOrgLogo = new Telerik.Reporting.PictureBox();
@@ -52,7 +48,11 @@ namespace ExceedERP.Reporting.HRM.Payroll
             this.textBox12 = new Telerik.Reporting.TextBox();
             this.textBox14 = new Telerik.Reporting.TextBox();
             this.shape1 = new Telerik.Reporting.Shape();
+            this.pageFooterSection1 = new Telerik.Reporting.PageFooterSection();
+            this.textBox10 = new Telerik.Reporting.TextBox();
+            this.reportHeaderSection1 = new Telerik.Reporting.ReportHeaderSection();
             this.textBox9 = new Telerik.Reporting.TextBox();
+            this.Organization = new Telerik.Reporting.ObjectDataSource();
             ((System.ComponentModel.ISupportInitialize)(this)).BeginInit();
             // 
             // textBox1
@@ -110,8 +110,8 @@ namespace ExceedERP.Reporting.HRM.Payroll
             this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.6239523887634277D)));
             this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.6239523887634277D)));
             this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.6239523887634277D)));
-            this.table1.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D)));
-            this.table1.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D)));
+            this.table1.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.20000003278255463D)));
+            this.table1.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.20000003278255463D)));
             this.table1.Body.SetCellContent(0, 0, this.textBox5);
             this.table1.Body.SetCellContent(0, 1, this.textBox6);
             this.table1.Body.SetCellContent(0, 2, this.textBox7);
@@ -152,6 +152,7 @@ namespace ExceedERP.Reporting.HRM.Payroll
             tableGroup5.Name = "Detail";
             this.table1.RowGroups.Add(tableGroup5);
             this.table1.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(6.4958095550537109D), Telerik.Reporting.Drawing.Unit.Inch(0.60000002384185791D));
+            this.table1.Sortings.Add(new Telerik.Reporting.Sorting("= Fields.EmpID", Telerik.Reporting.SortDirection.Asc));
             this.table1.StyleName = " Civic.TableNormal";
             // 
             // textBox5
@@ -203,7 +204,7 @@ namespace ExceedERP.Reporting.HRM.Payroll
             // bonusBankPaymentObjectDataSource
             // 
             this.bonusBankPaymentObjectDataSource.DataMember = "GetBonusBankPaymentListsByYear";
-            this.bonusBankPaymentObjectDataSource.DataSource = typeof(BonusBankPaymentListObjectDataSource);
+            this.bonusBankPaymentObjectDataSource.DataSource = typeof(ExceedERP.Reporting.HRM.Payroll.DataSource.BonusBankPaymentListObjectDataSource);
             this.bonusBankPaymentObjectDataSource.Name = "bonusBankPaymentObjectDataSource";
             this.bonusBankPaymentObjectDataSource.Parameters.AddRange(new Telerik.Reporting.ObjectDataSourceParameter[] {
             new Telerik.Reporting.ObjectDataSourceParameter("fyear", typeof(string), "= Parameters.fyear.Value")});
@@ -214,35 +215,6 @@ namespace ExceedERP.Reporting.HRM.Payroll
             this.pageHeaderSection1.Items.AddRange(new Telerik.Reporting.ReportItemBase[] {
             this.panel1});
             this.pageHeaderSection1.Name = "pageHeaderSection1";
-            // 
-            // pageFooterSection1
-            // 
-            this.pageFooterSection1.Height = Telerik.Reporting.Drawing.Unit.Inch(0.60000008344650269D);
-            this.pageFooterSection1.Items.AddRange(new Telerik.Reporting.ReportItemBase[] {
-            this.textBox10});
-            this.pageFooterSection1.Name = "pageFooterSection1";
-            // 
-            // textBox10
-            // 
-            this.textBox10.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(4.90625D), Telerik.Reporting.Drawing.Unit.Inch(0.3958333432674408D));
-            this.textBox10.Name = "textBox10";
-            this.textBox10.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.5748031139373779D), Telerik.Reporting.Drawing.Unit.Inch(0.19995993375778198D));
-            this.textBox10.Style.Font.Bold = true;
-            this.textBox10.Style.Font.Name = "Segoe UI";
-            this.textBox10.Value = "Page: {PageNumber}";
-            // 
-            // reportHeaderSection1
-            // 
-            this.reportHeaderSection1.Height = Telerik.Reporting.Drawing.Unit.Inch(0.20003938674926758D);
-            this.reportHeaderSection1.Items.AddRange(new Telerik.Reporting.ReportItemBase[] {
-            this.textBox9});
-            this.reportHeaderSection1.Name = "reportHeaderSection1";
-            // 
-            // Organization
-            // 
-            this.Organization.DataMember = "GetOrganization";
-            this.Organization.DataSource = typeof(ExceedERP.Reporting.SharedDataSources.OrganizationObjectDataSource);
-            this.Organization.Name = "Organization";
             // 
             // panel1
             // 
@@ -326,6 +298,29 @@ namespace ExceedERP.Reporting.HRM.Payroll
             this.shape1.Style.BorderWidth.Top = Telerik.Reporting.Drawing.Unit.Point(1.5D);
             this.shape1.Style.Color = System.Drawing.Color.Transparent;
             // 
+            // pageFooterSection1
+            // 
+            this.pageFooterSection1.Height = Telerik.Reporting.Drawing.Unit.Inch(0.60000008344650269D);
+            this.pageFooterSection1.Items.AddRange(new Telerik.Reporting.ReportItemBase[] {
+            this.textBox10});
+            this.pageFooterSection1.Name = "pageFooterSection1";
+            // 
+            // textBox10
+            // 
+            this.textBox10.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(4.90625D), Telerik.Reporting.Drawing.Unit.Inch(0.3958333432674408D));
+            this.textBox10.Name = "textBox10";
+            this.textBox10.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.5748031139373779D), Telerik.Reporting.Drawing.Unit.Inch(0.19995993375778198D));
+            this.textBox10.Style.Font.Bold = true;
+            this.textBox10.Style.Font.Name = "Segoe UI";
+            this.textBox10.Value = "Page: {PageNumber}";
+            // 
+            // reportHeaderSection1
+            // 
+            this.reportHeaderSection1.Height = Telerik.Reporting.Drawing.Unit.Inch(0.20003938674926758D);
+            this.reportHeaderSection1.Items.AddRange(new Telerik.Reporting.ReportItemBase[] {
+            this.textBox9});
+            this.reportHeaderSection1.Name = "reportHeaderSection1";
+            // 
             // textBox9
             // 
             this.textBox9.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(0D), Telerik.Reporting.Drawing.Unit.Inch(3.9418537198798731E-05D));
@@ -333,6 +328,12 @@ namespace ExceedERP.Reporting.HRM.Payroll
             this.textBox9.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(3.6000001430511475D), Telerik.Reporting.Drawing.Unit.Inch(0.19999997317790985D));
             this.textBox9.Style.Font.Bold = true;
             this.textBox9.Value = "Fiscal Year: {=Parameters.fyear.Label}   ";
+            // 
+            // Organization
+            // 
+            this.Organization.DataMember = "GetOrganization";
+            this.Organization.DataSource = typeof(ExceedERP.Reporting.SharedDataSources.OrganizationObjectDataSource);
+            this.Organization.Name = "Organization";
             // 
             // rptBonusBankPaymentList
             // 

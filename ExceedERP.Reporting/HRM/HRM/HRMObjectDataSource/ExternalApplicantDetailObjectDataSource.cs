@@ -81,7 +81,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                                     }
                                     internalVacancy.No = internalVacancies.Count + 1;
 
-                                    internalVacancy.ApplicantName = a.ApplicantName;
+                                   // internalVacancy.ApplicantName = a.ApplicantName;
 
 
 
@@ -93,40 +93,40 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                                     foreach (var e in empOtherEx)
                                     {
                                         otherexplist = new ExternalApplicantExpriance();
-                                        otherexplist.From = e.From.ToShortDateString();
-                                        otherexplist.To = e.To.ToShortDateString();
+                                        //otherexplist.From = e.From.ToShortDateString();
+                                        //otherexplist.To = e.To.ToShortDateString();
                                         otherexplist.CompanyName = e.OrganizationName;
-                                        var orDefault = lookups.Where(x => x.LookupId == e.EducField).FirstOrDefault();
-                                        if (orDefault != null)
-                                            otherexplist.EduField = orDefault.Description;
+                                        //var orDefault = lookups.Where(x => x.LookupId == e.EducField).FirstOrDefault();
+                                        //if (orDefault != null)
+                                        //    otherexplist.EduField = orDefault.Description;
 
-                                        var @default = lookups.Where(x => x.LookupId == e.EduLevel).FirstOrDefault();
-                                        if (@default != null)
-                                            otherexplist.EduLevel = @default.Description;
-                                        otherexplist.JobTitleName = e.Postion;                                    
+                                        //var @default = lookups.Where(x => x.LookupId == e.EduLevel).FirstOrDefault();
+                                        //if (@default != null)
+                                        //    otherexplist.EduLevel = @default.Description;
+                                        //otherexplist.JobTitleName = e.Postion;                                    
                                         
-                                        var fromc = new DateTime(e.From.Year, e.From.Month, e.From.Day);
-                                        var toc = new DateTime(e.To.Year, e.To.Month, e.To.Day);
+                                        //var fromc = new DateTime(e.From.Year, e.From.Month, e.From.Day);
+                                        //var toc = new DateTime(e.To.Year, e.To.Month, e.To.Day);
 
-                                        var totalmonths = (toc.Year - fromc.Year) * 12 + toc.Month - fromc.Month;
-                                        totalmonths += toc.Day < fromc.Day ? -1 : 0;
+                                        //var totalmonths = (toc.Year - fromc.Year) * 12 + toc.Month - fromc.Month;
+                                        //totalmonths += toc.Day < fromc.Day ? -1 : 0;
 
-                                        var years = totalmonths / 12;
-                                        var months = totalmonths % 12;
-                                        var dayss = fromc.Subtract(toc.AddMonths(totalmonths)).Days;
+                                        //var years = totalmonths / 12;
+                                        //var months = totalmonths % 12;
+                                        //var dayss = fromc.Subtract(toc.AddMonths(totalmonths)).Days;
 
-                                        int year = years;
-                                        int month = months;
-                                        int days = dayss;
-                                        otherexplist.Year = XAPI.Common.GetYearMonthDay(e.From, e.To);
-                                        TotalYear += year;
-                                        TotalMonth += month;
-                                        TotalDays += days;
+                                        //int year = years;
+                                        //int month = months;
+                                        //int days = dayss;
+                                        //otherexplist.Year = XAPI.Common.GetYearMonthDay(e.From, e.To);
+                                        //TotalYear += year;
+                                        //TotalMonth += month;
+                                        //TotalDays += days;
                                        
-                                        string val = XAPI.Common.GetConcatenatedYearMonthDay(e.From, e.To);
-                                        otherexplist.DYear = Convert.ToInt32(val.Split('-')[0]);
-                                        otherexplist.DMonth = Convert.ToInt32(val.Split('-')[1]);
-                                        otherexplist.DMonth = Convert.ToInt32(val.Split('-')[1]);
+                                        //string val = XAPI.Common.GetConcatenatedYearMonthDay(e.From, e.To);
+                                        //otherexplist.DYear = Convert.ToInt32(val.Split('-')[0]);
+                                        //otherexplist.DMonth = Convert.ToInt32(val.Split('-')[1]);
+                                        //otherexplist.DMonth = Convert.ToInt32(val.Split('-')[1]);
 
                                         internalVacancy.OtherExpriance.Add(otherexplist);
                                     }
@@ -169,15 +169,15 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                                     {
                                         educationList = new ExternalApplicantEducation();
                                         //   educationList.From = e.From.ToShortDateString();
-                                        educationList.To = e.To.ToShortDateString();
-                                        educationList.EduInst = e.EducationInstitution;
-                                        var orDefault = lookups.Where(x => x.LookupId == e.EducField).FirstOrDefault();
-                                        if (orDefault != null)
-                                            educationList.EduField = orDefault.Description;
+                                        //educationList.To = e.To.ToShortDateString();
+                                        //educationList.EduInst = e.EducationInstitution;
+                                        //var orDefault = lookups.Where(x => x.LookupId == e.EducField).FirstOrDefault();
+                                        //if (orDefault != null)
+                                        //    educationList.EduField = orDefault.Description;
 
-                                        var @default = lookups.Where(x => x.LookupId == e.EduLevel).FirstOrDefault();
-                                        if (@default != null)
-                                            educationList.EduLevel = @default.Description;
+                                        //var @default = lookups.Where(x => x.LookupId == e.EduLevel).FirstOrDefault();
+                                        //if (@default != null)
+                                        //    educationList.EduLevel = @default.Description;
 
                                         internalVacancy.Education.Add(educationList);
                                     }
@@ -261,7 +261,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                                     }
                                 internalVacancy.No = internalVacancies.Count + 1;
 
-                                    internalVacancy.ApplicantName = a.ApplicantName;
+                                    //internalVacancy.ApplicantName = a.ApplicantName;
 
 
 
@@ -272,39 +272,39 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                                     var empEduc = educationsList.Where(x => x.ApplicantRegistrationId == a.ApplicantRegistrationId).ToList();
                                     foreach (var e in empOtherEx)
                                     {
-                                        otherexplist = new ExternalApplicantExpriance();
-                                        otherexplist.From = e.From.ToShortDateString();
-                                        otherexplist.To = e.To.ToShortDateString();
-                                        otherexplist.CompanyName = e.OrganizationName;
-                                        var orDefault = lookups.Where(x => x.LookupId == e.EducField).FirstOrDefault();
-                                        if (orDefault != null)
-                                            otherexplist.EduField = orDefault.Description;
+                                        //otherexplist = new ExternalApplicantExpriance();
+                                        //otherexplist.From = e.From.ToShortDateString();
+                                        //otherexplist.To = e.To.ToShortDateString();
+                                        //otherexplist.CompanyName = e.OrganizationName;
+                                        //var orDefault = lookups.Where(x => x.LookupId == e.EducField).FirstOrDefault();
+                                        //if (orDefault != null)
+                                        //    otherexplist.EduField = orDefault.Description;
 
-                                        var @default = lookups.Where(x => x.LookupId == e.EduLevel).FirstOrDefault();
-                                        if (@default != null)
-                                            otherexplist.EduLevel = @default.Description;
-                                        otherexplist.JobTitleName = e.Postion;
-                                    var fromc = new DateTime(e.From.Year, e.From.Month, e.From.Day);
-                                    var toc = new DateTime(e.To.Year, e.To.Month, e.To.Day);
+                                        //var @default = lookups.Where(x => x.LookupId == e.EduLevel).FirstOrDefault();
+                                        //if (@default != null)
+                                        //    otherexplist.EduLevel = @default.Description;
+                                    //    otherexplist.JobTitleName = e.Postion;
+                                    //var fromc = new DateTime(e.From.Year, e.From.Month, e.From.Day);
+                                    //var toc = new DateTime(e.To.Year, e.To.Month, e.To.Day);
 
-                                    var totalmonths = (toc.Year - fromc.Year) * 12 + toc.Month - fromc.Month;
-                                    totalmonths += toc.Day < fromc.Day ? -1 : 0;
+                                    //var totalmonths = (toc.Year - fromc.Year) * 12 + toc.Month - fromc.Month;
+                                    //totalmonths += toc.Day < fromc.Day ? -1 : 0;
 
-                                    var years = totalmonths / 12;
-                                    var months = totalmonths % 12;
-                                    var dayss = fromc.Subtract(toc.AddMonths(totalmonths)).Days;
+                                    //var years = totalmonths / 12;
+                                    //var months = totalmonths % 12;
+                                    //var dayss = fromc.Subtract(toc.AddMonths(totalmonths)).Days;
 
-                                    int year = years;
-                                    int month = months;
-                                    int days = dayss;
-                                    otherexplist.Year = XAPI.Common.GetYearMonthDay(e.From, e.To);
-                                    TotalYear += year;
-                                        TotalMonth += month;
-                                        TotalDays += days;
-                                    string val = XAPI.Common.GetConcatenatedYearMonthDay(e.From, e.To);
-                                    otherexplist.DYear = Convert.ToInt32(val.Split('-')[0]);
-                                    otherexplist.DMonth = Convert.ToInt32(val.Split('-')[1]);
-                                    otherexplist.DMonth = Convert.ToInt32(val.Split('-')[1]);
+                                    //int year = years;
+                                    //int month = months;
+                                    //int days = dayss;
+                                    //otherexplist.Year = XAPI.Common.GetYearMonthDay(e.From, e.To);
+                                    //TotalYear += year;
+                                    //    TotalMonth += month;
+                                    //    TotalDays += days;
+                                    //string val = XAPI.Common.GetConcatenatedYearMonthDay(e.From, e.To);
+                                    //otherexplist.DYear = Convert.ToInt32(val.Split('-')[0]);
+                                    //otherexplist.DMonth = Convert.ToInt32(val.Split('-')[1]);
+                                    //otherexplist.DMonth = Convert.ToInt32(val.Split('-')[1]);
 
                                     internalVacancy.OtherExpriance.Add(otherexplist);
                                     }
@@ -345,19 +345,19 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                                 internalVacancy.TotalExpriance = XAPI.Common.GetYearAndMonth(TotalYear, TotalMonth, TotalDays);
                                 foreach (var e in empEduc)
                                     {
-                                        educationList = new ExternalApplicantEducation();
-                                        //   educationList.From = e.From.ToShortDateString();
-                                        educationList.To = e.To.ToShortDateString();
-                                        educationList.EduInst = e.EducationInstitution;
-                                        var orDefault = lookups.Where(x => x.LookupId == e.EducField).FirstOrDefault();
-                                        if (orDefault != null)
-                                            educationList.EduField = orDefault.Description;
+                                        //educationList = new ExternalApplicantEducation();
+                                        ////   educationList.From = e.From.ToShortDateString();
+                                        //educationList.To = e.To.ToShortDateString();
+                                        //educationList.EduInst = e.EducationInstitution;
+                                        //var orDefault = lookups.Where(x => x.LookupId == e.EducField).FirstOrDefault();
+                                        //if (orDefault != null)
+                                        //    educationList.EduField = orDefault.Description;
 
-                                        var @default = lookups.Where(x => x.LookupId == e.EduLevel).FirstOrDefault();
-                                        if (@default != null)
-                                            educationList.EduLevel = @default.Description;
+                                        //var @default = lookups.Where(x => x.LookupId == e.EduLevel).FirstOrDefault();
+                                        //if (@default != null)
+                                        //    educationList.EduLevel = @default.Description;
 
-                                        internalVacancy.Education.Add(educationList);
+                                        //internalVacancy.Education.Add(educationList);
                                     }
                                     internalVacancy.Trainings = new List<EmpApplicantTraining>();
                                     var emptrainings = trainingList.Where(x => x.ApplicantRegistrationId == a.ApplicantRegistrationId).ToList();

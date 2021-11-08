@@ -1909,6 +1909,18 @@
       <DependentUpon>MaintenanceForm.cs</DependentUpon>
     </Compile>
     <Compile Include="HelpDesk\ViewModel\MaintenanceFormVM.cs" />
+    <Compile Include="HRM\HRM\AttendanceLetter.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\AttendanceLetter.Designer.cs">
+      <DependentUpon>AttendanceLetter.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HRM\HRM\AttendanceWeek.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\AttendanceWeek.Designer.cs">
+      <DependentUpon>AttendanceWeek.cs</DependentUpon>
+    </Compile>
     <Compile Include="HRM\HRM\Commitment.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -1946,6 +1958,7 @@
       <DependentUpon>HealthPaymentSelfCare.cs</DependentUpon>
     </Compile>
     <Compile Include="HRM\HRM\HRMObjectDataSource\AllDepartmentsListODS.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\AttendanceLetterODS.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\AttendanceListObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\ChangeOfPayrollBenefitObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\ChangeOfPayrollObjectDataSource.cs" />
@@ -1967,15 +1980,19 @@
     <Compile Include="HRM\HRM\HRMObjectDataSource\LaboratoryFormRequestHeadersObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\LaboratoryRequestFormObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\LeaveOneByOneDetailSelfCareObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\ManPowerPlanningRequestODS.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\MonthlySalaryPerPeriodObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\NotPlacedEmployeesObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\ProbationPerformanceMeasureODS.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\ProjectObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\ReferalSheetObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\TrainingAndEducationOneByOneODS.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\TrainingEvaluationEvaluaterInfoODS.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\TrainingEvaluationODS.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\TrainingOneByOneObjectDataSourse.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\TrainingRequestODS.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\AttendanceHeaderVM.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\AttendanceLeterVM.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\ChangeOfPayrollBenefitVM.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\ChangeOfPayrollVM.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\ClinicViewModel.cs" />
@@ -1983,6 +2000,7 @@
     <Compile Include="HRM\HRM\HRMViewModel\CompanyStructureVM.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\ComplainVM.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\CosignVM.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\csvColumnHidingVM.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\DelegationCCVM.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\DeligationVM.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\EmployeeHealthPayment.cs" />
@@ -1998,6 +2016,7 @@
     <Compile Include="HRM\HRM\HRMViewModel\LaboratoryRequestTestsVM.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\LeaveBalanceViewModel.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\LeaveRequestLetterVM.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\ManPowerRequestVM.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\MonthlySalaryPerPeriodVM.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\NotPlacedEmployeeVM.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\ProbationMeasureDetailVM.cs" />
@@ -2005,14 +2024,9 @@
     <Compile Include="HRM\HRM\HRMViewModel\ReferalSheetVM.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\TerminationAcceptanceLetterVM.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\TrainingAndEducationOneByeOneVM.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\TrainingEvaluationVM.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\TrainingOneByeOneViewModel.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\TrainingReqeustVM.cs" />
-    <Compile Include="HRM\HRM\LaboratoryRequestForm.cs">
-      <SubType>Component</SubType>
-    </Compile>
-    <Compile Include="HRM\HRM\LaboratoryRequestForm.designer.cs">
-      <DependentUpon>LaboratoryRequestForm.cs</DependentUpon>
-    </Compile>
     <Compile Include="HRM\HRM\LeaveOnebyOneSelfCare.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -2061,11 +2075,30 @@
     </Compile>
     <Compile Include="HRM\HRM\Letters\LeaveRequestLetterODS.cs" />
     <Compile Include="HRM\HRM\Letters\LetterObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\Letters\ManPowerPlanningRequestLetter.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\Letters\ManPowerPlanningRequestLetter.Designer.cs">
+      <DependentUpon>ManPowerPlanningRequestLetter.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HRM\HRM\Letters\RecruitmentRequestLetter.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\Letters\RecruitmentRequestLetter.designer.cs">
+      <DependentUpon>RecruitmentRequestLetter.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HRM\HRM\Letters\RecruitmentRequestLetterODS.cs" />
     <Compile Include="HRM\HRM\Letters\ReferalSheet.cs">
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="HRM\HRM\Letters\ReferalSheet.designer.cs">
       <DependentUpon>ReferalSheet.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HRM\HRM\Letters\rptAttendanceLetter.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\Letters\rptAttendanceLetter.designer.cs">
+      <DependentUpon>rptAttendanceLetter.cs</DependentUpon>
     </Compile>
     <Compile Include="HRM\HRM\Letters\TerminationAcceptanceLetter.cs">
       <SubType>Component</SubType>
@@ -2087,6 +2120,12 @@
     </Compile>
     <Compile Include="HRM\HRM\NotPlacedEmployees.designer.cs">
       <DependentUpon>NotPlacedEmployees.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HRM\HRM\Report1.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\Report1.designer.cs">
+      <DependentUpon>Report1.cs</DependentUpon>
     </Compile>
     <Compile Include="HRM\HRM\rptClinicReport.cs">
       <SubType>Component</SubType>
@@ -2129,6 +2168,12 @@
     </Compile>
     <Compile Include="HRM\HRM\TrainingAndEducationOneByOne.designer.cs">
       <DependentUpon>TrainingAndEducationOneByOne.cs</DependentUpon>
+    </Compile>
+    <Compile Include="HRM\HRM\TrainingEvaluation.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\TrainingEvaluation.Designer.cs">
+      <DependentUpon>TrainingEvaluation.cs</DependentUpon>
     </Compile>
     <Compile Include="HRM\HRM\TrainingOneByeOne.cs">
       <SubType>Component</SubType>
@@ -4041,6 +4086,7 @@
     <Compile Include="SharedDataSources\JobTitleObjectDataSource.cs" />
     <Compile Include="SharedDataSources\LeavePeriodObjectDataSource.cs" />
     <Compile Include="SharedDataSources\LeaveTypeObjectDataSource.cs" />
+    <Compile Include="SharedDataSources\LetterLanguageODS.cs" />
     <Compile Include="SharedDataSources\LetterTypeObjectDataSource.cs" />
     <Compile Include="SharedDataSources\LookupObjectDataSource.cs" />
     <Compile Include="SharedDataSources\NationObjectDataSource.cs" />
@@ -4056,10 +4102,12 @@
     <Compile Include="SharedDataSources\RetireNofificationNumberObjectDataSource.cs" />
     <Compile Include="SharedDataSources\SalaryObjectDataSource.cs" />
     <Compile Include="SharedDataSources\SexObjectDataSource.cs" />
+    <Compile Include="SharedDataSources\SourceODS.cs" />
     <Compile Include="SharedDataSources\TerminationTypeObjectDataSource.cs" />
     <Compile Include="SharedDataSources\TitleObjectDataSource.cs" />
     <Compile Include="SharedDataSources\TrainingObjectDataSource.cs" />
     <Compile Include="SharedDataSources\TrainingOrEducationODS.cs" />
+    <Compile Include="SharedDataSources\TrainingProviderODS.cs" />
     <Compile Include="SharedDataSources\TrainingsODS.cs" />
     <Compile Include="SharedDataSources\TrainingStatusObjectDataSource.cs" />
     <Compile Include="SharedDataSources\TrainingTypeObjectDataSource.cs" />
@@ -5035,6 +5083,12 @@
     <EmbeddedResource Include="HelpDesk\Designer\MaintenanceForm.resx">
       <DependentUpon>MaintenanceForm.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="HRM\HRM\AttendanceLetter.resx">
+      <DependentUpon>AttendanceLetter.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="HRM\HRM\AttendanceWeek.resx">
+      <DependentUpon>AttendanceWeek.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\Commitment.resx">
       <DependentUpon>Commitment.cs</DependentUpon>
     </EmbeddedResource>
@@ -5070,9 +5124,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\InVacRpt.resx">
       <DependentUpon>InVacRpt.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\LaboratoryRequestForm.resx">
-      <DependentUpon>LaboratoryRequestForm.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\LeaveOnebyOne.resx">
       <DependentUpon>LeaveOnebyOne.cs</DependentUpon>
@@ -5110,6 +5161,9 @@
     <EmbeddedResource Include="HRM\HRM\Letters\LeaveRequestLetter.resx">
       <DependentUpon>LeaveRequestLetter.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="HRM\HRM\Letters\ManPowerPlanningRequestLetter.resx">
+      <DependentUpon>ManPowerPlanningRequestLetter.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\Letters\PatientTransfer.resx">
       <DependentUpon>PatientTransfer.cs</DependentUpon>
     </EmbeddedResource>
@@ -5125,8 +5179,14 @@
     <EmbeddedResource Include="HRM\HRM\Letters\RecruitmentLetter.resx">
       <DependentUpon>RecruitmentLetter.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="HRM\HRM\Letters\RecruitmentRequestLetter.resx">
+      <DependentUpon>RecruitmentRequestLetter.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\Letters\ReferalSheet.resx">
       <DependentUpon>ReferalSheet.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="HRM\HRM\Letters\rptAttendanceLetter.resx">
+      <DependentUpon>rptAttendanceLetter.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\Letters\rptMyProfile.resx">
       <DependentUpon>rptMyProfile.cs</DependentUpon>
@@ -5151,6 +5211,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\NotPlacedEmployees.resx">
       <DependentUpon>NotPlacedEmployees.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="HRM\HRM\Report1.resx">
+      <DependentUpon>Report1.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\Restitution.resx">
       <DependentUpon>Restitution.cs</DependentUpon>
@@ -5343,6 +5406,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\TrainingAndEducationOneByOne.resx">
       <DependentUpon>TrainingAndEducationOneByOne.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="HRM\HRM\TrainingEvaluation.resx">
+      <DependentUpon>TrainingEvaluation.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\TrainingOneByeOne.resx">
       <DependentUpon>TrainingOneByeOne.cs</DependentUpon>

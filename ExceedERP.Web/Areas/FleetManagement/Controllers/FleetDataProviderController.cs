@@ -12,7 +12,6 @@ using System.Data.Entity;
 using ExceedERP.Web.Areas.FleetManagement.Models;
 using ExceedERP.ApplicationServices.FleetManagement.FleetRegistration;
 using ExceedERP.ApplicationServices.FleetManagement.FleetMaintenance;
-using ExceedERP.Core.Domain.FleetManagement.FleetMaintenance;
 using ExceedERP.Core.Domain.HRM.EmployeeDetail;
 using ExceedERP.Core.Domain.Common.HRM;
 using ExceedERP.Helpers.Common;
@@ -28,27 +27,27 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
         public const string Tool = "1002";
         public const string Operator = "Operator";
         public const string Mechanic = "Mechanic";
-        public JsonResult ServiceCrewActiveByService(string Id)
-        {
-            IServiceCrewService _ServiceCrewService = new ServiceCrewService();
-            var Crews = new List<ServiceCrew>();
-            var JobOrder = db.JobOrder.Where(x => x.JobOrderID.ToString() == Id).FirstOrDefault();
+        //public JsonResult ServiceCrewActiveByService(string Id)
+        //{
+        //    IServiceCrewService _ServiceCrewService = new ServiceCrewService();
+        //    var Crews = new List<ServiceCrew>();
+        //    var JobOrder = db.JobOrder.Where(x => x.JobOrderID.ToString() == Id).FirstOrDefault();
 
-            var Request = db.JobRequest.Where(x => x.Num == JobOrder.Referance).FirstOrDefault();
+        //    var Request = db.JobRequest.Where(x => x.Num == JobOrder.Referance).FirstOrDefault();
 
-            var Services = db.JobOrderDetail.Where(x => x.JobOrderID == JobOrder.JobOrderID || x.JobOrderID == Request.JobRequestId).ToList();
-            foreach (var Service in Services)
-            {
-                var ServiceCrew = _ServiceCrewService.GetAll().Where(x => x.ServiceID == Service.ServiceID).ToList();
+        //    var Services = db.JobOrderDetail.Where(x => x.JobOrderID == JobOrder.JobOrderID || x.JobOrderID == Request.JobRequestId).ToList();
+        //    foreach (var Service in Services)
+        //    {
+        //        var ServiceCrew = _ServiceCrewService.GetAll().Where(x => x.ServiceID == Service.ServiceID).ToList();
 
-                Crews.AddRange(ServiceCrew);
-                Crews = Crews.Where(x => x.IsActive == true).ToList();
+        //        Crews.AddRange(ServiceCrew);
+        //        Crews = Crews.Where(x => x.IsActive == true).ToList();
  
-            }
+        //    }
 
-            return Json(Crews.Select(s => new    {   Value = s.MechanicCrewID  , Name = s.MechanicCrews.FullName  }),JsonRequestBehavior.AllowGet);
+        //    return Json(Crews.Select(s => new    {   Value = s.MechanicCrewID  , Name = s.MechanicCrews.FullName  }),JsonRequestBehavior.AllowGet);
 
-        }
+        //}
 
         public JsonResult GetAssignEquipmentDDBind(Guid Id)
         {
@@ -71,12 +70,27 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                 var JobTitles = db.Lookups.Where(x => x.LookupId == map.JobTitleCode && x.LookupType == Core.Domain.Common.LookUpTypes.JOB_TITLE).ToList();
                 foreach (var JobTitle in JobTitles)
                 {
-                    var sparePart = db.Placements.Where(x => x.LookupId == JobTitle.LookupId  ).Select(s => new FleetBindingHelper.HelperObject
+                    var placements = db.Placements.Where(x => x.LookupId == JobTitle.LookupId  )
+                        //.Select(s => new FleetBindingHelper.HelperObject
+                        //{
+                        //    Value = s.EmployeeId.ToString() ,
+                        //    Name = s.Employee.FirstName + " "  +s.Employee.MiddleName + " " + s.Employee.LastName
+                        //})
+                    .ToList();
+                    foreach  (var pl in placements)
                     {
-                        Value = s.Employee.EmployeeId.ToString() ,
-                        Name = s.Employee.FirstName + " "  +s.Employee.MiddleName + " " + s.Employee.LastName
-                    }).ToList();
-                    Placment.AddRange(sparePart);
+                        var employee = db.Person_Employee.Find(pl.EmployeeId);
+                        if(employee != null)
+                        {
+                            var record = new FleetBindingHelper.HelperObject
+                            {
+                                Value = employee.EmployeeId.ToString(),
+                                Name = employee.FirstName + " " + employee.MiddleName + " " + employee.LastName
+                            };
+                            Placment.Add(record);
+                        }
+                    }
+                    //Placment.AddRange(sparePart);
                 }
             }
             return Json(Placment, JsonRequestBehavior.AllowGet);
@@ -399,12 +413,21 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                 var JobTitles = db.Lookups.Where(x => x.LookupId == map.JobTitleCode && x.LookupType == Core.Domain.Common.LookUpTypes.JOB_TITLE).ToList();
                 foreach (var JobTitle in JobTitles)
                 {
-                    var sparePart = db.Placements.Where(x => x.LookupId == JobTitle.LookupId  ).Select(s => new FleetBindingHelper.HelperObject
+                    var placements = db.Placements.Where(x => x.LookupId == JobTitle.LookupId).ToList();
+                    foreach (var pl in placements)
                     {
-                        Value = s.EmployeeId.ToString()   ,
-                        Name = s.Employee.FirstName + " " + s.Employee.MiddleName + " " + s.Employee.LastName
-                    }).ToList();
-                    Placment.AddRange(sparePart);
+                        var employee = db.Person_Employee.Find(pl.EmployeeId);
+                        if (employee != null)
+                        {
+                            var record = new FleetBindingHelper.HelperObject
+                            {
+                                Value = employee.EmployeeId.ToString(),
+                                Name = employee.FirstName + " " + employee.MiddleName + " " + employee.LastName
+                            };
+                            Placment.Add(record);
+                        }
+                    }
+                    //Placment.AddRange(sparePart);
                 }
             }
             return Json(Placment, JsonRequestBehavior.AllowGet);
@@ -463,18 +486,18 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
             return Json(JobOrders, JsonRequestBehavior.AllowGet);
 
         }
-        [AllowAnonymous]
-        public JsonResult  JobDetailDDBind()
-        {
+        //[AllowAnonymous]
+        //public JsonResult  JobDetailDDBind()
+        //{
 
-            var DailyCares = db.JobOrderDetail.Select(s => new FleetBindingHelper.HelperObject
-            {
-                Name = s.Service.ServiceName,
-                Value = s.JobOrderDetailID.ToString(),
-            }).ToList();
-            return Json(DailyCares, JsonRequestBehavior.AllowGet);
+        //    var DailyCares = db.JobOrderDetail.Select(s => new FleetBindingHelper.HelperObject
+        //    {
+        //        Name = s.Service.ServiceName,
+        //        Value = s.JobOrderDetailID.ToString(),
+        //    }).ToList();
+        //    return Json(DailyCares, JsonRequestBehavior.AllowGet);
 
-        }
+        //}
 
         [AllowAnonymous]
         public JsonResult GetCheckListByEquipmentDDBind(string Type)
@@ -802,11 +825,11 @@ namespace ExceedERP.Web.Areas.FleetManagement.Controllers
                 foreach (var Spare in Spares)
                 {
 
-                    var InventoryItem = db.InventoryItems.Where(x => x.ItemCode == Spare.InventoryItemId).FirstOrDefault();
-                    var RequestionRef = db.JobStoreRequisition.Where(x => x.JobId == Spare.ServiceSpareID).FirstOrDefault();
-                    var Requestion = db.StoreRequisitionItems.Where(x => x.StoreRequisitionItemID == RequestionRef.RequisitionId).FirstOrDefault();
+                    //var InventoryItem = db.InventoryItems.Where(x => x.ItemCode == Spare.InventoryItemId).FirstOrDefault();
+                    //var RequestionRef = db.JobStoreRequisition.Where(x => x.JobId == Spare.ServiceSpareID).FirstOrDefault();
+                    //var Requestion = db.StoreRequisitionItems.Where(x => x.StoreRequisitionItemID == RequestionRef.RequisitionId).FirstOrDefault();
 
-                    cost = cost + (InventoryItem.AvgPrice * Requestion.IssuedQuantity);
+                    //cost = cost + (InventoryItem.AvgPrice * Requestion.IssuedQuantity);
 
                 }
 

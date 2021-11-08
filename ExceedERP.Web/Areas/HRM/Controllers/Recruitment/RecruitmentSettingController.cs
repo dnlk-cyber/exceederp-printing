@@ -11,7 +11,6 @@ using Kendo.Mvc.UI;
 using ExceedERP.Web.Controllers;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Web.Helpers;
-using ExceedERP.Core.Domain.Global;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
 {
@@ -61,43 +60,36 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
         public ActionResult Configurations_Create([DataSourceRequest]DataSourceRequest request, Configuration configuration)
         {
             ModelState.Clear();
+
+            var checkexistance = db.Configurations.Where(x => x.Category == "Recruitment" && x.Reference == "Recruitment" && x.Attribute == configuration.Attribute).FirstOrDefault();
+            if (checkexistance != null)
+            {
+                ModelState.AddModelError("", "this setting is already exist");
+            }
+
             if (ModelState.IsValid)
             {
-                var checkexistance = db.Configurations.Where(x => x.Category == "Recruitment" && x.Reference == "Recruitment" && x.Attribute == configuration.Attribute).FirstOrDefault();
-                if (checkexistance != null)
+                var entity = new Configuration
                 {
-                    ModelState.AddModelError("", "Recruitment Setting:- " + configuration.Attribute + " is already registered!!");
-                }
-                else
-                {
-                    var entity = new Configuration
-                    {
-                        Category = "Recruitment",
-                        Reference = "Recruitment",
-                        Attribute = configuration.Attribute,
-                        CurrentValue = configuration.CurrentValue,
-                        PreviousValue = configuration.PreviousValue,
-                        Remark = configuration.Remark,
-                        DateCreated = DateTime.Now,
-                        LastModified = configuration.LastModified,
+                    Category = "Recruitment",
+                    Reference = "Recruitment",
+                    Attribute = configuration.Attribute,
+                    CurrentValue = configuration.CurrentValue,
+                    PreviousValue = configuration.PreviousValue,
+                    Remark = configuration.Remark,
+                    DateCreated = DateTime.Now,
+                    LastModified = configuration.LastModified,
 
-                        CreatedBy = User.Identity.Name,
+                    CreatedBy = User.Identity.Name,
 
-                        ModifiedBy = configuration.ModifiedBy
-                    };
+                    ModifiedBy = configuration.ModifiedBy
+                };
 
-                    db.Configurations.Add(entity);
-                    db.SaveChanges();
-                    configuration.ConfigurationId = entity.ConfigurationId;
-
-                    #region operation log
-                    
-                        UserHelper.OperationLog(Request.UserHostAddress, "Internal Setting ", "Success", User.Identity.Name, User.Identity.Name + " add Internal Setting " +entity.Reference + " date " + DateTime.Today.ToShortDateString(),Modules.HRM);
-                   
-                    #endregion
-
-                }
+                db.Configurations.Add(entity);
+                db.SaveChanges();
+                configuration.ConfigurationId = entity.ConfigurationId;
             }
+
             return Json(new[] { configuration }.ToDataSourceResult(request, ModelState));
         }
 
@@ -105,6 +97,12 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
         public ActionResult Configurations_Update([DataSourceRequest]DataSourceRequest request, Configuration configuration)
         {
             ModelState.Clear();
+            var checkexistance = db.Configurations.FirstOrDefault(x => x.Category == "Recruitment" && x.Reference == "Recruitment" && x.Attribute == configuration.Attribute && x.ConfigurationId != configuration.ConfigurationId);
+            if (checkexistance != null)
+            {
+                ModelState.AddModelError("", "this setting is already exist");
+            }
+
             if (ModelState.IsValid)
             {
                 var entity = new Configuration
@@ -126,13 +124,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
                 db.Configurations.Attach(entity);
                 db.Entry(entity).State = EntityState.Modified;
                 db.SaveChanges();
-
-                #region operation log
-                
-                    UserHelper.OperationLog(Request.UserHostAddress, "Internal Setting ", "Success", User.Identity.Name, User.Identity.Name + " update Internal Setting " + entity.Reference + " date " + DateTime.Today.ToShortDateString(),Modules.HRM);
-               
-                #endregion
-
             }
 
             return Json(new[] { configuration }.ToDataSourceResult(request, ModelState));

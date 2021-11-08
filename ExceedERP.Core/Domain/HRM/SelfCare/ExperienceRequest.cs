@@ -19,7 +19,7 @@ namespace ExceedERP.Core.Domain.HRM.SelfCare
         [Display(Name = "HR_SelfCare_ExperienceRequest_ApplicationDate", ResourceType = typeof(Localization.Resources))]
         public DateTime ApplicationDate { get; set; }
         [Display(Name = "HR_SelfCare_ExperienceRequest_ApplicationDate", ResourceType = typeof(Localization.Resources))]
-        [Required]
+        //[Required]
         public string ApplicationDateAm { get; set; }
         [Display(Name = "Remark", ResourceType = typeof(Localization.Resources))]
         public string Remark { get; set; }
@@ -27,5 +27,6 @@ namespace ExceedERP.Core.Domain.HRM.SelfCare
         public bool IsForOther { get; set; }
         [Display(Name = "የጥያቄው ዓይነት")]
         public SelfServiceRequestType RequestType { get; set; }
+        public bool IsDirect { get; set; }
     }
 }

@@ -10,8 +10,8 @@
       .Columns(columns =>
       {
       columns.Bound(c => c.Check).Template(@<text></text>).ClientTemplate("<input type='checkbox' #= Check ? checked='checked':'' # class='chkbx' />")
-                    .HeaderTemplate("<input type='checkbox' id='masterCheckBox' onclick='checkAll(this)'/>").Width(120);
-          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "PersonId", "FullNameWithOutCode").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150).Width(200);
+                    .HeaderTemplate("<input type='checkbox' id='masterCheckBox' onclick='checkAll(this)'/>").Width(50);
+          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameAmharic").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150).Width(200);
           columns.ForeignKey(c => c.GLPeriodId, (IEnumerable)ViewData["Period"], "GLPeriodId", "Name").EditorTemplateName("GLPeriodSelector").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150).Width(200);
           columns.Bound(c => c.TotalDays).Width(120);
           columns.Bound(c => c.TotalHours).Width(120);
@@ -31,22 +31,40 @@
           toolbar.Template(@<text>
         <div class="toolbar">
             @item.SaveButton(Resources .ActionButton_SaveChanges , Resources .ActionButton_Cancel)
-            <label class="category-label" for="Period">@Resources.HR_PerformanceManagment_EmployeeMeasurementDefinition_PeriodId</label>
             @(Html.Kendo().ComboBox()
+                                   .Name("GlFiscalYearId")
+                                   .Placeholder("Year")
+                                           .DataTextField("Name")
+                                              .DataValueField("GlFiscalYearId")
+                                                   .DataSource(dataSource =>
+                                 {
+                                            dataSource.Read(read => read.Action("GetFisicalYear", "HRMDataProvider", new { area = "HRM" }))
+                                                                  .ServerFiltering(false);
+                                        })
+                                                
+                           .AutoBind(false)
+
+                           .HtmlAttributes(new { style = "width: 150px;" })
+
+    )
+    <label class="category-label" for="Period">@Resources.HR_PerformanceManagment_EmployeeMeasurementDefinition_PeriodId</label>
+    @(Html.Kendo().ComboBox()
                                     .Name("Period")
                                     .Placeholder("Period")
                                             .DataTextField("Name")
+                                            .CascadeFrom("GlFiscalYearId")
+                                             .DataValueField("GLPeriodId")
                                                     .DataSource(dataSource =>
                                   {
-                                      dataSource.Read(read => read.Action("GetCurrentYearPeriods", "HRMDataProvider", new { area = "HRM" }))
-                                                            .ServerFiltering(false);
-                                  })
-                                                    .DataValueField("GLPeriodId")
+                                            dataSource.Read(read => read.Action("GetPeriods", "HRMDataProvider", new { area = "HRM" }).Data("filterPeriod"))
+                                                                  .ServerFiltering(true);
+                                        })
+                                                   
                             .AutoBind(false)
-                                           
+
                             .HtmlAttributes(new { style = "width: 150px;" })
 
-            )
+    )
             @*<label class="category-label" for="EmployeeId">@Resources.HR_PerformanceManagment_EmployeeMeasurementDefinition_PersonEmployee</label>
             @(Html.Kendo().ComboBox()
                                          .Placeholder("Employee..")
@@ -96,6 +114,7 @@
       .DataSource(dataSource => dataSource
 
           .Ajax()
+          .Sort(x=>x.Add(s=>s.LateComingSummaryId).Descending())
           .Batch (true)
               .Events(events =>
               {
@@ -197,4 +216,15 @@
             
          }
      }
+</script>
+
+<script>
+
+    function filterPeriod() {
+        return {
+            GlFiscalYearId: $("#GlFiscalYearId").val()
+        };
+    }
+
+
 </script>

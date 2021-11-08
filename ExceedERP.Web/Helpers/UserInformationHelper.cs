@@ -35,7 +35,7 @@ namespace ExceedERP.Web.Helpers
             var placment = db.Placements.FirstOrDefault(x => x.EmployeeId ==employeeid && x.isCurrent);
             if (placment != null)
             {
-                branch = placment.Branch.BranchId;
+                branch = placment.BranchId;
             }
 
             return branch;
@@ -55,7 +55,11 @@ namespace ExceedERP.Web.Helpers
                 var placment = db.Placements.Where(x => x.EmployeeId.ToString() == userempId.EmployeeId && x.isCurrent).FirstOrDefault();
                 if (placment != null)
                 {
-                    branch = placment.Branch.Name;
+                    var br = db.Branch.Find(placment.BranchId);
+                    if(br != null)
+                    {
+                        branch = br.Name;
+                    }
                 }
             }
 
@@ -75,7 +79,11 @@ namespace ExceedERP.Web.Helpers
                 var placment = db.Placements.Where(x => x.EmployeeId.ToString() == userempId.EmployeeId && x.isCurrent).FirstOrDefault();
                 if (placment != null)
                 {
-                    department = placment.MainCompanyStructure.Name;
+                    var str = db.MainCompanyStructures.Find(placment.OrgStructureId);
+                    if(str != null)
+                    {
+                        department = str.Name;
+                    }
                 }
             }
 
@@ -337,24 +345,6 @@ namespace ExceedERP.Web.Helpers
         }
         #endregion
         //should return BranchId
-        public static int GetUserBranchByUserName(string username)
-        {
-            ExceedDbContext db = new ExceedDbContext();
-            ApplicationDbContext _dbApplication = new ApplicationDbContext();
-
-            var user = _dbApplication.Users.FirstOrDefault(x => x.UserName == username);
-            if (user != null)
-            {
-                int.TryParse(user.EmployeeId, out int employeeId);
-                var place = db.Placements.FirstOrDefault(x => x.EmployeeId == employeeId);
-                if (place != null)
-                {
-                    return place.BranchId;
-                }
-            }
-
-            return 0;
-        }
         public static int GetEmployeeBranchId(string userName)
         {
             ApplicationDbContext _dbApplication = new ApplicationDbContext();
@@ -433,7 +423,7 @@ namespace ExceedERP.Web.Helpers
                 var placment = db.Placements.Where(x => x.EmployeeId.ToString() == userempId.EmployeeId && x.isCurrent).FirstOrDefault();
                 if (placment != null)
                 {
-                    department = placment.MainCompanyStructure.OrgStructureId;
+                    department = placment.OrgStructureId;
                 }
             }
 
@@ -450,7 +440,7 @@ namespace ExceedERP.Web.Helpers
             var placment = db.Placements.FirstOrDefault(x => x.EmployeeId == empid && x.isCurrent);
             if (placment != null)
             {
-                department = placment.MainCompanyStructure.OrgStructureId;
+                department = placment.OrgStructureId;
             }
 
             return department;
@@ -746,6 +736,24 @@ namespace ExceedERP.Web.Helpers
             }
 
             return false;
+        }
+        public static int GetUserBranchByUserName(string username)
+        {
+            ExceedDbContext db = new ExceedDbContext();
+            ApplicationDbContext _dbApplication = new ApplicationDbContext();
+
+            var user = _dbApplication.Users.FirstOrDefault(x => x.UserName == username);
+            if (user != null)
+            {
+                int.TryParse(user.EmployeeId, out int employeeId);
+                var place = db.Placements.FirstOrDefault(x => x.EmployeeId == employeeId);
+                if (place != null)
+                {
+                    return place.BranchId;
+                }
+            }
+
+            return 0;
         }
         /// <summary>
         /// get reports to workunit and its immediate children

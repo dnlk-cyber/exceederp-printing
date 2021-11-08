@@ -11,10 +11,11 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMViewModel
         public bool Assigned { get; set; }
         public string TotalExp { get; set; }
         public ICollection<EmployeeExperienceList> EmployeeExperienceList { get; set; }
-
+        public ICollection<EmployeeEducationList> EmployeeEducationList { get; set; }
         public EmployeeExperience()
         {
             EmployeeExperienceList = new List<EmployeeExperienceList>();
+            EmployeeEducationList = new List<EmployeeEducationList>();
         }
 
     }

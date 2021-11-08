@@ -18,8 +18,8 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
         {
             List<string> status = new List<string>();
 
-            status.Add("የተሞላላቸው");
-            status.Add("ያልተሞላላቸው");
+            status.Add("Reviewed");
+            status.Add("Not Reviewed");
 
             return status;
         }

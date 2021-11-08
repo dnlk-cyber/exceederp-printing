@@ -117,8 +117,4 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="textBox1.Value" xml:space="preserve">
-    <value>ከ {=Fields.TerminationDate} ቀን  ጀምሮ {=Fields.Title} {=Fields.EmpName} ከ{=Fields.TempOne} የሚለቁ መሆኑን {=Fields.RequestDate} ቀን በጻፉት ማመልከቻ በገለፁት መሰረት ከዚሁ ዕለት ጀምሮ ከ{=Fields.TempOne} ጋር ያለዎት የስራ ዉል እንዲቋረጥ የተወሰነ መሆኑን እየገለጽን፤ ከዕዳ ነጻ መሆንዎን የሚገልጽ ክሊራንስ አስፈርመው እንዲያቀርቡ እናሳስባለን ። 
-የ __________________ ሠራተኛው ከዕዳ ነጻ መሆናቸዉን የሚገልጽ ክሊራንስ አስፈርመው እስኪያቀርቡ ድረስ ማንኛዉንም ዓይነት ክፍያ እንዳይፈጸም በዚህ ደብዳቤ ግልባጭ ተገልጾለታል። </value>
-  </data>
 </root>

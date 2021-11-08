@@ -33,11 +33,10 @@ namespace ExceedERP.Core.Domain.HRM.SelfCare
         [Display(Name = "HR_SelfCare_TrainingApplicant_NoofTrainee", ResourceType = typeof(Localization.Resources))]
         public int NoofTrainee { get; set; }
         [Display(Name = "Remark", ResourceType = typeof(Localization.Resources))]
-        public string Remark { get; set; }
-      
+        public string Remark { get; set; }      
+        public TrainingRequestType TrainingRequestType { get; set; }
 
-
-
+        public int GlFisicalYearId { get; set; }
 
     }
 }

@@ -9,8 +9,8 @@
           .Name("ClearanceProviderGrid")
       .Columns(columns =>
       {
-          columns.ForeignKey(c => c.WorkUnit, (IEnumerable)ViewData["Department"], "Name", "Name").EditorTemplateName("Organization").Width(300);
-          columns.Bound(c => c.Name).Width(300);
+         // columns.ForeignKey(c => c.WorkUnit, (IEnumerable)ViewData["Department"], "Name", "Name").EditorTemplateName("Organization").Width(300);
+          columns.Bound(c => c.Name).EditorTemplateName("DepartmentAutoComplate").Width(300);
           columns.Bound(c => c.Remark);
           columns.Command(command =>
           {

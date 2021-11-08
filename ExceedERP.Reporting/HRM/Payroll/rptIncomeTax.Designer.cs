@@ -37,6 +37,7 @@ namespace ExceedERP.Reporting.HRM.Payroll
             Telerik.Reporting.Drawing.DescendantSelector descendantSelector1 = new Telerik.Reporting.Drawing.DescendantSelector();
             Telerik.Reporting.Drawing.StyleRule styleRule4 = new Telerik.Reporting.Drawing.StyleRule();
             Telerik.Reporting.Drawing.DescendantSelector descendantSelector2 = new Telerik.Reporting.Drawing.DescendantSelector();
+            this.textBox38 = new Telerik.Reporting.TextBox();
             this.textBox1 = new Telerik.Reporting.TextBox();
             this.textBox2 = new Telerik.Reporting.TextBox();
             this.textBox19 = new Telerik.Reporting.TextBox();
@@ -48,6 +49,9 @@ namespace ExceedERP.Reporting.HRM.Payroll
             this.textBox10 = new Telerik.Reporting.TextBox();
             this.textBox4 = new Telerik.Reporting.TextBox();
             this.textBox30 = new Telerik.Reporting.TextBox();
+            this.periodObjectDataSource = new Telerik.Reporting.ObjectDataSource();
+            this.BranchObjectDataSource = new Telerik.Reporting.ObjectDataSource();
+            this.StatusObjectDataSource = new Telerik.Reporting.ObjectDataSource();
             this.detailSection1 = new Telerik.Reporting.DetailSection();
             this.table1 = new Telerik.Reporting.Table();
             this.textBox5 = new Telerik.Reporting.TextBox();
@@ -68,6 +72,9 @@ namespace ExceedERP.Reporting.HRM.Payroll
             this.textBox23 = new Telerik.Reporting.TextBox();
             this.textBox31 = new Telerik.Reporting.TextBox();
             this.textBox37 = new Telerik.Reporting.TextBox();
+            this.textBox39 = new Telerik.Reporting.TextBox();
+            this.textBox40 = new Telerik.Reporting.TextBox();
+            this.incomeTaxObjectDataSource = new Telerik.Reporting.ObjectDataSource();
             this.pageHeaderSection1 = new Telerik.Reporting.PageHeaderSection();
             this.panel1 = new Telerik.Reporting.Panel();
             this.txtOrgName = new Telerik.Reporting.TextBox();
@@ -82,15 +89,18 @@ namespace ExceedERP.Reporting.HRM.Payroll
             this.reportHeaderSection1 = new Telerik.Reporting.ReportHeaderSection();
             this.textBox9 = new Telerik.Reporting.TextBox();
             this.textBox11 = new Telerik.Reporting.TextBox();
-            this.textBox38 = new Telerik.Reporting.TextBox();
-            this.textBox39 = new Telerik.Reporting.TextBox();
-            this.textBox40 = new Telerik.Reporting.TextBox();
-            this.incomeTaxObjectDataSource = new Telerik.Reporting.ObjectDataSource();
-            this.periodObjectDataSource = new Telerik.Reporting.ObjectDataSource();
-            this.BranchObjectDataSource = new Telerik.Reporting.ObjectDataSource();
-            this.StatusObjectDataSource = new Telerik.Reporting.ObjectDataSource();
             this.Organization = new Telerik.Reporting.ObjectDataSource();
             ((System.ComponentModel.ISupportInitialize)(this)).BeginInit();
+            // 
+            // textBox38
+            // 
+            this.textBox38.Name = "textBox38";
+            this.textBox38.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.35119050741195679D), Telerik.Reporting.Drawing.Unit.Inch(0.31980666518211365D));
+            this.textBox38.Style.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(140)))), ((int)(((byte)(174)))), ((int)(((byte)(173)))));
+            this.textBox38.Style.Font.Bold = true;
+            this.textBox38.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(9D);
+            this.textBox38.StyleName = "Civic.TableHeader";
+            this.textBox38.Value = "S.No.";
             // 
             // textBox1
             // 
@@ -202,6 +212,26 @@ namespace ExceedERP.Reporting.HRM.Payroll
             this.textBox30.StyleName = "Civic.TableHeader";
             this.textBox30.Value = "Net Pay";
             // 
+            // periodObjectDataSource
+            // 
+            this.periodObjectDataSource.DataMember = "GetPayrollPeriods";
+            this.periodObjectDataSource.DataSource = typeof(ExceedERP.Reporting.HRM.Payroll.DataSource.PayrollPeriodsObjectDataSource);
+            this.periodObjectDataSource.Name = "periodObjectDataSource";
+            // 
+            // BranchObjectDataSource
+            // 
+            this.BranchObjectDataSource.DataMember = "GetBranch";
+            this.BranchObjectDataSource.DataSource = typeof(ExceedERP.Reporting.SharedDataSources.UserBranchObjectDataSource);
+            this.BranchObjectDataSource.Name = "BranchObjectDataSource";
+            this.BranchObjectDataSource.Parameters.AddRange(new Telerik.Reporting.ObjectDataSourceParameter[] {
+            new Telerik.Reporting.ObjectDataSourceParameter("user", typeof(string), "= Parameters.user.Value")});
+            // 
+            // StatusObjectDataSource
+            // 
+            this.StatusObjectDataSource.DataMember = "GetEmpStatus";
+            this.StatusObjectDataSource.DataSource = typeof(ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource.EmployeeStatusObjectDataSource);
+            this.StatusObjectDataSource.Name = "StatusObjectDataSource";
+            // 
             // detailSection1
             // 
             this.detailSection1.Height = Telerik.Reporting.Drawing.Unit.Inch(0.69999980926513672D);
@@ -214,14 +244,14 @@ namespace ExceedERP.Reporting.HRM.Payroll
             this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.35119050741195679D)));
             this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.88370132446289062D)));
             this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(2.0801260471343994D)));
-            this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.75595206022262573D)));
-            this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.75297582149505615D)));
-            this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.715545654296875D)));
+            this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.75595194101333618D)));
+            this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.7529757022857666D)));
+            this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.71554553508758545D)));
             this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.58035659790039062D)));
-            this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.64732128381729126D)));
+            this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.64732122421264648D)));
             this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.63095217943191528D)));
             this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.75595223903656006D)));
-            this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.86584216356277466D)));
+            this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.86584204435348511D)));
             this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.83333313465118408D)));
             this.table1.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.21266371011734009D)));
             this.table1.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.15066370368003845D)));
@@ -283,6 +313,7 @@ namespace ExceedERP.Reporting.HRM.Payroll
             this.table1.ColumnGroups.Add(tableGroup12);
             this.table1.DataSource = this.incomeTaxObjectDataSource;
             this.table1.Items.AddRange(new Telerik.Reporting.ReportItemBase[] {
+            this.textBox39,
             this.textBox5,
             this.textBox6,
             this.textBox22,
@@ -294,14 +325,15 @@ namespace ExceedERP.Reporting.HRM.Payroll
             this.textBox21,
             this.textBox8,
             this.textBox31,
-            this.textBox32,
             this.textBox40,
+            this.textBox32,
             this.textBox33,
             this.textBox34,
             this.textBox35,
             this.textBox23,
             this.textBox36,
             this.textBox37,
+            this.textBox38,
             this.textBox1,
             this.textBox2,
             this.textBox19,
@@ -312,9 +344,7 @@ namespace ExceedERP.Reporting.HRM.Payroll
             this.textBox17,
             this.textBox10,
             this.textBox4,
-            this.textBox30,
-            this.textBox38,
-            this.textBox39});
+            this.textBox30});
             this.table1.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(0D), Telerik.Reporting.Drawing.Unit.Inch(0D));
             this.table1.Name = "table1";
             tableGroup14.Name = "group3";
@@ -327,6 +357,7 @@ namespace ExceedERP.Reporting.HRM.Payroll
             this.table1.RowGroups.Add(tableGroup13);
             this.table1.RowGroups.Add(tableGroup15);
             this.table1.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(9.8532485961914062D), Telerik.Reporting.Drawing.Unit.Inch(0.68313407897949219D));
+            this.table1.Sortings.Add(new Telerik.Reporting.Sorting("= Fields.EmpID", Telerik.Reporting.SortDirection.Asc));
             this.table1.StyleName = "Office.Civic";
             // 
             // textBox5
@@ -494,6 +525,33 @@ namespace ExceedERP.Reporting.HRM.Payroll
             this.textBox37.StyleName = "Office.TableBody";
             this.textBox37.Value = "=sum(Fields.NetPay)";
             // 
+            // textBox39
+            // 
+            this.textBox39.Name = "textBox39";
+            this.textBox39.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.35119050741195679D), Telerik.Reporting.Drawing.Unit.Inch(0.21266369521617889D));
+            this.textBox39.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
+            this.textBox39.StyleName = "Office.TableBody";
+            this.textBox39.Value = "= RowNumber(\'table1\')";
+            // 
+            // textBox40
+            // 
+            this.textBox40.Name = "textBox40";
+            this.textBox40.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(4.82394552230835D), Telerik.Reporting.Drawing.Unit.Inch(0.15066370368003845D));
+            this.textBox40.Style.Font.Bold = true;
+            this.textBox40.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
+            this.textBox40.StyleName = "Office.TableBody";
+            // 
+            // incomeTaxObjectDataSource
+            // 
+            this.incomeTaxObjectDataSource.DataMember = "GetMonthlyIncomeTaxReport";
+            this.incomeTaxObjectDataSource.DataSource = typeof(ExceedERP.Reporting.HRM.Payroll.DataSource.IncomeTaxObjectDataSource);
+            this.incomeTaxObjectDataSource.Name = "incomeTaxObjectDataSource";
+            this.incomeTaxObjectDataSource.Parameters.AddRange(new Telerik.Reporting.ObjectDataSourceParameter[] {
+            new Telerik.Reporting.ObjectDataSourceParameter("period", typeof(string), "= Parameters.period.Value"),
+            new Telerik.Reporting.ObjectDataSourceParameter("branchId", typeof(string), "= Parameters.branchId.Value"),
+            new Telerik.Reporting.ObjectDataSourceParameter("status", typeof(string), "= Parameters.Status.Value"),
+            new Telerik.Reporting.ObjectDataSourceParameter("user", typeof(string), "= Parameters.user.Value")});
+            // 
             // pageHeaderSection1
             // 
             this.pageHeaderSection1.Height = Telerik.Reporting.Drawing.Unit.Inch(1.1000000238418579D);
@@ -623,63 +681,6 @@ namespace ExceedERP.Reporting.HRM.Payroll
             this.textBox11.Style.Font.Bold = true;
             this.textBox11.StyleName = "Civic.TableHeader";
             this.textBox11.Value = "Income Tax";
-            // 
-            // textBox38
-            // 
-            this.textBox38.Name = "textBox38";
-            this.textBox38.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.35119050741195679D), Telerik.Reporting.Drawing.Unit.Inch(0.31980666518211365D));
-            this.textBox38.Style.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(140)))), ((int)(((byte)(174)))), ((int)(((byte)(173)))));
-            this.textBox38.Style.Font.Bold = true;
-            this.textBox38.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(9D);
-            this.textBox38.StyleName = "Civic.TableHeader";
-            this.textBox38.Value = "S.No.";
-            // 
-            // textBox39
-            // 
-            this.textBox39.Name = "textBox39";
-            this.textBox39.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.35119050741195679D), Telerik.Reporting.Drawing.Unit.Inch(0.21266369521617889D));
-            this.textBox39.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
-            this.textBox39.StyleName = "Office.TableBody";
-            this.textBox39.Value = "= RowNumber(\'table1\')";
-            // 
-            // textBox40
-            // 
-            this.textBox40.Name = "textBox40";
-            this.textBox40.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(4.82394552230835D), Telerik.Reporting.Drawing.Unit.Inch(0.15066370368003845D));
-            this.textBox40.Style.Font.Bold = true;
-            this.textBox40.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
-            this.textBox40.StyleName = "Office.TableBody";
-            // 
-            // incomeTaxObjectDataSource
-            // 
-            this.incomeTaxObjectDataSource.DataMember = "GetMonthlyIncomeTaxReport";
-            this.incomeTaxObjectDataSource.DataSource = typeof(ExceedERP.Reporting.HRM.Payroll.DataSource.IncomeTaxObjectDataSource);
-            this.incomeTaxObjectDataSource.Name = "incomeTaxObjectDataSource";
-            this.incomeTaxObjectDataSource.Parameters.AddRange(new Telerik.Reporting.ObjectDataSourceParameter[] {
-            new Telerik.Reporting.ObjectDataSourceParameter("period", typeof(string), "= Parameters.period.Value"),
-            new Telerik.Reporting.ObjectDataSourceParameter("branchId", typeof(string), "= Parameters.branchId.Value"),
-            new Telerik.Reporting.ObjectDataSourceParameter("status", typeof(string), "= Parameters.Status.Value"),
-            new Telerik.Reporting.ObjectDataSourceParameter("user", typeof(string), "= Parameters.user.Value")});
-            // 
-            // periodObjectDataSource
-            // 
-            this.periodObjectDataSource.DataMember = "GetPayrollPeriods";
-            this.periodObjectDataSource.DataSource = typeof(ExceedERP.Reporting.HRM.Payroll.DataSource.PayrollPeriodsObjectDataSource);
-            this.periodObjectDataSource.Name = "periodObjectDataSource";
-            // 
-            // BranchObjectDataSource
-            // 
-            this.BranchObjectDataSource.DataMember = "GetBranch";
-            this.BranchObjectDataSource.DataSource = typeof(ExceedERP.Reporting.SharedDataSources.UserBranchObjectDataSource);
-            this.BranchObjectDataSource.Name = "BranchObjectDataSource";
-            this.BranchObjectDataSource.Parameters.AddRange(new Telerik.Reporting.ObjectDataSourceParameter[] {
-            new Telerik.Reporting.ObjectDataSourceParameter("user", typeof(string), "= Parameters.user.Value")});
-            // 
-            // StatusObjectDataSource
-            // 
-            this.StatusObjectDataSource.DataMember = "GetEmpStatus";
-            this.StatusObjectDataSource.DataSource = typeof(ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource.EmployeeStatusObjectDataSource);
-            this.StatusObjectDataSource.Name = "StatusObjectDataSource";
             // 
             // Organization
             // 

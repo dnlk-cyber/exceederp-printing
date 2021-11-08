@@ -1,0 +1,71 @@
+﻿@using ExceedERP.Core.Domain.Common.HRM
+@using ExceedERP.Core.Domain.HRM.SalaryStructure
+@using ExceedERP.Core.Localization
+
+@using System.Collections
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<Legend>InActive Employees</Legend>
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.Common.HRM.Person_Employee>()
+              .Name("grid")
+              .Columns(columns =>
+              {
+                  columns.Bound(c => c.EmployeeCode).ClientTemplate(
+                                            @"<div class='Employee-photo'
+style='background-image: url(" + Url.Content("~/Content/Images/") + "#:data.EmployeeId#-Photo/" + "#:data.EmployeeId#.jpg" + ");'></div>" +
+                                        "<div class='Employee-name'>#:EmployeeCode#</div>").Width(150);
+                  columns.Bound(c => c.Title).EditorTemplateName("Enum").Width(50).Visible(false);
+                  columns.Bound(c => c.IsProbationEnd).Visible(false);
+                  columns.Bound(c => c.FirstName).Width(100);//Filterable(ftb => ftb.Multi(true).Search(true))
+      columns.Bound(c => c.FirstNameEnglish).Width(100);
+      //.Filterable(filterable => filterable.UI("cityFilter"));
+      columns.Bound(c => c.MiddleName).Width(100);
+                  columns.Bound(c => c.MiddleNameEnglish).Width(100);
+                  columns.Bound(c => c.LastName).Width(100);
+                  columns.Bound(c => c.LastNameEnglish).Width(100);
+                  columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["Branch"], "BranchId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(100);
+      //columns.Bound(c => c.MothersFullName).Width(100);
+      columns.Bound(c => c.Gender).EditorTemplateName("Enum").Width(80);
+                  columns.Bound(c => c.DateOfBirthAm).Width(100);//.Format("{0:yyyy-MM-dd}");
+                                                                 //  columns.Bound(c => c.BirthPlace).Width(120);
+      columns.Bound(c => c.Region).EditorTemplateName("Enum").Width(100).Visible(false);
+                  columns.Bound(c => c.Religion).EditorTemplateName("Enum").Width(100).Visible(false);
+                  columns.Bound(c => c.Status).EditorTemplateName("Enum").Width(100).Visible(true);
+                  columns.Bound(c => c.IsActive).ClientTemplate("<input type='checkbox' disabled = 'true' #=IsActive ? checked='checked' :'' # >").Width(100).Visible(true);
+                  columns.ForeignKey(c => c.Nation, (IEnumerable)ViewData["NationList"], "LookupId", "Description").EditorTemplateName("Nation").Width(100).Visible(true);
+      // columns.ForeignKey(c => c.Nationality, (IEnumerable)ViewData["Nationalites"], "CountryId", "Nationality").EditorTemplateName("NationalityList").Width(100);
+      columns.Bound(c => c.MartialStatus).EditorTemplateName("Enum").Width(100);
+
+                  columns.Command(command =>
+                  {
+          // command.Edit();
+          //  command.Destroy();
+      }).Width(180);
+              })
+              .ToolBar(toolbar =>
+              {
+      //  toolbar.Create();
+  })
+              .Editable(editable => editable.Mode(GridEditMode.InLine))
+               .Pageable(pageable => pageable
+                                .Input(true)
+                                .Numeric(false)
+                                .Refresh(true)
+                                .PageSizes(true)
+                                .ButtonCount(5)
+                                .Enabled(true)
+                                )
+              .Filterable()
+               .Scrollable(h => h.Height(500))
+              .DataSource(dataSource => dataSource
+                  .Ajax()
+                  .Model(model => model.Id(p => p.EmployeeId))
+                  .Read(read => read.Action("InActiveEmployees_Read", "InActiveEmployees"))
+                  .Create(create => create.Action("InActiveEmployees_Create", "InActiveEmployees"))
+                  .Update(update => update.Action("InActiveEmployees_Update", "InActiveEmployees"))
+                  .Destroy(destroy => destroy.Action("InActiveEmployees_Destroy", "InActiveEmployees"))
+              )
+)

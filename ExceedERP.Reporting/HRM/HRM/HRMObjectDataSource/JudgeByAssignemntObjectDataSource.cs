@@ -37,9 +37,11 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                     {
                         CourtWorkUnit = new CourtWorkUnit();
                         CourtWorkUnit.CourtEmployeesList = new List<CourtEmployees>();
-                        CourtWorkUnit.Name = a.MainCompanyStructure.Name;
-
-
+                        var mainCompany = db.MainCompanyStructures.FirstOrDefault(x=>x.OrgStructureId == a.OrgStructureId);
+                        if(mainCompany != null)
+                        {
+                            CourtWorkUnit.Name = mainCompany.Name;
+                        }    
                         foreach (var asign in workunits)
                         {
                             var assignedWorkunit = assigned.Where(x => x.OrgStructureId == asign).Distinct();

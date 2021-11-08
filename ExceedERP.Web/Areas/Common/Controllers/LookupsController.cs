@@ -126,10 +126,10 @@ namespace ExceedERP.Web.Areas.Common.Controllers
             var recruitmentRequest = db.RecruitmentRequest.FirstOrDefault(x=>x.LookupId == lookup.LookupId);
             var manPower = db.JobTitleMapping.FirstOrDefault(x=>x.LookupId == lookup.LookupId);
             var jobtitlesalary = db.SalariesJobTitles.FirstOrDefault(x=>x.LookupId == lookup.LookupId);
-            var applicantRegistration = db.ApplicantRegistration.FirstOrDefault(x=>x.LookupId == lookup.LookupId);
+            //var applicantRegistration = db.ApplicantRegistration.FirstOrDefault(x=>x.LookupId == lookup.LookupId);
             var applicantResult = db.ApplicantionFormes.FirstOrDefault(x=>x.LookupId == lookup.LookupId);
 
-            if(placement !=null || recruitmentPlan != null || recruitmentRequest != null || manPower != null || jobtitlesalary != null || applicantRegistration != null || applicantResult != null)
+            if(placement !=null || recruitmentPlan != null || recruitmentRequest != null || manPower != null || jobtitlesalary != null  || applicantResult != null)
             {
                 ModelState.AddModelError("","You can't delete this data it is used in other forms");
             }

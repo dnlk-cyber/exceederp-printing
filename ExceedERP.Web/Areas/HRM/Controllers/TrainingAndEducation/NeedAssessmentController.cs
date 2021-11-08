@@ -32,11 +32,14 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
             GetCourse();
             GetProvider();
             PopulateViewData();
+            GetTargetGroup();
             TrainingType();
             return View();
         }
         private void PopulateViewData()
         {
+            var employeName = db.Person_Employee.ToList();
+            ViewData["EmployeeName"] = employeName;
             var structres = db.MainCompanyStructures.AsQueryable();
             ViewData["organization"] = structres;
             GetDepartments();
@@ -48,6 +51,21 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
 
             ViewData["TargetGroup"] = db.Lookups.Where(x => x.LookupType == LookUpTypes.TARGET_GROUP);
 
+        }
+
+        public JsonResult GetTargetGroup()
+        {
+            var targetGroupList = db.Lookups.AsQueryable().ToList();
+            if (targetGroupList.Count > 0)
+            {
+                targetGroupList = targetGroupList.Where(l => l.LookupType == LookUpTypes.TARGET_GROUP && l.IsActive).ToList();
+            }
+            ViewData["TargetGroupList"] = targetGroupList.Count > 0 ? targetGroupList.ToList() : new List<Lookup>();
+            return Json(targetGroupList.Select(p => new
+            {
+                LookupId = p.LookupId,
+                Description = p.Description
+            }), JsonRequestBehavior.AllowGet);
         }
         public void GetDepartments()
         {
@@ -125,7 +143,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
         public ActionResult NeedAssessments_Read([DataSourceRequest]DataSourceRequest request)
         {
             List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
-            IQueryable<NeedAssessment> needassessments = db.NeedAssessments.Where(x => mybraches.Contains(x.OrgBranchName));
+            IQueryable<NeedAssessment> needassessments = db.NeedAssessments;//.Where(x => mybraches.Contains(x.OrgBranchName));
             DataSourceResult result = needassessments.ToDataSourceResult(request, needAssessment => new
             {
                 AssesmentId = needAssessment.AssesmentId,
@@ -146,6 +164,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
                 CreatedBy = needAssessment.CreatedBy,
                 ModifiedBy = needAssessment.ModifiedBy,
                 OrgBranchName = needAssessment.OrgBranchName,
+                IsTransfered = needAssessment.IsTransfered,
+                IsSendForApproval = needAssessment.IsSendForApproval,
             });
 
             return Json(result);
@@ -155,6 +175,16 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
         public ActionResult NeedAssessments_Create([DataSourceRequest]DataSourceRequest request, NeedAssessment needAssessment)
         {
             ModelState.Clear();
+            var employeeId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
+            var placement = db.Placements.FirstOrDefault(x=>x.EmployeeId == employeeId && x.isCurrent);
+            if(placement != null)
+            {
+                needAssessment.OrgStructureId = placement.OrgStructureId;
+            }
+            if(needAssessment.NoOfStaff <= 0)
+            {
+                ModelState.AddModelError("","No of staff should be greater than zero");
+            }
             if (ModelState.IsValid)
             {
                 var entity = new NeedAssessment
@@ -184,9 +214,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
                 needAssessment.AssesmentId = entity.AssesmentId;
 
                 #region operation log
-
-                var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-                var name = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == empId);
+                              
+                var name = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == employeeId);
                 if (name != null)
                 {
                     UserHelper.OperationLog(Request.UserHostAddress, "Need Assessment ", "Success", User.Identity.Name, name.EmployeeCode + " add new Need Assessment adding date " + DateTime.Today.ToShortDateString(),Modules.HRM);
@@ -204,6 +233,12 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
         public ActionResult NeedAssessments_Update([DataSourceRequest]DataSourceRequest request, NeedAssessment needAssessment)
         {
             ModelState.Clear();
+
+            if (needAssessment.NoOfStaff <= 0)
+            {
+                ModelState.AddModelError("", "No of staff should be greater than zero");
+            }
+
             if (ModelState.IsValid)
             {
                 var entity = new NeedAssessment
@@ -286,6 +321,74 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
 
             return Json(new[] { needAssessment }.ToDataSourceResult(request, ModelState));
         }
+        [AcceptVerbs(HttpVerbs.Post)]
+        public ActionResult Transfer_Create([DataSourceRequest] DataSourceRequest request, [Bind(Prefix = "models")]IEnumerable<NeedAssessment> needAssessments)
+        {
+            ModelState.Clear();
+            var results = new List<NeedAssessment>();
+
+
+            TrainingPlan trainingPlan = new TrainingPlan();
+            List<TrainingPlan> planList = new List<TrainingPlan>();
+
+            ExceedDbContext dbs = new ExceedDbContext();
+
+            List<NeedAssessment> needAssessment = db.NeedAssessments.ToList();
+
+            if (needAssessments.Any() && ModelState.IsValid)
+            {
+                foreach (var check in needAssessments)
+                {
+                    if (check.Check)
+                    {
+                        trainingPlan = new TrainingPlan();
+
+                        //trainingPlan.GlFiscalYearId = product.MainCompanyId;
+                        //trainingPlan.GlFiscalYearId = 5;//check.GlFiscalYearId,  
+                        trainingPlan.WorkUnit = check.OrgStructureId;
+                        trainingPlan.LookupId = check.LookupId;
+                        trainingPlan.MainCompanyId = check.MainCompanyId;
+                        trainingPlan.GlFiscalYearId = check.GlFiscalYearId;
+                        //trainingPlan.WorkUnit = check.WorkUnit,  
+                        //trainingPlan.CostPerPerson = check.CostPerPerson,
+                        //trainingPlan.TotalCost = check.TotalCost,                       
+                        trainingPlan.Course = check.LookupId;
+                        trainingPlan.NoofTrainee = check.NoOfStaff;
+                        trainingPlan.OrgBranchName = check.OrgBranchName;
+                        //trainingPlan.LookupId = check.LookupId;
+                        trainingPlan.CreatedBy = User.Identity.Name;
+                        trainingPlan.DateCreated = DateTime.Now;
+                        trainingPlan.ModifiedBy = null;
+                        UserInformationHelper.GetUserDefaultBranch(User.Identity.Name);
+                        trainingPlan.LastModified = null;
+                        planList.Add(trainingPlan);
+
+                        db.TrainingPlans.Add(trainingPlan);
+                        db.SaveChanges();
+
+                        #region remove transfered assessment
+                        TrainingAssessmentViewModel train = new TrainingAssessmentViewModel();
+                        // train.TrainingAssessmentViewModelId=check
+                        var assessment = db.NeedAssessments.Find(check.AssesmentId);
+                        if (assessment != null)
+                        {
+                            assessment.IsTransfered = true;
+
+                            db.Entry(assessment).State = EntityState.Modified;
+                            db.SaveChanges();
+                        }
+                        #endregion
+
+                    }
+
+
+                }
+
+            }
+
+            return Json(planList.ToDataSourceResult(request, ModelState));
+        }
+
         public JsonResult GetJobTitle(int OrganizationId)
         {
             db = new ExceedDbContext();

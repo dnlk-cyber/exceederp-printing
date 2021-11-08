@@ -12,31 +12,39 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
         private ExceedDbContext db = new ExceedDbContext();
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<ClearanceProvider> GetClearanceProvider()
+        public List<ClearanceProvider> GetClearanceProvider(string empId)
         {
-            ClearanceProvider provider = new ClearanceProvider();
             List<ClearanceProvider> list = new List<ClearanceProvider>();
-            List<ClearanceProvider> allDepartment;
-            var lookups = db.MainCompanyStructures.ToList();
-            allDepartment = new List<ClearanceProvider>();
-            allDepartment = db.ClearanceProvideres.ToList();
-            if (allDepartment.Any())
+
+            var allProviders = db.ClearanceProvideres.ToList();
+
+            foreach (var a in allProviders)
             {
-                foreach (var a in allDepartment)
+                var provider = new ClearanceProvider();
+
+                provider.Name = a.Name;
+
+                list.Add(provider);
+            }
+            if (empId != null)
+            {
+                int.TryParse(empId, out int employeeId);
+                var placement = db.Placements.Where(x => x.EmployeeId == employeeId).OrderByDescending(x => x.AssignmentDate).FirstOrDefault();
+                if (placement != null)
                 {
-                    provider = new ClearanceProvider();
-                    if (a.WorkUnit == null)
+                    var mainCompany = db.MainCompanyStructures.FirstOrDefault(x => x.OrgStructureId == placement.OrgStructureId);
+                    if (mainCompany != null)
                     {
-                        provider.Name = a.Name;
+                        var checkDup = list.FirstOrDefault(x => x.Name.Trim().ToLower() == mainCompany.Name.Trim().ToLower());
+                        if (checkDup == null)
+                        {
+                            var pro = new ClearanceProvider();
+
+                            pro.Name = mainCompany.Name;
+
+                            list.Add(pro);
+                        }
                     }
-                    else
-                    {
-
-                        provider.Name = a.WorkUnit;
-
-
-                    }
-                    list.Add(provider);
                 }
             }
 

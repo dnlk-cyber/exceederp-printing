@@ -1,0 +1,321 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.Common.HRM
+@using ExceedERP.Core.Domain.HRM.RecruitmentManagment
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>Screening Setting</legend>
+@(Html.Kendo().Grid<ScreeningSetting>()
+          .Name("ConfigurationGrid")
+      .Columns(columns =>
+      {
+          columns.ForeignKey(c => c.VacancyId, (IEnumerable)ViewData["Vacancy"], "VacancyId", "VaccancyCode").EditorTemplateName("VacancyLists").Width(150);
+          columns.Bound(c => c.OrganizationType).Width(150);
+          columns.Bound(c => c.ExperienceYear).Width(150);
+          columns.Bound(c => c.Gender).EditorTemplateName("Enum").Width(150);
+          columns.Bound(c => c.Language).Width(150);
+
+
+          //columns.Bound(c => c.Remark);
+          columns.Command(command =>
+          {
+              command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+              command.Destroy().Text(Resources.ActionButton_Cancel);
+          }).Width(200);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+          .Scrollable(h => h.Height(500))
+                 .Groupable()
+                          .Sortable(sortable =>
+                          {
+                              sortable.SortMode(GridSortMode.SingleColumn);
+                          })
+              .Filterable()
+                 .Pageable(pageable => pageable
+                                            .Input(true)
+                                            .Numeric(false)
+                                            .Refresh(true)
+                                            .PageSizes(true)
+                                            .ButtonCount(5))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+              .Events(events =>
+              {
+
+                  events.Error("error_handler(\"ConfigurationGrid\")");
+                  events.RequestStart("onRequestStart(\"ConfigurationGrid\")");
+                  events.RequestEnd("onRequestEnd(\"ConfigurationGrid\")");
+              })
+
+          .Model(model =>
+          {
+              model.Id(p => p.ScreeningSettingId);
+              model.Field(p => p.Gender).DefaultValue(0);
+          })
+                  .Read(read => read.Action("ScreeningSettings_Read", "ScreeningSettings"))
+                      .Create(create => create.Action("ScreeningSettings_Create", "ScreeningSettings"))
+                  .Update(update => update.Action("ScreeningSettings_Update", "ScreeningSettings"))
+                  .Destroy(destroy => destroy.Action("ScreeningSettings_Destroy", "ScreeningSettings"))
+      ).ClientDetailTemplateId("EducationLevel")
+)
+
+
+
+<script id="EducationLevel" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                  .Name("tabstrip2_#=ScreeningSettingId#")
+            .SelectedIndex(0)
+            .Items(items =>
+             {
+
+                 items.Add().Text("Education Level").Content(
+                    @<text>
+
+                        @(Html.Kendo().Grid<ScreeningEducationLevel>()
+                                  .Name("EducationLevel#=ScreeningSettingId#")
+                      .Columns(columns =>
+                      {
+                          columns.ForeignKey(c => c.EducationLevelId, (IEnumerable)ViewData["EducationLevel"], "LookupId", "Description").EditorTemplateName("EducationLevelLists").Width(150);
+                          columns.Bound(c => c.Remark).Width(150);
+
+                          columns.Command(command =>
+                          {
+
+                              command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+
+                              command.Destroy().Text(Resources.ActionButton_Cancel);
+
+                          }).Width(250);
+                      })
+                      .ToolBar(toolbar =>
+                      {
+                          
+                              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                              //toolbar.Custom().Text("Add New Applicant").HtmlAttributes(new { id = "customCommand" });
+                       
+                      })
+                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                      .Scrollable(h => h.Height(500))
+
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+                                  .Events(events =>
+                                  {
+                                      events.Error("error_handler(\"EducationLevel#=ScreeningSettingId#\")");
+                                      events.RequestStart("onRequestStart(\"EducationLevel#=ScreeningSettingId#\")");
+                                      events.RequestEnd("onRequestEnd(\"EducationLevel#=ScreeningSettingId#\")");
+                                  }
+                                            )
+
+                                  .Model(model =>
+                                              model.Id(p => p.ScreeningEducationLevelId))
+
+                                          .Read(read => read.Action("ScreeningEducationLevels_Read", "ScreeningEducationLevels", new { Area = "HRM", id = "#=ScreeningSettingId#" }))
+                                            .Create(create => create.Action("ScreeningEducationLevels_Create", "ScreeningEducationLevels", new { Area = "HRM", id = "#=ScreeningSettingId#" }))
+                                  .Update(update => update.Action("ScreeningEducationLevels_Update", "ScreeningEducationLevels"))
+                                  .Destroy(destroy => destroy.Action("ScreeningEducationLevels_Destroy", "ScreeningEducationLevels"))
+                      ).ToClientTemplate()
+                        )
+                    </text>
+                    );
+
+                 items.Add().Text("Education Field").Content(
+                    @<text>
+
+                        @(Html.Kendo().Grid<ScreeningEducationField>()
+                                  .Name("EducationField#=ScreeningSettingId#")
+                      .Columns(columns =>
+                      {
+                          columns.ForeignKey(c => c.EducationFieldId, (IEnumerable)ViewData["EducationField"], "LookupId", "Description").EditorTemplateName("EducationFieldLists").Width(150);
+                          columns.Bound(c => c.Remark).Width(150);
+
+                          columns.Command(command =>
+                          {
+
+                              command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+
+                              command.Destroy().Text(Resources.ActionButton_Cancel);
+
+                          }).Width(250);
+                      })
+                      .ToolBar(toolbar =>
+                      {
+                         
+                              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                              //toolbar.Custom().Text("Add New Applicant").HtmlAttributes(new { id = "customCommand" });
+                          
+                      })
+                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                      .Scrollable(h => h.Height(500))
+
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+                                  .Events(events =>
+                                  {
+                                      events.Error("error_handler(\"EducationField#=ScreeningSettingId#\")");
+                                      events.RequestStart("onRequestStart(\"EducationField#=ScreeningSettingId#\")");
+                                      events.RequestEnd("onRequestEnd(\"EducationField#=ScreeningSettingId#\")");
+                                  }
+                                            )
+
+                                  .Model(model =>
+                                              model.Id(p => p.ScreeningEducationFieldId))
+
+                                          .Read(read => read.Action("ScreeningEducationFields_Read", "ScreeningEducationFields", new { Area = "HRM", id = "#=ScreeningSettingId#" }))
+                                            .Create(create => create.Action("ScreeningEducationFields_Create", "ScreeningEducationFields", new { Area = "HRM", id = "#=ScreeningSettingId#" }))
+                                  .Update(update => update.Action("ScreeningEducationFields_Update", "ScreeningEducationFields"))
+                                  .Destroy(destroy => destroy.Action("ScreeningEducationFields_Destroy", "ScreeningEducationFields"))
+                      ).ToClientTemplate()
+                        )
+                    </text>
+                    );
+
+                 items.Add().Text("Experience Jobtitle for External Applicant").Content(
+                    @<text>
+
+                        @(Html.Kendo().Grid<ScreeningExperienceJobtitle>()
+                                  .Name("Jobtitle#=ScreeningSettingId#")
+                      .Columns(columns =>
+                      {
+                          columns.ForeignKey(c => c.ExperienceJobTitleId, (IEnumerable)ViewData["Lookups"], "LookupId", "Description").EditorTemplateName("ExperienceJobtitleLists").Width(150);
+                          columns.Bound(c => c.Remark).Width(150);
+
+                          columns.Command(command =>
+                          {
+
+                              command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+
+                              command.Destroy().Text(Resources.ActionButton_Cancel);
+
+                          }).Width(250);
+                      })
+                      .ToolBar(toolbar =>
+                      {
+                          
+                              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                              //toolbar.Custom().Text("Add New Applicant").HtmlAttributes(new { id = "customCommand" });
+                         
+                      })
+                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                      .Scrollable(h => h.Height(500))
+
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+                                  .Events(events =>
+                                  {
+                                      events.Error("error_handler(\"Jobtitle#=ScreeningSettingId#\")");
+                                      events.RequestStart("onRequestStart(\"Jobtitle#=ScreeningSettingId#\")");
+                                      events.RequestEnd("onRequestEnd(\"Jobtitle#=ScreeningSettingId#\")");
+                                  }
+                                            )
+
+                                  .Model(model =>
+                                              model.Id(p => p.ScreeningExperienceJobtitleId))
+
+                                          .Read(read => read.Action("ScreeningExperienceJobtitles_Read", "ScreeningExperienceJobtitles", new { Area = "HRM", id = "#=ScreeningSettingId#" }))
+                                            .Create(create => create.Action("ScreeningExperienceJobtitles_Create", "ScreeningExperienceJobtitles", new { Area = "HRM", id = "#=ScreeningSettingId#" }))
+                                  .Update(update => update.Action("ScreeningExperienceJobtitles_Update", "ScreeningExperienceJobtitles"))
+                                  .Destroy(destroy => destroy.Action("ScreeningExperienceJobtitles_Destroy", "ScreeningExperienceJobtitles"))
+                      ).ToClientTemplate()
+                        )
+                    </text>
+                    );
+
+
+             items.Add().Text("Experience Jobtitle for Internal Applicant").Content(
+                @<text>
+
+                    @(Html.Kendo().Grid<ScreeningExperienceJobtitleForInternal>()
+                                      .Name("ScreeningExperienceJobtitleForInternal#=ScreeningSettingId#")
+                          .Columns(columns =>
+                          {
+                              columns.ForeignKey(c => c.ExperienceJobTitleId, (IEnumerable)ViewData["LookupsExternalExperienceJobTitleForInternalApplicants"], "LookupId", "Description").EditorTemplateName("ExperienceJobtitleListForInternal").Width(150);
+                              columns.Bound(c => c.Remark).Width(150);
+
+                              columns.Command(command =>
+                              {
+
+                                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+
+                                  command.Destroy().Text(Resources.ActionButton_Cancel);
+
+                              }).Width(250);
+                          })
+                          .ToolBar(toolbar =>
+                          {
+
+                              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                              //toolbar.Custom().Text("Add New Applicant").HtmlAttributes(new { id = "customCommand" });
+
+                          })
+                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                          .Scrollable(h => h.Height(500))
+
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+                                      .Events(events =>
+                                      {
+                                          events.Error("error_handler(\"ScreeningExperienceJobtitleForInternal#=ScreeningSettingId#\")");
+                                          events.RequestStart("onRequestStart(\"ScreeningExperienceJobtitleForInternal#=ScreeningSettingId#\")");
+                                          events.RequestEnd("onRequestEnd(\"ScreeningExperienceJobtitleForInternal#=ScreeningSettingId#\")");
+                                      }
+                                                )
+
+                                      .Model(model =>
+                                                  model.Id(p => p.ScreeningExperienceJobtitleForInternalId))
+
+                                              .Read(read => read.Action("ScreeningExperienceJobtitleForInternal_Read", "ScreeningExperienceJobtitles", new { Area = "HRM", id = "#=ScreeningSettingId#" }))
+                                                .Create(create => create.Action("ScreeningExperienceJobtitleForInternal_Create", "ScreeningExperienceJobtitles", new { Area = "HRM", id = "#=ScreeningSettingId#" }))
+                                      .Update(update => update.Action("ScreeningExperienceJobtitleForInternal_Update", "ScreeningExperienceJobtitles"))
+                                      .Destroy(destroy => destroy.Action("ScreeningExperienceJobtitleForInternal_Destroy", "ScreeningExperienceJobtitles"))
+                          ).ToClientTemplate()
+                    )
+                </text>);
+
+
+             }).ToClientTemplate())
+</script>
+
+
+
+
+
+
+<script>
+    function filterCategories() {
+        return {
+            Reference: $("#Reference").val()
+        };
+    }
+</script>
+<script>
+    function filterAttributes() {
+        return {
+            Attribute: $("#Attribute").val()
+        };
+    }
+
+
+</script>
+<script>
+    function filterCurrentValue() {
+        return {
+            Attribute: $("#CurrentValue").val()
+        };
+    }
+
+
+</script>
+<script>
+
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+</script>

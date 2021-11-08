@@ -42,23 +42,23 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Attendance
                        select (new { e });
 
             ViewData["Period"] = db.GLPeriods.ToList();
-            ViewData["EmployeeList"] = list.Select(x => x.e).ToList();
-            GetPeriod();
+            ViewData["EmployeeList"] = db.Person_Employee.ToList();//list.Select(x => x.e).ToList();
+            //GetPeriod();
         }
-        public JsonResult GetPeriod()
-        {
-            var periodList = db.PayrollPeriods.Where(x => x.Status == FiscalYearStatus.Open);
-            var listt = from p in periodList
-                        join g in db.GLPeriods
-                            on p.Name equals g.Name
-                        select (new
-                        {
-                            g
-                        });
-            ViewData["PeriodList"] = listt.Select(x => x.g).ToList();
+        //public JsonResult GetPeriod()
+        //{
+        //    var periodList = db.PayrollPeriods.Where(x => x.Status == FiscalYearStatus.Open);
+        //    var listt = from p in periodList
+        //                join g in db.GLPeriods
+        //                    on p.Name equals g.Name
+        //                select (new
+        //                {
+        //                    g
+        //                });
+        //    ViewData["PeriodList"] = listt.Select(x => x.g).ToList();
 
-            return Json(listt.Select(p => new { GLPeriodId = p.g.GLPeriodId, Name = p.g.Name }), JsonRequestBehavior.AllowGet);
-        }
+        //    return Json(listt.Select(p => new { GLPeriodId = p.g.GLPeriodId, Name = p.g.Name }), JsonRequestBehavior.AllowGet);
+        //}
         public void SetDate(string name, string value)
         {
             if (name == "DateLateAmharic")
@@ -72,15 +72,15 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Attendance
 
         public ActionResult LateComingSummaries_Read([DataSourceRequest]DataSourceRequest request)
         {
-            var periodList = from p in db.PayrollPeriods
-                             join g in db.GLPeriods
-                             on p.Name equals g.Name
-                             where p.Status == FiscalYearStatus.Open
-                             select (new { g.GLPeriodId });
+            //var periodList = from p in db.PayrollPeriods
+            //                 join g in db.GLPeriods
+            //                 on p.Name equals g.Name
+            //                 where p.Status == FiscalYearStatus.Open
+            //                 select (new { g.GLPeriodId });
 
-            List<int> selectedPeriod = periodList.Select(x => x.GLPeriodId).ToList();
+           // List<int> selectedPeriod = periodList.Select(x => x.GLPeriodId).ToList();
             List<string> employees = inputs.GetUserBranchEmployees(User.Identity.Name);
-            IQueryable<LateComingSummary> LateComingSummaries = db.LateComingSummaries.Where(x => employees.Contains(x.EmployeeId.ToString()) /*&& selectedPeriod.Contains(x.GLPeriodId)*/);
+            IQueryable<LateComingSummary> LateComingSummaries = db.LateComingSummaries;//.Where(x => employees.Contains(x.EmployeeId.ToString()) /*&& selectedPeriod.Contains(x.GLPeriodId)*/);
             DataSourceResult result = LateComingSummaries.ToDataSourceResult(request, LateComingSummary => new
             {
                 LateComingSummaryId = LateComingSummary.LateComingSummaryId,
@@ -98,11 +98,11 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Attendance
         private bool CheckPayrollProcess(int employeeId, int periodId)
         {
 
-            var checkexistance = db.PayrollProcessViewModel.Where(x => x.EmployeeId == employeeId && x.GLPeriodId == periodId).FirstOrDefault();
-            if (checkexistance != null)
-            {
-                return true;
-            }
+            //var checkexistance = db.PayrollProcessViewModel.Where(x => x.EmployeeId == employeeId && x.GLPeriodId == periodId).FirstOrDefault();
+            //if (checkexistance != null)
+            //{
+            //    return true;
+            //}
 
             return false;
         }
@@ -188,132 +188,126 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Attendance
 
             return Json(new[] { LateComingSummary }.ToDataSourceResult(request, ModelState));
         }
-        [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult Editing_Create([DataSourceRequest] DataSourceRequest request, [Bind(Prefix = "models")]IEnumerable<LateComingSummary> summaries)
-        {
-            var results = new List<LateComingSummary>();
-            LateComingSummary LateComingSummary = new LateComingSummary();
-            ExceedDbContext dbs = new ExceedDbContext();
-            if (summaries != null && ModelState.IsValid)
-            {
-                foreach (var summary in summaries)
-                {
-                    db = new ExceedDbContext();
-                    bool isProcessed = CheckPayrollProcess(summary.EmployeeId, summary.GLPeriodId);
-                    if (!isProcessed)
-                    {
-                        var oneData = db.LateComingSummaries.Where(x => x.LateComingSummaryId == summary.LateComingSummaryId).FirstOrDefault();
-                        LateComingSummary = new LateComingSummary();
-                        LateComingSummary = oneData;
-                        if (oneData != null)
-                        {
-                            db.LateComingSummaries.Remove(oneData);
-                            db.SaveChanges();
-                        }
-                        db = new ExceedDbContext();
-                        LateComingSummary.TotalDays = summary.TotalDays;
-                        LateComingSummary.TotalHours = summary.TotalHours;
-                        LateComingSummary.Check = summary.Check;
-                        LateComingSummary.GLPeriodId = summary.GLPeriodId;
-                        LateComingSummary.EmployeeId = summary.EmployeeId;
-                        LateComingSummary.Processed = summary.Processed;
-                        LateComingSummary.TotalDays = LateComingSummary.TotalHours / 8;
-                        db.LateComingSummaries.Add(LateComingSummary);
-                        db.SaveChanges();
-                        oneData.LateComingSummaryId = LateComingSummary.LateComingSummaryId;
-                        if (summary.Check)
-                        {
-                            SaveAttendance(summary.GLPeriodId, summary.EmployeeId, LateComingSummary.TotalDays);
-                        }
-                        else
-                        {
-                            RemoveAttendance(summary.GLPeriodId, summary.EmployeeId);
-                        }
-                    }
-                }
-            }
+        //[AcceptVerbs(HttpVerbs.Post)]
+        //public ActionResult Editing_Create([DataSourceRequest] DataSourceRequest request, [Bind(Prefix = "models")]IEnumerable<LateComingSummary> summaries)
+        //{
+        //    var results = new List<LateComingSummary>();
+        //    LateComingSummary LateComingSummary = new LateComingSummary();
+        //    ExceedDbContext dbs = new ExceedDbContext();
+        //    if (summaries != null && ModelState.IsValid)
+        //    {
+        //        foreach (var summary in summaries)
+        //        {
+        //            db = new ExceedDbContext();
+        //            bool isProcessed = CheckPayrollProcess(summary.EmployeeId, summary.GLPeriodId);
+        //            if (!isProcessed)
+        //            {
+        //                var oneData = db.LateComingSummaries.Where(x => x.LateComingSummaryId == summary.LateComingSummaryId).FirstOrDefault();
+        //                LateComingSummary = new LateComingSummary();
+        //                LateComingSummary = oneData;
+        //                if (oneData != null)
+        //                {
+        //                    db.LateComingSummaries.Remove(oneData);
+        //                    db.SaveChanges();
+        //                }
+        //                db = new ExceedDbContext();
+        //                LateComingSummary.TotalDays = summary.TotalDays;
+        //                LateComingSummary.TotalHours = summary.TotalHours;
+        //                LateComingSummary.Check = summary.Check;
+        //                LateComingSummary.GLPeriodId = summary.GLPeriodId;
+        //                LateComingSummary.EmployeeId = summary.EmployeeId;
+        //                LateComingSummary.Processed = summary.Processed;
+        //                LateComingSummary.TotalDays = LateComingSummary.TotalHours / 8;
+        //                db.LateComingSummaries.Add(LateComingSummary);
+        //                db.SaveChanges();
+        //                oneData.LateComingSummaryId = LateComingSummary.LateComingSummaryId;
+        //                if (summary.Check)
+        //                {
+        //                    SaveAttendance(summary.GLPeriodId, summary.EmployeeId, LateComingSummary.TotalDays);
+        //                }
+        //                else
+        //                {
+        //                    RemoveAttendance(summary.GLPeriodId, summary.EmployeeId);
+        //                }
+        //            }
+        //        }
+        //    }
 
 
-            return Json(results.ToDataSourceResult(request, ModelState));
-        }
-        private void RemoveAttendance(int period, int empId)
-        {
-            var checkExistance = db.EmpPayrollNoDaysWorkeds.FirstOrDefault(x => x.GLPeriodId == period && x.EmployeeId == empId && x.Remark == "Late Coming");
-            if (checkExistance != null)
-            {
-                db.EmpPayrollNoDaysWorkeds.Attach(checkExistance);
-                db.EmpPayrollNoDaysWorkeds.Remove(checkExistance);
-                db.SaveChanges();
-            }
-        }
-        private void SaveAttendance(int period, int empId, decimal days)
+        //    return Json(results.ToDataSourceResult(request, ModelState));
+        //}
+        //private void RemoveAttendance(int period, int empId)
+        //{
+        //    var checkExistance = db.EmpPayrollNoDaysWorkeds.FirstOrDefault(x => x.GLPeriodId == period && x.EmployeeId == empId && x.Remark == "Late Coming");
+        //    if (checkExistance != null)
+        //    {
+        //        db.EmpPayrollNoDaysWorkeds.Attach(checkExistance);
+        //        db.EmpPayrollNoDaysWorkeds.Remove(checkExistance);
+        //        db.SaveChanges();
+        //    }
+        //}
+        //private void SaveAttendance(int period, int empId, decimal days)
 
-        {
-            var checkExistance = db.EmpPayrollNoDaysWorkeds.FirstOrDefault(x => x.GLPeriodId == period && x.EmployeeId == empId && x.Remark == "Late Coming");
-            if (checkExistance != null)
-            {
-                db.EmpPayrollNoDaysWorkeds.Attach(checkExistance);
-                db.EmpPayrollNoDaysWorkeds.Remove(checkExistance);
-                db.SaveChanges();
-            }
+        //{
+        //    var checkExistance = db.EmpPayrollNoDaysWorkeds.FirstOrDefault(x => x.GLPeriodId == period && x.EmployeeId == empId && x.Remark == "Late Coming");
+        //    if (checkExistance != null)
+        //    {
+        //        db.EmpPayrollNoDaysWorkeds.Attach(checkExistance);
+        //        db.EmpPayrollNoDaysWorkeds.Remove(checkExistance);
+        //        db.SaveChanges();
+        //    }
 
-            var entity = new EmpPayrollNoDaysWorked
-            {
-                EmployeeId = empId,
-                GLPeriodId = period,
-                Days = days,
-                Remark = "Late Coming",
-                DateCreated = DateTime.Now,
-                LastModified = null,
-                CreatedBy = User.Identity.Name,
-                ModifiedBy = null,
-                Reason = "Late Coming",
-                MeasureTaken = null
-            };
+        //    var entity = new EmpPayrollNoDaysWorked
+        //    {
+        //        EmployeeId = empId,
+        //        GLPeriodId = period,
+        //        Days = days,
+        //        Remark = "Late Coming",
+        //        DateCreated = DateTime.Now,
+        //        LastModified = null,
+        //        CreatedBy = User.Identity.Name,
+        //        ModifiedBy = null,
+        //        Reason = "Late Coming",
+        //        MeasureTaken = null
+        //    };
 
-            db.EmpPayrollNoDaysWorkeds.Add(entity);
-            db.SaveChanges();
-        }
-        [HttpPost]
+        //    db.EmpPayrollNoDaysWorkeds.Add(entity);
+        //    db.SaveChanges();
+        //}
         public void Summary(int periodId)
         {
-            var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-            var empIdList = EmployeeHelper.GetSubordinates(empId);
-            foreach (var employee in empIdList)
+            var period = db.GLPeriods.FirstOrDefault(x => x.GLPeriodId == periodId);
+            if (period != null)
             {
-                var latecomingList = db.LateCommings.Where(x => x.EmployeeId == employee).ToList();
-                var periodList = db.GLPeriods.FirstOrDefault(x => x.GLPeriodId == periodId);
-                var summaries = new List<LateComming>();
-                if (periodList != null)
-                {
-                    foreach (var l in latecomingList)
-                    {
+                var lateComings = db.LateCommings.Where(x => x.Date >= period.DateFrom && x.Date <= period.DateTo).ToList();
 
-                        if (l.Date >= periodList.DateFrom && l.Date <= periodList.DateTo)
-                        {
-                            summaries.Add(l);
-                        }
-                    }
-                }
-                if (summaries.Any())
+                lateComings = lateComings.DistinctByField(x => x.EmployeeId).ToList();
+
+                foreach (var late in lateComings)
                 {
-                    var checkExistance = db.LateComingSummaries.FirstOrDefault(x => x.EmployeeId == employee && x.GLPeriodId == periodId);
+                    var singleEmpLates = db.LateCommings.Where(x => x.EmployeeId == late.EmployeeId && x.Date >= period.DateFrom && x.Date <= period.DateTo).ToList();
+
+                    var checkExistance = db.LateComingSummaries.FirstOrDefault(x => x.EmployeeId == late.EmployeeId && x.GLPeriodId == period.GLPeriodId);
                     if (checkExistance != null)
                     {
-                        checkExistance.TotalHours = summaries.Sum(x => x.Time);
-                        checkExistance.TotalDays = (summaries.Sum(x => x.Time)) / 8;
 
-                        db.Entry(checkExistance).State = EntityState.Modified;
-                        db.SaveChanges();
+                        if (singleEmpLates.Any())
+                        {
+                            checkExistance.TotalHours = singleEmpLates.Sum(x => x.Time);
+                            checkExistance.TotalDays = (singleEmpLates.Sum(x => x.Time)) / 8;
+
+                            db.Entry(checkExistance).State = EntityState.Modified;
+                            db.SaveChanges();
+                        }
                     }
                     else
                     {
                         var entity = new LateComingSummary
                         {
-                            EmployeeId = employee,
+                            EmployeeId = late.EmployeeId,
                             TotalDays = 0,
                             GLPeriodId = periodId,
-                            TotalHours = summaries.Sum(x => x.Time),
+                            TotalHours = singleEmpLates.Sum(x => x.Time),
                             Remark = null,
 
                         };
@@ -322,11 +316,10 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Attendance
                         db.LateComingSummaries.Add(entity);
                         db.SaveChanges();
                     }
-
                 }
-
             }
         }
+
         protected override void Dispose(bool disposing)
         {
             db.Dispose();

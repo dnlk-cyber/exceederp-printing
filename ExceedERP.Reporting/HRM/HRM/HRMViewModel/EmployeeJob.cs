@@ -1,4 +1,5 @@
 ﻿using ExceedERP.Core.Domain.Common;
+using System.Collections.Generic;
 
 namespace ExceedERP.Reporting.HRM.HRM.HRMViewModel
 {
@@ -15,5 +16,10 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMViewModel
         // public string To { get; set; }
 
 
+    }
+    public class EmployeeJobTitle
+    {
+        public string Department { get; set; }
+        public List<EmployeeJob> EmployeeJobs { get; set; }
     }
 }

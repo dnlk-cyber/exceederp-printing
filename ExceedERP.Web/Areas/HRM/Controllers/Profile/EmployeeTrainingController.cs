@@ -22,7 +22,7 @@ using ExceedERP.Core.Domain.Global;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
 {
-    
+
     [AuthorizeRoles(HrmConstants.HRProfileUser, HrmConstants.HRProfileAdmin, HrmConstants.HRAdmin)]
     public class EmployeeTrainingController : BaseController
     {
@@ -97,7 +97,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
             }
 
         }
-     
+
         [AuthorizeRoles(HrmConstants.HRProfileUser, HrmConstants.HRProfileAdmin, HrmConstants.HRAdmin)]
         public ActionResult EmpTrainingEducations_Read([DataSourceRequest]DataSourceRequest request, int idTr)
         {
@@ -126,40 +126,52 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
 
             return Json(result);
         }
-      
+
         [AuthorizeRoles(HrmConstants.HRProfileUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult EmpTrainingEducations_Create([DataSourceRequest]DataSourceRequest request, Training empTrainingEducation, int idTrTwo)
         {
             ModelState.Clear();
+
+            if (empTrainingEducation.ToTraAm != null)
+            {
+                var splitDate = empTrainingEducation.ToTraAm.Split('/');
+                empTrainingEducation.To = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
+
+            }
+            else
+            {
+                ModelState.AddModelError("", "Please Enter End Date");
+            }
+            if (empTrainingEducation.FromTrAm != null)
+            {
+                var splitDate = empTrainingEducation.FromTrAm.Split('/');
+                empTrainingEducation.From = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
+
+            }
+
+            if (empTrainingEducation.From > DateTime.Now.Date)
+            {
+
+                ModelState.AddModelError("", "Start date should be less or equal to the current date!!");
+            }
+            else if (empTrainingEducation.From > empTrainingEducation.To)
+            {
+
+                ModelState.AddModelError("", "Start date should be less or equal to end date!!");
+            }
+
+
             if (ModelState.IsValid)
             {
-                if (ToAmharic == null)
-                {
-                    ModelState.AddModelError("", "To Date values are mandatory!!");
-                }
-                if (!String.IsNullOrEmpty(FromAmharic))
-                {
-                    if (From.Date > DateTime.Now.Date)
-                    {
-
-                        ModelState.AddModelError("", "Start date should be less or equal to the current date!!");
-                    }
-                    else if (From.Date > To.Date)
-                    {
-
-                        ModelState.AddModelError("", "Start date should be less or equal to end date!!");
-                    }
-                }
-
                 var entity = new Training
                 {
                     OrganizationName = empTrainingEducation.OrganizationName,
                     EmployeeId = idTrTwo,
                     OrgAddress = empTrainingEducation.OrgAddress,
                     IsTraining = true,
-                    From = From,
-                    To = To,
+                    From = empTrainingEducation.From,
+                    To = empTrainingEducation.To,
                     Score = empTrainingEducation.Score,
                     TotalCost = empTrainingEducation.TotalCost,
                     TrainingName = empTrainingEducation.TrainingName,
@@ -169,17 +181,11 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                     LastModified = empTrainingEducation.LastModified,
                     CreatedBy = User.Identity.Name,
                     ModifiedBy = empTrainingEducation.ModifiedBy,
-                    FromTrAm = FromAmharic,
-                    ToTraAm = ToAmharic
+                    FromTrAm = empTrainingEducation.FromTrAm,
+                    ToTraAm = empTrainingEducation.ToTraAm
                 };
 
-                if (String.IsNullOrEmpty(entity.FromTrAm))
-                {
-                    entity.From = null;
-                    entity.FromTrAm = null;
-                }
-
-
+               
                 db.EmpTrainingEducations.Add(entity);
                 db.SaveChanges();
                 empTrainingEducation.EmpEduTrainId = entity.EmpEduTrainId;
@@ -188,8 +194,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                 var person = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == entity.EmployeeId);
                 if (person != null)
                 {
-                        UserHelper.OperationLog(Request.UserHostAddress, "Employee Training", "Success", User.Identity.Name, "Employee Training for " + person.EmployeeCode + " is Created By  " + User.Identity.Name,Modules.HRM);
-                    
+                    UserHelper.OperationLog(Request.UserHostAddress, "Employee Training", "Success", User.Identity.Name, "Employee Training for " + person.EmployeeCode + " is Created By  " + User.Identity.Name, Modules.HRM);
+
                 }
                 #endregion
 
@@ -197,85 +203,88 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
 
             return Json(new[] { empTrainingEducation }.ToDataSourceResult(request, ModelState));
         }
-      
+
         [AuthorizeRoles(HrmConstants.HRProfileUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult EmpTrainingEducations_Update([DataSourceRequest]DataSourceRequest request, Training empTrainingEducation)
         {
             ModelState.Clear();
+
+            if (empTrainingEducation.ToTraAm != null)
+            {
+                var splitDate = empTrainingEducation.ToTraAm.Split('/');
+                empTrainingEducation.To = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
+
+            }
+            else
+            {
+                ModelState.AddModelError("", "Please Enter End Date");
+            }
+            if (empTrainingEducation.FromTrAm != null)
+            {
+                var splitDate = empTrainingEducation.FromTrAm.Split('/');
+                empTrainingEducation.From = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
+
+            }
+
+            if (empTrainingEducation.From > DateTime.Now.Date)
+            {
+
+                ModelState.AddModelError("", "Start date should be less or equal to the current date!!");
+            }
+            else if (empTrainingEducation.From > empTrainingEducation.To)
+            {
+
+                ModelState.AddModelError("", "Start date should be less or equal to end date!!");
+            }
+
+
             if (ModelState.IsValid)
             {
-                if (FromAmharic == null)
-                {
-                    FromAmharic = empTrainingEducation.FromTrAm;
-                    var splitDate = FromAmharic.Split('/');
-                    From = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
-                }
-                if (ToAmharic == null)
-                {
-                    ToAmharic = empTrainingEducation.ToTraAm;
-                    var splitDate = ToAmharic.Split('/');
-                    To = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
-                }
-                if (From.Date > DateTime.Now.Date)
-                {
 
-                    ModelState.AddModelError("", "Start date should be less or equal to the current date!!");
-                }
-                else if (From.Date > To.Date)
+                var entity = new Training
                 {
+                    EmpEduTrainId = empTrainingEducation.EmpEduTrainId,
+                    EmployeeId = empTrainingEducation.EmployeeId,
+                    OrganizationName = empTrainingEducation.OrganizationName,
+                    OrgAddress = empTrainingEducation.OrgAddress,
+                    IsTraining = true,
+                    From = empTrainingEducation.From,
+                    To = empTrainingEducation.To,
+                    TrainingName = empTrainingEducation.TrainingName,
+                    Score = empTrainingEducation.Score,
+                    TotalCost = empTrainingEducation.TotalCost,
+                    PercentCoverdByOrg = empTrainingEducation.PercentCoverdByOrg,
+                    Remark = empTrainingEducation.Remark,
+                    DateCreated = empTrainingEducation.DateCreated,
+                    LastModified = DateTime.Now,
+                    CreatedBy = empTrainingEducation.CreatedBy,
+                    ModifiedBy = User.Identity.Name,
+                    FromTrAm = empTrainingEducation.FromTrAm,
+                    ToTraAm = empTrainingEducation.ToTraAm
+                };
 
-                    ModelState.AddModelError("", "Start date should be less or equal to end date!!");
-                }
-                else
+                db.EmpTrainingEducations.Attach(entity);
+                db.Entry(entity).State = EntityState.Modified;
+                db.SaveChanges();
+
+                #region operation log
+
+                var person = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == entity.EmployeeId);
+                if (person != null)
                 {
-                    var entity = new Training
-                    {
-                        EmpEduTrainId = empTrainingEducation.EmpEduTrainId,
-                        EmployeeId = empTrainingEducation.EmployeeId,
-                        OrganizationName = empTrainingEducation.OrganizationName,
-                        OrgAddress = empTrainingEducation.OrgAddress,
-                        IsTraining = true,
-                        From = From,
-                        To = To,
-                        TrainingName = empTrainingEducation.TrainingName,
-                        Score = empTrainingEducation.Score,
-                        TotalCost = empTrainingEducation.TotalCost,
-                        PercentCoverdByOrg = empTrainingEducation.PercentCoverdByOrg,
-                        Remark = empTrainingEducation.Remark,
-                        DateCreated = empTrainingEducation.DateCreated,
-                        LastModified = DateTime.Now,
-                        CreatedBy = empTrainingEducation.CreatedBy,
-                        ModifiedBy = User.Identity.Name,
-                        FromTrAm = FromAmharic,
-                        ToTraAm = ToAmharic
-                    };
+                    UserHelper.OperationLog(Request.UserHostAddress, "Employee Training", "Success", User.Identity.Name, "Training Info of " + person.EmployeeCode + " is Updated By  " + User.Identity.Name, Modules.HRM);
 
-                    if (String.IsNullOrEmpty(entity.FromTrAm))
-                    {
-                        entity.From = null;
-                        entity.FromTrAm = null;
-                    }
-
-                    db.EmpTrainingEducations.Attach(entity);
-                    db.Entry(entity).State = EntityState.Modified;
-                    db.SaveChanges();
-
-                    #region operation log
-                    var person = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == entity.EmployeeId);
-                    if (person != null)
-                    {
-                            UserHelper.OperationLog(Request.UserHostAddress, "Employee Training", "Success", User.Identity.Name, "Training Info of " + person.EmployeeCode + " is Updated By  " + User.Identity.Name,Modules.HRM);
-                        
-                    }
-                    #endregion
                 }
+
+                #endregion
+
             }
 
             return Json(new[] { empTrainingEducation }.ToDataSourceResult(request, ModelState));
         }
-     
-        [AuthorizeRoles( HrmConstants.HRProfileAdmin, HrmConstants.HRAdmin)]
+
+        [AuthorizeRoles(HrmConstants.HRProfileAdmin, HrmConstants.HRAdmin)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult EmpTrainingEducations_Destroy([DataSourceRequest]DataSourceRequest request, Training empTrainingEducation)
         {

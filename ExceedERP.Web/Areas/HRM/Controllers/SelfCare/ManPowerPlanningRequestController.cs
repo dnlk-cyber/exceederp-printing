@@ -15,6 +15,8 @@ using ExceedERP.Core.Domain.Global;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using ExceedERP.Web.Models;
+using System.Net;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
 {
@@ -24,7 +26,28 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
         ExceedDbContext db = new ExceedDbContext();
         public ActionResult Index()
         {
+            List<SelectListItem> requestStatusList = new List<SelectListItem>();
+
+            var requests = Enum.GetValues(typeof(RequestStatus))
+                         .Cast<RequestStatus>()
+                         .Select(v => v)
+                         .ToList();           
+
+            foreach (var req in requests)
+            {
+                var selectedList = new SelectListItem
+                {
+                    Text = req.ToString(),
+                    Value = req.ToString()
+                };
+                requestStatusList.Add(selectedList);
+            }
+
+            ViewBag.RequestStatus = requests;
+
             PopulateViewData();
+           
+
             return View();
         }
         private void PopulateViewData()
@@ -157,13 +180,33 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ManPowerPlanningRequest_Create([DataSourceRequest]DataSourceRequest request, ManPowerPlanningRequest req)
         {
+            ApplicationDbContext adb =new ApplicationDbContext();
             ModelState.Clear();
 
-           
+            var username = User.Identity.Name;
+            var user = adb.Users.FirstOrDefault(x=>x.UserName == username);
+            if(user != null)
+            {
+                int.TryParse(user.EmployeeId, out int employeeId);
+                var placement = db.Placements.FirstOrDefault(x=>x.EmployeeId == employeeId && x.isCurrent);
+                req.OrgStructureId = placement.OrgStructureId;
+            }
+
             if(req.IsNewJobTitle)
             {
                 req.LookupId = 0;
+                if(req.JobTitle == null || req.JobTitle.Trim() == "")
+                {
+                    ModelState.AddModelError("","If you select is new job title you have to add jobtitle");
+                }
             }
+            else
+            {
+                if(req.LookupId == null)
+                {
+                    ModelState.AddModelError("","You have to select job title");
+                }
+            }            
 
             if (ModelState.IsValid)
             {
@@ -288,40 +331,157 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
 
             return Json(new[] { req }.ToDataSourceResult(request, ModelState));
         }
+        public string CheckStatus(int masterId)
+        {
+            var reques = db.RequestesStatus.FirstOrDefault(x => x.RequestId == masterId && x.ReferenceType == "ManPowerPlanning");
+            if (reques != null)
+            {
+                var approve = db.RequestesStatus.FirstOrDefault(x => x.RequestId == masterId && x.ReferenceType == "ManPowerPlanning" && x.Status == RequestStatus.APPROVE);
 
+                if (approve != null)
+                {
+                    return "approved";
+                }
+                var deptApprove = db.RequestesStatus.FirstOrDefault(x => x.RequestId == masterId && x.ReferenceType == "ManPowerPlanning" && x.Status == RequestStatus.DEPARTMENT_APPROVAL);
+                if(deptApprove != null)
+                {
+                    return "dept_approved";
+                }
+                var reject = db.RequestesStatus.FirstOrDefault(x => x.RequestId == masterId && x.ReferenceType == "ManPowerPlanning" && x.Status == RequestStatus.REJECT);
+                if (reject != null)
+                {
+                    return "reject";
+                }
+                var waiting = db.RequestesStatus.FirstOrDefault(x => x.RequestId == masterId && x.ReferenceType == "ManPowerPlanning" && x.Status == RequestStatus.WAITING_FOR_APPROVAL);
+                if (waiting != null)
+                {
+                    return "waiting";
+                }
+                var pend = db.RequestesStatus.FirstOrDefault(x => x.RequestId == masterId && x.ReferenceType == "ManPowerPlanning" && x.Status == RequestStatus.PEND);
+                if (pend != null)
+                {
+                    return "pend";
+                }
+            }
+            return "notsent";
+        }
         public void Download(int id)
         {
             HRMInputs.SelectedFile = id;
 
         }
+        //public ActionResult DownloadDoument(string filename, string attachId)
+        //{
+        //    if (attachId == "0")
+        //    {
+        //        string messages = "Please select the row first!!";
+        //        return new JavaScriptResult() { Script = "alert('" + messages + "');" };
+        //    }
+
+        //    db = new ExceedDbContext();
+        //    //try
+        //    //{
+        //    int.TryParse(attachId, out int attachmentId);
+        //    var attachment =
+        //            db.Attachments.FirstOrDefault(x => x.Reference == filename && x.ReferenceType == AttachmentType.DOCUMENT && x.AttachmentId == attachmentId);
+
+        //    if (attachment != null)
+        //    {
+        //        WebClient req = new WebClient();
+        //        HttpResponse response = System.Web.HttpContext.Current.Response;
+        //        response.Clear();
+        //        response.ClearContent();
+        //        response.ClearHeaders();
+        //        response.Buffer = true;
+        //        response.AddHeader("Content-Disposition",
+        //            "attachment;filename=\"" + attachment.Description + "\"");
+        //        byte[] datas = req.DownloadData(Server.MapPath("~/Content/Images/" + HRMInputs.EmployeeId.ToString() + "-" + AttachmentType.DOCUMENT + "/" + attachment.Description));
+
+        //        // byte[] datas11 = req.DownloadData(Server.MapPath("~/Content/Images/" + HRMInputs.EmployeeId.ToString() + "-" + AttachmentType.PHOTO + "/" + attachment.Description));
+
+        //        response.BinaryWrite(datas);
+        //        response.End();
+        //        HRMInputs.SelectedFile = 0;
+        //        return File(filename, attachment.FileType);
+        //    }
+        //    //}
+        //    //catch (Exception)
+        //    //{
+
+        //    //    // throw;
+        //    //}
+        //    HRMInputs.SelectedFile = 0;
+        //    return null;
+        //}
+        public ActionResult DownloadDoument(string filename, string attachId)
+        {
+            if (attachId == "0")
+            {
+                string messages = "Please select the row first!!";
+                return new JavaScriptResult() { Script = "alert('" + messages + "');" };
+            }
+
+            db = new ExceedDbContext();
+            //try
+            //{
+            int.TryParse(attachId, out int attachmentId);
+            var attachment =
+                    db.Attachments.FirstOrDefault(x => x.Reference == filename && x.ReferenceType == AttachmentType.DOCUMENT && x.AttachmentId == attachmentId);
+
+            if (attachment != null)
+            {
+                WebClient req = new WebClient();
+                HttpResponse response = System.Web.HttpContext.Current.Response;
+                response.Clear();
+                response.ClearContent();
+                response.ClearHeaders();
+                response.Buffer = true;
+                response.AddHeader("Content-Disposition",
+                    "attachment;filename=\"" + attachment.Description + "\"");
+                byte[] datas = req.DownloadData(Server.MapPath("~/Content/Images/" + HRMInputs.EmployeeId.ToString() + "-" + AttachmentType.DOCUMENT + "/" + attachment.Description));
+
+                // byte[] datas11 = req.DownloadData(Server.MapPath("~/Content/Images/" + HRMInputs.EmployeeId.ToString() + "-" + AttachmentType.PHOTO + "/" + attachment.Description));
+
+                response.BinaryWrite(datas);
+                response.End();
+                HRMInputs.SelectedFile = 0;
+                return File(filename, attachment.FileType);
+            }
+            //}
+            //catch (Exception)
+            //{
+
+            //    // throw;
+            //}
+            HRMInputs.SelectedFile = 0;
+            return null;
+        }
+
         public ActionResult UploadDocument(HttpPostedFileBase file, string txtValue)
         {
             try
             {
                 if (file.ContentLength > 0)
                 {
+
                     var fileName = Path.GetFileName(file.FileName);
-                    var path =
-                        Path.Combine(Server.MapPath("~/Content/Images/" + HRMInputs.EmployeeId.ToString() + "-" +
-                                           AttachmentType.DOCUMENT), txtValue);
-                    var mainPath =
-                        Path.Combine(Server.MapPath("~/Content/Images/" + HRMInputs.EmployeeId.ToString() + "-" +
-                                           AttachmentType.DOCUMENT));
+                    var path = Path.Combine(Server.MapPath("~/Content/Images/" + HRMInputs.EmployeeId.ToString() + "-" + AttachmentType.DOCUMENT), HRMInputs.EmployeeId.ToString() + "-" + txtValue + "-" + fileName);
+
+                    var mainPath = Path.Combine(Server.MapPath("~/Content/Images/" + HRMInputs.EmployeeId.ToString() + "-" + AttachmentType.DOCUMENT));
+
                     if (!Directory.Exists(mainPath))
                     {
                         Directory.CreateDirectory(mainPath);
                     }
                     if (!System.IO.File.Exists(path))
                     {
-
-
                         file.SaveAs(path);
 
                         var entity = new Attachment
                         {
 
                             Reference = HRMInputs.EmployeeId.ToString(),
-                            Description = file.FileName,
+                            Description = HRMInputs.EmployeeId.ToString() + "-" + txtValue + "-" + fileName,
                             FileName = txtValue,
                             FileType = file.ContentType,
                             ReferenceType = AttachmentType.DOCUMENT,

@@ -1,29 +1,29 @@
-﻿﻿using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
- using ExceedERP.Core.Domain;
- using Kendo.Mvc.Extensions;
+using ExceedERP.Core.Domain;
+using Kendo.Mvc.Extensions;
 using ExceedERP.Core.Domain.Global;
 using Kendo.Mvc.UI;
 using ExceedERP.Core.Domain.HRM;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Core.Domain.Common;
-﻿using ExceedERP.Core.Domain.Common.HRM;
+using ExceedERP.Core.Domain.Common.HRM;
 using ExceedERP.Core.Domain.HRM.SelfCare;
 using ExceedERP.Web.Areas.HRM.Controllers.Profile;
 using ExceedERP.Web.Controllers;
 using ExceedERP.Web.Helpers;
 using ExceedERP.Helpers.Common;
- using ExceedERP.Web.Hubs;
+using ExceedERP.Web.Hubs;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
 {
- 
-    [AuthorizeRoles(HrmConstants.HREmployeeSelfService,  HrmConstants.HRDepartmentHead)]
+
+    [AuthorizeRoles(HrmConstants.HREmployeeSelfService, HrmConstants.HRDepartmentHead)]
     public class ApplicationFormController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();
@@ -33,8 +33,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
         public static int EmployeeId { get; set; }
         public ActionResult Index()
         {
-
-
             PopulateViewData();
             return View();
         }
@@ -178,59 +176,59 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
             List<ApplicantionForm> applicantRegi = new List<ApplicantionForm>();
             var SettingSum = EduField + EduLevel + RelatedExp + RelevantExp + Disabliy + Gender + Profile + Training + Dicipline;
 
-            if (id == "Screen")
-            {
-                foreach (var a in applicarionForm)
-                {
-                    db = new ExceedDbContext();
-                    var screen =
-                        db.ApplicantScreeningResult.Where(
-                            x => x.ApplicantRegistrationId == a.ApplicantionFormId && x.ReferenceType == "Internal")
-                            .ToList();
-                    if (screen != null)
-                    {
+            //if (id == "Screen")
+            //{
+            //    foreach (var a in applicarionForm)
+            //    {
+            //        db = new ExceedDbContext();
+            //        var screen =
+            //            db.ApplicantScreeningResult.Where(
+            //                x => x.ApplicantRegistrationId == a.ApplicantionFormId && x.ReferenceType == "Internal")
+            //                .ToList();
+            //        if (screen != null)
+            //        {
 
-                        screenSum = Convert.ToDecimal(screen.Sum(x => x.CurrentResult));
-                        a.TotalResult = screenSum;
-                        var exam =
-                            db.ApplicantExamResult.Where(
-                                x => x.ApplicantRegistrationId == a.ApplicantionFormId && x.ReferenceType == "Internal")
-                                .ToList();
-                        if (exam != null)
-                        {
-                            decimal exmSum = Convert.ToDecimal(exam.Sum(x => x.CurrentResult));
-                        }
-                        if (screenSum >= SettingSum)
-                        {
-                            applicantRegi.Add(a);
+            //            screenSum = Convert.ToDecimal(screen.Sum(x => x.CurrentResult));
+            //            a.TotalResult = screenSum;
+            //            var exam =
+            //                db.ApplicantExamResult.Where(
+            //                    x => x.ApplicantRegistrationId == a.ApplicantionFormId && x.ReferenceType == "Internal")
+            //                    .ToList();
+            //            if (exam != null)
+            //            {
+            //                decimal exmSum = Convert.ToDecimal(exam.Sum(x => x.CurrentResult));
+            //            }
+            //            if (screenSum >= SettingSum)
+            //            {
+            //                applicantRegi.Add(a);
 
 
-                        }
-                    }
+            //            }
+            //        }
 
-                }
-                applicarionForm = applicantRegi.AsQueryable();
-            }
-            else
-            {
-                foreach (var a in applicarionForm)
-                {
-                    db = new ExceedDbContext();
-                    var screen =
-                        db.ApplicantScreeningResult.Where(x => x.ApplicantRegistrationId == a.ApplicantionFormId && x.ReferenceType == "Internal")
-                            .ToList();
-                    if (screen != null)
-                    {
+            //    }
+            //    applicarionForm = applicantRegi.AsQueryable();
+            //}
+            //else
+            //{
+            //    foreach (var a in applicarionForm)
+            //    {
+            //        db = new ExceedDbContext();
+            //        var screen =
+            //            db.ApplicantScreeningResult.Where(x => x.ApplicantRegistrationId == a.ApplicantionFormId && x.ReferenceType == "Internal")
+            //                .ToList();
+            //        if (screen != null)
+            //        {
 
-                        screenSum = Convert.ToDecimal(screen.Sum(x => x.CurrentResult));
-                        a.TotalResult = screenSum;
-                        
-                        applicantRegi.Add(a);
-                    }
-                }
-            }
+            //            screenSum = Convert.ToDecimal(screen.Sum(x => x.CurrentResult));
+            //            a.TotalResult = screenSum;
 
-         
+            //            applicantRegi.Add(a);
+            //        }
+            //    }
+            //}
+
+
 
             DataSourceResult result = applicarionForm.ToDataSourceResult(request, applicantionForm => new
             {
@@ -270,158 +268,154 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
         public ActionResult ApplicantionFormes_Create([DataSourceRequest]DataSourceRequest request, ApplicantionForm applicantionForm)
         {
             ModelState.Clear();
-            int vacancyId = Convert.ToInt32(applicantionForm.IDAndTitle.Split('-')[1]);
-            int lookUpId = Convert.ToInt32(applicantionForm.IDAndTitle.Split('-')[0]);
-            if(applicantionForm.EmployeeId == 0 && applicantionForm.IsForOther)
+
+            //int vacancyId = Convert.ToInt32(applicantionForm.IDAndTitle.Split('-')[1]);
+            //int lookUpId = Convert.ToInt32(applicantionForm.IDAndTitle.Split('-')[0]);
+
+            if (applicantionForm.EmployeeId == 0 && applicantionForm.IsForOther)
             {
-                ModelState.AddModelError("","Employee ID and User are not mapped");
+                ModelState.AddModelError("", "Employee ID and User are not mapped");
             }
 
-           
-            
-            if (ModelState.IsValid)
+            //var placmenets = db.Placements.Where( x =>
+            //            x.AssignmentDate.Year == DateTime.Now.Year &&
+            //            x.EmployeeId == applicantionForm.EmployeeId && x.AssignmentType == AssignmentType.PROMOTION).ToList();
+            //if (placmenets.Count > NoOfPromotion)
+            //{
+            //    RedirectToAction("Index");
+            //    string messages = "You can not apply for this vacancy. \n You already promoted " + placmenets.Count + " times";
+            //    return new JavaScriptResult() { Script = "alert('" + messages + "');" };
+
+            //}
+
+            if (!applicantionForm.IsForOther)
             {
-                var placmenets =
-                    db.Placements.Where(
-                        x =>
-                            x.AssignmentDate.Year == DateTime.Now.Year &&
-                            x.EmployeeId == applicantionForm.EmployeeId && x.AssignmentType == AssignmentType.PROMOTION).ToList();
-                if (placmenets.Count > NoOfPromotion)
+                applicantionForm.EmployeeId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
+                if (applicantionForm.EmployeeId == 0)
                 {
-                    RedirectToAction("Index");
-                    string messages = "You can not apply for this vacancy. \n You already promoted " + placmenets.Count + " times";
+                    string messages = "Employee and User are not mapped";
                     return new JavaScriptResult() { Script = "alert('" + messages + "');" };
-
                 }
 
-                if (!applicantionForm.IsForOther)
-                {
-                    EmployeeId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-                    if(EmployeeId == 0)
-                    {
-                        string messages = "Employee and User are not mapped";
-                        return new JavaScriptResult() { Script = "alert('" + messages + "');" };
-                    }
-                    var appForm =
-                        db.ApplicantionFormes.FirstOrDefault(x => x.EmployeeId == EmployeeId && x.VacancyId == vacancyId);
-                    if (appForm!=null)
-                    {
-                        string messages = "you were apply for this vacancy";
-                        return new JavaScriptResult() { Script = "alert('" + messages + "');" };
-                    }
-                }
-                else
-                {
-                    EmployeeId = applicantionForm.EmployeeId;
-                    var appForm =
-                        db.ApplicantionFormes.FirstOrDefault(x => x.EmployeeId == EmployeeId && x.VacancyId == vacancyId);
-                    if (appForm != null)
-                    {
-                        string messages = "you were apply for this vacancy";
-                        return new JavaScriptResult() { Script = "alert('" + messages + "');" };
-                    }
-                }
+                var appForm = db.ApplicantionFormes.FirstOrDefault(x => x.EmployeeId == applicantionForm.EmployeeId && x.VacancyId == applicantionForm.VacancyId);
 
-                var desciplines = db.DisciplinaryCases.Where(x => x.EmployeeId == EmployeeId).ToList();
-                if (desciplines.Any())
+                if (appForm != null)
                 {
-                    foreach (var disc in desciplines)
+                    string messages = "you were apply for this vacancy";
+                    return new JavaScriptResult() { Script = "alert('" + messages + "');" };
+                }
+            }
+            else
+            {
+                applicantionForm.EmployeeId = applicantionForm.EmployeeId;
+                var appForm = db.ApplicantionFormes.FirstOrDefault(x => x.EmployeeId == applicantionForm.EmployeeId && x.VacancyId == applicantionForm.VacancyId);
+
+                if (appForm != null)
+                {
+                    string messages = "you were apply for this vacancy";
+                    return new JavaScriptResult() { Script = "alert('" + messages + "');" };
+                }
+            }
+
+            var desciplines = db.DisciplinaryCases.Where(x => x.EmployeeId == applicantionForm.EmployeeId).ToList();
+            if (desciplines.Any())
+            {
+                foreach (var disc in desciplines)
+                {
+                    var disciplineMeasures = db.EmpDisciplineMeasure.Where(x => x.DisciplinaryCaseId == disc.DisciplinaryCaseId).ToList();
+                    foreach (var dm in disciplineMeasures)
                     {
-                        var disciplineMeasures = db.EmpDisciplineMeasure.Where(x => x.DisciplinaryCaseId == disc.DisciplinaryCaseId).ToList();
-                        foreach (var dm in disciplineMeasures)
+                        var dif = dm.DecisionDate.AddMonths(dm.Month);
+                        if (dif > DateTime.Today)
                         {
-                            var dif = dm.DecisionDate.AddMonths(dm.Month);
-                            if (dif > DateTime.Today)
-                            {
-                                ModelState.AddModelError("", "you can not apply, you have Discipline case");
-                            }
+                            ModelState.AddModelError("", "you can not apply, you have Discipline case");
                         }
                     }
                 }
+            }
 
-                var placement = db.Placements.Where(x => x.EmployeeId == EmployeeId && x.AssignmentType == AssignmentType.PROMOTION);
-                if (placement.Any())
+            //var placement = db.Placements.Where(x => x.EmployeeId == applicantionForm.EmployeeId && x.AssignmentType == AssignmentType.PROMOTION);
+            //if (placement.Any())
+            //{
+            //    var dates = placement.Select(x => x.AssignmentDate).ToList();
+            //    var maxdate = dates.Max();
+               
+            //    var days = DateTime.Today.Date.Subtract(maxdate).Days;
+            //    var month = days / 30;
+            //    var year = (int)month / 12;
+            //    if (year < 1)
+            //    {
+            //        ModelState.AddModelError("", "you are promoted this year you can't promoted morethan once ayear ");
+            //    }
+            //}
+
+            var profile = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == applicantionForm.EmployeeId);
+            if (profile != null)
+            {
+                var days = DateTime.Today.Date.Subtract(profile.HiredDate).Days;
+                var month = days / 30;
+                var year = (int)month / 12;
+                if (year < 1)
                 {
-                    var dates = placement.Select(x => x.AssignmentDate).ToList();
-                    var maxdate = dates.Max();
-                    //  var place = placement.FirstOrDefault(x=>x.AssignmentDate == maxdate);
-
-                    var days = DateTime.Today.Date.Subtract(maxdate).Days;
-                    var month = days / 30;
-                    var year = (int)month / 12;
-                    if (year < 1)
-                    {
-                        ModelState.AddModelError("", "you are promoted this year you can't promoted morethan once ayear ");
-                    }
+                    ModelState.AddModelError("", "you are new employee you can't be promoted before 1 year internal experience");
                 }
-                var profile = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == EmployeeId);
-                if(profile != null)
+            }
+
+            if (ModelState.IsValid)
+            {
+                var entity = new ApplicantionForm
                 {
-                    var days = DateTime.Today.Date.Subtract(profile.HiredDate).Days;
-                    var month = days / 30;
-                    var year = (int)month / 12;
-                    if(year < 1)
-                    {
-                        ModelState.AddModelError("","you are new employee you can't be promoted before 1 year internal experience");
-                    }
-                }
-                if (ModelState.IsValid)
-                {
-                    var entity = new ApplicantionForm
-                    {
-                        EmployeeId = EmployeeId,
-                        ApplicationType = applicantionForm.ApplicationType,
-                        VacancyId = vacancyId,
-                        OrgStructureId = applicantionForm.OrgStructureId,
-                        Remark = applicantionForm.Remark,
-                        LookupId = lookUpId,
-                        OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name),
-                        EmployeeCode = inputs.GetEmployees().FirstOrDefault(x => x.PersonId == EmployeeId)?.EmployeeCode,
-                        CreatedBy = User.Identity.Name,
-                        DateCreated = DateTime.Now,
-                        ModifiedBy = applicantionForm.ModifiedBy,
-                        LastModified = applicantionForm.LastModified,
-                        VacancyType = GetType(applicantionForm.VacancyId.ToString()),
-                        From = DateTime.Today,
-                        To = DateTime.Today
-
-                    };
-
-                    db.ApplicantionFormes.Add(entity);
-                    db.SaveChanges();
-                    applicantionForm.ApplicantionFormId = entity.ApplicantionFormId;
-
-                    #region operation log
-                    var person = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == entity.EmployeeId);
-                    if (person != null)
-                    {
-                            UserHelper.OperationLog(Request.UserHostAddress, "Application Form", "Success", User.Identity.Name,User.Identity.Name + " add new Application for " + person.EmployeeCode ,Modules.HRM);
-                        
-                    }
-                    #endregion
-
-                }
-
-                #region notification
-
-
-
-                var empid = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-                var superviorId = EmployeeHelper.GetSupervisor(empid);
-
-                NotifModels notif = new NotifModels
-                {
-
-                    UserId = UserInformationHelper.GetEmployeeUserId(superviorId),
-                    Title = "Promotion Request",
-                    Message = $" {UserInformationHelper.GetEmployeeFullName(User.Identity.Name)}  has request Promotion",
-                    URL= "~/HRM/ApplicationForm"
+                    EmployeeId = applicantionForm.EmployeeId,
+                    ApplicationType = applicantionForm.ApplicationType,
+                    VacancyId = applicantionForm.VacancyId,
+                    OrgStructureId = applicantionForm.OrgStructureId,
+                    Remark = applicantionForm.Remark,
+                    LookupId = applicantionForm.LookupId,
+                    OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name),
+                    EmployeeCode = inputs.GetEmployees().FirstOrDefault(x => x.PersonId == EmployeeId)?.EmployeeCode,
+                    CreatedBy = User.Identity.Name,
+                    DateCreated = DateTime.Now,
+                    ModifiedBy = applicantionForm.ModifiedBy,
+                    LastModified = applicantionForm.LastModified,
+                    VacancyType = GetType(applicantionForm.VacancyId.ToString()),
+                    From = DateTime.Today,
+                    To = DateTime.Today
                 };
 
-                Notify.NotifyUser(notif);
+                db.ApplicantionFormes.Add(entity);
+                db.SaveChanges();
+                applicantionForm.ApplicantionFormId = entity.ApplicantionFormId;
 
+                #region operation log
+                var person = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == entity.EmployeeId);
+                if (person != null)
+                {
+                    UserHelper.OperationLog(Request.UserHostAddress, "Application Form", "Success", User.Identity.Name, User.Identity.Name + " add new Application for " + person.EmployeeCode, Modules.HRM);
+                }
                 #endregion
+
             }
+
+            #region notification
+
+
+
+            var empid = UserInformationHelper.GetEmployeeId(User.Identity.Name);
+            var superviorId = EmployeeHelper.GetSupervisor(empid);
+
+            NotifModels notif = new NotifModels
+            {
+
+                UserId = UserInformationHelper.GetEmployeeUserId(superviorId),
+                Title = "Promotion Request",
+                Message = $" {UserInformationHelper.GetEmployeeFullName(User.Identity.Name)}  has request Promotion",
+                URL = "~/HRM/ApplicationForm"
+            };
+
+            Notify.NotifyUser(notif);
+
+            #endregion
+
 
             return Json(new[] { applicantionForm }.ToDataSourceResult(request, ModelState));
         }
@@ -458,8 +452,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                 var person = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == entity.EmployeeId);
                 if (person != null)
                 {
-                        UserHelper.OperationLog(Request.UserHostAddress, "Application Form", "Success", User.Identity.Name, User.Identity.Name + " update Application form info of " + person.EmployeeCode,Modules.HRM);
-                    
+                    UserHelper.OperationLog(Request.UserHostAddress, "Application Form", "Success", User.Identity.Name, User.Identity.Name + " update Application form info of " + person.EmployeeCode, Modules.HRM);
+
                 }
                 #endregion
             }
@@ -512,11 +506,11 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                     var detail = db.VaccancyPlans.Where(x => x.VacancyId == p.VacancyId).FirstOrDefault();
                     if (detail != null)
                     {
-                        var lookup = db.Lookups.Where(x => x.LookupId == detail.LookupId).FirstOrDefault();
-                        if (lookup != null)
-                        {
-                            titleList.Add(lookup);
-                        }
+                        //var lookup = db.Lookups.Where(x => x.LookupId == detail.Media_LookupId).FirstOrDefault();
+                        //if (lookup != null)
+                        //{
+                        //    titleList.Add(lookup);
+                        //}
                     }
 
 
@@ -524,7 +518,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
             }
             return Json(titleList.Select(p => new
             {
-                LookupId = p.LookupId, 
+                LookupId = p.LookupId,
                 Description = p.Description
             }), JsonRequestBehavior.AllowGet);
 

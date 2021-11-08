@@ -19,7 +19,12 @@
               // columns.ForeignKey(c => c.RefersTo, (IEnumerable)ViewData["RefersTo"], "OrgStructureId", "Name").EditorTemplateName("OrganizationDept").Width(200);
 
               columns.Bound(c => c.Remark).Width(100);
-              columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit); command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+
+              columns.Command(command =>
+              {
+                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                  command.Destroy().Text(Resources.ActionButton_Cancel);
+              }).Width(200);
           })
           .ToolBar(toolbar =>
           {
@@ -41,7 +46,6 @@
           .Events(e =>
           {
               e.Save("GetDate");
-
               e.Edit("GetDate");
           })
           .Pageable(pageable => pageable
@@ -59,7 +63,10 @@
                       events.RequestEnd("onRequestEnd(\"Complain\")");
                   })
 
-              .Model(model => model.Id(p => p.ComplainId))
+              .Model(model =>
+              {
+                  model.Id(p => p.ComplainId);
+              })
               .Read(read => read.Action("Complains_Read", "Complain"))
               .Create(create => create.Action("Complainss_Create", "Complain", new { Area = "HRM" }))
               .Update(update => update.Action("Complains_Update", "Complain"))
@@ -69,51 +76,51 @@
 )
 <script id="template" type="text/kendo-tmpl">
     @(Html.Kendo().TabStrip()
-                                                                    .Name("tabstrip_#=ComplainId#")
-                                                            .SelectedIndex(0)
-                                                            .Items(items =>
-                                                             {
+                              .Name("tabstrip_#=ComplainId#")
+                      .SelectedIndex(0)
+                      .Items(items =>
+                       {
 
 
-                                                     //*****************************************************************************************************//
-                                                     items.Add().Text("CC").Content(
-                                                                @<text>
+               //*****************************************************************************************************//
+               items.Add().Text("CC").Content(
+                          @<text>
 
 
-                                                                    @(Html.Kendo().Grid<ComplainCC>()
-                                                                                                                                              .Name("ComplainCC#=ComplainId#")
-                                                                                                                              .Columns(columns =>
-                                                                                                                              {
+                              @(Html.Kendo().Grid<ComplainCC>()
+                                    .Name("ComplainCC#=ComplainId#")
+                                   .Columns(columns =>
+                                   {
+                                                                   
+                                              columns.ForeignKey(c => c.CC, (IEnumerable)ViewData["CC"], "OrgStructureId", "Name").EditorTemplateName("OrganizationDept").Width(150);
+                                              //columns.Bound(c => c.IsCurrent).Width(100);
+                                              columns.Command(command =>
+                                              {
 
-              columns.ForeignKey(c => c.CC, (IEnumerable)ViewData["CC"], "OrgStructureId", "Name").EditorTemplateName("OrganizationDept").Width(150);
-                                                                                                                                  //columns.Bound(c => c.IsCurrent).Width(100);
-                                                                                                                                  columns.Command(command =>
-                                                                                                                                  {
+                                                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                                  command.Destroy().Text(Resources.ActionButton_Cancel);
 
-                                                                                                                                      command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
-                                                                                                                                      command.Destroy().Text(Resources.ActionButton_Cancel);
+                                              }).Width(100);
+                                          })
 
-                                                                                                                                  }).Width(100);
-                                                                                                                              })
+                                          .ToolBar(toolbar =>
+                                          {
+                                              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                                          })
 
-                                                                                                                              .ToolBar(toolbar =>
-                                                                                                                              {
-                                                                                                                                  toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
-                                                                                                                              })
+                                  .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                  .Scrollable()
+                                  .Selectable()
+                                  .DataSource(dataSource => dataSource
+                                      .Ajax()
+                                              .Events(events =>
+                                              {
+                                                  events.Error("error_handler(\"ComplainCC#=ComplainId#\")");
+                                                  events.RequestStart("onRequestStart(\"ComplainCC#=ComplainId#\")");
+                                                  events.RequestEnd("onRequestEnd(\"ComplainCC#=ComplainId#\")");
+                                              })
 
-                                                                                                                      .Editable(editable => editable.Mode(GridEditMode.InLine))
-                                                                                                                      .Scrollable()
-                                                                                                                      .Selectable()
-                                                                                                                      .DataSource(dataSource => dataSource
-                                                                                                                          .Ajax()
-                                                                                                                                  .Events(events =>
-                                                                                                                                  {
-                                                                                                                                      events.Error("error_handler(\"ComplainCC#=ComplainId#\")");
-                                                                                                                                      events.RequestStart("onRequestStart(\"ComplainCC#=ComplainId#\")");
-                                                                                                                                      events.RequestEnd("onRequestEnd(\"ComplainCC#=ComplainId#\")");
-                                                                                                                                  })
-
-
+                                                                                                                
                                                       .Model(model => model.Id(p => p.ComplainCCId))
                                                    .Read(read => read.Action("ComplainCCDetail_Read", "ComplainCC", new { id = "#=ComplainId#" }))
                                                    .Create(create => create.Action("ComplainCCDetail_Create", "ComplainCC", new { id = "#=ComplainId#" }))
@@ -132,51 +139,51 @@
 
 
                                                                             @(Html.Kendo().Grid<ComplainDetail>()
-                                                                                                                                                      .Name("ComplainDetail#=ComplainId#")
-                                                                                                                                      .Columns(columns =>
-                                                                                                                                      {
+                                                                                         .Name("ComplainDetail#=ComplainId#")
+                                                                         .Columns(columns =>
+                                                                         {
 
-                                                                                                                                          columns.Bound(c => c.Response).Width(200);
-                                                                                                                                          columns.Bound(c => c.DateAm).Width(50);
-                                                                                                                                          //columns.Bound(c => c.IsCurrent).Width(100);
-                                                                                                                                          //columns.Command(command =>
-                                                                                                                                          //{
+                                                                             columns.Bound(c => c.Response).Width(200);
+                                                                             columns.Bound(c => c.DateAm).Width(50);
+                                                                             //columns.Bound(c => c.IsCurrent).Width(100);
+                                                                             //columns.Command(command =>
+                                                                             //{
 
-                                                                                                                                          //    //command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
-                                                                                                                                          //    //command.Destroy().Text(Resources.ActionButton_Cancel);
+                                                                             //    //command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                                                             //    //command.Destroy().Text(Resources.ActionButton_Cancel);
 
-                                                                                                                                          //}).Width(20);
-                                                                                                                                      })
+                                                                             //}).Width(20);
+                                                                         })
 
-                                                                                                                                      .ToolBar(toolbar =>
-                                                                                                                                      {
-                                                                                                                                          //toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
-                                                                                                                                      })
+                                                                         .ToolBar(toolbar =>
+                                                                         {
+                                                                             //toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                                                                         })
 
-                                                                                                                              .Editable(editable => editable.Mode(GridEditMode.InLine))
-                                                                                                                              .Scrollable()
-                                                                                                                              .Selectable()
-                                                                                                                              .DataSource(dataSource => dataSource
-                                                                                                                                  .Ajax()
-                                                                                                                                          .Events(events =>
-                                                                                                                                          {
-                                                                                                                                              events.Error("error_handler(\"ComplainDetail#=ComplainId#\")");
-                                                                                                                                              events.RequestStart("onRequestStart(\"ComplainDetail#=ComplainId#\")");
-                                                                                                                                              events.RequestEnd("onRequestEnd(\"ComplainDetail#=ComplainId#\")");
-                                                                                                                                          })
+                                                                          .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                          .Scrollable()
+                                                                          .Selectable()
+                                                                          .DataSource(dataSource => dataSource
+                                                                              .Ajax()
+                                                                                      .Events(events =>
+                                                                                      {
+                                                                                          events.Error("error_handler(\"ComplainDetail#=ComplainId#\")");
+                                                                                          events.RequestStart("onRequestStart(\"ComplainDetail#=ComplainId#\")");
+                                                                                          events.RequestEnd("onRequestEnd(\"ComplainDetail#=ComplainId#\")");
+                                                                                      })
 
-
+                                                                                                                             
                                                               .Model(model => model.Id(p => p.ComplainDetailId))
                                                            .Read(read => read.Action("ComplainDetail_Read", "ComplainDetail", new { id = "#=ComplainId#" }))
                                                            .Create(create => create.Action("ComplainDetail_Create", "ComplainDetail", new { id = "#=ComplainId#" }))
                                                           .Update(update => update.Action("ComplainDetail_Update", "ComplainDetail"))
                                                           .Destroy(destroy => destroy.Action("ComplainDetail_Destroy", "ComplainDetail"))
 
-                                                                                                                              ).ToClientTemplate()
+                                                                           ).ToClientTemplate()
                                                                             )
 
                                                                         </text>
-                                                                                                                                   );
+                                                                            );
 
 
 

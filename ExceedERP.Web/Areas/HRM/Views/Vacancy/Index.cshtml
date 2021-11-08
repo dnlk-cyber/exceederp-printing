@@ -14,16 +14,18 @@
           @*columns.Bound(c => c.IsComplete).Template(@<text></text>).ClientTemplate("<input type='checkbox' #= Check ? checked='checked':'' # class='chkbx' />")
                               .HeaderTemplate("<input type='checkbox' id='masterCheckBox' onclick='checkAll(this)'/>").Width(60);*@
           columns.Bound(c => c.VaccancyCode).Width(120);
-          columns.Bound(c => c.IsComplete).ClientTemplate("<input type='checkbox' disabled = 'true' #=IsComplete ? checked='checked' :'' # >").Width(100);
+          columns.Bound(c => c.IsActive).ClientTemplate("<input type='checkbox' disabled = 'true' #=IsActive ? checked='checked' :'' # >").Width(100);
           columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "AmharicName").EditorTemplateName("BranchSelectorFromPlan").Filterable(ftb => ftb.Multi(true).Search(true)).Width(130);
-          columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["workunits"], "OrgStructureId", "Name").EditorTemplateName("OrganizationDept").Filterable(ftb => ftb.Multi(true).Search(true)).Width(200);
-          columns.ForeignKey(c => c.RecruitmentPlanId, (IEnumerable)ViewData["Recruitments"], "RecruitmentPlanId", "JobTitle").EditorTemplateName("RecruitmentPlan").Filterable(ftb => ftb.Multi(true).Search(true)).Width(200);
-          columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["PeriodList"], "GlFiscalYearId", "Name").EditorTemplateName("GLYearSelector").Width(80);
+          //columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["workunits"], "OrgStructureId", "Name").EditorTemplateName("OrganizationDept").Filterable(ftb => ftb.Multi(true).Search(true)).Width(200);
+          // columns.ForeignKey(c => c.RecruitmentPlanId, (IEnumerable)ViewData["Recruitments"], "RecruitmentPlanId", "JobTitle").EditorTemplateName("RecruitmentPlan").Filterable(ftb => ftb.Multi(true).Search(true)).Width(200);
+          // columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["PeriodList"], "GlFiscalYearId", "Name").EditorTemplateName("GLYearSelector").Width(80);
 
           columns.Bound(c => c.RecruSource).EditorTemplateName("Enum").Width(150);
-          columns.Bound(c => c.FromVacAm).EditorTemplateName("Calander").Width(150);
-          columns.Bound(c => c.ToVacAm).EditorTemplateName("Calander").Width(150);
-          columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["Media"], "LookupId", "Description").Width(90).EditorTemplateName("Media");
+          //columns.Bound(c => c.FromVacAm).EditorTemplateName("Calander").Width(150);
+          //columns.Bound(c => c.ToVacAm).EditorTemplateName("Calander").Width(150);
+          columns.Bound(c => c.From).Width(150);
+          columns.Bound(c => c.To).Width(150);
+          // columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["Media"], "LookupId", "Description").Width(90).EditorTemplateName("Media");
           columns.Bound(c => c.VacancyType).EditorTemplateName("Enum").Width(120);
 
 
@@ -31,8 +33,9 @@
           {
               if (HttpContext.Current.User.IsInRole("HR_Recruitment_User"))
               {
-                  command.Custom("").Text("Close").Click("terminate");
-               
+                  command.Custom("open").Text("Force Open").Click("forchOpen");
+                  command.Custom("close").Text("Close").Click("terminate");
+
                   command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
               }
               if (HttpContext.Current.User.IsInRole("HR_Recruitment_Admin") || HttpContext.Current.User.IsInRole("HR_Admin"))
@@ -60,6 +63,7 @@
 
 
       })
+
       .Filterable()
       .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("Vacancy"))
       .Selectable(selectable =>
@@ -72,6 +76,7 @@
                 {
                     e.Save("GetDate");
                     e.Edit("GetDate");
+                    e.DataBound("onDataBound");
                 })
       .Scrollable(h => h.Height(500))
       .Pageable(pageable => pageable
@@ -93,28 +98,94 @@
               events.RequestEnd("onRequestEnd(\"VaccancyPlangrid\")");
           })
 
-                      .Model(model => { model.Id(p => p.VacancyId);
+                      .Model(model =>
+                      {
+                          model.Id(p => p.VacancyId);
                           model.Field(p => p.VacancyId).Editable (false);
                           model.Field(p => p.VaccancyCode).Editable(false);
-                                          model.Field(p => p.IsComplete).Editable(false);
+
                       })
                .Read(read => read.Action("VaccancyPlans_Read", "Vacancy", new { Area = "HRM" }))
             .Create(create => create.Action("VaccancyPlans_Create", "Vacancy", new { Area = "HRM"}))
           .Update(update => update.Action("VaccancyPlans_Update", "Vacancy"))
            //.Update(update => update.Action("ChangingStatus_Edit", "Vacancy"))
            .Destroy(destroy => destroy.Action("VaccancyPlans_Destroy", "Vacancy"))
-      )
+      ).ClientDetailTemplateId("Interviwers")
 )
+
+
+<script id="Interviwers" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                  .Name("tabstrip2_#=VacancyId#")
+            .SelectedIndex(0)
+            .Items(items =>
+             {
+
+                 items.Add().Text("Interviewrs").Content(
+                    @<text>
+
+                        @(Html.Kendo().Grid<RecruitmetnInterviewerPerseon>()
+                                  .Name("Interviewer#=VacancyId#")
+                      .Columns(columns =>
+                      {
+                          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["Employee"], "EmployeeId", "FullNameaEnglish").EditorTemplateName("EmployeeList").Width(150);
+                          columns.Bound(c => c.Remark).Width(150);
+
+                          columns.Command(command =>
+                          {
+
+                              command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+
+                              command.Destroy().Text(Resources.ActionButton_Cancel);
+
+                          }).Width(250);
+                      })
+                      .ToolBar(toolbar =>
+                      {
+                          if (HttpContext.Current.User.IsInRole("HR_Recruitment_User"))
+                          {
+                              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                              //toolbar.Custom().Text("Add New Applicant").HtmlAttributes(new { id = "customCommand" });
+                          }
+                      })
+                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                      .Scrollable(h => h.Height(500))
+
+                      .DataSource(dataSource => dataSource
+                          .Ajax()
+                                  .Events(events =>
+                                  {
+                                      events.Error("error_handler(\"Interviewer#=VacancyId#\")");
+                                      events.RequestStart("onRequestStart(\"Interviewer#=VacancyId#\")");
+                                      events.RequestEnd("onRequestEnd(\"Interviewer#=VacancyId#\")");
+                                  }
+                                            )
+
+                                  .Model(model =>
+                                              model.Id(p => p.RecruitmetnInterviewerPerseonId))
+
+                                          .Read(read => read.Action("Interviewer_Read", "Interviewer", new { Area = "HRM", id = "#=VacancyId#" }))
+                                            .Create(create => create.Action("Interviewer_Create", "Interviewer", new { Area = "HRM", id = "#=VacancyId#" }))
+                                  .Update(update => update.Action("Interviewer_Update", "Interviewer"))
+                                  .Destroy(destroy => destroy.Action("Interviewer_Destroy", "Interviewer"))
+                      ).ToClientTemplate()
+                        )
+                    </text>
+                    );
+
+
+             }).ToClientTemplate())
+</script>
 
 
 <style type="text/css">
     div.k-edit-form-container {
-        width: 700px;
+        width: 900px;
     }
 </style>
 <style type="text/css">
     div.k-edit-form-container {
-        width: 700px;
+        width: 900px;
     }
 
     .Employee-photo {
@@ -166,14 +237,28 @@
         for (var j = 0; j < rows.length; j++) {
             var row = $(rows[j]);
             var dataItem = e.sender.dataItem(row);
-            if (dataItem.Status === 0) {
+            if (dataItem.IsActive == false) {
 
-
-                row.css("background-color", "red");
-
-            } else {
-                row.css("background-color", "green");
+                row.find(".k-grid-edit").hide();
+                row.find(".k-grid-delete").hide();
+                row.find(".k-grid-close").hide();
+                row.find(".k-grid-open").show();
+                row.css("background-color", "gray");
             }
+            else {
+                row.find(".k-grid-edit").show();
+                row.find(".k-grid-delete").show();
+                row.find(".k-grid-close").show();
+                row.find(".k-grid-open").hide();
+                row.css("background-color", "");
+            }
+            //if (dataItem.Status === 0) {
+
+            //    row.css("background-color", "red");
+
+            //} else {
+            //    row.css("background-color", "green");
+            //}
 
         }
 
@@ -247,21 +332,13 @@
 </script>
 <script>
     function terminate(e) {
-       // var value = e;
-        //var grid = $("#VaccancyPlangrid").data("kendoGrid");
-        
-        //var selectedRow = grid.dataItem(grid.select());//grid.select();
-        //var id = selectedRow.VacancyId;
 
         var row = $(e.target).closest("tr");
         var grid = $("#VaccancyPlangrid").data("kendoGrid");
         var dataItem = grid.dataItem(row);
         var id = dataItem.VacancyId;
 
-
-        if (id.length !== 0 )
-        {
-
+        if (id.length !== 0) {
             $.ajax({
                 url: '@Url.Action("Close", "Vacancy")',
 
@@ -271,10 +348,39 @@
                 success: function (result) {
                     r = result;
 
+                        alert(r);
 
-                   // $("#OrgStructureId").val(r).trigger("change");;
+                    grid.dataSource.read();
+                }
 
 
+
+            });
+
+        }
+    }
+
+    function forchOpen(e) {
+
+        var row = $(e.target).closest("tr");
+        var grid = $("#VaccancyPlangrid").data("kendoGrid");
+        var dataItem = grid.dataItem(row);
+        var id = dataItem.VacancyId;
+
+        if (id.length !== 0 )
+        {
+            $.ajax({
+                url: '@Url.Action("ForceOpen", "Vacancy")',
+
+                data: { id: id},
+                type: 'POST',
+                cache: false,
+                success: function (result) {
+                    r = result;
+
+                        alert(r);
+
+                    grid.dataSource.read();
                 }
 
 
@@ -303,11 +409,7 @@
                 cache: false,
                 success: function (result) {
                     r = result;
-
-
-                    $("#OrgStructureId").val(r).trigger("change");;
-
-
+                    $("#OrgStructureId").val(r).trigger("change");
                 }
 
 
@@ -320,15 +422,22 @@
 </script>
 <script>
 
-    function filterWorkunit() {
+     function filterWorkunit() {
         return {
-            BranchId: $("#BranchId").val(),
-            searchText: $("#OrgStructureId").data("kendoDropDownList").filterInput.val()
+            BranchId: $("#BranchId").val()
         };
     }
+
+    //function filterWorkunit() {
+     //   return {
+      //      BranchId: $("#BranchId").val(),
+      //      searchText: $("#OrgStructureId").data("kendoDropDownList").filterInput.val()
+      //  };
+  //  }
     function filterJobTitle() {
         return {
-            OrgStructureId: $("#BranchId").val()+"-"+$("#OrgStructureId").val()
+             BranchId: $("#BranchId").val(),
+             OrgStructureId: $("#Department").val()
         };
     }
 

@@ -20,88 +20,79 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             List<PayableLeave> summaries = new List<PayableLeave>();
             PayableLeave sum = new PayableLeave();
             DateTime currentDate = new DateTime(DateTime.Now.Year, DateTime.Now.Month, DateTime.Now.Day);
+
             var periods = db.GLFiscalYears.ToList();
-            List<Person_Employee> employees;//= ListOfEmployeeIdView.GetEmployees();
-            if (branchId != null && dept != null)
-            {
-                employees = EmployeeHelper.GetEmployeesByBranchAndWorkUnit(Convert.ToInt32(branchId), Convert.ToInt32(dept)).Where(x => x.IsActive).ToList();
-            }
-            else if (branchId != null && dept == null)
-            {
-                employees = EmployeeHelper.GetEmployeesByBranch(Convert.ToInt32(branchId)).Where(x => x.IsActive).ToList();
-            }
-            else if (branchId == null && dept != null)
-            {
-                employees = EmployeeHelper.GetEmployeesByWorkUnit(Convert.ToInt32(dept)).Where(x => x.IsActive).ToList();
-            }
-            else
-            {
 
-                employees = db.Person_Employee.Where(x => x.IsActive).ToList();
+            var employees = db.Person_Employee.Where(x => x.IsActive).ToList();
 
-            }
-            if(year != null)
+            if (branchId != null)
             {
-                periods = periods.Where(x=>x.GlFiscalYearId.ToString() == year).ToList();
+                int.TryParse(branchId, out int braId);
+                var empIds = db.Placements.Where(x => x.BranchId == braId && x.isCurrent).Select(x => x.EmployeeId).ToList();
+                employees = employees.Where(x => empIds.Contains(x.EmployeeId)).ToList();
             }
+            if (dept != null)
+            {
+                int.TryParse(dept, out int orgId);
+                var empIds = db.Placements.Where(x => x.OrgStructureId == orgId && x.isCurrent).Select(x => x.EmployeeId).ToList();
+                employees = employees.Where(x => empIds.Contains(x.EmployeeId)).ToList();
+            }
+
+            if (year != null)
+            {
+                int.TryParse(year, out int periodId);
+                periods = periods.Where(x => x.GlFiscalYearId == periodId).ToList();
+            }
+
             PaybaleLeaveList PaybaleLeaveList = new PaybaleLeaveList();
-            var placments = db.Placements.Where(x => x.isCurrent);
-            //var requestStatus = db.RequestesStatus.Where(x => x.ReferenceType == "LeaveTransfer").ToList();
+
+           // var placments = db.Placements.Where(x => x.isCurrent);
+
             foreach (var e in employees)
             {
                 sum = new PayableLeave();
-                sum.ID = e.EmployeeCode;
-                sum.FullName = e.FirstName + " " + e.MiddleName + " " + e.LastName;
                 sum.PaybaleLeaveList = new List<PaybaleLeaveList>();
+
+                sum.ID = e.EmployeeCode;
+                sum.FullName = e.FullNameAmharic;
+
+                db = new ExceedDbContext();
+
+                decimal salary = 0;
+                var basicSalary = db.Placements.FirstOrDefault(x => x.EmployeeId == e.EmployeeId && x.isCurrent);
+                if (basicSalary != null)
+                {
+                    salary = basicSalary.Salary;
+                }
+
                 foreach (var p in periods)
                 {
                     PaybaleLeaveList = new PaybaleLeaveList();
-                    // var p= periods .Where (x=> x.DateTo.Year - )
-                    var check = p.DateTo.Year - currentDate.Year;
-                    if (check <= 2)
+
+                    db = new ExceedDbContext();
+                    var leaveTaken = db.Leaves.Where(x => x.EmployeeId == e.EmployeeId && x.GlFiscalYearId == p.GlFiscalYearId).ToList();
+
+                    db = new ExceedDbContext();
+                    var paidInCash = db.LeavePaid.Where(x => x.EmployeeId == e.EmployeeId && x.GlFiscalYearId == p.GlFiscalYearId).ToList();
+
+                    PaybaleLeaveList.LeavePeriod = p.Name;
+
+                    db = new ExceedDbContext();
+                    var entitle = db.LeavesEntitle.FirstOrDefault(x => x.GlFiscalYearId == p.GlFiscalYearId && x.EmployeeId == e.EmployeeId);
+                    if (entitle != null)
                     {
-                        decimal salary = 0;
-                        var basicSalary = placments.Where(x => x.EmployeeId == e.EmployeeId).FirstOrDefault();
-                        if (basicSalary != null)
-                        {
-                            salary = basicSalary.Salary;
-                        }
-                        int period = p.GlFiscalYearId;
-                        var entitlew = db.LeavesEntitle.Where(x => x.GlFiscalYearId == period).ToList();
-                        var taken = db.Leaves.Where(x => x.GlFiscalYearId == period).ToList();
-                        var paidIncash = db.LeavePaid.Where(x => x.GlFiscalYearId == period).ToList();
-
-                        var tranferedList = db.LeaveTransfer.Where(x => x.To == period && x.Check).ToList();
-                        var periodName = db.GLFiscalYears.Where(x => x.GlFiscalYearId == period).FirstOrDefault();
-
-
-
-                        if (periodName != null)
-                        {
-                            PaybaleLeaveList.LeavePeriod = periodName.Name;
-                        }
-                        PaybaleLeaveList.TransferedFrom = Convert.ToDecimal(tranferedList.Where(x => x.EmployeeId == e.EmployeeId).Sum(a => a.Amount));
-
-                        var firstOrDefault = entitlew.Where(x => x.EmployeeId == e.EmployeeId).FirstOrDefault();
-                        if (firstOrDefault != null)
-                            PaybaleLeaveList.Entitlment = firstOrDefault.Amount;
-
-                        PaybaleLeaveList.TotalAmountTaken = taken.Where(x => x.EmployeeId == e.EmployeeId).Sum(x => x.Amount);
-                        PaybaleLeaveList.PaidInCash = Convert.ToDecimal(paidIncash.Where(x => x.EmployeeId == e.EmployeeId).Sum(x => x.Amount));
-                        PaybaleLeaveList.Balance = (PaybaleLeaveList.Entitlment + PaybaleLeaveList.TransferedFrom) - PaybaleLeaveList.TotalAmountTaken - PaybaleLeaveList.PaidInCash;
-                        PaybaleLeaveList.Total = (salary / 26) * PaybaleLeaveList.Balance;
-
-
-
+                        PaybaleLeaveList.Entitlment = entitle.Amount;
+                        PaybaleLeaveList.Balance = entitle.Balance;
                     }
-                    else
-                    {
-                        PaybaleLeaveList.LeavePeriod = "-";
-                        PaybaleLeaveList.PaidInCash = 0;
-                        PaybaleLeaveList.Total = 0;
-                    }
+
+                    PaybaleLeaveList.TotalAmountTaken = leaveTaken.Sum(x => x.Amount);
+                    PaybaleLeaveList.PaidInCash = Convert.ToDecimal(paidInCash.Sum(x => x.Amount));
+                    //PaybaleLeaveList.Balance = entitle.Balance;//PaybaleLeaveList.Entitlment - PaybaleLeaveList.TotalAmountTaken - PaybaleLeaveList.PaidInCash;
+                    PaybaleLeaveList.Total = (salary / 26) * PaybaleLeaveList.Balance;
+
                     sum.PaybaleLeaveList.Add(PaybaleLeaveList);
                 }
+
                 summaries.Add(sum);
             }
 
@@ -109,4 +100,5 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             return summaries;
         }
     }
+
 }

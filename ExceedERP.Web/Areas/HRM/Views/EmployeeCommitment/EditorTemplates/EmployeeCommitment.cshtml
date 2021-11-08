@@ -6,11 +6,6 @@
 
 <form>
 
-
-
-
-
-
 <div class="row">
     <div class="col-md-1">
 
@@ -23,43 +18,21 @@
 
             </div>
             <div>
+                     @(Html.Kendo().DropDownListFor(m => m.EmployeeId)
+                              .DataTextField("FullNameaEnglish")
+                              .DataValueField("EmployeeId")
+                              .OptionLabel(Resources.Select)
+                              .Filter(Resources.Select)
+                              .ValuePrimitive(true)
+                              .DataSource(dataSource =>
+                              {
+                                  dataSource.Read(read => read.Action("GetActiveEmployees", "HRMDataProvider", new { area = "HRM" }))
+                                      .ServerFiltering(false);
+                              })
 
-                @(Html.Kendo().DropDownListFor(model => model.EmployeeId)
-                              //  .Name("EmployeeId")
-                              .DataValueField("PersonId")
-        .DataTextField("FullName")
-           .OptionLabel("Select Employee..")
-            .Filter("contains")
-            .MinLength(2)
-            .HtmlAttributes(new { style = "width:200px" })
-            .Virtual(v => v.ValueMapper("valueMapper").ItemHeight(26))
-        .DataSource(source =>
-        {
-            source.Custom()
-                  .ServerFiltering(true)
-                  .ServerPaging(true)
-                  .Type("aspnetmvc-ajax")
-                  .Transport(transport => transport.Read(r => r.Action("GetEmployees", "HRMDataProvider")))
-                  .Schema(schema =>
-                  {
-                      schema.Data("Data")
-                            .Total("Total");
-                  });
-        })
+                    )
 
-                           .ValuePrimitive(true)
-
-
-                                                  .Height(400)
-                                                          .HeaderTemplate("<div class=\"dropdown-header k-widget k-header\">" +
-                                        "<span>Photo</span>" +
-                                        "<span>Full Name</span>" +
-                                    "</div>")
-                                            .Template(@"<div class='Employee-photo' style='background-image: url(" + Url.Content("~/Content/Images/") + "#:data.PersonId#-Photo/" + "#:data.PersonId#.jpg" + ");'></div>" +
-                                            "<div class='Employee-name'>#:FullName#</div>")
-                )
-
-
+                    @Html.ValidationMessageFor(model => model.EmployeeId, "", new { @class = "text-danger" })
 
             </div>
         </div>

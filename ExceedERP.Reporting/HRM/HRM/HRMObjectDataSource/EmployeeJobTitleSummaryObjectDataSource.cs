@@ -20,170 +20,112 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
         {
 
             List<EmployeeSummary> list = new List<EmployeeSummary>();
-            EmployeeSummary employee = new EmployeeSummary();
-            db = new ExceedDbContext();
+
+            var employee = new EmployeeSummary();
+
             var lookups = db.Lookups.Where(x => x.LookupType == LookUpTypes.JOB_TITLE).ToList();
-            List<Person_Employee> emplist;
+
             int index = 0;
 
-            #region byJobTitle
+            var empPlacement = db.Placements.ToList();
 
-            var empPlacement = db.Placements.DistinctByField(x => x.EmployeeId).ToList();
-            if (branchId != null && orgStructureId == null && job == null)
+            if (branchId != null)
             {
-                empPlacement = empPlacement.Where(x => x.BranchId.ToString() == branchId).ToList();
+                int.TryParse(branchId, out int braId);
+                empPlacement = empPlacement.Where(x => x.BranchId == braId).ToList();
             }
-            else if (branchId != null && orgStructureId != null && job == null)
+            if (orgStructureId != null)
             {
-                empPlacement = empPlacement.Where(x => x.BranchId.ToString() == branchId &&
-                        x.OrgStructureId.ToString() == orgStructureId)
-                    .ToList();
-            }
-            else if (branchId != null && orgStructureId != null && job != null)
-            {
-                empPlacement = empPlacement.Where(x => x.BranchId.ToString() == branchId && x.OrgStructureId.ToString() == orgStructureId &&
-                    x.LookupId.ToString() == job).ToList();
+                int.TryParse(orgStructureId, out int orgId);
+                // empPlacement = empPlacement.Where(x => x.OrgStructureId == orgId).ToList();
+                empPlacement = EmployeeHelper.GetEmployees_ByDepartment_WithCaseTeam_FromPlacement(empPlacement, orgId);
+                /// and here filter jobtitles under this department
 
-            }
-            else if (branchId != null && orgStructureId == null && job != null)
-            {
-                empPlacement = empPlacement.Where(x => x.BranchId.ToString() == branchId && x.LookupId.ToString() == job).ToList();
+                var lookupIds = empPlacement.Select(x => x.LookupId).ToList();
+                lookups = lookups.Where(x => lookupIds.Contains(x.LookupId)).ToList();
 
             }
-            else if (branchId == null && orgStructureId == null && job != null)
+            if (job != null)
             {
-                empPlacement = empPlacement.Where(x => x.LookupId.ToString() == job).ToList();
-
-            }
-            else if (branchId == null && orgStructureId != null && job == null)
-            {
-                empPlacement = empPlacement.Where(x => x.OrgStructureId.ToString() == orgStructureId).ToList();
-
-            }
-            else if (branchId == null && orgStructureId != null && job != null)
-            {
-                empPlacement = empPlacement.Where(x => x.OrgStructureId.ToString() == orgStructureId && x.LookupId.ToString() == job).ToList();
-
-            }
-            else
-            {
-                empPlacement = empPlacement.ToList();
+                int.TryParse(job, out int lookUpId);
+                empPlacement = empPlacement.Where(x => x.LookupId == lookUpId).ToList();
+               
+                /// filter by jobtitle here 
+                lookups = lookups.Where(x => x.LookupId == lookUpId).ToList();
             }
 
-            if (empPlacement.Any())
+            var males = db.Person_Employee.Where(x => x.Gender == Gender.MALE).ToList();
+            var females = db.Person_Employee.Where(x => x.Gender == Gender.FEMALE).ToList();
+
+            var malesId = males.Select(x => x.EmployeeId).ToList();
+            var femalesId = females.Select(x => x.EmployeeId).ToList();
+
+
+            if (status == "Active")
             {
-                var personEmployee = db.Person_Employee.ToList();
+                malesId = males.Where(x => x.IsActive).Select(x => x.EmployeeId).ToList();
+                femalesId = females.Where(x => x.IsActive).Select(x => x.EmployeeId).ToList();
+                empPlacement = empPlacement.Where(x => x.isCurrent).DistinctByField(x => x.EmployeeId).ToList();
+            }
+            if (status == "InActive")
+            {
+                malesId = males.Where(x => !x.IsActive).Select(x => x.EmployeeId).ToList();
+                femalesId = females.Where(x => !x.IsActive).Select(x => x.EmployeeId).ToList();
+                empPlacement = empPlacement.Where(x => !x.isCurrent).DistinctByField(x => x.EmployeeId).ToList();
+            }
 
-                if (status == "Active")
-                {
-                    personEmployee = personEmployee.Where(x => x.IsActive).ToList();
-                }
-                if (status == "InActive")
-                {
-                    personEmployee = personEmployee.Where(x => !x.IsActive).ToList();
-                }
 
-                var allLookup = db.Lookups.Where(x => x.LookupType == LookUpTypes.JOB_TITLE);
-                var employeeJobtitle = from ep in empPlacement
-                                       join pe in personEmployee
-                                           on ep.EmployeeId equals pe.EmployeeId
-                                       join lu in allLookup
-                                       on ep.LookupId equals lu.LookupId
-                                       select (new { pe.Gender, ep.LookupId, pe });
+            empPlacement = empPlacement.DistinctByField(x => x.EmployeeId).ToList();
 
-                foreach (var placement in empPlacement)
-                {
-                    employee = new EmployeeSummary();
-                    var lookup = db.Lookups.FirstOrDefault(x => x.LookupId == placement.LookupId && x.LookupType == LookUpTypes.JOB_TITLE);
 
-                    employee.SummaryName = lookup?.Description;
-                    if (employeeJobtitle.Any())
-                    {
-                        employee.index = index;
-                        employee.NumberOfFemaleEmployee = employeeJobtitle.Where(x => x.LookupId == lookup.LookupId).Count(x => x.Gender == Gender.FEMALE);
-                        employee.NumberOfMaleEmployee = employeeJobtitle.Where(x => x.LookupId == lookup.LookupId).Count(x => x.Gender == Gender.MALE);
-                        employee.TotalEmployee = employee.NumberOfMaleEmployee + employee.NumberOfFemaleEmployee;
-                    }
-                    list.Add(employee);
-                    index++;
-                }
-                int oo = 0;
-                var empIdsmale = personEmployee.Where(x => x.Gender == Gender.MALE).Select(x => x.EmployeeId).ToList();
-
+            foreach (var look in lookups)
+            {
                 employee = new EmployeeSummary();
-                if (empIdsmale.Any())
-                {
-                    //var notplacedmale = db.Placements.Where(x => !empIdsmale.Contains(x.EmployeeId)).DistinctByField(x => x.EmployeeId).ToList();
-                    //if (notplacedmale.Any())
-                    //{
-                    //    employee.SummaryName = "ያልተመደቡ ";
-                    //    employee.NumberOfMaleEmployee = notplacedmale.Count();
-                    //    employee.TotalEmployee = employee.NumberOfMaleEmployee + employee.NumberOfFemaleEmployee;
-                    //}
 
-                    var countM = 0;
-                    foreach (var i in empIdsmale)
-                    {
-                        var place = db.Placements.FirstOrDefault(x => x.EmployeeId == i);
-                        if (place == null)
-                        {
-                            countM = countM + 1;
-                        }
-                    }
-
-                    employee.SummaryName = "ያልተመደቡ ";
-                    employee.NumberOfMaleEmployee = countM;
-                    employee.TotalEmployee = employee.NumberOfMaleEmployee + employee.NumberOfFemaleEmployee;
-                }
-                var empIdsfemale = personEmployee.Where(x => x.Gender == Gender.FEMALE).Select(x => x.EmployeeId).ToList();
-                if (empIdsfemale.Any())
-                {
-                    var notplacedFemale = db.Placements.Where(x => !empIdsfemale.Contains(x.EmployeeId)).DistinctByField(x => x.EmployeeId).ToList();
-                    //if (notplacedFemale.Any())
-                    //{
-                    //    employee.SummaryName = "ያልተመደቡ ";
-                    //    employee.NumberOfFemaleEmployee = notplacedFemale.Count();
-                    //    employee.TotalEmployee = employee.NumberOfMaleEmployee + employee.NumberOfFemaleEmployee;
-
-
-                    //}
-                    var countF = 0;
-                    foreach(var i in empIdsfemale)
-                    {
-                        var place = db.Placements.FirstOrDefault(x=>x.EmployeeId == i);
-                        if(place == null)
-                        {
-                             countF = countF + 1;
-                        }
-                    }
-                    employee.SummaryName = "ያልተመደቡ ";
-                    employee.NumberOfFemaleEmployee = countF;
-                    employee.TotalEmployee = employee.NumberOfMaleEmployee + employee.NumberOfFemaleEmployee;
-                }
-
-                employee.index = index++;
+                employee.index = index;
+                employee.SummaryName = look.Description;
+                employee.NumberOfFemaleEmployee = empPlacement.Where(x => femalesId.Contains(x.EmployeeId) && x.LookupId == look.LookupId).Count();
+                employee.NumberOfMaleEmployee = empPlacement.Where(x => malesId.Contains(x.EmployeeId) && x.LookupId == look.LookupId).Count();
+                employee.TotalEmployee = employee.NumberOfMaleEmployee + employee.NumberOfFemaleEmployee;
 
                 list.Add(employee);
+                index++;
             }
-            
 
 
-            return list.DistinctByField(x => x.SummaryName).ToList();
+            employee = new EmployeeSummary();
 
-            #endregion
+            var countM = 0;
+            var countF = 0;
 
+            foreach (var id in malesId)
+            {
+                var place = db.Placements.Where(x => x.EmployeeId == id);
+                if (place == null)
+                {
+                    countM = countM + 1;
+                }
+            }
 
-            #region Filter
-            //var palcementList = db.Placements.Where(x=> x.isCurrent ).ToList();
-            //emplist = HrHelper.PersonEmployeesOneBranch(branchId, orgStructureId, "");
-            //var employeeList = db.Person_Employee.Where(x => x.IsActive).ToList();
-            //var employeeJobtitle = from e in emplist
-            //            join p in palcementList
-            //                on e.EmployeeId equals p.EmployeeId
-            //            select (new { e.Gender, p });
-            #endregion
+            foreach (var id in femalesId)
+            {
+                var place = db.Placements.FirstOrDefault(x => x.EmployeeId == id);
+                if (place == null)
+                {
+                    countF = countF + 1;
+                }
+            }
 
+            employee.SummaryName = "ያልተመደቡ ";
+            employee.NumberOfMaleEmployee = countM;
+            employee.NumberOfFemaleEmployee = countF;
+            employee.TotalEmployee = employee.NumberOfMaleEmployee + employee.NumberOfFemaleEmployee;
 
+            employee.index = index++;
+
+            list.Add(employee);
+
+            return list;
         }
 
 

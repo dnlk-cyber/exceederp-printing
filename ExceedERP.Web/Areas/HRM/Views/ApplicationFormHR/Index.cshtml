@@ -1,0 +1,87 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.HRM.SelfCare
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<legend>@Resources.NavigatorSelfCare_ApplicationForm Hr</legend>
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.HRM.SelfCare.ApplicantionForm>()
+          .Name("grid")
+          .Columns(columns =>
+          {
+              columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeName"], "EmployeeId", "EmployeeCode").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).Width(200);
+              columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeName"], "EmployeeId", "FullNameAmharic").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).Width(200);
+              columns.ForeignKey(c => c.VacancyId, (IEnumerable)ViewData["recruitmentVacancy"], "VacancyId", "MediaVacancyCode").EditorTemplateName("Vacancy").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
+              columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["workunits"], "OrgStructureId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(200);
+              columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["JobTitle"], "LookupId", "Description").Filterable(ftb => ftb.Multi(true).Search(true)).Width(200);
+              columns.Bound(c => c.Remark).Width(80);
+
+              columns.Command(command =>
+              {
+                  command.Edit();
+                  command.Destroy();
+              }).Width(180);
+          })
+          .ToolBar(toolbar =>
+          {
+              toolbar.Create();
+          })
+
+           .Scrollable(h => h.Height(500))
+                         .Groupable()
+                                  .Sortable(sortable =>
+                                  {
+                                      sortable.SortMode(GridSortMode.SingleColumn);
+                                  })
+                      .Filterable()
+                         .Pageable(pageable => pageable
+                            .Input(true)
+                            .Numeric(false)
+                            .Refresh(true)
+                            .PageSizes(true)
+                            .ButtonCount(5))
+
+          .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("ApplicationForm").Window(window =>
+          {
+              window.Title(Resources.NavigatorSelfCare_ApplicationForm);
+              window.Scrollable(false);
+          }))
+
+          .DataSource(dataSource => dataSource
+              .Ajax()
+                .Sort(sort => sort.Add("ApplicantionFormId").Descending())
+              .Model(model =>
+              {
+                  model.Id(p => p.ApplicantionFormId);
+                  model.Field(p => p.EmployeeCode).Editable(false);
+              })
+              .Read(read => read.Action("ApplicantionFormes_Read", "ApplicationFormHR"))
+              .Create(create => create.Action("ApplicantionFormes_Create", "ApplicationFormHR"))
+              .Update(update => update.Action("ApplicantionFormes_Update", "ApplicationFormHR"))
+              .Destroy(destroy => destroy.Action("ApplicantionFormes_Destroy", "ApplicationFormHR"))
+          )
+)
+
+
+<script>
+    function filterCategories() {
+        return {
+            OrgStructureId: $("#OrgStructureId").val(),
+            MediaVacancyCode: $("#MediaVacancyCode").val()
+        };
+    }
+
+    function filterJobtitle() {
+        return {
+            VacancyId: $("#VacancyId").val()
+        };
+    }
+
+    function filterworkunit() {
+        return {
+            VacancyId: $("#VacancyId").val()
+        };
+    }
+</script>

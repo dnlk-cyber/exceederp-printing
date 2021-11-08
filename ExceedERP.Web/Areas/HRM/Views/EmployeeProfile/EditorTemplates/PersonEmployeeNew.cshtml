@@ -1,0 +1,482 @@
+﻿@using Kendo.Mvc.UI
+@using ExceedERP.Core.Localization
+@model ExceedERP.Core.Domain.Common.HRM.Person_Employee
+@using System.Collections
+
+
+<div class="form">
+
+    <div class="row fullrow">
+        <div class="col-md-1"> </div>
+     
+    </div>
+
+    <div class="container demo" id="popupContainerStyle">
+
+        <div class="panel-group" id="accordion" role="tablist" aria-multiselectable="true">
+
+            <div class="panel panel-default">
+                <div class="panel-heading" role="tab" id="headingOne">
+                    <h4 class="panel-title">
+                        <a role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseOne" aria-expanded="true" aria-controls="collapseOne">
+                            <i class="more-less glyphicon glyphicon-plus"></i>
+                           Basic Information
+                        </a>
+                    </h4>
+                </div>
+                <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
+                    <div class="panel-body">
+
+                        <div class="row fullrow">
+                            <div class="col-md-3 ro1">
+                                <div class="form-group">
+
+                                    @Html.LabelFor(model => model.EmployeeCode, htmlAttributes: new { @class = "control-label col-md-8" })
+                                    <div class="col-md-6">
+                                        @*@Html.TextBoxFor(model => model.EmployeeCode)*@
+                                        @Html.Kendo().TextBoxFor(model => model.EmployeeCode)
+                                        @Html.ValidationMessageFor(model => model.EmployeeCode, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+
+
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.FirstName, htmlAttributes: new { @class = "control-label col-md-8" })
+                                    <div class="col-md-6">
+                                        @*@Html.TextBoxFor(model => model.FirstName)*@
+                                        @Html.Kendo().TextBoxFor(model => model.FirstName)
+                                        @*, htmlAttributes: new { onkeyup = "transcrireFirstName()" })*@
+                                        @Html.ValidationMessageFor(model => model.FirstName, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.MiddleName, htmlAttributes: new { @class = "control-label col-md-8" })
+                                    <div class="col-md-6">
+                                        @*@Html.TextBoxFor(model => model.MiddleName)*@
+                                        @Html.Kendo().TextBoxFor(model => model.MiddleName)
+                                        @*, htmlAttributes: new { onkeyup = "transcrireMiddleName()" })*@
+                                        @Html.ValidationMessageFor(model => model.MiddleName, "", new { @class = "text-danger" })
+
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.LastName, htmlAttributes: new { @class = "control-label col-md-8" })
+                                    <div class="col-md-6">
+
+                                        @*@Html.TextBoxFor(model => model.LastName)*@
+                                        @Html.Kendo().TextBoxFor(model => model.LastName)
+                                        @*, htmlAttributes: new { onkeyup = "transcrireLastName()" })*@
+                                        @Html.ValidationMessageFor(model => model.LastName, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+
+
+                            </div>
+
+                            <div class="col-md-3 ro1">
+
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.FirstNameEnglish, htmlAttributes: new { @class = "control-label col-md-8" })
+                                    <div class="col-md-6">
+
+                                        @Html.Kendo().TextBoxFor(model => model.FirstNameEnglish)
+                                        @Html.ValidationMessageFor(model => model.FirstNameEnglish, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.MiddleNameEnglish, htmlAttributes: new { @class = "control-label col-md-8" })
+                                    <div class="col-md-6">
+                                        @Html.Kendo().TextBoxFor(model => model.MiddleNameEnglish)
+                                        @Html.ValidationMessageFor(model => model.MiddleNameEnglish, "", new { @class = "text-danger" })
+
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.LastNameEnglish, htmlAttributes: new { @class = "control-label col-md-8" })
+                                    <div class="col-md-6">
+
+                                        @Html.Kendo().TextBoxFor(model => model.LastNameEnglish)
+                                        @Html.ValidationMessageFor(model => model.LastNameEnglish, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+
+                                    @Html.LabelFor(model => model.Title, htmlAttributes: new { @class = "control-label col-md-8" })
+                                    <div class="col-md-6">
+                                        @*@Html.EnumDropDownListFor(m => m.Title, htmlAttributes: new { @class = "k-dropdown-wrap k-state-default", @style = "width: 140px" })*@
+
+                                        @(Html.Kendo().DropDownListFor(m => m.Title)
+                                                      .DataTextField("Description")
+                                                      .DataValueField("LookupId")
+                                                      .OptionLabel(Resources.Select)
+                                                      .Filter(Resources.Select)
+                                                      .ValuePrimitive(true)
+                                                      .DataSource(dataSource =>
+                                                      {
+                                                          dataSource.Read(read => read.Action("GetPersonTitle", "HRMDataProvider", new { area = "HRM" }))
+                                                              .ServerFiltering(false);
+                                                      })
+
+                                        )
+
+                                        @Html.ValidationMessageFor(model => model.Title, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="col-md-4 ro1">
+
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.Gender, htmlAttributes: new { @class = "control-label col-md-8" })
+                                    <div class="col-md-6">
+
+                                        @(Html.EnumDropDownListFor(m => m.Gender, htmlAttributes: new { @class = "k-dropdown-wrap k-state-default", @style = "width: 140px" })
+
+                                        )
+                                        @Html.ValidationMessageFor(model => model.Gender, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.MothersFullName, htmlAttributes: new { @class = "control-label col-md-8" })
+
+                                    <div class="col-md-6">
+
+                                        @Html.Kendo().TextBoxFor(model => model.MothersFullName)
+                                        @Html.ValidationMessageFor(model => model.MothersFullName, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+
+
+
+                                <div class="row"></div><br />
+                                <div class="form-group">
+                                    @*    @Html.LabelFor(model => model.IsActive, htmlAttributes: new { @class = "control-label col-md-8" })*@
+
+                                    <div class="col-md-10">
+
+                                        @(Html.Kendo().CheckBoxFor(model => model.IsActive)
+                                                                            .Enable(false)
+
+                                        )
+                                        @Html.ValidationMessageFor(model => model.IsActive, "", new { @class = "text-danger" })
+                                    </div>
+
+
+                                </div>
+                            </div>
+                        </div>
+
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel panel-default">
+                <div class="panel-heading" role="tab" id="headingTwo">
+                    <h4 class="panel-title">
+                        <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseTwo" aria-expanded="false" aria-controls="collapseTwo">
+                            <i class="more-less glyphicon glyphicon-plus"></i>
+                            Address Information
+                        </a>
+                    </h4>
+                </div>
+                <div id="collapseTwo" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingTwo">
+                    <div class="panel-body">
+
+                        <div class="row fullrow">
+                            <div class="col-md-3 ro1">
+
+                              <div class="form-group">
+                                    @Html.LabelFor(model => model.Nationality, htmlAttributes: new { @class = "control-label col-md-8" })
+                                    <div class="col-md-6">
+
+                                        @(Html.Kendo().DropDownListFor(model => model.Nationality)
+
+                                             .OptionLabel(Resources.Select)
+                                             .DataTextField("Nationality")
+                                             .DataValueField("CountryId")
+                                             .ValuePrimitive(true)
+                                             .DataSource(dataSource =>
+                                             {
+                                                 dataSource.Read(read => read.Action("GetCountry", "HRMDataProvider"))
+                                                     .ServerFiltering(true);
+                                             }))
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.Nation, htmlAttributes: new { @class = "control-label col-md-8" })
+                                    <div class="col-md-6">
+
+                                        @(Html.Kendo().DropDownListFor(model => model.Nation)
+
+                                            .OptionLabel(Resources.Select)
+                                            .DataTextField("Description")
+                                            .DataValueField("LookupId")
+                                            .ValuePrimitive(true)
+                                            .DataSource(dataSource =>
+                                            {
+                                                dataSource.Read(read => read.Action("GetNation", "HRMDataProvider"))
+                                                    .ServerFiltering(true);
+                                            }))
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.Region, htmlAttributes: new { @class = "control-label col-md-8" })
+                                    <div class="col-md-6">
+
+                                        @Html.EnumDropDownListFor(model => model.Region, htmlAttributes: new { @class = "k-dropdown-wrap k-state-default", @style = "width: 140px" })
+
+                                    </div>
+                                </div>
+
+                            </div>
+                            <div class="col-md-3 ro1">
+
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.Religion, htmlAttributes: new { @class = "control-label col-md-8" })
+                                    <div class="col-md-6">
+
+                                        @Html.EnumDropDownListFor(model => model.Religion, htmlAttributes: new { @class = "k-dropdown-wrap k-state-default", @style = "width: 140px" })
+
+
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+
+                                    @Html.LabelFor(model => model.PhoneNo, htmlAttributes: new { @class = "control-label col-md-8" })
+                                    <div class="col-md-6">
+                                        @Html.Kendo().TextBoxFor(model => model.PhoneNo)
+                                        @Html.ValidationMessageFor(model => model.PhoneNo, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+
+
+                            </div>
+                            <div class="col-md-4 ro1">
+
+                                <div class="form-group">
+
+                                    @Html.LabelFor(model => model.City, htmlAttributes: new { @class = "control-label col-md-8" })
+                                    <div class="col-md-6">
+                                        @Html.Kendo().TextBoxFor(model => model.City)
+                                        @Html.ValidationMessageFor(model => model.City, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                                <div class="form-group">
+
+                                    @Html.LabelFor(model => model.SubCity, htmlAttributes: new { @class = "control-label col-md-8" })
+                                    <div class="col-md-6">
+                                        @Html.Kendo().TextBoxFor(model => model.SubCity)
+                                        @Html.ValidationMessageFor(model => model.SubCity, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                                <div class="form-group">
+
+                                    @Html.LabelFor(model => model.Wereda, htmlAttributes: new { @class = "control-label col-md-8" })
+                                    <div class="col-md-6">
+                                        @Html.Kendo().TextBoxFor(model => model.Wereda)
+                                        @Html.ValidationMessageFor(model => model.Wereda, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+            <div class="panel panel-default">
+                <div class="panel-heading" role="tab" id="headingThree">
+                    <h4 class="panel-title">
+                        <a class="collapsed" role="button" data-toggle="collapse" data-parent="#accordion" href="#collapseThree" aria-expanded="false" aria-controls="collapseThree">
+                            <i class="more-less glyphicon glyphicon-plus"></i>
+                            Other Information
+                        </a>
+                    </h4>
+                </div>
+                <div id="collapseThree" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingThree">
+                    <div class="panel-body">
+
+                        <div class="row fullrow">
+                            <div class="col-md-3 ro1">
+
+
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.DateOfBirthAm, htmlAttributes: new { @class = "control-label col-md-8" })
+
+                                    <div class="col-md-10">
+
+                                        @Html.TextBoxFor(model => model.DateOfBirthAm, htmlAttributes: new { disabled = "disabled", @class = "et-popup-picker" }) <img src="~/Scripts/etp/images/calendar-blue.gif" onclick="SelectDate(this)" />
+                                        @Html.ValidationMessageFor(model => model.DateOfBirthAm, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.BirthPlace, htmlAttributes: new { @class = "control-label col-md-8" })
+
+                                    <div class="col-md-10">
+                                        @Html.Kendo().TextBoxFor(model => model.BirthPlace)
+                                        @Html.ValidationMessageFor(model => model.BirthPlace, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+
+
+
+                            </div>
+
+                            <div class="col-md-3 ro1">
+
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.HiredDateAmharic, htmlAttributes: new { @class = "control-label col-md-8" })
+
+                                    <div class="col-md-10">
+
+                                        @Html.TextBoxFor(model => model.HiredDateAmharic, htmlAttributes: new { disabled = "disabled", @class = "et-popup-picker" }) <img src="~/Scripts/etp/images/calendar-blue.gif" onclick="SelectDate(this)" />
+                                        @Html.ValidationMessageFor(model => model.HiredDateAmharic, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.MartialStatus, htmlAttributes: new { @class = "control-label col-md-8" })
+                                    <div class="col-md-10">
+
+                                        @(Html.EnumDropDownListFor(model => model.MartialStatus, htmlAttributes: new { @class = "k-dropdown-wrap k-state-default", @style = "width: 140px" })
+
+                                        )
+
+                                    </div>
+                                </div>
+
+
+                            </div>
+                            <div class="col-md-3 ro1">
+
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.Status, htmlAttributes: new { @class = "control-label col-md-8" })
+                                    <div class="col-md-10">
+
+                                        @Html.EnumDropDownListFor(model => model.Status, htmlAttributes: new { @class = "k-dropdown-wrap k-state-default", @style = "width: 140px"@*, @onchange = "onFreeLancer()"*@})
+                                    </div>
+
+                                </div>
+
+                                <div class="form-group">
+                                    @Html.LabelFor(model => model.Remark, htmlAttributes: new { @class = "control-label col-md-8" })
+
+                                    <div class="col-md-10">
+
+                                        @*@Html.TextAreaFor(model => model.Remark)*@
+                                        @Html.Kendo().TextBoxFor(model => model.Remark)
+                                        @Html.ValidationMessageFor(model => model.Remark, "", new { @class = "text-danger" })
+                                    </div>
+                                </div>
+
+
+                            </div>
+                            <div class="col-md-4 ro1">
+
+                                @*//////////////////////////*@
+
+                            </div>
+                        </div>
+
+                    </div>
+                </div>
+            </div>
+
+
+        </div><!-- panel-group -->
+
+
+    </div><!-- container -->
+
+</div>
+
+
+
+
+
+
+
+<style>
+    #popupContainerStyle {
+        width: 850px;
+        padding: 10px;
+    }
+</style>
+
+
+
+<style>
+
+    /*******************************
+    * Does not work properly if "in" is added after "collapse".
+    * Get free snippets on bootpen.com
+    *******************************/
+    .panel-group .panel {
+        border-radius: 0;
+        box-shadow: none;
+        border-color: #EEEEEE;
+    }
+
+    .panel-default > .panel-heading {
+        padding: 0;
+        border-radius: 0;
+        color: #212121;
+        background-color: #FAFAFA;
+        border-color: #EEEEEE;
+    }
+
+    .panel-title {
+        font-size: 14px;
+    }
+
+        .panel-title > a {
+            display: block;
+            padding: 15px;
+            text-decoration: none;
+        }
+
+    .more-less {
+        float: right;
+        color: #212121;
+    }
+
+    .panel-default > .panel-heading + .panel-collapse > .panel-body {
+        border-top-color: #EEEEEE;
+    }
+
+    /* ----- v CAN BE DELETED v ----- */
+    body {
+        background-color: #26a69a;
+    }
+
+    .demo {
+        padding-top: 60px;
+        padding-bottom: 60px;
+    }
+</style>
+
+
+
+<script>
+
+    function toggleIcon(e) {
+        $(e.target)
+            .prev('.panel-heading')
+            .find(".more-less")
+            .toggleClass('glyphicon-plus glyphicon-minus');
+    }
+    $('.panel-group').on('hidden.bs.collapse', toggleIcon);
+    $('.panel-group').on('shown.bs.collapse', toggleIcon);
+
+</script>
+
+
+
+

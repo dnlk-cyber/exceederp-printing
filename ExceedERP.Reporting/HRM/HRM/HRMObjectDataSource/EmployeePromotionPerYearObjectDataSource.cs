@@ -20,193 +20,107 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
         {
             List<EmployeePromotion> EmployeeInfoList = new List<EmployeePromotion>();
             EmployeePromotion EmployeeInfo = new EmployeePromotion();
+
             int PromotionPerYear = 0;
-            int checkDiffrence = 0;
-            db = new ExceedDbContext();
-            var ranks = db.Steps.ToList();
-            db = new ExceedDbContext();
-            var jobs = db.Lookups.ToList();
-            db = new ExceedDbContext();
-            var salaries = db.Salaries.ToList();
-            var configration = db.Configurations.Where(x => x.Reference == "YEARLY_PROMOTION_PER_YEAR" && x.Attribute == "Promotion").FirstOrDefault();
+
+            var configration = db.Configurations.FirstOrDefault(x => x.Reference == "YEARLY_PROMOTION_PER_YEAR" && x.Attribute == "Promotion");
             if (configration != null)
             {
                 PromotionPerYear = Convert.ToInt32(configration.CurrentValue);
             }
-            List<Person_Employee> emplist;
-            if (branchId != null && dept != null)
-            {
-                emplist = EmployeeHelper.GetEmployeesByBranchAndWorkUnit(Convert.ToInt32(branchId), Convert.ToInt32(dept)).Where(x => x.IsActive).ToList();
-            }
-            else if (branchId != null && dept == null)
-            {
-                emplist = EmployeeHelper.GetEmployeesByBranch(Convert.ToInt32(branchId)).Where(x => x.IsActive).ToList();
-            }
-            else if (branchId == null && dept != null)
-            {
-                emplist = EmployeeHelper.GetEmployeesByWorkUnit(Convert.ToInt32(dept)).Where(x => x.IsActive).ToList();
-            }
-            else
-            {
 
-                emplist = db.Person_Employee.Where(x => x.IsActive).ToList();
+            var placements = db.Placements.Where(x => x.AssignmentType == AssignmentType.PROMOTION).ToList();
 
+            if (branchId != null)
+            {
+                int.TryParse(branchId, out int braId);
+                placements = EmployeeHelper.GetEmployees_ByBranch_FromPlacement(placements, braId);
             }
             if (dept != null)
             {
-                db = new ExceedDbContext();
-
-
-
-
-
-                if (emplist.Any())
-                {
-                    foreach (var e in emplist)
-                    {
-                        db = new ExceedDbContext();
-                        var placements = db.Placements.Where(x => x.EmployeeId == e.EmployeeId && x.LookupId.ToString() == dept && x.isCurrent).FirstOrDefault();
-
-                        if (placements != null)
-                        {
-                            checkDiffrence = DateTime.Now.Year - placements.AssignmentDate.Year;
-                            if (checkDiffrence >= PromotionPerYear)
-                            {
-
-                                var previousPlacment = db.Placements.Where(x => x.Index == placements.Index - 1).FirstOrDefault();
-                                EmployeeInfo = new EmployeePromotion();
-                               // EmployeeInfo.Sex = e.Gender;
-                                if (e.Gender==Gender.MALE)
-                                {
-                                    EmployeeInfo.Sex = "ወንድ";
-                                }
-                                else
-                                {
-                                    EmployeeInfo.Sex = "ሴት";
-                                }
-                                EmployeeInfo.FullName = e.FirstName + " " + e.MiddleName + " " + e.LastName;
-                                EmployeeInfo.EmployeeId = e.EmployeeCode;
-                                if (previousPlacment != null)
-                                {
-                                    EmployeeInfo.FromStep = ranks.Where(x => x.StepId == previousPlacment.StepId).FirstOrDefault().StepName;
-                                }
-                                var toStep = ranks.Where(x => x.StepId == placements.StepId).FirstOrDefault();
-                                if (toStep != null)
-                                {
-                                    var nextStep = ranks.Where(x => x.StepSequence == toStep.StepSequence + 1).FirstOrDefault();
-                                    if (nextStep != null)
-                                    {
-                                        EmployeeInfo.ToStep = nextStep.StepName;
-                                        var salary = db.Salaries.Where(x => x.RankId == placements.RankId && x.StepId == nextStep.StepId).FirstOrDefault();
-                                        if (salary != null)
-                                        {
-                                            EmployeeInfo.Salary = salary.SalaryAmount;
-                                        }
-                                        else
-                                        {
-                                            var JobTitlesalary = db.SalariesJobTitles.Where(x => x.RankId == placements.RankId && x.StepId == nextStep.StepId && x.LookupId == placements.LookupId).FirstOrDefault();
-                                            if (JobTitlesalary != null)
-                                            {
-                                                EmployeeInfo.Salary = JobTitlesalary.Salary;
-                                            }
-                                        }
-                                    }
-                                }
-                                EmployeeInfo.YearOfPromotion = placements.AssignmentDate.Year;
-
-                                var deptt =
-                                    db.MainCompanyStructures.Where(
-                                            x => x.OrgStructureId == placements.OrgStructureId)
-                                        .FirstOrDefault();
-                                EmployeeInfo.JobTitle = jobs.Where(x => x.LookupId.ToString() == dept).FirstOrDefault().Description;
-                                if (deptt != null)
-                                {
-                                    EmployeeInfo.Departement = deptt.Name;
-                                }
-                                EmployeeInfoList.Add(EmployeeInfo);
-
-                            }
-
-                        }
-                    }
-                }
+                int.TryParse(dept, out int orgId);
+                placements = EmployeeHelper.GetEmployees_ByDepartment_WithCaseTeam_FromPlacement(placements, orgId);
             }
-            else
+
+            foreach (var e in placements)
             {
-                db = new ExceedDbContext();
+                var employee = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == e.EmployeeId);
 
-
-
-
-                if (emplist.Any())
+                if (employee != null)
                 {
-                    foreach (var e in emplist)
+
+                    EmployeeInfo = new EmployeePromotion();
+
+                    if (employee.Gender == Gender.MALE)
                     {
-                        db = new ExceedDbContext();
-                        var placements = db.Placements.Where(x => x.EmployeeId == e.EmployeeId && x.isCurrent).FirstOrDefault();
-                        if (placements != null)
+                        EmployeeInfo.Sex = "ወንድ";
+                    }
+                    else
+                    {
+                        EmployeeInfo.Sex = "ሴት";
+                    }
+
+                    EmployeeInfo.FullName = employee.FullNameAmharic;
+                    EmployeeInfo.EmployeeId = employee.EmployeeCode;
+
+                    var previousPlacment = db.Placements.Where(x => x.EmployeeId == e.EmployeeId).OrderByDescending(x => x.AssignmentDate).FirstOrDefault();
+
+                    if (previousPlacment != null)
+                    {
+                        var prevStep = db.Steps.FirstOrDefault(x => x.StepId == previousPlacment.StepId);
+                        if (prevStep != null)
                         {
-                            checkDiffrence = DateTime.Now.Year - placements.AssignmentDate.Year;
-                            if (checkDiffrence >= PromotionPerYear)
+                            EmployeeInfo.FromStep = prevStep.StepName;
+                        }
+
+                    }
+
+                    var toStep = db.Steps.FirstOrDefault(x => x.StepId == e.StepId);
+
+                    if (toStep != null)
+                    {
+                        var nextStep = db.Steps.FirstOrDefault(x => x.StepSequence == toStep.StepSequence + 1);
+
+                        if (nextStep != null)
+                        {
+                            EmployeeInfo.ToStep = nextStep.StepName;
+
+                            var salary = db.Salaries.FirstOrDefault(x => x.RankId == e.RankId && x.StepId == nextStep.StepId);
+                            if (salary != null)
                             {
-                                var previousPlacment = db.Placements.Where(x => x.Index == placements.Index - 1).FirstOrDefault();
-                                EmployeeInfo = new EmployeePromotion();
-                               // EmployeeInfo.Sex = e.Gender;
-                                if (e.Gender == Gender.MALE)
-                                {
-                                    EmployeeInfo.Sex = "ወንድ";
-                                }
-                                else
-                                {
-                                    EmployeeInfo.Sex = "ሴት";
-                                }
-                                EmployeeInfo.FullName = e.FirstName + " " + e.MiddleName + " " + e.LastName;
-                                EmployeeInfo.EmployeeId = e.EmployeeCode;
-                                if (previousPlacment != null)
-                                {
-                                    EmployeeInfo.FromStep = ranks.Where(x => x.StepId == previousPlacment.StepId).FirstOrDefault().StepName;
-                                }
-                                var toStep = ranks.Where(x => x.StepId == placements.StepId).FirstOrDefault();
-                                if (toStep != null)
-                                {
-                                    var nextStep = ranks.Where(x => x.StepSequence == toStep.StepSequence + 1).FirstOrDefault();
-                                    if (nextStep != null)
-                                    {
-                                        EmployeeInfo.ToStep = nextStep.StepName;
-                                        var salary = db.Salaries.Where(x => x.RankId == placements.RankId && x.StepId == nextStep.StepId).FirstOrDefault();
-                                        if (salary != null)
-                                        {
-                                            EmployeeInfo.Salary = salary.SalaryAmount;
-                                        }
-                                        else
-                                        {
-                                            var JobTitlesalary = db.SalariesJobTitles.Where(x => x.RankId == placements.RankId && x.StepId == nextStep.StepId && x.LookupId == placements.LookupId).FirstOrDefault();
-                                            if (JobTitlesalary != null)
-                                            {
-                                                EmployeeInfo.Salary = JobTitlesalary.Salary;
-                                            }
-                                        }
-                                    }
-                                }
-                                EmployeeInfo.YearOfPromotion = placements.AssignmentDate.Year;
-                                EmployeeInfo.Salary = placements.Salary;
-                                EmployeeInfo.JobTitle = jobs.Where(x => x.LookupId == placements.LookupId).FirstOrDefault().Description;
-                                var deptt =
-                                    db.MainCompanyStructures.Where(
-                                            x => x.OrgStructureId == placements.OrgStructureId)
-                                        .FirstOrDefault();
-                                if (deptt != null)
-                                {
-                                    EmployeeInfo.Departement = deptt.Name;
-                                }
-                                EmployeeInfoList.Add(EmployeeInfo);
+                                EmployeeInfo.Salary = salary.SalaryAmount;
                             }
-
-
+                            else
+                            {
+                                var JobTitlesalary = db.SalariesJobTitles.FirstOrDefault(x => x.RankId == e.RankId && x.StepId == nextStep.StepId && x.LookupId == e.LookupId);
+                                if (JobTitlesalary != null)
+                                {
+                                    EmployeeInfo.Salary = JobTitlesalary.Salary;
+                                }
+                            }
                         }
                     }
+
+                    EmployeeInfo.YearOfPromotion = e.AssignmentDate.Year;
+
+                    var job = db.Lookups.FirstOrDefault(x => x.LookupId == e.LookupId);
+
+                    if (job != null)
+                    {
+                        EmployeeInfo.JobTitle = job.Description;
+                    }
+                    var deptt = db.MainCompanyStructures.FirstOrDefault(x => x.OrgStructureId == e.OrgStructureId);
+
+                    if (deptt != null)
+                    {
+                        EmployeeInfo.Departement = deptt.Name;
+                    }
+
+                    EmployeeInfoList.Add(EmployeeInfo);
+
                 }
             }
+
             return EmployeeInfoList;
         }
     }

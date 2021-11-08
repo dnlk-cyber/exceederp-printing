@@ -5,114 +5,117 @@
 }
 <legend>@Resources.Navigator_Company_MaintainJobTitle</legend>
 @(Html.Kendo().Grid<Lookup>()
-          .Name("Lookupgrid")
-      .Columns(columns =>
-      {
-          // columns.Bound(c => c.Code);
-          //  columns.Bound(c => c.Category);
-          // columns.Bound(c => c.Index);
-          // columns.Bound(c => c.LookupType);
-          columns.Bound(c => c.Description);
-          // columns.Bound(c => c.IsDefault);
-          // columns.Bound(c => c.IsActive);
-          columns.Bound(c => c.Remark);
-          columns.Command(command =>
+              .Name("Lookupgrid")
+          .Columns(columns =>
           {
-              if (HttpContext.Current.User.IsInRole("HR_Company_User"))
+  // columns.Bound(c => c.Code);
+  //  columns.Bound(c => c.Category);
+  // columns.Bound(c => c.Index);
+  // columns.Bound(c => c.LookupType);
+  columns.Bound(c => c.Description);
+  // columns.Bound(c => c.IsDefault);
+  // columns.Bound(c => c.IsActive);
+  columns.Bound(c => c.Remark);
+              columns.Command(command =>
               {
-                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
-              }
-              if (HttpContext.Current.User.IsInRole("HR_Admin") || HttpContext.Current.User.IsInRole("HR_Company_Admin"))
-              {
-                   command.Destroy().Text(Resources.ActionButton_Cancel);//
-              }
-          }).Width(200);
-      })
-      .ToolBar(toolbar =>
-      {
+                  if (HttpContext.Current.User.IsInRole("HR_Company_User"))
+                  {
+                      command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                  }
+                  if (HttpContext.Current.User.IsInRole("HR_Admin") || HttpContext.Current.User.IsInRole("HR_Company_Admin"))
+                  {
+                      command.Destroy().Text(Resources.ActionButton_Cancel);//
+      }
+              }).Width(200);
+          })
+          .ToolBar(toolbar =>
+          {
 
-          toolbar.Template(@<text>
-            <div class="toolbar" style="">
-                @if (HttpContext.Current.User.IsInRole("HR_Company_User"))
-                {
-                    @item.CreateButton(Resources.ActionButton_AddNewRecord)
-                  
-                }
-                @if (HttpContext.Current.User.IsInRole("HR_Company_Admin") || HttpContext.Current.User.IsInRole("HR_Admin"))
-                {
-                  
-                    @item.CustomCommandToolBarButton("Excel", "<span class='k-icon k-i-excel'></span>" + Resources.ActionButton_ExportExcel, "Excel_Export_Save", "JobTitle", "", new { @class = "k-button k-button-icontext k-grid-excel btn btn-primary btn-xs pull-right" });
-                    @item.CustomCommandToolBarButton("PDF", "<span class='k-icon k-i-pdf'></span>" + Resources.ActionButton_ExportPDF, "Pdf_Export_Save", "JobTitle", "", new { @class = "k-button k-button-icontext k-grid-pdf  btn btn-primary btn-xs pull-right" });
-                    @(Html.Kendo().Button()
-          .Name("btnDownLoad")
-               .HtmlAttributes(new { type = "button", @class = "k-primary btn btn-primary btn-xs pull-right" })
-          .Events(e => e.Click("DownLoadTemplate"))
-                          .Content(Resources.DownloadTemplate))
-    <br>
-                    @(Html.Kendo().Upload()
-                      
-          .Name("file")
-                          .Async(a => a.Save("JobTitle_Import", "JobTitle"))
-          .Events(e => e.Complete("onUploadSuccess").Upload("checkFileType"))
-                        //.ShowFileList(false).
-                           //  .HtmlAttributes(new { @class = "btn btn-primary btn-xs pull-left" })
-                             // .HtmlAttributes(new { @class = "btn btn-primary btn-xs pull-right" })
-                    )
+              toolbar.Template(@<text>
+                <div class="toolbar" style="">
+                    @if (HttpContext.Current.User.IsInRole("HR_Company_User"))
+                                {
+                        @item.CreateButton(Resources.ActionButton_AddNewRecord)
+
+                                }
                     
+                    @if (HttpContext.Current.User.IsInRole("HR_Company_Admin") || HttpContext.Current.User.IsInRole("HR_Admin"))
+                                {
 
-                }
-            </div>
-        </text>);
-         
-      })
-          .Excel(excel => excel
-                                                    .FileName(Resources.Navigator_Company_MaintainJobTitle + ".xlsx")
-                                    .Filterable(true)
-                                            .AllPages(true)
-                                                          //  .ProxyURL(Url.Action("Excel_Export_Save", "JobTitle"))
-                                )
-                                     .Pdf(pdf => pdf
-                                    .AllPages()
-                                                        .FileName(Resources.Navigator_Company_MaintainJobTitle + ".pdf")
-                                                           // .ProxyURL(Url.Acion("Pdf_Export_Save", "JobTitle"))
-                                )
-      .Editable(editable => editable.Mode(GridEditMode.InLine))
-         .Selectable(selectable =>
-             {
-                 selectable.Mode(GridSelectionMode.Single);
-                 selectable.Type(GridSelectionType.Row);
-             })
-                 .Scrollable(h => h.Height(500))
-                     .Groupable()
-                              .Sortable(sortable =>
-                              {
-                                  sortable.SortMode(GridSortMode.SingleColumn);
-                              })
-                  .Filterable()
-                     .Pageable(pageable => pageable
-                                                .Input(true)
-                                                .Numeric(false)
-                                                .Refresh(true)
-                                                .PageSizes(true)
-                                                .ButtonCount(5))
-      .DataSource(dataSource => dataSource
-          .Ajax()
-                               .Events(events =>
-{
+                        @item.CustomCommandToolBarButton("Excel", "<span class='k-icon k-i-excel'></span>" + Resources.ActionButton_ExportExcel, "Excel_Export_Save", "JobTitle", "", new { @class = "k-button k-button-icontext k-grid-excel btn btn-primary btn-xs pull-right" });
+                        @item.CustomCommandToolBarButton("PDF", "<span class='k-icon k-i-pdf'></span>" + Resources.ActionButton_ExportPDF, "Pdf_Export_Save", "JobTitle", "", new { @class = "k-button k-button-icontext k-grid-pdf  btn btn-primary btn-xs pull-right" });
+                        @(Html.Kendo().Button()
+                      .Name("btnDownLoad")
+                           .HtmlAttributes(new { type = "button", @class = "k-primary btn btn-primary btn-xs pull-right" })
+                      .Events(e => e.Click("DownLoadTemplate"))
+                                      .Content(Resources.DownloadTemplate))
+                        <br>
+                        @(Html.Kendo().Upload()
 
-events.Error("error_handler(\"Lookupgrid\")");
-events.RequestStart("onRequestStart(\"Lookupgrid\")");
- events.RequestEnd("onRequestEnd(\"Lookupgrid\")");
- })
+                      .Name("file")
+                                      .Async(a => a.Save("JobTitle_Import", "JobTitle"))
+                      .Events(e => e.Complete("onUploadSuccess").Upload("checkFileType"))
+                                //.ShowFileList(false).
+                                //  .HtmlAttributes(new { @class = "btn btn-primary btn-xs pull-left" })
+                                // .HtmlAttributes(new { @class = "btn btn-primary btn-xs pull-right" })
+                        )
 
-                             
-          .Model(model => model.Id(p => p.LookupId))
-              .Read(read => read.Action("Lookups_Read", "JobTitle"))
-              .Create(create => create.Action("Lookups_Create", "JobTitle"))
-              .Update(update => update.Action("Lookups_Update", "JobTitle"))
-              .Destroy(destroy => destroy.Action("Lookups_Destroy", "JobTitle"))
-      )
+
+                                }
+                   
+                </div>
+            </text>);
+
+                })
+                    .Excel(excel => excel
+                                 .FileName(Resources.Navigator_Company_MaintainJobTitle + ".xlsx")
+                                      .Filterable(true)
+                                                      .AllPages(true)
+                                          //  .ProxyURL(Url.Action("Excel_Export_Save", "JobTitle"))
+                                          )
+                                               .Pdf(pdf => pdf
+                                              .AllPages()
+                                            .FileName(Resources.Navigator_Company_MaintainJobTitle + ".pdf")
+                                          // .ProxyURL(Url.Acion("Pdf_Export_Save", "JobTitle"))
+                                          )
+                .Editable(editable => editable.Mode(GridEditMode.InLine))
+                   .Selectable(selectable =>
+                       {
+                           selectable.Mode(GridSelectionMode.Single);
+                           selectable.Type(GridSelectionType.Row);
+                       })
+                           .Scrollable(h => h.Height(500))
+                               .Groupable()
+                                        .Sortable(sortable =>
+                                        {
+                                            sortable.SortMode(GridSortMode.SingleColumn);
+                                        })
+                            .Filterable()
+                               .Pageable(pageable => pageable
+                                                          .Input(true)
+                                                          .Numeric(false)
+                                                          .Refresh(true)
+                                                          .PageSizes(true)
+                                                          .ButtonCount(5))
+                .DataSource(dataSource => dataSource
+                    .Ajax()
+                                         .Events(events =>
+          {
+
+              events.Error("error_handler(\"Lookupgrid\")");
+              events.RequestStart("onRequestStart(\"Lookupgrid\")");
+              events.RequestEnd("onRequestEnd(\"Lookupgrid\")");
+          })
+
+
+                    .Model(model => model.Id(p => p.LookupId))
+                        .Read(read => read.Action("Lookups_Read", "JobTitle"))
+                        .Create(create => create.Action("Lookups_Create", "JobTitle"))
+                        .Update(update => update.Action("Lookups_Update", "JobTitle"))
+                        .Destroy(destroy => destroy.Action("Lookups_Destroy", "JobTitle"))
+                )
 )
+
 <script>
     //function error_handler(e) {
     //    if (e.errors) {
@@ -143,7 +146,7 @@ events.RequestStart("onRequestStart(\"Lookupgrid\")");
     function checkFileType(e) {
         var files = e.files;
 
-        $.each(files, function() {
+        $.each(files, function () {
 
             if (this.extension.toLowerCase() === ".xls" || this.extension.toLowerCase() === ".xlsx" || this.extension.toLowerCase() === ".xlsm") {
 
@@ -178,61 +181,89 @@ events.RequestStart("onRequestStart(\"Lookupgrid\")");
     });
 </script>
 @(Html.Kendo().Window().Name("AttachmentWindow")
-        .Title(Resources.Templates)
-    .Visible(false)
-    .Modal(true)
-      .Content(@<text>
+            .Title(Resources.Templates)
+        .Visible(false)
+        .Modal(true)
+          .Content(@<text>
 
-        @(Html.Kendo().Grid<Attachment>()
-                  .Name("AttachmentGrid")
-          .Columns(columns =>
-          {
-              columns.Bound(c => c.Description); //.Title("File Name").ClientTemplate((@Html.ActionLink("#=Description#", "DownloadFile", "DownloadDocument", new { filename = "#=Description#" }, null).ToHtmlString()));
-              columns.Bound(c => c.FileType).ClientTemplate(Html.ActionLink("DownLoad", "DownloadFile", new { area = "HRM", filename = "#=Description#" }).ToHtmlString());
+            @(Html.Kendo().Grid<Attachment>()
+                              .Name("AttachmentGrid")
+                      .Columns(columns =>
+                      {
+                                columns.Bound(c => c.Description); //.Title("File Name").ClientTemplate((@Html.ActionLink("#=Description#", "DownloadFile", "DownloadDocument", new { filename = "#=Description#" }, null).ToHtmlString()));
+                    columns.Bound(c => c.FileType).ClientTemplate(Html.ActionLink("DownLoad", "DownloadFile", new { area = "HRM", filename = "#=Description#" }).ToHtmlString());
 
-          })
+                            })
 
-              .Scrollable()
-              .Selectable()
-              .DataSource(dataSource => dataSource
-                  .Ajax()
-                                           .Events(events => events.Error("error_handler(\"AttachmentGrid\")"))
+                          .Scrollable()
+                          .Selectable()
+                          .DataSource(dataSource => dataSource
+                              .Ajax()
+                                                       .Events(events => events.Error("error_handler(\"AttachmentGrid\")"))
 
-                  .Model(model => model.Id(p => p.AttachmentId))
-                                  .Read(read => read.Action("Attachments_Read", "Attachment", new { Area = "Common", attachmentReferenceType = "TEMPLATE", id = 0 }))
+                              .Model(model => model.Id(p => p.AttachmentId))
+                                              .Read(read => read.Action("Attachments_Read", "Attachment", new { Area = "Common", attachmentReferenceType = "TEMPLATE", id = 0 }))
 
 
-              )
-        )
+                          )
+            )
 
-    </text>).Width( 500)
-      )
+        </text>).Width(500)
+)
 <style>
-   .k-pdf-export  .pdf-page {
-            margin: 0 auto;
-            box-sizing: border-box;
-            box-shadow: 0 5px 10px 0 rgba(0,0,0,.3);
-            background-color: #fff;
-            color: #333;
-            position: relative;
-            /*font-family:  "DejaVu Sans", "Arial", sans-serif,"Nyala";*/
-        }
-      .k-pdf-export   .pdf-header {
-            position: absolute;
-            top: .5in;
-            height: .6in;
-            left: .5in;
-            right: .5in;
-            border-bottom: 1px solid #e5e5e5;
-        }
-        .k-grid {
-        /*font-family: "DejaVu Sans", "Arial", sans-serif,"nyala";*/
-       
+    .k-pdf-export .pdf-page {
+        margin: 0 auto;
+        box-sizing: border-box;
+        box-shadow: 0 5px 10px 0 rgba(0,0,0,.3);
+        background-color: #fff;
+        color: #333;
+        position: relative;
+        /*font-family:  "DejaVu Sans", "Arial", sans-serif,"Nyala";*/
     }
-        .k-pdf-export  {
-            font-family: "Nyala","DejaVu Sans";
-  }
-        .k-widget {
-            font-family: "Nyala","DejaVu Sans"
-}
+
+    .k-pdf-export .pdf-header {
+        position: absolute;
+        top: .5in;
+        height: .6in;
+        left: .5in;
+        right: .5in;
+        border-bottom: 1px solid #e5e5e5;
+    }
+
+    .k-grid {
+        /*font-family: "DejaVu Sans", "Arial", sans-serif,"nyala";*/
+    }
+
+    .k-pdf-export {
+        font-family: "Nyala","DejaVu Sans";
+    }
+
+    .k-widget {
+        font-family: "Nyala","DejaVu Sans"
+    }
 </style>
+
+
+
+
+<script type="text/javascript">
+    $(document).ready(function () {
+       // var ApiUrl = "http://localhost:50537/";
+        $.ajax({
+            url: '@Url.Action("GetDescription", "JobTitle")',
+            type: "Get",
+            dataType: 'json',
+            contentType: 'application/json; charset=utf-8',
+            success: function (result) {
+                $("#Description").kendoAutoComplete({
+                    clearButton: true,
+                    dataSource: result,
+                    filter: "startswith",
+                    dataTextField: "Description",
+                    minLength: 1,
+                    placeholder: "Enter Description ...",
+                });
+            }
+        });
+    });
+</script>  

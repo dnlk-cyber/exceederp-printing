@@ -19,6 +19,8 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMViewModel
         public string Salary { get; set; }
         public string Step { get; set; }
         public string Rank { get; set; }
+        public string ApprovedBy { get; set; }
+        public string PreparedBy { get; set; }
 
         public string Name { get; set; }
         public string AmharicName { get; set; }

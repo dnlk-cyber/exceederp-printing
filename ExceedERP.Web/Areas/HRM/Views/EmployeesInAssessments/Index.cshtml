@@ -1,0 +1,23 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.HRM.TrainingEducation.EmployeesInAssessment>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.EmployeeId);
+        columns.Bound(c => c.JobtitleId);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.EmployeesInAssessmentId))
+          .Read(read => read.Action("EmployeesInAssessments_Read", "EmployeesInAssessments"))
+          .Create(create => create.Action("EmployeesInAssessments_Create", "EmployeesInAssessments"))
+          .Update(update => update.Action("EmployeesInAssessments_Update", "EmployeesInAssessments"))
+          .Destroy(destroy => destroy.Action("EmployeesInAssessments_Destroy", "EmployeesInAssessments"))
+      )
+)

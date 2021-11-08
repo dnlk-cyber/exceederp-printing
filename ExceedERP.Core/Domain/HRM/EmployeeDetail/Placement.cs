@@ -24,7 +24,7 @@ namespace ExceedERP.Core.Domain.HRM.EmployeeDetail
         [Required]
         [Display(Name = "HR_EmployeeDetail_Placement_PersonEmployee", ResourceType = typeof(Localization.Resources))]
         public int EmployeeId { get; set; }
-        public virtual Person_Employee Employee { get; set; }
+      //  public virtual Person_Employee Employee { get; set; }
         [Required]
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}")]
@@ -36,10 +36,10 @@ namespace ExceedERP.Core.Domain.HRM.EmployeeDetail
         public string AssignmentDateAmharic { get; set; }
         [Display(Name = "HR_EmployeeDetail_Placement_JobTitleName", ResourceType = typeof(Localization.Resources))]
         public int LookupId { get; set; }
-        public virtual Lookup Lookup { get; set; }
+       // public virtual Lookup Lookup { get; set; }
         [Display(Name = "HR_EmployeeDetail_Placement_OrgStructureId", ResourceType = typeof(Localization.Resources))]
         public int OrgStructureId { get; set; }
-        public virtual MainCompanyStructure MainCompanyStructure { get; set; }
+       // public virtual MainCompanyStructure MainCompanyStructure { get; set; }
         [Required]
         [Display(Name = "HR_EmployeeDetail_Placement_JobTitleName", ResourceType = typeof(Localization.Resources))]
         public string JobTitleName { get; set; }
@@ -49,7 +49,7 @@ namespace ExceedERP.Core.Domain.HRM.EmployeeDetail
         [Required]
         [Display(Name = "HR_EmployeeDetail_Placement_Rank", ResourceType = typeof(Localization.Resources))]
         public int RankId { get; set; }
-        public virtual Rank Rankrel { get; set; }
+       // public virtual Rank Rankrel { get; set; }
 
         [Display(Name = "HR_EmployeeDetail_Placement_Rank", ResourceType = typeof(Localization.Resources))]
         ////[NotMapped ]
@@ -60,7 +60,7 @@ namespace ExceedERP.Core.Domain.HRM.EmployeeDetail
         [Required]
         [Display(Name = "HR_EmployeeDetail_Placement_Step", ResourceType = typeof(Localization.Resources))]
         public int StepId { get; set; }
-        public virtual Step StepRel { get; set; }
+       // public virtual Step StepRel { get; set; }
         [Required]
         [Range(0, int.MaxValue, ErrorMessage = "Please enter valid integer Number")]
         [Display(Name = "HR_EmployeeDetail_Placement_Salary", ResourceType = typeof(Localization.Resources))]
@@ -83,7 +83,7 @@ namespace ExceedERP.Core.Domain.HRM.EmployeeDetail
         public int Department { get; set; }
         [Display(Name = "HR_EmployeeDetail_Placement_Branch", ResourceType = typeof(Localization.Resources))]
         public int BranchId { get; set; }
-        public virtual Branch Branch { get; set; }
+       // public virtual Branch Branch { get; set; }
         [Display(Name = "Remark", ResourceType = typeof(Localization.Resources))]
         public string Remark { get; set; }
         [Display(Name = "HR_EmployeeDetail_Placement_IsCurrent", ResourceType = typeof(Localization.Resources))]
@@ -101,5 +101,11 @@ namespace ExceedERP.Core.Domain.HRM.EmployeeDetail
         public bool IsPend { get; set; }
         [Display(Name = "Placement_BusinessUnit", ResourceType = typeof(Localization.Resources))]
         public int BusinessUnitId { get; set; }
+        // This field is used for check to group de activate employees
+        [NotMapped]
+        public bool Check { get; set; }
+        public bool IsApprove { get; set; }
+        public int ApprovedByEmpId { get; set; }
+        public int PreparedByEmpId { get; set; }
     }
 }

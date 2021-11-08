@@ -7,6 +7,7 @@ using ExceedERP.Core.Domain;
 using ExceedERP.Web.Controllers;
 using ExceedERP.Web.Helpers;
 using ExceedERP.Web.Models;
+using ExceedERP.DataAccess.Context;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.PrintableLetters
 {
@@ -118,6 +119,20 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.PrintableLetters
 
             return View();
         }
+        public ActionResult ManPowerPlanningRequestLetter(int id)
+        {
+
+            ViewBag.id = id;
+
+            return View();
+        }
+        public ActionResult RecruitmentRequestLetter(int id)
+        {
+
+            ViewBag.id = id;
+
+            return View();
+        }
         public ActionResult TrainingRequestLetter(int id)
         {
 
@@ -145,7 +160,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.PrintableLetters
             return View();
         }
         public ActionResult ExperienceAmharicFBC()
-        {            
+        {
             return View();
         }
         public ActionResult Deligation(int id)
@@ -172,7 +187,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.PrintableLetters
 
         public ActionResult LaboratoryRequestForm(int id)
         {
-            ViewBag.id = id; 
+            ViewBag.id = id;
             return View();
         }
         public ActionResult TerminationAcceptanceLetter()
@@ -181,9 +196,42 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.PrintableLetters
         }
         public ActionResult ChangeOfPayroll(int id)
         {
-            ViewBag.id = id; 
+            ViewBag.id = id;
             return View();
         }
 
+        public ActionResult TrainingEvaluation(int traineeId)
+        {
+            ExceedDbContext db = new ExceedDbContext();
+            var trainee = db.Trainee.FirstOrDefault(x => x.TraineeId == traineeId);
+            if(trainee != null)
+            {
+                ViewBag.courseTrackingId = trainee.CourseTrackingId;
+                ViewBag.empId = trainee.EmployeeId;
+            }
+          
+            return View();
+        }
+
+        public ActionResult AttendanceLetter()
+        {
+            ExceedDbContext db = new ExceedDbContext();
+            var id = UserInformationHelper.GetEmployeeId(User.Identity.Name);
+            string depname = "";
+            var placement = db.Placements.FirstOrDefault(x => x.EmployeeId == id && x.isCurrent);
+            if (placement != null)
+            {
+                var mainCompany = db.MainCompanyStructures.FirstOrDefault(x => x.OrgStructureId == placement.OrgStructureId);
+                if (mainCompany != null)
+                {
+                    depname = mainCompany.Name;
+                }
+            }
+
+            ViewBag.id = id;
+            ViewBag.depname = depname;
+
+            return View();
+        }
     }
 }

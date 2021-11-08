@@ -11,11 +11,10 @@ using Kendo.Mvc.UI;
 using ExceedERP.Web.Controllers;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Web.Helpers;
-using ExceedERP.Core.Domain.Global;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
 {
-    
+
     [AuthorizeRoles(HrmConstants.HRRecruitmentAdmin, HrmConstants.HRAdmin)]
     public class RecruitmentSettingExternalController : BaseController
     {
@@ -54,36 +53,29 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
         public ActionResult Configurations_Create([DataSourceRequest]DataSourceRequest request, Configuration configuration)
         {
             ModelState.Clear();
+
+            var checkexistance = db.Configurations.FirstOrDefault(x => x.Category == "Recruitment_External" && x.Reference == "Recruitment" && x.Attribute == configuration.Attribute);
+            if (checkexistance != null)
+            {
+                ModelState.AddModelError("", "this setting is already exist");
+            }
             if (ModelState.IsValid)
             {
-                var checkexistance = db.Configurations.Where(x => x.Category == "Recruitment_External" && x.Reference == "Recruitment" && x.Attribute == configuration.Attribute).FirstOrDefault();
-                if (checkexistance != null)
+                var entity = new Configuration
                 {
-                    ModelState.AddModelError("", "External Recruitment Setting :-" + configuration.Attribute + " is already registered!!");
-                }
-                else
-                {
-                    var entity = new Configuration
-                    {
-                        Category = "Recruitment_External",
-                        Reference = "Recruitment",
-                        Attribute = configuration.Attribute,
-                        CurrentValue = configuration.CurrentValue,
-                        PreviousValue = configuration.PreviousValue,
-                        Remark = configuration.Remark
-                    };
+                    Category = "Recruitment_External",
+                    Reference = "Recruitment",
+                    Attribute = configuration.Attribute,
+                    CurrentValue = configuration.CurrentValue,
+                    PreviousValue = configuration.PreviousValue,
+                    Remark = configuration.Remark
+                };
 
-                    db.Configurations.Add(entity);
-                    db.SaveChanges();
-                    configuration.ConfigurationId = entity.ConfigurationId;
-
-                    #region operation log
-                    
-                        UserHelper.OperationLog(Request.UserHostAddress, "External Setting ", "Success", User.Identity.Name, User.Identity.Name + " add External Setting " + entity.Reference + " date " + DateTime.Today.ToShortDateString(),Modules.HRM);
-                    
-                    #endregion
-                }
+                db.Configurations.Add(entity);
+                db.SaveChanges();
+                configuration.ConfigurationId = entity.ConfigurationId;
             }
+
             return Json(new[] { configuration }.ToDataSourceResult(request, ModelState));
         }
 
@@ -91,6 +83,13 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
         public ActionResult Configurations_Update([DataSourceRequest]DataSourceRequest request, Configuration configuration)
         {
             ModelState.Clear();
+
+            var checkexistance = db.Configurations.FirstOrDefault(x => x.Category == "Recruitment_External" && x.Reference == "Recruitment" && x.Attribute == configuration.Attribute && x.ConfigurationId != configuration.ConfigurationId);
+            if (checkexistance != null)
+            {
+                ModelState.AddModelError("", "this setting is already exist");
+            }
+
             if (ModelState.IsValid)
             {
                 var entity = new Configuration
@@ -107,18 +106,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
                 db.Configurations.Attach(entity);
                 db.Entry(entity).State = EntityState.Modified;
                 db.SaveChanges();
-
-                #region operation log
-
-                var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-                var name = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == empId);
-                if (name != null)
-                {
-                    UserHelper.OperationLog(Request.UserHostAddress, "External Setting ", "Success", User.Identity.Name, name.EmployeeCode + " add External Setting " + entity.Reference + " date " + DateTime.Today.ToShortDateString(),Modules.HRM);
-                }
-
-
-                #endregion
             }
 
             return Json(new[] { configuration }.ToDataSourceResult(request, ModelState));

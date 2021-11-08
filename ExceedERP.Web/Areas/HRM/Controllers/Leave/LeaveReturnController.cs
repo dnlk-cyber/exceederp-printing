@@ -284,7 +284,10 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
             employeeids.Remove(employeeid);
             //IQueryable<LeaveRequest> leaverequest = db.LeaveRequest.Where(x => employeeids.Contains(x.EmployeeId)).OrderBy(x => x.RequestDate);
             //IQueryable<LeaveRequest> leaverequest = db.LeaveRequest.Where(x => x.EmployeeId == employeeid || x.RequesterId == employeeid).OrderBy(x => x.RequestDate);
-            IQueryable<LeaveReturn> leaveReturns = db.LeaveReturns.Where(x => employeeids.Contains(x.EmployeeId));
+            
+            //IQueryable<LeaveReturn> leaveReturns = db.LeaveReturns.Where(x => employeeids.Contains(x.EmployeeId));
+
+            IQueryable<LeaveReturn> leaveReturns = db.LeaveReturns.Where(x=>x.IsSendForApproval);
 
             DataSourceResult result = leaveReturns.ToDataSourceResult(request, leaveReturn => new
             {

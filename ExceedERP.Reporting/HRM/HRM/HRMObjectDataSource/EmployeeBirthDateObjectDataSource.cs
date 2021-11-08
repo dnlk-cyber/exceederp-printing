@@ -2,12 +2,12 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
-using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Common.HRM;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Helpers.HR;
 using ExceedERP.Reporting.HRM.HRM.HRMViewModel;
-
+using ExceedERP.Core.Domain.HRM.EmployeeDetail;
 
 namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 {
@@ -17,84 +17,78 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
         private ExceedDbContext db = new ExceedDbContext();
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<string> GetSexParameterData()
-        {            
-            var list =
-            Enum.GetValues(typeof(Gender))
-                .Cast<Gender>()
-                .Select(x => x.ToString()).ToList();
-            return list;
-        }
-
-        [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<EmployeeTypeReportParameterViewModel> GetEmployeeTypeParameterData()
-        {
-            var list = db.EmployeeTypes.Select(e => new EmployeeTypeReportParameterViewModel
-            {
-                Id =  e.EmployeeTypeId.ToString(),
-                Name = e.Name
-            }).ToList();
-            return list;
-            
-        }
-        [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<EmployeeInfo> GetEmployeeBirthDate(string branchId, string orgStructureId, string employeeTypeId, string sex, int agemin, int ageMax)
+        public List<EmployeeInfo> GetEmployeeBirthDate(/*string branchId,*/ object[] branchId, string orgStructureId, int agemin, int ageMax, string status)
         {
             List<EmployeeInfo> EmployeeInfoList = new List<EmployeeInfo>();
             EmployeeInfo EmployeeInfo = new EmployeeInfo();
-           
 
-            var palcement = db.Placements.Where(x => x.isCurrent);
-            List<Person_Employee> emplist;
-            db = new ExceedDbContext();
-       
-            emplist = HrHelper.PersonEmployeesOneBranch(branchId, orgStructureId, "");
-            if(employeeTypeId != null)
+            var placements = db.Placements.ToList();
+
+            var branches = branchId.ToList();
+            if (branches.Any())
             {
-                int.TryParse(employeeTypeId, out int empTypeId);
-                emplist = emplist.Where(e => e.EmployeeTypeId == empTypeId).ToList();
-            }
-            if(sex != null)
-            {
-                emplist = emplist.Where(e => e.Gender.ToString() == sex).ToList();
-            }
-            if (emplist.Any())
-            {
-                foreach (var e in emplist)
+                List<Placement> filteredPlacements = new List<Placement>();
+                foreach (var b in branches)
                 {
-                    int diff = (DateTime.Now.Year - e.DateOfBirth.Year);
-                 
-                    if (ageMax !=0&& agemin !=0)
+                    var filt = EmployeeHelper.GetEmployees_ByBranch_FromPlacement(placements, Convert.ToInt32(b)).ToList();
+
+                    filteredPlacements.AddRange(filt);
+                }
+
+                placements = filteredPlacements;
+            }
+
+            //if (branchId != null)
+            //{
+            //    int.TryParse(branchId, out int braId);
+            //    placements = EmployeeHelper.GetEmployees_ByBranch_FromPlacement(placements, braId);
+            //}
+            if (orgStructureId != null)
+            {
+                int.TryParse(orgStructureId, out int orgId);
+                placements = EmployeeHelper.GetEmployees_ByDepartment_WithCaseTeam_FromPlacement(placements, orgId);
+            }
+            if (!string.IsNullOrEmpty(status) && status.ToLower() == "active")
+            {
+                placements = EmployeeHelper.Get_Active_EmployeesFrom_Placement(placements).Where(x => x.isCurrent).DistinctByField(x => x.EmployeeId).ToList();
+            }
+            if (!string.IsNullOrEmpty(status) && status.ToLower() == "inactive")
+            {
+                placements = EmployeeHelper.Get_InActive_EmployeesFrom_Placement(placements).OrderByDescending(x => x.AssignmentDate).DistinctByField(x => x.EmployeeId).ToList();
+            }
+
+            foreach (var place in placements)
+            {
+                var employee = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == place.EmployeeId);
+                if (employee != null)
+                {
+                    int diff = (DateTime.Now.Year - employee.DateOfBirth.Year);
+                    if (ageMax != 0 && agemin != 0)
                     {
                         if (diff >= agemin && diff <= ageMax)
                         {
                             EmployeeInfo = new EmployeeInfo();
-                            EmployeeInfo.IdNumber = e.EmployeeCode;
-                            EmployeeInfo.Type = GetEmployeeTypeName(e.EmployeeTypeId);
-                            EmployeeInfo.Sex = HrHelper.GetGender(e.Gender);
 
-                            EmployeeInfo.FullName = HrHelper.GetEmployeeFullName(e.EmployeeId);
-                            ;
-                            EmployeeInfo.Dob = e.DateOfBirthAm;
-                            if (palcement.Any())
+                            EmployeeInfo.IdNumber = employee.EmployeeCode;
+                            EmployeeInfo.BirthDate = employee.DateOfBirthAm;
+                            EmployeeInfo.Sex = HrHelper.GetGender(employee.Gender);
+
+                            EmployeeInfo.FullName = employee.FullNameAmharic;
+
+                            EmployeeInfo.Dob = employee.DateOfBirthAm;
+
+                            var branch = db.Branch.FirstOrDefault(x => x.BranchId == place.BranchId);
+                            if(branch != null)
                             {
-                                var place =
-                                    palcement
-                                        .FirstOrDefault(x => x.EmployeeId == e.EmployeeId && x.isCurrent);
-                                if (place != null)
-                                {
-                                    var deptt =
-                                        db.MainCompanyStructures
-                                            .FirstOrDefault(x => x.OrgStructureId == place.OrgStructureId);
-                                    if (deptt != null)
-                                    {
-                                        EmployeeInfo.Department = deptt.Name;
-                                    }
-                                }
+                                EmployeeInfo.Branch = branch.Name;
                             }
-                            EmployeeInfo.CriteriaName = (DateTime.Now.Year - e.DateOfBirth.Year).ToString();
-                          
+                            var deptt = db.MainCompanyStructures.FirstOrDefault(x => x.OrgStructureId == place.OrgStructureId);
+                            if (deptt != null)
+                            {
+                                EmployeeInfo.Department = deptt.Name;
+                            }
 
+                            EmployeeInfo.CriteriaName = (DateTime.Now.Year - employee.DateOfBirth.Year).ToString();
 
                             EmployeeInfoList.Add(EmployeeInfo);
                         }
@@ -102,45 +96,35 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                     else
                     {
                         EmployeeInfo = new EmployeeInfo();
-                        EmployeeInfo.IdNumber = e.EmployeeCode;
-                        EmployeeInfo.Type = GetEmployeeTypeName(e.EmployeeTypeId);
-                        EmployeeInfo.Sex = HrHelper.GetGender(e.Gender);
 
-                        EmployeeInfo.FullName = HrHelper.GetEmployeeFullName(e.EmployeeId); ;
-                        EmployeeInfo.Dob = e.DateOfBirthAm;
-                        if (palcement.Any())
+                        EmployeeInfo.IdNumber = employee.EmployeeCode;
+                        EmployeeInfo.BirthDate = employee.DateOfBirthAm;
+                        EmployeeInfo.Sex = HrHelper.GetGender(employee.Gender);
+
+                        EmployeeInfo.FullName = employee.FullNameAmharic;
+
+                        EmployeeInfo.Dob = employee.DateOfBirthAm;
+
+                        var branch = db.Branch.FirstOrDefault(x => x.BranchId == place.BranchId);
+                        if (branch != null)
                         {
-                            var place =
-                                palcement
-                                    .FirstOrDefault(x => x.EmployeeId == e.EmployeeId && x.isCurrent);
-                            if (place != null)
-                            {
-                                var deptt =
-                                    db.MainCompanyStructures
-                                        .FirstOrDefault(x => x.OrgStructureId == place.OrgStructureId);
-                                if (deptt != null)
-                                {
-                                    EmployeeInfo.Department = deptt.Name;
-                                }
-                            }
+                            EmployeeInfo.Branch = branch.Name;
                         }
-                        EmployeeInfo.CriteriaName = (DateTime.Now.Year - e.DateOfBirth.Year).ToString();
-                       
 
+                        var deptt = db.MainCompanyStructures.FirstOrDefault(x => x.OrgStructureId == place.OrgStructureId);
+                        if (deptt != null)
+                        {
+                            EmployeeInfo.Department = deptt.Name;
+                        }
+
+                        EmployeeInfo.CriteriaName = (DateTime.Now.Year - employee.DateOfBirth.Year).ToString();
 
                         EmployeeInfoList.Add(EmployeeInfo);
                     }
                 }
-
-
-
             }
-            return EmployeeInfoList;
-        }
 
-        private string GetEmployeeTypeName(int? id)
-        {
-            return db.EmployeeTypes.Find(id)?.Name;
+            return EmployeeInfoList;
         }
     }
 }

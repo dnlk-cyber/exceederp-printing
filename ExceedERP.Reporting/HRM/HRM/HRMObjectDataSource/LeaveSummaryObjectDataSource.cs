@@ -16,205 +16,130 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
         private ExceedDbContext db = new ExceedDbContext();
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<LeaveSummary> GetLeaveSummary(string periodN, string branchId, string orgStructureId, string id, string status, object[] dep)
+        public List<LeaveSummary> GetLeaveSummary(string periodN, string branchId, /*string orgStructureId,*/ string id, string status, object[] dep, bool allDepartment)
         {
             List<LeaveSummary> summaries = new List<LeaveSummary>();
-            LeaveSummary sum = new LeaveSummary();
-            List<LeaveSummaryList> LeaveSummaryList = new List<LeaveSummaryList>();
-            LeaveSummaryList LeaveSummaryone = new LeaveSummaryList();
-            List<Person_Employee> employees;
-            List<int> placements = new List<int>();
-            if (branchId != null && orgStructureId != null)
+            var sum = new LeaveSummary();
+
+            var LeaveSummaryone = new LeaveSummaryList();
+
+
+            var placements = db.Placements.ToList();
+
+            if (branchId != null)
             {
-                employees = EmployeeHelper.GetAllEmployeesByBranchAndWorkUnit(Convert.ToInt32(branchId), Convert.ToInt32(orgStructureId)).ToList();
+                int.TryParse(branchId, out int braId);
+                placements = EmployeeHelper.GetEmployees_ByBranch_FromPlacement(placements, braId);
             }
-            if (branchId != null /*&& orgStructureId == null*/)
-            {
-                employees = EmployeeHelper.GetAllEmployeesByBranch(Convert.ToInt32(branchId)).ToList();
-            }
-            else if (branchId == null && orgStructureId != null)
-            {
-                employees = EmployeeHelper.GetAllEmployeesByWorkUnit(Convert.ToInt32(orgStructureId)).ToList();
-            }
-            else
-            {
-                employees = db.Person_Employee.ToList();
-            }
+
             if (status == "Active")
             {
-                employees = db.Person_Employee.Where(x => x.IsActive).ToList();
+                placements = EmployeeHelper.Get_Active_EmployeesFrom_Placement(placements).OrderByDescending(x => x.AssignmentDate).ToList();
             }
             if (status == "InActive")
             {
-                employees = db.Person_Employee.Where(x => !x.IsActive).ToList();
+                placements = EmployeeHelper.Get_InActive_EmployeesFrom_Placement(placements).OrderByDescending(x => x.AssignmentDate).ToList();
             }
-            if (dep.Any())
+
+            if (!allDepartment)
             {
-                foreach (var d in dep.ToList())
+                if (dep.Any())
                 {
-                    List<int> placement = new List<int>(); ;
-                    if (status == "Active")
+                    List<int> orgIds = new List<int>();
+
+                    foreach (var d in dep.ToList())
                     {
-                        placement = db.Placements.Where(x => x.OrgStructureId.ToString() == d.ToString() && x.isCurrent).Select(x => x.EmployeeId).ToList();
+                        orgIds.Add(Convert.ToInt32(d.ToString()));
                     }
-                    else
-                    {
-                        placement = db.Placements.Where(x => x.OrgStructureId.ToString() == d.ToString()).Select(x => x.EmployeeId).ToList();
-                    }
-                    if (placement.Any())
-                    {
-                        placements.AddRange(placement);
-                    }
+
+                    placements = placements.Where(x => orgIds.Contains(x.OrgStructureId)).ToList();
                 }
-
-                employees = employees.Where(x => placements.Contains(x.EmployeeId)).ToList();
-
             }
 
+            var periods = db.GLFiscalYears.ToList();
 
             if (periodN != null)
             {
-                int period = db.GLFiscalYears.FirstOrDefault(x => x.GlFiscalYearId.ToString() == periodN).GlFiscalYearId;
-                var entitlew = db.LeavesEntitle.Where(x => x.GlFiscalYearId == period).ToList();
-                var taken = db.Leaves.Where(x => x.GlFiscalYearId == period).ToList();
-                var paidIncash = db.LeavePaid.Where(x => x.GlFiscalYearId == period).ToList();
-
-
-                //var tranferedList = db.LeaveTransfer.Where(x => x.To == period && x.Check).ToList();
-                var periodName = db.GLFiscalYears.FirstOrDefault(x => x.GlFiscalYearId == period);
-                //var requestStatus = db.RequestesStatus.Where(x => x.ReferenceType == "LeaveTransfer").ToList();
-                foreach (var e in employees)
-                {
-                    sum = new LeaveSummary();
-                    sum.LeaveSummaryLists = new List<LeaveSummaryList>();
-                    LeaveSummaryone = new LeaveSummaryList();
-                    sum.ID = e.EmployeeCode;
-                    sum.FullName = e.FirstName + " " + e.MiddleName + " " + e.LastName;
-                    if (periodName != null)
-                    {
-                        LeaveSummaryone.LeavePeriod = periodName.Name;
-
-                        //LeaveSummaryone.TransferedFrom = Convert.ToDecimal(tranferedList.Where(x => x.EmployeeId == e.EmployeeId).Sum(a => a.Amount));
-
-                        var firstOrDefault = entitlew.Where(x => x.EmployeeId == e.EmployeeId).FirstOrDefault();
-                        if (firstOrDefault != null)
-                        {
-
-                            LeaveSummaryone.Entitlment = firstOrDefault.Amount;
-
-                            LeaveSummaryone.TotalAmountTaken = taken.Where(x => x.EmployeeId == e.EmployeeId).Sum(x => x.Amount);
-                            LeaveSummaryone.PainInCash = Convert.ToDecimal(paidIncash.Where(x => x.EmployeeId == e.EmployeeId).Sum(x => x.Amount));
-                            LeaveSummaryone.Balance = firstOrDefault.Balance;// (LeaveSummaryone.Entitlment + LeaveSummaryone.TransferedFrom) - LeaveSummaryone.TotalAmountTaken - LeaveSummaryone.PainInCash;
-
-                        }
-                        LeaveSummaryList.Add(LeaveSummaryone);
-                        sum.LeaveSummaryLists.Add(LeaveSummaryone);
-
-                        summaries.Add(sum);
-                    }
-                    Placement placement = null;
-                    if(status == "Active")
-                    {
-                        placement = db.Placements.FirstOrDefault(x => x.EmployeeId == e.EmployeeId && x.isCurrent);
-                    }
-                    else
-                    {
-                        var places = db.Placements.Where(x=>x.EmployeeId == e.EmployeeId).OrderByDescending(x=>x.PlacementId).ToList();
-                        if(places != null)
-                        {
-                            placement = places.FirstOrDefault();
-                        }
-                    }
-                    if (placement != null)
-                    {
-                        var stracture = db.MainCompanyStructures.FirstOrDefault(x => x.OrgStructureId == placement.OrgStructureId);
-                        if (stracture != null)
-                        {
-                            sum.Department = stracture.Name;
-                        }
-
-                    }
-                }
+                int.TryParse(periodN, out int GLFiscalYearId);
+                periods = periods.Where(x => x.GlFiscalYearId == GLFiscalYearId).ToList();
             }
-            else
+
+            var placementsDistinicted = placements.DistinctByField(x => x.EmployeeId).ToList();
+
+            foreach (var e in placementsDistinicted)
             {
-                var periods = db.GLFiscalYears.ToList();
-                foreach (var e in employees)
-                {
-                    sum = new LeaveSummary();
-                    sum.LeaveSummaryLists = new List<LeaveSummaryList>();
-                    sum.ID = e.EmployeeCode;
-                    sum.FullName = e.FirstName + " " + e.MiddleName + " " + e.LastName;
+                sum = new LeaveSummary();
+                sum.LeaveSummaryLists = new List<LeaveSummaryList>();
 
-                    Placement placement = null;
-                    if (status == "Active")
+                var person = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == e.EmployeeId);
+                if (person != null)
+                {
+                    sum.ID = person.EmployeeCode;
+                    sum.FullName = person.FullNameAmharic;
+                }
+
+                var activePeriods = db.LeavesEntitle.Where(x => !x.IsExpired && x.EmployeeId == e.EmployeeId).Select(x => x.GlFiscalYearId).ToList();
+
+                periods = periods.Where(x => activePeriods.Contains(x.GlFiscalYearId)).ToList();
+
+                foreach (var period in periods)
+                {
+
+                    LeaveSummaryone = new LeaveSummaryList();
+
+                    LeaveSummaryone.LeavePeriod = period.Name;
+
+                    var leaveTaken = db.Leaves.Where(x => x.EmployeeId == e.EmployeeId && x.GlFiscalYearId == period.GlFiscalYearId).ToList();
+                    var paidIncash = db.LeavePaid.Where(x => x.EmployeeId == e.EmployeeId && x.GlFiscalYearId == period.GlFiscalYearId).ToList();
+                    var leaveEntitlments = db.LeavesEntitle.FirstOrDefault(x => x.EmployeeId == e.EmployeeId && x.GlFiscalYearId == period.GlFiscalYearId);
+
+                    LeaveSummaryone.TotalAmountTaken = leaveTaken.Sum(x => x.Amount);
+                    LeaveSummaryone.PainInCash = Convert.ToDecimal(paidIncash.Sum(x => x.Amount));
+
+                    if (leaveEntitlments != null)
                     {
-                        placement = db.Placements.FirstOrDefault(x => x.EmployeeId == e.EmployeeId && x.isCurrent);
+                        LeaveSummaryone.Balance = leaveEntitlments.Balance;
+                        LeaveSummaryone.Entitlment = leaveEntitlments.Amount;
+
+                        LeaveSummaryone.PainInCash = e.Salary / 26 * leaveEntitlments.Balance;
                     }
-                    else
+
+                    sum.LeaveSummaryLists.Add(LeaveSummaryone);
+                }
+                if (!sum.LeaveSummaryLists.Any())
+                {
+                    LeaveSummaryone = new LeaveSummaryList();
+
+                    LeaveSummaryone.LeavePeriod = " ";
+                    LeaveSummaryone.TotalAmountTaken = 0;
+                    LeaveSummaryone.PainInCash = 0;
+                    LeaveSummaryone.Balance = 0;
+                    LeaveSummaryone.Entitlment = 0;
+                }
+
+                if (e.isCurrent)
+                {
+                    var stracture = db.MainCompanyStructures.FirstOrDefault(x => x.OrgStructureId == e.OrgStructureId);
+                    if (stracture != null)
                     {
-                        var places = db.Placements.Where(x => x.EmployeeId == e.EmployeeId).OrderByDescending(x => x.PlacementId).ToList();
-                        if (places != null)
-                        {
-                            placement = places.FirstOrDefault();
-                        }
+                        sum.Department = stracture.Name;
                     }
-                    if (placement != null)
+                }
+                else
+                {
+                    var place = placements.FirstOrDefault(x => x.EmployeeId == e.EmployeeId);
+                    if (place != null)
                     {
-                        var stracture = db.MainCompanyStructures.FirstOrDefault(x => x.OrgStructureId == placement.OrgStructureId);
+                        var stracture = db.MainCompanyStructures.FirstOrDefault(x => x.OrgStructureId == place.OrgStructureId);
                         if (stracture != null)
                         {
                             sum.Department = stracture.Name;
                         }
-
                     }
-
-                    var filterPeriods = db.LeavesEntitle.DistinctByField(x => x.GlFiscalYearId).Where(x => !x.IsExpired).ToList();
-                    foreach (var filter in filterPeriods)
-                    {
-                        var period = periods.FirstOrDefault(x => x.GlFiscalYearId == filter.GlFiscalYearId);
-
-                        //foreach (var period in periods)
-                        //{
-
-                        var entitlew = db.LeavesEntitle.Where(x => x.GlFiscalYearId == period.GlFiscalYearId).ToList();
-                        var taken = db.Leaves.Where(x => x.GlFiscalYearId == period.GlFiscalYearId).ToList();
-                        var paidIncash = db.LeavePaid.Where(x => x.GlFiscalYearId == period.GlFiscalYearId).ToList();
-
-
-                        //var tranferedList = db.LeaveTransfer.Where(x => x.To == period.GlFiscalYearId && x.Check).ToList();
-                        var periodName = db.GLFiscalYears.Where(x => x.GlFiscalYearId == period.GlFiscalYearId).FirstOrDefault();
-                        //var requestStatus = db.RequestesStatus.Where(x => x.ReferenceType == "LeaveTransfer").ToList();
-
-                        LeaveSummaryone = new LeaveSummaryList();
-
-                        if (periodName != null)
-                        {
-                            LeaveSummaryone.LeavePeriod = periodName.Name;
-
-                            //LeaveSummaryone.TransferedFrom = Convert.ToDecimal(db.LeavesEntitle.Where(x => x.EmployeeId == e.EmployeeId && !x.IsExpired).Sum(a => a.Amount));
-                            var totalBalance = entitlew.Where(x => x.EmployeeId == e.EmployeeId && !x.IsExpired && x.GlFiscalYearId == period.GlFiscalYearId).Sum(x => x.Amount);
-                            var firstOrDefault = entitlew.FirstOrDefault(x => x.EmployeeId == e.EmployeeId && x.GlFiscalYearId == period.GlFiscalYearId);
-                            //if (firstOrDefault != null)
-
-
-                            LeaveSummaryone.TotalAmountTaken = taken.Where(x => x.EmployeeId == e.EmployeeId).Sum(x => x.Amount);
-                            LeaveSummaryone.PainInCash = Convert.ToDecimal(paidIncash.Where(x => x.EmployeeId == e.EmployeeId).Sum(x => x.Amount));
-                            if (firstOrDefault != null)
-                            {
-
-                                LeaveSummaryone.Balance = firstOrDefault.Balance;// (totalBalance - LeaveSummaryone.TotalAmountTaken - LeaveSummaryone.PainInCash);
-                                LeaveSummaryone.Entitlment = firstOrDefault.Amount; //LeaveSummaryone.Balance + LeaveSummaryone.TotalAmountTaken + LeaveSummaryone.PainInCash;
-                            }
-                            LeaveSummaryList.Add(LeaveSummaryone);
-                            sum.LeaveSummaryLists.Add(LeaveSummaryone);
-                        }
-                        //}
-                    }
-                    summaries.Add(sum);
                 }
-            }
 
+                summaries.Add(sum);
+            }
 
             return summaries;
         }

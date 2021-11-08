@@ -10,7 +10,7 @@
                   .Name("WeeklyAttendance")
               .Columns(columns =>
               {
-                  columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "PersonId", "FullNameWithOutCode").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
+                  columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameaEnglish").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
                   columns.ForeignKey(c => c.Department, (IEnumerable)ViewData["Department"], "OrgStructureId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
                   //columns.Bound(c => c.DayOne).ClientTemplate("<input type='checkbox' disabled='true' value='#=DayOne #' " + " # if (DayOne) { #" + "checked='checked'" + "# } #" + " />").Width(130).Title("");
                   //columns.Bound(c => c.DayOneAN).ClientTemplate("<input type='checkbox' disabled='true' value='#=DayOneAN #' " + " # if (DayOneAN) { #" + "checked='checked'" + "# } #" + " />").Width(130).Title("");
@@ -165,7 +165,7 @@
       {
           model.Id(p => p.WeeklyAttendanceId);
           model.Field(p => p.EmployeeId).Editable(false);
-
+          model.Field(p => p.Department).Editable(false);
       })
       .Read(read => read.Action("WeeklyAttendances_Read", "WeeklyAttendance"))
           .Create(create => create.Action("Editing_Create", "WeeklyAttendance"))

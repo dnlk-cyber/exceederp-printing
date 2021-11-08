@@ -72,77 +72,80 @@
 
 <script id="template" type="text/kendo-tmpl">
     @(Html.Kendo().TabStrip()
-                                          .Name("tabstrip_#=ManPowerPlanningRequestId#")
-                                          .SelectedIndex(0)
-                                          .Items(items =>
-                                          {
-                                              items.Add().Text(Resources.HR_RequestStatus).Content(
-                                                @<text>
-                                                    @*<legend>Status</legend>*@
+           .Name("tabstrip_#=ManPowerPlanningRequestId#")
+           .SelectedIndex(0)
+           .Items(items =>
+           {
+               items.Add().Text(Resources.HR_RequestStatus).Content(
+                 @<text>
+                     @*<legend>Status</legend>*@
 
-                                                    @(Html.Kendo().Grid<RequestesStatus>()
-                                                                                                  .Name("RequestesStatusgrid_#=ManPowerPlanningRequestId#")
-                                                                                          .Columns(columns =>
-                                                                                          {
-                                                                                              //columns.Bound(c => c.RequestId);
-                                                                                              columns.Bound(c => c.DateReqStatAm).Width(100);
-                                                                                              columns.Bound(c => c.Status).EditorTemplateName("Enum").Width(150);
-                                                                                              columns.ForeignKey(c => c.ApproverId, (IEnumerable)ViewData["EmployeeName"], "EmployeeId", "FullNameAmharic").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
-                                                                                              columns.ForeignKey(c => c.ApproverDepartment, (IEnumerable)ViewData["Departments"], "OrgStructureId", "Name").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
-                                                                                              columns.Bound(c => c.Remark).Width(100);
-                                                                                              columns.Command(command =>
-                                                                                              {
-                                                                                                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
-                                                                                                  command.Destroy().Text(Resources.ActionButton_Cancel);
-                                                                                              }).Width(400);
-                                                                                          })
-                                                                                          .ToolBar(toolbar =>
-                                                                                          {
-                                                                                              toolbar.Custom().Action("SendForApproval", "ManPowerPlanningRequest").Text(Resources.HR_Send_For_Approval);
-                                                                                          })
-                                                                                          .Editable(editable => editable.Mode(GridEditMode.InLine))
-                                                                                          .Scrollable()
-                                                                                          .DataSource(dataSource => dataSource
-                                                                                              .Ajax()
-                                                                                                      .Events(events =>
-                                                                                                      {
-                                                                                                          events.Error("error_handler(\"RequestesStatusgrid_#=ManPowerPlanningRequestId#\")");
-                                                                                                          events.RequestStart("onRequestStart(\"RequestesStatusgrid_#=ManPowerPlanningRequestId#\")");
-                                                                                                          events.RequestEnd("onRequestEnd(\"RequestesStatusgrid_#=ManPowerPlanningRequestId#\")");
-                                                                                                      })
+                     @(Html.Kendo().Grid<RequestesStatus>()
+                                       .Name("RequestesStatusgrid_#=ManPowerPlanningRequestId#")
+                               .Columns(columns =>
+                               {
+                                   //columns.Bound(c => c.RequestId);
+                                   columns.Bound(c => c.DateReqStatAm).Width(100);
+                                   columns.Bound(c => c.Status).EditorTemplateName("Enum").Width(180);
+                                   columns.ForeignKey(c => c.ApproverId, (IEnumerable)ViewData["EmployeeName"], "EmployeeId", "FullNameAmharic").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
+                                   columns.ForeignKey(c => c.ApproverDepartment, (IEnumerable)ViewData["Departments"], "OrgStructureId", "Name").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
+                                   columns.Bound(c => c.Remark).Width(100);
+                                   columns.Command(command =>
+                                   {
+                                       command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                       command.Destroy().Text(Resources.ActionButton_Cancel);
+                                   }).Width(400);
+                               })
+                               .ToolBar(toolbar =>
+                               {
+                                   toolbar.Custom().Action("SendForApproval", "ManPowerPlanningRequest").Text(Resources.HR_Send_For_Approval);
+                               })
+                               .Editable(editable => editable.Mode(GridEditMode.InLine))
+                               .Scrollable()
+                               .DataSource(dataSource => dataSource
+                                   .Ajax()
+                                           .Events(events =>
+                                           {
+                                               events.Error("error_handler(\"RequestesStatusgrid_#=ManPowerPlanningRequestId#\")");
+                                               events.RequestStart("onRequestStart(\"RequestesStatusgrid_#=ManPowerPlanningRequestId#\")");
+                                               events.RequestEnd("onRequestEnd(\"RequestesStatusgrid_#=ManPowerPlanningRequestId#\")");
+                                           })
 
-                                                                                                      .Model(model =>
-                                                                                                      {
-                                                                                                          model.Id(p => p.RequestStatusId);
-                                                                                                          model.Field(p => p.Date).Editable(false).DefaultValue(DateTime.Today);
-                                                                                                      })
+                                           .Model(model =>
+                                           {
+                                               model.Id(p => p.RequestStatusId);
+                                               model.Field(p => p.Date).Editable(false).DefaultValue(DateTime.Today);
+                                               model.Field(p => p.DateReqStatAm).Editable(false);
+                                               model.Field(p => p.ApproverDepartment).Editable(false);
+                                               model.Field(p => p.ApproverId).Editable(false);
+                                           })
 
-                                                                                             .Read(read => read.Action("RequestesStatus_Read", "RequestesStatus", new { id = "#=ManPowerPlanningRequestId#", referenceType = "ManPowerPlanning" }))
-                                                                                            .Create(create => create.Action("RequestesStatus_Create", "RequestesStatus", new { id = "#=ManPowerPlanningRequestId#", referenceType2 = "ManPowerPlanning" }))
-                                                                                                          .Update(update => update.Action("RequestesStatus_Update", "RequestesStatus"))
-                                                                                                          .Destroy(destroy => destroy.Action("RequestesStatus_Destroy", "RequestesStatus"))
-                                                                                          ).ToClientTemplate()
-                                                    )
+                                  .Read(read => read.Action("RequestesStatus_Read", "RequestesStatus", new { id = "#=ManPowerPlanningRequestId#", referenceType = "ManPowerPlanning" }))
+                                 .Create(create => create.Action("RequestesStatus_Create", "RequestesStatus", new { id = "#=ManPowerPlanningRequestId#", referenceType2 = "ManPowerPlanning" }))
+                                               .Update(update => update.Action("RequestesStatus_Update", "RequestesStatus"))
+                                               .Destroy(destroy => destroy.Action("RequestesStatus_Destroy", "RequestesStatus"))
+                               ).ToClientTemplate()
+                     )
 
 
-                                                </text>
-                                                                                  );
+                 </text>                             
+                                                   );
 
-                                          //*********************************Attachment***********************************************************//
-                                          items.Add().Text(Resources.Navigator_Company_UploadDocument).Content(
-                                        @<text>
-                                            @* <Legend>Photo</Legend>*@
+           //*********************************Attachment***********************************************************//
+           items.Add().Text(Resources.Navigator_Company_UploadDocument).Content(
+         @<text>
+             @* <Legend>Photo</Legend>*@
 
-                                            @(Html.Kendo().Grid<Attachment>()
-                                                                                                                                  .Name("Documents_#=ManPowerPlanningRequestId#")
-                                                                                                                                  .Columns(columns =>
-                                                                                                                                  {
-                                                                                                                                              columns.Bound(c => c.FileName);
-                                                                                                                                              columns.Bound(c => c.Description); //.Title("File Name").ClientTemplate((@Html.ActionLink("#=Description#", "DownloadFile", "DownloadDocument", new { filename = "#=Description#" }, null).ToHtmlString()));
-                                                                                                                                                                                 // columns.Bound(c => c.FileType).ClientTemplate(Html.ActionLink("DownLoad", "DownloadDoument", new { filename = "#=EmployeeId#" }).ToHtmlString());
-                                                                                                                                  columns.Bound(m => m.FileType).ClientTemplate(Html.ActionLink(Resources.Common_Attachment_FileType, "DownloadFile", "HRMDataProvider", new { filename = "\\#= AttachmentId\\#", type = "Doc" }, null).ToString());
-                                                                                                                                              columns.Command(command =>
-{
+             @(Html.Kendo().Grid<Attachment>()
+                                                                                                   .Name("Documents_#=ManPowerPlanningRequestId#")
+                                                                                                   .Columns(columns =>
+                                                                                                   {
+                                                                                                               columns.Bound(c => c.FileName);
+                                                                                                               columns.Bound(c => c.Description); //.Title("File Name").ClientTemplate((@Html.ActionLink("#=Description#", "DownloadFile", "DownloadDocument", new { filename = "#=Description#" }, null).ToHtmlString()));
+                                                                                                                                                  // columns.Bound(c => c.FileType).ClientTemplate(Html.ActionLink("DownLoad", "DownloadDoument", new { filename = "#=EmployeeId#" }).ToHtmlString());
+                                                                                                   columns.Bound(m => m.FileType).ClientTemplate(Html.ActionLink(Resources.Common_Attachment_FileType, "DownloadFile", "HRMDataProvider", new { filename = "\\#= AttachmentId\\#", type = "Doc" }, null).ToString());
+                                                                                                               columns.Command(command =>
+{                                      
                                 if (HttpContext.Current.User.IsInRole("HR_Profile_Admin") || HttpContext.Current.User.IsInRole("HR_Admin"))
                                 {
                                     command.Destroy().Text(Resources.ActionButton_Cancel);//

@@ -166,6 +166,12 @@
 </form>
 
 <script>
+    //
+    // Global variables to be used on distribution regenerating
+    var selectedBranchId = 0;
+    var selectedPeriodId = 0;
+    //var statusOfSelectedPayrollPeriodStatus= 3 // set to 3(transfered) by default
+
     function Distributions(e) {
         try {
             var grid = $("#Periodgrid").data("kendoGrid");
@@ -173,6 +179,17 @@
             var dataItem = grid.dataItem(grid.select());
             var id = dataItem.GLPeriodId;
             var branchid = dataItem.BranchId;
+            // update global variables to current selected row
+            selectedBranchId = branchid;
+            selectedPeriodId = id;
+
+            var stat = dataItem.Status;
+            if (stat == 3) {
+                $("#regenerate-distribution-button").attr("disabled", true);
+            }
+            else {
+                $("#regenerate-distribution-button").attr("disabled", false);
+            }
             var save = $("#btnDistribut").data("kendoButton");
             if ($('#btnDistribut').length > 0) {
                 save.enable(false);
@@ -221,7 +238,31 @@
             alert("Please select the row!!");
         }
     }
-   
+   function onReGenerateButtonclick(e) {
+        $("#regenerate-distribution-button").attr("disabled", true);
+        //if (btn) {
+        //    btn.enable(false);
+        //}
+        //var grid = $("#Periodgrid").data("kendoGrid");
+        //var dataItem = grid.dataItem(grid.select());
+        //var id = dataItem.GLPeriodId;
+        //var branchid = dataItem.BranchId;
+        if (confirm("Are you sure you want to regenerate distribution? Existing Distribution data will be deleted.")) {
+            $.ajax({
+                url: '@Url.Action("RegenerateDistribution", "PayrollProcess")',
+                data: { id: selectedPeriodId, branchId: selectedBranchId, },
+                type: 'POST',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                    $("#PayrollDistributiongrid").data("kendoGrid").dataSource.read();
+                    $("#PayrollDistributiongrid").data("kendoGrid").refresh();
+
+                    $("#regenerate-distribution-button").attr("disabled", false);
+                }
+            });
+        }
+    }
 </script>
 
 <script>
@@ -849,7 +890,7 @@
       .Columns(columns =>
       {
           columns.Bound(c => c.AccountDesc);
-           columns.Bound(c => c.AccountCode).EditorTemplateName("AccountCode").Width(200);
+          columns.Bound(c => c.AccountCode).EditorTemplateName("AccountCode").Width(200);
           columns.Bound(c => c.Description).Width(200);
           // columns.Bound(c => c.CostCenterCode);
           // columns.Bound(c => c.OrgBranchName);
@@ -865,6 +906,7 @@
          .ToolBar(toolbar =>
          {
              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+             toolbar.Custom().Text("Regenerate Distribution").IconClass("k-icon k-i-refresh").Name("regenerate-distribution-button").Url("#").HtmlAttributes(new { @class = "btn btn-danger btn-xs", onClick = "onReGenerateButtonclick()", id = "regenerate-distribution-button" });
              toolbar.Excel().Text(Resources.ActionButton_ExportExcel).HtmlAttributes(new { @class = "btn btn-primary btn-xs pull-right" });
              toolbar.Pdf().Text(Resources.ActionButton_ExportPDF ).HtmlAttributes(new { @class = "btn btn-primary btn-xs pull-right" });
          })
@@ -883,23 +925,23 @@
      .DataSource(dataSource => dataSource
           .Ajax()
                         .Events(events =>
-                                            {
-                                                events.Error("error_handler(\"PayrollDistributiongrid\")");
-                                                events.RequestEnd("onRequestEnd(\"PayrollDistributiongrid\")");
-                                            })
+                        {
+                            events.Error("error_handler(\"PayrollDistributiongrid\")");
+                            events.RequestEnd("onRequestEnd(\"PayrollDistributiongrid\")");
+                        })
                                               .Group(groups => groups.Add(p => p.CostCenterCode))
                .Aggregates(aggregates =>
-            {
-                aggregates.Add(p => p.Debit).Sum();
-                aggregates.Add(p => p.Credit).Sum();
+               {
+                   aggregates.Add(p => p.Debit).Sum();
+                   aggregates.Add(p => p.Credit).Sum();
 
-            })
+               })
                      .Model(model => { model.Id(p => p.PayrollDistributionId);
-                     model.Field(p => p.AccountDesc).Editable (false);
+                         model.Field(p => p.AccountDesc).Editable (false);
                      })
                           .Read(read => read.Action("PayrollDistributions_Read", "PayrollProcess"))
                                 .Create(read => read.Action("PayrollDistributions_Create", "PayrollProcess"))
-                                      
+
                                         .Update(read => read.Action("PayrollDistributions_Update", "PayrollProcess"))
       )
 )

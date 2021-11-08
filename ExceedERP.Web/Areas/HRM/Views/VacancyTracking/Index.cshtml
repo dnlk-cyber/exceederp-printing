@@ -1,0 +1,62 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.HRM.RecruitmentManagment
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@(Html.Kendo().Grid<Vacancy>()
+              .Name("grid")
+              .Columns(columns =>
+              {
+                  columns.Bound(c => c.VaccancyCode);
+
+                  columns.ForeignKey(c => c.JobTitle, (IEnumerable)ViewData["Lookup"], "LookupId", "Description").Filterable(ftb => ftb.Multi(true).Search(true));
+                  columns.ForeignKey(c => c.Department, (IEnumerable)ViewData["Department"], "OrgStructureId", "Name").Filterable(ftb => ftb.Multi(true).Search(true));
+                //  columns.ForeignKey(c => c.Location, (IEnumerable)ViewData["Location"], "BranchLocationId", "Name").Filterable(ftb => ftb.Multi(true).Search(true));
+
+                  columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["Branches"], "BranchId", "AmharicName").EditorTemplateName("BranchSelectorFromPlan").Filterable(ftb => ftb.Multi(true).Search(true));
+                  columns.Bound(c => c.From);
+                  columns.Bound(c => c.To);
+                  columns.Bound(c => c.WrittenExamSchedule);
+                  columns.Bound(c => c.InterviewSchedule);
+                //  columns.Bound(c => c.CurrentStatusTracking);
+
+                  columns.Command(command =>
+                  {
+                      command.Edit();
+                  }).Width(180);
+              })
+              // .ColumnMenu()
+              .Editable(editable => editable.Mode(GridEditMode.InLine))
+              .Pageable()
+                .HtmlAttributes(new { style = "height: 550px;" })
+              // .Navigatable()
+              //.Selectable(selectable =>
+              //{
+              //    selectable.Mode(GridSelectionMode.Single);
+              //    selectable.Type(GridSelectionType.Row);
+              //})
+              .Sortable(sortable =>
+              {
+                  sortable.SortMode(GridSortMode.SingleColumn);
+              })
+              .Filterable()
+              .Scrollable()
+              .DataSource(dataSource => dataSource
+                  .Ajax()
+                  .Model(model =>
+                  {
+                      model.Id(p => p.VacancyId);
+                      model.Field(p => p.VaccancyCode).Editable(false);
+                      model.Field(p => p.JobTitle).Editable(false);
+                      model.Field(p => p.BranchId).Editable(false);
+                      model.Field(p => p.Location).Editable(false);
+                      model.Field(p => p.From).Editable(false);
+                      model.Field(p => p.To).Editable(false);
+                      model.Field(p => p.Department).Editable(false);
+                  })
+                  .Read(read => read.Action("VaccancyPlans_Read", "VacancyTracking"))
+                  .Update(update => update.Action("VaccancyPlans_Update", "VacancyTracking"))
+              )
+)

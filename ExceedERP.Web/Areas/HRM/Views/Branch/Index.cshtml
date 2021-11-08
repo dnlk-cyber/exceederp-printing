@@ -22,13 +22,17 @@
           //    //command.Custom(Resources.ActionButton_CopyTemp).Click("CopyMapping");
           //}).Width(220);
       })
-     
+      .ToolBar(toolbar =>
+      {
+          toolbar.Excel();
+      })
+
 .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("Branch").Window(window => { window.Title(Resources.Navigator_Company_MaintainBranch); window.Scrollable(false); }))
               .Selectable(selectable =>
-                 {
-                     selectable.Mode(GridSelectionMode.Single);
-                     selectable.Type(GridSelectionType.Row);
-                 })
+              {
+                  selectable.Mode(GridSelectionMode.Single);
+                  selectable.Type(GridSelectionType.Row);
+              })
                      .Scrollable(h => h.Height(500))
                          .Groupable()
                                   .Sortable(sortable =>
@@ -45,16 +49,16 @@
           .DataSource(dataSource => dataSource
               .Ajax()
                    .Events(events => {
-events.Error("error_handler(\"Branchgrid\")");
-events.RequestStart("onRequestStart(\"Branchgrid\")");
- events.RequestEnd("onRequestEnd(\"Branchgrid\")");
-})
-                        
+                       events.Error("error_handler(\"Branchgrid\")");
+                       events.RequestStart("onRequestStart(\"Branchgrid\")");
+                       events.RequestEnd("onRequestEnd(\"Branchgrid\")");
+                   })
+
               .Model(model => model.Id(p => p.BranchId))
               .Read(read => read.Action("Branch_Read", "Branch"))
               .Create(create => create.Action("Branch_Create", "Branch"))
               .Update(update => update.Action("Branch_Update", "Branch"))
-        //.Destroy(destroy => destroy.Action("Branch_Destroy", "Branch"))
+          //.Destroy(destroy => destroy.Action("Branch_Destroy", "Branch"))
           )
 )
 <script>

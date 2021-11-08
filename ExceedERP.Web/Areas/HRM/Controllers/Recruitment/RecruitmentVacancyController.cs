@@ -147,7 +147,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
             DataSourceResult result = vacancies.ToDataSourceResult(request, vacancyLists => new
             {
                 RecruitmentPlanId = vacancyLists.RecruitmentPlanId,
-                LookupId = vacancyLists.LookupId,
+                //LookupId = vacancyLists.LookupId,
                 VacancyType = vacancyLists.VacancyType,
 
                 //OrgStructureId = vacancyLists.OrgStructureId,
@@ -196,10 +196,10 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
                     if (!dd.Any())
                     {
 
-                        var recruitmentsPlan =
-                            db.RecruitmentPlans.FirstOrDefault(x => x.RecruitmentPlanId == vacancy.RecruitmentPlanId);
-                        if (recruitmentsPlan != null)
-                        {
+                        //var recruitmentsPlan =
+                        //    db.RecruitmentPlans.FirstOrDefault(x => x.RecruitmentPlanId == vacancy.RecruitmentPlanId);
+                        //if (recruitmentsPlan != null)
+                        //{
                             VacancyForMediaViewModel job = new VacancyForMediaViewModel();
 
 
@@ -208,19 +208,28 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
                             job.RecruitmentSource = vacancy.RecruSource;
 
 
-                            job.VacancyForMediaId = recruitmentsPlan.RecruitmentPlanId;
-                            job.RecruitmentPlanId = recruitmentsPlan.RecruitmentPlanId;
-                            job.JobtitleName = recruitmentsPlan.JobtitleName;
-                            job.LookupId = recruitmentsPlan.LookupId;
-                            job.RecruitmentType = recruitmentsPlan.RecruitmentType;
-                            job.NoOfVacantPost = recruitmentsPlan.NoOfVacantPost;
-                            job.WorkUnitId = recruitmentsPlan.OrgStructureId;
+                        //job.VacancyForMediaId = vacancy.RecruitmentPlanId;
+                        //job.RecruitmentPlanId = recruitmentsPlan.RecruitmentPlanId;
+                        var look = db.Lookups.FirstOrDefault(x=>x.LookupId == vacancy.JobTitle);
+                        if(look != null)
+                        {
+                            job.JobtitleName = look.Description;
+                        }
+
+                        var department = db.MainCompanyStructures.FirstOrDefault(x => x.OrgStructureId == vacancy.Department);
+                        if (department != null)
+                        {
+                            job.Department = department.Name;
+                        }
+
+                        job.RecruitmentType = vacancy.VacancyType;
+                            job.NoOfVacantPost = vacancy.NoOfVacant;
                             job.FromAmharic = vacancy.FromVacAm;
                             job.ToAmharic = vacancy.ToVacAm;
 
                             vacancyList.Add(job);
 
-                        }
+                       // }
                     }
                 }
             }
@@ -236,11 +245,11 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
                 JobtitleName = vacancyLists.JobtitleName,
                 RecruitmentType = vacancyLists.RecruitmentType,
                 NoOfVacantPost = vacancyLists.NoOfVacantPost,
-                RecruitmentPlanId = vacancyLists.RecruitmentPlanId,
+               // RecruitmentPlanId = vacancyLists.RecruitmentPlanId,
                 VacancyId = vacancyLists.VacancyId,
-                LookupId = vacancyLists.LookupId,
+               // LookupId = vacancyLists.LookupId,
                 VacancyCode = vacancyLists.VacancyCode,
-                WorkUnitId = vacancyLists.WorkUnitId,
+                Department = vacancyLists.Department,
                 FromAmharic = vacancyLists.FromAmharic,
                 ToAmharic = vacancyLists.ToAmharic,
                 RecruitmentSource = vacancyLists.RecruitmentSource
@@ -298,16 +307,23 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
                 vacancyForMedia.MediaVacancyCode = plan.MediaVacancyCode;
                 vacancyForMedia.VacancyId = plan.VacancyId;
                 vacancyForMedia.VacancyCode = plan.Vacancy.VaccancyCode;
-                var vacancy = db.VaccancyPlans.FirstOrDefault(x=>x.VacancyId == plan.VacancyId);
-                if(vacancy != null)
+                var look = db.Lookups.FirstOrDefault(x => x.LookupId == plan.Vacancy.JobTitle);
+                if (look != null)
                 {
-                    var recPlan = db.RecruitmentPlans.FirstOrDefault(x=>x.RecruitmentPlanId == vacancy.RecruitmentPlanId);
-                    if(recPlan != null)
-                    {
-                        vacancyForMedia.JobtitleName = recPlan.JobtitleName;
-                    }
+                    vacancyForMedia.JobtitleName = look.Description;
                 }
+
              
+                //var vacancy = db.VaccancyPlans.FirstOrDefault(x=>x.VacancyId == plan.VacancyId);
+                //if(vacancy != null)
+                //{
+                //    var recPlan = db.RecruitmentPlans.FirstOrDefault(x=>x.RecruitmentPlanId == vacancy.RecruitmentPlanId);
+                //    if(recPlan != null)
+                //    {
+                //        vacancyForMedia.JobtitleName = recPlan.JobtitleName;
+                //    }
+                //}
+
                 vacancyForMedia.DateCreated = plan.DateCreated;
                 recruitmentvacancy.Add(vacancyForMedia);
 
@@ -374,10 +390,10 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
             ExceedDbContext dbs = new ExceedDbContext();
 
             int recruitmentMediaCode = db.VaccancyPlans.Max(x => x.VacancyId);
-            List<RecruitmentVacancy> checking = db.RecruitmentVacancy.ToList();
+           // List<RecruitmentVacancy> checking = db.RecruitmentVacancy.ToList();
 
 
-            var recruitmentVacancies = RecruitmentVacancies as VacancyForMediaViewModel[] ?? RecruitmentVacancies.ToArray();
+            var recruitmentVacancies = RecruitmentVacancies as VacancyForMediaViewModel[] ?? RecruitmentVacancies.Where(x=>x.Check).ToArray();
             var recruitment = recruitmentVacancies.FirstOrDefault();
             if (recruitment != null && recruitment.RecruitmentSource == RecruitmentSource.EXTERNAL)
             {
@@ -416,12 +432,12 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
                     if (product.Check)
                     {
 
-                        FromAmh = product.FromAmharic;
-                        var splitDateFrom = FromAmh.Split('/');
-                        From = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDateFrom[0]), Convert.ToInt32(splitDateFrom[1]), Convert.ToInt32(splitDateFrom[2]));
-                        ToAmh = product.ToAmharic;
-                        var splitDateTo = ToAmh.Split('/');
-                        To = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDateTo[0]), Convert.ToInt32(splitDateTo[1]), Convert.ToInt32(splitDateTo[2]));
+                        //FromAmh = product.FromAmharic;
+                        //var splitDateFrom = FromAmh.Split('/');
+                        //From = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDateFrom[0]), Convert.ToInt32(splitDateFrom[1]), Convert.ToInt32(splitDateFrom[2]));
+                        //ToAmh = product.ToAmharic;
+                        //var splitDateTo = ToAmh.Split('/');
+                        //To = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDateTo[0]), Convert.ToInt32(splitDateTo[1]), Convert.ToInt32(splitDateTo[2]));
 
 
                         RecruitmentVacancy = new RecruitmentVacancy();
@@ -434,8 +450,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
                         RecruitmentVacancy.MediaVacancyCode = code;
                         RecruitmentVacancy.FromAmh = product.FromAmharic;
                         RecruitmentVacancy.ToAmh = product.ToAmharic;
-                        RecruitmentVacancy.From = From;
-                        RecruitmentVacancy.To = To;
+                        RecruitmentVacancy.From = product.From;
+                        RecruitmentVacancy.To = product.To;
 
 
 

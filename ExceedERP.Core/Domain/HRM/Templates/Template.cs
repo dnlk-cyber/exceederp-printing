@@ -5,5 +5,6 @@
         public int TemplateId { get; set; }
         public string TempOne { get; set; }
         public TemplateTypes TemplateType { get; set; }
+        public string Document { get; set; }
     }
 }

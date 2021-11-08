@@ -6,10 +6,10 @@ namespace ExceedERP.Core.Domain.HRM.Discipline
     {
         [Key ]
         public int DisciplineTypeId { get; set; }
-        [Required]
+        public int DetailMeasuresId { get; set; }
+    
         [Display(Name = "HR_Discipline_DisciplineMeasuresType_MeasuresId", ResourceType = typeof(Localization.Resources))]
         public int MeasuresId { get; set; }
-        public virtual DisciplineMeasures DisciplineMeasures { get; set; }
         [Display(Name = "HR_Discipline_DisciplineMeasuresType_ExpireYear", ResourceType = typeof(Localization.Resources))]
         public decimal ExpireYear { get; set; }
         [Display(Name = "HR_Discipline_DisciplineMeasuresType_PercentageEffectOnPromotion", ResourceType = typeof(Localization.Resources))]

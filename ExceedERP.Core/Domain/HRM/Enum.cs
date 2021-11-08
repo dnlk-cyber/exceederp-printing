@@ -57,9 +57,11 @@ namespace ExceedERP.Core.Domain.HRM
 
     public enum TemplateTypes
     {
-        ExperianceAm,
-        ExperianceEng,
-        WarrantyAm,
-        TerminationAcceptanceAm
+        ExperianceAm = 1,
+        ExperianceEng = 2,
+        WarrantyAm = 3,
+        TerminationAcceptanceAm = 4,
+        RecruitmentExternalLetterAm = 5,
+        PromotionAm = 6
     }
 }

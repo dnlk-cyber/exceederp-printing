@@ -39,6 +39,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMViewModel
         public List<TrainingExt> TrainingExt { get; set; }
         public List<Languages> Languages { get; set; }
         public List<EmployeePerformances> EmployeePerformances { get; set; }
+        public List<Discipline> Discipline { get; set; }
 
     }
     public class Training
@@ -58,5 +59,13 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMViewModel
         public string Type { get; set; }
         public string Result { get; set; }
         public string EvaluationCriteria { get; set; }
+    }
+    public class Discipline
+    {
+        public string MeasureRank { get; set; }
+        public string MeasureTaken { get; set; }
+        public int Month { get; set; }
+        public string DecisionDate { get; set; }
+        public decimal Amount { get; set; }
     }
 }

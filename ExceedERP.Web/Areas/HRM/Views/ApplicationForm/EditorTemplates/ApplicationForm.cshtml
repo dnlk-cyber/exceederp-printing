@@ -33,12 +33,12 @@
 
         </div>
         <div>
-            
-            
+
+
         </div>
-        
+
         <div class="col-md-3">
-            
+
             <div class="form-group">
                 <div class="k-label">
                     @Html.LabelFor(model => model.EmployeeId, htmlAttributes: new { @class = "control-label col-md-8" })
@@ -47,40 +47,38 @@
                 <div>
 
                     @(Html.Kendo().DropDownListFor(model => model.EmployeeId)
-                      
-                      .DataValueField("PersonId")
-                      .DataTextField("FullName")
-                      .OptionLabel(Resources.Select)
-                      .Filter("contains")
-                      .MinLength(2)
-                      .CascadeFrom("IsForOther")
-                      .HtmlAttributes(new { style = "width:200px" })
-                      .Virtual(v => v.ValueMapper("valueMapper").ItemHeight(26))
-                      
-                      .DataSource(source =>
-                      {
-                          source.Read(read =>
-                          {
-                              read.Action("GetEmployeesAskForOther", "HRMDataProvider");
-                              //.Data("IsforOthers");
-                          })
-                              .ServerFiltering(false);
-                      })
-                      .Enable(false)
 
-                      .ValuePrimitive(true)
+                              .DataValueField("PersonId")
+                              .DataTextField("FullName")
+                              .OptionLabel(Resources.Select)
+                              .Filter("contains")
+                              .MinLength(2)
+                              .CascadeFrom("IsForOther")
+                              .HtmlAttributes(new { style = "width:200px" })
+                              .Virtual(v => v.ValueMapper("valueMapper").ItemHeight(26))
+
+                              .DataSource(source =>
+                              {
+                                  source.Read(read =>
+                                  {
+                                      read.Action("GetEmployeesAskForOther", "HRMDataProvider");
+                                          //.Data("IsforOthers");
+                                      })
+                                      .ServerFiltering(false);
+                              })
+                              .Enable(false)
+
+                              .ValuePrimitive(true)
 
 
-                      .Height(400)
-                      .HeaderTemplate("<div class=\"dropdown-header k-widget k-header\">" +
-                                      "<span>Photo</span>" +
-                                      "<span>Full Name</span>" +
-                                      "</div>")
-                      .Template(@"<div class='Employee-photo' style='background-image: url(" + Url.Content("~/Content/Images/") + "#:data.PersonId#-Photo/" + "#:data.PersonId#.jpg" + ");'></div>" +
-                                "<div class='Employee-name'>#:FullName#</div>")
+                              .Height(400)
+                              .HeaderTemplate("<div class=\"dropdown-header k-widget k-header\">" +
+                                              "<span>Photo</span>" +
+                                              "<span>Full Name</span>" +
+                                              "</div>")
+                              .Template(@"<div class='Employee-photo' style='background-image: url(" + Url.Content("~/Content/Images/") + "#:data.PersonId#-Photo/" + "#:data.PersonId#.jpg" + ");'></div>" +
+                                        "<div class='Employee-name'>#:FullName#</div>")
                     )
-
-
 
                 </div>
 
@@ -88,7 +86,7 @@
 
         </div>
 
-        <div class="col-md-3">
+        @*<div class="col-md-3">
             <div>
                 @Html.LabelFor(model => model.VacancyId, htmlAttributes: new { @class = "control-label col-md-8" })
             </div>
@@ -106,9 +104,29 @@
                       })
                 )
             </div>
+        </div>*@
+
+        <div class="col-md-3">
+            <div>
+                @Html.LabelFor(model => model.VacancyId, htmlAttributes: new { @class = "control-label col-md-8" })
+            </div>
+            <div class="form-group">
+                @(Html.Kendo().DropDownListFor(model => model.VacancyId)
+                                          .ValuePrimitive(true)
+                                  .OptionLabel(Resources.Select)
+                                  .DataTextField("VaccancyCode")
+                                   .DataValueField("VacancyId")
+                              .Filter("contains")
+                              .DataSource(dataSource =>
+                              {
+                                  dataSource.Read(read => read.Action("GetVacancyCodeForInternalApplicant", "HRMDataProvider", new { area = "HRM" }))
+                                      .ServerFiltering(false);
+                              })
+                )
+            </div>
         </div>
-      
-    
+
+
         <div class="col-md-3">
             <div>
                 @Html.LabelFor(model => model.OrgStructureId, htmlAttributes: new { @class = "control-label col-md-8" })
@@ -116,51 +134,40 @@
             <div class="form-group">
 
                 @(Html.Kendo().DropDownListFor(model => model.OrgStructureId)
-                                   .ValuePrimitive(true)
+                                           .ValuePrimitive(true)
 
-                          .OptionLabel(Resources.Select)
-                      .CascadeFrom("MediaVacancyCode")
-                           .DataTextField("Name")
-                            .DataValueField("OrgStructureId")
+                                  .OptionLabel(Resources.Select)
+                              .CascadeFrom("VacancyId")
+                                   .DataTextField("Name")
+                                    .DataValueField("OrgStructureId")
 
-                                                   .DataSource(source =>
-                                                   {
-                                                       source.Read(read =>
-                                                       {
-                                                           read.Action("GetWorkUnitFromVacancy", "HRMDataProvider").Data("filterworkunit");
-                                                       })
-                                                       .ServerFiltering(true);
-                                                   })
+                                       .DataSource(source =>
+                                       {
+                                           source.Read(read =>
+                                           {
+                                               read.Action("GetDepartmentsByVacancy", "HRMDataProvider").Data("filterworkunit");
+                                           })
+                                           .ServerFiltering(true);
+                                       })
 
 
                 )
                 @Html.ValidationMessageFor(model => model.OrgStructureId, "", new { @class = "text-danger" })
             </div>
-
-                
         </div>
-       
-
-
     </div>
-
-
 <br/>
-
-
-
 
     <div class="row">
     <div class="col-md-1">
-
     </div>
         <div class="col-md-3">
             <div>
-                @Html.LabelFor(model => model.IDAndTitle, htmlAttributes: new { @class = "control-label col-md-8" })
+                @Html.LabelFor(model => model.LookupId, htmlAttributes: new { @class = "control-label col-md-8" })
             </div>
             <div class="form-group">
 
-                @(Html.Kendo().DropDownListFor(model => model.IDAndTitle)
+                @(Html.Kendo().DropDownListFor(model => model.LookupId)
                       .ValuePrimitive(true)
                       .OptionLabel(Resources.Select)
                       .DataTextField("Description")
@@ -170,8 +177,8 @@
                       {
                           source.Read(read =>
                           {
-                              read.Action("GetJobTitleFromVacancy", "HRMDataProvider")
-                                  .Data("filterCategories");
+                              read.Action("GetJobtitlesByVacancy", "HRMDataProvider")
+                                  .Data("filterJobtitle");
                           })
                               .ServerFiltering(true);
                       })

@@ -20,6 +20,7 @@ using ExceedERP.Web.Controllers;
 using ExceedERP.Web.Helpers;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Web.Hubs;
+using ExceedERP.Web.Models;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Termination
 {
@@ -86,6 +87,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Termination
         }
         public JsonResult TerminateEmployee(int id)
         {
+
             var termination = db.Terminations.FirstOrDefault(x => x.TerminationId == id);
             if (termination != null)
             {
@@ -115,22 +117,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Termination
                     };
                     db.RequestesStatus.Add(status);
 
-                    #endregion
-                    #region deactivate employee
-                    var employee = db.Person_Employee.Find(termination.EmployeeId);
-                    if (employee != null)
-                    {
-                        employee.IsActive = false;
-                        db.Entry(employee).State = EntityState.Modified;
-
-                    }
-                    var placement = db.Placements.FirstOrDefault(x => x.EmployeeId == termination.EmployeeId && x.isCurrent);
-                    if (placement != null)
-                    {
-                        placement.isCurrent = false;
-                        db.Entry(placement).State = EntityState.Modified;
-
-                    }
                     #endregion
 
                     db.SaveChanges();
@@ -162,23 +148,23 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Termination
 
                     #region Notification
 
-                    var person = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == termination.EmployeeId);
-                    if (person != null)
-                    {
-                        var empid = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-                        var superviorId = EmployeeHelper.GetSupervisor(empid);
+                    //var person = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == termination.EmployeeId);
+                    //if (person != null)
+                    //{
+                    //    var empid = UserInformationHelper.GetEmployeeId(User.Identity.Name);
+                    //    var superviorId = EmployeeHelper.GetSupervisor(empid);
 
-                        NotifModels notif = new NotifModels
-                        {
+                    //    NotifModels notif = new NotifModels
+                    //    {
 
-                            UserId = UserInformationHelper.GetEmployeeUserId(superviorId),
-                            Title = "Employee Termination",
-                            Message = $" {person.FullNameaEnglish}  is terminated and removed from Payroll",
-                            URL = "~/HRM/Termination"
-                        };
+                    //        UserId = UserInformationHelper.GetEmployeeUserId(superviorId),
+                    //        Title = "Employee Termination",
+                    //        Message = $" {person.FullNameaEnglish}  is terminated and removed from Payroll",
+                    //        URL = "~/HRM/Termination"
+                    //    };
 
-                        Notify.NotifyUser(notif);
-                    }
+                    //    Notify.NotifyUser(notif);
+                    //}
 
                     #endregion
 
@@ -197,6 +183,110 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Termination
             };
             return Json(formatedData1, JsonRequestBehavior.AllowGet);
         }
+        public JsonResult ForceTerminateEmployee(int id)
+        {
+            var termination = db.Terminations.FirstOrDefault(x => x.TerminationId == id);
+            if (termination != null)
+            {
+                termination.IsOnlineApproved = true;
+
+                db.Entry(termination).State = EntityState.Modified;
+
+                #region change resquest status 
+
+                var statusDep = new RequestesStatus
+                {
+                    RequestId = termination.TerminationId,
+                    Date = DateTime.Now.Date,
+                    ReferenceType = "Termination",
+                    Status = RequestStatus.DEPARTMENT_APPROVAL
+                };
+                db.RequestesStatus.Add(statusDep);
+
+                var statusApp = new RequestesStatus
+                {
+                    RequestId = termination.TerminationId,
+                    Date = DateTime.Now.Date,
+                    ReferenceType = "Termination",
+                    Status = RequestStatus.APPROVE
+                };
+                db.RequestesStatus.Add(statusApp);
+
+                #endregion
+
+                db.SaveChanges();
+
+                var person = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == termination.EmployeeId);
+                if (person != null)
+                {
+                    person.IsActive = false;
+
+                    db.Entry(person).State = EntityState.Modified;
+                    db.SaveChanges();
+                }
+
+                var placements = db.Placements.Where(x => x.EmployeeId == termination.EmployeeId).ToList();
+
+                foreach (var place in placements)
+                {
+                    place.isCurrent = false;
+
+                    db.Entry(place).State = EntityState.Modified;
+                    db.SaveChanges();
+                }
+
+                var formatedData = new
+                {
+                    Message = "This employee is successfully Terminated",
+                    Status = "OK"
+                };
+                return Json(formatedData, JsonRequestBehavior.AllowGet);
+
+            }
+            var formatedData1 = new
+            {
+                Message = "Please select employee",
+                Status = "Fail"
+            };
+            return Json(formatedData1, JsonRequestBehavior.AllowGet);
+        }
+
+        public JavaScriptResult UpdateTerminationStatus()
+        {
+            var terminations = db.Terminations.ToList();
+            foreach (var term in terminations)
+            {
+                var requestStatus = db.RequestesStatus.FirstOrDefault(x => x.RequestId == term.TerminationId && x.ReferenceType == "Termination");
+                if (requestStatus != null && requestStatus.Status == RequestStatus.APPROVE)
+                {
+                    term.IsDepartmentOnlineApproved = true;
+                    term.IsOnlineApproved = true;
+
+                    db.Entry(term).State = EntityState.Modified;
+                    db.SaveChanges();
+                }
+            }
+            string message = "All termination status are updated successfully";
+            return new JavaScriptResult() { Script = "alert('" + message + "');" };
+        }
+        public bool CheckIfActive(int empId)
+        {
+            /// this function return 'True' if the employee is active in profile or he is current in placement 
+            /// and return false if the employee is InActive in profile and Not Current in placement 
+            var person = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == empId);
+            if (person != null && person.IsActive)
+            {
+                return true;
+            }
+            var placement = db.Placements.FirstOrDefault(x => x.EmployeeId == empId && x.isCurrent);
+            if (placement != null)
+            {
+                return true;
+            }
+
+            return false;
+        }
+
         [AuthorizeRoles(HrmConstants.HRTerminationUser, HrmConstants.HRAdmin)]
         public ActionResult Terminations_Read([DataSourceRequest]DataSourceRequest request)
         {
@@ -233,7 +323,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Termination
                 OrgBranchName = termination.OrgBranchName,
                 EmployeeCode = termination.EmployeeCode,
                 IsOnlineApproved = termination.IsOnlineApproved,
-                IsDirect = termination.IsDirect
+                IsDirect = termination.IsDirect,
+                IsActive = CheckIfActive(termination.EmployeeId)
                 //TerminationLevel = termination.TerminationLevel
             });
 
@@ -269,22 +360,38 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Termination
         {
             ModelState.Clear();
 
-            var checkExistance = db.Terminations.Where(x => x.EmployeeId == termination.EmployeeId).FirstOrDefault();
+            if (termination.TerminationDateAm != null)
+            {
+                var splitDate = termination.TerminationDateAm.Split('/');
+                termination.TerminationDate = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
+            }
+            else
+            {
+                ModelState.AddModelError("", "Termination Date Is Required");
+            }
+
+            if (termination.ApplicationDateAm != null)
+            {
+                var splitDate = termination.ApplicationDateAm.Split('/');
+                termination.ApplicationDate = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
+            }
+            else
+            {
+                ModelState.AddModelError("", "Termination Date Is Required");
+            }
+
+            var checkExistance = db.Terminations.FirstOrDefault(x => x.EmployeeId == termination.EmployeeId);
             if (checkExistance != null)
             {
-
                 ModelState.AddModelError("", "This employee already request the termination!!");
             }
-            else if (TerminationDate.Date < ApplicationDate.Date)
+
+            if (termination.TerminationDate < termination.ApplicationDate)
             {
-                ModelState.AddModelError("", "Please check the date range!!");
-            }
-            else if (TerminationDateAm == null || ApplicationDateAm == null)
-            {
-                ModelState.AddModelError("", "Termination and application Date values are mandatory!!");
+                ModelState.AddModelError("", "Termination Date Can't Be Below Application Date");
             }
 
-            else if (ApplicationDate.Date > DateTime.Now.Date)
+            if (termination.ApplicationDate > DateTime.Now.Date)
             {
 
                 ModelState.AddModelError("", "Application date should be less or equal to the current date!!");
@@ -292,18 +399,18 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Termination
 
             if (ModelState.IsValid)
             {
-                var diff = (TerminationDate - ApplicationDate).TotalDays;
+                var diff = (termination.TerminationDate - termination.ApplicationDate).Days;
 
                 var entity = new Core.Domain.HRM.EmployeeDetail.Termination
                 {
                     EmployeeId = termination.EmployeeId,
                     LookupId = termination.LookupId,
                     Reason = termination.Reason,
-                    ApplicationDate = ApplicationDate,
-                    TerminationDate = TerminationDate,
+                    ApplicationDate = termination.ApplicationDate,
+                    TerminationDate = termination.TerminationDate,
                     Remark = termination.Remark,
-                    TerminationDateAm = TerminationDateAm,
-                    ApplicationDateAm = ApplicationDateAm,
+                    TerminationDateAm = termination.TerminationDateAm,
+                    ApplicationDateAm = termination.ApplicationDateAm,
                     DateCreated = DateTime.Now,
                     LastModified = termination.LastModified,
                     CreatedBy = User.Identity.Name,
@@ -321,7 +428,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Termination
                 db = new ExceedDbContext();
 
                 termination.TerminationId = entity.TerminationId;
-
 
 
                 #region operation log
@@ -348,32 +454,44 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Termination
         {
             ModelState.Clear();
 
-            if (TerminationDateAm == null)
+            if (termination.TerminationDateAm != null)
             {
-                TerminationDateAm = termination.TerminationDateAm;
-                var splitDate = TerminationDateAm.Split('/');
-                TerminationDate = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
+                var splitDate = termination.TerminationDateAm.Split('/');
+                termination.TerminationDate = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
             }
-            if (ApplicationDateAm == null)
+            else
             {
-                ApplicationDateAm = termination.ApplicationDateAm;
-                var splitDate = ApplicationDateAm.Split('/');
-                ApplicationDate = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
+                ModelState.AddModelError("", "Termination Date Is Required");
             }
-            if (TerminationDate.Date < ApplicationDate.Date)
-            {
-                ModelState.AddModelError("", "Please check the date range!!");
-            }
-            else if (TerminationDate.Date < DateTime.Now.Date)
-            {
 
-                ModelState.AddModelError("", "Termination date should be greater or equal to the current date!!");
+            if (termination.ApplicationDateAm != null)
+            {
+                var splitDate = termination.ApplicationDateAm.Split('/');
+                termination.ApplicationDate = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
             }
-            else if (ApplicationDate.Date > DateTime.Now.Date)
+            else
+            {
+                ModelState.AddModelError("", "Termination Date Is Required");
+            }
+
+            var checkExistance = db.Terminations.FirstOrDefault(x => x.EmployeeId == termination.EmployeeId);
+            if (checkExistance != null)
+            {
+                ModelState.AddModelError("", "This employee already request the termination!!");
+            }
+
+            if (termination.TerminationDate < termination.ApplicationDate)
+            {
+                ModelState.AddModelError("", "Termination Date Can't Be Below Application Date");
+            }
+
+            if (termination.ApplicationDate > DateTime.Now.Date)
             {
 
                 ModelState.AddModelError("", "Application date should be less or equal to the current date!!");
             }
+
+
             if (ModelState.IsValid)
             {
                 var entity = new Core.Domain.HRM.EmployeeDetail.Termination
@@ -382,11 +500,11 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Termination
                     EmployeeId = termination.EmployeeId,
                     LookupId = termination.LookupId,
                     Reason = termination.Reason,
-                    TerminationDate = TerminationDate,
-                    ApplicationDate = ApplicationDate,
+                    TerminationDate = termination.TerminationDate,
+                    ApplicationDate = termination.ApplicationDate,
                     Remark = termination.Remark,
-                    TerminationDateAm = TerminationDateAm,
-                    ApplicationDateAm = ApplicationDateAm,
+                    TerminationDateAm = termination.TerminationDateAm,
+                    ApplicationDateAm = termination.ApplicationDateAm,
                     DateCreated = termination.DateCreated,
                     LastModified = DateTime.Now,
                     CreatedBy = termination.CreatedBy,

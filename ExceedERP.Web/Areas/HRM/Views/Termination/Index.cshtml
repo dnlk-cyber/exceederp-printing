@@ -13,15 +13,16 @@
                   {
 
                       columns.Bound(c => c.EmployeeCode).Width(100);
-                      columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeName"], "EmployeeId", "FullNameAmharic").EditorTemplateName("ListOfEmployee").Width(220);
-                      columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["TerminationTypes"], "LookupId", "Description").EditorTemplateName("TerminationType").Width(150);
-          //columns.Bound(c => c.TerminationLevel).Width(120);
-          columns.Bound(c => c.ApplicationDateAm).EditorTemplateName("Calander").Width(150);
+                      columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeName"], "EmployeeId", "FullNameAmharic").Filterable(g=>g.Search(true).Multi(true)).EditorTemplateName("ActiveEmployees").Width(220);
+                      columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["TerminationTypes"], "LookupId", "Description").Filterable(g => g.Search(true).Multi(true)).EditorTemplateName("TerminationType").Width(150);
+                      //columns.Bound(c => c.TerminationLevel).Width(120);
+
+                      columns.Bound(c => c.ApplicationDateAm).EditorTemplateName("Calander").Width(150);
 
                       columns.Bound(c => c.Reason).Width(120);
                       columns.Bound(c => c.TerminationDateAm).EditorTemplateName("Calander").Width(150);
-          // columns.Bound(c => c.Remark).Width (120);
-          columns.Command(command =>
+                      // columns.Bound(c => c.Remark).Width (120);
+                      columns.Command(command =>
                       {
                           if (HttpContext.Current.User.IsInRole("HR_Termination_User"))
                           {
@@ -31,6 +32,8 @@
                           {
                               command.Destroy().Text(Resources.ActionButton_Cancel);
                               command.Custom("terminate").Text("&nbsp;Approve").Click("terminateEmployee").IconClass("fa fa-check").HtmlAttributes(new { @class = "btn btn-success", @title = "Approve termination", @id = "terminate" });
+
+                              command.Custom("forceTerminate").Text("&nbsp;Force Terminate").Click("forceTerminateEmployee").IconClass("fa fa-check").HtmlAttributes(new { @class = "btn btn-danger", @title = "Force Terminate Employees", @id = "forceTerminate" });
                           }
                       }).Width(300);
                   })
@@ -69,6 +72,7 @@
                                                     .ButtonCount(5))
                   .DataSource(dataSource => dataSource
                       .Ajax()
+                      .Sort(s=>s.Add(x=>x.TerminationId).Descending())
                            .Events(events =>
                            {
                                events.Error("error_handler(\"TerminationGrid\")");
@@ -368,6 +372,9 @@
 <script>
     function GetDate() {
 
+        $("#TerminationDateAm").trigger("change");
+        $("#ApplicationDateAm").trigger("change");
+
         var x = AssignDate();
         var y = x;
         for (var o in y) {
@@ -423,6 +430,36 @@
     }
 </script>
 
+
+<script>
+    function forceTerminateEmployee(e) {
+         var row = $(e.target).closest("tr");
+        var grid = $("#TerminationGrid").data("kendoGrid");
+        var dataItem = grid.dataItem(row);
+        var id = dataItem.TerminationId;
+
+        if (id.length !== 0 )
+        {
+            $('#loading-image').show();
+
+            $.ajax({
+                url: '@Url.Action("ForceTerminateEmployee", "Termination")',
+
+                data: { id: id},
+                type: 'POST',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                    alert(r.Message);
+                    $('#loading-image').hide();
+                    grid.dataSource.read();
+                }
+            });
+
+        }
+    }
+</script>
+
 <script>
     function onDataBound(e) {
 
@@ -443,6 +480,10 @@
                 row.find(".k-grid-edit").hide();
                 row.find(".k-grid-delete").hide();
                 row.find("#terminate").hide();
+            }
+            if (dataItem.IsActive === false)
+            {
+                row.find("#forceTerminate").hide();
             }
         }
     }

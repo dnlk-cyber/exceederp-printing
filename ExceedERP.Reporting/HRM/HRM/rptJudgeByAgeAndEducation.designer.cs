@@ -229,7 +229,7 @@ namespace ExceedERP.Reporting.HRM.HRM
             this.tblJudgeAge.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.98916500806808472D)));
             this.tblJudgeAge.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.0644255876541138D)));
             this.tblJudgeAge.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.27291673421859741D)));
-            this.tblJudgeAge.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.22238644957542419D)));
+            this.tblJudgeAge.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.222386434674263D)));
             this.tblJudgeAge.Body.SetCellContent(1, 4, this.textBox9);
             this.tblJudgeAge.Body.SetCellContent(1, 5, this.textBox10);
             this.tblJudgeAge.Body.SetCellContent(0, 0, this.textBox1);

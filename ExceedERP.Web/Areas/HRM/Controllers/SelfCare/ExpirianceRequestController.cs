@@ -1,4 +1,4 @@
-﻿﻿using System;
+﻿using System;
 using System.Collections.Generic;
 using ExceedERP.Core.Domain.Global;
 using System.Data.Entity;
@@ -6,24 +6,24 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
- using ExceedERP.Core.Domain;
- using ExceedERP.Core.Domain.Common;
-﻿using Kendo.Mvc.Extensions;
+using ExceedERP.Core.Domain;
+using ExceedERP.Core.Domain.Common;
+using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using ExceedERP.Core.Domain.HRM;
 using ExceedERP.Core.Domain.HRM.SelfCare;
 using ExceedERP.DataAccess.Context;
-﻿using ExceedERP.Web.Areas.Common.Controllers;
-﻿using ExceedERP.Web.Areas.HRM.Controllers.Profile;
+using ExceedERP.Web.Areas.Common.Controllers;
+using ExceedERP.Web.Areas.HRM.Controllers.Profile;
 using ExceedERP.Web.Controllers;
 using ExceedERP.Web.Models;
 using ExceedERP.Web.Helpers;
 using ExceedERP.Helpers.Common;
- using ExceedERP.Web.Hubs;
+using ExceedERP.Web.Hubs;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
 {
-    [AuthorizeRoles(HrmConstants.HREmployeeSelfService,  HrmConstants.HRDepartmentHead)]
+    [AuthorizeRoles(HrmConstants.HREmployeeSelfService, HrmConstants.HRDepartmentHead)]
     public class ExpirianceRequestController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();
@@ -204,76 +204,60 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
         public ActionResult ExprianceRequests_Create([DataSourceRequest]DataSourceRequest request, ExperienceRequest experienceRequest)
         {
             ModelState.Clear();
+
+            if (!IsForOther)
+            {
+                EmployeeId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
+            }
+            else
+            {
+                EmployeeId = experienceRequest.EmployeeId;
+            }
+
+            if (experienceRequest.ApplicationDateAm != null)
+            {
+                var splitDate = experienceRequest.ApplicationDateAm.Split('/');
+                experienceRequest.ApplicationDate = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
+            }
+            else
+            {
+                ModelState.AddModelError("", "Application date value is mandatory!!");
+            }
+
+            if (experienceRequest.ApplicationDate > DateTime.Now)
+            {
+
+                ModelState.AddModelError("", "Application date should be less or equal to the current date!!");
+            }
+
             if (ModelState.IsValid)
             {
-                if (!IsForOther)
+                var entity = new ExperienceRequest
                 {
-                    EmployeeId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-                }
+                    EmployeeId = EmployeeId,
+                    ApplicationDate = Date,
+                    Remark = experienceRequest.Remark,
+                    ApplicationDateAm = AmharicDate,
+                    EmployeeCode = inputs.GetEmployees().FirstOrDefault(x => x.PersonId == EmployeeId)?.EmployeeCode,
+                    RequestType = experienceRequest.RequestType,
+                    DateCreated = DateTime.Now,
+                    LastModified = experienceRequest.LastModified,
+                    CreatedBy = User.Identity.Name,
+                    ModifiedBy = experienceRequest.ModifiedBy,
+                    OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name),
+                    IsForOther = experienceRequest.IsForOther,
+                };
 
+                db.ExprianceRequests.Add(entity);
+                db.SaveChanges();
+                experienceRequest.ExperienceRequestId = entity.ExperienceRequestId;
 
-                else
-                {
-                    EmployeeId = experienceRequest.EmployeeId;
-                }
-                if (AmharicDate == null)
-                {
-                    ModelState.AddModelError("", "Application date value is mandatory!!");
-                }
-                else if (Date.Date > DateTime.Now.Date)
-                {
+                #region operation log
 
-                    ModelState.AddModelError("", "Application date should be less or equal to the current date!!");
-                }
+                UserHelper.OperationLog(Request.UserHostAddress, "ExpirianceRequest ", "Success", User.Identity.Name, User.Identity.Name + " add new Experiance Request at date " + DateTime.Today.ToShortDateString(), Modules.HRM);
 
-                else
-                {
-                    var entity = new ExperienceRequest
-                    {
-                        EmployeeId = EmployeeId,
-                        ApplicationDate = Date,
-                        Remark = experienceRequest.Remark,
-                        ApplicationDateAm = AmharicDate,
-                        EmployeeCode = inputs.GetEmployees().FirstOrDefault(x => x.PersonId == EmployeeId)?.EmployeeCode,
-                        RequestType = experienceRequest.RequestType,
-                        DateCreated = DateTime.Now,
-                        LastModified = experienceRequest.LastModified,
-                        CreatedBy = User.Identity.Name,
-                        ModifiedBy = experienceRequest.ModifiedBy,
-                        OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name),
-                        IsForOther = experienceRequest.IsForOther,
-                    };
+                #endregion
 
-                    db.ExprianceRequests.Add(entity);
-                    db.SaveChanges();
-                    experienceRequest.ExperienceRequestId = entity.ExperienceRequestId;
-
-                    #region operation log
-
-                    UserHelper.OperationLog(Request.UserHostAddress, "ExpirianceRequest ", "Success", User.Identity.Name, User.Identity.Name + " add new Experiance Request at date " + DateTime.Today.ToShortDateString(), Modules.HRM);
-
-                    #endregion
-
-                    //#region notification
-
-
-
-                    //var empid = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-                    //var superviorId = EmployeeHelper.GetSupervisor(empid);
-
-                    //NotifModels notif = new NotifModels
-                    //{
-
-                    //    UserId = UserInformationHelper.GetEmployeeUserId(superviorId),
-                    //    Title = "Experience Request",
-                    //    Message = $" {UserInformationHelper.GetEmployeeFullName(User.Identity.Name)}  has request Experience",
-                    //    URL = "~/HRM/ExpirianceRequest"
-                    //};
-
-                    //Notify.NotifyUser(notif);
-
-                    //#endregion
-                }
             }
             IsForOther = false;
             return Json(new[] { experienceRequest }.ToDataSourceResult(request, ModelState));
@@ -283,49 +267,51 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
         public ActionResult ExprianceRequests_Update([DataSourceRequest]DataSourceRequest request, ExperienceRequest experienceRequest)
         {
             ModelState.Clear();
+
+            if (experienceRequest.ApplicationDateAm != null)
+            {
+                var splitDate = experienceRequest.ApplicationDateAm.Split('/');
+                experienceRequest.ApplicationDate = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
+            }
+            else
+            {
+                ModelState.AddModelError("", "Application date value is mandatory!!");
+            }
+
+            if (experienceRequest.ApplicationDate > DateTime.Now)
+            {
+
+                ModelState.AddModelError("", "Application date should be less or equal to the current date!!");
+            }
             if (ModelState.IsValid)
             {
-                if (AmharicDate == null)
+                var entity = new ExperienceRequest
                 {
-                    AmharicDate = experienceRequest.ApplicationDateAm;
-                    var splitDate = AmharicDate.Split('/');
-                    Date = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
-                }
-                if (Date.Date > DateTime.Now.Date)
-                {
+                    ExperienceRequestId = experienceRequest.ExperienceRequestId,
+                    EmployeeId = experienceRequest.EmployeeId,
+                    ApplicationDate = Date,
+                    Remark = experienceRequest.Remark,
+                    ApplicationDateAm = AmharicDate,
+                    EmployeeCode = inputs.GetEmployees().Where(x => x.PersonId == experienceRequest.EmployeeId).FirstOrDefault().EmployeeCode,
+                    RequestType = experienceRequest.RequestType,
+                    DateCreated = experienceRequest.DateCreated,
+                    LastModified = DateTime.Now,
+                    CreatedBy = experienceRequest.CreatedBy,
+                    ModifiedBy = User.Identity.Name,
+                    OrgBranchName = experienceRequest.OrgBranchName,
+                    IsForOther = experienceRequest.IsForOther,
+                };
 
-                    ModelState.AddModelError("", "Application date should be less or equal to the current date!!");
-                }
-                else
-                {
-                    var entity = new ExperienceRequest
-                    {
-                        ExperienceRequestId = experienceRequest.ExperienceRequestId,
-                        EmployeeId = experienceRequest.EmployeeId,
-                        ApplicationDate = Date,
-                        Remark = experienceRequest.Remark,
-                        ApplicationDateAm = AmharicDate,
-                        EmployeeCode = inputs.GetEmployees().Where(x => x.PersonId == experienceRequest.EmployeeId).FirstOrDefault().EmployeeCode,
-                        RequestType = experienceRequest.RequestType,
-                        DateCreated = experienceRequest.DateCreated,
-                        LastModified = DateTime.Now,
-                        CreatedBy = experienceRequest.CreatedBy,
-                        ModifiedBy = User.Identity.Name,
-                        OrgBranchName = experienceRequest.OrgBranchName,
-                        IsForOther = experienceRequest.IsForOther,
-                    };
+                db.ExprianceRequests.Attach(entity);
+                db.Entry(entity).State = EntityState.Modified;
+                db.SaveChanges();
 
-                    db.ExprianceRequests.Attach(entity);
-                    db.Entry(entity).State = EntityState.Modified;
-                    db.SaveChanges();
+                #region operation log
 
-                    #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "ExpirianceRequest ", "Success", User.Identity.Name, User.Identity.Name + " update Experiance Request at date " + DateTime.Today.ToShortDateString(), Modules.HRM);
 
-                    UserHelper.OperationLog(Request.UserHostAddress, "ExpirianceRequest ", "Success", User.Identity.Name, User.Identity.Name + " update Experiance Request at date " + DateTime.Today.ToShortDateString(), Modules.HRM);
+                #endregion
 
-                    #endregion
-
-                }
             }
             IsForOther = false;
             return Json(new[] { experienceRequest }.ToDataSourceResult(request, ModelState));

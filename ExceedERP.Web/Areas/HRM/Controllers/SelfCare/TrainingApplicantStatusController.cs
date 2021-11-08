@@ -111,6 +111,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                 LookupId = trainingApplicant.LookupId,
                 Remark = trainingApplicant.Remark,
                 Date = trainingApplicant.Date,
+                DateAmharic = trainingApplicant.DateAmharic,
                 DepartmentSendForApprovalBy = trainingApplicant.DepartmentSendForApprovalBy,
                 DepartmentSendForApprovalTime = trainingApplicant.DepartmentSendForApprovalTime,
                 IsDepartmentSendForApproval = trainingApplicant.IsDepartmentSendForApproval,
@@ -120,7 +121,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                 OnlineApprovedBy = trainingApplicant.OnlineApprovedBy,
                 OnlineApprovedTime = trainingApplicant.OnlineApprovedTime,
                 IsOnlineApproved = trainingApplicant.IsOnlineApproved,
-
+                NoofTrainee = trainingApplicant.NoofTrainee,
+                TrainingRequestType = trainingApplicant.TrainingRequestType,
             });
 
             return Json(result);

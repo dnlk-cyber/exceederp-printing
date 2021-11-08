@@ -1,0 +1,14 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.HRM.RecruitmentManagment.InternalApplicants>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.ApplicationFormId);
+        columns.Bound(c => c.EmployeeId);
+      })
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Read(read => read.Action("InternalApplicants_Read", "InternalApplicants"))
+      )
+)

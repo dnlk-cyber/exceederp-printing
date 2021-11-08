@@ -32,8 +32,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
         // GET: HRM/EmployeePlacmentHistories
         public ActionResult Index()
         {
-
-
             PopulateViewData();
             GetOrganizations();
             return View();
@@ -83,7 +81,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                 Rank = placementHistory.Rank,
                 Step = placementHistory.Step,
                 Salary = placementHistory.Salary,
-
+                LookupId = placementHistory.LookupId,
                 Remark = placementHistory.Remark,
                 DateCreated = placementHistory.DateCreated,
                 LastModified = placementHistory.LastModified,
@@ -105,6 +103,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
         {
             ModelState.Clear();
 
+            placementHistory.EmployeeId = empIdT;
+
             if (placementHistory.FromAmharic != null)
             {
                 var splitDate = placementHistory.FromAmharic.Split('/');
@@ -123,25 +123,61 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
             {
                 ModelState.AddModelError("", "To date is required");
             }
-            if (placementHistory.From.Date > placementHistory.To.Date)
+
+            if (placementHistory.From > placementHistory.To)
             {
                 ModelState.AddModelError("", "Please check the date range, The year of experience should be non negative!!");
             }
-            else if (placementHistory.From.Date > DateTime.Now.Date)
+            else if (placementHistory.From > DateTime.Now)
             {
 
                 ModelState.AddModelError("", "Start date should be less or equal to the current date!!");
             }
-            else if (placementHistory.To.Date > DateTime.Now.Date)
+            else if (placementHistory.To > DateTime.Now)
             {
 
                 ModelState.AddModelError("", "End date should be less or equal to the current date!!");
             }
+
+            var person = db.Person_Employee.FirstOrDefault(x=>x.EmployeeId == placementHistory.EmployeeId);
+            if(person != null)
+            {
+                if(placementHistory.From < person.HiredDate)
+                {
+                    ModelState.AddModelError("","Internal Experience date should be after hire date");
+                }
+            }
+
+            var placements = db.Placements.Where(x => x.EmployeeId == placementHistory.EmployeeId).ToList();
+            if (placements.Any())
+            {
+                DateTime firstAssignment = placements.Select(x => x.AssignmentDate).Min();
+                if (firstAssignment.Year != 1)
+                {
+                    if (placementHistory.From >= firstAssignment || placementHistory.To >= firstAssignment)
+                    {
+                        ModelState.AddModelError("", "you can register only the experience before the system starts");
+                    }
+                }
+            }
+
+            var lookUp = db.Lookups.FirstOrDefault(x => x.LookupId == placementHistory.LookupId && x.LookupType == LookUpTypes.OLD_JOB_TITLE);
+            if (lookUp != null)
+            {
+                placementHistory.JobTitle = lookUp.Description;
+            }
+            var emp = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == placementHistory.EmployeeId);
+            if (emp != null)
+            {
+                placementHistory.EmployeeCode = emp.EmployeeCode;
+            }
+
             if (ModelState.IsValid)
             {
+               
                 var entity = new PlacementHistory
                 {
-                    EmployeeId = empIdT,
+                    EmployeeId = placementHistory.EmployeeId,
                     From = placementHistory.From,
                     To = placementHistory.To,
                     JobTitle = placementHistory.JobTitle,
@@ -149,7 +185,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                     Rank = placementHistory.Rank,
                     Step = placementHistory.Step,
                     Salary = placementHistory.Salary,
-
+                    LookupId = placementHistory.LookupId,
                     Remark = placementHistory.Remark,
                     DateCreated = DateTime.Now,
                     LastModified = placementHistory.LastModified,
@@ -157,7 +193,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                     ModifiedBy = placementHistory.ModifiedBy,
                     FromAmharic = placementHistory.FromAmharic,
                     ToAmharic = placementHistory.ToAmharic,
-                    EmployeeCode = inputs.GetEmployees().Where(x => x.PersonId == empIdT).FirstOrDefault().EmployeeCode,
+                    EmployeeCode = placementHistory.EmployeeCode,
                     OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name),
                     EmployementType = placementHistory.EmployementType
                 };
@@ -194,8 +230,43 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
             {
                 ModelState.AddModelError("", "To date is required");
             }
+
+            var person = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == placementHistory.EmployeeId);
+            if (person != null)
+            {
+                if (placementHistory.From < person.HiredDate)
+                {
+                    ModelState.AddModelError("", "Internal Experience date should be after hire date");
+                }
+            }
+
+            var placements = db.Placements.Where(x => x.EmployeeId == placementHistory.EmployeeId).ToList();
+            if (placements.Any())
+            {
+                DateTime firstAssignment = placements.Select(x => x.AssignmentDate).Min();
+                if (firstAssignment.Year != 1)
+                {
+                    if (placementHistory.From >= firstAssignment || placementHistory.To >= firstAssignment)
+                    {
+                        ModelState.AddModelError("", "you can register only the experience before the system starts");
+                    }
+                }
+            }
+
+            var lookUp = db.Lookups.FirstOrDefault(x => x.LookupId == placementHistory.LookupId && x.LookupType == LookUpTypes.OLD_JOB_TITLE);
+            if (lookUp != null)
+            {
+                placementHistory.JobTitle = lookUp.Description;
+            }
+            var emp = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == placementHistory.EmployeeId);
+            if (emp != null)
+            {
+                placementHistory.EmployeeCode = emp.EmployeeCode;
+            }
+
             if (ModelState.IsValid)
             {
+            
                 var entity = new PlacementHistory
                 {
                     PlacementHistoryId = placementHistory.PlacementHistoryId,
@@ -207,7 +278,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                     Rank = placementHistory.Rank,
                     Step = placementHistory.Step,
                     Salary = placementHistory.Salary,
-
+                    LookupId = placementHistory.LookupId,
                     Remark = placementHistory.Remark,
                     DateCreated = placementHistory.DateCreated,
                     LastModified = DateTime.Now,
@@ -215,7 +286,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                     ModifiedBy = User.Identity.Name,
                     FromAmharic = placementHistory.FromAmharic,
                     ToAmharic = placementHistory.ToAmharic,
-                    EmployeeCode = inputs.GetEmployees().Where(x => x.PersonId == placementHistory.EmployeeId).FirstOrDefault().EmployeeCode,
+                    EmployeeCode = placementHistory.EmployeeCode,
                     OrgBranchName = placementHistory.OrgBranchName,
                     EmployementType = placementHistory.EmployementType
                 };
@@ -245,6 +316,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                     Rank = placementHistory.Rank,
                     Step = placementHistory.Step,
                     Salary = placementHistory.Salary,
+                    LookupId = placementHistory.LookupId,
                     Remark = placementHistory.Remark,
                     DateCreated = placementHistory.DateCreated,
                     LastModified = placementHistory.LastModified,

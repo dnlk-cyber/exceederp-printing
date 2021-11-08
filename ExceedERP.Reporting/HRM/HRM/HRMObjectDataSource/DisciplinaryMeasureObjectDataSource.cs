@@ -16,91 +16,72 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
         private ExceedDbContext db = new ExceedDbContext();
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<EmployeeSummary> GetDisciplinaryMeasureSummary(DateTime from, DateTime to, string branchId, string orgStructureId, string status)
+        public List<EmployeeSummary> GetDisciplinaryMeasureSummary(DateTime from, DateTime to, string branchId, string orgStructureId, string status, string measure, bool nonZero)
         {
             List<EmployeeSummary> list = new List<EmployeeSummary>();
             EmployeeSummary employee = new EmployeeSummary();
-            db = new ExceedDbContext();
+
             var types = db.DisciplineMeasures.ToList();
-            List<Person_Employee> employees;
-            if (branchId != null && orgStructureId != null)
+
+            var placements = db.Placements.ToList();
+            if (branchId != null)
             {
-                employees = EmployeeHelper.GetAllEmployeesByBranchAndWorkUnit(Convert.ToInt32(branchId), Convert.ToInt32(orgStructureId)).ToList();
+                int.TryParse(branchId, out int braId);
+                placements = EmployeeHelper.GetEmployees_ByBranch_FromPlacement(placements, braId);
             }
-            else if (branchId != null && orgStructureId == null)
+            if (orgStructureId != null)
             {
-                employees = EmployeeHelper.GetAllEmployeesByBranch(Convert.ToInt32(branchId)).ToList();
+                int.TryParse(orgStructureId, out int orgId);
+                placements = EmployeeHelper.GetEmployees_ByDepartment_WithCaseTeam_FromPlacement(placements, orgId);
             }
-            else if (branchId == null && orgStructureId != null)
-            {
-                employees = EmployeeHelper.GetAllEmployeesByWorkUnit(Convert.ToInt32(orgStructureId)).ToList();
-            }
-            else
-            {
-                employees = db.Person_Employee.ToList();
-            }
+
             if (status == "Active")
             {
-                employees = employees.Where(x => x.IsActive).ToList();
+                placements = EmployeeHelper.Get_Active_EmployeesFrom_Placement(placements);
             }
             if (status == "InActive")
             {
-                employees = employees.Where(x => !x.IsActive).ToList();
+                placements = EmployeeHelper.Get_InActive_EmployeesFrom_Placement(placements);
             }
-            if (types.Any())
+
+            var males = EmployeeHelper.Get_Male_EmployeesFrom_Placement(placements).Select(x => x.EmployeeId);
+            var females = EmployeeHelper.Get_Female_EmployeesFrom_Placement(placements).Select(x => x.EmployeeId);
+
+            foreach (var type in types)
             {
-                db = new ExceedDbContext();
-                foreach (var type in types)
+                employee = new EmployeeSummary();
+
+                var disipliceMeasures = db.EmpDisciplineMeasure.Where(x => x.MeasuresId == type.MeasuresId && !x.IsExpired).ToList();
+                if (from <= to)
                 {
-                    employee = new EmployeeSummary();
-                    db = new ExceedDbContext();
-                    var disipliceMeasure = db.EmpDisciplineMeasure.ToList();
-                    disipliceMeasure = disipliceMeasure.Where(
-                        x =>
-                            x.DecisionDate.Date >= from.Date && x.DecisionDate.Date <= to.Date &&
-                            x.MeasuresId == type.MeasuresId).ToList();
-                    employee.Criteria = type.MeasuresType;
-                    if (disipliceMeasure.Count() > 0)
+                    disipliceMeasures = disipliceMeasures.Where(x => x.DecisionDate.Date >= from.Date && x.DecisionDate.Date <= to.Date).ToList();
+                }
+
+                employee.Criteria = type.MeasuresType;
+
+                var disciplinCaseIds = disipliceMeasures.Select(x => x.DisciplinaryCaseId).ToList();
+
+                var disciplineCases = db.DisciplinaryCases.Where(x => disciplinCaseIds.Contains(x.DisciplinaryCaseId)).ToList();
+
+                employee.NumberOfMaleEmployee = disciplineCases.Where(x => males.Contains(x.EmployeeId)).Count();
+                employee.NumberOfFemaleEmployee = disciplineCases.Where(x => females.Contains(x.EmployeeId)).Count();
+                employee.TotalEmployee = employee.NumberOfFemaleEmployee + employee.NumberOfMaleEmployee;
+               
+
+                if (nonZero)
+                {
+                    if (employee.TotalEmployee > 0)
                     {
-                        db = new ExceedDbContext();
-                        foreach (var t in disipliceMeasure)
-                        {
-                            db = new ExceedDbContext();
-                            var diciplineCase =
-                                db.DisciplinaryCases.Where(x => x.DisciplinaryCaseId == t.DisciplinaryCaseId).ToList();
-                            if (diciplineCase.Any())
-                            {
-                                foreach (var c in diciplineCase)
-                                {
-
-
-                                    var empList = employees.Where(x => x.EmployeeId == c.EmployeeId).ToList();
-                                    foreach (var e in empList)
-                                    {
-
-                                        if (e.Gender == Gender.FEMALE)
-                                        {
-                                            employee.NumberOfFemaleEmployee += 1;
-
-                                        }
-                                        if (e.Gender == Gender.MALE)
-                                        {
-                                            employee.NumberOfMaleEmployee += 1;
-
-                                        }
-
-
-
-                                    }
-                                }
-                            }
-                            employee.TotalEmployee = employee.NumberOfFemaleEmployee + employee.NumberOfMaleEmployee;
-                        }
+                        list.Add(employee);
                     }
+                }
+                else
+                {
                     list.Add(employee);
                 }
 
             }
+
             return list;
         }
     }

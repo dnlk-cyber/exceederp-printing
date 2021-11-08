@@ -35,44 +35,58 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
         [AuthorizeRoles(HrmConstants.HRPlacementAdmin, HrmConstants.HRPlacementUser, HrmConstants.HRAdmin)]
         public ActionResult EmployeesUnderBoss_Read([DataSourceRequest]DataSourceRequest request, int id)
         {
+            //var employeeid = UserInformationHelper.GetEmployeeId(User.Identity.Name);
+            //List<int> employeeids = EmployeeHelper.GetSubordinates(employeeid);
+            //employeeids.Remove(employeeid);
+         
+            //List<Placement> employeesL = db.Placements.Where(x => employeeids.Contains(x.EmployeeId) && x.isCurrent).ToList();
+
+            #region Commented
+
             List<EmployeesUnderBossVM> employeesList = new List<EmployeesUnderBossVM>();
             var place = db.Placements.FirstOrDefault(x => x.PlacementId == id && x.IsHead && x.isCurrent);
             if (place != null)
             {
-                var employees = db.Placements.Where(x => x.OrgStructureId == place.OrgStructureId && x.BranchId == place.BranchId && x.isCurrent).ToList();
+                List<int> employeeids = EmployeeHelper.GetSubordinates(place.EmployeeId);
+                employeeids.Remove(place.EmployeeId);
 
-                employees.Remove(place);
+                //var employees = db.Placements.Where(x => x.OrgStructureId == place.OrgStructureId && x.BranchId == place.BranchId && x.isCurrent).ToList();
+
+                //employees.Remove(place);
+
+                var employees = db.Person_Employee.Where(x=>employeeids.Contains(x.EmployeeId)).ToList();
 
                 foreach (var emp in employees)
                 {
                     var employee = new EmployeesUnderBossVM();
 
-                  
-                    var person = db.Person_Employee.FirstOrDefault(x=>x.EmployeeId == emp.EmployeeId);
-                    if(person != null)
+                    var person = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == emp.EmployeeId);
+                    if (person != null)
                     {
-                        employee.EmployeeCode = person.EmployeeCode;
-                        employee.FullName = person.FullNameaEnglish;
-                        employee.IsCurrent = emp.isCurrent;
+                        employee.EmployeeCode = emp.EmployeeCode;
+                        employee.FullName = emp.FullNameaEnglish;
+                        //employee.IsCurrent = emp.isCurrent;
+
                         employeesList.Add(employee);
                     }
-                 
+
                 }
             }
+            #endregion
 
-                DataSourceResult result = employeesList.ToDataSourceResult(request, p => new
-                {
-                    EmployeesUnderBossId = p.EmployeesUnderBossId,
-                    EmployeeCode = p.EmployeeCode,
-                    FullName = p.FullName,
-                  IsCurrent = p.IsCurrent
-                });
-            
+            DataSourceResult result = employeesList.ToDataSourceResult(request, p => new
+            {
+                EmployeesUnderBossId = p.EmployeesUnderBossId,
+                EmployeeCode = p.EmployeeCode,
+                FullName = p.FullName,
+                IsCurrent = p.IsCurrent
+            });
+
             return Json(result);
 
 
         }
 
-     
+
     }
 }

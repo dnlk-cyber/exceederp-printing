@@ -1,0 +1,16 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.Common
+@using ExceedERP.Core.Localization
+@(Html.Kendo().DropDownListFor(m => m)
+
+                            .DataTextField("Description")
+                                        .DataValueField("LookupId")
+                                         .OptionLabel(Resources.Select)
+      .ValuePrimitive(true)
+      .DataSource(dataSource =>
+      {
+          dataSource.Read(read => read.Action("GetLookupJobtitleForInternal", "HRMDataProvider", new { area = "HRM" }))
+              .ServerFiltering(false);
+      })
+                       
+)

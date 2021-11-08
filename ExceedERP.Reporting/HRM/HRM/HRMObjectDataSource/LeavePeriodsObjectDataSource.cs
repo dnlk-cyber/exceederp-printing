@@ -19,7 +19,6 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
             var periods = db.GLFiscalYears.ToList();
 
-
             if (!periods.Any())
             {
                 return list;

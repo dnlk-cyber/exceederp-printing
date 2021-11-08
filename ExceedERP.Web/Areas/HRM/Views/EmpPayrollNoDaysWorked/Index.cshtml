@@ -44,10 +44,10 @@
 
                   .DataSource(dataSource =>
                   {
-                                                   dataSource.Read(read => read.Action("GetCurrentYearPeriods", "EmpPayrollNoDaysWorked", new { area = "HRM" }))
-                                                       .ServerFiltering(false);
-                                               })
-
+                          dataSource.Read(read => read.Action("GetCurrentYearPeriods", "EmpPayrollNoDaysWorked", new { area = "HRM" }))
+                          .ServerFiltering(false);
+                  })
+                                              
                   .DataTextField("Name")
                   .DataValueField("GLPeriodId")
                   .AutoBind(false)
@@ -55,7 +55,7 @@
                   .HtmlAttributes(new { style = "width: 300px;" })
 
     )
-    @if (HttpContext.Current.User.IsInRole("GenerateDayAbsent")) { 
+   
 
     @(Html.Kendo().Button()
                  .Name("btnRefresh")
@@ -69,7 +69,7 @@
                   .HtmlAttributes(new { type = "button", @class = "k-primary", width = "200px" })
                   .Events(e => e.Click("summary"))
                   .Content(Resources.HR_Attendance_EmpPayrollNoDaysWorked_Summary))
-    }
+   
 
 
 </div>
@@ -86,21 +86,22 @@
                                   })
                       .Filterable()
                          .Pageable(pageable => pageable
-                                                    .Input(true)
-                                                    .Numeric(false)
-                                                    .Refresh(true)
-                                                    .PageSizes(true)
-                                                    .ButtonCount(5))
+                                .Input(true)
+                                .Numeric(false)
+                                .Refresh(true)
+                                .PageSizes(true)
+                                .ButtonCount(5))
       .DataSource(dataSource => dataSource
           .Ajax()
-                                                  .Events(events =>
-                                                                   {
+          .Sort(x=>x.Add(s=>s.EmpPayrollNoDaysWorkedId).Descending())
+            .Events(events =>
+                 {
 
-                                                                       events.Error("error_handler(\"EmpPayrollNoDaysWorkedgrid\")");
-                                                                       events.RequestStart("onRequestStart(\"EmpPayrollNoDaysWorkedgrid\")");
-                                                                       events.RequestEnd("onRequestEnd(\"EmpPayrollNoDaysWorkedgrid\")");
-                                                                   })
-                       
+                     events.Error("error_handler(\"EmpPayrollNoDaysWorkedgrid\")");
+                     events.RequestStart("onRequestStart(\"EmpPayrollNoDaysWorkedgrid\")");
+                     events.RequestEnd("onRequestEnd(\"EmpPayrollNoDaysWorkedgrid\")");
+                 })
+                           
           .Model(model => model.Id(p => p.EmpPayrollNoDaysWorkedId))
           .Read(read => read.Action("EmpPayrollNoDaysWorkeds_Read", "EmpPayrollNoDaysWorked"))
           .Create(create => create.Action("EmpPayrollNoDaysWorkeds_Create", "EmpPayrollNoDaysWorked"))
@@ -172,7 +173,7 @@
         } else {
 
             $.ajax({
-                url: '@Url.Action("Refresh", "EmpPayrollNoDaysWorked")',
+                url: '@Url.Action("RefreshNew", "EmpPayrollNoDaysWorked")',
                 //contentType: "application/json; charset=utf-8",
                 data: { period: period},
                 type: 'POST',
@@ -182,7 +183,7 @@
                     r = result;
 
                     $("#EmpPayrollNoDaysWorkedgrid").data("kendoGrid").dataSource.read();
-                    $("#EmpPayrollNoDaysWorkedgrid").data("kendoGrid").refresh();
+                   // $("#EmpPayrollNoDaysWorkedgrid").data("kendoGrid").refresh();
                 }
 
 

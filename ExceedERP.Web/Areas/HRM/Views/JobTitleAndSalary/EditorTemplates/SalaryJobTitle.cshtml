@@ -1,0 +1,121 @@
+﻿@using System.Collections
+@using ExceedERP.Web.Areas.HRM.Controllers
+@using ExceedERP.Web.Areas.HRM.Controllers.Company
+@using Kendo.Mvc.UI
+@using ExceedERP.Core.Localization
+@model ExceedERP.Core.Domain.HRM.SalaryStructure.SalaryJobTitle
+<br />
+<form>
+
+    <div class="row">
+        <div class="col-md-1">
+
+        </div>
+
+        <div class="col-md-3">
+
+            <div class="form-group">
+                <div>@Html.LabelFor(model => model.LookupId, htmlAttributes: new { @class = "control-label col-md-8" })</div>
+
+                @(Html.Kendo().DropDownListFor(m => m.LookupId)
+                         .OptionLabel(Resources.Select)
+                              .DataTextField("Description")
+                                    .DataValueField("LookupId")
+                      .DataSource(dataSource =>
+                      {
+                          dataSource.Read(read => read.Action("GetAllowance", "HRMDataProvider", new { area = "HRM" }))
+                              .ServerFiltering(false);
+                      })
+                                                 .Filter("contains")
+                                    .MinLength(2)
+                                                 //.CascadeFrom("OrganizationId")
+                          .ValuePrimitive(true)
+                        // .Enable(false)
+                )
+                @Html.ValidationMessageFor(model => model.LookupId, "", new { @class = "text-danger" })
+            </div>
+
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div>@Html.LabelFor(model => model.RankId, htmlAttributes: new { @class = "control-label col-md-8" })</div>
+
+                @(Html.Kendo().DropDownListFor(model => model.RankId)
+                  .OptionLabel(Resources.Select)
+                          .DataTextField("RankName")
+                                  .DataValueField("RankId")
+                          .BindTo((IEnumerable)ViewData["RankList"])
+                  .ValuePrimitive(true)
+
+                )
+                @Html.ValidationMessageFor(model => model.RankId, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
+
+        <div class="col-md-3">
+            <div class="form-group">
+                <div>@Html.LabelFor(model => model.StepId, htmlAttributes: new { @class = "control-label col-md-8" })</div>
+
+                @(Html.Kendo().DropDownListFor(model => model.StepId)
+                  .OptionLabel(Resources.Select)
+                                  .DataTextField("StepName")
+                                  .DataValueField("StepId")
+                                  .BindTo((IEnumerable)ViewData["StepList"])
+                  .ValuePrimitive(true)
+
+                )
+                @Html.ValidationMessageFor(model => model.StepId, "", new { @class = "text-danger" })
+            </div>
+        </div>
+    
+ 
+       
+    </div>
+
+    <br />
+
+
+
+    <div class="row">
+        <div class="col-md-1">
+
+        </div>
+
+        <div class="col-md-3">
+
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.Salary, htmlAttributes: new { @class = "control-label col-md-8" })
+                </div>
+                <div>
+
+                    @Html.Kendo().TextBoxFor(model => model.Salary)
+                    @Html.ValidationMessageFor(model => model.Salary, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+        </div>
+        <div class="col-md-3">
+            <div class="form-group">
+                <div class="k-label">
+                    @Html.LabelFor(model => model.Remark, htmlAttributes: new { @class = "control-label col-md-8" })
+
+                </div>
+                <div>
+
+                    @Html.TextAreaFor( model => model.Remark)
+                    @Html.ValidationMessageFor(model => model.Remark, "", new { @class = "text-danger" })
+                </div>
+            </div>
+        </div>
+    </div>
+</form>
+
+<style>
+    div.k-edit-form-container {
+        width: 700px;
+    }
+</style>
+
+

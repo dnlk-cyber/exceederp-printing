@@ -1,0 +1,31 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.HRM.RecruitmentManagment.InternalApplicantExperience>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.ApplicationFormId);
+        columns.Bound(c => c.InternalApplicantsId);
+        columns.Bound(c => c.OrganizationType);
+        columns.Bound(c => c.JobTitleId);
+        columns.Bound(c => c.Jobtitle);
+        columns.Bound(c => c.Year);
+        columns.Bound(c => c.OrganizationName);
+        columns.Bound(c => c.From);
+        columns.Bound(c => c.To);
+        columns.Bound(c => c.Remark);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.InternalApplicantExperienceId))
+          .Read(read => read.Action("InternalApplicantExperiences_Read", "InternalApplicantExperiences"))
+          .Create(create => create.Action("InternalApplicantExperiences_Create", "InternalApplicantExperiences"))
+          .Update(update => update.Action("InternalApplicantExperiences_Update", "InternalApplicantExperiences"))
+          .Destroy(destroy => destroy.Action("InternalApplicantExperiences_Destroy", "InternalApplicantExperiences"))
+      )
+)

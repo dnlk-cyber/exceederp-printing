@@ -7,6 +7,7 @@ using ExceedERP.Core.Domain.Common.HRM;
 using ExceedERP.Core.Domain.Finance.GL;
 using ExceedERP.Core.Domain.HRM.RecruitmentManagment;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Helpers.HR;
 using ExceedERP.Reporting.HRM.HRM.HRMViewModel;
 using Telerik.Reporting.Charting;
@@ -74,7 +75,9 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             }
             if (orgId != null)
             {
-                list = list.Where(x => x.p.OrgStructureId.ToString() == orgId).ToList();
+                int.TryParse(orgId, out int orgStructureId);
+                var orgIds = db.MainCompanyStructures.Where(x=>x.Parent == orgStructureId || x.OrgStructureId == orgStructureId).Select(x=>x.OrgStructureId).ToList();
+                list = list.Where(x => orgIds.Contains(x.p.OrgStructureId)).ToList();
             }
             if (empId != null)
             {
@@ -335,7 +338,12 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                     if (activePlacment != null)
                     {
                         promotedEmployee.CurrentSalary = activePlacment.Salary;
-                        promotedEmployee.Branch = activePlacment.Branch.AmharicName;
+                       
+                        var branch = db.Branch.FirstOrDefault(x=>x.BranchId == activePlacment.BranchId);
+                        if(branch != null)
+                        {
+                            promotedEmployee.Branch = branch.AmharicName;
+                        }
                     }
 
 

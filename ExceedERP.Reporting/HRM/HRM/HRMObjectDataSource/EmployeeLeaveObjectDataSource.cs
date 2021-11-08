@@ -20,23 +20,22 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
         {
             List<EmployeeLeave> EmployeeInfoList = new List<EmployeeLeave>();
             EmployeeLeave EmployeeInfo = new EmployeeLeave();
-            List<Person_Employee> employees;
-            if (branchId != null && dept != null)
+            List<Person_Employee> employees = db.Person_Employee.ToList(); ;
+
+            if (branchId != null)
             {
-                employees = EmployeeHelper.GetAllEmployeesByBranchAndWorkUnit(Convert.ToInt32(branchId), Convert.ToInt32(dept)).ToList();
+                int.TryParse(branchId, out int braId);
+                var placementEmpIds = db.Placements.Where(x => x.BranchId == braId).Select(x => x.EmployeeId).ToList();
+                employees = employees.Where(x => placementEmpIds.Contains(x.EmployeeId)).ToList();
             }
-            else if (branchId != null && dept == null)
+            if (dept != null)
             {
-                employees = EmployeeHelper.GetAllEmployeesByBranch(Convert.ToInt32(branchId)).ToList();
+                int.TryParse(dept, out int orgId);
+                var placements = db.Placements.ToList();
+                var placementEmpIds = EmployeeHelper.GetEmployees_ByDepartment_WithCaseTeam_FromPlacement(placements,orgId).Select(x => x.EmployeeId).ToList();
+                employees = employees.Where(x => placementEmpIds.Contains(x.EmployeeId)).ToList();
             }
-            else if (branchId == null && dept != null)
-            {
-                employees = EmployeeHelper.GetAllEmployeesByWorkUnit(Convert.ToInt32(dept)).ToList();
-            }
-            else
-            {
-                employees = db.Person_Employee.ToList();
-            }
+
             if (status == "Active")
             {
                 employees = employees.Where(x => x.IsActive).ToList();
@@ -46,232 +45,110 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                 employees = employees.Where(x => !x.IsActive).ToList();
             }
 
-            DateTime dateTow = new DateTime(to.Year, to.Month, to.Day);
-            DateTime dateOne = new DateTime(from.Year, from.Month, from.Day);
+            DateTime dateFrom = new DateTime(from.Year, from.Month, from.Day);
+            DateTime dateTo = new DateTime(to.Year, to.Month, to.Day);
+
+            var leaves = db.Leaves.ToList();
             if (type != null)
             {
-                db = new ExceedDbContext();
-                var leaves = db.Leaves.Where(x => x.LeaveType.ToString() == type).ToList();
-                if (leaves.Any())
-                {
-                    foreach (var l in leaves)
-                    {
-                        DateTime leaveFrom = new DateTime(l.From.Year, l.From.Month, l.From.Day);
-                        DateTime leaveTow = new DateTime(l.To.Year, l.To.Month, l.To.Day);
-                        //if ((leaveFrom >= dateOne && leaveFrom <= dateTow) || (leaveTow >= dateOne && leaveTow <= dateTow))
-                        //{
-                        //if ((leaveFrom >= dateOne && leaveFrom <= dateTow) && (leaveTow >= dateOne && leaveTow <= dateTow) && (dateOne <= dateTow))
-                        //{
-                        if ((leaveFrom >= dateOne && leaveFrom <= dateTow))
-                        {
-                            db = new ExceedDbContext();
-
-
-                            var placement =
-                                db.Placements.FirstOrDefault(
-                                        x => x.EmployeeId == l.EmployeeId);
-
-                            if (placement != null)
-                            {
-
-
-                                //foreach (var e in placement)
-                                //{
-                                var emplist =
-                                    employees.Where(x => x.EmployeeId == placement.EmployeeId)
-                                        .FirstOrDefault();
-                                if (emplist != null)
-                                {
-
-                                    if (status == null && emplist.IsActive)
-                                    {
-                                        placement = db.Placements.FirstOrDefault(x => x.EmployeeId == l.EmployeeId && x.isCurrent);
-                                    }
-                                    if (status == null && !emplist.IsActive)
-                                    {
-                                        var placements = db.Placements.Where(x => x.EmployeeId == l.EmployeeId).OrderByDescending(x => x.PlacementId).ToList();
-                                        if (placements.Any())
-                                        {
-                                            placement = placements.FirstOrDefault();
-                                        }
-
-                                    }
-                                    if (status == "Active")
-                                    {
-                                        placement = db.Placements.FirstOrDefault(x => x.EmployeeId == l.EmployeeId && x.isCurrent);
-                                    }
-                                    if (status == "InActive")
-                                    {
-                                        var placements = db.Placements.Where(x => x.EmployeeId == l.EmployeeId && x.isCurrent).ToList().OrderByDescending(P => P.PlacementId);
-                                        if(placements.Any())
-                                        {
-                                            placement = placements.FirstOrDefault();
-                                        }
-                                    }
-
-
-                                    EmployeeInfo = new EmployeeLeave();
-                                    //  EmployeeInfo.Sex = emplist.Gender;
-                                    if (emplist.Gender == Gender.MALE)
-                                    {
-                                        EmployeeInfo.Sex = "ወንድ";
-                                    }
-                                    else
-                                    {
-                                        EmployeeInfo.Sex = "ሴት";
-                                    }
-                                    EmployeeInfo.FullName = emplist.FirstName + " " + emplist.MiddleName + " " +
-                                                            emplist.LastName;
-                                    EmployeeInfo.From = XAPI.EthiopicDateTime.GetEthiopicDate(l.From.Day, l.From.Month, l.From.Year);//l.From.ToShortDateString();
-                                    EmployeeInfo.To = XAPI.EthiopicDateTime.GetEthiopicDate(l.To.Day, l.To.Month, l.To.Year);//l.To.ToShortDateString();
-                                    EmployeeInfo.EmployeeId = emplist.EmployeeCode;
-                                    EmployeeInfo.LeaveType = l.LeaveType;
-                                    var fullhalf = l.Day;
-                                    if (fullhalf == LeaveDay.ሙሉ_ቀን)
-                                    {
-                                        EmployeeInfo.FullOrHalf = "ሙሉ ቀን ";
-                                    }
-                                    else if (fullhalf == LeaveDay.ግማሽ_ቀን)
-                                    {
-                                        if (l.MorningOrAfternoon == MorningOrAfternoon.ከሰዓት)
-                                        {
-                                            EmployeeInfo.FullOrHalf = "ከሰአት ";
-                                        }
-                                        else if (l.MorningOrAfternoon == MorningOrAfternoon.ጥዋት)
-                                        {
-                                            EmployeeInfo.FullOrHalf = "ጠዋት";
-                                        }
-                                    }
-                                    EmployeeInfo.AmountTaken = l.Amount;
-                                    var entitle = db.LeavesEntitle.Where(x=>x.EmployeeId == l.EmployeeId && !x.IsExpired).ToList();
-                                    if(entitle.Any())
-                                    {
-                                        EmployeeInfo.Balance = entitle.Sum(x=>x.Balance);
-                                    }
-                                    var deptt =
-                                        db.MainCompanyStructures.Where(x => x.OrgStructureId == placement.OrgStructureId)
-                                            .FirstOrDefault();
-                                    EmployeeInfo.Departement = deptt.Name;
-                                    EmployeeInfoList.Add(EmployeeInfo);
-                                }
-                                //}
-
-
-                            }
-                        }
-                    }
-                }
+                leaves = leaves.Where(x => x.LeaveType.ToString() == type).ToList();
             }
-            else
+
+            db = new ExceedDbContext();
+
+            if (leaves.Any())
             {
-                db = new ExceedDbContext();
-                var leaves = db.Leaves.ToList();
-                if (leaves.Any())
+                foreach (var l in leaves)
                 {
-                    foreach (var l in leaves)
+
+                    if ((l.From >= dateFrom && l.From <= dateTo))
                     {
-                        DateTime leaveFrom = new DateTime(l.From.Year, l.From.Month, l.From.Day);
-                        DateTime leaveTow = new DateTime(l.To.Year, l.To.Month, l.To.Day);
-                        //if ((leaveFrom >= dateOne && leaveFrom <= dateTow) || (leaveTow >= dateOne && leaveTow <= dateTow))
-                        //{
-                        //if ((leaveFrom >= dateOne && leaveFrom <= dateTow) && (leaveTow >= dateOne && leaveTow <= dateTow) && (dateOne <= dateTow))
-                        //{
-                        if ((leaveFrom >= dateOne && leaveFrom <= dateTow))
+                        db = new ExceedDbContext();
+
+                        var emplist = employees.FirstOrDefault(x => x.EmployeeId == l.EmployeeId);
+
+                        if (emplist != null)
                         {
-                            db = new ExceedDbContext();
-
-
-                            var placement =
-                               db.Placements.FirstOrDefault(
-                                       x => x.EmployeeId == l.EmployeeId);
-
-                            if (placement != null)
+                            EmployeeInfo = new EmployeeLeave();
+                            //  EmployeeInfo.Sex = emplist.Gender;
+                            if (emplist.Gender == Gender.MALE)
                             {
-                                //foreach (var e in placement)
-                                //{
-                                var emplist =
-                                    employees.FirstOrDefault(x => x.EmployeeId == placement.EmployeeId);
-                                if (emplist != null)
-                                {
-
-                                    if (status == null && emplist.IsActive)
-                                    {
-                                        placement = db.Placements.FirstOrDefault(x => x.EmployeeId == l.EmployeeId && x.isCurrent);
-                                    }
-                                    if (status == null && !emplist.IsActive)
-                                    {
-                                        var placements = db.Placements.Where(x => x.EmployeeId == l.EmployeeId).OrderByDescending(x => x.PlacementId).ToList();
-                                        if (placements.Any())
-                                        {
-                                            placement = placements.FirstOrDefault();
-                                        }
-
-                                    }
-                                    if (status == "Active")
-                                    {
-                                        placement = db.Placements.FirstOrDefault(x => x.EmployeeId == l.EmployeeId && x.isCurrent);
-                                    }
-                                    if (status == "InActive")
-                                    {
-                                        var placements = db.Placements.Where(x => x.EmployeeId == l.EmployeeId && x.isCurrent).ToList().OrderByDescending(P => P.PlacementId);
-                                        if (placements.Any())
-                                        {
-                                            placement = placements.FirstOrDefault();
-                                        }
-                                    }
-
-                                    EmployeeInfo = new EmployeeLeave();
-                                    // EmployeeInfo.Sex = emplist.Gender;
-                                    if (emplist.Gender == Gender.MALE)
-                                    {
-                                        EmployeeInfo.Sex = "ወንድ";
-                                    }
-                                    else
-                                    {
-                                        EmployeeInfo.Sex = "ሴት";
-                                    }
-                                    EmployeeInfo.FullName = emplist.FirstName + " " + emplist.MiddleName + " " +
-                                                            emplist.LastName;
-                                    EmployeeInfo.From = XAPI.EthiopicDateTime.GetEthiopicDate(l.From.Day, l.From.Month, l.From.Year);//l.From.ToShortDateString();
-                                    EmployeeInfo.To = XAPI.EthiopicDateTime.GetEthiopicDate(l.To.Day, l.To.Month, l.To.Year);//l.To.ToShortDateString();
-                                    EmployeeInfo.EmployeeId = emplist.EmployeeCode;
-                                    EmployeeInfo.LeaveType = l.LeaveType;
-                                    var fullhalf = l.Day;
-                                    if (fullhalf == LeaveDay.ሙሉ_ቀን)
-                                    {
-                                        EmployeeInfo.FullOrHalf = "ሙሉ ቀን ";
-                                    }
-                                    else if (fullhalf == LeaveDay.ግማሽ_ቀን)
-                                    {
-                                        if (l.MorningOrAfternoon == MorningOrAfternoon.ከሰዓት)
-                                        {
-                                            EmployeeInfo.FullOrHalf = "ከሰአት ";
-                                        }
-                                        else if (l.MorningOrAfternoon == MorningOrAfternoon.ጥዋት)
-                                        {
-                                            EmployeeInfo.FullOrHalf = "ጠዋት";
-                                        }
-                                    }
-                                    EmployeeInfo.AmountTaken = l.Amount;
-                                    var entitle = db.LeavesEntitle.Where(x => x.EmployeeId == l.EmployeeId && !x.IsExpired).ToList();
-                                    if (entitle.Any())
-                                    {
-                                        EmployeeInfo.Balance = entitle.Sum(x => x.Balance);
-                                    }
-                                    var deptt =
-                                        db.MainCompanyStructures.FirstOrDefault(x => x.OrgStructureId == placement.OrgStructureId);
-                                    if (deptt != null) EmployeeInfo.Departement = deptt.Name;
-                                    EmployeeInfoList.Add(EmployeeInfo);
-                                }
-                                //}
-
-
+                                EmployeeInfo.Sex = "ወንድ";
                             }
+                            else
+                            {
+                                EmployeeInfo.Sex = "ሴት";
+                            }
+                            EmployeeInfo.FullName = emplist.FullNameAmharic;
+                            EmployeeInfo.From = XAPI.EthiopicDateTime.GetEthiopicDate(l.From.Day, l.From.Month, l.From.Year);//l.From.ToShortDateString();
+                            EmployeeInfo.To = XAPI.EthiopicDateTime.GetEthiopicDate(l.To.Day, l.To.Month, l.To.Year);//l.To.ToShortDateString();
+                            EmployeeInfo.EmployeeId = emplist.EmployeeCode;
+                            EmployeeInfo.LeaveType = l.LeaveType;
+
+                            var fullhalf = l.Day;
+                            if (fullhalf == LeaveDay.ሙሉ_ቀን)
+                            {
+                                EmployeeInfo.FullOrHalf = "ሙሉ ቀን ";
+                            }
+                            else if (fullhalf == LeaveDay.ግማሽ_ቀን)
+                            {
+                                if (l.MorningOrAfternoon == MorningOrAfternoon.ከሰዓት)
+                                {
+                                    EmployeeInfo.FullOrHalf = "ከሰአት ";
+                                }
+                                else if (l.MorningOrAfternoon == MorningOrAfternoon.ጥዋት)
+                                {
+                                    EmployeeInfo.FullOrHalf = "ጠዋት";
+                                }
+                            }
+
+                            EmployeeInfo.AmountTaken = l.Amount;
+
+                            var entitle = db.LeavesEntitle.Where(x => x.EmployeeId == l.EmployeeId && !x.IsExpired).ToList();
+                            if (entitle.Any())
+                            {
+                                EmployeeInfo.Balance = entitle.Sum(x => x.Balance);
+                            }
+
+                            bool IsCurrent = false;
+                            int orgId = 0;
+
+                            var placements = db.Placements.Where(x => x.EmployeeId == l.EmployeeId).ToList();
+
+                            foreach (var place in placements)
+                            {
+                                if (place.isCurrent)
+                                {
+                                    IsCurrent = true;
+                                    orgId = place.OrgStructureId;
+                                    break;
+                                }
+                            }
+
+                            if (!IsCurrent)
+                            {
+                                var place = placements.OrderByDescending(x => x.AssignmentDate).FirstOrDefault();
+                                if (place != null)
+                                {
+                                    orgId = place.OrgStructureId;
+                                }
+                            }
+
+                            var mainCompanyStructure = db.MainCompanyStructures.FirstOrDefault(x => x.OrgStructureId == orgId);
+
+                            if (mainCompanyStructure != null)
+                            {
+                                EmployeeInfo.Departement = mainCompanyStructure.Name;
+                            }
+
+                            EmployeeInfoList.Add(EmployeeInfo);
+
                         }
                     }
                 }
             }
             return EmployeeInfoList;
         }
+
     }
 }

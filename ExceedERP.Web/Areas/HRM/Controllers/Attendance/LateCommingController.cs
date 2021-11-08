@@ -48,9 +48,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Attendance
                 Date = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
             }
 
-        }
-
-     
+        }     
         public ActionResult LateCommings_Read([DataSourceRequest]DataSourceRequest request)
         {
             List<string> employees = inputs.GetUserBranchEmployees(User.Identity.Name);

@@ -1,0 +1,28 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.HRM.LeaveManagment.LeaveNewAwajStartYear>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.GlFisicalYearId);
+          columns.Command(command =>
+          {
+              command.Edit();
+              command.Destroy();
+          }).Width(180);
+      })
+      .ToolBar(toolbar => {
+          toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Pageable()
+      .Filterable()
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.LeaveNewAwajStartYearId))
+          .Read(read => read.Action("LeaveNewAwajStartYears_Read", "LeaveNewAwajStartYears"))
+          .Create(create => create.Action("LeaveNewAwajStartYears_Create", "LeaveNewAwajStartYears"))
+          .Update(update => update.Action("LeaveNewAwajStartYears_Update", "LeaveNewAwajStartYears"))
+          .Destroy(destroy => destroy.Action("LeaveNewAwajStartYears_Destroy", "LeaveNewAwajStartYears"))
+      )
+)

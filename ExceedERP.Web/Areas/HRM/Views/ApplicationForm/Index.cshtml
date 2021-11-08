@@ -11,13 +11,17 @@
                       .Name("ApplicantionForm")
       .Columns(columns =>
       {
-          columns.Bound(c => c.EmployeeCode).Width(150);
-          columns.ForeignKey(c => c.EmployeeId, (IEnumerable) ViewData["EmployeeName"], "EmployeeId", "FullNameAmharic").EditorTemplateName("ListOfEmployee").Width(200);
-          columns.ForeignKey(c => c.VacancyId, (IEnumerable)ViewData["recruitmentVacancy"], "VacancyId", "MediaVacancyCode").EditorTemplateName("Vacancy").Width(150);
-          columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["workunits"], "OrgStructureId", "Name").Width(200);
-          columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["JobTitle"], "LookupId", "Description").Width(200);
+          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeName"], "EmployeeId", "EmployeeCode").Filterable(ftb => ftb.Multi(true).Search(true)).EditorTemplateName("ListOfEmployee").Width(200);
+          columns.ForeignKey(c => c.EmployeeId, (IEnumerable) ViewData["EmployeeName"], "EmployeeId", "FullNameAmharic").Filterable(ftb => ftb.Multi(true).Search(true)).EditorTemplateName("ListOfEmployee").Width(200);
+          columns.ForeignKey(c => c.VacancyId, (IEnumerable)ViewData["recruitmentVacancy"], "VacancyId", "MediaVacancyCode").Filterable(ftb => ftb.Multi(true).Search(true)).EditorTemplateName("Vacancy").Width(150);
+          columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["workunits"], "OrgStructureId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(200);
+          columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["JobTitle"], "LookupId", "Description").Filterable(ftb => ftb.Multi(true).Search(true)).Width(200);
           columns.Bound(c => c.Remark).Width (80);
-          columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit); command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+          columns.Command(command =>
+          {
+              command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+              command.Destroy().Text(Resources.ActionButton_Cancel);
+          }).Width(200);
       })
       .ToolBar(toolbar =>
       {
@@ -36,14 +40,14 @@
                                   })
                       .Filterable()
                          .Pageable(pageable => pageable
-                                                    .Input(true)
-                                                    .Numeric(false)
-                                                    .Refresh(true)
-                                                    .PageSizes(true)
-                                                    .ButtonCount(5))
+                             .Input(true)
+                             .Numeric(false)
+                             .Refresh(true)
+                             .PageSizes(true)
+                             .ButtonCount(5))
           .DataSource(dataSource => dataSource
           .Ajax()
-          .Sort(sort => sort.Add("DateCreated").Descending())
+          .Sort(sort => sort.Add("ApplicantionFormId").Descending())
                   .Events(events =>
                   {
                       events.Error("error_handler(\"ApplicantionForm\")");
@@ -144,12 +148,20 @@
 <script>
     function filterCategories() {
         return {
-            OrgStructureId: $("#OrgStructureId").val()
+            OrgStructureId: $("#OrgStructureId").val(),
+            MediaVacancyCode: $("#MediaVacancyCode").val()
         };
     }
+
+    function filterJobtitle() {
+        return {
+            VacancyId: $("#VacancyId").val()
+        };
+    }
+
     function filterworkunit() {
         return {
-            mediacode: $("#MediaVacancyCode").val()
+            VacancyId: $("#VacancyId").val()
         };
     }
 </script>

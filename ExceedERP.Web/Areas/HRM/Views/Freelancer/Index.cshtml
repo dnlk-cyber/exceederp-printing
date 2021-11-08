@@ -1,0 +1,27 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.HRM.EmployeeDetail.Freelancer>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.EmployeeId);
+        columns.Bound(c => c.From);
+        columns.Bound(c => c.To);
+        columns.Bound(c => c.FromAm);
+        columns.Bound(c => c.ToAm);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Filterable()
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.FreelancerId))
+          .Read(read => read.Action("Freelancers_Read", "Freelancer"))
+          .Create(create => create.Action("Freelancers_Create", "Freelancer"))
+          .Update(update => update.Action("Freelancers_Update", "Freelancer"))
+          .Destroy(destroy => destroy.Action("Freelancers_Destroy", "Freelancer"))
+      )
+)

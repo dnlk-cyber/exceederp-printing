@@ -1,0 +1,76 @@
+﻿@model IEnumerable<ExceedERP.Core.Domain.HRM.Templates.Template>
+
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+<legend>Templates</legend>
+
+<div class="col-md-12">
+    <div class="col-md-1">
+    </div>
+    <div class="col-md-10">
+        @Html.ActionLink(" Add New Template", "Create", null, new { @class = "fa fa-plus" })
+
+    </div>
+    <div class="col-md-1">
+    </div>
+</div>
+<br /> <br /> 
+
+
+@foreach (var item in Model)
+{
+
+
+    <div class="col-md-12">
+
+        <div class="col-md-1"></div>
+
+        <div class="cards-container col-md-10">
+            <div class="card-block">
+
+                <div class="k-vbox k-column">
+                    <div class="k-card-header">
+                        <h5 class="k-card-title" style="font-size:20px;font-weight:bold;"> @Html.DisplayFor(modelItem => item.TemplateType)</h5>
+                    </div>
+                    <div class="k-card-body">
+                        <p style="font-size:16px;"> @Html.DisplayFor(modelItem => item.Document)</p>
+                    </div>
+                    <div class="k-card-actions k-card-actions-stretched k-card-actions-horizontal">
+
+                        <span class="k-card-action">
+                            <span class="k-button k-flat">  @Html.ActionLink(" Edit", "Edit", new { id = item.TemplateId }, new { @class = "fa fa-edit" }) </span>
+                            @*@Html.ActionLink("Edit ", "Edit", "Templates", new { id = item.TemplateId }, new { @class = "btn btn-success fa fa-edit" })*@
+                        </span>
+                        <span class="k-card-action">
+                            <span class="k-button k-flat k-primary"> @Html.ActionLink(" Delete", "Delete", new { id = item.TemplateId }, new { @class = "fa fa-trash", style = "color:red;" })</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <div class="col-md-1"></div>
+
+    </div>
+
+
+
+}
+
+
+
+<style>
+    .cards-container {
+        display: flex;
+        flex-wrap: wrap;
+        justify-content: space-between;
+    }
+
+    .k-card {
+        margin: 5%;
+        width: 300px;
+    }
+</style>

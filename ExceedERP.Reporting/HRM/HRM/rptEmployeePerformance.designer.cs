@@ -21,6 +21,7 @@ namespace ExceedERP.Reporting.HRM.HRM
             Telerik.Reporting.TableGroup tableGroup13 = new Telerik.Reporting.TableGroup();
             Telerik.Reporting.TableGroup tableGroup14 = new Telerik.Reporting.TableGroup();
             Telerik.Reporting.TableGroup tableGroup15 = new Telerik.Reporting.TableGroup();
+            Telerik.Reporting.TableGroup tableGroup16 = new Telerik.Reporting.TableGroup();
             Telerik.Reporting.TableGroup tableGroup1 = new Telerik.Reporting.TableGroup();
             Telerik.Reporting.TableGroup tableGroup2 = new Telerik.Reporting.TableGroup();
             Telerik.Reporting.TableGroup tableGroup3 = new Telerik.Reporting.TableGroup();
@@ -39,6 +40,10 @@ namespace ExceedERP.Reporting.HRM.HRM
             this.textBox10 = new Telerik.Reporting.TextBox();
             this.textBox6 = new Telerik.Reporting.TextBox();
             this.textBox19 = new Telerik.Reporting.TextBox();
+            this.BranchObjectDataSource = new Telerik.Reporting.ObjectDataSource();
+            this.WorkUnitObjectDataSource = new Telerik.Reporting.ObjectDataSource();
+            this.YearODS = new Telerik.Reporting.ObjectDataSource();
+            this.EvaluationStatusODS = new Telerik.Reporting.ObjectDataSource();
             this.pageHeaderSection1 = new Telerik.Reporting.PageHeaderSection();
             this.panel1 = new Telerik.Reporting.Panel();
             this.panel2 = new Telerik.Reporting.Panel();
@@ -61,6 +66,7 @@ namespace ExceedERP.Reporting.HRM.HRM
             this.textBox2 = new Telerik.Reporting.TextBox();
             this.textBox8 = new Telerik.Reporting.TextBox();
             this.textBox17 = new Telerik.Reporting.TextBox();
+            this.EmployeePerformanceObjectDataSource = new Telerik.Reporting.ObjectDataSource();
             this.pageFooterSection1 = new Telerik.Reporting.PageFooterSection();
             this.textBox16 = new Telerik.Reporting.TextBox();
             this.reportHeaderSection1 = new Telerik.Reporting.ReportHeaderSection();
@@ -68,12 +74,10 @@ namespace ExceedERP.Reporting.HRM.HRM
             this.textBox3 = new Telerik.Reporting.TextBox();
             this.textBox28 = new Telerik.Reporting.TextBox();
             this.textBox29 = new Telerik.Reporting.TextBox();
-            this.EmployeePerformanceObjectDataSource = new Telerik.Reporting.ObjectDataSource();
-            this.BranchObjectDataSource = new Telerik.Reporting.ObjectDataSource();
-            this.WorkUnitObjectDataSource = new Telerik.Reporting.ObjectDataSource();
-            this.YearODS = new Telerik.Reporting.ObjectDataSource();
             this.Organization = new Telerik.Reporting.ObjectDataSource();
-            this.EvaluationStatusODS = new Telerik.Reporting.ObjectDataSource();
+            this.textBox4 = new Telerik.Reporting.TextBox();
+            this.textBox5 = new Telerik.Reporting.TextBox();
+            this.textBox9 = new Telerik.Reporting.TextBox();
             ((System.ComponentModel.ISupportInitialize)(this)).BeginInit();
             // 
             // textBox11
@@ -156,6 +160,30 @@ namespace ExceedERP.Reporting.HRM.HRM
             this.textBox19.Style.Font.Bold = true;
             this.textBox19.StyleName = "Civic.TableHeader";
             this.textBox19.Value = "ፊርማ";
+            // 
+            // BranchObjectDataSource
+            // 
+            this.BranchObjectDataSource.DataMember = "GetBranch";
+            this.BranchObjectDataSource.DataSource = typeof(ExceedERP.Reporting.SharedDataSources.BranchObjectDataSource);
+            this.BranchObjectDataSource.Name = "BranchObjectDataSource";
+            // 
+            // WorkUnitObjectDataSource
+            // 
+            this.WorkUnitObjectDataSource.DataMember = "GetDepartment";
+            this.WorkUnitObjectDataSource.DataSource = typeof(ExceedERP.Reporting.SharedDataSources.DepartmentObjectDataSource);
+            this.WorkUnitObjectDataSource.Name = "WorkUnitObjectDataSource";
+            // 
+            // YearODS
+            // 
+            this.YearODS.DataMember = "GetFiscalYearss";
+            this.YearODS.DataSource = typeof(ExceedERP.Reporting.SharedDataSources.FiscalYearDataSource);
+            this.YearODS.Name = "YearODS";
+            // 
+            // EvaluationStatusODS
+            // 
+            this.EvaluationStatusODS.DataMember = "GetEvaluationStatus";
+            this.EvaluationStatusODS.DataSource = typeof(ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource.EvaluationStatusODS);
+            this.EvaluationStatusODS.Name = "EvaluationStatusODS";
             // 
             // pageHeaderSection1
             // 
@@ -253,34 +281,39 @@ namespace ExceedERP.Reporting.HRM.HRM
             // 
             // tblEmployeeSumm
             // 
-            this.tblEmployeeSumm.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.0928562879562378D)));
-            this.tblEmployeeSumm.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.6071429252624512D)));
-            this.tblEmployeeSumm.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.76545852422714233D)));
-            this.tblEmployeeSumm.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.3178598880767822D)));
-            this.tblEmployeeSumm.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.0520830154418945D)));
-            this.tblEmployeeSumm.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.0729167461395264D)));
-            this.tblEmployeeSumm.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1D)));
+            this.tblEmployeeSumm.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.33333331346511841D)));
+            this.tblEmployeeSumm.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.0928566455841065D)));
+            this.tblEmployeeSumm.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.6071428060531616D)));
+            this.tblEmployeeSumm.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.76545864343643188D)));
+            this.tblEmployeeSumm.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.3178596496582031D)));
+            this.tblEmployeeSumm.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.0520831346511841D)));
+            this.tblEmployeeSumm.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.0729165077209473D)));
+            this.tblEmployeeSumm.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.0000002384185791D)));
             this.tblEmployeeSumm.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.23958329856395721D)));
             this.tblEmployeeSumm.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.20000001788139343D)));
-            this.tblEmployeeSumm.Body.SetCellContent(0, 4, this.table1, 2, 3);
-            this.tblEmployeeSumm.Body.SetCellContent(0, 0, this.textBox12, 2, 1);
-            this.tblEmployeeSumm.Body.SetCellContent(0, 1, this.textBox2, 2, 1);
-            this.tblEmployeeSumm.Body.SetCellContent(0, 2, this.textBox8, 2, 1);
-            this.tblEmployeeSumm.Body.SetCellContent(0, 3, this.textBox17, 2, 1);
-            tableGroup6.Name = "group1";
-            tableGroup6.ReportItem = this.textBox11;
-            tableGroup7.Name = "group3";
-            tableGroup7.ReportItem = this.textBox1;
-            tableGroup8.Name = "group6";
-            tableGroup8.ReportItem = this.textBox7;
-            tableGroup9.Name = "group7";
-            tableGroup9.ReportItem = this.textBox13;
-            tableGroup10.Name = "group2";
-            tableGroup10.ReportItem = this.textBox10;
-            tableGroup11.Name = "group";
-            tableGroup11.ReportItem = this.textBox6;
-            tableGroup12.Name = "group9";
-            tableGroup12.ReportItem = this.textBox19;
+            this.tblEmployeeSumm.Body.SetCellContent(0, 5, this.table1, 2, 3);
+            this.tblEmployeeSumm.Body.SetCellContent(0, 1, this.textBox12, 2, 1);
+            this.tblEmployeeSumm.Body.SetCellContent(0, 2, this.textBox2, 2, 1);
+            this.tblEmployeeSumm.Body.SetCellContent(0, 3, this.textBox8, 2, 1);
+            this.tblEmployeeSumm.Body.SetCellContent(0, 4, this.textBox17, 2, 1);
+            this.tblEmployeeSumm.Body.SetCellContent(0, 0, this.textBox5);
+            this.tblEmployeeSumm.Body.SetCellContent(1, 0, this.textBox9);
+            tableGroup6.Name = "group11";
+            tableGroup6.ReportItem = this.textBox4;
+            tableGroup7.Name = "group1";
+            tableGroup7.ReportItem = this.textBox11;
+            tableGroup8.Name = "group3";
+            tableGroup8.ReportItem = this.textBox1;
+            tableGroup9.Name = "group6";
+            tableGroup9.ReportItem = this.textBox7;
+            tableGroup10.Name = "group7";
+            tableGroup10.ReportItem = this.textBox13;
+            tableGroup11.Name = "group2";
+            tableGroup11.ReportItem = this.textBox10;
+            tableGroup12.Name = "group";
+            tableGroup12.ReportItem = this.textBox6;
+            tableGroup13.Name = "group9";
+            tableGroup13.ReportItem = this.textBox19;
             this.tblEmployeeSumm.ColumnGroups.Add(tableGroup6);
             this.tblEmployeeSumm.ColumnGroups.Add(tableGroup7);
             this.tblEmployeeSumm.ColumnGroups.Add(tableGroup8);
@@ -288,6 +321,7 @@ namespace ExceedERP.Reporting.HRM.HRM
             this.tblEmployeeSumm.ColumnGroups.Add(tableGroup10);
             this.tblEmployeeSumm.ColumnGroups.Add(tableGroup11);
             this.tblEmployeeSumm.ColumnGroups.Add(tableGroup12);
+            this.tblEmployeeSumm.ColumnGroups.Add(tableGroup13);
             this.tblEmployeeSumm.DataSource = this.EmployeePerformanceObjectDataSource;
             this.tblEmployeeSumm.Items.AddRange(new Telerik.Reporting.ReportItemBase[] {
             this.textBox12,
@@ -301,17 +335,20 @@ namespace ExceedERP.Reporting.HRM.HRM
             this.textBox13,
             this.textBox10,
             this.textBox6,
-            this.textBox19});
+            this.textBox19,
+            this.textBox4,
+            this.textBox5,
+            this.textBox9});
             this.tblEmployeeSumm.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(0D), Telerik.Reporting.Drawing.Unit.Inch(0D));
             this.tblEmployeeSumm.Name = "tblEmployeeSumm";
-            tableGroup14.Name = "group4";
-            tableGroup15.Name = "group5";
-            tableGroup13.ChildGroups.Add(tableGroup14);
-            tableGroup13.ChildGroups.Add(tableGroup15);
-            tableGroup13.Groupings.Add(new Telerik.Reporting.Grouping(null));
-            tableGroup13.Name = "detailTableGroup";
-            this.tblEmployeeSumm.RowGroups.Add(tableGroup13);
-            this.tblEmployeeSumm.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(7.9083175659179688D), Telerik.Reporting.Drawing.Unit.Inch(0.67916661500930786D));
+            tableGroup15.Name = "group4";
+            tableGroup16.Name = "group5";
+            tableGroup14.ChildGroups.Add(tableGroup15);
+            tableGroup14.ChildGroups.Add(tableGroup16);
+            tableGroup14.Groupings.Add(new Telerik.Reporting.Grouping(null));
+            tableGroup14.Name = "detailTableGroup";
+            this.tblEmployeeSumm.RowGroups.Add(tableGroup14);
+            this.tblEmployeeSumm.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(8.2416505813598633D), Telerik.Reporting.Drawing.Unit.Inch(0.67916661500930786D));
             this.tblEmployeeSumm.Sortings.Add(new Telerik.Reporting.Sorting("= Fields.EmployeeId", Telerik.Reporting.SortDirection.Asc));
             this.tblEmployeeSumm.StyleName = "Civic.TableHeader";
             // 
@@ -444,6 +481,18 @@ namespace ExceedERP.Reporting.HRM.HRM
             this.textBox17.StyleName = "";
             this.textBox17.Value = "= Fields.Departement";
             // 
+            // EmployeePerformanceObjectDataSource
+            // 
+            this.EmployeePerformanceObjectDataSource.DataMember = "GetEmployeePerformance";
+            this.EmployeePerformanceObjectDataSource.DataSource = typeof(ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource.EmployeePerforObjectDataSource);
+            this.EmployeePerformanceObjectDataSource.Name = "EmployeePerformanceObjectDataSource";
+            this.EmployeePerformanceObjectDataSource.Parameters.AddRange(new Telerik.Reporting.ObjectDataSourceParameter[] {
+            new Telerik.Reporting.ObjectDataSourceParameter("branchId", typeof(string), "= Parameters.branchId.Value"),
+            new Telerik.Reporting.ObjectDataSourceParameter("orgStructureId", typeof(string), "= Parameters.orgStructureId.Value"),
+            new Telerik.Reporting.ObjectDataSourceParameter("employeeType", typeof(string), "= Parameters.employeeType.Value"),
+            new Telerik.Reporting.ObjectDataSourceParameter("year", typeof(string), "= Parameters.year.Value"),
+            new Telerik.Reporting.ObjectDataSourceParameter("status", typeof(string), "= Parameters.status.Value")});
+            // 
             // pageFooterSection1
             // 
             this.pageFooterSection1.Height = Telerik.Reporting.Drawing.Unit.Inch(1D);
@@ -510,47 +559,39 @@ namespace ExceedERP.Reporting.HRM.HRM
             this.textBox29.Style.Font.Bold = true;
             this.textBox29.Value = "የስራ ክፍል {= Parameters.orgStructureId.Label}";
             // 
-            // EmployeePerformanceObjectDataSource
-            // 
-            this.EmployeePerformanceObjectDataSource.DataMember = "GetEmployeePerformance";
-            this.EmployeePerformanceObjectDataSource.DataSource = typeof(ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource.EmployeePerforObjectDataSource);
-            this.EmployeePerformanceObjectDataSource.Name = "EmployeePerformanceObjectDataSource";
-            this.EmployeePerformanceObjectDataSource.Parameters.AddRange(new Telerik.Reporting.ObjectDataSourceParameter[] {
-            new Telerik.Reporting.ObjectDataSourceParameter("branchId", typeof(string), "= Parameters.branchId.Value"),
-            new Telerik.Reporting.ObjectDataSourceParameter("orgStructureId", typeof(string), "= Parameters.orgStructureId.Value"),
-            new Telerik.Reporting.ObjectDataSourceParameter("employeeType", typeof(string), "= Parameters.employeeType.Value"),
-            new Telerik.Reporting.ObjectDataSourceParameter("year", typeof(string), "= Parameters.year.Value"),
-            new Telerik.Reporting.ObjectDataSourceParameter("status", typeof(string), "= Parameters.status.Value")});
-            // 
-            // BranchObjectDataSource
-            // 
-            this.BranchObjectDataSource.DataMember = "GetBranch";
-            this.BranchObjectDataSource.DataSource = typeof(ExceedERP.Reporting.SharedDataSources.BranchObjectDataSource);
-            this.BranchObjectDataSource.Name = "BranchObjectDataSource";
-            // 
-            // WorkUnitObjectDataSource
-            // 
-            this.WorkUnitObjectDataSource.DataMember = "GetDepartment";
-            this.WorkUnitObjectDataSource.DataSource = typeof(ExceedERP.Reporting.SharedDataSources.DepartmentObjectDataSource);
-            this.WorkUnitObjectDataSource.Name = "WorkUnitObjectDataSource";
-            // 
-            // YearODS
-            // 
-            this.YearODS.DataMember = "GetFiscalYearss";
-            this.YearODS.DataSource = typeof(ExceedERP.Reporting.SharedDataSources.FiscalYearDataSource);
-            this.YearODS.Name = "YearODS";
-            // 
             // Organization
             // 
             this.Organization.DataMember = "GetOrganization";
             this.Organization.DataSource = typeof(ExceedERP.Reporting.SharedDataSources.OrganizationObjectDataSource);
             this.Organization.Name = "Organization";
             // 
-            // EvaluationStatusODS
+            // textBox4
             // 
-            this.EvaluationStatusODS.DataMember = "GetEvaluationStatus";
-            this.EvaluationStatusODS.DataSource = typeof(ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource.EvaluationStatusODS);
-            this.EvaluationStatusODS.Name = "EvaluationStatusODS";
+            this.textBox4.Name = "textBox4";
+            this.textBox4.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.33333331346511841D), Telerik.Reporting.Drawing.Unit.Inch(0.23958331346511841D));
+            this.textBox4.Style.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(140)))), ((int)(((byte)(174)))), ((int)(((byte)(173)))));
+            this.textBox4.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.textBox4.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
+            this.textBox4.Style.Font.Bold = true;
+            this.textBox4.StyleName = "Civic.TableHeader";
+            this.textBox4.Value = "ተ.ቁ ";
+            // 
+            // textBox5
+            // 
+            this.textBox5.Name = "textBox5";
+            this.textBox5.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.33333331346511841D), Telerik.Reporting.Drawing.Unit.Inch(0.23958329856395721D));
+            this.textBox5.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.textBox5.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
+            this.textBox5.StyleName = "";
+            this.textBox5.Value = "= RowNumber(\"tblEmployeeSumm\")";
+            // 
+            // textBox9
+            // 
+            this.textBox9.Name = "textBox9";
+            this.textBox9.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.33333331346511841D), Telerik.Reporting.Drawing.Unit.Inch(0.20000001788139343D));
+            this.textBox9.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.textBox9.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
+            this.textBox9.StyleName = "";
             // 
             // rptEmployeePerformance
             // 
@@ -656,5 +697,8 @@ namespace ExceedERP.Reporting.HRM.HRM
         private Telerik.Reporting.TextBox textBox28;
         private Telerik.Reporting.TextBox textBox29;
         private Telerik.Reporting.ObjectDataSource EvaluationStatusODS;
+        private Telerik.Reporting.TextBox textBox5;
+        private Telerik.Reporting.TextBox textBox9;
+        private Telerik.Reporting.TextBox textBox4;
     }
 }

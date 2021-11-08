@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
+using ExceedERP.Reporting.HRM.HRM.HRMViewModel;
+using ExceedERP.DataAccess.Context;
+using System;
 using System.Linq;
 using ExceedERP.Core.Domain.Common;
-using ExceedERP.DataAccess.Context;
-using ExceedERP.Reporting.HRM.HRM.HRMViewModel;
-using ExceedERP.Reporting.HRM.Payroll;
-using ExceedERP.Reporting.HRM.Payroll.DataSource;
 
 //using ExceedERP.Reporting.HRM.Payroll;
 
@@ -15,7 +13,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
     [DataObject]
     public class LeaveOneByOneDetailSelfCareObjectDataSource : List<LeaveOneByOne>
     {
-        private ExceedDbContext db = new ExceedDbContext();
+        ExceedDbContext db = new ExceedDbContext();
 
         [DataObjectMethod(DataObjectMethodType.Select)]
         public List<LeaveOneByOne> GetLeaveOneByOneDetail(/*string periodN*/object[] periodNs, string id)
@@ -48,9 +46,9 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                             db.Leaves.Where(
                                     x => x.GlFiscalYearId == period && x.EmployeeId == personEmployee.EmployeeId/* && x.LeaveType == LeaveType.ANNUAL*/)
                                 .ToList();
-                        var employees =
-                            ListOfEmployeeIdView.GetEmployees().FirstOrDefault(x => x.PersonId == personEmployee.EmployeeId);
-                        var tranferedList = db.LeaveTransfer.Where(x => x.To == period && x.EmployeeId == personEmployee.EmployeeId && x.Check).ToList();
+                        var employees = db.Person_Employee.FirstOrDefault(x=>x.EmployeeId == personEmployee.EmployeeId);
+                           // ListOfEmployeeIdView.GetEmployees().FirstOrDefault(x => x.PersonId == personEmployee.EmployeeId);
+                       // var tranferedList = db.LeaveTransfer.Where(x => x.To == period && x.EmployeeId == personEmployee.EmployeeId && x.Check).ToList();
                         var periods = db.GLFiscalYears.ToList();
                         var paidIncash = db.LeavePaid.Where(x => x.GlFiscalYearId == period && x.EmployeeId == personEmployee.EmployeeId).ToList();
                         var periodName = periods.FirstOrDefault(x => x.GlFiscalYearId == period);
@@ -58,16 +56,16 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                         if (employees != null)
                         {
                             sum.ID = employees.EmployeeCode;
-                            sum.FullName = employees.FullName;
+                            sum.FullName = employees.FullNameaEnglish;
                         }
                         if (periodName != null)
                         {
                             sum.LeavePeriod = sum.LeavePeriod + periodName.Name + ", ";
                         }
-                        if (tranferedList.Any())
-                        {
-                            sum.TransferedFrom = tranferedList.Sum(x => x.Amount);
-                        }
+                        //if (tranferedList.Any())
+                        //{
+                        //    sum.TransferedFrom = tranferedList.Sum(x => x.Amount);
+                        //}
                         if (paidIncash.Any())
                         {
                             sum.LeavePaidInCash = Convert.ToDecimal(paidIncash.Sum(x => x.Amount));
@@ -79,7 +77,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                             totalEntitle = entitles.Sum(x => x.Balance);
                         }
                         if (entitlew != null) sum.Entitlment = totalEntitle;// entitlew.Amount;
-                        sum.TotalAmountTaken = taken.Where(x=>x.LeaveType == LeaveType.ANNUAL).Sum(x => x.Amount);
+                        sum.TotalAmountTaken = taken.Where(x => x.LeaveType == LeaveType.ANNUAL).Sum(x => x.Amount);
                         decimal subtract = sum.TotalAmountTaken + sum.LeavePaidInCash;
                         sum.Balance = totalEntitle;
 

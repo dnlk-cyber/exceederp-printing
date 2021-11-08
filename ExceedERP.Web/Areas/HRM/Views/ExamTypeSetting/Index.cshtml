@@ -1,0 +1,75 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.HRM.RecruitmentManagment
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<Legend>Exam Type Settings</Legend>
+@(Html.Kendo().Grid<ExamTypeSetting>()
+              .Name("ExamTypeSettinggrid")
+          .Columns(columns =>
+          {
+              //columns.Bound(c => c.Reference);
+            //  columns.ForeignKey(c => c.ExamType, (IEnumerable)ViewData["RecruitmentSetting"], "Text", "Text").EditorTemplateName("Setting");
+              columns.Bound(c => c.ExamType);
+              columns.Bound(c => c.ExamSource);
+              columns.Bound(c => c.SettingVlaue);
+              columns.Bound(c => c.Remark);
+              columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit); command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(300);
+          })
+          .ToolBar(toolbar =>
+          {
+              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+          })
+          .Editable(editable => editable.Mode(GridEditMode.InLine))
+            .Scrollable(h => h.Height(500))
+                 .Groupable()
+                          .Sortable(sortable =>
+                          {
+                              sortable.SortMode(GridSortMode.SingleColumn);
+                          })
+              .Filterable()
+                 .Pageable(pageable => pageable
+                                            .Input(true)
+                                            .Numeric(false)
+                                            .Refresh(true)
+                                            .PageSizes(true)
+                                            .ButtonCount(5))
+          .DataSource(dataSource => dataSource
+              .Ajax()
+                    .Events(events =>
+                    {
+                        events.Error("error_handler(\"ExamTypeSettinggrid\")");
+                        events.RequestStart("onRequestStart(\"ExamTypeSettinggrid\")");
+                        events.RequestEnd("onRequestEnd(\"ExamTypeSettinggrid\")");
+                    })
+
+              .Model(model => model.Id(p => p.ExamTypeSettingId))
+                  .Read(read => read.Action("ExamTypeSetting_Read", "ExamTypeSetting"))
+                  .Create(create => create.Action("ExamTypeSetting_Create", "ExamTypeSetting"))
+                  .Update(update => update.Action("ExamTypeSetting_Update", "ExamTypeSetting"))
+                  .Destroy(destroy => destroy.Action("ExamTypeSetting_Destroy", "ExamTypeSetting"))
+          )
+)
+<script>
+    //function error_handler(e) {
+    //    if (e.errors) {
+    //        var message = "Errors:\n";
+    //        $.each(e.errors, function(key, value) {
+    //            if ('errors' in value) {
+    //                $.each(value.errors, function() {
+    //                    message += this + "\n";
+    //                });
+    //            }
+    //        });
+    //        alert(message);
+
+    //    }
+
+    //}
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+</script>

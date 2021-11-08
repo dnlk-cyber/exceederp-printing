@@ -4,6 +4,7 @@ using System.Data.Entity;
 using System.Linq;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Common.HRM;
+using ExceedERP.Core.Domain.HRM.RecruitmentManagment;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
 
@@ -208,7 +209,7 @@ namespace ExceedERP.Helpers.HR
 
                 case Region.AMHARA:
                     return "አማራ";
-                case Region.OROMO:
+                case Region.OROMIA:
                     return "ኦሮሞ";
                 case Region.AFAR:
                     return "አፋር";
@@ -564,6 +565,95 @@ namespace ExceedERP.Helpers.HR
                 capitalizedWord = capitalizedWord + " " + capital;
             }
             return capitalizedWord;
+        }
+        public static string GenerateVacancyCode(Vacancy vaccancyPlan)
+        {
+            ExceedDbContext db = new ExceedDbContext();
+
+            string id = "";
+            int nextID;
+
+            var alllist = db.VaccancyPlans.ToList();
+
+            var ExternalOrInternal = "";
+
+            if (vaccancyPlan.RecruSource == RecruitmentSource.EXTERNAL)
+            {
+                ExternalOrInternal = "Ext";
+            }
+            else if (vaccancyPlan.RecruSource == RecruitmentSource.INTERNAL)
+            {
+                ExternalOrInternal = "Int";
+            }
+
+            if (vaccancyPlan.VacancyType == VacancyType.CONTRACT)
+            {
+                if (alllist.Any())
+                {
+                    var cont = alllist.Where(x => x.VacancyType == VacancyType.CONTRACT).OrderByDescending(x => x.VacancyId).FirstOrDefault();
+
+                    if (cont != null)
+                    {
+                        if (cont.VaccancyCode.Contains('-'))
+                        {
+                            nextID = Convert.ToInt32(cont.VaccancyCode.Split('-')[2]) + 1;
+
+                            id = ExternalOrInternal + "-CO-" + nextID.ToString() + "-" + DateTime.Now.Year.ToString();
+                        }
+                        else
+                        {
+                            // id = ExternalOrInternal + "-CO-" + nextID.ToString() + "-" + DateTime.Now.Year.ToString();
+                        }
+                    }
+                    else
+                    {
+                        id = ExternalOrInternal + "-CO-" + "1" + "-" + DateTime.Now.Year.ToString();
+                    }
+                }
+                else
+                {
+                    id = ExternalOrInternal + "-CO-" + "1" + "-" + DateTime.Now.Year.ToString();
+                }
+
+            }
+            else
+            {
+                if (alllist.Any())
+                {
+                    var cont = alllist.Where(x => x.VacancyType == VacancyType.PERMANENT).OrderByDescending(x => x.VacancyId).FirstOrDefault();
+
+                    if (cont != null)
+                    {
+                        if (cont.VaccancyCode.Contains('-'))
+                        {
+                            nextID = Convert.ToInt32(cont.VaccancyCode.Split('-')[2]) + 1;
+                            id = ExternalOrInternal + "-PE-" + nextID.ToString() + "-" + DateTime.Now.Year.ToString();
+                        }
+                        else
+                        {
+                            // id = ExternalOrInternal + "-CO-" + nextID.ToString() + "-" + DateTime.Now.Year.ToString();
+                        }
+
+                    }
+                    else
+                    {
+                        id = ExternalOrInternal + "-PE-" + "1" + "-" + DateTime.Now.Year.ToString();
+                    }
+                }
+                else
+                {
+                    if (vaccancyPlan.VacancyType == VacancyType.CONTRACT)
+                    {
+                        id = ExternalOrInternal + "-CO-" + "1" + "-" + DateTime.Now.Year.ToString();
+                    }
+                    else
+                    {
+                        id = ExternalOrInternal + "-PE-" + "1" + "-" + DateTime.Now.Year.ToString();
+                    }
+                }
+            }
+
+            return id;
         }
     }
 }

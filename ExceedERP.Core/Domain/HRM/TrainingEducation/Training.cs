@@ -49,5 +49,6 @@ namespace ExceedERP.Core.Domain.HRM.TrainingEducation
         public string TrainingName { get; set; }
         [Display(Name = "Remark", ResourceType = typeof(Localization.Resources))]
         public string Remark { get; set; }
+        public int? CourseTrackingId { get; set; }
     }
 }

@@ -8,197 +8,206 @@
 }
 <legend>@Resources.NavigatorBenefit_Delegation</legend>
 @(Html.Kendo().Grid<Delegation>()
-                      .Name("Delegation")
-                  .Columns(columns =>
-                  {
-                      columns.ForeignKey(c => c.GLPeriodId, (IEnumerable)ViewData["PeriodList"], "GLPeriodId", "Name").EditorTemplateName("GLPeriodSelector").Width(120);
-                      columns.ForeignKey(c => c.FromEmployeeId, (IEnumerable)ViewData["EmployeeList"], "PersonId", "FullNameWithOutCode").EditorTemplateName("ListOfEmployee").Width(200);
-                      columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "PersonId", "FullNameWithOutCode").EditorTemplateName("ListOfEmployee").Width(200);
-                      columns.Bound(c => c.FromDateTimeAm).EditorTemplateName("Calander").Width(200);
-                      columns.Bound(c => c.ToDateTimeAm).EditorTemplateName("Calander").Width(200);
-                      //columns.Bound(c => c.Reason).Width(250);
+            .Name("Delegation")
+        .Columns(columns =>
+        {
+            columns.ForeignKey(c => c.GLPeriodId, (IEnumerable)ViewData["PeriodList"], "GLPeriodId", "Name").EditorTemplateName("GLPeriodSelector").Width(120);
+            columns.ForeignKey(c => c.FromEmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameaEnglish").EditorTemplateName("Employees").Width(200);
+            columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameaEnglish").EditorTemplateName("Employees").Width(200);
+            columns.Bound(c => c.FromDateTimeAm).EditorTemplateName("Calander").Width(200);
+            columns.Bound(c => c.ToDateTimeAm).EditorTemplateName("Calander").Width(200);
+            //columns.Bound(c => c.Reason).Width(250);
 
-                      columns.Command(command =>
-                      {
-                          if(HttpContext.Current.User.IsInRole("HR_Department_Head"))
-                          {
+            columns.Command(command =>
+            {
+                if (HttpContext.Current.User.IsInRole("HR_Department_Head"))
+                {
+                    command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit).HtmlAttributes(new { @id = "delegationEdit" });
+                    command.Custom("").Click("Open").Text("  Open ").IconClass("fa fa-check fa4x").HtmlAttributes(new { @class = "btn btn-yellow", @title = "Open delegation and set start date ", @id = "open" });
+                    command.Custom("").Click("Close").Text(" Close").IconClass("fa fa-remove fa4x").HtmlAttributes(new { @class = "btn btn-white", @title = "Close delegation and set end date ", @id = "close" });
 
-                              command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
-                          }
-                          if (HttpContext.Current.User.IsInRole("HR_Department_Head"))
-                          {
-                              command.Destroy().Text(Resources.ActionButton_Cancel);
-                          }
-                      }).Width(200);
-                  })
-                  .ToolBar(toolbar =>
-                  {
-                      if (HttpContext.Current.User.IsInRole("HR_Department_Head"))
-                      {
+                }
+                if (HttpContext.Current.User.IsInRole("HR_Department_Head"))
+                {
+                    command.Destroy().Text(Resources.ActionButton_Cancel).HtmlAttributes(new { @id = "delegationDelete" }); ;
+                }
+            }).Width(300);
+        })
+        .ToolBar(toolbar =>
+        {
+            if (HttpContext.Current.User.IsInRole("HR_Department_Head"))
+            {
 
-                          toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
-                      }
-                  })
-                  .Editable(editable => editable.Mode(GridEditMode.InLine))
-                       .Events(x =>
-                       {
-                           x.Save("GetDate");
+                toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+            }
+        })
+        .Editable(editable => editable.Mode(GridEditMode.InLine))
+             .Events(x =>
+             {
+                 x.DataBound("onDataBound");
+                 x.Save("GetDate");
+                 x.Edit("GetDate");
+             })
+           .Scrollable(h => h.Height(500))
+               .Groupable()
+                        .Sortable(sortable =>
+                        {
+                            sortable.SortMode(GridSortMode.SingleColumn);
+                        })
+            .Filterable()
+               .Pageable(pageable => pageable
+                                          .Input(true)
+                                          .Numeric(false)
+                                          .Refresh(true)
+                                          .PageSizes(true)
+                                          .ButtonCount(5))
+        .DataSource(dataSource => dataSource
+            .Ajax()
+                 .Events(events =>
+                 {
+                     events.Error("error_handler(\"Delegation\")");
+                     events.RequestStart("onRequestStart(\"Delegation\")");
+                     events.RequestEnd("onRequestEnd(\"Delegation\")");
+                 })
 
-                           x.Edit("GetDate");
-                       })
-                     .Scrollable(h => h.Height(500))
-                         .Groupable()
-                                  .Sortable(sortable =>
-                                  {
-                                      sortable.SortMode(GridSortMode.SingleColumn);
-                                  })
-                      .Filterable()
-                         .Pageable(pageable => pageable
-                                                    .Input(true)
-                                                    .Numeric(false)
-                                                    .Refresh(true)
-                                                    .PageSizes(true)
-                                                    .ButtonCount(5))
-                  .DataSource(dataSource => dataSource
-                      .Ajax()
-                           .Events(events =>
-                           {
-                               events.Error("error_handler(\"Delegation\")");
-                               events.RequestStart("onRequestStart(\"Delegation\")");
-                               events.RequestEnd("onRequestEnd(\"Delegation\")");
-                           })
+            .Model(model =>
+            {
+                model.Id(p => p.DelegationId);
+                model.Field(p => p.FromDateTime).Editable(false);
+                model.Field(p => p.ToDateTimeAm).Editable(false);
+                model.Field(p => p.FromDateTimeAm).Editable(false);
+                model.Field(p => p.ToDateTimeAm).Editable(false);
+            })
+                .Read(read => read.Action("Delegations_Read", "Delegation"))
+                .Create(create => create.Action("Delegations_Create", "Delegation"))
+                .Update(update => update.Action("Delegations_Update", "Delegation"))
+                .Destroy(destroy => destroy.Action("Delegations_Destroy", "Delegation"))
 
-                      .Model(model => model.Id(p => p.DelegationId))
-                          .Read(read => read.Action("Delegations_Read", "Delegation"))
-                          .Create(create => create.Action("Delegations_Create", "Delegation"))
-                          .Update(update => update.Action("Delegations_Update", "Delegation"))
-                          .Destroy(destroy => destroy.Action("Delegations_Destroy", "Delegation"))
-
-                  ).ClientDetailTemplateId("template")
+        ).ClientDetailTemplateId("template")
 )
 <script id="template" type="text/kendo-tmpl">
     @(Html.Kendo().TabStrip()
-                                                                                            .Name("tabstrip_#=DelegationId#")
-                                                                                    .SelectedIndex(0)
-                                                                                    .Items(items =>
-                                                                                     {
+                        .Name("tabstrip_#=DelegationId#")
+                .SelectedIndex(0)
+                .Items(items =>
+                 {
 
 
-                                                                             //*****************************************************************************************************//
-                                                                             items.Add().Text("CC").Content(
-                                                                                        @<text>
+         //*****************************************************************************************************//
+         items.Add().Text("CC").Content(
+                    @<text>
 
 
-                                                                                            @(Html.Kendo().Grid<DeligationCC>()
-                                                                                                                                                                                              .Name("DeligationCC#=DelegationId#")
-                                                                                                                                                                              .Columns(columns =>
-                                                                                                                                                                              {
+         @(Html.Kendo().Grid<DeligationCC>()
+          .Name("DeligationCC#=DelegationId#")
+                                 .Columns(columns =>
+                                 {
 
-                                                                                                                                                                                  columns.ForeignKey(c => c.CC, (IEnumerable)ViewData["CC"], "OrgStructureId", "Name").EditorTemplateName("OrganizationDept").Width(150);
-                                                                                                                                                                                  //columns.Bound(c => c.IsCurrent).Width(100);
-                                                                                                                                                                                  columns.Command(command =>
-                                                                                                                                                                                  {
-                                                                                                                                                                                      if (HttpContext.Current.User.IsInRole("HR_Department_Head"))
-                                                                                                                                                                                      {
-                                                                                                                                                                                          command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
-                                                                                                                                                                                          command.Destroy().Text(Resources.ActionButton_Cancel);
-                                                                                                                                                                                      }
+                                             columns.ForeignKey(c => c.CC, (IEnumerable)ViewData["CC"], "OrgStructureId", "Name").EditorTemplateName("OrganizationDept").Width(150);
+                                 //columns.Bound(c => c.IsCurrent).Width(100);
+                                 columns.Command(command =>
+                                 {
+                                             if (HttpContext.Current.User.IsInRole("HR_Department_Head"))
+                                             {
+                                                 command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                                 command.Destroy().Text(Resources.ActionButton_Cancel);
+                                             }
 
-                                                                                                                                                                                  }).Width(100);
-                                                                                                                                                                              })
+                                         }).Width(100);
+                                         })
 
-                                                                                                                                                                              .ToolBar(toolbar =>
-                                                                                                                                                                              {
-                                                                                                                                                                                  if (HttpContext.Current.User.IsInRole("HR_Department_Head"))
-                                                                                                                                                                                  {
-                                                                                                                                                                                      toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
-                                                                                                                                                                                  }
-                                                                                                                                                                              })
+                                     .ToolBar(toolbar =>
+                                     {
+                                                 if (HttpContext.Current.User.IsInRole("HR_Department_Head"))
+                                                 {
+                                                     toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                                                 }
+                                             })
 
-                                                                                                                                                                      .Editable(editable => editable.Mode(GridEditMode.InLine))
-                                                                                                                                                                      .Scrollable()
-                                                                                                                                                                      .Selectable()
-                                                                                                                                                                      .DataSource(dataSource => dataSource
-                                                                                                                                                                          .Ajax()
-                                                                                                                                                                                  .Events(events =>
-                                                                                                                                                                                  {
-                                                                                                                                                                                      events.Error("error_handler(\"DeligationCC#=DelegationId#\")");
-                                                                                                                                                                                      events.RequestStart("onRequestStart(\"DeligationCC#=DelegationId#\")");
-                                                                                                                                                                                      events.RequestEnd("onRequestEnd(\"DeligationCC#=DelegationId#\")");
-                                                                                                                                                                                  })
-
-
-                                                                                                      .Model(model => model.Id(p => p.DeligationCCId))
-                                                                                                   .Read(read => read.Action("DelegationCC_Read", "Delegation", new { id = "#=DelegationId#" }))
-                                                                                                   .Create(create => create.Action("DelegationCC_Create", "Delegation", new { id = "#=DelegationId#" }))
-                                                                                                  .Update(update => update.Action("DelegationCC_Update", "Delegation"))
-                                                                                                  .Destroy(destroy => destroy.Action("DelegationCC_Destroy", "Delegation"))
-
-                                                                                                                                                                      ).ToClientTemplate()
-                                                                                            )
-                                                                                            <a href='@Url.Action("Deligation", "PrintableLetter")/?id=#=DelegationId#' title="Print"><i class="fa fa-print fa-2x"></i></a>
-
-                                                                                        </text>
-                                                                                                                                                                          );
-
-                                                                                     //**********************************************************************************//
-                                                                                     items.Add().Text("Delegation Reason").Content(
-                                                                                                            @<text>
+                                            .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                            .Scrollable()
+                                            .Selectable()
+                                            .DataSource(dataSource => dataSource
+                                                .Ajax()
+                                                        .Events(events =>
+                                                        {
+                                                                    events.Error("error_handler(\"DeligationCC#=DelegationId#\")");
+                                                                    events.RequestStart("onRequestStart(\"DeligationCC#=DelegationId#\")");
+                                                                    events.RequestEnd("onRequestEnd(\"DeligationCC#=DelegationId#\")");
+                                                                })
 
 
-                                                                                                                @(Html.Kendo().Grid<DelegationReason>()
-                                                                                                                                                                                                                  .Name("DelegationReason#=DelegationId#")
-                                                                                                                                                                                                  .Columns(columns =>
-                                                                                                                                                                                                  {
+                                                      .Model(model => model.Id(p => p.DeligationCCId))
+                                                   .Read(read => read.Action("DelegationCC_Read", "Delegation", new { id = "#=DelegationId#" }))
+                                                   .Create(create => create.Action("DelegationCC_Create", "Delegation", new { id = "#=DelegationId#" }))
+                                                  .Update(update => update.Action("DelegationCC_Update", "Delegation"))
+                                                  .Destroy(destroy => destroy.Action("DelegationCC_Destroy", "Delegation"))
 
-                                                                                                                                                                                                      columns.Bound(c => c.Reason).Width(200);
-                                                                                                                                                                                                      columns.Command(command =>
-                                                                                                                                                                                                      {
-                                                                                                                                                                                                          if (HttpContext.Current.User.IsInRole("HR_Department_Head"))
-                                                                                                                                                                                                          {
-                                                                                                                                                                                                              command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
-                                                                                                                                                                                                              command.Destroy().Text(Resources.ActionButton_Cancel);
-                                                                                                                                                                                                          }
-                                                                                                                                                                                                      }).Width(100);
-                                                                                                                                                                                                  })
+                                                                                                                            ).ToClientTemplate()
+                                                )
+                                                <a href='@Url.Action("Deligation", "PrintableLetter")/?id=#=DelegationId#' title="Print"><i class="fa fa-print fa-2x"></i></a>
 
-                                                                                                                                                                                                  .ToolBar(toolbar =>
-                                                                                                                                                                                                  {
-                                                                                                                                                                                                      if (HttpContext.Current.User.IsInRole("HR_Department_Head"))
-                                                                                                                                                                                                      {
-                                                                                                                                                                                                          toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
-                                                                                                                                                                                                      }
-                                                                                                                                                                                                  })
+                                            </text>
+                                                                                                                                                                             );
 
-                                                                                                                                                                                          .Editable(editable => editable.Mode(GridEditMode.InLine))
-                                                                                                                                                                                          .Scrollable()
-                                                                                                                                                                                          .Selectable()
-                                                                                                                                                                                          .DataSource(dataSource => dataSource
-                                                                                                                                                                                              .Ajax()
-                                                                                                                                                                                                      .Events(events =>
-                                                                                                                                                                                                      {
-                                                                                                                                                                                                          events.Error("error_handler(\"DelegationReason#=DelegationId#\")");
-                                                                                                                                                                                                          events.RequestStart("onRequestStart(\"DelegationReason#=DelegationId#\")");
-                                                                                                                                                                                                          events.RequestEnd("onRequestEnd(\"DelegationReason#=DelegationId#\")");
-                                                                                                                                                                                                      })
+                                         //**********************************************************************************//
+                                         items.Add().Text("Delegation Reason").Content(
+                                                    @<text>
 
 
-                                                                                                                          .Model(model => model.Id(p => p.DelegationReasonId))
-                                                                                                                       .Read(read => read.Action("DelegationReason_Read", "Delegation", new { id = "#=DelegationId#" }))
-                                                                                                                       .Create(create => create.Action("DelegationReason_Create", "Delegation", new { id = "#=DelegationId#" }))
-                                                                                                                      .Update(update => update.Action("DelegationReason_Update", "Delegation"))
-                                                                                                                      .Destroy(destroy => destroy.Action("DelegationReason_Destroy", "Delegation"))
+                                                        @(Html.Kendo().Grid<DelegationReason>()
+                                                                       .Name("DelegationReason#=DelegationId#")
+                                                       .Columns(columns =>
+                                                       {
 
-                                                                                                                                                                                          ).ToClientTemplate()
-                                                                                                                )
+                                                                   columns.Bound(c => c.Reason).Width(200);
+                                                                   columns.Command(command =>
+                                                                    {
+                                                                   if (HttpContext.Current.User.IsInRole("HR_Department_Head"))
+                                                                   {
+                                                                       command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                                                       command.Destroy().Text(Resources.ActionButton_Cancel);
+                                                                   }
+                                                               }).Width(100);
+                                                               })
 
-                                                                                                            </text>
-                                                                                                                                                                       );
+                                                       .ToolBar(toolbar =>
+                                                       {
+                                                                   if (HttpContext.Current.User.IsInRole("HR_Department_Head"))
+                                      {
+                                          toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                                      }
+                                  })
+
+                        .Editable(editable => editable.Mode(GridEditMode.InLine))
+                              .Scrollable()
+                              .Selectable()
+                              .DataSource(dataSource => dataSource
+                                  .Ajax()
+                                          .Events(events =>
+                                          {
+                                                      events.Error("error_handler(\"DelegationReason#=DelegationId#\")");
+                                                      events.RequestStart("onRequestStart(\"DelegationReason#=DelegationId#\")");
+                                                      events.RequestEnd("onRequestEnd(\"DelegationReason#=DelegationId#\")");
+                                                  })
+
+
+                            .Model(model => model.Id(p => p.DelegationReasonId))
+                         .Read(read => read.Action("DelegationReason_Read", "Delegation", new { id = "#=DelegationId#" }))
+                                            .Create(create => create.Action("DelegationReason_Create", "Delegation", new { id = "#=DelegationId#" }))
+                                           .Update(update => update.Action("DelegationReason_Update", "Delegation"))
+                                           .Destroy(destroy => destroy.Action("DelegationReason_Destroy", "Delegation"))
+                                                                                     
+                                                                                                                ).ToClientTemplate()
+                                                        )
+
+                                                    </text>
+                                                                                           );
 
 
 
 
-                                                                                                 }).ToClientTemplate())
+                                                     }).ToClientTemplate())
 </script>
 
 
@@ -272,6 +281,106 @@
 
             });
         }
+    }
+
+</script>
+
+
+
+<script>
+
+    function Open(e) {
+
+     var row = $(e.target).closest("tr");
+        var grid = $("#Delegation").data("kendoGrid");
+        var dataItem = grid.dataItem(row);
+        var id = dataItem.DelegationId;
+
+        if (id.length !== 0 )
+        {
+            $('#loading-image').show();
+
+            $.ajax({
+                url: '@Url.Action("OpenDelegation", "Delegation")',
+
+                data: { id: id},
+                type: 'POST',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                    alert(r.Message);
+                    $('#loading-image').hide();
+                    grid.dataSource.read();
+                }
+            });
+
+        }
+
+    }
+
+    ////////////////////////////////
+
+    function Close(e) {
+
+     var row = $(e.target).closest("tr");
+        var grid = $("#Delegation").data("kendoGrid");
+        var dataItem = grid.dataItem(row);
+        var id = dataItem.DelegationId;
+
+        if (id.length !== 0 )
+        {
+            $('#loading-image').show();
+
+            $.ajax({
+                url: '@Url.Action("CloseDelegation", "Delegation")',
+
+                data: { id: id},
+                type: 'POST',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                    alert(r.Message);
+                    $('#loading-image').hide();
+                    grid.dataSource.read();
+                }
+            });
+
+        }
+
+    }
+
+</script>
+
+
+<script>
+
+    function onDataBound(e) {
+
+        var grid = this;
+        var gridRows = grid.tbody.find("tr");
+        for (var i = 0; i < gridRows.length; i++) {
+            var row = $(gridRows[i]);
+            var dataItem = grid.dataItem(row);
+            //perform your custom check
+
+            if (dataItem.IsOpen === false) {
+                row.find("#open").show();
+                row.find("#close").hide();
+            }
+            else if (dataItem.IsOpen === true) {
+               // row.css("background-color", "red");
+                row.find("#open").hide();
+                row.find("#close").show();
+            }           
+
+           if (dataItem.HideButtons === true) {
+                row.find("#open").hide();
+                row.find("#close").hide();
+                row.find("#delegationEdit").hide();
+                row.find("#delegationDelete").hide();
+            }
+        }
+
     }
 
 </script>

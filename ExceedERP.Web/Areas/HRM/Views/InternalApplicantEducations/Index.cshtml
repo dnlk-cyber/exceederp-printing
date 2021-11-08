@@ -1,0 +1,27 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.HRM.RecruitmentManagment.InternalApplicantEducation>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.ApplicationFormId);
+        columns.Bound(c => c.InternalApplicantsId);
+        columns.Bound(c => c.EducationLevelSettingId);
+        columns.Bound(c => c.EducationFieldSettingId);
+        columns.Bound(c => c.EducationInstitution);
+        columns.Bound(c => c.Remark);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.InternalApplicantEducationId))
+          .Read(read => read.Action("InternalApplicantEducations_Read", "InternalApplicantEducations"))
+          .Create(create => create.Action("InternalApplicantEducations_Create", "InternalApplicantEducations"))
+          .Update(update => update.Action("InternalApplicantEducations_Update", "InternalApplicantEducations"))
+          .Destroy(destroy => destroy.Action("InternalApplicantEducations_Destroy", "InternalApplicantEducations"))
+      )
+)

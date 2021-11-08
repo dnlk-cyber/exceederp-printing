@@ -46,7 +46,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Attendance
             var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
             var empIdList = EmployeeHelper.GetSubordinates(empId);
             var list = inputs.GetEmployees().Where(x => x.IsActive && empIdList.Contains(x.PersonId) && x.PersonId != empId).ToList();
-            ViewData["EmployeeList"] = list;
+            ViewData["EmployeeList"] = db.Person_Employee.AsQueryable();
             ViewData["AllEmployeeList"] = inputs.GetAllPlacmentEmployees(User.Identity.Name);
             GenerateCalander(list);
 
@@ -103,8 +103,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Attendance
         {
             return LastDayOfWeek(DateTime.Today);
         }
-
-
         private void ArrangeCalander(int id)
         {
             var list = db.WeeklyAttendances.Where(x => x.WeeklyAttendanceId == id).FirstOrDefault();
@@ -921,8 +919,10 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Attendance
             //IQueryable<WeeklyAttendance> weeklyattendances = db.WeeklyAttendances.Where(
             //        x => x.Month == DateTime.Now.Month && x.Year == DateTime.Now.Year && x.Week == WeekNumber && empIdList.Contains(x.EmployeeId)).AsQueryable();// DetailViewModels().AsQueryable();
 
-            IQueryable<WeeklyAttendance> weeklyattendances = db.WeeklyAttendances.Where(
-                  x => x.GLPeriodId == pid && x.GlFiscalYearId == yid && x.Week == WeekNumber && empIdList.Contains(x.EmployeeId)).AsQueryable();// DetailViewModels().AsQueryable();
+            IQueryable<WeeklyAttendance> weeklyattendances = db.WeeklyAttendances.Where(x => x.GLPeriodId == pid && x.GlFiscalYearId == yid && 
+                                                                                              x.Week == WeekNumber && 
+                                                                                              empIdList.Contains(x.EmployeeId)).AsQueryable();
+                                                                                              // DetailViewModels().AsQueryable();
 
             DataSourceResult result = weeklyattendances.ToDataSourceResult(request, weeklyAttendance => new
             {
@@ -975,8 +975,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Attendance
                   .ToList();
 
         }
-
-
         public ActionResult Editing_Create([DataSourceRequest] DataSourceRequest request, [Bind(Prefix = "models")]IEnumerable<WeeklyAttendance> attendances)
         {
             ModelState.Clear();
@@ -1242,8 +1240,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Attendance
 
             return Json(new[] { weeklyAttendance }.ToDataSourceResult(request, ModelState));
         }
-
-
 
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult WeeklyAttendances_Update([DataSourceRequest]DataSourceRequest request, WeeklyAttendance weeklyAttendance)

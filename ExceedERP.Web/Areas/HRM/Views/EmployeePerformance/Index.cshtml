@@ -40,14 +40,14 @@
 
             <label class="category-label" for="Role">Evaluation Level</label>
             @(Html.Kendo().ComboBox()
-                                                                                                          .Name("Evaluation")
-                                                                                                          .Placeholder("Evaluation Level")
-                                                                                                          .DataTextField("Text")
-                                                                                                          .BindTo(EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.Common.EvaluationLevel)))
-                                                                                                          .DataValueField("Value")
-                                                                                                          .AutoBind(false)
-                                                                                                          //.Events(e => e.Change("Roles"))
-                                                                                                          .HtmlAttributes(new { style = "width: 100px;" })
+                             .Name("Evaluation")
+                             .Placeholder("Evaluation Level")
+                             .DataTextField("Text")
+                             .BindTo(EnumExtension.EnumToSelectList(typeof(ExceedERP.Core.Domain.Common.EvaluationLevel)))
+                             .DataValueField("Value")
+                             .AutoBind(false)
+                             //.Events(e => e.Change("Roles"))
+                             .HtmlAttributes(new { style = "width: 100px;" })
 
             )
 
@@ -55,17 +55,17 @@
 
             <label class="category-label" @*for="Period"*@>Year</label>
             @(Html.Kendo().DropDownListFor(m => m)
-                                                                                                                                     .Name("GlFiscalYearId")
-                                                                                                                                             //.Placeholder("Period")
-                                                                                                                                             .OptionLabel(Resources.Select)
-                                                                                                                                             .Filter("contains")
-                                                                                                                                             .DataTextField("Name")
-                                                                                                                                                 .DataValueField("GlFiscalYearId")
-                                                                                                                                                     .DataSource(dataSource =>
-                                                                                                                                                     {
-                                                                                                                                          dataSource.Read(read => read.Action("GetFiscalYear", "EmployeePerformance", new { area = "HRM" }))
-                                                       .ServerFiltering(false);
-                                                                                                                                      })
+                  .Name("GlFiscalYearId")
+                          //.Placeholder("Period")
+                          .OptionLabel(Resources.Select)
+                          .Filter("contains")
+                          .DataTextField("Name")
+                              .DataValueField("GlFiscalYearId")
+                                  .DataSource(dataSource =>
+                                  {
+                       dataSource.Read(read => read.Action("GetFiscalYear", "EmployeePerformance", new { area = "HRM" }))
+                            .ServerFiltering(false);
+                                                                                                           })
 
 
             )
@@ -73,38 +73,38 @@
 
             <label class="category-label" for="Period">@Resources.HR_PerformanceManagment_EmployeeMeasurementDefinition_PeriodId</label>
             @(Html.Kendo().DropDownListFor(m => m)
-                                                                                                                                     .Name("Period")
-                                                                                                                                             //.Placeholder("Period")
-                                                                                                                                             .OptionLabel(Resources.Select)
-                                                                                                                                             .Filter("contains")
-                                                                                                                                              .CascadeFrom("GlFiscalYearId")
-                                                                                                                                             .DataTextField("Name")
-                                                                                                                                                     .DataSource(dataSource =>
-                                                                                                                                                     {
-                                                                                                                                          dataSource.Read(read => read.Action("GetPeriodList", "EmployeePerformance", new { area = "HRM" }).Data("filterPeriod"))
-                                                       .ServerFiltering(true);
-                                                                                                                                      })
-                                                                                                                                                     .DataValueField("QuarterId")
-                                                                                                                             .AutoBind(false)
-                                                                                                                                             .Events(e => e.Change("Period"))
-                                                                                                                             .HtmlAttributes(new { style = "width: 150px;" })
+                 .Name("Period")
+                         //.Placeholder("Period")
+                         .OptionLabel(Resources.Select)
+                         .Filter("contains")
+                          .CascadeFrom("GlFiscalYearId")
+                         .DataTextField("Name")
+                                 .DataSource(dataSource =>
+                                 {
+                      dataSource.Read(read => read.Action("GetPeriodList", "EmployeePerformance", new { area = "HRM" }).Data("filterPeriod"))
+                             .ServerFiltering(true);
+                                                })
+                                            .DataValueField("QuarterId")
+                                       .AutoBind(false)
+                                                       .Events(e => e.Change("Period"))
+                                       .HtmlAttributes(new { style = "width: 150px;" })
 
             )
             <label class="category-label" for="EmployeeId">@Resources.HR_PerformanceManagment_EmployeeMeasurementDefinition_PersonEmployee</label>
             @(Html.Kendo().DropDownListFor(m => m)
-                                                                                                                                          .Name("EmployeeId")
-                                                                                                                                                  .OptionLabel(Resources.Select)
-                                                                                                                                                  .Filter("contains")
-                                                                                                                                                  .DataTextField("FullNameaEnglish")
-                                                                                                                                                   .DataValueField("EmployeeId")
+                  .Name("EmployeeId")
+                          .OptionLabel(Resources.Select)
+                          .Filter("contains")
+                          .DataTextField("FullNameaEnglish")
+                           .DataValueField("EmployeeId")
 
-                                                                                                                                                            .DataSource(dataSource =>
-                                                                                                                                                            {
-                                                                                                                                                 dataSource.Read(read => read.Action("GetEmployeesByUserForPerformanceEvaluation", "HRMDataProvider", new { area = "HRM" }))
-                                                              .ServerFiltering(false);
-                                                                                                                                             })
+                                    .DataSource(dataSource =>
+                                    {
+                         dataSource.Read(read => read.Action("GetEmployeesByUserForPerformanceEvaluation", "HRMDataProvider", new { area = "HRM" }))
+                                   .ServerFiltering(false);
+                                          })
 
-                                                                                                                                  .HtmlAttributes(new { style = "width: 150px;" })
+                                     .HtmlAttributes(new { style = "width: 150px;" })
 
             )
 
@@ -114,30 +114,30 @@
 
             <label class="category-label" for="LookupId">@Resources.HR_PerformanceManagment_EmployeePerformance_EvaluationType</label>
             @(Html.Kendo().ComboBox()
-                                                                                                                                                  .Name("LookupId")
-                                                                                                                                          .Placeholder("Type")
-                                                                                                                                          .DataTextField("Description")
-                                                                                                                                          .BindTo((IEnumerable)ViewData["EvaluationTypes"])
-                                                                                                                                          .DataValueField("LookupId")
-                                                                                                                                          .AutoBind(false)
-                                                                                                                                          //.Events(e => e.Change("Process"))
-                                                                                                                                          .HtmlAttributes(new { style = "width: 150px;" })
+                            .Name("LookupId")
+                    .Placeholder("Type")
+                    .DataTextField("Description")
+                    .BindTo((IEnumerable)ViewData["EvaluationTypes"])
+                    .DataValueField("LookupId")
+                    .AutoBind(false)
+                    //.Events(e => e.Change("Process"))
+                    .HtmlAttributes(new { style = "width: 150px;" })
 
             )
 
             @(Html.Kendo().Button()
-                                                                                                                .Name("btnRefresh")
-                                                                                                                .HtmlAttributes(new { type = "button", @class = "k-primary" })
-                                                                                                                   .Events(e => e.Click("Process"))
-                                                                                                                   .Content(Resources.Show))
+                      .Name("btnRefresh")
+                      .HtmlAttributes(new { type = "button", @class = "k-primary" })
+                         .Events(e => e.Click("Process"))
+                         .Content(Resources.Show))
             &nbsp; &nbsp;
             &nbsp; &nbsp;
             &nbsp;  &nbsp;
             @(Html.Kendo().Button()
-                                                                                                              .Name("btnApprove")
-                                                                                                              .HtmlAttributes(new { type = "button", @class = "btn btn-success" })
-                                                                                                                 .Events(e => e.Click("Approve"))
-                                                                                                                 .Content("Approve"))
+                     .Name("btnApprove")
+                            .HtmlAttributes(new { type = "button", @class = "btn btn-success" })
+                               .Events(e => e.Click("Approve"))
+                               .Content("Approve"))
 
 
         </div>

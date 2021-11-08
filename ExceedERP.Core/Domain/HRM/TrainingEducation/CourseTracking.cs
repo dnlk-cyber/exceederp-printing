@@ -11,26 +11,26 @@ namespace ExceedERP.Core.Domain.HRM.TrainingEducation
     {
         [Key]
         public int CourseTrackingId { get; set; }
-        [Required]
+       // [Required]
         [Display(Name = "HR_TrainingEducation_TrainingPlan", ResourceType = typeof(Localization.Resources))]
-        public int TrainingPlanId { get; set; }
-        public virtual TrainingPlan TrainingPlan { get; set; }           
-        [Required ]
+        public int? TrainingPlanId { get; set; }
+       // public virtual TrainingPlan TrainingPlan { get; set; }           
+        //[Required ]
         [Display(Name = "HR_TrainingEducation_CourseTracking_Period", ResourceType = typeof(Localization.Resources))]
         public int GlFiscalYearId { get; set; }
-        public virtual GlFiscalYear GlFiscalYear { get; set; }
-        [Required ]
+       // public virtual GlFiscalYear GlFiscalYear { get; set; }
+       // [Required ]
         [Display(Name = "HR_TrainingEducation_CourseTracking_Course", ResourceType = typeof(Localization.Resources))]
         public int LookupId { get; set; }
-        public virtual Lookup Lookup { get; set; }
-        [Required ]
+      //  public virtual Lookup Lookup { get; set; }
+       // [Required ]
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}")]
         [Display(Name = "HR_TrainingEducation_CourseTracking_From", ResourceType = typeof(Localization.Resources))]
         public DateTime From { get; set; }
         [Display(Name = "HR_TrainingEducation_CourseTracking_From", ResourceType = typeof(Localization.Resources))]
         public string FromAmharic { get; set; }
-        [Required ]
+        //[Required ]
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}")]
         [Display(Name = "HR_TrainingEducation_CourseTracking_To", ResourceType = typeof(Localization.Resources))]
@@ -47,12 +47,13 @@ namespace ExceedERP.Core.Domain.HRM.TrainingEducation
         public TrainingLocation TrainingLocation { get; set; }
         [Display(Name = "HR_TrainingEducation_CourseTracking_Organization", ResourceType = typeof(Localization.Resources))]
         public int MainCompanyId { get; set; }
-        public virtual MainCompany MainCompany { get; set; }
+       // public virtual MainCompany MainCompany { get; set; }
         [Display(Name = "HR_TrainingEducation_CourseTracking_IsOnJob", ResourceType = typeof(Localization.Resources))]
         public bool IsOnJob { get; set; }
         [Display(Name = "Remark", ResourceType = typeof(Localization.Resources))]
         public string Remark { get; set; }
         public int NoOfTrainee { get; set; }
+        public TrainingRequestType TrainingRequestType { get; set; }
 
     }
 }                                                

@@ -22,7 +22,7 @@ namespace ExceedERP.Reporting.HRM.HRM
             this.DataSource = Organization;
             var culture = "am-ET";//System.Threading.Thread.CurrentThread.CurrentUICulture.ToString();
             var cultures = new CultureInfo(culture);
-            this.Page.Value = Resources.ResourceManager.GetString("Rpt_Page", cultures);
+           // this.Page.Value = Resources.ResourceManager.GetString("Rpt_Page", cultures);
             this.JobTitle.Value = Resources.ResourceManager.GetString("Rpt_No", cultures);
             this.No.Value = Resources.ResourceManager.GetString("Rpt_No", cultures);
             this.JobTitle.Value = Resources.ResourceManager.GetString("Rpt_JobTitle", cultures);

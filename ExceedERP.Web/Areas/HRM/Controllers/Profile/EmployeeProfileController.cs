@@ -30,6 +30,7 @@ using ExceedERP.Core.Domain.HRM.EmployeeDetail;
 using ExceedERP.Core.Domain.HRM.TrainingEducation;
 using ExceedERP.Web.Hubs;
 using ExceedERP.Helpers.HR;
+using ExceedERP.Web.Models;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
 {
@@ -52,22 +53,37 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
         HRMInputs inputs = new HRMInputs();
         public ActionResult Index()
         {
+            ViewData["JobTitleAutoComplate"] = db.Lookups.Where(x => x.LookupType == LookUpTypes.JOB_TITLE).Select(x => x.Description).ToList();
+            ViewData["JobTitleExternalExperience"] = db.Lookups.Where(x => x.LookupType == LookUpTypes.Jobtitle_External_Experience).ToList();
             var commtTypes = db.Lookups.Where(x => x.LookupType == LookUpTypes.COMMITMENT_TYPE);
             ViewData["commitment"] = commtTypes;
             var cosignTypes = db.Lookups.Where(x => x.LookupType == LookUpTypes.COSIGN_TYPE);
             ViewData["CosignType"] = cosignTypes;
-            ViewData["EmployeeTypes"] = db.EmployeeTypes.Select(e => new { e.EmployeeTypeId, e.Name }).ToList();
 
-
+            ViewData["Measures"] = db.DisciplineMeasures;
+            ViewData["MeasuresDetails"] = db.DisciplineMeasuresDetail;
 
             GetEducationFiled();
             GetEducationLevel();
             SetInitialDatas();
             ViewData["Branch"] = db.Branch.ToList();
+
+            ViewData["OldJobTitle"] = db.Lookups.Where(x => x.LookupType == LookUpTypes.OLD_JOB_TITLE || x.LookupType == LookUpTypes.JOB_TITLE).ToList();
+
+            GetPlacementAfterSystem();
             Notifications();
+
             return View();
         }
 
+        public void GetPlacementAfterSystem()
+        {
+            ViewData["branches"] = db.Branch.ToList();
+            ViewData["workunits"] = db.MainCompanyStructures.ToList();
+            ViewData["Jobtitle"] = db.Lookups.Where(x => x.LookupType == LookUpTypes.JOB_TITLE).ToList();
+            ViewData["RankList"] = db.Ranks.ToList();
+            ViewData["StepList"] = db.Steps.ToList();
+        }
         private void Notifications()
         {
 
@@ -109,16 +125,16 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                     };
 
                     Notify.NotifyUser(notif);
-                }             
+                }
 
             }
-            foreach (var per in persons.Where(x=>x.Status == EmployeeStatus.PROBATION))
+            foreach (var per in persons.Where(x => x.Status == EmployeeStatus.PROBATION))
             {
                 var config = db.Configurations.FirstOrDefault(x => x.Category == "HRM" && x.Attribute == ProbationSetting.Probation_Period.ToString());
                 if (config != null)
                 {
-                   // var dayss = DateTime.Today.Date.Subtract(per.HiredDate.Date).Days;
-                    var dayss = HrHelper.GetWorkingDays(per.HiredDate,DateTime.Today);
+                    // var dayss = DateTime.Today.Date.Subtract(per.HiredDate.Date).Days;
+                    var dayss = HrHelper.GetWorkingDays(per.HiredDate, DateTime.Today);
                     var orginalday = Convert.ToInt32(config.CurrentValue);
                     var day = Convert.ToInt32(config.CurrentValue) - 5;
                     if (dayss >= day)
@@ -138,15 +154,21 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
 
 
         }
-
-        public string GenerateProfile(string id, string text)
+        public JsonResult GenerateProfile(string id, string text)
         {
             int EmployeeId = Convert.ToInt32(id);
             string NewEmployeeCode = text;
 
+            string EmpCodeGenerated = GenerateEmployeeCode(DateTime.Today);
+
+            if (!string.IsNullOrEmpty(EmpCodeGenerated))
+            {
+                NewEmployeeCode = EmpCodeGenerated;
+            }
+
             int EmployeeIdNew = 0;
 
-            if (id != null && text != null)
+            if (id != null && !string.IsNullOrEmpty(NewEmployeeCode))
             {
                 var employee = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == EmployeeId);
                 var educations = db.Education.Where(x => x.EmployeeId == EmployeeId).ToList();
@@ -163,8 +185,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                 var attachmentsDocument = db.Attachments.Where(x => x.Reference == EmployeeId.ToString() && x.ReferenceType == AttachmentType.DOCUMENT && x.Remark == EmployeeId.ToString()).ToList();
                 var contracts = db.Contract.Where(x => x.EmployeeId == EmployeeId).ToList();
 
-                #region  Add Profile
-                if (employee != null)
+                if (employee != null && !employee.IsActive)
                 {
                     var person = new Person_Employee
                     {
@@ -185,7 +206,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                         Title = employee.Title,
                         Gender = employee.Gender,
                         CategoryID = employee.CategoryID,
-                        IsActive = false,
+                        IsActive = true,
                         Remark = employee.Remark,
                         DateCreated = DateTime.Now,
                         LastModified = employee.LastModified,
@@ -205,337 +226,368 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                     db.SaveChanges();
 
                     EmployeeIdNew = person.EmployeeId;
-                }
-                #endregion
 
-                #region Education
-                foreach (var edu in educations)
-                {
-                    var education = new Education
+
+
+                    #region Education
+                    foreach (var edu in educations)
                     {
-                        EmployeeId = EmployeeIdNew,
-                        OrganizationName = edu.OrganizationName,
-                        OrgAddress = edu.OrgAddress,
-                        From = edu.From,
-                        To = edu.To,
-                        Score = edu.Score,
-                        EduLevel = edu.EduLevel,
-                        EduField = edu.EduField,
-                        TotalCost = edu.TotalCost,
-                        PercentCoverdByOrg = edu.PercentCoverdByOrg,
-                        Remark = edu.Remark,
-                        FromEAmharic = edu.FromEAmharic,
-                        ToEAmharic = edu.ToEAmharic,
-                        IsHighLevel = edu.IsHighLevel,
+                        var education = new Education
+                        {
+                            EmployeeId = EmployeeIdNew,
+                            OrganizationName = edu.OrganizationName,
+                            OrgAddress = edu.OrgAddress,
+                            From = edu.From,
+                            To = edu.To,
+                            Score = edu.Score,
+                            EduLevel = edu.EduLevel,
+                            EduField = edu.EduField,
+                            TotalCost = edu.TotalCost,
+                            PercentCoverdByOrg = edu.PercentCoverdByOrg,
+                            Remark = edu.Remark,
+                            FromEAmharic = edu.FromEAmharic,
+                            ToEAmharic = edu.ToEAmharic,
+                            IsHighLevel = edu.IsHighLevel,
+                        };
+
+                        db.Education.Add(education);
+                        db.SaveChanges();
+                    }
+                    #endregion
+
+                    #region Experience
+                    foreach (var exp in experiences)
+                    {
+                        var experience = new Experience
+                        {
+                            EmployeeId = EmployeeIdNew,
+                            Organozation = exp.Organozation,
+                            OrgFullAddress = exp.OrgFullAddress,
+                            EmploymentType = exp.EmploymentType,
+                            From = exp.From,
+                            To = exp.To,
+                            TotalDuration = exp.TotalDuration,
+                            TotalExp = exp.TotalExp,
+                            Responsibility = exp.Responsibility,
+                            ClearanceDateTime = exp.ClearanceDateTime,
+                            CleranceReason = exp.CleranceReason,
+                            IncomeTaxPaymentRefNo = exp.IncomeTaxPaymentRefNo,
+                            Remark = exp.Remark,
+                            Salary = exp.Salary,
+                            EmployeeCode = exp.EmployeeCode,
+                            FromExAmharic = exp.FromExAmharic,
+                            ToExAmharic = exp.ToExAmharic,
+                            ClearanceDateTimeAm = exp.ClearanceDateTimeAm,
+                            IsPrivate = exp.IsPrivate,
+                        };
+
+                        db.Experiences.Add(experience);
+                        db.SaveChanges();
+                    }
+                    #endregion
+
+                    #region Training
+                    foreach (var tr in trainings)
+                    {
+                        var training = new Training
+                        {
+                            OrganizationName = tr.OrganizationName,
+                            EmployeeId = EmployeeIdNew,
+                            OrgAddress = tr.OrgAddress,
+                            IsTraining = true,
+                            From = tr.From,
+                            To = tr.To,
+                            Score = tr.Score,
+                            TotalCost = tr.TotalCost,
+                            TrainingName = tr.TrainingName,
+                            PercentCoverdByOrg = tr.PercentCoverdByOrg,
+                            Remark = tr.Remark,
+                            DateCreated = DateTime.Now,
+                            LastModified = tr.LastModified,
+                            CreatedBy = User.Identity.Name,
+                            ModifiedBy = tr.ModifiedBy,
+                            FromTrAm = tr.FromTrAm,
+                            ToTraAm = tr.ToTraAm
+                        };
+
+                        db.EmpTrainingEducations.Add(training);
+                        db.SaveChanges();
+                    }
+                    #endregion
+
+                    #region Language
+                    foreach (var lg in languages)
+                    {
+                        var language = new LanguageProficiency
+                        {
+                            EmployeeId = EmployeeIdNew,
+                            LanguageId = lg.LanguageId,
+                            Reading = lg.Reading,
+                            Listening = lg.Listening,
+                            Writing = lg.Writing,
+                            Speaking = lg.Speaking,
+                            Remark = lg.Remark,
+                            DateCreated = DateTime.Now,
+                            LastModified = lg.LastModified,
+                            CreatedBy = User.Identity.Name,
+                            ModifiedBy = lg.ModifiedBy
+                        };
+
+                        db.LanguageOfProficiencies.Add(language);
+                        db.SaveChanges();
+                    }
+                    #endregion
+
+                    #region Competency
+                    foreach (var cmp in competencies)
+                    {
+                        var comptncy = new Competency
+                        {
+                            EmployeeId = EmployeeIdNew,
+                            Level = cmp.Level,
+                            LookupId = cmp.LookupId,
+                            Status = cmp.Status,
+                            From = cmp.From,
+                            To = cmp.To,
+                            Remark = cmp.Remark,
+                            DateCreated = DateTime.Now,
+                            LastModified = cmp.LastModified,
+                            CreatedBy = User.Identity.Name,
+                            ModifiedBy = cmp.ModifiedBy,
+                            FromComAm = cmp.FromComAm,
+                            ToCompAm = cmp.ToCompAm,
+                        };
+
+                        db.Competencies.Add(comptncy);
+                        db.SaveChanges();
+                    }
+                    #endregion
+
+                    #region Association
+                    foreach (var assos in associasions)
+                    {
+                        var association = new EmployeeAssociation
+                        {
+                            AssociationId = assos.AssociationId,
+                            Name = assos.Name,
+                            LookupId = assos.LookupId,
+                            EmployeeId = EmployeeIdNew,
+
+                            Remark = assos.Remark,
+                            DateCreated = DateTime.Now,
+                            LastModified = assos.LastModified,
+                            CreatedBy = User.Identity.Name,
+                            ModifiedBy = assos.ModifiedBy
+                        };
+
+                        db.EmployeeAssociation.Add(association);
+                        db.SaveChanges();
+                    }
+                    #endregion
+
+                    #region Emergencies
+                    foreach (var em in emergencies)
+                    {
+                        var emergency = new Emergency
+                        {
+                            EmergencyId = em.EmergencyId,
+                            Name = em.Name,
+                            LookupId = em.LookupId,
+                            EmployeeId = EmployeeIdNew,
+                            HomePhoneNo = em.HomePhoneNo,
+                            MobilePhoneNo = em.MobilePhoneNo,
+                            WorkPhoneno = em.WorkPhoneno,
+                            Remark = em.Remark,
+                            DateCreated = DateTime.Now,
+                            LastModified = em.LastModified,
+                            CreatedBy = User.Identity.Name,
+                            ModifiedBy = em.ModifiedBy
+                        };
+
+                        db.Emergencies.Add(emergency);
+                        db.SaveChanges();
+                    }
+                    #endregion
+
+                    #region Disabilities
+                    foreach (var disab in disabilities)
+                    {
+                        var disability = new Disability
+                        {
+                            EmployeeId = EmployeeIdNew,
+                            Type = disab.Type,
+                            Remark = disab.Remark,
+                            DateCreated = DateTime.Now,
+                            LastModified = disab.LastModified,
+                            CreatedBy = User.Identity.Name,
+                            ModifiedBy = disab.ModifiedBy
+                        };
+
+                        db.Disabilities.Add(disability);
+                        db.SaveChanges();
+
+                    }
+                    #endregion
+
+                    #region Address
+                    foreach (var add in addresses)
+                    {
+                        var address = new Address
+                        {
+                            Reference = EmployeeIdNew.ToString(),
+                            Category = add.Category,
+                            Value = add.Value,
+                            ReferenceType = add.ReferenceType,
+                            Remark = add.Remark,
+                            DateCreated = DateTime.Now,
+                            LastModified = add.LastModified,
+                            CreatedBy = User.Identity.Name,
+                            ModifiedBy = add.ModifiedBy
+                        };
+
+                        db.Addresses.Add(address);
+                        db.SaveChanges();
+
+                    }
+                    #endregion
+
+                    #region Identification
+                    foreach (var iden in identifications)
+                    {
+                        var identification = new Identification
+                        {
+                            Reference = EmployeeIdNew.ToString(),
+                            ReferenceType = iden.ReferenceType,
+                            Description = iden.Description,
+                            IdNumber = iden.IdNumber,
+                            Type = iden.Type,
+                            IssueDate = iden.IssueDate,
+                            ExpiryDate = iden.ExpiryDate,
+                            Issuer = iden.Issuer,
+                            Remark = iden.Remark,
+                            DateCreated = DateTime.Now,
+                            LastModified = iden.LastModified,
+                            CreatedBy = User.Identity.Name,
+                            ModifiedBy = iden.ModifiedBy,
+                            IssueDateIdAm = iden.IssueDateIdAm,
+                            ExpiryDateAm = iden.ExpiryDateAm
+                        };
+
+                        db.Identifications.Add(identification);
+                        db.SaveChanges();
+
+                    }
+                    #endregion
+
+                    #region Attachment Photo
+                    foreach (var atach in attachmentsPhoto)
+                    {
+                        var entity = new Attachment
+                        {
+                            ReferenceType = atach.ReferenceType,
+                            Reference = EmployeeIdNew.ToString(),
+                            Description = atach.Description,
+                            URL = atach.URL,
+                            BinaryFile = atach.BinaryFile,
+                            FileType = atach.FileType,
+                            Index = atach.Index,
+                            Remark = EmployeeIdNew.ToString(),
+                            FileName = atach.FileName
+                        };
+
+                        db.Attachments.Add(entity);
+                        db.SaveChanges();
+
+                    }
+                    #endregion
+
+                    #region Attachment Document
+                    foreach (var atachD in attachmentsDocument)
+                    {
+                        var entity = new Attachment
+                        {
+                            ReferenceType = atachD.ReferenceType,
+                            Reference = EmployeeIdNew.ToString(),
+                            Description = atachD.Description,
+                            URL = atachD.URL,
+                            BinaryFile = atachD.BinaryFile,
+                            FileType = atachD.FileType,
+                            Index = atachD.Index,
+                            Remark = EmployeeIdNew.ToString(),
+                            FileName = atachD.FileName
+                        };
+
+                        db.Attachments.Add(entity);
+                        db.SaveChanges();
+
+                    }
+                    #endregion
+
+                    #region Contracts
+                    foreach (var cont in contracts)
+                    {
+                        var contract = new Contract
+                        {
+                            ContractId = cont.ContractId,
+                            From = cont.From,
+                            To = cont.To,
+                            MonthlySalary = cont.MonthlySalary,
+                            EmployeeId = EmployeeIdNew,
+                            Remark = cont.Remark,
+                            DateCreated = DateTime.Now,
+                            LastModified = cont.LastModified,
+                            CreatedBy = User.Identity.Name,
+                            ModifiedBy = cont.ModifiedBy,
+                            FromContAm = cont.FromContAm,
+                            ToContAm = cont.ToContAm
+                        };
+
+                        db.Contract.Add(contract);
+                        db.SaveChanges();
+
+                    }
+                    #endregion
+                }
+                else if (employee.IsActive)
+                {
+                    var duplication = new
+                    {
+                        Message = "This Employee is active can't duplicate",
+                        Status = "Fail"
                     };
 
-                    db.Education.Add(education);
-                    db.SaveChanges();
+                    return Json(duplication, JsonRequestBehavior.AllowGet);
                 }
-                #endregion
-
-                #region Experience
-                foreach (var exp in experiences)
+                else
                 {
-                    var experience = new Experience
+                    var nulReturn = new
                     {
-                        EmployeeId = EmployeeIdNew,
-                        Organozation = exp.Organozation,
-                        OrgFullAddress = exp.OrgFullAddress,
-                        EmploymentType = exp.EmploymentType,
-                        From = exp.From,
-                        To = exp.To,
-                        TotalDuration = exp.TotalDuration,
-                        TotalExp = exp.TotalExp,
-                        Responsibility = exp.Responsibility,
-                        ClearanceDateTime = exp.ClearanceDateTime,
-                        CleranceReason = exp.CleranceReason,
-                        IncomeTaxPaymentRefNo = exp.IncomeTaxPaymentRefNo,
-                        Remark = exp.Remark,
-                        Salary = exp.Salary,
-                        EmployeeCode = exp.EmployeeCode,
-                        FromExAmharic = exp.FromExAmharic,
-                        ToExAmharic = exp.ToExAmharic,
-                        ClearanceDateTimeAm = exp.ClearanceDateTimeAm,
-                        IsPrivate = exp.IsPrivate,
+                        Message = "No such employee",
+                        Status = "Fail"
                     };
 
-                    db.Experiences.Add(experience);
-                    db.SaveChanges();
+                    return Json(nulReturn, JsonRequestBehavior.AllowGet);
                 }
-                #endregion
-
-                #region Training
-                foreach (var tr in trainings)
-                {
-                    var training = new Training
-                    {
-                        OrganizationName = tr.OrganizationName,
-                        EmployeeId = EmployeeIdNew,
-                        OrgAddress = tr.OrgAddress,
-                        IsTraining = true,
-                        From = tr.From,
-                        To = tr.To,
-                        Score = tr.Score,
-                        TotalCost = tr.TotalCost,
-                        TrainingName = tr.TrainingName,
-                        PercentCoverdByOrg = tr.PercentCoverdByOrg,
-                        Remark = tr.Remark,
-                        DateCreated = DateTime.Now,
-                        LastModified = tr.LastModified,
-                        CreatedBy = User.Identity.Name,
-                        ModifiedBy = tr.ModifiedBy,
-                        FromTrAm = tr.FromTrAm,
-                        ToTraAm = tr.ToTraAm
-                    };
-
-                    db.EmpTrainingEducations.Add(training);
-                    db.SaveChanges();
-                }
-                #endregion
-
-                #region Language
-                foreach (var lg in languages)
-                {
-                    var language = new LanguageProficiency
-                    {
-                        EmployeeId = EmployeeIdNew,
-                        LanguageId = lg.LanguageId,
-                        Reading = lg.Reading,
-                        Listening = lg.Listening,
-                        Writing = lg.Writing,
-                        Speaking = lg.Speaking,
-                        Remark = lg.Remark,
-                        DateCreated = DateTime.Now,
-                        LastModified = lg.LastModified,
-                        CreatedBy = User.Identity.Name,
-                        ModifiedBy = lg.ModifiedBy
-                    };
-
-                    db.LanguageOfProficiencies.Add(language);
-                    db.SaveChanges();
-                }
-                #endregion
-
-                #region Competency
-                foreach (var cmp in competencies)
-                {
-                    var comptncy = new Competency
-                    {
-                        EmployeeId = EmployeeIdNew,
-                        Level = cmp.Level,
-                        LookupId = cmp.LookupId,
-                        Status = cmp.Status,
-                        From = cmp.From,
-                        To = cmp.To,
-                        Remark = cmp.Remark,
-                        DateCreated = DateTime.Now,
-                        LastModified = cmp.LastModified,
-                        CreatedBy = User.Identity.Name,
-                        ModifiedBy = cmp.ModifiedBy,
-                        FromComAm = cmp.FromComAm,
-                        ToCompAm = cmp.ToCompAm,
-                    };
-
-                    db.Competencies.Add(comptncy);
-                    db.SaveChanges();
-                }
-                #endregion
-
-                #region Association
-                foreach (var assos in associasions)
-                {
-                    var association = new EmployeeAssociation
-                    {
-                        AssociationId = assos.AssociationId,
-                        Name = assos.Name,
-                        LookupId = assos.LookupId,
-                        EmployeeId = EmployeeIdNew,
-
-                        Remark = assos.Remark,
-                        DateCreated = DateTime.Now,
-                        LastModified = assos.LastModified,
-                        CreatedBy = User.Identity.Name,
-                        ModifiedBy = assos.ModifiedBy
-                    };
-
-                    db.EmployeeAssociation.Add(association);
-                    db.SaveChanges();
-                }
-                #endregion
-
-                #region Emergencies
-                foreach (var em in emergencies)
-                {
-                    var emergency = new Emergency
-                    {
-                        EmergencyId = em.EmergencyId,
-                        Name = em.Name,
-                        LookupId = em.LookupId,
-                        EmployeeId = EmployeeIdNew,
-                        HomePhoneNo = em.HomePhoneNo,
-                        MobilePhoneNo = em.MobilePhoneNo,
-                        WorkPhoneno = em.WorkPhoneno,
-                        Remark = em.Remark,
-                        DateCreated = DateTime.Now,
-                        LastModified = em.LastModified,
-                        CreatedBy = User.Identity.Name,
-                        ModifiedBy = em.ModifiedBy
-                    };
-
-                    db.Emergencies.Add(emergency);
-                    db.SaveChanges();
-                }
-                #endregion
-
-                #region Disabilities
-                foreach (var disab in disabilities)
-                {
-                    var disability = new Disability
-                    {
-                        EmployeeId = EmployeeIdNew,
-                        Type = disab.Type,
-                        Remark = disab.Remark,
-                        DateCreated = DateTime.Now,
-                        LastModified = disab.LastModified,
-                        CreatedBy = User.Identity.Name,
-                        ModifiedBy = disab.ModifiedBy
-                    };
-
-                    db.Disabilities.Add(disability);
-                    db.SaveChanges();
-
-                }
-                #endregion
-
-                #region Address
-                foreach (var add in addresses)
-                {
-                    var address = new Address
-                    {
-                        Reference = EmployeeIdNew.ToString(),
-                        Category = add.Category,
-                        Value = add.Value,
-                        ReferenceType = add.ReferenceType,
-                        Remark = add.Remark,
-                        DateCreated = DateTime.Now,
-                        LastModified = add.LastModified,
-                        CreatedBy = User.Identity.Name,
-                        ModifiedBy = add.ModifiedBy
-                    };
-
-                    db.Addresses.Add(address);
-                    db.SaveChanges();
-
-                }
-                #endregion
-
-                #region Identification
-                foreach (var iden in identifications)
-                {
-                    var identification = new Identification
-                    {
-                        Reference = EmployeeIdNew.ToString(),
-                        ReferenceType = iden.ReferenceType,
-                        Description = iden.Description,
-                        IdNumber = iden.IdNumber,
-                        Type = iden.Type,
-                        IssueDate = iden.IssueDate,
-                        ExpiryDate = iden.ExpiryDate,
-                        Issuer = iden.Issuer,
-                        Remark = iden.Remark,
-                        DateCreated = DateTime.Now,
-                        LastModified = iden.LastModified,
-                        CreatedBy = User.Identity.Name,
-                        ModifiedBy = iden.ModifiedBy,
-                        IssueDateIdAm = iden.IssueDateIdAm,
-                        ExpiryDateAm = iden.ExpiryDateAm
-                    };
-
-                    db.Identifications.Add(identification);
-                    db.SaveChanges();
-
-                }
-                #endregion
-
-                #region Attachment Photo
-                foreach (var atach in attachmentsPhoto)
-                {
-                    var entity = new Attachment
-                    {
-                        ReferenceType = atach.ReferenceType,
-                        Reference = EmployeeIdNew.ToString(),
-                        Description = atach.Description,
-                        URL = atach.URL,
-                        BinaryFile = atach.BinaryFile,
-                        FileType = atach.FileType,
-                        Index = atach.Index,
-                        Remark = EmployeeIdNew.ToString(),
-                        FileName = atach.FileName
-                    };
-
-                    db.Attachments.Add(entity);
-                    db.SaveChanges();
-
-                }
-                #endregion
-
-                #region Attachment Document
-                foreach (var atachD in attachmentsDocument)
-                {
-                    var entity = new Attachment
-                    {
-                        ReferenceType = atachD.ReferenceType,
-                        Reference = EmployeeIdNew.ToString(),
-                        Description = atachD.Description,
-                        URL = atachD.URL,
-                        BinaryFile = atachD.BinaryFile,
-                        FileType = atachD.FileType,
-                        Index = atachD.Index,
-                        Remark = EmployeeIdNew.ToString(),
-                        FileName = atachD.FileName
-                    };
-
-                    db.Attachments.Add(entity);
-                    db.SaveChanges();
-
-                }
-                #endregion
-
-                #region Contracts
-                foreach (var cont in contracts)
-                {
-                    var contract = new Contract
-                    {
-                        ContractId = cont.ContractId,
-                        From = cont.From,
-                        To = cont.To,
-                        MonthlySalary = cont.MonthlySalary,
-                        EmployeeId = EmployeeIdNew,
-                        Remark = cont.Remark,
-                        DateCreated = DateTime.Now,
-                        LastModified = cont.LastModified,
-                        CreatedBy = User.Identity.Name,
-                        ModifiedBy = cont.ModifiedBy,
-                        FromContAm = cont.FromContAm,
-                        ToContAm = cont.ToContAm
-                    };
-
-                    db.Contract.Add(contract);
-                    db.SaveChanges();
-
-                }
-                #endregion
             }
             else
             {
-                ModelState.AddModelError("", "First enter the new ID");
+                var formatedData1 = new
+                {
+                    Message = "First enter the new ID",
+                    Status = "OK"
+                };
+
+                return Json(formatedData1, JsonRequestBehavior.AllowGet);
             }
 
+            var formatedData2 = new
+            {
+                Message = "Successfully Generated",
+                Status = "OK"
+            };
 
-            return "successfully duplicated";
+            return Json(formatedData2, JsonRequestBehavior.AllowGet);
         }
-
         public ActionResult Refresh()
         {
             var allEmployee = db.Person_Employee.ToList();
@@ -555,7 +607,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                 }
                 else
                 {
-                    var placement = db.Placements.Where(x => x.EmployeeId == p.EmployeeId).OrderByDescending(x=>x.AssignmentDate).FirstOrDefault();
+                    var placement = db.Placements.Where(x => x.EmployeeId == p.EmployeeId).OrderByDescending(x => x.AssignmentDate).FirstOrDefault();
                     if (placement != null)
                     {
                         p.BranchId = placement.BranchId;
@@ -606,9 +658,129 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
             ViewData["EduLevelList"] = lookups;
             return Json(lookups.Select(p => new { LookupId = p.LookupId, Description = p.Description }), JsonRequestBehavior.AllowGet);
         }
-        public ActionResult DownloadFile(string filename)
+        public ActionResult Upload(HttpPostedFileBase file)
         {
-            if (HRMInputs.SelectedFile == 0)
+            try
+            {
+                if (file.ContentLength > 0)
+                {
+                    var fileExtension = Path.GetFileName(file.FileName).Split('.')[1];
+                    var path = Path.Combine(Server.MapPath("~/Content/Images/" + HRMInputs.EmployeeId.ToString() + "-" + AttachmentType.PHOTO), HRMInputs.EmployeeId.ToString() + "." + fileExtension);
+                    var mainPath = Path.Combine(Server.MapPath("~/Content/Images/" + HRMInputs.EmployeeId.ToString() + "-" + AttachmentType.PHOTO));
+
+                    if (!Directory.Exists(mainPath))
+                    {
+                        Directory.CreateDirectory(mainPath);
+                    }
+                    if (System.IO.File.Exists(path))
+                    {
+
+                        try
+                        {
+                            System.IO.File.Delete(path);
+                        }
+                        catch (System.IO.IOException e)
+                        {
+                            Console.WriteLine(e.Message);
+                            //  return;
+                        }
+                    }
+                    file.SaveAs(path);
+                    var checkExistance = db.Attachments.Where(x => x.Reference == HRMInputs.EmployeeId.ToString() && x.Description == HRMInputs.EmployeeId.ToString() + "." + fileExtension && x.ReferenceType == AttachmentType.PHOTO).ToList();
+                    if (checkExistance != null)
+                    {
+                        db.Attachments.RemoveRange(checkExistance);
+                        db.SaveChanges();
+                    }
+                    db = new ExceedDbContext();
+                    var entity = new Attachment
+                    {
+
+                        Reference = HRMInputs.EmployeeId.ToString(),
+                        Description = HRMInputs.EmployeeId.ToString() + "." + fileExtension,
+                        FileType = file.ContentType,
+                        ReferenceType = AttachmentType.PHOTO,
+                        Index = 0,
+                        URL = path,
+                        Remark = HRMInputs.Owner
+                    };
+                    db.Attachments.Add(entity);
+
+                    db.SaveChanges();
+                    ViewBag.Message = "Upload successful";
+                }
+
+                //}
+                //else
+                //{
+
+                //    ViewBag.Message = "The file is existed";
+
+                //}
+                return RedirectToAction("Index");
+            }
+            catch
+            {
+                ViewBag.Message = "Upload failed";
+                return RedirectToAction("Upload");
+            }
+        }
+        public ActionResult UploadDocument(HttpPostedFileBase file, string txtValue)
+        {
+            try
+            {
+                if (file.ContentLength > 0)
+                {
+
+                    var fileName = Path.GetFileName(file.FileName);
+                    var path = Path.Combine(Server.MapPath("~/Content/Images/" + HRMInputs.EmployeeId.ToString() + "-" + AttachmentType.DOCUMENT), HRMInputs.EmployeeId.ToString() + "-" + txtValue + "-" + fileName);
+
+                    var mainPath = Path.Combine(Server.MapPath("~/Content/Images/" + HRMInputs.EmployeeId.ToString() + "-" + AttachmentType.DOCUMENT));
+
+                    if (!Directory.Exists(mainPath))
+                    {
+                        Directory.CreateDirectory(mainPath);
+                    }
+                    if (!System.IO.File.Exists(path))
+                    {
+                        file.SaveAs(path);
+
+                        var entity = new Attachment
+                        {
+
+                            Reference = HRMInputs.EmployeeId.ToString(),
+                            Description = HRMInputs.EmployeeId.ToString() + "-" + txtValue + "-" + fileName,
+                            FileName = txtValue,
+                            FileType = file.ContentType,
+                            ReferenceType = AttachmentType.DOCUMENT,
+                            Index = 0,
+                            URL = path,
+                            Remark = HRMInputs.Owner
+                        };
+                        db.Attachments.Add(entity);
+
+                        db.SaveChanges();
+                        ViewBag.Message = "Upload successful";
+                    }
+
+                }
+                else
+                {
+
+                    ViewBag.Message = "The file is existed";
+
+                }
+                return RedirectToAction("Index");
+            }
+            catch
+            {
+                ViewBag.Message = "Upload failed";
+                return RedirectToAction("Upload");
+            }
+        }
+        public ActionResult DownloadFile(string filename, string attachId)
+        {
+            if (attachId == "0")
             {
                 string messages = "Please select the row first!!";
                 return new JavaScriptResult() { Script = "alert('" + messages + "');" };
@@ -617,9 +789,10 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
             db = new ExceedDbContext();
             try
             {
-                var attachment =
-                        db.Attachments.Where(x => x.Reference == filename && x.ReferenceType == AttachmentType.PHOTO && x.Remark == HRMInputs.Owner && x.AttachmentId == HRMInputs.SelectedFile)
-                            .FirstOrDefault();
+                int.TryParse(attachId, out int attachmentId);
+
+                var attachment = db.Attachments.FirstOrDefault(x => x.Reference == filename && x.ReferenceType == AttachmentType.PHOTO && x.AttachmentId == attachmentId);
+
                 if (attachment != null)
                 {
                     WebClient req = new WebClient();
@@ -645,42 +818,46 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
             HRMInputs.SelectedFile = 0;
             return null;
         }
-        public ActionResult DownloadDoument(string filename)
+        public ActionResult DownloadDoument(string filename, string attachId)
         {
-            if (HRMInputs.SelectedFile == 0)
+            if (attachId == "0")
             {
                 string messages = "Please select the row first!!";
                 return new JavaScriptResult() { Script = "alert('" + messages + "');" };
             }
 
             db = new ExceedDbContext();
-            try
-            {
-                var attachment =
-                        db.Attachments.Where(x => x.Reference == filename && x.ReferenceType == AttachmentType.DOCUMENT && x.Remark == HRMInputs.Owner && x.AttachmentId == HRMInputs.SelectedFile)
-                            .FirstOrDefault();
-                if (attachment != null)
-                {
-                    WebClient req = new WebClient();
-                    HttpResponse response = System.Web.HttpContext.Current.Response;
-                    response.Clear();
-                    response.ClearContent();
-                    response.ClearHeaders();
-                    response.Buffer = true;
-                    response.AddHeader("Content-Disposition",
-                        "attachment;filename=\"" + attachment.Description + "\"");
-                    byte[] datas = req.DownloadData(Server.MapPath("~/Content/Images/" + HRMInputs.EmployeeId.ToString() + "-" + AttachmentType.DOCUMENT + "/" + attachment.Description));
-                    response.BinaryWrite(datas);
-                    response.End();
-                    HRMInputs.SelectedFile = 0;
-                    return File(filename, attachment.FileType);
-                }
-            }
-            catch (Exception)
-            {
+            //try
+            //{
+            int.TryParse(attachId, out int attachmentId);
+            var attachment =
+                    db.Attachments.FirstOrDefault(x => x.Reference == filename && x.ReferenceType == AttachmentType.DOCUMENT && x.AttachmentId == attachmentId);
 
-                // throw;
+            if (attachment != null)
+            {
+                WebClient req = new WebClient();
+                HttpResponse response = System.Web.HttpContext.Current.Response;
+                response.Clear();
+                response.ClearContent();
+                response.ClearHeaders();
+                response.Buffer = true;
+                response.AddHeader("Content-Disposition",
+                    "attachment;filename=\"" + attachment.Description + "\"");
+                byte[] datas = req.DownloadData(Server.MapPath("~/Content/Images/" + HRMInputs.EmployeeId.ToString() + "-" + AttachmentType.DOCUMENT + "/" + attachment.Description));
+
+                // byte[] datas11 = req.DownloadData(Server.MapPath("~/Content/Images/" + HRMInputs.EmployeeId.ToString() + "-" + AttachmentType.PHOTO + "/" + attachment.Description));
+
+                response.BinaryWrite(datas);
+                response.End();
+                HRMInputs.SelectedFile = 0;
+                return File(filename, attachment.FileType);
             }
+            //}
+            //catch (Exception)
+            //{
+
+            //    // throw;
+            //}
             HRMInputs.SelectedFile = 0;
             return null;
         }
@@ -694,15 +871,15 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
             var relations = db.Lookups.Where(l => l.LookupType == LookUpTypes.RELATIONSHIP);
             ViewData["LanguageList"] = languageList != null ? languageList.ToList() : new List<Language>();
 
-            ViewData["PeriodList"] = periodList != null ? periodList.ToList() : new List<Period>();
+            ViewData["PeriodList"] = db.GLPeriods.ToList();// periodList != null ? periodList.ToList() : new List<Period>();
 
             ViewData["Relationship"] = relations != null ? relations.ToList() : new List<Lookup>();
-            ViewData["EmployeeList"] = inputs.GetEmployees(User.Identity.Name);
+            ViewData["EmployeeList"] = db.Person_Employee.ToList();//inputs.GetEmployees(User.Identity.Name);
             GetNation();
             GetNationality();
             var skillTypes = db.Lookups.Where(l => l.LookupType == LookUpTypes.SKILL_TYPE);
             ViewData["SkillTypes"] = skillTypes;
-            CheckEmployeeRetirment();
+            // CheckEmployeeRetirment();
         }
         public void CheckEmployeeRetirment()
         {
@@ -1052,8 +1229,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
             }
             return 0;
         }
-
-
         public ActionResult UpdateExperience()
         {
 
@@ -1085,47 +1260,35 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
             return RedirectToAction("Index");
 
         }
+        public int? GetContractLeftDay(int id)
+        {
+            var profile = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == id && x.IsActive && x.Status == EmployeeStatus.CONTRACT);
+            if (profile != null)
+            {
+                var contract = db.Contract.Where(x => x.EmployeeId == profile.EmployeeId).ToList().OrderByDescending(x => x.To).FirstOrDefault();
+                if (contract != null)
+                {
+                    int leftDay = (contract.To - DateTime.Today).Days;
 
+                    return leftDay;
+                }
+            }
+
+            return null;
+        }
 
         [AuthorizeRoles(HrmConstants.HRProfileUser, HrmConstants.HRProfileAdmin, HrmConstants.HRAdmin)]
         public ActionResult Person_Employee_Read([DataSourceRequest]DataSourceRequest request)
         {
-            var placmenets = db.Placements.Where(x => x.isCurrent).ToList();
-            //UpdateEmployeeBranch(placmenets);
+
+            //int branchId = UserInformationHelper.GetUserBranchByUserName(User.Identity.Name);
+
+            //var employees = placements.Where(x => x.BranchId == branchId).Select(x => x.EmployeeId);
+            //IQueryable<Person_Employee> person_employees = db.Person_Employee.Where(x => employees.Contains(x.EmployeeId) && x.IsActive);
 
             List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
             //List<string> employees = inputs.GetUserBranchEmployees(User.Identity.Name);
-            IQueryable<Person_Employee> person_employees = db.Person_Employee;//.Where(x => mybraches.Contains(x.OrgBranchName.ToString()));
-            string searchedValue = "";
-
-            if (request.Filters != null)
-            {
-                dd: if (request.Filters.Any())
-                {
-                    foreach (var filter in request.Filters)
-                    {
-                        var descriptor = filter as FilterDescriptor;
-                        if (descriptor != null)
-                        {
-                            if (descriptor.Member == "LastName" || descriptor.Member == "EmployeeCode" || descriptor.Member == "MiddleName" || descriptor.Member == "FirstName")
-                            {
-                                person_employees = ModifyFilters(request.Filters, person_employees).AsQueryable();
-
-                            }
-
-                        }
-                        else if (filter is CompositeFilterDescriptor)
-                        {
-
-                            request.Filters = ((CompositeFilterDescriptor)filter).FilterDescriptors;
-                            goto dd;
-                            //ModifyFilters(((CompositeFilterDescriptor) filter).FilterDescriptors, person_employee);
-
-                        }
-                    }
-                    //request.Filters.Clear();
-                }
-            }
+            IQueryable<Person_Employee> person_employees = db.Person_Employee.Where(x => mybraches.Contains(x.OrgBranchName.ToString()) && x.IsActive);
 
 
             DataSourceResult result = person_employees.ToDataSourceResult(request, person_Employee => new
@@ -1162,12 +1325,14 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                 LastNameEnglish = person_Employee.LastNameEnglish,
                 DateOfBirthAm = person_Employee.DateOfBirthAm,
                 HiredDateAmharic = person_Employee.HiredDateAmharic,
-
-                EmployeeTypeId = person_Employee.EmployeeTypeId,
-
                 ProhabitionState = CheckProhabition(person_Employee.EmployeeId),
                 BranchId = person_Employee.BranchId,//Branch(person_Employee.EmployeeId),
-                IsProbationEnd = person_Employee.Status == EmployeeStatus.PROBATION ? Probation(person_Employee.EmployeeId) : false
+                IsProbationEnd = person_Employee.Status == EmployeeStatus.PROBATION ? Probation(person_Employee.EmployeeId) : false,
+                ContratLeftDay = GetContractLeftDay(person_Employee.EmployeeId),
+                PhoneNo = person_Employee.PhoneNo,
+                City = person_Employee.City,
+                SubCity = person_Employee.SubCity,
+                Wereda = person_Employee.Wereda,
             });
 
             return Json(result);
@@ -1254,35 +1419,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
 
 
         }
-
-        [AuthorizeRoles(HrmConstants.HRProfileUser)]
-        [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult Person_Employee_Create([DataSourceRequest]DataSourceRequest request, Person_Employee person_Employee)
+        public string GenerateEmployeeCode(DateTime date)
         {
-            ModelState.Clear();
-
-            if(person_Employee.DateOfBirthAm != null)
-            {
-                var splitDateB = person_Employee.DateOfBirthAm.Split('/');
-                person_Employee.DateOfBirth = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDateB[0]), Convert.ToInt32(splitDateB[1]), Convert.ToInt32(splitDateB[2]));
-            }
-            else
-            {
-                ModelState.AddModelError("","Birth Date is required");
-            }
-                   
-            if(person_Employee.HiredDateAmharic != null)
-            {
-                var splitDateH = person_Employee.HiredDateAmharic.Split('/');
-                person_Employee.HiredDate = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDateH[0]), Convert.ToInt32(splitDateH[1]), Convert.ToInt32(splitDateH[2]));
-
-            }
-            else
-            {
-                ModelState.AddModelError("", "Hire Date is required");
-            }
-
-
             var empCode = "";
             var name = "";
             var sequenceNo = 0;
@@ -1339,19 +1477,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                         }
                         if (code.Type == EmployeeIDAbbreviationType.Year)
                         {
-                            if (person_Employee.HiredDateAmharic != null)
-                            {
-                                var splitDate = person_Employee.HiredDateAmharic.Split('/');
-                                var year = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2])).ToString("yy");
+                            emp.Add(date.Year.ToString());
 
-                                emp.Add(year);
-                            }
-                            else
-                            {
-                                ModelState.AddModelError("", "hire date is required");
-                            }
                         }
-
 
                     }
 
@@ -1370,111 +1498,141 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
 
                 }
 
+                var idSequence = new EmployeeCodeSequenceSetting
+                {
+                    ItemCodeTrim = digitLength,
+                    IndexCount = sequenceNo,
+                    Name = name,
+                    Status = true,
+                };
+
+                db.EmployeeCodeSequenceSettings.Add(idSequence);
+                db.SaveChanges();
+            }
+
+            return empCode;
+
+        }
+        [AuthorizeRoles(HrmConstants.HRProfileUser)]
+        [AcceptVerbs(HttpVerbs.Post)]
+        public ActionResult Person_Employee_Create([DataSourceRequest]DataSourceRequest request, Person_Employee person_Employee)
+        {
+            ModelState.Clear();
+
+            if (person_Employee.DateOfBirthAm != null)
+            {
+                var splitDateB = person_Employee.DateOfBirthAm.Split('/');
+                person_Employee.DateOfBirth = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDateB[0]), Convert.ToInt32(splitDateB[1]), Convert.ToInt32(splitDateB[2]));
+            }
+            else
+            {
+                ModelState.AddModelError("", "Birth Date is required");
+            }
+
+            if (person_Employee.HiredDateAmharic != null)
+            {
+                var splitDateH = person_Employee.HiredDateAmharic.Split('/');
+                person_Employee.HiredDate = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDateH[0]), Convert.ToInt32(splitDateH[1]), Convert.ToInt32(splitDateH[2]));
+
+            }
+            else
+            {
+                ModelState.AddModelError("", "Hire Date is required");
+            }
+
+            //this variable uses for if the setting is not added it helps to take manualy filled id
+            string empCode = person_Employee.EmployeeCode;
+
+            person_Employee.EmployeeCode = GenerateEmployeeCode(person_Employee.HiredDate);
+
+            if (string.IsNullOrEmpty(person_Employee.EmployeeCode))
+            {
                 person_Employee.EmployeeCode = empCode;
             }
+            else
+            {
+                person_Employee.EmployeeCode = "---";
+            }
+
+            #region Validation 
+
+            int age = DateTime.Now.Year - person_Employee.DateOfBirth.Year;
+            var checkExistance = db.Person_Employee.FirstOrDefault(x => x.EmployeeCode == person_Employee.EmployeeCode);
+            if (checkExistance != null)
+            {
+                ModelState.AddModelError("", "This Employee Id is already assigned for other employee!!");
+            }
+            if (person_Employee.HiredDate < person_Employee.DateOfBirth)
+            {
+                ModelState.AddModelError("", "Date of birth should be less than hire date.");
+            }
+            if (age < 18)
+            {
+                ModelState.AddModelError("", "The Employee age should be 18 or more.");
+            }
+            if (person_Employee.HiredDate.Date > DateTime.Now.Date)
+            {
+
+                ModelState.AddModelError("", "Hire date should be less or equal to the current date!!");
+            }
+
+            #endregion
 
             if (ModelState.IsValid)
             {
-
-                int age = DateTime.Now.Year - person_Employee.DateOfBirth.Year;
-                var checkExistance =
-                    db.Person_Employee.Where(x => x.EmployeeCode == person_Employee.EmployeeCode).FirstOrDefault();
-                if (checkExistance != null)
+                var entity = new Person_Employee
                 {
-                    ModelState.AddModelError("", "This Employee Id is already assigned for other employee!!");
-                }
-                else if (person_Employee.HiredDate < person_Employee.DateOfBirth)
+                    EmployeeId = person_Employee.EmployeeId,
+                    EmployeeCode = person_Employee.EmployeeCode,
+                    MothersFullName = person_Employee.MothersFullName,
+                    BirthPlace = person_Employee.BirthPlace,
+                    Nation = person_Employee.Nation,
+                    Region = person_Employee.Region,
+                    Religion = person_Employee.Religion,
+                    MartialStatus = person_Employee.MartialStatus,
+                    Status = person_Employee.Status,
+                    HiredDate = person_Employee.HiredDate,
+                    FirstName = person_Employee.FirstName,//FirstName,
+                    MiddleName = person_Employee.MiddleName, //MiddleName ,
+                    LastName = person_Employee.LastName,//LastName
+                    Nationality = person_Employee.Nationality,
+                    DateOfBirth = person_Employee.DateOfBirth,
+                    Title = person_Employee.Title,
+                    Gender = person_Employee.Gender,
+                    CategoryID = person_Employee.CategoryID,
+                    IsActive = false,
+                    Remark = person_Employee.Remark,
+                    DateCreated = DateTime.Now,
+                    LastModified = person_Employee.LastModified,
+                    CreatedBy = User.Identity.Name,
+                    ModifiedBy = person_Employee.ModifiedBy,
+                    //DateCreatedAM = XAPI.EthiopicDateTime.GetEthiopicDate(DateTime.Today.Day,DateTime.Today.Month,DateTime.Today.Year),
+                    //DateLastModifiedAM = XAPI.EthiopicDateTime.GetEthiopicDate(DateTime.Today.Day, DateTime.Today.Month, DateTime.Today.Year),
+                    FirstNameEnglish = person_Employee.FirstNameEnglish,
+                    MiddleNameEnglish = person_Employee.MiddleNameEnglish,
+                    LastNameEnglish = person_Employee.LastNameEnglish,
+                    DateOfBirthAm = person_Employee.DateOfBirthAm,
+                    HiredDateAmharic = person_Employee.HiredDateAmharic,
+                    OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name),
+                    PhoneNo = person_Employee.PhoneNo,
+                    City = person_Employee.City,
+                    SubCity = person_Employee.SubCity,
+                    Wereda = person_Employee.Wereda,
+                };
+
+                db.Person_Employee.Add(entity);
+                db.SaveChanges();
+
+                person_Employee.EmployeeId = entity.EmployeeId;
+
+                #region operation log
+                var person = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == entity.EmployeeId);
+                if (person != null)
                 {
-                    ModelState.AddModelError("", "Date of birth should be less than hire date.");
+                    UserHelper.OperationLog(Request.UserHostAddress, "Employee Profile", "Success", User.Identity.Name, " Profile Info for " + person.EmployeeCode + " is Created By  " + User.Identity.Name, Modules.HRM);
+
                 }
-                else if (age < 18)
-                {
-                    ModelState.AddModelError("", "The Employee age should be 18 or more.");
-                }
-                else if (person_Employee.HiredDateAmharic == null)
-                {
-                    ModelState.AddModelError("", "Hire date value is mandatory!!");
-                }
-                else if (person_Employee.DateOfBirthAm == null)
-                {
-                    ModelState.AddModelError("", "Date of birth date value is mandatory!!");
-                }
-                else if (person_Employee.HiredDate.Date > DateTime.Now.Date)
-                {
-
-                    ModelState.AddModelError("", "Hire date should be less or equal to the current date!!");
-                }
-                else
-                {
-
-
-                    var entity = new Person_Employee
-                    {
-
-                        EmployeeId = person_Employee.EmployeeId,
-                        EmployeeCode = person_Employee.EmployeeCode,
-                        MothersFullName = person_Employee.MothersFullName,
-                        BirthPlace = person_Employee.BirthPlace,
-                        Nation = person_Employee.Nation,
-                        Region = person_Employee.Region,
-                        Religion = person_Employee.Religion,
-                        MartialStatus = person_Employee.MartialStatus,
-                        Status = person_Employee.Status,
-                        HiredDate = person_Employee.HiredDate,
-                        FirstName = person_Employee.FirstName,//FirstName,
-                        MiddleName = person_Employee.MiddleName, //MiddleName ,
-                        LastName = person_Employee.LastName,//LastName
-                        Nationality = person_Employee.Nationality,
-                        DateOfBirth = person_Employee.DateOfBirth,
-                        Title = person_Employee.Title,
-                        Gender = person_Employee.Gender,
-                        CategoryID = person_Employee.CategoryID,
-                        IsActive = false,
-                        Remark = person_Employee.Remark,
-                        DateCreated = DateTime.Now,
-                        LastModified = person_Employee.LastModified,
-                        CreatedBy = User.Identity.Name,
-                        ModifiedBy = person_Employee.ModifiedBy,
-                        //DateCreatedAM = XAPI.EthiopicDateTime.GetEthiopicDate(DateTime.Today.Day,DateTime.Today.Month,DateTime.Today.Year),
-                        //DateLastModifiedAM = XAPI.EthiopicDateTime.GetEthiopicDate(DateTime.Today.Day, DateTime.Today.Month, DateTime.Today.Year),
-                        FirstNameEnglish = person_Employee.FirstNameEnglish,
-                        MiddleNameEnglish = person_Employee.MiddleNameEnglish,
-                        LastNameEnglish = person_Employee.LastNameEnglish,
-                        DateOfBirthAm = person_Employee.DateOfBirthAm,
-                        HiredDateAmharic = person_Employee.HiredDateAmharic,
-                        OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name),
-                        EmployeeTypeId = person_Employee.EmployeeTypeId,
-                    };
-
-                    db.Person_Employee.Add(entity);
-                    if (config != null)
-                    {
-                        var idSequence = new EmployeeCodeSequenceSetting
-                        {
-                            ItemCodeTrim = digitLength,
-                            IndexCount = sequenceNo,
-                            Name = name,
-                            Status = true,
-                        };
-
-                        db.EmployeeCodeSequenceSettings.Add(idSequence);
-                    }
-                    db.SaveChanges();
-                    person_Employee.EmployeeId = entity.EmployeeId;
-
-
-
-
-                    #region operation log
-                    var person = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == entity.EmployeeId);
-                    if (person != null)
-                    {
-                        UserHelper.OperationLog(Request.UserHostAddress, "Employee Profile", "Success", User.Identity.Name, " Profile Info for " + person.EmployeeCode + " is Created By  " + User.Identity.Name, Modules.HRM);
-
-                    }
-                    #endregion
-                }
-
+                #endregion
 
             }
 
@@ -1671,30 +1829,26 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
             }
 
 
-            var period = db.GLFiscalYears.FirstOrDefault(x => x.Status == Core.Domain.Finance.GL.FiscalYearStatus.Open);
-            if (period != null)
-            {
-                var allPerfromace = db.EmployeeMeasurementDefinition.Where(x => x.EmployeeId == person_Employee.EmployeeId).ToList();
+            //var period = db.GLFiscalYears.FirstOrDefault(x => x.Status == Core.Domain.Finance.GL.FiscalYearStatus.Open);
+            //if (period != null)
+            //{
+            //    var allPerfromace = db.EmployeeMeasurementDefinition.Where(x => x.EmployeeId == person_Employee.EmployeeId).ToList();
 
-                //var quarterlength = db.QuarterLengths.FirstOrDefault(x => x.GlFiscalYearId == period.GlFiscalYearId);
-                var quarter = allPerfromace.Select(x => x.QuarterId).Distinct().Count();
+            //    var quarter = allPerfromace.Select(x => x.QuarterId).Distinct().Count();
 
-                if (allPerfromace.Any())
-                {
-                    var percentage = allPerfromace.Sum(x => x.EmpPercentageofWeight) / quarter;
-                    var result = allPerfromace.Sum(x => x.Result) / quarter;
-                    var min = percentage / 2;
-                    if (result < min)
-                    {
-                        ModelState.AddModelError("", "this employee is not eligible to change the status");
-                    }
-                }
+            //    if (allPerfromace.Any())
+            //    {
+            //        var percentage = allPerfromace.Sum(x => x.EmpPercentageofWeight) / quarter;
+            //        var result = allPerfromace.Sum(x => x.Result) / quarter;
+            //        var min = percentage / 2;
+            //        if (result < min)
+            //        {
+            //            ModelState.AddModelError("", "this employee is not eligible to change the status");
+            //        }
+            //    }
 
-                //foreach(var ql in quarterlength)
-                //{
-                //    var quarter = db.Quarters.FirstOrDefault(x=>x.QuarterLengthId == ql.QuarterLengthId);
-                //}
-            }
+
+            //}
 
 
 
@@ -1793,9 +1947,10 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                                 DateOfBirthAm = person_Employee.DateOfBirthAm,
                                 OrgBranchName = person_Employee.OrgBranchName,
                                 HiredDateAmharic = person_Employee.HiredDateAmharic,
-
-                                EmployeeTypeId = person_Employee.EmployeeTypeId,
-
+                                PhoneNo = person_Employee.PhoneNo,
+                                City = person_Employee.City,
+                                SubCity = person_Employee.SubCity,
+                                Wereda = person_Employee.Wereda,
                             };
                             db = new ExceedDbContext();
                             db.Person_Employee.Attach(entity);
@@ -1872,9 +2027,10 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                             DateOfBirthAm = person_Employee.DateOfBirthAm,
                             OrgBranchName = person_Employee.OrgBranchName,
                             HiredDateAmharic = person_Employee.HiredDateAmharic,
-
-                            EmployeeTypeId = person_Employee.EmployeeTypeId,
-
+                            PhoneNo = person_Employee.PhoneNo,
+                            City = person_Employee.City,
+                            SubCity = person_Employee.SubCity,
+                            Wereda = person_Employee.Wereda,
                         };
                         db = new ExceedDbContext();
                         db.Person_Employee.Attach(entity);
@@ -1949,9 +2105,10 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                         DateOfBirthAm = person_Employee.DateOfBirthAm,
                         HiredDateAmharic = person_Employee.HiredDateAmharic,
                         OrgBranchName = person_Employee.OrgBranchName,
-
-                        EmployeeTypeId = person_Employee.EmployeeTypeId,
-
+                        PhoneNo = person_Employee.PhoneNo,
+                        City = person_Employee.City,
+                        SubCity = person_Employee.SubCity,
+                        Wereda = person_Employee.Wereda,
                     };
                     #region delete log
                     UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted employee information of employee Id" + person_Employee.EmployeeCode);
@@ -2095,199 +2252,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
         }
 
         [AuthorizeRoles(HrmConstants.HRProfileUser)]
-        public ActionResult Upload(HttpPostedFileBase file)
-        {
-            try
-            {
-                if (file.ContentLength > 0)
-                {
-                    var fileName = Path.GetFileName(file.FileName).Split('.')[1];
-                    var path =
-                        Path.Combine(Server.MapPath("~/Content/Images/" + HRMInputs.EmployeeId.ToString() + "-" +
-                                                    AttachmentType.PHOTO),
-                            HRMInputs.EmployeeId.ToString() + "." + fileName);
-                    var mainPath =
-                        Path.Combine(Server.MapPath("~/Content/Images/" + HRMInputs.EmployeeId.ToString() + "-" +
-                                                    AttachmentType.PHOTO));
-                    if (!Directory.Exists(mainPath))
-                    {
-                        Directory.CreateDirectory(mainPath);
-                    }
-                    if (System.IO.File.Exists(path))
-                    {
 
-                        try
-                        {
-                            System.IO.File.Delete(path);
-                        }
-                        catch (System.IO.IOException e)
-                        {
-                            Console.WriteLine(e.Message);
-                            //  return;
-                        }
-                    }
-                    file.SaveAs(path);
-                    var checkExistance =
-                        db.Attachments.Where(
-                            x =>
-                                x.Reference == HRMInputs.EmployeeId.ToString() &&
-                                x.Description == HRMInputs.EmployeeId.ToString() + "." + fileName &&
-                                x.ReferenceType == AttachmentType.PHOTO).ToList();
-                    if (checkExistance != null)
-                    {
-                        db.Attachments.RemoveRange(checkExistance);
-                        db.SaveChanges();
-                    }
-                    db = new ExceedDbContext();
-                    var entity = new Attachment
-                    {
-
-                        Reference = HRMInputs.EmployeeId.ToString(),
-                        Description = HRMInputs.EmployeeId.ToString() + "." + fileName,
-                        FileType = file.ContentType,
-                        ReferenceType = AttachmentType.PHOTO,
-                        Index = 0,
-                        URL = path,
-                        Remark = HRMInputs.Owner
-                    };
-                    db.Attachments.Add(entity);
-
-                    db.SaveChanges();
-                    ViewBag.Message = "Upload successful";
-                }
-
-                //}
-                //else
-                //{
-
-                //    ViewBag.Message = "The file is existed";
-
-                //}
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                ViewBag.Message = "Upload failed";
-                return RedirectToAction("Upload");
-            }
-        }
-
-        //[AuthorizeRoles(HrmConstants.HRProfileUser)]
-        //public ActionResult UploadDocument(HttpPostedFileBase file, string url, string txtValue, string txtDecsion, string id)
-        //{
-        //    //try
-        //    //{
-        //        HRMInputs.LetterId = id;
-        //        HRMInputs.Owner = "Institution";
-        //        if (file.ContentLength > 0)
-        //        {
-
-        //            var fileName = Path.GetFileName(file.FileName);
-        //            var path =
-        //                Path.Combine(Server.MapPath("~/Content/Images/" + HRMInputs.LetterId.ToString() + "-" +
-        //                                   AttachmentType.DOCUMENT), fileName);
-        //            var mainPath =
-        //                Path.Combine(Server.MapPath("~/Content/Images/" + HRMInputs.LetterId.ToString() + "-" +
-        //                                   AttachmentType.DOCUMENT));
-        //            if (!Directory.Exists(mainPath))
-        //            {
-        //                Directory.CreateDirectory(mainPath);
-        //            }
-        //            if (!System.IO.File.Exists(path))
-        //            {
-
-
-        //                file.SaveAs(path);
-
-        //                var entity = new Attachment
-        //                {
-
-        //                    Reference = HRMInputs.LetterId.ToString(),
-        //                    Description = file.FileName,
-        //                    FileName = txtValue,
-        //                    FileType = file.ContentType,
-        //                    ReferenceType = AttachmentType.DOCUMENT,
-        //                    Index = 0,
-        //                    URL = path,
-        //                    Remark = HRMInputs.Owner
-        //                };
-        //                db.Attachments.Add(entity);
-
-        //                db.SaveChanges();
-        //                ViewBag.Message = "Upload successful";
-        //            }
-
-        //        }
-        //        else
-        //        {
-
-        //            ViewBag.Message = "The file is existed";
-
-        //        }
-        //        return RedirectToAction("Index");
-        //    //}
-        //    //catch
-        //    //{
-        //        //ViewBag.Message = "Upload failed";
-        //        //return RedirectToAction("Upload");
-        //    //}
-        //}
-        public ActionResult UploadDocument(HttpPostedFileBase file, string txtValue)
-        {
-            try
-            {
-                if (file.ContentLength > 0)
-                {
-                    var fileName = Path.GetFileName(file.FileName);
-                    var path =
-                        Path.Combine(Server.MapPath("~/Content/Images/" + HRMInputs.EmployeeId.ToString() + "-" +
-                                           AttachmentType.DOCUMENT), txtValue);
-                    var mainPath =
-                        Path.Combine(Server.MapPath("~/Content/Images/" + HRMInputs.EmployeeId.ToString() + "-" +
-                                           AttachmentType.DOCUMENT));
-                    if (!Directory.Exists(mainPath))
-                    {
-                        Directory.CreateDirectory(mainPath);
-                    }
-                    if (!System.IO.File.Exists(path))
-                    {
-
-
-                        file.SaveAs(path);
-
-                        var entity = new Attachment
-                        {
-
-                            Reference = HRMInputs.EmployeeId.ToString(),
-                            Description = file.FileName,
-                            FileName = txtValue,
-                            FileType = file.ContentType,
-                            ReferenceType = AttachmentType.DOCUMENT,
-                            Index = 0,
-                            URL = path,
-                            Remark = HRMInputs.Owner
-                        };
-                        db.Attachments.Add(entity);
-
-                        db.SaveChanges();
-                        ViewBag.Message = "Upload successful";
-                    }
-
-                }
-                else
-                {
-
-                    ViewBag.Message = "The file is existed";
-
-                }
-                return RedirectToAction("Index");
-            }
-            catch
-            {
-                ViewBag.Message = "Upload failed";
-                return RedirectToAction("Upload");
-            }
-        }
         public void Download(int id)
         {
             HRMInputs.SelectedFile = id;
@@ -2343,13 +2308,13 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
             int internalExpriance = 0;
             int externalExpriance = 0;
             var displineList = db.DisciplinaryCases.Where(x => x.EmployeeId == id).Count();
-            var abcentList = db.EmpPayrollNoDaysWorkeds.Where(x => x.EmployeeId == id).Count();
-            var externalExpriances = db.Experiences.Where(x => x.EmployeeId == id);
+            // var abcentList = db.EmpPayrollNoDaysWorkeds.Where(x => x.EmployeeId == id).Count();
+            var externalExpriances = db.Experiences.Where(x => x.EmployeeId == id).ToList();
             if (externalExpriances.Any())
             {
                 externalExpriance = Convert.ToInt32(externalExpriances.Sum(x => x.TotalDuration));
             }
-            var employee = db.Person_Employee.Where(x => x.EmployeeId == id).FirstOrDefault();
+            var employee = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == id);
             if (employee != null)
             {
                 internalExpriance = (DateTime.Now.Year - employee.HiredDate.Year);
@@ -2378,30 +2343,29 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                 //data.EmployeeChartModels.Add(data);
                 viewModel.Add(data);
             }
-            if (abcentList > 0)
-            {
-                data = new EmployeeChartModel();
-                //data.EmployeeChartModels = new List<EmployeeChartModel>();
-                data.Category = "Abcent";
-                data.Value = abcentList;
+            //if (abcentList > 0)
+            //{
+            //    data = new EmployeeChartModel();
+            //    //data.EmployeeChartModels = new List<EmployeeChartModel>();
+            //    data.Category = "Abcent";
+            //    data.Value = abcentList;
 
-                data.Color = "OrangeRed";
-                viewModel.Add(data);
-                //data.EmployeeChartModels.Add(data);
-            }
+            //    data.Color = "OrangeRed";
+            //    viewModel.Add(data);
+            //    //data.EmployeeChartModels.Add(data);
+            //}
             data = new EmployeeChartModel();
             //data.EmployeeChartModels = new List<EmployeeChartModel>();
             data.Category = "Internal Expriance";
             data.Value = internalExpriance;
-
             data.Color = "MediumSlateBlue";
             //data.EmployeeChartModels.Add(data);
             viewModel.Add(data);
+
             data = new EmployeeChartModel();
             //data.EmployeeChartModels = new List<EmployeeChartModel>();
             data.Category = "External Expriance";
             data.Value = externalExpriance;
-
             data.Color = "Chocolate";
             //data.EmployeeChartModels.Add(data);
             viewModel.Add(data);
@@ -2638,6 +2602,145 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
             HRMInputs.SelectedFile = 0;
             return null;
         }
+
+        public ActionResult Region_Update()
+        {
+            var persons = db.Person_Employee.ToList();
+
+            foreach (var person in persons)
+            {
+                switch (Convert.ToInt32(person.Region))
+                {
+                    case 0:
+                        person.Region = Region.TIGRAY;
+                        break;
+                    case 1:
+                        person.Region = Region.AFAR;
+                        break;
+                    case 2:
+                        person.Region = Region.AMHARA;
+                        break;
+                    case 3:
+                        person.Region = Region.OROMIA;
+                        break;
+                    case 4:
+                        person.Region = Region.SOMALIA;
+                        break;
+                    case 5:
+                        person.Region = Region.SOUTH_NATION_AND_NATIONALITIES;
+                        break;
+                    case 6:
+                        person.Region = Region.BENSHANGUL_GUMUZ;
+                        break;
+                    case 7:
+                        person.Region = Region.HARRARI;
+                        break;
+                    case 8:
+                        person.Region = Region.GAMBELLA;
+                        break;
+                    case 9:
+                        person.Region = Region.ADDIS_ABEBA;
+                        break;
+                    case 10:
+                        person.Region = Region.DIRE_DAWA;
+                        break;
+                    case 11:
+                        person.Region = Region.OTHER;
+                        break;
+                }
+
+                db.Entry(person).State = EntityState.Modified;
+                db.SaveChanges();
+            }
+            return RedirectToAction("Index");
+        }
+        public ActionResult Religion_Update()
+        {
+            var persons = db.Person_Employee.ToList();
+
+            foreach (var person in persons)
+            {
+                switch (Convert.ToInt32(person.Religion))
+                {
+                    case 0:
+                        person.Religion = ReligionList.ORTHODOX;
+                        break;
+                    case 1:
+                        person.Religion = ReligionList.MUSLIM;
+                        break;
+                    case 2:
+                        person.Religion = ReligionList.CATHOLIC;
+                        break;
+                    case 3:
+                        person.Religion = ReligionList.PROTESTANT;
+                        break;
+                    case 4:
+                        person.Religion = ReligionList.WAAQEFFATAA;
+                        break;
+                    case 5:
+                        person.Religion = ReligionList.OTHER;
+                        break;
+
+                }
+
+                db.Entry(person).State = EntityState.Modified;
+                db.SaveChanges();
+            }
+            return RedirectToAction("Index");
+        }
+        public ActionResult Gender_Update()
+        {
+            var persons = db.Person_Employee.Where(x => x.Gender != Gender.MALE && x.Gender != Gender.FEMALE).ToList();
+
+            foreach (var person in persons)
+            {
+                switch (Convert.ToInt32(person.Gender))
+                {
+                    case 0:
+                        person.Gender = Gender.MALE;
+                        break;
+                    case 1:
+                        person.Gender = Gender.FEMALE;
+                        break;
+                }
+
+                db.Entry(person).State = EntityState.Modified;
+                db.SaveChanges();
+            }
+            return RedirectToAction("Index");
+        }
+        public ActionResult MartialStatus_Update()
+        {
+            var persons = db.Person_Employee.ToList();
+
+            foreach (var person in persons)
+            {
+                switch (Convert.ToInt32(person.MartialStatus))
+                {
+                    case 0:
+                        person.MartialStatus = MartialStatus.SINGLE;
+                        break;
+                    case 1:
+                        person.MartialStatus = MartialStatus.MARRIED;
+                        break;
+                    case 2:
+                        person.MartialStatus = MartialStatus.SEPARATED;
+                        break;
+                    case 3:
+                        person.MartialStatus = MartialStatus.DIVORCED;
+                        break;
+                    case 4:
+                        person.MartialStatus = MartialStatus.OTHER;
+                        break;
+
+                }
+
+                db.Entry(person).State = EntityState.Modified;
+                db.SaveChanges();
+            }
+            return RedirectToAction("Index");
+        }
+
 
     }
 

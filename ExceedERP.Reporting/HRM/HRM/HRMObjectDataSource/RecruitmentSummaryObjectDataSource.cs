@@ -16,620 +16,236 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
         private ExceedDbContext db = new ExceedDbContext();
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<RecruitmentSummary> GetRecruitmentSummary(string jobTitle, string vacancyCod, string vacancyId, string period, DateTime from, DateTime to, string branchId, string orgStructureId)
+        public List<RecruitmentSummary> GetRecruitmentSummary(string vacancyId)
         {
             List<InternalApplicantDetail> internalVacancies = new List<InternalApplicantDetail>();
             List<RecruitmentSummary> summaries = new List<RecruitmentSummary>();
-            RecruitmentSummary oneapplicant = new RecruitmentSummary();
-            DateTime dateOne = new DateTime(from.Year, from.Month, from.Day);
-            decimal passMark = 0;
-            DateTime dateTow = new DateTime(to.Year, to.Month, to.Day);
-            //var GLPeriodId = db.Quarters.Where(x => x.QuarterId.ToString() == period).FirstOrDefault();
-            var allPerfromace = db.EmployeeMeasurementDefinition.ToList();
-            var configration = db.Configurations.Where(x => x.Attribute == "Promotion" && x.Category == "Promotion" && x.Reference == "PASS_MARK").FirstOrDefault();
-            if (configration != null)
+
+            if (vacancyId != null)
             {
-                passMark = Convert.ToDecimal(configration.CurrentValue);
-            }
+                int.TryParse(vacancyId, out int vacId);
+                var applicantScreening = db.ApplicantScreenResults.FirstOrDefault(x => x.VacancyId == vacId);
 
-            if (jobTitle != null && vacancyCod != null && vacancyId == null)
-            {
-
-
-                var recruits = db.RecruitmentPlans.Where(x => x.LookupId.ToString() == jobTitle).ToList();//&& x.WorkUnitId.ToString() == orgStructureId
-                decimal total = 0;
-                foreach (var r in recruits)
+                if (applicantScreening != null)
                 {
-                    var vacan = new RecruitmentVacancy();
+                    var screenedApplicants = db.ApplicantScreenings.Where(x => x.ApplicantScreenResultId == applicantScreening.ApplicantScreenResultId).ToList();
 
-                    var vacancyPlan = db.VaccancyPlans.FirstOrDefault(x => x.RecruitmentPlanId == r.RecruitmentPlanId);
-                    if (vacancyPlan != null)
+                    foreach (var screen in screenedApplicants)
                     {
-                        vacan = db.RecruitmentVacancy.FirstOrDefault(x => x.VacancyId == vacancyPlan.VacancyId);
-                    }
+                        RecruitmentSummary recruitment = new RecruitmentSummary();
 
-                    var vacancydetail = db.VaccancyPlans.Where(x => x.VacancyId == vacan.VacancyId).FirstOrDefault();
-                    if (vacancydetail != null)
-                    {
-                        var applicants = db.ApplicantionFormes.Where(x => x.VacancyId == vacan.VacancyId).ToList();
-                        if (applicants.Any())
+                        var applicant = db.ApplicantDetails.FirstOrDefault(x => x.ApplicantDetailId == screen.ApplicantDetailId);
+
+                        if (applicant != null)
                         {
-                            foreach (var a in applicants)
+                            recruitment.Name = applicant.ApplicantName;
+                            recruitment.Age = applicant.Age;
+                            recruitment.Sex = GetGender(applicant.Sex);
+                            recruitment.Training = applicant.Training;
+                            recruitment.Discipline = "No";
+
+                            var appEdus = db.ApplicantEducation.Where(x => x.ApplicantDetailId == applicant.ApplicantDetailId).ToList();
+
+                            string comma = "";
+                            foreach (var edu in appEdus)
                             {
-                                db = new ExceedDbContext();
-                                oneapplicant = new RecruitmentSummary();
-                                total = 0;
-                                var personem =
-                                    db.Person_Employee.Where(x => x.EmployeeId == a.EmployeeId && x.IsActive).FirstOrDefault();
-                                oneapplicant.Name = personem.FirstName + " " + personem.MiddleName + " " +
-                                                    personem.LastName;
-                                oneapplicant.Age = DateTime.Now.Year - personem.DateOfBirth.Year;
-                                oneapplicant.Sex = personem.Gender;
-                                var internalApplcant =
-                                    db.ApplicantScreeningResult.Where(
-                                        x =>
-                                            x.ApplicantRegistrationId == a.ApplicantionFormId).ToList();
-                                if (internalApplcant.Any())
+                                var eduLevelLook = db.Lookups.FirstOrDefault(x => x.LookupId == edu.EducationLevelSettingId);
+                                if (eduLevelLook != null)
                                 {
-                                    foreach (var i in internalApplcant)
-                                    {
-                                        switch (i.Criteria)
-                                        {
-                                            case "DISABILITY":
-                                                oneapplicant.Disability = i.CurrentResult;
-                                                break;
-                                            case "DISCIPLINE":
-                                                oneapplicant.Discipline = i.CurrentResult;
-                                                break;
-                                            case "GENDER":
-                                                oneapplicant.Gender = i.CurrentResult;
-                                                break;
-                                            case "EDUCATIONAL_FIELD":
-                                                oneapplicant.EduField = i.CurrentResult;
-                                                break;
-                                            case "EDUCATION_LEVEL":
-                                                oneapplicant.EduLevel = i.CurrentResult;
-                                                break;
-                                            case "PROFILE":
-                                                oneapplicant.Profile = i.CurrentResult;
-                                                break;
-                                            case "TRAINING":
-                                                oneapplicant.Training = i.CurrentResult;
-                                                break;
-                                            case "RELATED_EXPERIENCE":
-                                                oneapplicant.RelatedExperience = i.CurrentResult;
-                                                break;
-                                            case "RELEVANT_EXPERIENCE":
-                                                oneapplicant.RelevantExperience = i.CurrentResult;
-                                                break;
-                                            case "NATION":
-                                                oneapplicant.Nation = i.CurrentResult;
-                                                break;
-
-                                        }
-
-                                    }
-
-
-
+                                    recruitment.EduLevel = recruitment.EduLevel + comma + eduLevelLook.Description;
                                 }
-                                var internalApplcantexam =
-                                    db.ApplicantExamResult.Where(
-                                        x =>
-                                            x.ApplicantRegistrationId == a.ApplicantionFormId
-                                    ).ToList();
-                                if (internalApplcantexam.Any())
+                                var eduFieldLook = db.Lookups.FirstOrDefault(x => x.LookupId == edu.EducationFieldSettingId);
+                                if (eduFieldLook != null)
                                 {
-                                    foreach (var i in internalApplcantexam)
-                                    {
-                                        switch (i.Criteria)
-                                        {
-                                            case "THEORY_EXAM":
-                                                oneapplicant.TheoryExam = i.CurrentResult;
-                                                break;
-                                            case "PRACTICAL_EXAM":
-                                                oneapplicant.PracticalExam = i.CurrentResult;
-                                                break;
-                                            case "INTERVIEW":
-                                                oneapplicant.Interview = i.CurrentResult;
-                                                break;
-
-
-                                        }
-                                    }
-
-
+                                    recruitment.EduField = recruitment.EduField + comma + eduFieldLook.Description;
                                 }
-                                if (vacancydetail.RecruSource == RecruitmentSource.INTERNAL)
+
+                                comma = ", ";
+                            }
+
+                            var appExps = db.ApplicantExperience.Where(x => x.ApplicantDetailId == applicant.ApplicantDetailId).ToList();
+
+                            foreach (var ex in appExps)
+                            {
+                                var look = db.Lookups.FirstOrDefault(x => x.LookupId == ex.JobTitleId);
+                                if (look != null)
                                 {
-                                    //if (GLPeriodId != null)
-                                    //{
-                                    //    var performance =
-                                    //        db.EmployeeMeasurementDefinition.Where(
-                                    //            x =>
-                                    //                x.QuarterId == GLPeriodId.QuarterId &&
-                                    //                x.EmployeeId == personem.EmployeeId).ToList();
-                                    //    if (performance.Any())
-                                    //    {
-                                    //        oneapplicant.Performance = performance.Sum(x => x.Result);
-                                    //    }
-                                    //}
-
-
-                                    #region Performance
-                                    var periods = from p in db.QuarterLengths
-                                                  join f in db.GLFiscalYears
-                                                  on p.GlFiscalYearId equals f.GlFiscalYearId
-                                                  join q in db.Quarters
-                                                  on p.QuarterLengthId equals q.QuarterLengthId
-                                                  //where f.Status == FiscalYearStatus.Open 
-                                                  select (new { q, f });
-
-
-
-                                    var listPeriod = periods.ToList();
-                                    var qaurters = listPeriod.Select(x => x.q).ToList();
-
-                                    qaurters = listPeriod.Where(f => f.f.Status == FiscalYearStatus.Open).Select(x => x.q).ToList();
-
-
-
-                                    if (qaurters.Any())
-                                    {
-                                        decimal totalResult = 0;
-                                        int div = 0;
-                                        var performance = allPerfromace.Where(x => x.EmployeeId == personem.EmployeeId)
-                                            .ToList();
-                                        foreach (var p in qaurters)
-                                        {
-                                            var quarterName = p.AmharicName;
-                                            var oneQuarter = performance.Where(x => x.QuarterId == p.QuarterId).Sum(x => x.Result);
-                                            totalResult = totalResult + oneQuarter;
-
-                                        }
-
-                                        oneapplicant.Performance = (Math.Round(totalResult / qaurters.Count(), 2));
-                                    }
-
-                                    #endregion
-                             
-
-
+                                    recruitment.RelevantExperience = recruitment.RelevantExperience + look.Description + ", ";
                                 }
-                                total = oneapplicant.Interview + oneapplicant.PracticalExam + oneapplicant.TheoryExam +
-                                        oneapplicant.Disability + oneapplicant.Gender + oneapplicant.EduField +
-                                        oneapplicant.EduLevel +
-                                        oneapplicant.RelatedExperience + oneapplicant.RelevantExperience +
-                                        oneapplicant.Profile + oneapplicant.Training + oneapplicant.Discipline + oneapplicant.Nation;
-                                oneapplicant.Total = total;
-                                if (oneapplicant.Total >= passMark)
+                            }
+
+                            var applicantExams = db.ApplicantExamResult.Where(x => x.ApplicantScreeningId == screen.ApplicantScreeningId).ToList();
+                            decimal totalSetting = 0;
+                            foreach (var appExam in applicantExams)
+                            {
+                                switch (appExam.ExamType)
                                 {
-                                    oneapplicant.RecruitmentResult = RecruitmentResult.PASS;
+                                    case ExamType.THEORY_EXAM:
+                                        recruitment.TheoryExam = appExam.CurrentResult;
+                                        totalSetting = totalSetting + appExam.SettingValue;
+                                        break;
+                                    case ExamType.PRACTICAL_EXAM:
+                                        recruitment.PracticalExam = appExam.CurrentResult;
+                                        totalSetting = totalSetting + appExam.SettingValue;
+                                        break;
+                                    case ExamType.INTERVIEW:
+                                        recruitment.Interview = appExam.CurrentResult;
+                                        totalSetting = totalSetting + appExam.SettingValue;
+                                        break;
+                                }
+                            }
+
+                            recruitment.Total = recruitment.TheoryExam + recruitment.PracticalExam + recruitment.Interview;
+
+                            var passMark = db.RecruitmentApplicantPassSettings.FirstOrDefault(x => x.VacancyId == vacId);
+
+                            if (passMark != null)
+                            {
+                                var pass = (passMark.PassScore * Convert.ToDouble(totalSetting)) / passMark.TotalValue;
+                                if (recruitment.Total >= Convert.ToDecimal(pass))
+                                {
+                                    recruitment.RecruitmentResult = "አልፈዋል";
                                 }
                                 else
                                 {
-                                    oneapplicant.RecruitmentResult = RecruitmentResult.FAIL;
+                                    recruitment.RecruitmentResult = "አላለፉም";
                                 }
-                                summaries.Add(oneapplicant);
+
+                                summaries.Add(recruitment);
                             }
                         }
-                        var extApplican = db.ApplicantRegistration.Where(x => x.VacancyId == vacan.VacancyId).ToList();
-                        if (extApplican.Any())
-                        {
-                            foreach (var a in extApplican)
-                            {
-                                db = new ExceedDbContext();
-                                oneapplicant = new RecruitmentSummary();
-                                total = 0;
-
-                                oneapplicant.Name = a.ApplicantName;
-                                oneapplicant.Age = a.Age;
-                                oneapplicant.Sex = a.Sex;
-                                var internalApplcant =
-                                    db.ApplicantScreeningResult.Where(
-                                        x =>
-                                            x.ApplicantRegistrationId == a.ApplicantRegistrationId).ToList();
-                                if (internalApplcant.Any())
-                                {
-                                    foreach (var i in internalApplcant)
-                                    {
-
-                                        switch (i.Criteria)
-                                        {
-                                            case "DISABILITY":
-                                                oneapplicant.Disability = i.CurrentResult;
-                                                break;
-                                            case "DISCIPLINE":
-                                                oneapplicant.Discipline = i.CurrentResult;
-                                                break;
-                                            case "GENDER":
-                                                oneapplicant.Gender = i.CurrentResult;
-                                                break;
-                                            case "EDUCATIONAL_FIELD":
-                                                oneapplicant.EduField = i.CurrentResult;
-                                                break;
-                                            case "EDUCATION_LEVEL":
-                                                oneapplicant.EduLevel = i.CurrentResult;
-                                                break;
-                                            case "PROFILE":
-                                                oneapplicant.Profile = i.CurrentResult;
-                                                break;
-                                            case "TRAINING":
-                                                oneapplicant.Training = i.CurrentResult;
-                                                break;
-                                            case "RELATED_EXPERIENCE":
-                                                oneapplicant.RelatedExperience = i.CurrentResult;
-                                                break;
-                                            case "RELEVANT_EXPERIENCE":
-                                                oneapplicant.RelevantExperience = i.CurrentResult;
-                                                break;
-                                            case "NATION":
-                                                oneapplicant.Nation = i.CurrentResult;
-                                                break;
-
-                                        }
-                                    }
-                                }
-                                var internalApplcantexam =
-                                    db.ApplicantExamResult.Where(
-                                        x =>
-                                            x.ApplicantRegistrationId == a.ApplicantRegistrationId
-                                    ).ToList();
-                                if (internalApplcantexam.Any())
-                                {
-                                    foreach (var i in internalApplcantexam)
-                                    {
-
-                                        switch (i.Criteria)
-                                        {
-                                            case "THEORY_EXAM":
-                                                oneapplicant.TheoryExam = i.CurrentResult;
-                                                break;
-                                            case "PRACTICAL_EXAM":
-                                                oneapplicant.PracticalExam = i.CurrentResult;
-                                                break;
-                                            case "INTERVIEW":
-                                                oneapplicant.Interview = i.CurrentResult;
-                                                break;
-
-
-                                        }
-
-                                    }
-
-
-                                }
-                                total = oneapplicant.Interview + oneapplicant.PracticalExam +
-                                        oneapplicant.TheoryExam +
-                                        oneapplicant.Disability + oneapplicant.Gender + oneapplicant.EduField +
-                                        oneapplicant.EduLevel +
-                                        oneapplicant.RelatedExperience + oneapplicant.RelevantExperience +
-                                        oneapplicant.Profile + oneapplicant.Training + oneapplicant.Discipline + oneapplicant.Nation;
-                                oneapplicant.Total = total;
-                                if (oneapplicant.Total >= passMark)
-                                {
-                                    oneapplicant.RecruitmentResult = RecruitmentResult.PASS;
-                                }
-                                else
-                                {
-                                    oneapplicant.RecruitmentResult = RecruitmentResult.FAIL;
-                                }
-                                summaries.Add(oneapplicant);
-                            }
-                        }
-
-
 
                     }
 
                 }
-            }
-            else if (jobTitle != null && vacancyCod != null && vacancyId != null)
-            {
-                var recruitvac = db.RecruitmentVacancy.FirstOrDefault(x => x.MediaVacancyCode == vacancyCod && x.VacancyId.ToString() == vacancyId);
-                if (recruitvac != null)
+                else
                 {
-                    var vac = db.VaccancyPlans.FirstOrDefault(x => x.VacancyId == recruitvac.VacancyId);
-                    if (recruitvac != null)
+                    var applicantScreeningInternal = db.InternalApplicantScreeningResults.FirstOrDefault(x => x.VacancyId == vacId);
+
+                    if (applicantScreeningInternal != null)
                     {
+                        var screenedApplicantsInternal = db.InternalApplicantScreenings.Where(x => x.InternalApplicantScreeningResultId == applicantScreeningInternal.InternalApplicantScreeningResultId).ToList();
 
-                        var recruits = db.RecruitmentPlans.FirstOrDefault(x => x.LookupId.ToString() == jobTitle && x.RecruitmentPlanId == vac.RecruitmentPlanId);//&& x.WorkUnitId.ToString() == orgStructureId
-                        decimal total = 0;
-                        if (recruits != null)
+                        foreach (var screen in screenedApplicantsInternal)
                         {
+                            RecruitmentSummary recruitment = new RecruitmentSummary();
 
-                            //var vacan = new RecruitmentVacancy();
+                            //var applicant = db.InternalApplicants.FirstOrDefault(x => x.EmployeeId == screen.EmployeeId);
 
-                            //var vacancyPlan = db.VaccancyPlans.FirstOrDefault(x => x.RecruitmentPlanId == recruits.RecruitmentPlanId);
-                            //if (vacancyPlan != null)
+                            //if (applicant != null)
                             //{
-                            //    vacan = db.RecruitmentVacancy.FirstOrDefault(x => x.VacancyId == vacancyPlan.VacancyId);
-                            //}
+                            var person = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == screen.EmployeeId);
 
-                            //var vacancydetail = db.VaccancyPlans.Where(x => x.VacancyId == vacan.VacancyId).FirstOrDefault();
-                            //if (vacancydetail != null)
-                            //{
-                            var applicants = db.ApplicantionFormes.Where(x => x.VacancyId == vac.VacancyId).ToList();
-                            if (applicants.Any())
+                            if (person != null)
                             {
-                                foreach (var a in applicants)
-                                {
-                                    db = new ExceedDbContext();
-                                    oneapplicant = new RecruitmentSummary();
-                                    total = 0;
-                                    var personem =
-                                        db.Person_Employee.Where(x => x.EmployeeId == a.EmployeeId && x.IsActive).FirstOrDefault();
-                                    oneapplicant.Name = personem.FirstName + " " + personem.MiddleName + " " +
-                                                        personem.LastName;
-                                    oneapplicant.Age = DateTime.Now.Year - personem.DateOfBirth.Year;
-                                    oneapplicant.Sex = personem.Gender;
-                                    var internalApplcant =
-                                        db.ApplicantScreeningResult.Where(
-                                            x =>
-                                                x.ApplicantRegistrationId == a.ApplicantionFormId).ToList();
-                                    if (internalApplcant.Any())
-                                    {
-                                        foreach (var i in internalApplcant)
-                                        {
-                                            switch (i.Criteria)
-                                            {
-                                                case "DISABILITY":
-                                                    oneapplicant.Disability = i.CurrentResult;
-                                                    break;
-                                                case "DISCIPLINE":
-                                                    oneapplicant.Discipline = i.CurrentResult;
-                                                    break;
-                                                case "GENDER":
-                                                    oneapplicant.Gender = i.CurrentResult;
-                                                    break;
-                                                case "EDUCATIONAL_FIELD":
-                                                    oneapplicant.EduField = i.CurrentResult;
-                                                    break;
-                                                case "EDUCATION_LEVEL":
-                                                    oneapplicant.EduLevel = i.CurrentResult;
-                                                    break;
-                                                case "PROFILE":
-                                                    oneapplicant.Profile = i.CurrentResult;
-                                                    break;
-                                                case "TRAINING":
-                                                    oneapplicant.Training = i.CurrentResult;
-                                                    break;
-                                                case "RELATED_EXPERIENCE":
-                                                    oneapplicant.RelatedExperience = i.CurrentResult;
-                                                    break;
-                                                case "RELEVANT_EXPERIENCE":
-                                                    oneapplicant.RelevantExperience = i.CurrentResult;
-                                                    break;
-                                                case "NATION":
-                                                    oneapplicant.Nation = i.CurrentResult;
-                                                    break;
-
-                                            }
-
-                                        }
-
-
-
-                                    }
-                                    var internalApplcantexam =
-                                        db.ApplicantExamResult.Where(
-                                            x =>
-                                                x.ApplicantRegistrationId == a.ApplicantionFormId
-                                        ).ToList();
-                                    if (internalApplcantexam.Any())
-                                    {
-                                        foreach (var i in internalApplcantexam)
-                                        {
-                                            switch (i.Criteria)
-                                            {
-                                                case "THEORY_EXAM":
-                                                    oneapplicant.TheoryExam = i.CurrentResult;
-                                                    break;
-                                                case "PRACTICAL_EXAM":
-                                                    oneapplicant.PracticalExam = i.CurrentResult;
-                                                    break;
-                                                case "INTERVIEW":
-                                                    oneapplicant.Interview = i.CurrentResult;
-                                                    break;
-
-
-                                            }
-                                        }
-
-
-                                    }
-                                    if (vac.RecruSource == RecruitmentSource.INTERNAL)
-                                    {
-                                        //if (GLPeriodId != null)
-                                        //{
-                                        //    var performance =
-                                        //        db.EmployeeMeasurementDefinition.Where(
-                                        //            x =>
-                                        //                x.QuarterId == GLPeriodId.QuarterId &&
-                                        //                x.EmployeeId == personem.EmployeeId).ToList();
-                                        //    if (performance.Any())
-                                        //    {
-                                        //        oneapplicant.Performance = performance.Sum(x => x.Result);
-                                        //    }
-                                        //}
-
-                                        #region Performance
-                                        var periods = from p in db.QuarterLengths
-                                                      join f in db.GLFiscalYears
-                                                      on p.GlFiscalYearId equals f.GlFiscalYearId
-                                                      join q in db.Quarters
-                                                      on p.QuarterLengthId equals q.QuarterLengthId
-                                                      //where f.Status == FiscalYearStatus.Open 
-                                                      select (new { q, f });
-
-
-
-                                        var listPeriod = periods.ToList();
-                                        var qaurters = listPeriod.Select(x => x.q).ToList();
-
-                                        qaurters = listPeriod.Where(f => f.f.Status == FiscalYearStatus.Open).Select(x => x.q).ToList();
-
-
-
-                                        if (qaurters.Any())
-                                        {
-                                            decimal totalResult = 0;
-                                            int div = 0;
-                                            var performance = allPerfromace.Where(x => x.EmployeeId == personem.EmployeeId)
-                                                .ToList();
-                                            foreach (var p in qaurters)
-                                            {
-                                                var quarterName = p.AmharicName;
-                                                var oneQuarter = performance.Where(x => x.QuarterId == p.QuarterId).Sum(x => x.Result);
-                                                totalResult = totalResult + oneQuarter;
-
-                                            }
-
-                                            oneapplicant.Performance = (Math.Round(totalResult / qaurters.Count(), 2));
-                                        }
-
-                                        #endregion
-
-
-                                    }
-                                    total = oneapplicant.Interview + oneapplicant.PracticalExam + oneapplicant.TheoryExam +
-                                            oneapplicant.Disability + oneapplicant.Gender + oneapplicant.EduField +
-                                            oneapplicant.EduLevel +
-                                            oneapplicant.RelatedExperience + oneapplicant.RelevantExperience +
-                                            oneapplicant.Profile + oneapplicant.Training + oneapplicant.Discipline + oneapplicant.Nation;
-                                    oneapplicant.Total = total;
-                                    if (oneapplicant.Total >= passMark)
-                                    {
-                                        oneapplicant.RecruitmentResult = RecruitmentResult.PASS;
-                                    }
-                                    else
-                                    {
-                                        oneapplicant.RecruitmentResult = RecruitmentResult.FAIL;
-                                    }
-                                    summaries.Add(oneapplicant);
-                                }
+                                recruitment.Age = DateTime.Today.Year - person.DateOfBirth.Year;
+                                recruitment.Sex = GetGender(person.Gender);
+                                recruitment.Name = person.FullNameAmharic;
                             }
-                            else
+
+                           // recruitment.Training = screen.Training;
+                            recruitment.Discipline = "No";
+
+                            var appEdus = db.Education.Where(x => x.EmployeeId == screen.EmployeeId).ToList();
+
+                            string comma = "";
+                            foreach (var edu in appEdus)
                             {
-
-                                var extApplican = db.ApplicantRegistration.Where(x => x.VacancyId == vac.VacancyId).ToList();
-                                if (extApplican.Any())
+                                var eduLevelLook = db.Lookups.FirstOrDefault(x => x.LookupId == edu.EduLevel);
+                                if (eduLevelLook != null)
                                 {
-                                    foreach (var a in extApplican)
-                                    {
-                                        db = new ExceedDbContext();
-                                        oneapplicant = new RecruitmentSummary();
-                                        total = 0;
-
-                                        oneapplicant.Name = a.ApplicantName;
-                                        oneapplicant.Age = a.Age;
-                                        oneapplicant.Sex = a.Sex;
-                                        var internalApplcant =
-                                            db.ApplicantScreeningResult.Where(
-                                                x =>
-                                                    x.ApplicantRegistrationId == a.ApplicantRegistrationId).ToList();
-                                        if (internalApplcant.Any())
-                                        {
-                                            foreach (var i in internalApplcant)
-                                            {
-
-                                                switch (i.Criteria)
-                                                {
-                                                    case "DISABILITY":
-                                                        oneapplicant.Disability = i.CurrentResult;
-                                                        break;
-                                                    case "DISCIPLINE":
-                                                        oneapplicant.Discipline = i.CurrentResult;
-                                                        break;
-                                                    case "GENDER":
-                                                        oneapplicant.Gender = i.CurrentResult;
-                                                        break;
-                                                    case "EDUCATIONAL_FIELD":
-                                                        oneapplicant.EduField = i.CurrentResult;
-                                                        break;
-                                                    case "EDUCATION_LEVEL":
-                                                        oneapplicant.EduLevel = i.CurrentResult;
-                                                        break;
-                                                    case "PROFILE":
-                                                        oneapplicant.Profile = i.CurrentResult;
-                                                        break;
-                                                    case "TRAINING":
-                                                        oneapplicant.Training = i.CurrentResult;
-                                                        break;
-                                                    case "RELATED_EXPERIENCE":
-                                                        oneapplicant.RelatedExperience = i.CurrentResult;
-                                                        break;
-                                                    case "RELEVANT_EXPERIENCE":
-                                                        oneapplicant.RelevantExperience = i.CurrentResult;
-                                                        break;
-                                                    case "NATION":
-                                                        oneapplicant.Nation = i.CurrentResult;
-                                                        break;
-
-                                                }
-                                            }
-                                        }
-                                        var internalApplcantexam =
-                                            db.ApplicantExamResult.Where(
-                                                x =>
-                                                    x.ApplicantRegistrationId == a.ApplicantRegistrationId
-                                            ).ToList();
-                                        if (internalApplcantexam.Any())
-                                        {
-                                            foreach (var i in internalApplcantexam)
-                                            {
-
-                                                switch (i.Criteria)
-                                                {
-                                                    case "THEORY_EXAM":
-                                                        oneapplicant.TheoryExam = i.CurrentResult;
-                                                        break;
-                                                    case "PRACTICAL_EXAM":
-                                                        oneapplicant.PracticalExam = i.CurrentResult;
-                                                        break;
-                                                    case "INTERVIEW":
-                                                        oneapplicant.Interview = i.CurrentResult;
-                                                        break;
-
-
-                                                }
-
-                                            }
-
-
-                                        }
-                                        total = oneapplicant.Interview + oneapplicant.PracticalExam +
-                                                oneapplicant.TheoryExam +
-                                                oneapplicant.Disability + oneapplicant.Gender + oneapplicant.EduField +
-                                                oneapplicant.EduLevel +
-                                                oneapplicant.RelatedExperience + oneapplicant.RelevantExperience +
-                                                oneapplicant.Profile + oneapplicant.Training + oneapplicant.Discipline + oneapplicant.Nation;
-                                        oneapplicant.Total = total;
-                                        if (oneapplicant.Total >= passMark)
-                                        {
-                                            oneapplicant.RecruitmentResult = RecruitmentResult.PASS;
-                                        }
-                                        else
-                                        {
-                                            oneapplicant.RecruitmentResult = RecruitmentResult.FAIL;
-                                        }
-                                        summaries.Add(oneapplicant);
-                                    }
+                                    recruitment.EduLevel = recruitment.EduLevel + comma + eduLevelLook.Description;
+                                }
+                                var eduFieldLook = db.Lookups.FirstOrDefault(x => x.LookupId == edu.EduField);
+                                if (eduFieldLook != null)
+                                {
+                                    recruitment.EduField = recruitment.EduField + comma + eduFieldLook.Description;
                                 }
 
-
-
-
+                                comma = ", ";
                             }
+
+                            var appExps = db.Experiences.Where(x => x.EmployeeId == person.EmployeeId).ToList();
+
+                            foreach (var ex in appExps)
+                            {
+                                var look = db.Lookups.FirstOrDefault(x => x.LookupId == ex.JobTitleId);
+                                if (look != null)
+                                {
+                                    recruitment.RelevantExperience = recruitment.RelevantExperience + look.Description + ", ";
+                                }
+                            }
+
+                            var applicantExams = db.InternalApplicantExamResults.Where(x => x.InternalApplicantScreeningId == screen.InternalApplicantScreeningId).ToList();
+                            decimal totalSetting = 0;
+                            foreach (var appExam in applicantExams)
+                            {
+                                switch (appExam.ExamType)
+                                {
+                                    case ExamType.THEORY_EXAM:
+                                        recruitment.TheoryExam = appExam.CurrentResult;
+                                        totalSetting = totalSetting + appExam.SettingValue;
+                                        break;
+                                    case ExamType.PRACTICAL_EXAM:
+                                        recruitment.PracticalExam = appExam.CurrentResult;
+                                        totalSetting = totalSetting + appExam.SettingValue;
+                                        break;
+                                    case ExamType.INTERVIEW:
+                                        recruitment.Interview = appExam.CurrentResult;
+                                        totalSetting = totalSetting + appExam.SettingValue;
+                                        break;
+                                }
+                            }
+
+                            recruitment.Total = recruitment.TheoryExam + recruitment.PracticalExam + recruitment.Interview;
+
+                            var passMark = db.RecruitmentApplicantPassSettings.FirstOrDefault(x => x.VacancyId == vacId);
+
+                            if (passMark != null)
+                            {
+                                var pass = (passMark.PassScore * Convert.ToDouble(totalSetting)) / passMark.TotalValue;
+                                if (recruitment.Total >= Convert.ToDecimal(pass))
+                                {
+                                    recruitment.RecruitmentResult = "አልፈዋል";
+                                }
+                                else
+                                {
+                                    recruitment.RecruitmentResult = "አላለፉም";
+                                }
+
+                                summaries.Add(recruitment);
+                            }
+                            // }
+
                         }
 
                     }
                 }
 
             }
+
+
+            summaries = summaries.OrderByDescending(x => x.Total).ToList();
 
             return summaries;
         }
+
+        public string GetGender(Gender gender)
+        {
+            if (gender == Gender.MALE)
+            {
+                return "ወንድ";
+            }
+            else if (gender == Gender.FEMALE)
+            {
+                return "ሴት";
+            }
+
+            return null;
+        }
+
     }
+
+
 }
 

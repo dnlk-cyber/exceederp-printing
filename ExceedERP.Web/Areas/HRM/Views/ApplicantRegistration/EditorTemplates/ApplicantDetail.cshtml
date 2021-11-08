@@ -1,0 +1,138 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@using ExceedERP.Helpers.Common
+@using Kendo.Mvc.UI
+@using ExceedERP.Core.Localization
+@model ExceedERP.Core.Domain.HRM.RecruitmentManagment.ApplicantDetail 
+
+
+<form>
+
+    <div class="row">
+        <div class="col-md-1">
+
+        </div>
+        <div class="col-md-3">
+         
+            <div>
+                @Html.LabelFor(model => model.ApplicantName, htmlAttributes: new { @class = "control-label col-md-8" })
+
+                <div class="form-group">
+
+                    @Html.Kendo().TextBoxFor(model => model.ApplicantName)
+                    @Html.ValidationMessageFor(model => model.ApplicantName, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div>
+                @Html.LabelFor(model => model.Age, htmlAttributes: new { @class = "control-label col-md-8" })
+
+                <div class="form-group">
+
+                    @Html.Kendo().TextBoxFor(model => model.Age)
+                    @Html.ValidationMessageFor(model => model.Age, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div>
+                @Html.LabelFor(model => model.Address, htmlAttributes: new { @class = "control-label col-md-8" })
+
+                <div class="form-group">
+
+                    @Html.Kendo().TextBoxFor(model => model.Address)
+                    @Html.ValidationMessageFor(model => model.Address, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+           
+
+        </div>
+        <div class="col-md-3">
+           
+            @*<div>
+                @Html.LabelFor(model => model.Education, htmlAttributes: new { @class = "control-label col-md-8" })
+
+                <div class="form-group">
+
+                    @Html.Kendo().DatePickerFor(model => model.Education)
+                    @Html.ValidationMessageFor(model => model.Education, "", new { @class = "text-danger" })
+                </div>
+            </div>*@
+            <div>
+                @Html.LabelFor(model => model.Education, htmlAttributes: new { @class = "control-label col-md-8" })
+
+                <div class="form-group">
+
+                    @Html.Kendo().TextBoxFor(model => model.Education)
+                    @Html.ValidationMessageFor(model => model.Education, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div>
+                @Html.LabelFor(model => model.Training, htmlAttributes: new { @class = "control-label col-md-8" })
+
+                <div class="form-group">
+
+                    @Html.Kendo().TextBoxFor(model => model.Training)
+                    @Html.ValidationMessageFor(model => model.Training, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div>
+                @Html.LabelFor(model => model.Description, htmlAttributes: new { @class = "control-label col-md-8" })
+
+                <div class="form-group">
+
+                    @Html.Kendo().TextBoxFor(model => model.Description)
+                    @Html.ValidationMessageFor(model => model.Description, "", new { @class = "text-danger" })
+                </div>
+            </div>
+           
+        </div>
+        <div class="col-md-3">
+            <div>
+                @Html.LabelFor(model => model.Experiance, htmlAttributes: new { @class = "control-label col-md-8" })
+
+                <div class="form-group">
+
+                    @Html.Kendo().TextBoxFor(model => model.Experiance)
+                    @Html.ValidationMessageFor(model => model.Experiance, "", new { @class = "text-danger" })
+                </div>
+            </div>
+            <div>
+                @Html.LabelFor(model => model.Sex, htmlAttributes: new { @class = "control-label col-md-8" })
+
+                <div class="form-group">
+
+                    @Html.Kendo().TextBoxFor(model => model.Sex)
+                    @Html.ValidationMessageFor(model => model.Sex, "", new { @class = "text-danger" })
+                </div>
+            </div>
+          
+            @*<div>
+                @Html.LabelFor(model => model.FilePath, htmlAttributes: new { @class = "control-label col-md-8" })
+
+                <div class="form-group">
+
+                    @(Html.Kendo().Upload()
+                    .Name("DocumentFile").Multiple(false)
+                       //   .Async(a => a
+                       //   .Save("Chunk_Upload_Save", "Upload")
+                       //  .Remove("Chunk_Upload_Remove", "Upload")
+                       //  .AutoUpload(false)
+                       //.ChunkSize(1100)
+
+                       //     )
+                       )
+                    @Html.ValidationMessageFor(model => model.DocumentFile, "", new { @class = "text-danger" })
+                </div>
+            </div>*@
+
+        </div>  
+       
+
+
+    </div>
+
+
+
+
+</form>

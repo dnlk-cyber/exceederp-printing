@@ -48,5 +48,6 @@ namespace ExceedERP.Core.Domain.HRM.TrainingEducation
         public string Remark { get; set; }
         [Display(Name = "HR_TrainingEducation_Education_IsHighLevel", ResourceType = typeof(Localization.Resources))]
         public bool IsHighLevel { get; set; }
+        public int? CourseTrackingId { get; set; }
     }
 }

@@ -1,6 +1,9 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
+using System.Web.Mvc;
 using ExceedERP.Core.Domain.Common;
 
 namespace ExceedERP.Core.Domain.HRM.SelfCare
@@ -14,6 +17,7 @@ namespace ExceedERP.Core.Domain.HRM.SelfCare
         [Required]
         [Display(Name = "HR_SelfCare_RequestesStatus_Status", ResourceType = typeof(Localization.Resources))]
         public RequestStatus Status { get; set; }
+       
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}")]
         [Required]

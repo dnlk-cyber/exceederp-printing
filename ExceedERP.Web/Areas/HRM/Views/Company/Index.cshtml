@@ -64,6 +64,7 @@
           .Destroy(destroy => destroy.Action("Companies_Destroy", "Company"))
           ).ClientDetailTemplateId("template")
 )
+
 <script id="template" type="text/kendo-tmpl">
     @(Html.Kendo().TabStrip()
           .Name("tabstrip_#=MainCompanyId#")

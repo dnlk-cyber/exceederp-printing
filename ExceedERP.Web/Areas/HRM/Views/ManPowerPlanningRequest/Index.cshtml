@@ -16,13 +16,18 @@
 
                           columns.Bound(c => c.EmploymentType).EditorTemplateName("Enum").Width(120);
                           columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["jobTitles"], "LookupId", "Description").EditorTemplateName("JobTitles").Width(150);
+                          columns.Bound(c => c.JobTitle).Width(135);
                           columns.Bound(c => c.PlanType).EditorTemplateName("Enum").Width(110);
                           columns.Bound(c => c.NoOfShouldBeStaff).Width(135);
                           columns.Bound(c => c.NoOfCurrentStaff).Width(130);
 
                           columns.Bound(c => c.NoOfVaccantPostion).Title(Resources.Recruitment_Requested_Vacancy).Width(140);
 
-                          columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit); command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+                          columns.Command(command =>
+                          {
+                              command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                              command.Destroy().Text(Resources.ActionButton_Cancel);
+                          }).Width(200);
                       })
                       .ToolBar(toolbar =>
                       {
@@ -30,7 +35,7 @@
                       })
                                         .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("Request").Window(window => { window.Title("Man Power Planning Request"); window.Scrollable(false); }))
                                             .Events(events => events.DetailExpand("onDetailExpandUser"))
-                                         
+
                            .HtmlAttributes(new { style = "height: 550px;" })
                                                .Groupable()
                                               .Sortable(sortable =>
@@ -73,132 +78,138 @@
 
 <script id="template" type="text/kendo-tmpl">
     @(Html.Kendo().TabStrip()
-                                                  .Name("tabstrip_#=ManPowerPlanningRequestId#")
-                                                  .SelectedIndex(0)
-                                                  .Items(items =>
+                 .Name("tabstrip_#=ManPowerPlanningRequestId#")
+                 .SelectedIndex(0)
+                 .Items(items =>
+                 {
+                     items.Add().Text(Resources.HR_RequestStatus).Content(
+                    @<text>
+                        @*<legend>Status</legend>*@
+
+                        @(Html.Kendo().Grid<RequestesStatus>()
+                                                 .Name("RequestesStatusgrid_#=ManPowerPlanningRequestId#")
+                                         .Columns(columns =>
+                                         {
+                                         //columns.Bound(c => c.RequestId);
+                                         columns.Bound(c => c.DateReqStatAm).Width(100);
+                                                     columns.Bound(c => c.Status).EditorTemplateName("EnumCustom").Width(150);
+                                                     columns.ForeignKey(c => c.ApproverId, (IEnumerable)ViewData["EmployeeName"], "EmployeeId", "FullNameAmharic").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
+                                                     columns.ForeignKey(c => c.ApproverDepartment, (IEnumerable)ViewData["Departments"], "OrgStructureId", "Name").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
+                                                     columns.Bound(c => c.Remark).Width(100);
+                                                     columns.Command(command =>
+                                                     {
+                                                         command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                                         command.Destroy().Text(Resources.ActionButton_Cancel);
+                                                     }).Width(400);
+                                                 })
+                                         .ToolBar(toolbar =>
+                                         {
+                                                     toolbar.Custom().Action("SendForApproval", "ManPowerPlanningRequest").Text("").IconClass("fa fa-share-square fa-2x");
+                                                 })
+                                         .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                         .Scrollable()
+                                         .DataSource(dataSource => dataSource
+                                             .Ajax()
+                                                     .Events(events =>
+                                                     {
+                                                                 events.Error("error_handler(\"RequestesStatusgrid_#=ManPowerPlanningRequestId#\")");
+                                                                 events.RequestStart("onRequestStart(\"RequestesStatusgrid_#=ManPowerPlanningRequestId#\")");
+                                                                 events.RequestEnd("onRequestEnd(\"RequestesStatusgrid_#=ManPowerPlanningRequestId#\")");
+                                                             })
+
+                                                       .Model(model =>
+                                                       {
+                                                                   model.Id(p => p.RequestStatusId);
+                                                                   model.Field(p => p.Date).Editable(false).DefaultValue(DateTime.Today);
+                                                                   model.Field(p => p.ApproverId).Editable(false);
+                                                                   model.Field(p => p.ApproverDepartment).Editable(false);
+                                                               })
+
+                                            .Read(read => read.Action("RequestesStatus_Read", "RequestesStatus", new { id = "#=ManPowerPlanningRequestId#", referenceType = "ManPowerPlanning" }))
+                                           .Create(create => create.Action("RequestesStatus_Create", "RequestesStatus", new { id = "#=ManPowerPlanningRequestId#", referenceType2 = "ManPowerPlanning" }))
+                                                         .Update(update => update.Action("RequestesStatus_Update", "RequestesStatus"))
+                                                         .Destroy(destroy => destroy.Action("RequestesStatus_Destroy", "RequestesStatus"))
+                                         ).ToClientTemplate()
+                        )
+
+                    <a href='@Url.Action("ManPowerPlanningRequestLetter", "PrintableLetter")/?id=#=ManPowerPlanningRequestId#' target="_blank" title="Print"><i class="fa fa-print fa-2x"></i></a>
+
+                    </text>
+                               );
+
+              //*********************************Attachment***********************************************************//
+              items.Add().Text(Resources.Navigator_Company_UploadDocument).Content(
+            @<text>
+                @* <Legend>Photo</Legend>*@
+
+                @(Html.Kendo().Grid<Attachment>()
+                                      .Name("Documents_#=ManPowerPlanningRequestId#")
+                                      .Columns(columns =>
+                                      {
+                                                  columns.Bound(c => c.FileName);
+                                                  columns.Bound(c => c.Description); //.Title("File Name").ClientTemplate((@Html.ActionLink("#=Description#", "DownloadFile", "DownloadDocument", new { filename = "#=Description#" }, null).ToHtmlString()));
+                                                                                     // columns.Bound(c => c.FileType).ClientTemplate(Html.ActionLink("DownLoad", "DownloadDoument", new { filename = "#=EmployeeId#" }).ToHtmlString());
+                                      columns.Bound(m => m.FileType).ClientTemplate(Html.ActionLink(Resources.Common_Attachment_FileType, "DownloadDoument", "ManPowerPlanningRequest", new { filename = "#=ManPowerPlanningRequestId#", attachId = "\\#=AttachmentId\\#" }, null).ToString());
+                                                  columns.Command(command =>
                                                   {
-                                                      items.Add().Text(Resources.HR_RequestStatus).Content(
-                                                        @<text>
-                                                            @*<legend>Status</legend>*@
+                                                      if (HttpContext.Current.User.IsInRole("HR_Profile_Admin") || HttpContext.Current.User.IsInRole("HR_Admin"))
+                                                      {
+                                                          command.Destroy().Text(Resources.ActionButton_Cancel);//
+                                          }
+                                          //    command.Custom("Download").Click("DownloadAttachmnets");
 
-                                                            @(Html.Kendo().Grid<RequestesStatus>()
-                                                                                                                  .Name("RequestesStatusgrid_#=ManPowerPlanningRequestId#")
-                                                                                                          .Columns(columns =>
-                                                                                                          {
-                                                                                                              //columns.Bound(c => c.RequestId);
-                                                                                                              columns.Bound(c => c.DateReqStatAm).Width(100);
-                                                                                                              columns.Bound(c => c.Status).EditorTemplateName("Enum").Width(150);
-                                                                                                              columns.ForeignKey(c => c.ApproverId, (IEnumerable)ViewData["EmployeeName"], "EmployeeId", "FullNameAmharic").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
-                                                                                                              columns.ForeignKey(c => c.ApproverDepartment, (IEnumerable)ViewData["Departments"], "OrgStructureId", "Name").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
-                                                                                                              columns.Bound(c => c.Remark).Width(100);
-                                                                                                              columns.Command(command =>
-                                                                                                              {
-                                                                                                                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
-                                                                                                                  command.Destroy().Text(Resources.ActionButton_Cancel);
-                                                                                                              }).Width(400);
-                                                                                                          })
-                                                                                                          .ToolBar(toolbar =>
-                                                                                                          {
-                                                                                                              toolbar.Custom().Action("SendForApproval", "ManPowerPlanningRequest").Text(Resources.HR_Send_For_Approval);
-                                                                                                          })
-                                                                                                          .Editable(editable => editable.Mode(GridEditMode.InLine))
-                                                                                                          .Scrollable()
-                                                                                                          .DataSource(dataSource => dataSource
-                                                                                                              .Ajax()
-                                                                                                                      .Events(events =>
-                                                                                                                      {
-                                                                                                                          events.Error("error_handler(\"RequestesStatusgrid_#=ManPowerPlanningRequestId#\")");
-                                                                                                                          events.RequestStart("onRequestStart(\"RequestesStatusgrid_#=ManPowerPlanningRequestId#\")");
-                                                                                                                          events.RequestEnd("onRequestEnd(\"RequestesStatusgrid_#=ManPowerPlanningRequestId#\")");
-                                                                                                                      })
+                                      }).Width(300);
 
-                                                                                                                      .Model(model =>
-                                                                                                                      {
-                                                                                                                          model.Id(p => p.RequestStatusId);
-                                                                                                                          model.Field(p => p.Date).Editable(false).DefaultValue(DateTime.Today);
-                                                                                                                          model.Field(p => p.ApproverId).Editable(false);
-                                                                                                                          model.Field(p => p.ApproverDepartment).Editable(false);
-                                                                                                                      })
+                                              })
 
-                                                                                                             .Read(read => read.Action("RequestesStatus_Read", "RequestesStatus", new { id = "#=ManPowerPlanningRequestId#", referenceType = "ManPowerPlanning" }))
-                                                                                                            .Create(create => create.Action("RequestesStatus_Create", "RequestesStatus", new { id = "#=ManPowerPlanningRequestId#", referenceType2 = "ManPowerPlanning" }))
-                                                                                                                          .Update(update => update.Action("RequestesStatus_Update", "RequestesStatus"))
-                                                                                                                          .Destroy(destroy => destroy.Action("RequestesStatus_Destroy", "RequestesStatus"))
-                                                                                                          ).ToClientTemplate()
-                                                            )
-
-
-                                                        </text>
-                                                                                                  );
-
-                                                  //*********************************Attachment***********************************************************//
-                                                  items.Add().Text(Resources.Navigator_Company_UploadDocument).Content(
-                                            @<text>
-                                                @* <Legend>Photo</Legend>*@
-
-                                                @(Html.Kendo().Grid<Attachment>()
-                                                                                                                              .Name("Documents_#=ManPowerPlanningRequestId#")
-                                                                                                                              .Columns(columns =>
-                                                                                                                              {
-                                                                                                                                          columns.Bound(c => c.FileName);
-                                                                                                                                          columns.Bound(c => c.Description); //.Title("File Name").ClientTemplate((@Html.ActionLink("#=Description#", "DownloadFile", "DownloadDocument", new { filename = "#=Description#" }, null).ToHtmlString()));
-                                                                                                                                                                             // columns.Bound(c => c.FileType).ClientTemplate(Html.ActionLink("DownLoad", "DownloadDoument", new { filename = "#=EmployeeId#" }).ToHtmlString());
-                                                                                                                              columns.Bound(m => m.FileType).ClientTemplate(Html.ActionLink(Resources.Common_Attachment_FileType, "DownloadFile", "HRMDataProvider", new { filename = "\\#= AttachmentId\\#", type = "Doc" }, null).ToString());
-                                                                                                                                          columns.Command(command =>
-{
-                                if (HttpContext.Current.User.IsInRole("HR_Profile_Admin") || HttpContext.Current.User.IsInRole("HR_Admin"))
+                                .ToolBar(toolbar =>
                                 {
-                                    command.Destroy().Text(Resources.ActionButton_Cancel);//
-                    }
-                    //    command.Custom("Download").Click("DownloadAttachmnets");
-
-}).Width(300);
-
-                                                                                                                                      })
-                                                                                                                              .Events(e =>
-                                                                                                                                      {
-                                                                                                                                                  e.Change("onChange");
-                                                                                                                                                  e.Edit("onGridEdit");
-                                                                                                                                              })
-                                                                                                                                           .ToolBar(toolbar =>
-                                                                                                                                           {
-                                                                                                                                           //toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
-                                                                                                                                       })
-                                                                                                                                                  .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("UploadDocument").Window(window =>
-                                                                                                                                                  {
-                                                                                                                                                              window.Scrollable(false);
-                                                                                                                                                              window.Title(Resources.Navigator_Company_UploadDocument);
-                                                                                                                                                          }))
-
-                                                                                                                                  .Scrollable()
-                                                                                                                                  .Selectable()
-                                                                                                                                  .DataSource(dataSource => dataSource
-                                                                                                                                      .Ajax()
-                                                                                                                                               .Events(events =>
-                                                                                                                                               {
-
-                                                                                                                                                           events.Error("error_handler(\"Documents_#=ManPowerPlanningRequestId#\")");
-                                                                                                                                                           events.RequestStart("onRequestStart(\"Documents_#=ManPowerPlanningRequestId#\")");
-                                                                                                                                                           events.RequestEnd("onRequestEnd(\"Documents_#=ManPowerPlanningRequestId#\")");
-                                                                                                                                                       })
+                                            toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                                        })
 
 
-                                                                                                                                      .Model(model => model.Id(p => p.AttachmentId))
-                                                                                                                                                              .Read(read => read.Action("Attachments_Read", "Attachment", new { Area = "Common", attachmentReferenceType = "DOCUMENT", id = "#=ManPowerPlanningRequestId#", fileOwner = "#=ManPowerPlanningRequestId#" }))
-                                                                                                                                                                     .Create(create => create.Action("Attachments_Create", "Attachment", new { Area = "Common", attachmentReferenceType = "DOCUMENT", id = "#=ManPowerPlanningRequestId#", fileOwner = "#=ManPowerPlanningRequestId#" }))
-                                                                                                                                                      .Destroy(destroy => destroy.Action("Attachments_Destroy", "EmployeeProfile"))
+                          .Events(e =>
+                          {
+                                      e.Change("onChange");
+                                      e.Edit("onGridEdit");
+                                  })
 
-                                                                                                                                  ).ToClientTemplate()
-                                                )
-                                            </text>
-                                    );
+                             .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("UploadDocument").Window(window =>
+                             {
+                                         window.Scrollable(false);
+                                         window.Title(Resources.Navigator_Company_UploadDocument);
+                                     }))
+
+             .Scrollable()
+             .Selectable()
+             .DataSource(dataSource => dataSource
+                 .Ajax()
+                          .Events(events =>
+                          {
+
+                                      events.Error("error_handler(\"Documents_#=ManPowerPlanningRequestId#\")");
+                                      events.RequestStart("onRequestStart(\"Documents_#=ManPowerPlanningRequestId#\")");
+                                      events.RequestEnd("onRequestEnd(\"Documents_#=ManPowerPlanningRequestId#\")");
+                                  })
+
+
+                 .Model(model => model.Id(p => p.AttachmentId))
+                                         .Read(read => read.Action("Attachments_Read", "Attachment", new { Area = "Common", attachmentReferenceType = "DOCUMENT", id = "#=ManPowerPlanningRequestId#", fileOwner = "#=ManPowerPlanningRequestId#" }))
+                                                .Create(create => create.Action("Attachments_Create", "Attachment", new { Area = "Common", attachmentReferenceType = "DOCUMENT", id = "#=ManPowerPlanningRequestId#", fileOwner = "#=ManPowerPlanningRequestId#" }))
+                                 .Destroy(destroy => destroy.Action("Attachments_Destroy", "EmployeeProfile"))
+
+             ).ToClientTemplate()
+                )
+            </text>
+
+         );
 
 
 
 
-                                                      //*****************************************************************************************************//
+//*****************************************************************************************************//
 
-                                                  }).ToClientTemplate())
+}).ToClientTemplate())
 </script>
 <script>
     //function error_handler(e) {
@@ -255,39 +266,55 @@
     function onDetailExpandUser(e) {
         var masterRow = e.masterRow;
 
-        var masterGrid = $("#RecruitmentRequestgrid").data("kendoGrid");
+        var masterGrid = $("#ManPowerPlanningRequestgrid").data("kendoGrid");
 
         var masterDataItem = masterGrid.dataItem(masterRow);
 
-        masterId = masterDataItem.RecruitmentRequestId;
+        masterId = masterDataItem.ManPowerPlanningRequestId;
         var gridName = "#RequestesStatusgrid_" + masterId;
         $.ajax({
-            url: '@Url.Action("CheckStatus", "RecruitmentRequestStatus")',
+            url: '@Url.Action("CheckStatus", "ManPowerPlanningRequest")',
 
             data: { masterId: masterId },
             type: 'POST',
             cache: false,
             success: function (result) {
                 r = result;
-                if (r == "true") {
-                    $(gridName).find(".k-toolbar").hide(); //hide toolbar
-                    $(".k-grid-top", gridName).hide();
-                }
-                else if (r == "approved") {
+                if (r == "approved") {
                     $(gridName).find(".k-toolbar").hide(); //hide toolbar
                     $(".k-grid-top", gridName).hide();
                     $(".k-grid-edit", gridName).hide();
                     $(".k-grid-delete", gridName).hide();
                 }
-                else if (r == "Dapproved") {
+                else if (r == "reject") {
                     $(gridName).find(".k-toolbar").hide(); //hide toolbar
                     $(".k-grid-top", gridName).hide();
                     $(".k-grid-edit", gridName).hide();
                     $(".k-grid-delete", gridName).hide();
                 }
-                else {
+                else if (r == "dept_approved") {
+                    $(gridName).find(".k-toolbar").hide(); //hide toolbar
+                    $(".k-grid-top", gridName).hide();
+                    $(".k-grid-edit", gridName).show();
+                    $(".k-grid-delete", gridName).show();
+                }
+                else if (r == "notsent") {
                     $(gridName).find(".k-toolbar").show(); //hide toolbar
                     $(".k-grid-top", gridName).show();
+                    $(".k-grid-edit", gridName).show();
+                    $(".k-grid-delete", gridName).show();
+                }
+                else if (r == "waiting"){
+                    $(gridName).find(".k-toolbar").hide(); //hide toolbar
+                    $(".k-grid-top", gridName).hide();
+                    $(".k-grid-edit", gridName).show();
+                    $(".k-grid-delete", gridName).show();
+                }
+                else if (r == "pend") {
+                    $(gridName).find(".k-toolbar").hide(); //hide toolbar
+                    $(".k-grid-top", gridName).hide();
+                    $(".k-grid-edit", gridName).show();
+                    $(".k-grid-delete", gridName).show();
                 }
 
             }
@@ -437,27 +464,48 @@
 
         var x = e.checked;
         var dropDownJobTitle = $("#LookupId").data("kendoDropDownList");
-        var txtJobTitle = $("#JobTitle");
-        var txtJobLable = $("#JobTitle").data("kendoLabel");
-        var jj = $("#jobHide");
+      
+       
         if (x == true) {
-            dropDownJobTitle.enable(false);
-            txtJobTitle.show();// = false;
-            jj.show();
+          //  dropDownJobTitle.wrapper.hide();//.enable(false);
+            $("#lookUpJobTitle").hide();
+            $("#jobHide").show();
         }
         else {
-            dropDownJobTitle.enable(true);
-            txtJobTitle.hide();//.disabled = true;
-            jj.hide();
+            $("#lookUpJobTitle").show();
+           // dropDownJobTitle.wrapper.show();//.enable(true);
+            $("#jobHide").hide()
         }
     }
 </script>
 <script>
     function onDataBound() {
         
-        var jj = $("#jobHide");
-
-        jj.hide();
+      //  var jj = $("#jobHide");
+        $("#jobHide").hide();
+        //jj.hide();
        
+    }
+</script>
+
+
+<script>
+        function sendForApproval(id) {
+        var recordStatus = "";
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("SendForApproval", "LeaveRequestPersonal", new { area = "HRM" })',
+            data: { id: id },
+            success: function(result) {
+                // toastr.warnning(result.Message);
+                alert(result.Message);
+                recordStatus = result.Status;
+                location.reload(true);
+            }, //end succ
+            error: function(result) {
+                alert(result);
+            }
+        });
     }
 </script>

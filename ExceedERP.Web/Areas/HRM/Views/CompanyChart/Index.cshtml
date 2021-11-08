@@ -2,36 +2,59 @@
 @using ExceedERP.Web.Areas.HRM.Controllers.Company
 @using Kendo.Mvc.UI.Fluent
 @using ExceedERP.Core.Localization
+
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<legend >@Resources.Navigator_Company_CompanyChart</legend>
-<br/>
-<br />
-<div>
-    @(
 
-    Html.Kendo().TreeView()
-        .Name("TreeViewTemplateBiding")
-        .TemplateId("TreeViewTemplate")
-        .BindTo((IEnumerable<NodeViewModel>) ViewBag.Tree, (NavigationBindingFactory<TreeViewItem> mappings) =>
-        {
-            mappings.For<NodeViewModel>(binding => binding.ItemDataBound((item, node) =>
-            {
-                item.Id = node.Id.ToString();
-                item.Text = node.Title;
-                item.Expanded = node.Expanded;
-            })
-                .Children(node => node.Children));
-        })
-          )
-</div>
-<script >
+
+@(Html.Kendo().TabStrip()
+                          .Name("tabstrip")
+                          .Animation(animation =>
+                              animation.Open(effect =>
+                                  effect.Fade(FadeDirection.In)))
+                          .Items(tabstrip =>
+                          {
+
+                              tabstrip.Add().Text("Company Chart")
+             .Selected(true)
+                      .Content(@<text>
+
+                        @(Html.Kendo().TreeView()
+                                       .Name("TreeViewTemplateBiding")
+                                       .TemplateId("TreeViewTemplate")
+                                       .BindTo((IEnumerable<NodeViewModel>)ViewBag.Tree, (NavigationBindingFactory<TreeViewItem> mappings) =>
+                                       {
+                                                 mappings.For<NodeViewModel>(binding => binding.ItemDataBound((itm, node) =>
+                                     {
+                                                               itm.Id = node.Id.ToString();
+                                                               itm.Text = node.Title;
+                                                               itm.Expanded = node.Expanded;
+                                                           })
+                                         .Children(node => node.Children));
+                                             })
+                        )
+
+
+                    </text>);
+
+                                    tabstrip.Add().Text("Organization Chart")
+    .Content(@<text>
+           
+    <div id="chart-container"></div>
+
+    </text>);
+
+  })
+)
+
+
+<script>
     function name() {
         $('#chart-container').orgChart({
             'data': $('#TreeViewTemplateBiding')
-            
+
         });
     }
-   
+
 </script>

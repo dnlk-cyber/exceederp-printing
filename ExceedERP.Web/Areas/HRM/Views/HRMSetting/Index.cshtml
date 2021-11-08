@@ -1,61 +1,203 @@
 ﻿@using System.Collections
 @using ExceedERP.Core.Domain.Common.HRM
 @using ExceedERP.Core.Localization
+@using ExceedERP.Core.Domain.HRM.EmployeeDetail
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<legend>HRM Setting</legend>
-@(Html.Kendo().Grid<Configuration>()
-              .Name("ConfigurationGrid")
-          .Columns(columns =>
-          {
-              // columns.Bound(c => c.Category);
-              columns.Bound(c => c.Reference).EditorTemplateName("Categories").Width(200)
-                                 .ClientGroupHeaderTemplate("Setting")
-                                 ;
-              columns.Bound(c => c.Attribute).EditorTemplateName("Attribute").Width(300);
-              columns.Bound(c => c.CurrentValue).Width(150);
-              // columns.Bound(c => c.PreviousValue);
-              //columns.Bound(c => c.Remark);
-              columns.Command(command =>
-              { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
-                  command.Destroy().Text(Resources.ActionButton_Cancel);
-              }).Width(200);
-          })
-          .ToolBar(toolbar =>
-          {
-              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
-          })
-          .Editable(editable => editable.Mode(GridEditMode.InLine))
-              .Scrollable(h => h.Height(500))
-                     .Groupable()
-                              .Sortable(sortable =>
-                              {
-                                  sortable.SortMode(GridSortMode.SingleColumn);
-                              })
-                  .Filterable()
-                     .Pageable(pageable => pageable
-                                                .Input(true)
-                                                .Numeric(false)
-                                                .Refresh(true)
-                                                .PageSizes(true)
-                                                .ButtonCount(5))
-          .DataSource(dataSource => dataSource
-              .Ajax()
-                   .Events(events =>
-                   {
-                       events.Error("error_handler(\"ConfigurationGrid\")");
-                       events.RequestStart("onRequestStart(\"ConfigurationGrid\")");
-                       events.RequestEnd("onRequestEnd(\"ConfigurationGrid\")");
-                   })
 
-              .Model(model => model.Id(p => p.ConfigurationId))
-              .Read(read => read.Action("Configurations_Read", "HRMSetting"))
-                  .Create(create => create.Action("Configurations_Create", "HRMSetting", new { Attribute = "#=Attribute#", CurrentValue = "#=CurrentValue#" }))
-              .Update(update => update.Action("Configurations_Update", "HRMSetting"))
-              .Destroy(destroy => destroy.Action("Configurations_Destroy", "HRMSetting"))
-          )
+@(Html.Kendo().TabStrip()
+              .Name("tabstrip")
+              .Animation(animation =>
+                  animation.Open(effect =>
+                      effect.Fade(FadeDirection.In)))
+              .Items(tabstrip =>
+              {
+                  tabstrip.Add().Text("HRM Setting")
+                      .Selected(true)
+                      .Content(@<text>
+
+                        <legend>HRM Setting</legend>
+                        @(Html.Kendo().Grid<Configuration>()
+                                          .Name("ConfigurationGrid")
+                                      .Columns(columns =>
+                                      {
+                                          // columns.Bound(c => c.Category);
+                                          columns.Bound(c => c.Reference).EditorTemplateName("Categories").Width(200).ClientGroupHeaderTemplate("Setting");
+
+                                          columns.Bound(c => c.Attribute).EditorTemplateName("Attribute").Width(300);
+                                          columns.Bound(c => c.CurrentValue).Width(150);
+                                          // columns.Bound(c => c.PreviousValue);
+                                          //columns.Bound(c => c.Remark);
+                                          columns.Command(command =>
+                                          {
+                                              command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                              command.Destroy().Text(Resources.ActionButton_Cancel);
+                                          }).Width(200);
+                                      })
+                                      .ToolBar(toolbar =>
+                                      {
+                                          toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                                      })
+                                      .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                          .Scrollable(h => h.Height(500))
+                                                 .Groupable()
+                                                          .Sortable(sortable =>
+                                                          {
+                                                              sortable.SortMode(GridSortMode.SingleColumn);
+                                                          })
+                                              .Filterable()
+                                                 .Pageable(pageable => pageable
+                                                                            .Input(true)
+                                                                            .Numeric(false)
+                                                                            .Refresh(true)
+                                                                            .PageSizes(true)
+                                                                            .ButtonCount(5))
+                                      .DataSource(dataSource => dataSource
+                                          .Ajax()
+                                               .Events(events =>
+                                               {
+                                                   events.Error("error_handler(\"ConfigurationGrid\")");
+                                                   events.RequestStart("onRequestStart(\"ConfigurationGrid\")");
+                                                   events.RequestEnd("onRequestEnd(\"ConfigurationGrid\")");
+                                               })
+
+                                          .Model(model => model.Id(p => p.ConfigurationId))
+                                          .Read(read => read.Action("Configurations_Read", "HRMSetting"))
+                                              .Create(create => create.Action("Configurations_Create", "HRMSetting", new { Attribute = "#=Attribute#", CurrentValue = "#=CurrentValue#" }))
+                                          .Update(update => update.Action("Configurations_Update", "HRMSetting"))
+                                          .Destroy(destroy => destroy.Action("Configurations_Destroy", "HRMSetting"))
+                                      )
+                        )
+
+
+                    </text>);
+
+                        tabstrip.Add().Text("Employee Code Setting")
+                            .Content(@<text>
+
+                                <legend>Employee Code Setting</legend>
+                                @(Html.Kendo().Grid<EmployeeCodeSetting>()
+                                                  .Name("EmployeeCodeSettinggrid")
+                                              .Columns(columns =>
+                                              {
+                                        columns.Bound(c => c.Type).Width(100);
+                                        columns.Bound(c => c.Index).Width(100);
+                                        columns.Bound(c => c.Remark).Width(100);
+                                        columns.Command(command =>
+                                        {
+                                            command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate)
+                                            .Text(Resources.ActionButton_Edit);
+                                            command.Destroy().Text(Resources.ActionButton_Cancel);
+                                        }).Width(100);
+                                    })
+                                              .ToolBar(toolbar =>
+                                              {
+                                        toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                                    })
+                                              .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                .Scrollable(h => h.Height(500))
+
+                                                                 .Groupable()
+                                                                          .Sortable(sortable =>
+                                                                          {
+                                                                    sortable.SortMode(GridSortMode.SingleColumn);
+                                                                })
+                                                              .Filterable()
+                                                                 .Pageable(pageable => pageable
+                                                                         .Input(true)
+                                                                         .Numeric(false)
+                                                                         .Refresh(true)
+                                                                         .PageSizes(true)
+                                                                         .ButtonCount(5))
+                                              .DataSource(dataSource => dataSource
+                                                  .Ajax()
+                                                         .Events(events =>
+                                                         {
+                                                   events.Error("error_handler(\"EmployeeCodeSettinggrid\")");
+                                                   events.RequestStart("onRequestStart(\"EmployeeCodeSettinggrid\")");
+                                                   events.RequestEnd("onRequestEnd(\"EmployeeCodeSettinggrid\")");
+                                               }
+                                                      )
+
+                                                      .Model(model =>
+                                                      {
+                                                model.Id(p => p.EmployeeCodeSettingId);
+                                    //model.Field(p => p.Remark).Editable(false);
+                                })
+                                                  .Read(read => read.Action("EmployeeCodeSetting_Read", "EmployeeCodeSetting"))
+                                                  .Create(create => create.Action("EmployeeCodeSetting_Create", "EmployeeCodeSetting"))
+                                                  .Update(update => update.Action("EmployeeCodeSetting_Update", "EmployeeCodeSetting"))
+                                                  .Destroy(destroy => destroy.Action("EmployeeCodeSetting_Destroy", "EmployeeCodeSetting"))
+                                              )
+                                )
+
+                            </text>);
+
+                                tabstrip.Add().Text("Employee Code Sequence")
+                                    .Content(@<text>
+                                       
+<legend>Employee Code Setting</legend>
+@(Html.Kendo().Grid<EmployeeCodeSequenceSetting>()
+                  .Name("EmployeeCodeSequenceSettingggrid")
+              .Columns(columns =>
+              {
+                  columns.Bound(c => c.Name).Width(100);
+                  columns.Bound(c => c.ItemCodeTrim).Width(100);
+                  columns.Bound(c => c.IndexCount).Width(100);
+                  columns.Bound(c => c.Status).ClientTemplate("<input type='checkbox' disabled = 'true' #=Status ? checked='checked' :'' # >").Width(100);
+                  columns.Command(command =>
+                  {
+                    //  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);  command.Destroy().Text(Resources.ActionButton_Cancel);
+                  }).Width(100);
+              })
+              .ToolBar(toolbar =>
+              {
+                  //toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+              })
+              .Editable(editable => editable.Mode(GridEditMode.InLine))
+                .Scrollable(h => h.Height(500))
+
+                                 .Groupable()
+                                          .Sortable(sortable =>
+                                          {
+                                              sortable.SortMode(GridSortMode.SingleColumn);
+                                          })
+                              .Filterable()
+                                 .Pageable(pageable => pageable
+                                                            .Input(true)
+                                                            .Numeric(false)
+                                                            .Refresh(true)
+                                                            .PageSizes(true)
+                                                            .ButtonCount(5))
+              .DataSource(dataSource => dataSource
+                  .Ajax()
+                         .Events(events =>
+                         {
+                             events.Error("error_handler(\"EmployeeCodeSequenceSettingggrid\")");
+                             events.RequestStart("onRequestStart(\"EmployeeCodeSequenceSettingggrid\")");
+                             events.RequestEnd("onRequestEnd(\"EmployeeCodeSequenceSettingggrid\")");
+                         }
+                      )
+
+                      .Model(model =>
+                      {
+                          model.Id(p => p.EmployeeCodeSequenceSettingId);
+                          //model.Field(p => p.Remark).Editable(false);
+                      })
+                  .Read(read => read.Action("EmployeeCodeSequence_Read", "EmployeeCodeSequence"))
+                  .Create(create => create.Action("EmployeeCodeSequence_Create", "EmployeeCodeSequence"))
+                  .Update(update => update.Action("EmployeeCodeSequence_Update", "EmployeeCodeSequence"))
+                  .Destroy(destroy => destroy.Action("EmployeeCodeSequence_Destroy", "EmployeeCodeSequence"))
+              )
 )
+
+        </text>);
+
+                                     
+          })
+)
+
 
 <script>
     function filterCategories() {

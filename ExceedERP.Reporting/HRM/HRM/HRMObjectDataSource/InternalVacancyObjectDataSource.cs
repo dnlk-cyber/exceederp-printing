@@ -52,18 +52,22 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                             planedSalary = plan.PlannedSalary;
                             job = plan.JobtitleName;
                         }
-                        var internalVacancy = new InternalVacancy
-                        {
-                           
-                            VacancyCode = recruitVacancy.VaccancyCode,
-                            JobTitle = job,//recruitVacancy.RecruitmentPlan.JobtitleName,
-                           // Quntity = sta,
-                            Salary = planedSalary,//recruitVacancy.RecruitmentPlan.PlannedSalary,
-                            Location = recruitVacancy.Branch.AmharicName,
-                            RecruitmentType= HrHelper.GetVacancyType(recruitVacancy.VacancyType),
-                            
+
+                        var internalVacancy = new InternalVacancy();
+
+                        internalVacancy.VacancyCode = recruitVacancy.VaccancyCode;
+                        internalVacancy.JobTitle = job;//recruitVacancy.RecruitmentPlan.JobtitleName,
+                                                       // Quntity = sta,
+                        internalVacancy.Salary = planedSalary;//recruitVacancy.RecruitmentPlan.PlannedSalary,
+
+                        internalVacancy.RecruitmentType = HrHelper.GetVacancyType(recruitVacancy.VacancyType);                          
                        
-                        };
+                      
+                        var branch = db.Branch.FirstOrDefault(x => x.BranchId == recruitVacancy.BranchId);
+                        if (branch != null)
+                        {
+                            internalVacancy.Location = branch.AmharicName;
+                        }
                         //if(internalVacancy.RecruitmentType==Core.Domain.Common.VacancyType.PERMANENT)
                         //{
                         //    internalVacancy.RecruitmentType = "ቋሚ";
@@ -72,7 +76,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                         //{
                         //    internalVacancy.RecruitmentType = "ጊዜያዊ";
                         //}
-                       
+
 
                         var vacancyLookUpId = db.VaccancyPlans.Find(vacancydetail.VacancyId);
                         if(vacancyLookUpId!=null)

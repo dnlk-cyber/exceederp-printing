@@ -10,15 +10,20 @@
           .Name("TrainingApplicantgrid")
       .Columns(columns =>
       {
-        columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["Department"], "OrgStructureId", "Name").EditorTemplateName("Department").Width(200);
-        columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["CourseList"], "LookupId", "Description").EditorTemplateName("Course").Width(150);
-        columns.Bound(c => c.NoofTrainee).Width(150);
-        columns.Bound(c => c.DateAmharic).Width(150);
-        columns.Bound(c => c.Remark).Width (150);
-        columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+          columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["Department"], "OrgStructureId", "Name").EditorTemplateName("Department").Width(200);
+          columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["CourseList"], "LookupId", "Description").EditorTemplateName("Course").Width(150);
+          columns.Bound(c => c.NoofTrainee).Width(150);
+          columns.Bound(c => c.DateAmharic).Width(150);
+          columns.Bound(c => c.TrainingRequestType).EditorTemplateName("Enum").Width(150);
+          columns.Bound(c => c.Remark).Width (150);
+          columns.Command(command =>
+          {
+              command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+              command.Destroy().Text(Resources.ActionButton_Cancel);
+          }).Width(200);
       })
       .ToolBar(toolbar => {
-            toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+          toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
       })
                 .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("TrainingRequest").Window(window => { window.Title(Resources.NavigatorTraining_TrainingApplicant); window.Scrollable(false); }))
          .Selectable(selectable =>
@@ -27,11 +32,11 @@
              selectable.Type(GridSelectionType.Row);
          })
                .Events(e =>
-                       {
-                           e.Save("GetDate");
-                           e.Edit("GetDate");
-                           e.DetailExpand("onDetailExpandUser");
-                       })
+               {
+                   e.Save("GetDate");
+                   e.Edit("GetDate");
+                   e.DetailExpand("onDetailExpandUser");
+               })
              .Scrollable(h => h.Height(500))
                  .Groupable()
                           .Sortable(sortable =>
@@ -47,14 +52,15 @@
                                             .ButtonCount(5))
       .DataSource(dataSource => dataSource
           .Ajax()
-              //.Sort(sort => sort.Add("DateCreated").Descending()) 
+           .Sort(x => x.Add(y => y.TrainingApplicantId).Descending())
+               //.Sort(sort => sort.Add("DateCreated").Descending()) 
                .Events(events =>
-                 {
-                     events.Error("error_handler(\"TrainingApplicantgrid\")");
-                     events.RequestStart("onRequestStart(\"TrainingApplicantgrid\")");
-                     events.RequestEnd("onRequestEnd(\"TrainingApplicantgrid\")");
-                 })
-                       
+               {
+                   events.Error("error_handler(\"TrainingApplicantgrid\")");
+                   events.RequestStart("onRequestStart(\"TrainingApplicantgrid\")");
+                   events.RequestEnd("onRequestEnd(\"TrainingApplicantgrid\")");
+               })
+
           .Model(model => model.Id(p => p.TrainingApplicantId))
           .Read(read => read.Action("TrainingApplicants_Read", "TrainingApplicant"))
           .Create(create => create.Action("TrainingApplicants_Create", "TrainingApplicant"))
@@ -78,7 +84,7 @@
                           {
                               //columns.Bound(c => c.RequestId);
                               columns.Bound(c => c.DateReqStatAm).Width(100);
-                              columns.Bound(c => c.Status).EditorTemplateName("Enum").Width(200);
+                              columns.Bound(c => c.Status).EditorTemplateName("EnumWithoutApprove").Width(200);
                               columns.ForeignKey(c => c.ApproverId, (IEnumerable)ViewData["EmployeeName"], "EmployeeId", "FullNameAmharic").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
                               columns.ForeignKey(c => c.ApproverDepartment, (IEnumerable)ViewData["Department"], "OrgStructureId", "Name").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
                               columns.Bound(c => c.Remark).Width(100);
@@ -96,6 +102,7 @@
                           .Scrollable()
                           .DataSource(dataSource => dataSource
                               .Ajax()
+                             
                                        .Events(events =>
                                        {
                                            events.Error("error_handler(\"RequestesStatusgrid_#=TrainingApplicantId#\")");
@@ -107,6 +114,9 @@
                                       {
                                           model.Id(p => p.RequestStatusId);
                                           model.Field(p => p.Date).Editable(false).DefaultValue(DateTime.Today);
+                                          model.Field(p => p.DateReqStatAm).Editable(false);
+                                          model.Field(p => p.ApproverDepartment).Editable(false);
+                                          model.Field(p => p.ApproverId).Editable(false);
                                       })
 
                                              .Read(read => read.Action("RequestesStatus_Read", "RequestesStatus", new { id = "#=TrainingApplicantId#", referenceType = "Training" }))

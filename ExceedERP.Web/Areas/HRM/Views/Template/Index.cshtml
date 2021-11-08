@@ -4,58 +4,43 @@
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<legend>Templates</legend>
-@(Html.Kendo().Grid<Template>()
-          .Name("Template")
-          .Columns(columns =>
-          {
 
-              columns.Bound(c => c.TempOne).Width(200);
-              columns.Bound(c => c.TemplateType).Width(200);
+<div>
+    <div class="cards-container">
+        <div class="k-card k-card-horizontal">
+            
+            <div class="k-vbox k-column">
+                <div class="k-card-header">
+                    <h5 class="k-card-title">Card Title</h5>
+                </div>
+                <div class="k-card-body">
+                    <p>Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                </div>
+                <div class="k-card-actions k-card-actions-stretched k-card-actions-horizontal">
+                    <span class="k-card-action">
+                        <span class="k-button k-flat fa fa-edit">Edit</span>
+                    </span>
+                    <span class="k-card-action">
+                        <span class="k-button k-flat k-primary fa fa-trash">Delete</span>
+                    </span>
+                </div>
+            </div>
+        </div>
 
-                  columns.Command(command => {
-                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
-                  command.Destroy().Text(Resources.ActionButton_Cancel);
-                  }).Width(200);
-          })
-          .ToolBar(toolbar =>
-          {
-              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
-          })
-          .Editable(editable => editable.Mode(GridEditMode.InLine))
-          .Scrollable(h => h.Height(500))
-          .Selectable(selectable =>
-          {
-              selectable.Mode(GridSelectionMode.Single);
-              selectable.Type(GridSelectionType.Row);
-          })
-          .Groupable()
-          .Sortable(sortable =>
-          {
-              sortable.SortMode(GridSortMode.SingleColumn);
-          })
-          .Filterable()
+      
+    </div>
 
-          .Pageable(pageable => pageable
-              .Input(true)
-              .Numeric(false)
-              .Refresh(true)
-              .PageSizes(true)
-              .ButtonCount(5))
-          .DataSource(dataSource => dataSource
-              .Ajax()
-                  .Events(events =>
-                  {
-                      events.Error("error_handler(\"Template\")");
-                      events.RequestStart("onRequestStart(\"Template\")");
-                      events.RequestEnd("onRequestEnd(\"Template\")");
-                  })
+    <style>
+        .cards-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+        }
 
-              .Model(model => model.Id(p => p.TemplateId))
-              .Read(read => read.Action("Template_Read", "Template"))
-              .Create(create => create.Action("Template_Create", "Template", new { Area = "HRM" }))
-              .Update(update => update.Action("Template_Update", "Template"))
-              .Destroy(destroy => destroy.Action("Template_Destroy", "Template"))
-          ))
-
+        .k-card {
+            margin: 5%;
+            width: 300px;
+        }
+    </style>
+</div>
 

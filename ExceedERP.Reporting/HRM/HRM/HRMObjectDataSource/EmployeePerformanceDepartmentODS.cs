@@ -89,8 +89,14 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                         }
                         EmployeeInfo.From = HrHelper.ReportDateOneAm;
                         EmployeeInfo.To = HrHelper.ReportDateTwoAm;
-                        if (palcmentOne != null) EmployeeInfo.branchName = palcmentOne.Branch.AmharicName;
-
+                        if (palcmentOne != null)
+                        {
+                            var branch = db.Branch.FirstOrDefault(x=>x.BranchId == palcmentOne.BranchId);
+                            if(branch != null)
+                            {
+                                EmployeeInfo.branchName = branch.AmharicName;
+                            }                            
+                        }
 
                         if (period.Any())
                         {

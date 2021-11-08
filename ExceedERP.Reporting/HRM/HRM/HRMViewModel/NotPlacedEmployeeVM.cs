@@ -12,5 +12,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMViewModel
         public string FullName { get; set; }
         public string Status { get; set; }
         public string EmployementType { get; set; }
+        public string Branch { get; set; }
+        public string Department { get; set; }
     }
 }

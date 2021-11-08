@@ -38,7 +38,12 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                         var vacancy = db.VaccancyPlans.FirstOrDefault(x => x.VacancyId == rec.VacancyId && x.RecruSource==RecruitmentSource.EXTERNAL && x.IsActive);
                         if (vacancy != null)
                         {
-                            internalVacancy.Location = vacancy.Branch.AmharicName;
+                            var branch = db.Branch.FirstOrDefault(x => x.BranchId == vacancy.BranchId);
+                            if (branch != null)
+                            {
+                                internalVacancy.Location = branch.AmharicName;
+                            }
+
                             if (vacancy.VacancyType == VacancyType.PERMANENT)
                             {
                                 internalVacancy.RecruitmentType = "ቋሚ";

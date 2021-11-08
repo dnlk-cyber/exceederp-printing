@@ -70,21 +70,22 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                 var splitDate = DateAmharic.Split('/');
                 Date = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
             }
-           
+
         }
-        
+
         public ActionResult LateComingSummaries_Read([DataSourceRequest]DataSourceRequest request)
-           {
-               var periodList = from p in db.PayrollPeriods
-                   join g in db.GLPeriods
-                   on p.Name equals g.Name
-                   where p.Status == FiscalYearStatus.Open
-                   select (new {g.GLPeriodId});
-               List<int> selectedPeriod = periodList.Select(x=> x.GLPeriodId).ToList();
-               var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-               var empIdList = EmployeeHelper.GetSubordinates(empId);
-            IQueryable<LateComingSummary> LateComingSummaries = db.LateComingSummaries.Where(x => empIdList.Contains(x.EmployeeId)&& selectedPeriod.Contains( x.GLPeriodId ));
-            DataSourceResult result = LateComingSummaries.ToDataSourceResult(request, LateComingSummary => new {
+        {
+            var periodList = from p in db.PayrollPeriods
+                             join g in db.GLPeriods
+                             on p.Name equals g.Name
+                             where p.Status == FiscalYearStatus.Open
+                             select (new { g.GLPeriodId });
+            List<int> selectedPeriod = periodList.Select(x => x.GLPeriodId).ToList();
+            var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
+            var empIdList = EmployeeHelper.GetSubordinates(empId);
+            IQueryable<LateComingSummary> LateComingSummaries = db.LateComingSummaries.Where(x => empIdList.Contains(x.EmployeeId) /*&& selectedPeriod.Contains(x.GLPeriodId)*/);
+            DataSourceResult result = LateComingSummaries.ToDataSourceResult(request, LateComingSummary => new
+            {
                 LateComingSummaryId = LateComingSummary.LateComingSummaryId,
                 EmployeeId = LateComingSummary.EmployeeId,
                 TotalDays = LateComingSummary.TotalDays,
@@ -92,7 +93,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                 TotalHours = LateComingSummary.TotalHours,
                 Remark = LateComingSummary.Remark,
                 Check = LateComingSummary.Check,
-                Processed = CheckPayrollProcess( LateComingSummary.EmployeeId, LateComingSummary.GLPeriodId),
+                Processed = CheckPayrollProcess(LateComingSummary.EmployeeId, LateComingSummary.GLPeriodId),
             });
 
             return Json(result);
@@ -108,13 +109,14 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
 
             return false;
         }
-          
+
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult LateComingSummaries_Create([DataSourceRequest]DataSourceRequest request, LateComingSummary LateComingSummary)
-        {ModelState.Clear();
+        {
+            ModelState.Clear();
             if (ModelState.IsValid)
             {
-              
+
                 {
                     var entity = new LateComingSummary
                     {
@@ -123,7 +125,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                         GLPeriodId = LateComingSummary.GLPeriodId,
                         TotalHours = LateComingSummary.TotalHours,
                         Remark = LateComingSummary.Remark,
-                      
+
                     };
 
 
@@ -135,13 +137,14 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
 
             return Json(new[] { LateComingSummary }.ToDataSourceResult(request, ModelState));
         }
-         
+
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult LateComingSummaries_Update([DataSourceRequest]DataSourceRequest request, LateComingSummary LateComingSummary)
-        {ModelState.Clear();
+        {
+            ModelState.Clear();
             if (ModelState.IsValid)
             {
-               
+
                 {
                     var entity = new LateComingSummary
                     {
@@ -151,7 +154,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                         GLPeriodId = LateComingSummary.GLPeriodId,
                         TotalHours = LateComingSummary.TotalHours,
                         Remark = LateComingSummary.Remark,
-                     
+
                     };
 
                     db.LateComingSummaries.Attach(entity);
@@ -162,7 +165,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
 
             return Json(new[] { LateComingSummary }.ToDataSourceResult(request, ModelState));
         }
-          
+
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult LateComingSummaries_Destroy([DataSourceRequest]DataSourceRequest request, LateComingSummary LateComingSummary)
         {
@@ -176,7 +179,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                     GLPeriodId = LateComingSummary.GLPeriodId,
                     TotalHours = LateComingSummary.TotalHours,
                     Remark = LateComingSummary.Remark,
-                   
+
                 };
                 #region delete log
                 UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted employee late comming information of employee" + LateComingSummary.EmployeeId);
@@ -246,7 +249,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                 db.SaveChanges();
             }
         }
-        private void SaveAttendance(int period ,int empId, decimal days)
+        private void SaveAttendance(int period, int empId, decimal days)
 
         {
             var checkExistance = db.EmpPayrollNoDaysWorkeds.FirstOrDefault(x => x.GLPeriodId == period && x.EmployeeId == empId && x.Remark == "Late Coming");
@@ -256,7 +259,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                 db.EmpPayrollNoDaysWorkeds.Remove(checkExistance);
                 db.SaveChanges();
             }
-            
+
             var entity = new EmpPayrollNoDaysWorked
             {
                 EmployeeId = empId,
@@ -264,7 +267,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                 Days = days,
                 Remark = "Late Coming",
                 DateCreated = DateTime.Now,
-                LastModified =null,
+                LastModified = null,
                 CreatedBy = User.Identity.Name,
                 ModifiedBy = null,
                 Reason = "Late Coming",
@@ -275,47 +278,46 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
             db.SaveChanges();
         }
         [HttpPost]
-        public void Summary( int periodId)
+        public void Summary(int periodId)
         {
             var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
             var empIdList = EmployeeHelper.GetSubordinates(empId);
-            foreach (var employee in empIdList)
+            var period = db.GLPeriods.FirstOrDefault(x => x.GLPeriodId == periodId);
+            if (period != null)
             {
-                var checkExistance = db.LateComingSummaries.FirstOrDefault(x => x.EmployeeId == employee && x.GLPeriodId == periodId);
-                if (checkExistance == null)
-                {
-                    var latecomingList = db.LateCommings.Where(x => x.EmployeeId == employee).ToList();
-                    var periodList = db.GLPeriods.FirstOrDefault(x => x.GLPeriodId == periodId);
-                    var summaries = new List<LateComming>();
-                    if (periodList != null)
-                    {
-                        foreach (var l in latecomingList)
-                        {
+                var latecomingLists = db.LateCommings.Where(x => empIdList.Contains(x.EmployeeId) && x.Date >= period.DateFrom && x.Date <= period.DateTo).ToList();
 
-                            if (l.Date >= periodList.DateFrom && l.Date <= periodList.DateTo)
-                            {
-                                summaries.Add(l);
-                            }
+                foreach (var late in latecomingLists)
+                {
+                    var singleEmpLates = db.LateCommings.Where(x => x.EmployeeId == late.EmployeeId && x.Date >= period.DateFrom && x.Date <= period.DateTo).ToList();
+
+                    var checkExistance = db.LateComingSummaries.FirstOrDefault(x => x.EmployeeId == late.EmployeeId && x.GLPeriodId == period.GLPeriodId);
+                    if (checkExistance != null)
+                    {
+                        if (singleEmpLates.Any())
+                        {
+                            checkExistance.TotalHours = singleEmpLates.Sum(x => x.Time);
+                            checkExistance.TotalDays = (singleEmpLates.Sum(x => x.Time)) / 8;
+
+                            db.Entry(checkExistance).State = EntityState.Modified;
+                            db.SaveChanges();
                         }
                     }
-                    if (summaries.Any())
+                    else
                     {
-
                         var entity = new LateComingSummary
                         {
-                            EmployeeId = employee,
-                            TotalDays = 0,
+                            EmployeeId = late.EmployeeId,
                             GLPeriodId = periodId,
-                            TotalHours = summaries.Sum(x => x.Time),
+                            TotalHours = singleEmpLates.Sum(x => x.Time),
                             Remark = null,
-
                         };
+
                         entity.TotalDays = entity.TotalHours / 8;
 
                         db.LateComingSummaries.Add(entity);
                         db.SaveChanges();
                     }
-
                 }
             }
         }

@@ -8,13 +8,14 @@ namespace ExceedERP.Core.Domain.HRM.LeaveManagment
     public class LeaveReturn : DepartmentOperations
     {
         public int LeaveReturnId { get; set; }
-        [Required]
+        public int LeaveRequestId { get; set; }
+       // [Required]
         [Display(Name = "HR_LeaveManagment_Leave_PersonEmployee", ResourceType = typeof(Localization.Resources))]
         public int EmployeeId { get; set; }
-        [Required]
+       // [Required]
         [Display(Name = "HR_LeaveManagment_Leave_Amount", ResourceType = typeof(Localization.Resources))]
         public decimal Amount { get; set; }
-        [Required]
+       // [Required]
         [Display(Name = "HR_LeaveManagment_Leave_Period", ResourceType = typeof(Localization.Resources))]
         public int GlFiscalYearId { get; set; }
         [NotMapped]
@@ -27,7 +28,7 @@ namespace ExceedERP.Core.Domain.HRM.LeaveManagment
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}")]
         public DateTime To { get; set; }
         public string ToAm { get; set; }
-        [Display(Name = "HR_SelfCare_LeaveRequest_IsForOther", ResourceType = typeof(Localization.Resources))]
-        public bool IsForOther { get; set; }
+        //[Display(Name = "HR_SelfCare_LeaveRequest_IsForOther", ResourceType = typeof(Localization.Resources))]
+        //public bool IsForOther { get; set; }
     }
 }

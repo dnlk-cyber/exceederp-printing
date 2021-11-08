@@ -66,5 +66,6 @@ namespace ExceedERP.Core.Domain.HRM.EmployeeDetail
         public bool IsPrivate { get; set; }
         [Display(Name = "Remark", ResourceType = typeof(Localization.Resources))]
         public string Remark { get; set; }
+        public int JobTitleId { get; set; }
     }
 }

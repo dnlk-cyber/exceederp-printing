@@ -64,18 +64,18 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
             var branchCostCenter = db.BranchCostCenter.ToList();
             foreach (var b in branchCostCenter)
             {
-                var oneWorkUnit = db.MainCompanyStructures.Where(x => x.OrgStructureId == b.OrgStructureId).FirstOrDefault();
+                var oneWorkUnit = db.MainCompanyStructures.FirstOrDefault(x => x.OrgStructureId == b.OrgStructureId);
                 if (oneWorkUnit != null)
                 {
                     workUnits.Add(oneWorkUnit);
                 }
-
             }
 
-
-
-            return Json(workUnits.Select(p => new { OrgStructureId = p.OrgStructureId, Name = p.Name }), JsonRequestBehavior.AllowGet);
-
+            return Json(workUnits.Select(p => new
+            {
+                OrgStructureId = p.OrgStructureId,
+                Name = p.Name
+            }), JsonRequestBehavior.AllowGet);
 
         }
         public JsonResult GetJobTitleList()

@@ -36,24 +36,24 @@
       .ToolBar(toolbar =>
       {
       toolbar.Template(@<text>
-                               <div class="toolbar">
-                                   <label class="category-label">@Resources.HR_RecruitmentManagment_Vacancy_BranchId</label>
-                                   @(Html.Kendo().ComboBox()
-                                         .Placeholder(Resources.HR_RecruitmentManagment_Vacancy_BranchId)
-                                         .Name("OrgBranchName")
-                                         .BindTo((IEnumerable) ViewData["Branches"])
-                                         .DataTextField("Name")
-                                         .DataValueField("BranchId")
-                                         .Events(x => x.Change("Branch"))
-                                         .AutoBind(false)
+             <div class="toolbar">
+                 <label class="category-label">@Resources.HR_RecruitmentManagment_Vacancy_BranchId</label>
+                 @(Html.Kendo().ComboBox()
+                       .Placeholder(Resources.HR_RecruitmentManagment_Vacancy_BranchId)
+                       .Name("OrgBranchName")
+                       .BindTo((IEnumerable) ViewData["Branches"])
+                       .DataTextField("Name")
+                       .DataValueField("BranchId")
+                       .Events(x => x.Change("Branch"))
+                       .AutoBind(false)
 
-                                         .HtmlAttributes(new {style = "width: 200px;"})
+                       .HtmlAttributes(new {style = "width: 200px;"})
 
-                                         )
+                       )
 
-                                   <br/>
-                                   <br/>
-                               </div>
+                 <br/>
+                 <br/>
+             </div>
 @if (HttpContext.Current.User.IsInRole("HR_Training_User"))
 {
     @item.CreateButton(Resources.ActionButton_AddNewRecord)
@@ -69,27 +69,28 @@
                           sortable.SortMode(GridSortMode.SingleColumn);
                       })
           .Filterable()
+          .ColumnMenu()
                  .Events(e =>
                  {
                      e.Save("GetDate");
-
                      e.Edit("GetDate");
                  })
              .Pageable(pageable => pageable
-                                        .Input(true)
-                                        .Numeric(false)
-                                        .Refresh(true)
-                                        .PageSizes(true)
-                                        .ButtonCount(5))
+                  .Input(true)
+                  .Numeric(false)
+                  .Refresh(true)
+                  .PageSizes(true)
+                  .ButtonCount(5))
       .DataSource(dataSource => dataSource
           .Ajax()
+            .Sort(x => x.Add(y => y.CourseTrackingId).Descending())
                     .Events(events =>
-                                                             {
-                                                                 events.Error("error_handler(\"CourseTrackingGrid\")");
-                                                                 events.RequestStart("onRequestStart(\"CourseTrackingGrid\")");
-                                                                 events.RequestEnd("onRequestEnd(\"CourseTrackingGrid\")");
-                                                             })
-                                               
+                        {
+                            events.Error("error_handler(\"CourseTrackingGrid\")");
+                            events.RequestStart("onRequestStart(\"CourseTrackingGrid\")");
+                            events.RequestEnd("onRequestEnd(\"CourseTrackingGrid\")");
+                        })
+                              
           .Model(model => model.Id(p => p.CourseTrackingId))
           .Read(read => read.Action("CourseTrackings_Read", "CourseTracking"))
           .Create(create => create.Action("CourseTrackings_Create", "CourseTracking"))
@@ -100,7 +101,7 @@
 
 <script id="template" type="text/kendo-tmpl">
     @(Html.Kendo().TabStrip()
-                                .Name("tabstrip_#=CourseTrackingId#")
+          .Name("tabstrip_#=CourseTrackingId#")
           .SelectedIndex(0)
           .Items(items =>
           {
@@ -166,17 +167,91 @@
 
                 </text>
                   );
-             
+              
           }).ToClientTemplate())
 </script>
 
 
 <script id="outcometemplate" type="text/kendo-tmpl">
     @(Html.Kendo().TabStrip()
-                                        .Name("tabstrip_#=TraineeId#")
+          .Name("tabstrip_#=TraineeId#")
           .SelectedIndex(0)
           .Items(items =>
           {
+
+          items.Add().Text("Training Evaluation").Content(
+            @<text>
+    <a href='@Url.Action("TrainingEvaluation", "PrintableLetter")/?traineeId=#=TraineeId#' title="Print"><i class="fa fa-print fa-2x"></i></a>
+
+                @(Html.Kendo().Grid<TrainingEvaluation>()
+                      .Name("TrainingEvaluationGrid#=TraineeId#")
+      .Columns(columns =>
+      {
+          columns.ForeignKey(c => c.CriteriaId, (IEnumerable)ViewData["Criterias"], "TrainingEvaluationCriteriaId", "Criteria").EditorTemplateName("CriteriaLists").Width(120);
+          columns.Bound(c => c.Score).Width(200);
+
+          columns.Command(command =>
+          {
+
+          }).Width(100);
+      })
+
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Scrollable(h => h.Height(500))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+                   .Events(events =>
+                   {
+                       events.Error("error_handler(\"TrainingEvaluationGrid#=TraineeId#\")");
+                       events.RequestStart("onRequestStart(\"TrainingEvaluationGrid#=TraineeId#\")");
+                       events.RequestEnd("onRequestEnd(\"TrainingEvaluationGrid#=TraineeId#\")");
+                   })
+
+          .Model(model => model.Id(p => p.TrainingEvaluationId))
+
+          .Read(read => read.Action("TrainingEvaluation_For_CourseTracking_Read", "TrainingEvaluationAndFeedback", new { traineeId = "#=TraineeId#" }))
+     
+      ).ToClientTemplate()
+                )
+
+            </text>
+                  );
+
+          items.Add().Text("Training Feedback").Content(
+            @<text>
+
+                @(Html.Kendo().Grid<TrainingFeedback>()
+                             .Name("TrainingFeedbackGrid#=TraineeId#")
+                        .Columns(columns =>
+                        {
+                            columns.Bound(c => c.FeedBack).Width(200);
+
+                            columns.Command(command =>
+                            {
+
+                            }).Width(100);
+                        })
+
+                        .Editable(editable => editable.Mode(GridEditMode.InLine))
+                        .Scrollable(h => h.Height(500))
+                        .DataSource(dataSource => dataSource
+                            .Ajax()
+                                    //.Events().Update()
+                                    .Events(events =>
+                                    {
+                                        events.Error("error_handler(\"TrainingFeedbackGrid#=TraineeId#\")");
+                                        events.RequestStart("onRequestStart(\"TrainingFeedbackGrid#=TraineeId#\")");
+                                        events.RequestEnd("onRequestEnd(\"TrainingFeedbackGrid#=TraineeId#\")");
+                                    })
+
+                            .Model(model => model.Id(p => p.TrainingFeedbackId))
+                                    .Read(read => read.Action("TrainingFeedback_For_CourseTracking_Read", "TrainingEvaluationAndFeedback", new { traineeId = "#=TraineeId#" }))
+                        ).ToClientTemplate()
+                )
+
+            </text>
+                                  );
+
 
               items.Add().Text(Resources.NavigatorTraining_TrainingStatus).Content(
                 @<text>
@@ -211,17 +286,16 @@
       .DataSource(dataSource => dataSource
           .Ajax()
                    .Events(events =>
-                                                                             {
-                                                                                 events.Error("error_handler(\"TrainingStatus#=TraineeId#\")");
-                                                                                 events.RequestStart("onRequestStart(\"TrainingStatus#=TraineeId#\")");
-                                                                                 events.RequestEnd("onRequestEnd(\"TrainingStatus#=TraineeId#\")");
-                                                                             })
-                                   
-
+                      {
+                          events.Error("error_handler(\"TrainingStatus#=TraineeId#\")");
+                          events.RequestStart("onRequestStart(\"TrainingStatus#=TraineeId#\")");
+                          events.RequestEnd("onRequestEnd(\"TrainingStatus#=TraineeId#\")");
+                      })                    
+                                                                          
           .Model(model => model.Id(p => p.TrainingStatusId))
 
-                  .Read(read => read.Action("TrainingStatuses_Read", "TrainingOutCome", new { id = "#=TraineeId#" }))
-                  .Create(create => create.Action("TrainingStatuses_Create", "TrainingOutCome", new { id = "#=TraineeId#" }))
+          .Read(read => read.Action("TrainingStatuses_Read", "TrainingOutCome", new { id = "#=TraineeId#" }))
+          .Create(create => create.Action("TrainingStatuses_Create", "TrainingOutCome", new { id = "#=TraineeId#" }))
           .Update(update => update.Action("TrainingStatuses_Update", "TrainingOutCome"))
           .Destroy(destroy => destroy.Action("TrainingStatuses_Destroy", "TrainingOutCome"))
       ).ToClientTemplate() 
@@ -232,6 +306,7 @@
 
           }).ToClientTemplate())
 </script>
+
 <style>
     .dropdown-header {
         border-width: 0 0 1px 0;

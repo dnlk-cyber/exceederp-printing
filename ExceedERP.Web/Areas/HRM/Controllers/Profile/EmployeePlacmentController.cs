@@ -288,8 +288,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
 
                     ModelState.AddModelError("",
                         "This employee is already assigened under  Work unit:" +
-                        checkexistance.MainCompanyStructure.Name + ", job title: " +
-                        checkexistance.Lookup.Description + " and branch: " + checkexistance.Branch.Name + "!!");
+                        /*checkexistance.MainCompanyStructure.Name +*/ ", job title: " +
+                        /*checkexistance.Lookup.Description +*/ " and branch: " + /*checkexistance.Branch.Name +*/ "!!");
                 }
                 else if (AssigmentDateAmharic == null)
                 {

@@ -49,8 +49,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
             var cosignTypes = db.Lookups.Where(x => x.LookupType == LookUpTypes.COSIGN_TYPE);
             ViewData["CosignType"] = cosignTypes;
 
-            var list = inputs.GetEmployees(User.Identity.Name);
-            ViewData["EmployeeList"] = list.Where(x => x.IsActive);
+            ViewData["EmployeeList"] = db.Person_Employee.AsQueryable();
         }
 
         public void SetDate(string name, string value)
@@ -73,7 +72,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
         public ActionResult Commitments_Read([DataSourceRequest]DataSourceRequest request)
         {
             List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
-            IQueryable<Commitment> commitments = db.Commitments.Where(x => mybraches.Contains(x.OrgBranchName));
+            IQueryable<Commitment> commitments = db.Commitments;//.Where(x => mybraches.Contains(x.OrgBranchName));
             DataSourceResult result = commitments.ToDataSourceResult(request, commitment => new
             {
                 EmployeeId = commitment.EmployeeId,
@@ -104,33 +103,45 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
         public ActionResult Commitments_Create([DataSourceRequest]DataSourceRequest request, Commitment commitment)
         {
             ModelState.Clear();
+
+            if (commitment.FromCometAm != null)
+            {
+                var splitDate = commitment.FromCometAm.Split('/');
+                commitment.From = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
+            }
+            else
+            {
+                ModelState.AddModelError("", "Please Enter Start Date");
+            }
+            if (commitment.ToCometAm != null)
+            {
+                var splitDate = commitment.ToCometAm.Split('/');
+                commitment.To = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
+            }
+            else
+            {
+                ModelState.AddModelError("", "Please Enter End Date");
+            }
+
+            if (commitment.From > commitment.To)
+            {
+                ModelState.AddModelError("", "Start Date should be lessthan or Equal to the End Date");
+            }
+            if (commitment.From.Date > DateTime.Now.Date)
+            {
+                ModelState.AddModelError("", "Start date should be less or equal to the current date!!");
+            }
+
             if (ModelState.IsValid)
             {
                 var commitmentTable = db.Commitments.Where(x => x.CommitmentId == commitment.CommitmentId).ToList();
-                if (AmharicStartDate == null)
-                {
-                    ModelState.AddModelError("", "Start Date is mandatory!!");
-                }
-                else if (AmharicEndDate == null)
-                {
-                    ModelState.AddModelError("", "End Date is mandatory!!");
-                }
-                else if (StartDate.Date > EndDate.Date)
-                {
-                    ModelState.AddModelError("", "Start Date should be lessthan or Equal to the End Date");
-                }
-                else if (StartDate.Date > DateTime.Now.Date)
-                {
-
-                    ModelState.AddModelError("", "Start date should be less or equal to the current date!!");
-                }
-                else
-                {
+                
+               
                     var entity = new Commitment
                     {
                         CommitmentId = commitment.CommitmentId,
                         EmployeeId = commitment.EmployeeId,
-                        // Employee = commitment.Employee,
+                         Employee = commitment.Employee,
                         Reason = commitment.Reason,
                         LookupId = commitment.LookupId,
                         From = StartDate,
@@ -172,15 +183,16 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                     #endregion
                     //}
                     #region operation log
-                    var person1 = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == entity.EmployeeId);
-                    if (person1 != null)
+
+                    var profile = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == entity.EmployeeId);
+                    if (profile != null)
                     {
-                        UserHelper.OperationLog(Request.UserHostAddress, "Commitment", "Success", User.Identity.Name, "Commitment of " + person1.EmployeeCode + " is Created By  " + User.Identity.Name, Modules.HRM);
+                        UserHelper.OperationLog(Request.UserHostAddress, "Commitment", "Success", User.Identity.Name, "Commitment of " + profile.EmployeeCode + " is Created By  " + User.Identity.Name, Modules.HRM);
 
                     }
                     #endregion
                 }
-            }
+            
 
             return Json(new[] { commitment }.ToDataSourceResult(request, ModelState));
         }
@@ -254,9 +266,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
 
             return Json(new[] { commitment }.ToDataSourceResult(request, ModelState));
         }
-
-
-
+        
         [AuthorizeRoles(HrmConstants.HRProfileAdmin, HrmConstants.HRAdmin)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult Commitments_Destroy([DataSourceRequest]DataSourceRequest request, Commitment commitment)
@@ -383,8 +393,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
         }
         public string Close(int id)
         {
-            var empCommit = db.Commitments.FirstOrDefault(x=>x.CommitmentId == id);
-            if(empCommit != null)
+            var empCommit = db.Commitments.FirstOrDefault(x => x.CommitmentId == id);
+            if (empCommit != null)
             {
                 empCommit.IsActive = false;
 

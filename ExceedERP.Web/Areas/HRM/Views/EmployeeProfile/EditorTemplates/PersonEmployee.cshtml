@@ -2,6 +2,7 @@
 @using ExceedERP.Core.Localization
 @model ExceedERP.Core.Domain.Common.HRM.Person_Employee
 <div class="form">
+
     <div class="row fullrow">
         <div class="col-md-3 ro1">
             <div class="form-group">
@@ -170,6 +171,7 @@
 
                 </div>
             </div>
+       
         </div>
         <div class="col-md-4 ro1">
             <div class="form-group">
@@ -214,9 +216,11 @@
                 @Html.LabelFor(model => model.Status, htmlAttributes: new { @class = "control-label col-md-8" })
                 <div class="col-md-10">
 
-                    @Html.EnumDropDownListFor(model => model.Status, htmlAttributes: new { @class = "k-dropdown-wrap k-state-default", @style = "width: 140px" })
+                    @Html.EnumDropDownListFor(model => model.Status, htmlAttributes: new { @class = "k-dropdown-wrap k-state-default", @style = "width: 140px"@*, @onchange = "onFreeLancer()"*@ })
                 </div>
-
+                <div>
+                    @Html.Label("From",htmlAttributes: new { })
+                </div>
             </div>
             <div class="form-group">
                 @Html.LabelFor(model => model.Remark, htmlAttributes: new { @class = "control-label col-md-8" })
@@ -231,29 +235,21 @@
             <div class="row"></div><br />
             <div class="form-group">
                 @*    @Html.LabelFor(model => model.IsActive, htmlAttributes: new { @class = "control-label col-md-8" })*@
-                @*<div class="col-md-10">
+
+                <div class="col-md-10">
+
                     @(Html.Kendo().CheckBoxFor(model => model.IsActive)
                                 .Enable(false)
 
                     )
                     @Html.ValidationMessageFor(model => model.IsActive, "", new { @class = "text-danger" })
-                </div>*@
-                @Html.LabelFor(model => model.EmployeeTypeId, htmlAttributes: new { @class = "control-label col-md-8" })
-                <div class="col-md-10">
-                    @(Html.Kendo().DropDownListFor(model => model.EmployeeTypeId)
-
-                                     .OptionLabel(Resources.Select)
-                                     .DataTextField("Name")
-                                     .DataValueField("EmployeeTypeId")
-                                     .ValuePrimitive(true)
-                                     .DataSource(dataSource =>
-                                     {
-                                         dataSource.Read(read => read.Action("GetEmployeeTypes", "HRMDataProvider"))
-                                             .ServerFiltering(false);
-                                     }))
-                    @Html.ValidationMessageFor(model => model.EmployeeTypeId, "", new { @class = "text-danger" })
                 </div>
+
+
             </div>
         </div>
     </div>
+
 </div>
+
+

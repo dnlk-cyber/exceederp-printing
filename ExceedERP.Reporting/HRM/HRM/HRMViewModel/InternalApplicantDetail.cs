@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Reporting.SharedDataSources;
+using System;
 
 namespace ExceedERP.Reporting.HRM.HRM.HRMViewModel
 {
@@ -10,6 +11,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMViewModel
         public int No { get; set; }
         public string JobTitle { get; set; }
         public string EduandExp { get; set; }
+        public string ExperienceLevel { get; set; }
         public string Location { get; set; }
         public int Quntity { get; set; }
         public string Salary { get; set; }
@@ -22,7 +24,9 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMViewModel
         public string Remark { get; set; }
         public string TotalYear { get; set; }
         public string TotalMonth { get; set; }
-        public List<EmployeeEducation> Educations { get; set; }
+        public DateTime From { get; set; }
+        public DateTime To { get; set; }
+         public List<EmployeeEducation> Educations { get; set; }
         public List<CurrentEmployeeExpriance> Expriance { get; set; }
         public List<OtherEmployeeExpriance> OtherExpriance { get; set; }
         public List<EmpApplicantTraining> Trainings { get; set; }

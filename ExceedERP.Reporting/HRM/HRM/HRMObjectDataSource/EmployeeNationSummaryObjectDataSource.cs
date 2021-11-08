@@ -22,134 +22,99 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             List<EmployeeSummary> list = new List<EmployeeSummary>();
             EmployeeSummary employee = new EmployeeSummary();
             db = new ExceedDbContext();
-            var lookups = db.Lookups.ToList();
+            var lookups = db.Lookups.Where(x => x.LookupType == LookUpTypes.NATION).ToList();
 
             int index = 0;
 
             list = new List<EmployeeSummary>();
             employee = new EmployeeSummary();
 
-            #region Nation
             List<Person_Employee> emplist;
-            if (branchId != null && orgStructureId != null)
-            {
-                emplist = EmployeeHelper.GetAllEmployeesByBranchAndWorkUnit(Convert.ToInt32(branchId), Convert.ToInt32(orgStructureId)).ToList();
-            }
-            else if (branchId != null && orgStructureId == null)
-            {
-                emplist = EmployeeHelper.GetAllEmployeesByBranch(Convert.ToInt32(branchId)).ToList();
-            }
-            else if (branchId == null && orgStructureId != null)
-            {
-                emplist = EmployeeHelper.GetAllEmployeesByWorkUnit(Convert.ToInt32(orgStructureId)).ToList();
-            }
-            else
-            {
 
-                emplist = db.Person_Employee.ToList();
-
-            }
-            if(status == "Active")
+            var placements = db.Placements.ToList();
+            if (branchId != null)
             {
-                emplist = emplist.Where(x=>x.IsActive).ToList();
+                int.TryParse(branchId, out int braId);
+                placements = EmployeeHelper.GetEmployees_ByBranch_FromPlacement(placements, braId);
+            }
+            if (orgStructureId != null)
+            {
+                int.TryParse(orgStructureId, out int orgId);
+                placements = EmployeeHelper.GetEmployees_ByDepartment_WithCaseTeam_FromPlacement(placements, orgId);
+            }
+
+            if (status == "Active")
+            {
+                placements = EmployeeHelper.Get_Active_EmployeesFrom_Placement(placements);
             }
             if (status == "InActive")
             {
-                emplist = emplist.Where(x => !x.IsActive).ToList();
+                placements = EmployeeHelper.Get_InActive_EmployeesFrom_Placement(placements);
             }
             if (nation != null)
             {
-                employee = new EmployeeSummary();
-                db = new ExceedDbContext();
-                employee.Criteria = "Nation";
-                employee.SummaryName =
-                    lookups.FirstOrDefault(x => x.LookupId.ToString() == nation)?.Description;
-                if (emplist.Any())
-                {
-
-                    employee.NumberOfFemaleEmployee = emplist.Count(x => x.Gender == Gender.FEMALE && x.Nation == nation);
-                    employee.NumberOfMaleEmployee = emplist.Count(x => x.Gender == Gender.MALE && x.Nation == nation);
-                    employee.TotalEmployee = employee.NumberOfFemaleEmployee + employee.NumberOfMaleEmployee;
-                    list.Add(employee);
-                    return list;
-                }
+                int.TryParse(nation, out int lookupId);
+                lookups = lookups.Where(x => x.LookupId == lookupId).ToList();
             }
-            else
+
+            var maleIds = EmployeeHelper.Get_Male_EmployeesFrom_Placement(placements).Select(x=>x.EmployeeId).ToList();
+            var femaleIds = EmployeeHelper.Get_Female_EmployeesFrom_Placement(placements).Select(x => x.EmployeeId).ToList();
+
+            foreach (var n in lookups)
             {
-                db = new ExceedDbContext();
+                employee = new EmployeeSummary();
+                employee.Criteria = "Nation";
+                employee.SummaryName = n.Description;
+                employee.index = index;
 
+                employee.NumberOfFemaleEmployee = db.Person_Employee.Count(x => femaleIds.Contains(x.EmployeeId) && x.Nation == n.LookupId.ToString());
 
-                var natinlist = db.Lookups.Where(x => x.LookupType == LookUpTypes.NATION).ToList();
-                if (natinlist.Any())
-                {
-                    foreach (var n in natinlist)
-                    {
-                        employee = new EmployeeSummary();
-                        employee.Criteria = "Nation";
-                        employee.SummaryName = n.Description;
-                        employee.index = index;
-                        if (emplist.Any())
-                        {
+                employee.NumberOfMaleEmployee = db.Person_Employee.Count(x => maleIds.Contains(x.EmployeeId) && x.Nation == n.LookupId.ToString());
 
+                employee.TotalEmployee = employee.NumberOfFemaleEmployee + employee.NumberOfMaleEmployee;
 
-                            employee.NumberOfFemaleEmployee =
-                                emplist
-                                    .Count(x => x.Gender == Gender.FEMALE && x.Nation == n.LookupId.ToString());
+                list.Add(employee);
 
-                            employee.NumberOfMaleEmployee =
-                                emplist.Count(x => x.Gender == Gender.MALE && x.Nation == n.LookupId.ToString());
-                            employee.TotalEmployee = employee.NumberOfFemaleEmployee + employee.NumberOfMaleEmployee;
-
-
-                        }
-                        list.Add(employee);
-
-                        index++;
-                    }
-                    var noNationList = emplist.Where(x=>x.Nation == null).ToList();
-                    if(noNationList.Any())
-                    {
-                        employee = new EmployeeSummary();
-                        employee.Criteria = "Nation";
-                        employee.SummaryName = "ያልተሞላ";
-                        employee.index = index + 1;
-
-                        employee.NumberOfFemaleEmployee =
-                             emplist
-                                 .Count(x => x.Gender == Gender.FEMALE && x.Nation == null);
-
-                        employee.NumberOfMaleEmployee =
-                            emplist.Count(x => x.Gender == Gender.MALE && x.Nation == null);
-                        employee.TotalEmployee = employee.NumberOfFemaleEmployee + employee.NumberOfMaleEmployee;
-
-                        list.Add(employee);
-                    }
-                    var lookupids = natinlist.Select(x=>x.LookupId).ToList();
-                    var deletednationnames = emplist.Where(x=>!lookupids.Contains(Convert.ToInt32(x.Nation)) && x.Nation != null).ToList();
-                   
-                    if (deletednationnames.Any())
-                    {
-                        employee = new EmployeeSummary();
-                        employee.Criteria = "Nation";
-                        employee.SummaryName = "የተሳሳተ ";
-                        employee.index = index + 2;
-
-                        employee.NumberOfFemaleEmployee =
-                             deletednationnames
-                                 .Count(x => x.Gender == Gender.FEMALE);
-
-                        employee.NumberOfMaleEmployee =
-                            deletednationnames.Count(x => x.Gender == Gender.MALE);
-                        employee.TotalEmployee = employee.NumberOfFemaleEmployee + employee.NumberOfMaleEmployee;
-
-                        list.Add(employee);
-                    }
-                }
+                index++;
             }
 
-            #endregion
+            var noNationList = db.Person_Employee.Where(x => x.Nation == null).ToList();
+            if (noNationList.Any())
+            {
+                employee = new EmployeeSummary();
 
-            return list.OrderBy(x=>x.index).ToList();
+                employee.Criteria = "Nation";
+                employee.SummaryName = "ያልተሞላ";
+                employee.index = index + 1;
+
+                employee.NumberOfFemaleEmployee = db.Person_Employee.Count(x => femaleIds.Contains(x.EmployeeId) && x.Nation == null);
+
+                employee.NumberOfMaleEmployee = db.Person_Employee.Count(x => maleIds.Contains(x.EmployeeId) && x.Nation == null);
+
+                employee.TotalEmployee = employee.NumberOfFemaleEmployee + employee.NumberOfMaleEmployee;
+
+                list.Add(employee);
+            }
+
+            //var lookupids = natinlist.Select(x => x.LookupId).ToList();
+            //var deletednationnames = emplist.Where(x => !lookupids.Contains(Convert.ToInt32(x.Nation)) && x.Nation != null).ToList();
+
+            //if (deletednationnames.Any())
+            //{
+            //    employee = new EmployeeSummary();
+            //    employee.Criteria = "Nation";
+            //    employee.SummaryName = "የተሳሳተ ";
+            //    employee.index = index + 2;
+
+            //    employee.NumberOfFemaleEmployee = deletednationnames.Count(x => x.Gender == Gender.FEMALE);
+
+            //    employee.NumberOfMaleEmployee = deletednationnames.Count(x => x.Gender == Gender.MALE);
+            //    employee.TotalEmployee = employee.NumberOfFemaleEmployee + employee.NumberOfMaleEmployee;
+
+            //    list.Add(employee);
+            //}
+
+            return list.OrderBy(x => x.index).ToList();
         }
     }
 }

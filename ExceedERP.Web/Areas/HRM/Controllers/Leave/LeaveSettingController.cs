@@ -28,6 +28,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
         }
         private void PopulateViewData()
         {
+            ViewData["FisicalYear"] = db.GLFiscalYears.ToList();
             var LeaveSetting = Enum.GetValues(typeof(LeaveSetting))
                 .Cast<LeaveSetting>()
                 .Select(v => v.ToString())
@@ -90,6 +91,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
             {
                 ModelState.AddModelError("", "Leave Setting:- " + configuration.Attribute + " is already registered!!");
             }
+
             if (ModelState.IsValid)
             {
                 var entity = new Configuration

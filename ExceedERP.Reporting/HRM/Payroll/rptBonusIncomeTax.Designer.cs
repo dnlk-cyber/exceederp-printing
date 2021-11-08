@@ -30,6 +30,7 @@ namespace ExceedERP.Reporting.HRM.Payroll
             this.textBox2 = new Telerik.Reporting.TextBox();
             this.textBox3 = new Telerik.Reporting.TextBox();
             this.textBox4 = new Telerik.Reporting.TextBox();
+            this.fiscalYearObjectDataSource = new Telerik.Reporting.ObjectDataSource();
             this.detailSection1 = new Telerik.Reporting.DetailSection();
             this.table1 = new Telerik.Reporting.Table();
             this.textBox5 = new Telerik.Reporting.TextBox();
@@ -39,9 +40,11 @@ namespace ExceedERP.Reporting.HRM.Payroll
             this.textBox14 = new Telerik.Reporting.TextBox();
             this.textBox15 = new Telerik.Reporting.TextBox();
             this.textBox12 = new Telerik.Reporting.TextBox();
+            this.bonusIncomeTaxObjectDataSource = new Telerik.Reporting.ObjectDataSource();
             this.pageFooterSection1 = new Telerik.Reporting.PageFooterSection();
             this.textBox10 = new Telerik.Reporting.TextBox();
             this.reportHeaderSection1 = new Telerik.Reporting.ReportHeaderSection();
+            this.textBox9 = new Telerik.Reporting.TextBox();
             this.pageHeaderSection1 = new Telerik.Reporting.PageHeaderSection();
             this.panel1 = new Telerik.Reporting.Panel();
             this.txtOrgName = new Telerik.Reporting.TextBox();
@@ -51,9 +54,6 @@ namespace ExceedERP.Reporting.HRM.Payroll
             this.textBox11 = new Telerik.Reporting.TextBox();
             this.textBox16 = new Telerik.Reporting.TextBox();
             this.shape1 = new Telerik.Reporting.Shape();
-            this.textBox9 = new Telerik.Reporting.TextBox();
-            this.bonusIncomeTaxObjectDataSource = new Telerik.Reporting.ObjectDataSource();
-            this.fiscalYearObjectDataSource = new Telerik.Reporting.ObjectDataSource();
             this.Organization = new Telerik.Reporting.ObjectDataSource();
             ((System.ComponentModel.ISupportInitialize)(this)).BeginInit();
             // 
@@ -93,6 +93,12 @@ namespace ExceedERP.Reporting.HRM.Payroll
             this.textBox4.StyleName = "Civic.TableHeader";
             this.textBox4.Value = "Income Tax";
             // 
+            // fiscalYearObjectDataSource
+            // 
+            this.fiscalYearObjectDataSource.DataMember = "GetLeavePeriods";
+            this.fiscalYearObjectDataSource.DataSource = typeof(ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource.LeavePeriodsObjectDataSource);
+            this.fiscalYearObjectDataSource.Name = "fiscalYearObjectDataSource";
+            // 
             // detailSection1
             // 
             this.detailSection1.Height = Telerik.Reporting.Drawing.Unit.Inch(0.7958332896232605D);
@@ -106,8 +112,8 @@ namespace ExceedERP.Reporting.HRM.Payroll
             this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.6249901056289673D)));
             this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.6249901056289673D)));
             this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.6249901056289673D)));
-            this.table1.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.26527774333953857D)));
-            this.table1.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D)));
+            this.table1.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.26527771353721619D)));
+            this.table1.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.19999997317790985D)));
             this.table1.Body.SetCellContent(0, 0, this.textBox5);
             this.table1.Body.SetCellContent(0, 1, this.textBox6);
             this.table1.Body.SetCellContent(0, 2, this.textBox7);
@@ -152,6 +158,7 @@ namespace ExceedERP.Reporting.HRM.Payroll
             this.table1.RowGroups.Add(tableGroup5);
             this.table1.RowGroups.Add(tableGroup7);
             this.table1.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(6.4999604225158691D), Telerik.Reporting.Drawing.Unit.Inch(0.73055547475814819D));
+            this.table1.Sortings.Add(new Telerik.Reporting.Sorting("= Fields.EmpID", Telerik.Reporting.SortDirection.Asc));
             this.table1.StyleName = " Civic.TableNormal";
             // 
             // textBox5
@@ -210,6 +217,14 @@ namespace ExceedERP.Reporting.HRM.Payroll
             this.textBox12.StyleName = "Office.TableBody";
             this.textBox12.Value = "Total";
             // 
+            // bonusIncomeTaxObjectDataSource
+            // 
+            this.bonusIncomeTaxObjectDataSource.DataMember = "GetBonusIncomeTaxReportData";
+            this.bonusIncomeTaxObjectDataSource.DataSource = typeof(ExceedERP.Reporting.HRM.Payroll.DataSource.BonusIncomeTaxObjectDataSource);
+            this.bonusIncomeTaxObjectDataSource.Name = "bonusIncomeTaxObjectDataSource";
+            this.bonusIncomeTaxObjectDataSource.Parameters.AddRange(new Telerik.Reporting.ObjectDataSourceParameter[] {
+            new Telerik.Reporting.ObjectDataSourceParameter("fyear", typeof(string), "= Parameters.fyear.Value")});
+            // 
             // pageFooterSection1
             // 
             this.pageFooterSection1.Height = Telerik.Reporting.Drawing.Unit.Inch(0.59992122650146484D);
@@ -232,6 +247,14 @@ namespace ExceedERP.Reporting.HRM.Payroll
             this.reportHeaderSection1.Items.AddRange(new Telerik.Reporting.ReportItemBase[] {
             this.textBox9});
             this.reportHeaderSection1.Name = "reportHeaderSection1";
+            // 
+            // textBox9
+            // 
+            this.textBox9.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(3.9418537198798731E-05D), Telerik.Reporting.Drawing.Unit.Inch(0.043789386749267578D));
+            this.textBox9.Name = "textBox9";
+            this.textBox9.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(3.6000001430511475D), Telerik.Reporting.Drawing.Unit.Inch(0.19999997317790985D));
+            this.textBox9.Style.Font.Bold = true;
+            this.textBox9.Value = "Fiscal Year: {=Parameters.fyear.Label}   ";
             // 
             // pageHeaderSection1
             // 
@@ -321,28 +344,6 @@ namespace ExceedERP.Reporting.HRM.Payroll
             this.shape1.Style.BorderWidth.Bottom = Telerik.Reporting.Drawing.Unit.Point(0.5D);
             this.shape1.Style.BorderWidth.Top = Telerik.Reporting.Drawing.Unit.Point(1.5D);
             this.shape1.Style.Color = System.Drawing.Color.Transparent;
-            // 
-            // textBox9
-            // 
-            this.textBox9.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(3.9418537198798731E-05D), Telerik.Reporting.Drawing.Unit.Inch(0.043789386749267578D));
-            this.textBox9.Name = "textBox9";
-            this.textBox9.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(3.6000001430511475D), Telerik.Reporting.Drawing.Unit.Inch(0.19999997317790985D));
-            this.textBox9.Style.Font.Bold = true;
-            this.textBox9.Value = "Fiscal Year: {=Parameters.fyear.Label}   ";
-            // 
-            // bonusIncomeTaxObjectDataSource
-            // 
-            this.bonusIncomeTaxObjectDataSource.DataMember = "GetBonusIncomeTaxReportData";
-            this.bonusIncomeTaxObjectDataSource.DataSource = typeof(BonusIncomeTaxObjectDataSource);
-            this.bonusIncomeTaxObjectDataSource.Name = "bonusIncomeTaxObjectDataSource";
-            this.bonusIncomeTaxObjectDataSource.Parameters.AddRange(new Telerik.Reporting.ObjectDataSourceParameter[] {
-            new Telerik.Reporting.ObjectDataSourceParameter("fyear", typeof(string), "= Parameters.fyear.Value")});
-            // 
-            // fiscalYearObjectDataSource
-            // 
-            this.fiscalYearObjectDataSource.DataMember = "GetLeavePeriods";
-            this.fiscalYearObjectDataSource.DataSource = typeof(ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource.LeavePeriodsObjectDataSource);
-            this.fiscalYearObjectDataSource.Name = "fiscalYearObjectDataSource";
             // 
             // Organization
             // 

@@ -10,18 +10,22 @@
           .Name("PayrollEmployeeAccountGrid")
       .Columns(columns =>
       {
-          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "PersonId", "FullNameWithOutCode").EditorTemplateName("PayrollListOfEmployee").Width(260);
+          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "PersonId", "FullNameWithOutCode").EditorTemplateName("PayrollListOfEmployee").Width(260)
+          .Filterable(f => {
+              f.Search(true);
+              f.Multi(true);
+          });
           columns.ForeignKey(c => c.CostCenterAccountCode, (System.Collections.IEnumerable)ViewData["costCenter"], "Values", "Description").EditorTemplateName("CostCenter").Width(220); //(IEnumerable)ViewData["CostAcc"], "GlchartAccunt", "GlValue"
-          columns.ForeignKey(c => c.SubAccCode, (System.Collections.IEnumerable)ViewData["SubAccCode"], "Values", "Description").EditorTemplateName("Location").Width(220); 
+          columns.ForeignKey(c => c.SubAccCode, (System.Collections.IEnumerable)ViewData["SubAccCode"], "Values", "Description").EditorTemplateName("Location").Width(220);
           columns.Bound(c => c.Remark).Width(150);
           //columns.Bound(c => c.StaffAdvanceAccountCode).Title("Staff Advance Acc.code").EditorTemplateName("StaffAdvance").Width(220);
           //columns.Bound(c => c.StaffLoanAccountCode).Title("Staff Loan Acc.code").EditorTemplateName("StaffLoan").Width(220); 
-       
-        columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+
+          columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
       })
 
       .ToolBar(toolbar => {
-                              toolbar.Template(
+          toolbar.Template(
                                   @<text>
 
                                       <a class="k-button k-button-icontext k-grid-add" href='\#'><span class="k-icon k-i-add"></span> Add new record</a>

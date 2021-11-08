@@ -479,6 +479,7 @@ namespace ExceedERP.DataAccess.Context
             #endregion
 
             #region HRM
+            modelBuilder.Configurations.Add(new PlacementAfterSystemtEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new MonthlyLeavePlanEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new MonthlyLeavePlanDetailEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new EmployeePerformanceActionsEntityTypeConfiguration());
@@ -515,6 +516,7 @@ namespace ExceedERP.DataAccess.Context
             modelBuilder.Configurations.Add(new AllowanceMappingEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new CourtAllowanceMappingEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new AllowancePerEmployeeEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new AttendanceNewEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new AttendanceEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new WeeklyAttendanceEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExperienceEntityTypeConfiguration());
@@ -538,8 +540,12 @@ namespace ExceedERP.DataAccess.Context
             modelBuilder.Configurations.Add(new SalaryEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new EmpTrainingEducationEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new NeedAssessmentEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new EmployeesInAssessmentEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new DisabilityEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new CourseTrackingEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new TrainingEvaluationCriteriaCategoryEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new TrainingEvaluationCriteriaEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new TrainingEvaluationEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new MainCompanyEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new EmployeeEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new MainCompanyStructureEntityTypeConfiguration());
@@ -580,6 +586,7 @@ namespace ExceedERP.DataAccess.Context
             modelBuilder.Configurations.Add(new DisciplineMeasuerByMoneyEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new QuarterLengthEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new QuarterEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new LeaveNewAwajStartYearEntityTypeConfiguration());
             #region Payroll Process
             modelBuilder.Configurations.Add(new BonusSettingEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new PayrollProcessLongTermDeductionsEntityTypeConfiguration());
@@ -640,7 +647,7 @@ namespace ExceedERP.DataAccess.Context
             #region Recruitment
             modelBuilder.Configurations.Add(new ApplicantRegistrationEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ApplicantExamResultEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new ApplicantScreeningResultEntityTypeConfiguration());
+            //modelBuilder.Configurations.Add(new ApplicantScreeningResultEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ClearanceProviderEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new RecruitmentVacancyEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ApplicantEducationEntityTypeConfiguration());
@@ -676,8 +683,8 @@ namespace ExceedERP.DataAccess.Context
             modelBuilder.Configurations.Add(new InsuranceTypeEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new InsuranceCategoryEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new OtherInsuranceEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new FixedAssetAccidentRecordEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new VehicleAccidentDetailEntityTypeConfiguration());
+            //modelBuilder.Configurations.Add(new FixedAssetAccidentRecordEntityTypeConfiguration());
+            //modelBuilder.Configurations.Add(new VehicleAccidentDetailEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new PatientResultEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new PatientResultDetailEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new PatientDrugOrderEntityTypeConfiguration());
@@ -686,6 +693,7 @@ namespace ExceedERP.DataAccess.Context
             #region SelfCare
             modelBuilder.Configurations.Add(new MedicalRequestEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new LeaveRequestEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExperienceRequestEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new TrainingApplicantEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new EducationRequestEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new RecruitmentRequestEntityTypeConfiguration());
@@ -693,7 +701,6 @@ namespace ExceedERP.DataAccess.Context
             modelBuilder.Configurations.Add(new ApplicantExperienceEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new RequestesStatusEntityTypeConfiguration());
             //modelBuilder.Configurations.Add(new PromotionRequestEntityTypeConfiguration());
-            modelBuilder.Configurations.Add(new ExprianceRequestEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new OverTimeRequestEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new OverTimeRequestEmployeeEntityTypeConfiguration());
             #endregion
@@ -1886,8 +1893,7 @@ namespace ExceedERP.DataAccess.Context
         public System.Data.Entity.DbSet<Weekend> Weekends { get; set; }
         public System.Data.Entity.DbSet<QuarterLength> QuarterLengths { get; set; }
         public System.Data.Entity.DbSet<Quarter> Quarters { get; set; }
-        #endregion
-
+        #endregion       
         #region Payroll
 
         ////////////////////////////////////////////////////////////////////////////////////////////////////
@@ -1972,10 +1978,8 @@ namespace ExceedERP.DataAccess.Context
         public System.Data.Entity.DbSet<ExceedERP.Core.Domain.HRM.Payroll.Setting.PayrollEmployeeAccount> PayrollEmployeeAccounts { get; set; }
         public System.Data.Entity.DbSet<ExceedERP.Core.Domain.HRM.Payroll.Setting.PayrollAccounts> PayrollAccounts { get; set; }
         public System.Data.Entity.DbSet<Delegation> Delegations { get; set; }
-        public System.Data.Entity.DbSet<DelegationTempoRole> DelegationTempoRoles { get; set; }
 
         #endregion
-
         #region Allowance
         public System.Data.Entity.DbSet<AllowanceDefination> AllowanceDefinations { get; set; }
         public System.Data.Entity.DbSet<AllowanceMapping> AllowanceMappings { get; set; }
@@ -1997,7 +2001,6 @@ namespace ExceedERP.DataAccess.Context
         #endregion
 
         #region Employee Detail
-
         public System.Data.Entity.DbSet<EmployeeType> EmployeeTypes { get; set; }
         public System.Data.Entity.DbSet<EmployeeCodeSequenceSetting> EmployeeCodeSequenceSettings { get; set; }
         public System.Data.Entity.DbSet<EmployeeCodeSetting> EmployeeCodeSettings { get; set; }
@@ -2014,6 +2017,7 @@ namespace ExceedERP.DataAccess.Context
         public System.Data.Entity.DbSet<Disability> Disabilities { get; set; }
         public System.Data.Entity.DbSet<Placement> Placements { get; set; }
         public System.Data.Entity.DbSet<PlacementHistory> PlacementHistories { get; set; }
+        public System.Data.Entity.DbSet<PlacementAfterSystem> PlacementAfterSystems { get; set; }
         public System.Data.Entity.DbSet<Cosign> Cosigns { get; set; }
         public System.Data.Entity.DbSet<Committee> Committees { get; set; }
         public System.Data.Entity.DbSet<CommitteeMember> CommitteeMembers { get; set; }
@@ -2028,12 +2032,14 @@ namespace ExceedERP.DataAccess.Context
         #endregion
 
         #region Leave Management
+        public System.Data.Entity.DbSet<LeaveNewAwajStartYear> LeaveNewAwajStartYears { get; set; }
         public System.Data.Entity.DbSet<MonthlyLeavePlan> MonthlyLeavePlans { get; set; }
         public System.Data.Entity.DbSet<MonthlyLeavePlanDetail> MonthlyLeavePlanDetails { get; set; }
         public System.Data.Entity.DbSet<Leave> Leaves { get; set; }
         public System.Data.Entity.DbSet<LeaveEntitle> LeavesEntitle { get; set; }
         public System.Data.Entity.DbSet<LeaveTransfer> LeaveTransfer { get; set; }
         public System.Data.Entity.DbSet<LeavePaid> LeavePaid { get; set; }
+        public System.Data.Entity.DbSet<LeaveUsageTrackingForVoid> LeaveUsageTrackingForVoids { get; set; }
         #endregion
 
         #region Lettres
@@ -2065,9 +2071,19 @@ namespace ExceedERP.DataAccess.Context
         public System.Data.Entity.DbSet<RecruitmentPlan> RecruitmentPlans { get; set; }
         public System.Data.Entity.DbSet<TrainingPlan> TrainingPlans { get; set; }
         public System.Data.Entity.DbSet<Vacancy> VaccancyPlans { get; set; }
+
+        public System.Data.Entity.DbSet<ApplicantDetail> ApplicantDetails { get; set; }
+        public System.Data.Entity.DbSet<ExamTypeSetting> ExamTypeSettings { get; set; }
+        public System.Data.Entity.DbSet<CheckUp> CheckUps { get; set; }
         public System.Data.Entity.DbSet<ApplicantRegistration> ApplicantRegistration { get; set; }
         public System.Data.Entity.DbSet<ApplicantExamResult> ApplicantExamResult { get; set; }
-        public System.Data.Entity.DbSet<ApplicantScreeningResult> ApplicantScreeningResult { get; set; }
+        //public System.Data.Entity.DbSet<ApplicantScreeningResult> ApplicantScreeningResult { get; set; }
+        public System.Data.Entity.DbSet<ApplicantScreenResult> ApplicantScreenResults { get; set; }
+        public System.Data.Entity.DbSet<InternalApplicantScreening> InternalApplicantScreenings { get; set; }
+        public System.Data.Entity.DbSet<InternalApplicantScreeningResult> InternalApplicantScreeningResults { get; set; }
+        public System.Data.Entity.DbSet<InternalApplicantExamResult> InternalApplicantExamResults { get; set; }
+
+        public System.Data.Entity.DbSet<ApplicantScreening> ApplicantScreenings { get; set; }
         #endregion
 
         #region Prohibition
@@ -2083,8 +2099,25 @@ namespace ExceedERP.DataAccess.Context
         public System.Data.Entity.DbSet<RecruitmentVacancy> RecruitmentVacancy { get; set; }
         public System.Data.Entity.DbSet<ClearanceProvider> ClearanceProvideres { get; set; }
         public System.Data.Entity.DbSet<ApplicantEducation> ApplicantEducation { get; set; }
-        #endregion
 
+
+        public System.Data.Entity.DbSet<RecruitmetnInterviewerPerseon> RecruitmetnInterviewerPerseons { get; set; }
+
+        public System.Data.Entity.DbSet<ExperienceOrganizationTypeSetting> ExperienceOrganizationTypeSettings { get; set; }
+        public System.Data.Entity.DbSet<ScreeningSetting> ScreeningSettings { get; set; }
+        public System.Data.Entity.DbSet<ExperienceJobTitle> ExperienceJobTitles { get; set; }
+
+        public System.Data.Entity.DbSet<ScreeningEducationLevel> ScreeningEducationLevels { get; set; }
+        public System.Data.Entity.DbSet<ScreeningEducationField> ScreeningEducationFields { get; set; }
+        public System.Data.Entity.DbSet<ScreeningExperienceJobtitle> ScreeningExperienceJobtitles { get; set; }
+        public System.Data.Entity.DbSet<ScreeningExperienceJobtitleForInternal> ScreeningExperienceJobtitleForInternals { get; set; }
+        public System.Data.Entity.DbSet<ApplicantCertefication> ApplicantCertefications { get; set; }
+        public System.Data.Entity.DbSet<RecruitmentApplicantPassSetting> RecruitmentApplicantPassSettings { get; set; }
+
+        public System.Data.Entity.DbSet<InternalApplicants> InternalApplicants { get; set; }
+        //public System.Data.Entity.DbSet<InternalApplicantEducation> InternalApplicantEducations { get; set; }
+        //public System.Data.Entity.DbSet<InternalApplicantExperience> InternalApplicantExperiences { get; set; }
+        #endregion 
         #region Salary Structure
         public System.Data.Entity.DbSet<Rank> Ranks { get; set; }
         public System.Data.Entity.DbSet<Step> Steps { get; set; }
@@ -2097,10 +2130,15 @@ namespace ExceedERP.DataAccess.Context
         #region Training and Education
         public System.Data.Entity.DbSet<Training> EmpTrainingEducations { get; set; }
         public System.Data.Entity.DbSet<NeedAssessment> NeedAssessments { get; set; }
+        public System.Data.Entity.DbSet<EmployeesInAssessment> EmployeesInAssessments { get; set; }
         public System.Data.Entity.DbSet<CourseTracking> CourseTrackings { get; set; }
         public System.Data.Entity.DbSet<Education> Education { get; set; }
         public System.Data.Entity.DbSet<Trainee> Trainee { get; set; }
         public System.Data.Entity.DbSet<TrainingStatus> TrainingStatuses { get; set; }
+        public System.Data.Entity.DbSet<TrainingFeedback> TrainingFeedbacks { get; set; }
+        public System.Data.Entity.DbSet<TrainingEvaluationCriteriaCategory> TrainingEvaluationCriteriaCategories { get; set; }
+        public System.Data.Entity.DbSet<TrainingEvaluationCriteria> TrainingEvaluationCriterias { get; set; }
+        public System.Data.Entity.DbSet<TrainingEvaluation> TrainingEvaluations { get; set; }
         #endregion
 
         #region Discipline
@@ -2136,17 +2174,14 @@ namespace ExceedERP.DataAccess.Context
         public System.Data.Entity.DbSet<InsuranceCategory> InsuranceCategory { get; set; }
         public System.Data.Entity.DbSet<EmployeeAccident> EmployeeAccidents { get; set; }
         public System.Data.Entity.DbSet<OtherInsurance> OtherInsurance { get; set; }
-        public System.Data.Entity.DbSet<FixedAssetAccidentRecord> FixedAssetAccidentRecords { get; set; }
-        public System.Data.Entity.DbSet<VehicleAccidentDetail> VehicleAccidentDetails { get; set; }
+        //public System.Data.Entity.DbSet<FixedAssetAccidentRecord> FixedAssetAccidentRecords { get; set; }
+        //public System.Data.Entity.DbSet<VehicleAccidentDetail> VehicleAccidentDetails { get; set; }
         public System.Data.Entity.DbSet<PatientResult> PatientResults { get; set; }
         public System.Data.Entity.DbSet<PatientResultDetail> PatientResultDetails { get; set; }
         public System.Data.Entity.DbSet<PatientDrugOrder> PatientDrugOrders { get; set; }
         public System.Data.Entity.DbSet<Diagnosis> Diagnosis { get; set; }
         public System.Data.Entity.DbSet<Prescription> Prescription { get; set; }
-        #endregion
-
-
-        
+        #endregion        
 
         #region Self Care
         public System.Data.Entity.DbSet<TrainingApplicant> TrainingApplicants { get; set; }
@@ -2161,8 +2196,6 @@ namespace ExceedERP.DataAccess.Context
         public System.Data.Entity.DbSet<OverTimeRequest> OverTimeRequest { get; set; }
         public System.Data.Entity.DbSet<OverTimeRequestEmployee> OverTimeRequestEmployee { get; set; }
         #endregion
-
-
 
         #region Company
         public System.Data.Entity.DbSet<JobTitleMapping> JobTitleMapping { get; set; }
@@ -3427,6 +3460,7 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<Core.Domain.Common.DocumentApproval.ApprovalGroupRule> ApprovalGroupRules { get; set; }
         public DbSet<Core.Domain.Common.DocumentApproval.AssignApprovalGroup> AssignApprovalGroups { get; set; }
         public DbSet<Core.Domain.Common.DocumentApproval.AssignApprovalGroupAssignment> AssignApprovalGroupAssignments { get; set; }
+        public System.Data.Entity.DbSet<ExceedERP.Core.Domain.HRM.EmployeeDetail.Freelancer> Freelancers { get; set; }
         public System.Data.Entity.DbSet<ExceedERP.Core.Domain.HRM.Attendance.AttendanceNew> AttendanceNews { get; set; }
         
         #endregion
@@ -3492,5 +3526,7 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<PurchaseRequisitionSecondValidation> PurchaseRequisitionSecondValidations { get; set; }
 
         public DbSet<ArSalesOrderPartialPrint> ArSalesOrderPartialPrints { get; set; }
+        public System.Data.Entity.DbSet<DelegationTempoRole> DelegationTempoRoles { get; set; }
+
     }
 }

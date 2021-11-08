@@ -117,11 +117,4 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="textBox2.Value" xml:space="preserve">
-    <value>የ{=Fields.TempOne} ባልደረባ የሆኑት {=Fields.Name} ለ{= Parameters.person.Label} ዋስ መሆን ይችሉ ዘንድ የደመወዛቸው መጠንና የ{=Fields.TempOne} ቋሚ ሠራተኛ መሆናቸው ተገልጾ የዋስትና ደብዳቤ እንዲጻፍላቸው  {=Fields.RequestDate}ዓ.ም በጻፉት  ማመልከቻ ጠይቀዋል፡፡ 
-ስለሆነም ተጠቃሹ/ሿ የ{=Fields.TempOne} ቋሚ ሠራተኛ ሲሆኑ በወር የሚከፈላቸው ደመወዝ ብር  {=Fields.Salary} ({=Fields.SalaryInWord}) መሆኑን እያረጋገጥን በማንኛዉም ህጋዊ መንገድ {=Fields.TempOne} ቢለቁ ወይም በጡረታ ቢገለሉ በቅድሚያ የምናሳዉቃችሁ መሆኑን እንገልጻለን።
-
-                                                                                                          ከሰላምታ ጋር
-</value>
-  </data>
 </root>

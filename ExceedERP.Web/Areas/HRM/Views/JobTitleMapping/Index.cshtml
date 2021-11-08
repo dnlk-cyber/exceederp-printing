@@ -127,6 +127,7 @@
           .Destroy(destroy => destroy.Action("JobTitleMapping_Destroy", "JobTitleMapping"))
           ).ClientDetailTemplateId("template")
 )
+
 <script id="template" type="text/kendo-tmpl">
     @(Html.Kendo().TabStrip()
           .Name("tabstrip_#=JobTitleMappingId#")
@@ -229,6 +230,7 @@
 
           }).ToClientTemplate())
 </script>
+
 <script>
     //function error_handler(e) {
     //    if (e.errors) {

@@ -5,8 +5,8 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMViewModel
 {
     public class EmployeeExperienceLetter
     {
-
         public string ApplicantName { get; set; }
+        public bool IsTerminated { get; set; }
         public string Date { get; set; }
         public string TotalExpriance { get; set; }
         public string Remark { get; set; }

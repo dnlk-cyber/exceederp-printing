@@ -6,120 +6,137 @@
 }
 <legend>@Resources.Navigator_Employee_ExperienceRequests</legend>
 @(Html.Kendo().Grid<ExperienceRequest>()
-          .Name("ExperienceRequestgrid")
-      .Columns(columns =>
-      {
+                  .Name("ExperienceRequestgrid")
+              .Columns(columns =>
+              {
+                  columns.Bound(c => c.EmployeeCode).Width(100);
+                  columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "PersonId", "FullNameWithOutCode").EditorTemplateName("ListOfEmployee").Width(250);
+                  columns.Bound(c => c.ApplicationDateAm).Width(150);
+                  columns.Bound(c => c.RequestType).Width(200);
+                  columns.Bound(c => c.Remark).Width(100);
 
-          columns.Bound(c => c.EmployeeCode).Width(150);
-          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "PersonId", "FullNameWithOutCode").EditorTemplateName("ListOfEmployee").Width(200);
-          columns.Bound(c => c.ApplicationDateAm).Width( 200);
-          columns.Bound(c => c.RequestType).Width(200);
-        columns.Bound(c => c.Remark).Width( 200);
-        //columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
-      })
-      .ToolBar(toolbar => {
-           // toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
-      })
-         .Events(e =>
-         {
-            
-             e.DetailExpand("onDetailExpandUser");
-         })
-      .Editable(editable => editable.Mode(GridEditMode.InLine))
-       .Scrollable(h => h.Height(500))
-                     .Groupable()
-                              .Sortable(sortable =>
-                              {
-                                  sortable.SortMode(GridSortMode.SingleColumn);
-                              })
-                  .Filterable()
-                     .Pageable(pageable => pageable
-                                                .Input(true)
-                                                .Numeric(false)
-                                                .Refresh(true)
-                                                .PageSizes(true)
-                                                .ButtonCount(5))
-      .DataSource(dataSource => dataSource
-          .Ajax()
-          .Sort(sort => sort.Add("ApplicationDate").Descending())
-               .Events(events =>
-                                                                                       {
+                  columns.Command(command =>
+                  {
+                      command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                      command.Destroy().Text(Resources.ActionButton_Cancel);
+                      command.Custom("approve").Text("&nbsp;Approve").Click("ApproveExperienceRequest").IconClass("fa fa-check").HtmlAttributes(new { @class = "btn btn-success", @title = "Approve Experience Request", @id = "approve" });
+                  }).Width(250);
+              })
+              .ToolBar(toolbar =>
+              {
+                  toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+              })
+                 .Events(e =>
+                 {
 
-                                                                                           events.Error("error_handler(\"ExperienceRequestgrid\")");
-                                                                                           events.RequestStart("onRequestStart(\"ExperienceRequestgrid\")");
-                                                                                           events.RequestEnd("onRequestEnd(\"ExperienceRequestgrid\")");
-                                                                                       })
-                   
-          .Model(model => model.Id(p => p.ExperienceRequestId))
-              .Read(read => read.Action("ExprianceRequests_Read", "ExpirianceRequestStatus"))
-              .Create(create => create.Action("ExprianceRequests_Create", "ExpirianceRequestStatus"))
-              .Update(update => update.Action("ExprianceRequests_Update", "ExpirianceRequestStatus"))
-              .Destroy(destroy => destroy.Action("ExprianceRequests_Destroy", "ExpirianceRequestStatus"))
-          ).ClientDetailTemplateId("template")
+                     e.DetailExpand("onDetailExpandUser");
+                     e.DataBound("onDataBound");
+                 })
+              .Editable(editable => editable.Mode(GridEditMode.InLine))
+               .Scrollable(h => h.Height(500))
+                             .Groupable()
+                                      .Sortable(sortable =>
+                                      {
+                                          sortable.SortMode(GridSortMode.SingleColumn);
+                                      })
+                          .Filterable()
+                             .Pageable(pageable => pageable
+                                 .Input(true)
+                                 .Numeric(false)
+                                 .Refresh(true)
+                                 .PageSizes(true)
+                                 .ButtonCount(5))
+              .DataSource(dataSource => dataSource
+                  .Ajax()
+                  .Sort(sort => sort.Add("ApplicationDate").Descending())
+                       .Events(events =>
+                       {
+
+                           events.Error("error_handler(\"ExperienceRequestgrid\")");
+                           events.RequestStart("onRequestStart(\"ExperienceRequestgrid\")");
+                           events.RequestEnd("onRequestEnd(\"ExperienceRequestgrid\")");
+                       })
+
+                  .Model(model =>
+                  {
+                      model.Id(p => p.ExperienceRequestId);
+                      model.Field(p => p.EmployeeCode).Editable(false);
+                      model.Field(p => p.ApplicationDate).Editable(false).DefaultValue(DateTime.Today);
+                      model.Field(p => p.ApplicationDateAm).Editable(false);
+                  })
+                      .Read(read => read.Action("ExprianceRequests_Read", "ExpirianceRequestStatus"))
+                      .Create(create => create.Action("ExprianceRequests_Create", "ExpirianceRequestStatus"))
+                      .Update(update => update.Action("ExprianceRequests_Update", "ExpirianceRequestStatus"))
+                      .Destroy(destroy => destroy.Action("ExprianceRequests_Destroy", "ExpirianceRequestStatus"))
+                  ).ClientDetailTemplateId("template")
 )
 <script id="template" type="text/kendo-tmpl">
     @(Html.Kendo().TabStrip()
-          .Name("tabstrip_#=ExprianceRequestId#")
-          .SelectedIndex(0)
-          .Items(items =>
-          {
-              items.Add().Text(Resources.HR_RequestStatus).Content(
-                  @<text>
-                   @* <legend>Status</legend>*@
+                          .Name("tabstrip_#=ExperienceRequestId#")
+     .SelectedIndex(0)
+     .Items(items =>
+     {
+         items.Add().Text(Resources.HR_RequestStatus).Content(
+           @<text>
+               @* <legend>Status</legend>*@
 
-                    @(Html.Kendo().Grid<RequestesStatus>()
-                          .Name("RequestesStatusgrid_#=ExprianceRequestId#")
-                          .Columns(columns =>
-                          {
-                              //columns.Bound(c => c.RequestId);
-                              columns.Bound(c => c.DateReqStatAm).Width(150);
-                              columns.Bound(c => c.Status).EditorTemplateName("Enum").Width (300);
-                              columns.ForeignKey(c => c.ApproverId, (IEnumerable)ViewData["EmployeeName"], "EmployeeId", "FullNameAmharic").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
-                              columns.ForeignKey(c => c.ApproverDepartment, (IEnumerable)ViewData["Department"], "OrgStructureId", "Name").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
-                              columns.Bound(c => c.Remark).Width (150);
-                              columns.Command(command =>
-                              {
-                                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
-                                  //command.Destroy().Text(Resources.ActionButton_Cancel);
-                              }).Width (200);
-                          })
-                          .ToolBar(toolbar =>
-                          {
-                              toolbar.Create().Text(Resources.ActionButton_AddNewRecord); //.Custom().Action("SendForApproval", "ExpirianceRequest").Text("Send For Approval");
-                          })
-                          .Editable(editable => editable.Mode(GridEditMode.InLine))
-                          .Scrollable(h => h.Height(500))
-                          .DataSource(dataSource => dataSource
-                              .Ajax()
-                                      .Events(events =>
-                                      {
+               @(Html.Kendo().Grid<RequestesStatus>()
+                                     .Name("RequestesStatusgrid_#=ExperienceRequestId#")
+                                     .Columns(columns =>
+                                     {
+                                         //columns.Bound(c => c.RequestId);
+                                         columns.Bound(c => c.DateReqStatAm).Width(100);
+                                         columns.Bound(c => c.Status).EditorTemplateName("EnumWithoutDepApprove").Width(180);
+                                         columns.ForeignKey(c => c.ApproverId, (IEnumerable)ViewData["EmployeeName"], "EmployeeId", "FullNameAmharic").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
+                                         columns.ForeignKey(c => c.ApproverDepartment, (IEnumerable)ViewData["Department"], "OrgStructureId", "Name").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
+                                         columns.Bound(c => c.Remark).Width(150);
+                                         columns.Command(command =>
+                                         {
+                                             command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                             //command.Destroy().Text(Resources.ActionButton_Cancel);
+                                         }).Width(200);
+                                     })
+                                .ToolBar(toolbar =>
+                                {
+                                    toolbar.Create().Text(Resources.ActionButton_AddNewRecord); //.Custom().Action("SendForApproval", "ExpirianceRequest").Text("Send For Approval");
+                                })
+                                     .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                     .Scrollable(h => h.Height(500))
+                                     .DataSource(dataSource => dataSource
+                                         .Ajax()
+                                                 .Events(events =>
+                                                 {
 
-                                          events.Error("error_handler(\"RequestesStatusgrid_#=ExprianceRequestId#\")");
-                                          events.RequestStart("onRequestStart(\"RequestesStatusgrid_#=ExprianceRequestId#\")");
-                                          events.RequestEnd("onRequestEnd(\"RequestesStatusgrid_#=ExprianceRequestId#\")");
-                                      })
+                                                     events.Error("error_handler(\"RequestesStatusgrid_#=ExperienceRequestId#\")");
+                                                     events.RequestStart("onRequestStart(\"RequestesStatusgrid_#=ExperienceRequestId#\")");
+                                                     events.RequestEnd("onRequestEnd(\"RequestesStatusgrid_#=ExperienceRequestId#\")");
+                                                 })
 
-                              .Model(model =>
-                              {
-                                  model.Id(p => p.RequestStatusId);
-                                  model.Field(p => p.Date).Editable(false).DefaultValue(DateTime.Today);
-                              })
+                                         .Model(model =>
+                                         {
+                                             model.Id(p => p.RequestStatusId);
 
-                              .Read(read => read.Action("RequestesStatus_Read", "RequestesStatus", new {id = "#=ExprianceRequestId#", referenceType = "Experience"}))
-                              .Create(create => create.Action("RequestesStatus_Create", "RequestesStatus", new {id = "#=ExprianceRequestId#", referenceType2 = "Experience"}))
-                              .Update(update => update.Action("RequestesStatus_Update", "RequestesStatus"))
-                              .Destroy(destroy => destroy.Action("RequestesStatus_Destroy", "RequestesStatus"))
-                          ).ToClientTemplate()
-                          )
+                                             model.Field(p => p.Date).Editable(false).DefaultValue(DateTime.Today);
+                                             model.Field(p => p.DateReqStatAm).Editable(false);
+                                             model.Field(p => p.ApproverDepartment).Editable(false);
+                                             model.Field(p => p.ApproverId).Editable(false);
+                                         })
+
+                                         .Read(read => read.Action("RequestesStatus_Read", "RequestesStatus", new { id = "#=ExperienceRequestId#", referenceType = "Experience" }))
+                                         .Create(create => create.Action("RequestesStatus_Create", "RequestesStatus", new { id = "#=ExperienceRequestId#", referenceType2 = "Experience" }))
+                                         .Update(update => update.Action("RequestesStatus_Update", "RequestesStatus"))
+                                         .Destroy(destroy => destroy.Action("RequestesStatus_Destroy", "RequestesStatus"))
+                                     ).ToClientTemplate()
+               )
 
 
-                </text>
-                  );
-              //*****************************************************************************************************//
+           </text>
+                                                );
+                          //*****************************************************************************************************//
 
-          }).ToClientTemplate())
+                      }).ToClientTemplate())
 </script>
-    
+
 <script>
     //function error_handler(e) {
     //    if (e.errors) {
@@ -183,5 +200,62 @@
 
         });
 
+    }
+</script>
+
+
+<script>
+    function onDataBound(e) {
+
+        var grid = this;
+        var gridRows = grid.tbody.find("tr");
+        for (var i = 0; i < gridRows.length; i++) {
+            var row = $(gridRows[i]);
+            var dataItem = grid.dataItem(row);
+            //perform your custom check
+            if (dataItem.IsOnlineApproved === true) {
+
+                row.find(".k-grid-edit").hide();
+                row.find(".k-grid-delete").hide();
+                row.find("#approve").hide();
+                row.css("background-color", "gray");
+            }
+            if (dataItem.IsDirect === false) {
+                row.find(".k-grid-edit").hide();
+                row.find(".k-grid-delete").hide();
+                row.find("#approve").hide();
+            }
+        }
+    }
+
+</script>
+
+
+<script>
+    function ApproveExperienceRequest(e) {
+         var row = $(e.target).closest("tr");
+        var grid = $("#ExperienceRequestgrid").data("kendoGrid");
+        var dataItem = grid.dataItem(row);
+        var id = dataItem.ExperienceRequestId;
+
+        if (id.length !== 0 )
+        {
+            $('#loading-image').show();
+
+            $.ajax({
+                url: '@Url.Action("ApproveExperienceRequest", "ExpirianceRequestStatus")',
+
+                data: { id: id},
+                type: 'POST',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                    alert(r.Message);
+                    $('#loading-image').hide();
+                    grid.dataSource.read();
+                }
+            });
+
+        }
     }
 </script>

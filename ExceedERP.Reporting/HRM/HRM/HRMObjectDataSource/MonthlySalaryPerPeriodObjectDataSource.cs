@@ -86,12 +86,12 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                                 payrolldatas.FirstOrDefault(x => x.EmployeeId == payrolldata.EmployeeId);
                             EmployeeInfo = new MonthlySalaryPerPeriodVM();
                             EmployeeInfo.EmpID = id;
-                            var person = db.Person_Employee.FirstOrDefault(x=>x.EmployeeId == payrolldata.EmployeeId);
-                            if(person != null)
+                            var person = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == payrolldata.EmployeeId);
+                            if (person != null)
                             {
                                 EmployeeInfo.EmpFullName = person.FullNameAmharic;
                             }
-                           
+
                             EmployeeInfo.NetEarning = payrolldata.NetEarning;
 
                             if (paymentAccount != null && paymentAccount.BankAccount != null)

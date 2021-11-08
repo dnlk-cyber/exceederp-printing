@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ExceedERP.Core.Domain.Common;
+using System;
 using System.ComponentModel.DataAnnotations;
 
 namespace ExceedERP.Core.Domain.HRM.RecruitmentManagment
@@ -7,38 +8,25 @@ namespace ExceedERP.Core.Domain.HRM.RecruitmentManagment
     {
         [Key]
         public int ApplicantExpId { get; set; }
-
         public int ApplicantRegistrationId { get; set; }
-        public virtual ApplicantRegistration ApplicantRegistration { get; set; }
-        [Display(Name = "HR_RecruitmentManagment_ApplicantExperience_EduLevel", ResourceType = typeof(Localization.Resources))]
-        [Required]
-        public int EduLevel { get; set; }
-        [Display(Name = "HR_RecruitmentManagment_ApplicantExperience_EducField", ResourceType = typeof(Localization.Resources))]
-        [Required]
-        public int EducField { get; set; }
-        
-        [Required]
-        [Display(Name = "HR_RecruitmentManagment_ApplicantExperience_OrganizationName", ResourceType = typeof(Localization.Resources))]
+        public int ApplicantDetailId { get; set; }
+       // public int ExperienceOrganizationTypeSettingId { get; set; }
+       public OrganizationType OrganizationType { get; set; }
+        public int JobTitleId { get; set; }
+        public int? Jobtitle { get; set; }
+        public int? Year { get; set; }
         public string OrganizationName { get; set; }
-        [Required]
-        [Display(Name = "HR_RecruitmentManagment_ApplicantExperience_Postion", ResourceType = typeof(Localization.Resources))]
-        public string Postion { get; set; }
-
-        [Display(Name = "HR_RecruitmentManagment_ApplicantExperience_Experience", ResourceType = typeof(Localization.Resources))]
-        public decimal Experience { get; set; }
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}")]
-        [Display(Name = "HR_RecruitmentManagment_ApplicantExperience_From", ResourceType = typeof(Localization.Resources))]
-        public DateTime From { get; set; }
-        [Display(Name = "HR_RecruitmentManagment_ApplicantExperience_From", ResourceType = typeof(Localization.Resources))]
-        public string FromAmharic { get; set; }
+        public DateTime? From { get; set; }
+        [Display(Name = "From")]
+        public string FromAm { get; set; }
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}")]
-        [Display(Name = "HR_RecruitmentManagment_ApplicantExperience_To", ResourceType = typeof(Localization.Resources))]
-        public DateTime To { get; set; }
-        [Display(Name = "HR_RecruitmentManagment_ApplicantExperience_ToAmharic", ResourceType = typeof(Localization.Resources))]
-        public string ToAmahric { get; set; }
-        [Display(Name = "Remark", ResourceType = typeof(Localization.Resources))]
+        public DateTime? To { get; set; }
+        [Display(Name ="To")]
+        public string ToAm { get; set; }
         public string Remark { get; set; }
+        public string TotalExperience { get; set; }
     }
 }

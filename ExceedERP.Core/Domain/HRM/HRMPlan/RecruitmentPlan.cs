@@ -14,7 +14,7 @@ namespace ExceedERP.Core.Domain.HRM.HRMPlan
         [Display(Name = "HR_Company_JobTitleMapping_OrgStructureID", ResourceType = typeof(Localization.Resources))]
         public int OrgStructureId { get; set; }
 
-        public virtual MainCompanyStructure MainCompanyStructure { get; set; }
+        //public virtual MainCompanyStructure MainCompanyStructure { get; set; }
         [Required]
         [Display(Name = "HR_Company_JobTitleMapping_WorkUnitId", ResourceType = typeof(Localization.Resources))]
 

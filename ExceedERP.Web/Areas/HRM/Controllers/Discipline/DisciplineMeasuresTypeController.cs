@@ -29,9 +29,10 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Discipline
          [AuthorizeRoles(HrmConstants.HRDisciplineUser, HrmConstants.HRAdmin)]
         public ActionResult DisciplineMeasuresType_Read([DataSourceRequest]DataSourceRequest request, int id)
         {
-            IQueryable<DisciplineMeasuresType> disciplinemeasures = db.DisciplineMeasuresType;
+            IQueryable<DisciplineMeasuresType> disciplinemeasures = db.DisciplineMeasuresType.Where(x=>x.DetailMeasuresId == id);
             DataSourceResult result = disciplinemeasures.ToDataSourceResult(request, disciplineMeasures => new {
-                MeasuresId = id,
+                MeasuresId = disciplineMeasures.MeasuresId,
+                DetailMeasuresId = disciplineMeasures.DetailMeasuresId,
                 DisciplineTypeId = disciplineMeasures.DisciplineTypeId,
                 ExpireYear = disciplineMeasures.ExpireYear,
                 PercentageEffectOnPromotion = disciplineMeasures.PercentageEffectOnPromotion,
@@ -51,7 +52,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Discipline
             {
                 var entity = new DisciplineMeasuresType
                 {
-                    MeasuresId = id,
+                    MeasuresId = disciplineMeasures.MeasuresId,
+                    DetailMeasuresId = id,
                     DisciplineTypeId = disciplineMeasures.DisciplineTypeId,
                     ExpireYear = disciplineMeasures.ExpireYear,
                     PercentageEffectOnPromotion = disciplineMeasures.PercentageEffectOnPromotion,
@@ -85,6 +87,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Discipline
                 var entity = new DisciplineMeasuresType
                 {
                     MeasuresId = disciplineMeasures.MeasuresId,
+                    DetailMeasuresId = disciplineMeasures.DetailMeasuresId,
                     DisciplineTypeId = disciplineMeasures.DisciplineTypeId,
                     ExpireYear = disciplineMeasures.ExpireYear,
                     PercentageEffectOnPromotion = disciplineMeasures.PercentageEffectOnPromotion,
@@ -117,6 +120,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Discipline
                 var entity = new DisciplineMeasuresType
                 {
                     MeasuresId = disciplineMeasures.MeasuresId,
+                    DetailMeasuresId = disciplineMeasures.DetailMeasuresId,
                     DisciplineTypeId = disciplineMeasures.DisciplineTypeId,
                     ExpireYear = disciplineMeasures.ExpireYear,
                     PercentageEffectOnPromotion = disciplineMeasures.PercentageEffectOnPromotion,

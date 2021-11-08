@@ -1,0 +1,38 @@
+﻿
+@using System.Collections
+@using ExceedERP.Core.Domain.HRM.SelfCare
+@using ExceedERP.Core.Domain.HRM.RecruitmentManagment
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.HRM.SelfCare.ApplicantionForm>()
+              .Name("grid")
+              .Columns(columns =>
+              {
+                  columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["Employee"], "EmployeeId", "FullNameAmharic");
+                  columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["Department"], "OrgStructureId", "Name");
+                  columns.ForeignKey(c => c.VacancyId, (IEnumerable)ViewData["vacancy"], "VacancyId", "VaccancyCode").EditorTemplateName("Vacancy");
+
+                  columns.Bound(c => c.VacancyType);
+              })
+              .Scrollable(h => h.Height(500))
+
+                  .Filterable()
+                 .Pageable(pageable => pageable
+                                            .Input(true)
+                                            .Numeric(false)
+                                            .Refresh(true)
+                                            .PageSizes(true)
+                                            .ButtonCount(5))
+
+              .DataSource(dataSource => dataSource
+                  .Ajax()
+                  .Group(groups => groups.Add(p => p.VacancyId))
+                  .Read(read => read.Action("ApplicantionFormes_Read", "AllInternalApplicants"))
+              )
+)
+
+

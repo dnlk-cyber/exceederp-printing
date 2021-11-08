@@ -1,0 +1,161 @@
+﻿@using System.Collections
+@using System.Security.AccessControl
+@using ExceedERP.Core.Domain.HRM.EmployeeDetail
+
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>@Resources.NavigatorPlacment_EmployeePlacment</legend>
+
+@(Html.Kendo().Grid<Placement>()
+                  .Name("RemovePlacementGrid")
+                  .Columns(columns =>
+                  {
+           columns.Bound(c => c.Check).Template(@<text></text>).ClientTemplate("<input type='checkbox' #= Check ? checked='checked':'' # class='chkbx' />")
+                                    .HeaderTemplate("<input type='checkbox' id='masterCheckBox' onclick='checkAll(this)'/>").Filterable(ftb => ftb.Multi(false).Search(false).Enabled(false)).Width(70);
+          columns.ForeignKey(c => c.EmployeeCode, (IEnumerable)ViewData["EmployeeCode"], "EmployeeCode", "EmployeeCode").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).Width(110);
+
+                   //   columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameAmharic").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
+                      columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeListEnglish"], "EmployeeId", "FullNameaEnglish").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
+                    //  columns.Bound(c => c.Boss).Width(150);
+          // columns.ForeignKey(c => c.JobTitleCode, (IEnumerable)ViewData["jobTitle"], "OrgStructureId", "Name").EditorTemplateName("JobTitles").Width(130);
+          columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["workunits"], "OrgStructureId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(200);
+
+                      columns.Bound(c => c.JobTitleName).Filterable(ftb => ftb.Multi(true).Search(true)).Width(140);
+                      columns.Bound(c => c.IsHead).ClientTemplate(
+                        "<input type='checkbox' disabled = 'true' value='#= IsHead#' " +
+                        "# if (IsHead) { #" +
+                        "checked='checked'" +
+                        "# } #" +
+                        "/>"
+                        ).Width(75);
+
+                      columns.Bound(c => c.AssignmentDateAmharic).Width(100); ;
+                    //  columns.ForeignKey(c => c.RankId, (IEnumerable)ViewData["RankList"], "RankId", "RankName").EditorTemplateName("Rank").Width(70);
+                   //   columns.ForeignKey(c => c.StepId, (IEnumerable)ViewData["StepList"], "StepId", "StepName").EditorTemplateName("Step").Width(65);
+                      columns.Bound(c => c.Salary).Width(80);
+                      columns.Bound(c => c.AssignmentType).Width(120);
+                      columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["branches"], "BranchId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(80);
+          // columns.ForeignKey(c => c.ReportsTo, (IEnumerable)ViewData["jobTitle"], "OrgStructureId", "Name").EditorTemplateName("JobTitles").Width(200);
+          columns.Bound(c => c.EmployementType).Width(100);
+                      columns.Bound(c => c.isCurrent).ClientTemplate("<input type='checkbox' disabled='true' value='#=isCurrent #' " + " # if (isCurrent) { #" + "checked='checked'" + "# } #" + " />").Width(100);
+                  //    columns.Bound(c => c.IsPend).ClientTemplate("<input type='checkbox' disabled='true' value='#=IsPend #' " + " # if (IsPend) { #" + "checked='checked'" + "# } #" + " />").Width(100).Visible(false);
+                   //   columns.Bound(c => c.Remark).Width(100);
+
+                  })
+                  .ToolBar(toolbar =>
+                  {
+
+                      if (HttpContext.Current.User.IsInRole("HR_Placement_Admin") || HttpContext.Current.User.IsInRole("HR_Admin"))
+                      {
+                          toolbar.Excel().Text(Resources.ActionButton_ExportExcel).HtmlAttributes(new { @class = "btn btn-primary btn-xs pull-right" });
+                          toolbar.Pdf().Text(Resources.ActionButton_ExportPDF).HtmlAttributes(new { @class = "btn btn-primary btn-xs pull-right" });
+                      }
+
+                      toolbar.Template(@<text>
+                         @item.SaveButton()
+                    </text>);
+
+
+                  })
+                        .Excel(excel => excel
+                            .FileName(Resources.NavigatorPlacment_EmployeePlacment + ".xlsx")
+                            .Filterable(true)
+                            .AllPages(true)
+                            .ProxyURL(Url.Action("Excel_Export_Save", "EmployeePlacmentWithJ"))
+                        )
+                        .Pdf(pdf => pdf
+                            .AllPages()
+                            .FileName(Resources.NavigatorPlacment_EmployeePlacment + ".pdf")
+                            .ProxyURL(Url.Action("Pdf_Export_Save", "EmployeePlacmentWithJ"))
+                        )
+                        .Editable(editable => editable.Mode(GridEditMode.InCell).TemplateName("Placement").Window(window =>
+                        {
+                            window.Title(Resources.NavigatorPlacment_EmployeePlacment);
+                            window.Scrollable(false);
+                        }))
+                        .Scrollable(h => h.Height(500))
+                        .Groupable()
+
+                        .Sortable(sortable =>
+                        {
+                            sortable.SortMode(GridSortMode.SingleColumn);
+                        })
+                        .Filterable()
+
+                        .Pageable(pageable => pageable
+                            .Input(true)
+                            .Numeric(false)
+                            .Refresh(true)
+                            .PageSizes(true)
+                            .ButtonCount(5))
+
+                        .DataSource(dataSource => dataSource
+                            .Ajax()
+                            .Batch(true)
+                                .Sort(sort => sort.Add("EmployeeCode"))
+                            .Events(events =>
+                            {
+                                events.Error("error_handler(\"RemovePlacementGrid\")");
+                                events.RequestStart("onRequestStart(\"RemovePlacementGrid\")");
+                                events.RequestEnd("onRequestEnd(\"RemovePlacementGrid\")");
+                            }
+                            )
+                            .Model(model =>
+                            {
+                                model.Id(p => p.PlacementId);
+                                model.Field(p => p.EmployeeCode).Editable(false);
+                                model.Field(p => p.EmployeeId).Editable(false);
+                                model.Field(p => p.OrgStructureId).Editable(false);
+                                model.Field(p => p.LookupId).Editable(false);
+                                model.Field(p => p.JobTitleName).Editable(false);
+                                model.Field(p => p.IsHead).Editable(false);
+                                model.Field(p => p.AssignmentDateAmharic).Editable(false);
+                                model.Field(p => p.Salary).Editable(false);
+                                model.Field(p => p.AssignmentType).Editable(false);
+                                model.Field(p => p.BranchId).Editable(false);
+                                model.Field(p => p.EmployementType).Editable(false);
+                                model.Field(p => p.isCurrent).Editable(false);
+                            })
+                               .Read(read => read.Action("RemovePlacementOfEmployees_Read", "RemovePlacementOfEmployees"))
+                           .Create(create => create.Action("Remove_Group_Placement", "RemovePlacementOfEmployees"))
+                              .Update(update => update.Action("Remove_Group_Placement", "RemovePlacementOfEmployees"))
+                        //  .Destroy(destroy => destroy.Action("Placements_Destroy", "RemovePlacementOfEmployees"))
+
+                        )
+)
+
+
+
+
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 1000px;
+    }
+</style>
+
+
+<script type="text/javascript">
+    $(function () {
+        $('#RemovePlacementGrid').on('click', '.chkbx', function () {
+            var checked = $(this).is(':checked');
+            var grid = $('#RemovePlacementGrid').data().kendoGrid;
+            var dataItem = grid.dataItem($(this).closest('tr'));
+            dataItem.set('Check', checked);
+        })
+    })
+
+    function checkAll(ele) {
+        var state = $(ele).is(':checked');
+        var grid = $('#RemovePlacementGrid').data().kendoGrid;
+        $.each(grid.dataSource.view(), function () {
+            if (this['Check'] != state) {
+                this.dirty = true;
+            }            
+            this['Check'] = state;
+        });
+        grid.refresh();
+    }
+
+</script>

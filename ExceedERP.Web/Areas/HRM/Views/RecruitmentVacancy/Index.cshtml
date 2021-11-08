@@ -18,8 +18,8 @@
                   columns.Bound(c => c.VacancyCode).Width(120);
                   columns.Bound(c => c.RecruitmentSource).Width(120);
                   columns.Bound(c => c.JobtitleName).Width(250);
-                  columns.ForeignKey(c => c.WorkUnitId, (IEnumerable)ViewData["workunits"], "OrgStructureId", "Name").EditorTemplateName("OrganizationDept").Width(200);
-
+                  //  columns.ForeignKey(c => c.WorkUnitId, (IEnumerable)ViewData["workunits"], "RecruitmentPlanId", "Workunit").EditorTemplateName("OrganizationDept").Width(200);
+                  columns.Bound(c => c.Department).Width(250);
                   columns.Bound(c => c.RecruitmentType).EditorTemplateName ("Enum").Width(100);
                   columns.Bound(c => c.NoOfVacantPost).Width(100);
                   columns.Bound(c => c.FromAmharic).Width(100);
@@ -79,7 +79,7 @@
                                                                           model.Field(p => p.JobtitleName).Editable(false);
                                                                           model.Field(p => p.VacancyCode).Editable(false);
                                                                           model.Field(p => p.RecruitmentType).Editable(false);
-                                                                          model.Field(p => p.WorkUnitId).Editable(false);
+                                                                          model.Field(p => p.Department).Editable(false);
                                                                           model.Field(p => p.FromAmharic).Editable(false);
                                                                           model.Field(p => p.ToAmharic).Editable(false);
                                                                           model.Field(p => p.NoOfVacantPost).Editable(false);

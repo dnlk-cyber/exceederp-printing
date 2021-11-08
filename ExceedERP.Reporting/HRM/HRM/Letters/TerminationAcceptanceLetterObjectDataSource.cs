@@ -6,6 +6,7 @@ using ExceedERP.Reporting.SharedDataSources;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -18,7 +19,7 @@ namespace ExceedERP.Reporting.HRM.HRM.Letters
         private ExceedDbContext db = new ExceedDbContext();
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<TerminationAcceptanceLetterVM> GetTerminationAcceptance(string id, bool header)
+        public List<TerminationAcceptanceVM> GetTerminationAcceptance(string id, bool header)
         {
             List<TerminationAcceptanceLetterVM> acceptanceList = new List<TerminationAcceptanceLetterVM>();
             TerminationAcceptanceLetterVM acceptance = new TerminationAcceptanceLetterVM();
@@ -102,33 +103,99 @@ namespace ExceedERP.Reporting.HRM.HRM.Letters
 
             acceptance.Date = XAPI.EthiopicDateTime.GetEthiopicDate(DateTime.Today.Day, DateTime.Today.Month, DateTime.Today.Year);
 
-            var termination = db.Terminations.FirstOrDefault(x=>x.EmployeeId.ToString() == id);
-            if(termination != null)
+            var termination = db.Terminations.FirstOrDefault(x => x.EmployeeId.ToString() == id);
+            if (termination != null)
             {
-                var person = db.Person_Employee.FirstOrDefault(x=>x.EmployeeId == termination.EmployeeId);
-                if(person != null)
+                var person = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == termination.EmployeeId);
+                if (person != null)
                 {
-                    acceptance.EmpName = person.FullNameAmharic;
+                    string title = "";
+                    var look = db.Lookups.FirstOrDefault(x => x.LookupId == person.Title);
+                    if (look != null)
+                    {
+                        title = look.DescriptionEng;
+                    }
+                    acceptance.EmpName = title + " " + person.FullNameAmharic;
                     acceptance.RequestDate = termination.ApplicationDateAm;
                     acceptance.TerminationDate = termination.TerminationDateAm;
-                    var look = db.Lookups.FirstOrDefault(x=>x.LookupId == person.Title && x.LookupType == LookUpTypes.PERSON_TITLE);
-                    if(look != null)
+                    var lookUp = db.Lookups.FirstOrDefault(x => x.LookupId == person.Title && x.LookupType == LookUpTypes.PERSON_TITLE);
+                    if (lookUp != null)
                     {
-                        acceptance.Title = look.Description; ;
+                        acceptance.Title = lookUp.Description;
                     }
-                    
-                }
-            }
 
-            var template = db.Templates.FirstOrDefault(x=>x.TemplateType == TemplateTypes.TerminationAcceptanceAm);
-            if(template != null)
-            {
-                acceptance.TempOne = template.TempOne;
+                }
             }
 
             acceptanceList.Add(acceptance);
 
-            return acceptanceList;
+            List<TerminationAcceptanceVM> terminationAcceptanceList = new List<TerminationAcceptanceVM>();
+
+            foreach (var acc in acceptanceList)
+            {
+                var template = db.Templates.FirstOrDefault(x => x.TemplateType == TemplateTypes.TerminationAcceptanceAm);
+
+                if (template != null)
+                {
+                    var letter = new TerminationAcceptanceVM();
+
+                    #region Headers
+
+                    letter.Abbreviation = acc.Abbreviation;
+                    letter.Address = acc.Address;
+                    letter.AmharicName = acc.AmharicName;
+                    letter.City = acc.City;
+                    letter.Email = acc.Email;
+                    letter.EnglishName = acc.EnglishName;
+                    letter.Fax = acc.Fax;
+                    letter.LogoFileName = acc.LogoFileName;
+                    letter.Name = acc.Name;
+                    letter.Pobox = acc.Pobox;
+                    letter.Tel = acc.Tel;
+                    letter.WebSite = acc.WebSite;
+
+                    #endregion
+
+
+                    letter.Title = "ጉዳዩ ፡ የስራ ዉል ማቋረጥን የመለከታል";
+
+                    string doc = "";
+
+                    doc = template.Document.Replace("-TerminationDate-", acc.TerminationDate);
+                    doc = doc.Replace("-ApplicationDate-", acc.RequestDate);
+                    doc = doc.Replace("-ApplicantName-", acc.EmpName);
+
+                    letter.EmpName = acc.EmpName;
+                    letter.TerminationAcceptanceLetter = doc;
+
+                    terminationAcceptanceList.Add(letter);
+                }
+            }
+
+            return terminationAcceptanceList;
         }
+    }
+
+    public class TerminationAcceptanceVM
+    {
+        public string TerminationAcceptanceLetter { get; set; }
+        public string Title { get; set; }
+        public string EmpName { get; set; }
+        /// <summary>
+        /// ///////
+        /// </summary>
+        public string Name { get; set; }
+        public string AmharicName { get; set; }
+        public string EnglishName { get; set; }
+        public string Abbreviation { get; set; }
+        public string Address { get; set; }
+        public Image LogoFileName { get; set; }
+        public string Email { get; set; }
+        public string WebSite { get; set; }
+        public string City { get; set; }
+        public string Fax { get; set; }
+        public string Pobox { get; set; }
+        public string Tel { get; set; }
+        public string Date { get; set; }
     }
 }

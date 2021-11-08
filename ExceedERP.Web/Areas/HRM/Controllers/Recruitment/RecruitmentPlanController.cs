@@ -503,31 +503,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
                     db.RecruitmentPlans.Attach(entity);
                     db.Entry(entity).State = EntityState.Modified;
                     db.SaveChanges();
-
-                    #region operation log
-                    var branch = db.Branch.FirstOrDefault(x=>x.BranchId == entity.BranchId);
-                    if(branch != null)
-                    {
-                        var org = db.MainCompanyStructures.FirstOrDefault(x=>x.OrgStructureId == entity.OrgStructureId);
-                        if(org != null)
-                        {
-                            var job = db.Lookups.FirstOrDefault(x=>x.LookupId == entity.LookupId && x.LookupType == LookUpTypes.JOB_TITLE);
-                            if(job !=null)
-                            {
-                                var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-                                var name = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == empId);
-                                if (name != null)
-                                {
-                                    UserHelper.OperationLog(Request.UserHostAddress, "Recruitment Plan ", "Success", User.Identity.Name, name.EmployeeCode + " update Recruitment Plan of branch "+branch.Name+" workunit "+org.Name+" job title "+job.Description + " date " + DateTime.Today.ToShortDateString(),Core.Domain.Global.Modules.HRM);
-                                }
-
-                            }
-
-                        }
-                    }
-                   
-                    #endregion
-
                 }
             }
 
@@ -571,7 +546,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
                     WorkUnitId = recruitmentPlan.WorkUnitId,
                 };
                 #region delete log
-                UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted recruitment plan of structure  " + recruitmentPlan.MainCompanyStructure.Name + " branch" + recruitmentPlan.BranchId);
+               // UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted recruitment plan of structure  " + recruitmentPlan.m.Name + " branch" + recruitmentPlan.BranchId);
                 #endregion
                 db.RecruitmentPlans.Attach(entity);
                 db.RecruitmentPlans.Remove(entity);

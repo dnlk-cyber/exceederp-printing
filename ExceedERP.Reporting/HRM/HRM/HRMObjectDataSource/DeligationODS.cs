@@ -22,7 +22,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             List<DeligationVM> singleDeligation = new List<DeligationVM>();
             DeligationVM delg = new DeligationVM();
             var persons = db.Person_Employee.ToList();
-            var deligation = db.Delegations.FirstOrDefault(x=>x.DelegationId.ToString() == id);
+            var deligation = db.Delegations.FirstOrDefault(x => x.DelegationId.ToString() == id);
             var Organization = db.Companies.FirstOrDefault(x => x.Category == "0");
 
             if (header)
@@ -104,35 +104,33 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
             if (deligation != null)
             {
-               
-
-                var person1 = persons.FirstOrDefault(x=>x.EmployeeId == deligation.FromEmployeeId);
-                if(person1 != null)
+                var person1 = persons.FirstOrDefault(x => x.EmployeeId == deligation.FromEmployeeId);
+                if (person1 != null)
                 {
                     delg.FromEmployee = person1.FullNameAmharic;
 
-                    var place = db.Placements.FirstOrDefault(x=>x.EmployeeId == person1.EmployeeId && x.isCurrent);
-                    if(place != null)
+                    var place = db.Placements.FirstOrDefault(x => x.EmployeeId == person1.EmployeeId && x.isCurrent);
+                    if (place != null)
                     {
-                        var branch = db.Branch.FirstOrDefault(x=>x.BranchId == place.BranchId);
-                        if(branch != null)
+                        var branch = db.Branch.FirstOrDefault(x => x.BranchId == place.BranchId);
+                        if (branch != null)
                         {
                             delg.BranchFrom = branch.AmharicName;
                         }
-                        var dep = db.MainCompanyStructures.FirstOrDefault(x=>x.OrgStructureId == place.OrgStructureId);
-                        if(dep != null)
+                        var dep = db.MainCompanyStructures.FirstOrDefault(x => x.OrgStructureId == place.OrgStructureId);
+                        if (dep != null)
                         {
                             delg.DepartmentFrom = dep.Name;
                         }
-                        var job = db.Lookups.FirstOrDefault(x=>x.LookupId == place.LookupId  && x.LookupType == LookUpTypes.JOB_TITLE);
-                        if(job != null)
+                        var job = db.Lookups.FirstOrDefault(x => x.LookupId == place.LookupId && x.LookupType == LookUpTypes.JOB_TITLE);
+                        if (job != null)
                         {
                             delg.JobTitleFrom = job.Description;
                         }
                     }
                 }
-                var person2 = persons.FirstOrDefault(x=>x.EmployeeId == deligation.EmployeeId);
-                if(person2 != null)
+                var person2 = persons.FirstOrDefault(x => x.EmployeeId == deligation.EmployeeId);
+                if (person2 != null)
                 {
                     delg.ToEmployee = person2.FullNameAmharic;
 
@@ -159,18 +157,18 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
                 delg.DateFrom = deligation.FromDateTimeAm;
                 delg.DateTo = deligation.ToDateTimeAm;
-                var delegReason = db.DelegationReasons.FirstOrDefault(x=>x.DelegationId == deligation.DelegationId);
-                if(delegReason != null)
+                var delegReason = db.DelegationReasons.FirstOrDefault(x => x.DelegationId == deligation.DelegationId);
+                if (delegReason != null)
                 {
                     delg.Reason = delegReason.Reason;
                 }
 
-                var period = db.GLPeriods.FirstOrDefault(x=>x.GLPeriodId == deligation.GLPeriodId);
-                if(period != null)
+                var period = db.GLPeriods.FirstOrDefault(x => x.GLPeriodId == deligation.GLPeriodId);
+                if (period != null)
                 {
                     delg.Period = period.Name;
                 }
-                delg.Date = XAPI.EthiopicDateTime.GetEthiopicDate(DateTime.Today.Day,DateTime.Today.Month,DateTime.Today.Year);
+                delg.Date = XAPI.EthiopicDateTime.GetEthiopicDate(DateTime.Today.Day, DateTime.Today.Month, DateTime.Today.Year);
                 singleDeligation.Add(delg);
             }
 

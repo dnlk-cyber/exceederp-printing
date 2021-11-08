@@ -21,35 +21,29 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             List<EmployeeTraining> EmployeeInfoList = new List<EmployeeTraining>();
             EmployeeTraining EmployeeInfo = new EmployeeTraining();
             int number = 0;
-            db = new ExceedDbContext();
+
             var branches = db.Branch.ToList();
-            db = new ExceedDbContext();
+
             var jobs = db.Lookups.ToList();
-            db = new ExceedDbContext();
+
             var providers = db.Companies.Where(x => x.Category == "1").ToList();
-            db = new ExceedDbContext();
+
             DateTime dateTow = new DateTime(to.Year, to.Month, to.Day);
             DateTime dateOne = new DateTime(from.Year, from.Month, from.Day);
+
             var placements = db.Placements.ToList();
-            List<Person_Employee> employees;
-            if (branchId != null && orgStructureId != null)
-            {
-                employees = EmployeeHelper.GetEmployeesByBranchAndWorkUnit(Convert.ToInt32(branchId), Convert.ToInt32(orgStructureId)).ToList();
-            }
-            else if (branchId != null && orgStructureId == null)
-            {
-                employees = EmployeeHelper.GetEmployeesByBranch(Convert.ToInt32(branchId)).ToList();
-            }
-            else if (branchId == null && orgStructureId != null)
-            {
-                employees = EmployeeHelper.GetEmployeesByWorkUnit(Convert.ToInt32(orgStructureId)).ToList();
-            }
-            else
-            {
 
-                employees = db.Person_Employee.Where(x => x.IsActive).ToList();
-
+            if (branchId != null)
+            {
+                int.TryParse(branchId, out int braId);
+                placements = EmployeeHelper.GetEmployees_ByBranch_FromPlacement(placements, braId);
             }
+            if (orgStructureId != null)
+            {
+                int.TryParse(orgStructureId, out int orgId);
+                placements = EmployeeHelper.GetEmployees_ByDepartment_WithCaseTeam_FromPlacement(placements, orgId);
+            }
+
             bool idCompleted = false;
 
             if (status == "COMPLETED")
@@ -61,225 +55,123 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             {
                 idCompleted = false;
             }
-            if (type != null && status == null)
+
+            var courses = db.CourseTrackings.Where(x => x.TrainingType.ToString().ToUpper() == type.ToUpper()).ToList();
+
+            if (type != null)
             {
-                db = new ExceedDbContext();
-                var courses = db.CourseTrackings.Where(x => x.TrainingType.ToString() == type.ToUpper()).ToList();
-                if (courses.Any())
+                courses = db.CourseTrackings.Where(x => x.TrainingType.ToString().ToUpper() == type.ToUpper()).ToList();
+            }
+
+            if (status == null)
+            {
+                foreach (var l in courses)
                 {
-                    foreach (var l in courses)
+                    db = new ExceedDbContext();
+
+                    var trainees = db.Trainee.Where(x => x.CourseTrackingId == l.CourseTrackingId);
+
+                    foreach (var t in trainees)
                     {
                         db = new ExceedDbContext();
-                        var trainees = db.Trainee.Where(x => x.CourseTrackingId == l.CourseTrackingId);
-                        //var trainingTracking = db.CourseTrackings.FirstOrDefault(x=>x.CourseTrackingId==l.CourseTrackingId);
-                        
-                        
-                        foreach (var t in trainees)
+
+                        var emplist = db.Person_Employee.Where(x => x.EmployeeId == t.EmployeeId && x.IsActive).ToList();
+
+                        foreach (var e in emplist)
                         {
-                            db = new ExceedDbContext();
-                            var emplist = employees.Where(x => x.EmployeeId == t.EmployeeId && x.IsActive).ToList();
-
-                            if (emplist.Any())
+                            DateTime courceTrackForm = new DateTime(l.From.Year, l.From.Month,
+                                l.From.Day);
+                            DateTime courceTrackTo = new DateTime(l.To.Year, l.To.Month,
+                                l.To.Day);
+                            if (courceTrackForm >= dateOne && courceTrackTo <= dateTow)
                             {
-                                foreach (var e in emplist)
+
+                                EmployeeInfo = new EmployeeTraining();
+                                EmployeeInfo.EmployeeId = e.EmployeeCode;
+
+                                if (e.Gender == 0)
                                 {
-                                    DateTime courceTrackForm = new DateTime(l.From.Year, l.From.Month,
-                                        l.From.Day);
-                                    DateTime courceTrackTo = new DateTime(l.To.Year, l.To.Month,
-                                        l.To.Day);
-                                    if (courceTrackForm >= dateOne && courceTrackTo <= dateTow)
+                                    EmployeeInfo.Sex = "ወንድ";
+                                }
+                                else
+                                {
+                                    EmployeeInfo.Sex = "ሴት";
+                                }
+                                EmployeeInfo.FullName = e.FirstName + " " + e.MiddleName + " " + e.LastName;
+                                var dateFrom = XAPI.EthiopicDateTime.GetEthiopicDate(courceTrackForm.Day, courceTrackForm.Month, courceTrackForm.Year);
+                                var dateTo = XAPI.EthiopicDateTime.GetEthiopicDate(courceTrackTo.Day, courceTrackTo.Month, courceTrackTo.Year);
+                                EmployeeInfo.From = dateFrom;// courceTrackForm.ToShortDateString();
+                                EmployeeInfo.To = dateTo;// courceTrackTo.ToShortDateString();
+
+                                var trainee = db.Trainee.Where(x => x.CourseTrackingId == l.CourseTrackingId).ToList();
+                                number = trainee.Count();
+                                EmployeeInfo.Cost = l.Cost / number;
+
+                                var year = db.GLFiscalYears.FirstOrDefault(x => x.GlFiscalYearId == l.GlFiscalYearId);
+                                if (year != null)
+                                {
+                                    EmployeeInfo.Period = year.Name;
+                                }
+
+                                var place = placements.Where(x => x.EmployeeId == e.EmployeeId && x.isCurrent).FirstOrDefault();
+
+                                if (place != null)
+                                {
+
+                                    var deptt = db.MainCompanyStructures.FirstOrDefault(x => x.OrgStructureId == place.OrgStructureId);
+                                           
+                                    if (deptt != null)
                                     {
-                                        
-                                        EmployeeInfo = new EmployeeTraining();
-                                        EmployeeInfo.EmployeeId = e.EmployeeCode;
-                                       
-                                        if (e.Gender == 0)
-                                        {
-                                            EmployeeInfo.Sex = "ወንድ";
-                                        }
-                                        else
-                                        {
-                                            EmployeeInfo.Sex = "ሴት";
-                                        }
-                                        EmployeeInfo.FullName = e.FirstName + " " + e.MiddleName + " " + e.LastName;
-                                        var dateFrom = XAPI.EthiopicDateTime.GetEthiopicDate(courceTrackForm.Day,courceTrackForm.Month, courceTrackForm.Year);
-                                        var dateTo = XAPI.EthiopicDateTime.GetEthiopicDate(courceTrackTo.Day, courceTrackTo.Month, courceTrackTo.Year);
-                                        EmployeeInfo.From = dateFrom;// courceTrackForm.ToShortDateString();
-                                        EmployeeInfo.To = dateTo;// courceTrackTo.ToShortDateString();
-                                    
-                                        var trainee = db.Trainee.Where(x => x.CourseTrackingId == l.CourseTrackingId).ToList();
-                                        number = trainee.Count();
-                                        EmployeeInfo.Cost = l.Cost/number;
-                                        EmployeeInfo.Period = l.GlFiscalYear.Name;
-
-                                        var place =
-                                            placements.Where(x => x.EmployeeId == e.EmployeeId && x.isCurrent).FirstOrDefault();
-                                        if (place != null)
-                                        {
-
-                                            var deptt =
-                                                db.MainCompanyStructures.Where(
-                                                        x => x.OrgStructureId == place.OrgStructureId)
-                                                    .FirstOrDefault();
-                                            if (deptt != null)
-                                            {
-                                                EmployeeInfo.Departement = deptt.Name;
-                                            }
-                                        }
-
-                                        EmployeeInfo.Course =
-                                            jobs.Where(x => x.LookupId == l.LookupId).FirstOrDefault().Description;
-                                        EmployeeInfo.Provider =
-                                            providers.Where(x => x.MainCompanyId == l.MainCompanyId)
-                                                .FirstOrDefault()
-                                                .TradeName;
-                                        //EmployeeInfo.TrainingType = l.TrainingType.ToString();
-                                        if (l.TrainingType==TrainingType.TRAINING)
-                                        {
-                                            EmployeeInfo.TrainingType = "ስልጠና";
-                                        }
-                                        else
-                                        {
-                                            EmployeeInfo.TrainingType = "ትምህርት";
-                                        }
-
-                                        EmployeeInfoList.Add(EmployeeInfo);
+                                        EmployeeInfo.Departement = deptt.Name;
                                     }
                                 }
-                            }
+                               
+                                EmployeeInfo.Course = jobs.Where(x => x.LookupId == l.LookupId).FirstOrDefault().Description;
+                                EmployeeInfo.Provider =
+                                    providers.Where(x => x.MainCompanyId == l.MainCompanyId)
+                                        .FirstOrDefault()
+                                        .TradeName;
+                                //EmployeeInfo.TrainingType = l.TrainingType.ToString();
+                                if (l.TrainingType == TrainingType.TRAINING)
+                                {
+                                    EmployeeInfo.TrainingType = "ስልጠና";
+                                }
+                                else
+                                {
+                                    EmployeeInfo.TrainingType = "ትምህርት";
+                                }
 
+                                EmployeeInfoList.Add(EmployeeInfo);
+                            }
                         }
                     }
                 }
+
             }
-            else if (type != null && status != null)
+            else if (status != null)
             {
-                db = new ExceedDbContext();
-
-
-                var courses = db.CourseTrackings.Where(x => x.TrainingType.ToString() == type).ToList();
-                if (courses.Any())
+                foreach (var l in courses)
                 {
-                    foreach (var l in courses)
+                    db = new ExceedDbContext();
+
+                    var trainees = db.Trainee.Where(x => x.CourseTrackingId == l.CourseTrackingId && x.IsCompleteTraining == idCompleted).ToList();
+
+                    foreach (var t in trainees)
                     {
                         db = new ExceedDbContext();
-                        var trainees =
-                            db.Trainee.Where(
-                                x => x.CourseTrackingId == l.CourseTrackingId && x.IsCompleteTraining == idCompleted);
-                        foreach (var t in trainees)
-                        {
-                            db = new ExceedDbContext();
-                            var emplist = employees.Where(x => x.EmployeeId == t.EmployeeId && x.IsActive).ToList();
 
-                            if (emplist.Any())
+                        var emplist = db.Person_Employee.Where(x => x.EmployeeId == t.EmployeeId && x.IsActive).ToList();
+
+                        if (emplist.Any())
+                        {
+                            foreach (var e in emplist)
                             {
-                                foreach (var e in emplist)
+                                DateTime courceTrackForm = new DateTime(l.From.Year, l.From.Month,
+                                    l.From.Day);
+                                DateTime courceTrackTo = new DateTime(l.To.Year, l.To.Month,
+                                    l.To.Day);
+                                if (courceTrackForm >= dateOne && courceTrackTo <= dateTow)
                                 {
-                                    DateTime courceTrackForm = new DateTime(l.From.Year, l.From.Month,
-                                        l.From.Day);
-                                    DateTime courceTrackTo = new DateTime(l.To.Year, l.To.Month,
-                                        l.To.Day);
-                                    if (courceTrackForm >= dateOne && courceTrackTo <= dateTow)
-                                    {
-                                        EmployeeInfo = new EmployeeTraining();
-                                        EmployeeInfo.EmployeeId = e.EmployeeCode;
-                                        if (e.Gender == 0)
-                                        {
-                                            EmployeeInfo.Sex = "ወንድ";
-                                        }
-                                        else
-                                        {
-                                            EmployeeInfo.Sex = "ሴት";
-                                        }
-                                        EmployeeInfo.FullName = e.FirstName + " " + e.MiddleName + " " + e.LastName;
-                                        var dateFrom = XAPI.EthiopicDateTime.GetEthiopicDate(courceTrackForm.Day, courceTrackForm.Month, courceTrackForm.Year);
-                                        var dateTo = XAPI.EthiopicDateTime.GetEthiopicDate(courceTrackTo.Day, courceTrackTo.Month, courceTrackTo.Year);
-
-                                        EmployeeInfo.From = dateFrom;// courceTrackForm.ToShortDateString();
-                                        EmployeeInfo.To = dateTo;// courceTrackTo.ToShortDateString();
-                                        var trainee = db.Trainee.Where(x => x.CourseTrackingId == l.CourseTrackingId).ToList();
-                                        number = trainee.Count();
-                                        EmployeeInfo.Cost = l.Cost / number;
-                                        EmployeeInfo.Period = l.GlFiscalYear.Name;
-
-                                        var place =
-                                            placements.Where(x => x.EmployeeId == e.EmployeeId).FirstOrDefault();
-                                        if (place != null)
-                                        {
-
-                                            var deptt =
-                                                db.MainCompanyStructures.Where(
-                                                        x => x.OrgStructureId == place.OrgStructureId)
-                                                    .FirstOrDefault();
-                                            if (deptt != null)
-                                            {
-                                                EmployeeInfo.Departement = deptt.Name;
-                                            }
-                                        }
-
-                                        EmployeeInfo.Course =
-                                            jobs.Where(x => x.LookupId == l.LookupId).FirstOrDefault().Description;
-                                        EmployeeInfo.Provider =
-                                            providers.Where(x => x.MainCompanyId == l.MainCompanyId)
-                                                .FirstOrDefault()
-                                                .TradeName;
-                                       // EmployeeInfo.TrainingType = l.TrainingType.ToString();
-                                        if (l.TrainingType == TrainingType.TRAINING)
-                                        {
-                                            EmployeeInfo.TrainingType = "ስልጠና";
-                                        }
-                                        else
-                                        {
-                                            EmployeeInfo.TrainingType = "ትምህርት";
-                                        }
-
-                                        EmployeeInfoList.Add(EmployeeInfo);
-                                    }
-                                }
-                            }
-
-                        }
-                    }
-                }
-            }
-            else
-            {
-
-                db = new ExceedDbContext();
-                var courses = db.CourseTrackings.ToList();
-                if (courses.Any())
-                {
-                    foreach (var l in courses)
-                    {
-                        db = new ExceedDbContext();                      
-
-                        
-
-                        var trainees = db.Trainee.Where(x => x.CourseTrackingId == l.CourseTrackingId);
-
-                        if (status == "COMPLETED")
-                        {
-                            trainees = trainees.Where(x => x.IsCompleteTraining == true);
-                        }
-                        else if (status == "NOT_COMPLETED")
-                        {
-                            trainees = trainees.Where(x => x.IsCompleteTraining == false);
-                        }
-
-                        foreach (var t in trainees)
-                        {
-                            db = new ExceedDbContext();
-                            var emplist = employees.Where(x => x.EmployeeId == t.EmployeeId && x.IsActive).ToList();
-
-                            if (emplist.Any())
-                            {
-                                foreach (var e in emplist)
-                                {
-                                    DateTime courceTrackForm = new DateTime(l.From.Year, l.From.Month,
-                                        l.From.Day);
-                                    DateTime courceTrackTo = new DateTime(l.To.Year, l.To.Month,
-                                        l.To.Day);
-
                                     EmployeeInfo = new EmployeeTraining();
                                     EmployeeInfo.EmployeeId = e.EmployeeCode;
                                     if (e.Gender == 0)
@@ -291,7 +183,6 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                                         EmployeeInfo.Sex = "ሴት";
                                     }
                                     EmployeeInfo.FullName = e.FirstName + " " + e.MiddleName + " " + e.LastName;
-
                                     var dateFrom = XAPI.EthiopicDateTime.GetEthiopicDate(courceTrackForm.Day, courceTrackForm.Month, courceTrackForm.Year);
                                     var dateTo = XAPI.EthiopicDateTime.GetEthiopicDate(courceTrackTo.Day, courceTrackTo.Month, courceTrackTo.Year);
 
@@ -300,12 +191,15 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                                     var trainee = db.Trainee.Where(x => x.CourseTrackingId == l.CourseTrackingId).ToList();
                                     number = trainee.Count();
                                     EmployeeInfo.Cost = l.Cost / number;
-                                    EmployeeInfo.Period = l.GlFiscalYear.Name;
+                                    var year = db.GLFiscalYears.FirstOrDefault(x => x.GlFiscalYearId == l.GlFiscalYearId);
+                                    if (year != null)
+                                    {
+                                        EmployeeInfo.Period = year.Name;
+                                    }
 
                                     var place = placements.Where(x => x.EmployeeId == e.EmployeeId).FirstOrDefault();
                                     if (place != null)
                                     {
-
                                         var deptt =
                                             db.MainCompanyStructures.Where(
                                                     x => x.OrgStructureId == place.OrgStructureId)
@@ -322,7 +216,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                                         providers.Where(x => x.MainCompanyId == l.MainCompanyId)
                                             .FirstOrDefault()
                                             .TradeName;
-                                   // EmployeeInfo.TrainingType = l.TrainingType.ToString();
+                                    // EmployeeInfo.TrainingType = l.TrainingType.ToString();
                                     if (l.TrainingType == TrainingType.TRAINING)
                                     {
                                         EmployeeInfo.TrainingType = "ስልጠና";
@@ -334,11 +228,104 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
                                     EmployeeInfoList.Add(EmployeeInfo);
                                 }
+                            }
+                        }
+                    }
+                }
+            }
+            else
+            {
+                foreach (var l in courses)
+                {
 
+                    var trainees = db.Trainee.Where(x => x.CourseTrackingId == l.CourseTrackingId);
+
+                    if (status == "COMPLETED")
+                    {
+                        trainees = trainees.Where(x => x.IsCompleteTraining == true);
+                    }
+                    else if (status == "NOT_COMPLETED")
+                    {
+                        trainees = trainees.Where(x => x.IsCompleteTraining == false);
+                    }
+
+                    foreach (var t in trainees)
+                    {
+                        db = new ExceedDbContext();
+                        var emplist = db.Person_Employee.Where(x => x.EmployeeId == t.EmployeeId && x.IsActive).ToList();
+
+                        if (emplist.Any())
+                        {
+                            foreach (var e in emplist)
+                            {
+                                DateTime courceTrackForm = new DateTime(l.From.Year, l.From.Month,
+                                    l.From.Day);
+                                DateTime courceTrackTo = new DateTime(l.To.Year, l.To.Month,
+                                    l.To.Day);
+
+                                EmployeeInfo = new EmployeeTraining();
+                                EmployeeInfo.EmployeeId = e.EmployeeCode;
+                                if (e.Gender == 0)
+                                {
+                                    EmployeeInfo.Sex = "ወንድ";
+                                }
+                                else
+                                {
+                                    EmployeeInfo.Sex = "ሴት";
+                                }
+                                EmployeeInfo.FullName = e.FirstName + " " + e.MiddleName + " " + e.LastName;
+
+                                var dateFrom = XAPI.EthiopicDateTime.GetEthiopicDate(courceTrackForm.Day, courceTrackForm.Month, courceTrackForm.Year);
+                                var dateTo = XAPI.EthiopicDateTime.GetEthiopicDate(courceTrackTo.Day, courceTrackTo.Month, courceTrackTo.Year);
+
+                                EmployeeInfo.From = dateFrom;// courceTrackForm.ToShortDateString();
+                                EmployeeInfo.To = dateTo;// courceTrackTo.ToShortDateString();
+                                var trainee = db.Trainee.Where(x => x.CourseTrackingId == l.CourseTrackingId).ToList();
+                                number = trainee.Count();
+                                EmployeeInfo.Cost = l.Cost / number;
+                                var year = db.GLFiscalYears.FirstOrDefault(x => x.GlFiscalYearId == l.GlFiscalYearId);
+                                if (year != null)
+                                {
+                                    EmployeeInfo.Period = year.Name;
+                                }
+
+                                var place = placements.Where(x => x.EmployeeId == e.EmployeeId).FirstOrDefault();
+                                if (place != null)
+                                {
+
+                                    var deptt =
+                                        db.MainCompanyStructures.Where(
+                                                x => x.OrgStructureId == place.OrgStructureId)
+                                            .FirstOrDefault();
+                                    if (deptt != null)
+                                    {
+                                        EmployeeInfo.Departement = deptt.Name;
+                                    }
+                                }
+
+                                EmployeeInfo.Course =
+                                    jobs.Where(x => x.LookupId == l.LookupId).FirstOrDefault().Description;
+                                EmployeeInfo.Provider =
+                                    providers.Where(x => x.MainCompanyId == l.MainCompanyId)
+                                        .FirstOrDefault()
+                                        .TradeName;
+                                // EmployeeInfo.TrainingType = l.TrainingType.ToString();
+                                if (l.TrainingType == TrainingType.TRAINING)
+                                {
+                                    EmployeeInfo.TrainingType = "ስልጠና";
+                                }
+                                else
+                                {
+                                    EmployeeInfo.TrainingType = "ትምህርት";
+                                }
+
+                                EmployeeInfoList.Add(EmployeeInfo);
                             }
 
                         }
+
                     }
+
                 }
             }
             return EmployeeInfoList;

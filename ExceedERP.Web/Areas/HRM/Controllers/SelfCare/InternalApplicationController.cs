@@ -181,7 +181,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                     var ia = new ApplicantionForm();
 
                     //ia.BranchId = v.BranchId;
-                    ia.OrgStructureId = v.WorkUnitId;
+                    ia.OrgStructureId = v.VacancyId;
                     ia.VacancyId = v.VacancyId;
 
                     var recruitPlan = db.RecruitmentPlans.FirstOrDefault(x=>x.RecruitmentPlanId == v.RecruitmentPlanId);
@@ -410,11 +410,11 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                     var detail = db.VaccancyPlans.Where(x => x.VacancyId == p.VacancyId).FirstOrDefault();
                     if (detail != null)
                     {
-                        var lookup = db.Lookups.Where(x => x.LookupId == detail.LookupId).FirstOrDefault();
-                        if (lookup != null)
-                        {
-                            titleList.Add(lookup);
-                        }
+                        //var lookup = db.Lookups.Where(x => x.LookupId == detail.VacancyId).FirstOrDefault();
+                        //if (lookup != null)
+                        //{
+                        //    titleList.Add(lookup);
+                        //}
                     }
 
 

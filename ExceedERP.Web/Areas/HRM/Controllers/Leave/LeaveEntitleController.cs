@@ -359,283 +359,135 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
         #region Entitlement By New Awaj ... add 1 day per two years and intial 16
         public JavaScriptResult GetEmployeeLeaveEntitlemntNewAwaj(bool check, int period)
         {
-            //var currentPeriod = db.GLFiscalYears.FirstOrDefault(x => x.DateFrom <= DateTime.Now && x.DateTo >= DateTime.Now);
             var currentPeriod = db.GLFiscalYears.FirstOrDefault(x => x.GlFiscalYearId == period);
 
-            var leaveThrashold = db.Configurations.FirstOrDefault(x => x.Attribute == LeaveSetting.LEAVE_ENTITLE_THRESHOLD.ToString());
-
-            List<EmployeeIdView> EmployeeIdViews = new List<EmployeeIdView>();
-            int maximumValue = 0;
-            var maximumLeave = db.Configurations.FirstOrDefault(c => c.Attribute == LeaveSetting.MAXIMUM_LEAVE_ENTITLEMENT.ToString());
-            if (maximumLeave != null)
+            if (currentPeriod != null)
             {
-                maximumValue = Convert.ToInt32(maximumLeave.CurrentValue);
-            }
-            
-
-            EmployeeIdView EmployeeIdView = new EmployeeIdView();
-
-            List<string> employees = inputs.GetUserBranchEmployees(User.Identity.Name);
-
-            var employeeList = db.Person_Employee.Where(x => employees.Contains(x.EmployeeId.ToString()) && x.IsActive).AsQueryable();
-            db = new ExceedDbContext();
-
-            #region Validation
-
-            var forleaders0ld = db.Configurations.FirstOrDefault(c => c.Attribute == LeaveSetting.LEAVE_FOR_LEADRES_OLD.ToString());
-            if(forleaders0ld == null || forleaders0ld.CurrentValue == null)
-            {
-                var message = "you have to add Leave for leaders old initial value";
-
-                return new JavaScriptResult() { Script = "alert('" + message + "');" };
-            }
-
-            var forperformerold = db.Configurations.FirstOrDefault(c => c.Attribute == LeaveSetting.LEAVE_FOR_PERFORMERS_OLD.ToString());
-            if (forperformerold == null || forperformerold.CurrentValue == null)
-            {
-                var message = "you have to add Leave for performers old initial value";
-
-                return new JavaScriptResult() { Script = "alert('" + message + "');" };
-            }
-
-            var forleadersnew = db.Configurations.FirstOrDefault(c => c.Attribute == LeaveSetting.LEAVE_FOR_LEADRES_NEW.ToString());
-            if (forleadersnew == null || forleadersnew.CurrentValue == null)
-            {
-                var message = "you have to add Leave for leaders new initial value";
-
-                return new JavaScriptResult() { Script = "alert('" + message + "');" };
-            }
-
-            var forperformernew = db.Configurations.FirstOrDefault(c => c.Attribute == LeaveSetting.LEAVE_FOR_PERFORMERS_NEW.ToString());
-            if (forperformernew == null || forperformernew.CurrentValue == null)
-            {
-                var message = "you have to add Leave for performers new initial value";
-
-                return new JavaScriptResult() { Script = "alert('" + message + "');" };
-            }
-
-            var oldendyear = db.Configurations.FirstOrDefault(c => c.Attribute == LeaveSetting.Old_Initial_Leave_End_Year.ToString());
-            if (oldendyear == null || oldendyear.CurrentValue == null)
-            {
-                var message = "you have to add end of old intial value year";
-
-                return new JavaScriptResult() { Script = "alert('" + message + "');" };
-            }
-
-            var frequency = db.Configurations.FirstOrDefault(x => x.Category == "HRM" && x.Reference == "Leave" && x.Attribute == LeaveHrmSetting.Frequency.ToString());
-            if (frequency == null)
-            {
-                var message = "you have to add frequency in HRM Setting";
-
-                return new JavaScriptResult() { Script = "alert('" + message + "');" };
-            }
-            else if (String.IsNullOrEmpty(frequency.CurrentValue))
-            {
-                var message = "add current value in frequency first";
-
-                return new JavaScriptResult() { Script = "alert('" + message + "');" };
-
-            }
-
-            #endregion
-
-            foreach (var emp in employeeList)
-            {               
-
-                var leaveEntitle = db.LeavesEntitle.FirstOrDefault(x => x.GlFiscalYearId == currentPeriod.GlFiscalYearId && x.EmployeeId == emp.EmployeeId);
-                if (leaveEntitle != null)
+                var newAwajInitialYear = db.LeaveNewAwajStartYears.FirstOrDefault();
+                if (newAwajInitialYear != null)
                 {
-
-                    var initialSetting = db.Configurations.FirstOrDefault(x => x.Category == "HRM" && x.Attribute == LeaveHrmSetting.InitialYear.ToString());
-                    if (initialSetting != null)
+                    var initialGlFiscalYear = db.GLFiscalYears.FirstOrDefault(x => x.GlFiscalYearId == newAwajInitialYear.GlFisicalYearId);
+                    if (initialGlFiscalYear != null)
                     {
-                        int yearInitial = Convert.ToInt32(initialSetting.CurrentValue);
+                        var leaveThrashold = db.Configurations.FirstOrDefault(x => x.Attribute == LeaveSetting.LEAVE_ENTITLE_THRESHOLD.ToString());
 
-                        var intialFiscalYear = db.GLFiscalYears.FirstOrDefault(x => x.DateFrom.Year == yearInitial /*&& x.DateTo.Year >= year*/);
-                        if (intialFiscalYear != null && emp.HiredDate < intialFiscalYear.DateTo)
+                        int maximumValue = 0;
+                        var maximumLeave = db.Configurations.FirstOrDefault(c => c.Attribute == LeaveSetting.MAXIMUM_LEAVE_ENTITLEMENT.ToString());
+                        if (maximumLeave != null)
                         {
-                            double currentExpriance = GetCurrentExperienceLeaveDays(emp.EmployeeId, currentPeriod, intialFiscalYear);
-
-                            DateTime hireDate = emp.HiredDate;
-
-                            double totalDays = (currentPeriod.DateTo - emp.HiredDate).TotalDays;
-                            var totalYears = Math.Truncate(totalDays / 365);
-                            var totalMonths = Math.Truncate((totalDays % 365) / 30);
-                            var remainingDays = Math.Truncate((totalDays % 365) % 30);
-
-                            double externalExperience = 0;
-                            if (check)
-                            {
-                                externalExperience = GetExternalExperienceLeaveDays(emp.EmployeeId);
-                            }
-
-                            double totalExpriance = currentExpriance + externalExperience;
-
-                            var role = db.Placements.FirstOrDefault(pl => pl.EmployeeId == emp.EmployeeId && pl.isCurrent);
-
-
-                            leaveEntitle.EmployeeId = emp.EmployeeId;
-                            leaveEntitle.EmployeeCode = emp.EmployeeCode;
-
-                            // var hiredYear = db.GLFiscalYears.FirstOrDefault(x=>x.DateFrom <= emp.HiredDate && x.DateTo >= emp.HiredDate);
-
-                            double LeaveBaseLine = 0;
-
-                            var oldEndYear = db.Configurations.FirstOrDefault(c => c.Attribute == LeaveSetting.Old_Initial_Leave_End_Year.ToString());
-
-                            if (oldEndYear != null)
-                            {
-                                var oldEndBudgetYear = db.GLFiscalYears.FirstOrDefault(x => x.Name.Trim() == oldEndYear.CurrentValue.Trim());
-
-                                if (oldEndBudgetYear != null)
-                                {
-                                    if (role != null && emp.HiredDate < oldEndBudgetYear.DateFrom)
-                                    {
-                                        var baseLine = 0;
-
-                                        if (role.ResponsibilityLevel == ResponsibilityLevel.TOP_MANAGMENT)
-                                        {
-                                            var leaders = db.Configurations.FirstOrDefault(c => c.Attribute == LeaveSetting.LEAVE_FOR_LEADRES_OLD.ToString());
-                                            if (leaders != null)
-                                            {
-                                                LeaveBaseLine = Convert.ToInt32(leaders.CurrentValue);
-                                                baseLine = Convert.ToInt32(leaders.CurrentValue);
-                                            }
-                                        }
-                                        else
-                                        {
-                                            var performers = db.Configurations.FirstOrDefault(c => c.Attribute == LeaveSetting.LEAVE_FOR_PERFORMERS_OLD.ToString());
-                                            if (performers != null)
-                                            {
-                                                LeaveBaseLine = Convert.ToInt32(performers.CurrentValue);
-                                                baseLine = Convert.ToInt32(performers.CurrentValue);
-                                            }
-                                        }
-                                        if ((hireDate >= currentPeriod.DateFrom && hireDate <= currentPeriod.DateTo) && leaveThrashold != null && totalYears == 0)
-                                        {
-                                            //currentExpriance = 0;
-                                            // currentExpriance = ym/12;
-                                            // totalExpriance = currentExpriance + externalExperience;
-                                            LeaveBaseLine = totalMonths / 12 * baseLine;
-
-                                        }
-
-                                    }
-                                    else if (role != null && emp.HiredDate >= oldEndBudgetYear.DateFrom)
-                                    {
-                                        var baseLine = 0;
-
-                                        if (role.ResponsibilityLevel == ResponsibilityLevel.TOP_MANAGMENT)
-                                        {
-                                            var leaders = db.Configurations.FirstOrDefault(c => c.Attribute == LeaveSetting.LEAVE_FOR_LEADRES_NEW.ToString());
-                                            if (leaders != null)
-                                            {
-                                                LeaveBaseLine = Convert.ToInt32(leaders.CurrentValue);
-                                                baseLine = Convert.ToInt32(leaders.CurrentValue);
-                                            }
-                                        }
-                                        else
-                                        {
-                                            var performers = db.Configurations.FirstOrDefault(c => c.Attribute == LeaveSetting.LEAVE_FOR_PERFORMERS_NEW.ToString());
-                                            if (performers != null)
-                                            {
-                                                LeaveBaseLine = Convert.ToInt32(performers.CurrentValue);
-                                                baseLine = Convert.ToInt32(performers.CurrentValue);
-                                            }
-                                        }
-                                        if (/*(hireDate >= currentPeriod.DateFrom && hireDate <= currentPeriod.DateTo) && leaveThrashold != null &&*/ totalYears == 0)
-                                        {
-                                            //currentExpriance = 0;
-                                            // currentExpriance = ym/12;
-                                            // totalExpriance = currentExpriance + externalExperience;
-                                            LeaveBaseLine = totalMonths / 12 * baseLine;
-
-                                        }
-
-                                    }
-                                }
-                            }
-
-                            decimal amount = Convert.ToDecimal(currentExpriance + externalExperience + LeaveBaseLine);
-
-                            //if (leaveEntitlePrev != null && Convert.ToInt32(frequency.CurrentValue) == 1)
-                            //{
-                            //    amount = leaveEntitlePrev.Amount + 1;
-                            //}
-
-                            leaveEntitle.Amount = amount;//Convert.ToDecimal(totalExpriance + LeaveBaseLine);
-                            //leaveEntitle.Balance = amount; //Convert.ToDecimal(totalExpriance + LeaveBaseLine);
-                            leaveEntitle.IsAdded = true;
-                            leaveEntitle.GlFiscalYearId = currentPeriod.GlFiscalYearId;
-                            leaveEntitle.DateCreated = DateTime.Now;
-                            leaveEntitle.LastModified = null;
-                            leaveEntitle.CreatedBy = User.Identity.Name;
-                            leaveEntitle.ModifiedBy = null;
-                            leaveEntitle.OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name);
-
-
-                            if (Convert.ToDecimal(maximumValue) < leaveEntitle.Amount)
-                            {
-                                leaveEntitle.Amount = maximumValue;
-                                leaveEntitle.Balance = maximumValue;
-                            }
-                            if (leaveEntitle.Amount < 0)
-                            {
-                                leaveEntitle.Amount = 0;
-                                leaveEntitle.Balance = 0;
-                            }
-
-                            db.Entry(leaveEntitle).State = EntityState.Modified;
-                            db.SaveChanges();
-                            //}
-
-
-
-                            EmployeeIdViews.Add(EmployeeIdView);
+                            maximumValue = Convert.ToInt32(maximumLeave.CurrentValue);
                         }
-                    }
-                }
-                else if (leaveEntitle == null)
-                {
-                   var entitle = new LeaveEntitle();
 
-                    if (currentPeriod != null)
-                    {
+                        var employeeList = db.Person_Employee.Where(x => x.IsActive).ToList();
 
-                        if (emp.HiredDate <= currentPeriod.DateFrom || (emp.HiredDate >= currentPeriod.DateFrom && emp.HiredDate <= currentPeriod.DateTo))
+                        #region Validation
+
+                        var validation = Validation_For_Entitlement_Generation();
+
+                        if (!string.IsNullOrEmpty(validation))
                         {
-                            var preveDateFrom = currentPeriod.DateFrom.AddYears(-1);
-                            var prevDateTo = currentPeriod.DateTo.AddYears(-1);
+                            return new JavaScriptResult() { Script = "alert('" + validation + "');" };
+                        }
 
-                            var prevYear = db.GLFiscalYears.FirstOrDefault(x => x.DateFrom == preveDateFrom && x.DateTo == prevDateTo);
-                            if (prevYear != null)
+                        #endregion
+
+                        foreach (var emp in employeeList)
+                        {
+                            var leaveEntitle = db.LeavesEntitle.FirstOrDefault(x => x.GlFiscalYearId == currentPeriod.GlFiscalYearId && x.EmployeeId == emp.EmployeeId);
+
+                            if (leaveEntitle != null)
                             {
-                                var leaveEntitlePrev = db.LeavesEntitle.FirstOrDefault(x => x.EmployeeId == emp.EmployeeId && x.GlFiscalYearId == prevYear.GlFiscalYearId);
-                                if (leaveEntitlePrev == null || (leaveEntitlePrev != null && Convert.ToInt32(frequency.CurrentValue) == 1))
+                                decimal amount = 0;
+
+                                if (!leaveEntitle.IsAdded)
                                 {
-                                    db = new ExceedDbContext();
-                                    EmployeeIdView = new EmployeeIdView();
-                                    EmployeeIdView.PersonId = emp.EmployeeId;
-                                    EmployeeIdView.EmployeeCode = emp.EmployeeCode;
-                                    EmployeeIdView.IsActive = emp.IsActive;
-                                    EmployeeIdView.FullName = emp.FirstName + " " + emp.MiddleName + " " + emp.LastName;
+                                    double currentExpriance = GetCurrentExperienceLeaveDaysNew(emp.EmployeeId, currentPeriod, initialGlFiscalYear);
 
-                                    var initialSetting = db.Configurations.FirstOrDefault(x => x.Category == "HRM" && x.Attribute == LeaveHrmSetting.InitialYear.ToString());
-                                    if (initialSetting != null)
+                                    double externalExperience = 0;
+                                    if (check)
                                     {
-                                        int yearInitial = Convert.ToInt32(initialSetting.CurrentValue);
+                                        externalExperience = GetExternalExperienceLeaveDays(emp.EmployeeId);
+                                    }
 
-                                        var intialFiscalYear = db.GLFiscalYears.FirstOrDefault(x => x.DateFrom.Year == yearInitial /*&& x.DateTo.Year >= year*/);
-                                        if (intialFiscalYear != null && emp.HiredDate < intialFiscalYear.DateTo)
+                                    double totalExpriance = currentExpriance + externalExperience;
+
+                                    double LeaveBaseLine = GetInitialLeaveValue(emp, currentPeriod, initialGlFiscalYear);
+
+                                    amount = Convert.ToDecimal(currentExpriance + externalExperience + LeaveBaseLine);
+                                }
+                                else if (leaveEntitle.IsAdded)
+                                {
+                                    amount = leaveEntitle.Amount;
+                                }
+
+                                leaveEntitle.EmployeeId = emp.EmployeeId;
+                                leaveEntitle.EmployeeCode = emp.EmployeeCode;
+
+                                var placement = db.Placements.FirstOrDefault(x => x.EmployeeId == leaveEntitle.EmployeeId && x.isCurrent);
+                                if (placement != null)
+                                {
+                                    leaveEntitle.BranchId = placement.BranchId;
+                                    leaveEntitle.OrgBranchName = placement.BranchId.ToString();
+                                }
+
+                                decimal leaveTakenAndSubtractedFromThisBudgetYear = GetTakenLeaveInOneBudgetYear(emp.EmployeeId, currentPeriod.GlFiscalYearId);
+
+                                leaveEntitle.Amount = amount;
+                                leaveEntitle.Balance = leaveEntitle.Amount - leaveTakenAndSubtractedFromThisBudgetYear;
+                                leaveEntitle.IsAdded = true;
+                                leaveEntitle.GlFiscalYearId = currentPeriod.GlFiscalYearId;
+                                leaveEntitle.LastModified = DateTime.Now;
+                                leaveEntitle.ModifiedBy = User.Identity.Name;
+
+                                if (Convert.ToDecimal(maximumValue) < leaveEntitle.Amount)
+                                {
+                                    leaveEntitle.Amount = maximumValue;
+                                    leaveEntitle.Balance = leaveEntitle.Amount - leaveTakenAndSubtractedFromThisBudgetYear;
+                                }
+                                if (leaveEntitle.Amount < 0)
+                                {
+                                    leaveEntitle.Amount = 0;
+                                    leaveEntitle.Balance = 0;
+                                }
+
+                                db.Entry(leaveEntitle).State = EntityState.Modified;
+                                db.SaveChanges();
+                            }
+
+                            else if (leaveEntitle == null)
+                            {
+                                var entitle = new LeaveEntitle();
+
+                                bool IsHireDateBetweenCurrentPeriod = false;
+                                if (emp.HiredDate >= currentPeriod.DateFrom && emp.HiredDate <= currentPeriod.DateTo)
+                                {
+                                    IsHireDateBetweenCurrentPeriod = true;
+                                }
+
+                                if (emp.HiredDate <= currentPeriod.DateFrom || IsHireDateBetweenCurrentPeriod)
+                                {
+                                    var preveDateFrom = currentPeriod.DateFrom.AddYears(-1);
+                                    var prevDateTo = currentPeriod.DateTo.AddYears(-1);
+
+                                    var prevYear = db.GLFiscalYears.FirstOrDefault(x => x.DateFrom == preveDateFrom && x.DateTo == prevDateTo);
+                                    if (prevYear != null)
+                                    {
+                                        var leaveEntitlePrev = db.LeavesEntitle.FirstOrDefault(x => x.EmployeeId == emp.EmployeeId && x.GlFiscalYearId == prevYear.GlFiscalYearId);
+
+                                        var frequency = db.Configurations.FirstOrDefault(x => x.Category == "HRM" && x.Reference == "Leave" && x.Attribute == LeaveHrmSetting.Frequency.ToString());
+
+                                        bool CheckPreviosLeaveAndFrequencyValueIsOne = false;
+                                        if (leaveEntitlePrev != null)
                                         {
-                                            double currentExpriance = GetCurrentExperienceLeaveDays(emp.EmployeeId, currentPeriod, intialFiscalYear);
+                                            if (frequency != null && Convert.ToInt32(frequency.CurrentValue) == 1)
+                                            {
+                                                CheckPreviosLeaveAndFrequencyValueIsOne = true;
+                                            }
+                                        }
 
-                                            DateTime hireDate = emp.HiredDate;
-
-                                            double totalDays = (currentPeriod.DateTo - emp.HiredDate).TotalDays;
-                                            var totalYears = Math.Truncate(totalDays / 365);
-                                            var totalMonths = Math.Truncate((totalDays % 365) / 30);
-                                            var remainingDays = Math.Truncate((totalDays % 365) % 30);
+                                        if (leaveEntitlePrev == null || CheckPreviosLeaveAndFrequencyValueIsOne)
+                                        {
+                                            double currentExpriance = GetCurrentExperienceLeaveDaysNew(emp.EmployeeId, currentPeriod, initialGlFiscalYear);
 
                                             double externalExperience = 0;
                                             if (check)
@@ -645,109 +497,28 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
 
                                             double totalExpriance = currentExpriance + externalExperience;
 
-                                            var role = db.Placements.FirstOrDefault(pl => pl.EmployeeId == emp.EmployeeId && pl.isCurrent);
-
-
                                             entitle.EmployeeId = emp.EmployeeId;
                                             entitle.EmployeeCode = emp.EmployeeCode;
 
-                                            // var hiredYear = db.GLFiscalYears.FirstOrDefault(x=>x.DateFrom <= emp.HiredDate && x.DateTo >= emp.HiredDate);
-
-                                            double LeaveBaseLine = 0;
-
-                                            var oldEndYear = db.Configurations.FirstOrDefault(c => c.Attribute == LeaveSetting.Old_Initial_Leave_End_Year.ToString());
-
-                                            if (oldEndYear != null)
-                                            {
-                                               
-                                                var oldEndBudgetYear = db.GLFiscalYears.FirstOrDefault(x => x.Name.Trim() == oldEndYear.CurrentValue.Trim());
-
-                                                if (oldEndBudgetYear != null)
-                                                {
-                                                    if (role != null && emp.HiredDate < oldEndBudgetYear.DateFrom)
-                                                    {
-                                                        var baseLine = 0;
-
-                                                        if (role.ResponsibilityLevel == ResponsibilityLevel.TOP_MANAGMENT)
-                                                        {
-                                                            var leaders = db.Configurations.FirstOrDefault(c => c.Attribute == LeaveSetting.LEAVE_FOR_LEADRES_OLD.ToString());
-                                                            if (leaders != null)
-                                                            {
-                                                                LeaveBaseLine = Convert.ToInt32(leaders.CurrentValue);
-                                                                baseLine = Convert.ToInt32(leaders.CurrentValue);
-                                                            }
-                                                        }
-                                                        else
-                                                        {
-                                                            var performers = db.Configurations.FirstOrDefault(c => c.Attribute == LeaveSetting.LEAVE_FOR_PERFORMERS_OLD.ToString());
-                                                            if (performers != null)
-                                                            {
-                                                                LeaveBaseLine = Convert.ToInt32(performers.CurrentValue);
-                                                                baseLine = Convert.ToInt32(performers.CurrentValue);
-                                                            }
-                                                        }
-                                                        if ((hireDate >= currentPeriod.DateFrom && hireDate <= currentPeriod.DateTo) && leaveThrashold != null && totalYears == 0)
-                                                        {
-                                                            //currentExpriance = 0;
-                                                            // currentExpriance = ym/12;
-                                                            // totalExpriance = currentExpriance + externalExperience;
-                                                            LeaveBaseLine = totalMonths / 12 * baseLine;
-
-                                                        }
-
-                                                    }
-                                                    else if (role != null && emp.HiredDate >= oldEndBudgetYear.DateFrom)
-                                                    {
-                                                        var baseLine = 0;
-
-                                                        if (role.ResponsibilityLevel == ResponsibilityLevel.TOP_MANAGMENT)
-                                                        {
-                                                            var leaders = db.Configurations.FirstOrDefault(c => c.Attribute == LeaveSetting.LEAVE_FOR_LEADRES_NEW.ToString());
-                                                            if (leaders != null)
-                                                            {
-                                                                LeaveBaseLine = Convert.ToInt32(leaders.CurrentValue);
-                                                                baseLine = Convert.ToInt32(leaders.CurrentValue);
-                                                            }
-                                                        }
-                                                        else
-                                                        {
-                                                            var performers = db.Configurations.FirstOrDefault(c => c.Attribute == LeaveSetting.LEAVE_FOR_PERFORMERS_NEW.ToString());
-                                                            if (performers != null)
-                                                            {
-                                                                LeaveBaseLine = Convert.ToInt32(performers.CurrentValue);
-                                                                baseLine = Convert.ToInt32(performers.CurrentValue);
-                                                            }
-                                                        }
-                                                        if (/*(hireDate >= currentPeriod.DateFrom && hireDate <= currentPeriod.DateTo) && leaveThrashold != null &&*/ totalYears == 0)
-                                                        {
-                                                            //currentExpriance = 0;
-                                                            // currentExpriance = ym/12;
-                                                            // totalExpriance = currentExpriance + externalExperience;
-                                                            LeaveBaseLine = totalMonths / 12 * baseLine;
-
-                                                        }
-
-                                                    }
-                                                }
-                                            }
+                                            double LeaveBaseLine = GetInitialLeaveValue(emp, currentPeriod, initialGlFiscalYear);
 
                                             decimal amount = Convert.ToDecimal(currentExpriance + externalExperience + LeaveBaseLine);
 
-                                            //if (leaveEntitlePrev != null && Convert.ToInt32(frequency.CurrentValue) == 1)
-                                            //{
-                                            //    amount = leaveEntitlePrev.Amount + 1;
-                                            //}
+                                            var placement = db.Placements.FirstOrDefault(x => x.EmployeeId == entitle.EmployeeId && x.isCurrent);
+                                            if (placement != null)
+                                            {
+                                                entitle.BranchId = placement.BranchId;
+                                                entitle.OrgBranchName = placement.BranchId.ToString();
+                                            }
+                                            entitle.Amount = amount;
+                                            entitle.Balance = amount;
 
-                                            entitle.Amount = amount;//Convert.ToDecimal(totalExpriance + LeaveBaseLine);
-                                            entitle.Balance = amount; //Convert.ToDecimal(totalExpriance + LeaveBaseLine);
                                             entitle.IsAdded = true;
                                             entitle.GlFiscalYearId = currentPeriod.GlFiscalYearId;
                                             entitle.DateCreated = DateTime.Now;
                                             entitle.LastModified = null;
                                             entitle.CreatedBy = User.Identity.Name;
                                             entitle.ModifiedBy = null;
-                                            entitle.OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name);
-
 
                                             if (Convert.ToDecimal(maximumValue) < entitle.Amount)
                                             {
@@ -761,141 +532,46 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                                             }
                                             db.LeavesEntitle.Add(entitle);
                                             db.SaveChanges();
-                                            //}
 
-
-
-                                            EmployeeIdViews.Add(EmployeeIdView);
-                                        }
-                                    }
-
-                                }
-                                else
-                                {
-                                    var leaveEntitlePrevAdded = db.LeavesEntitle.FirstOrDefault(x => x.EmployeeId == emp.EmployeeId && x.GlFiscalYearId == prevYear.GlFiscalYearId && x.IsAdded);
-                                    if (leaveEntitlePrevAdded != null)
-                                    {
-                                        db = new ExceedDbContext();
-                                        EmployeeIdView = new EmployeeIdView();
-                                        EmployeeIdView.PersonId = leaveEntitlePrevAdded.EmployeeId;
-                                        EmployeeIdView.EmployeeCode = leaveEntitlePrevAdded.EmployeeCode;
-                                        EmployeeIdView.IsActive = emp.IsActive;
-                                        EmployeeIdView.FullName = emp.FirstName + " " + emp.MiddleName + " " + emp.LastName;
-
-                                        var role = db.Placements.FirstOrDefault(pl => pl.EmployeeId == emp.EmployeeId && pl.isCurrent);
-
-                                        decimal defaultLeave = 0;
-
-                                        var oldEndYear = db.Configurations.FirstOrDefault(c => c.Attribute == LeaveSetting.Old_Initial_Leave_End_Year.ToString());
-
-                                        if (oldEndYear != null)
-                                        {
-                                           
-                                            var oldEndBudgetYear = db.GLFiscalYears.FirstOrDefault(x => x.Name.Trim() == oldEndYear.CurrentValue.Trim());
-
-                                            if (oldEndBudgetYear != null)
-                                            {
-
-                                                if (role != null && emp.HiredDate < oldEndBudgetYear.DateFrom)
-                                                {
-                                                    if (role.ResponsibilityLevel == ResponsibilityLevel.TOP_MANAGMENT)
-                                                    {
-                                                        var leaders = db.Configurations.FirstOrDefault(c => c.Attribute == LeaveSetting.LEAVE_FOR_LEADRES_OLD.ToString());
-                                                        if (leaders != null)
-                                                        {
-                                                            defaultLeave = Convert.ToInt32(leaders.CurrentValue);
-                                                        }
-                                                    }
-                                                    else
-                                                    {
-                                                        var performers = db.Configurations.FirstOrDefault(c => c.Attribute == LeaveSetting.LEAVE_FOR_PERFORMERS_OLD.ToString());
-                                                        if (performers != null)
-                                                        {
-                                                            defaultLeave = Convert.ToInt32(performers.CurrentValue);
-                                                        }
-                                                    }
-                                                }
-                                                else if (role != null && emp.HiredDate >= oldEndBudgetYear.DateFrom)
-                                                {
-                                                    if (role.ResponsibilityLevel == ResponsibilityLevel.TOP_MANAGMENT)
-                                                    {
-                                                        var leaders = db.Configurations.FirstOrDefault(c => c.Attribute == LeaveSetting.LEAVE_FOR_LEADRES_NEW.ToString());
-                                                        if (leaders != null)
-                                                        {
-                                                            defaultLeave = Convert.ToInt32(leaders.CurrentValue);
-                                                        }
-                                                    }
-                                                    else
-                                                    {
-                                                        var performers = db.Configurations.FirstOrDefault(c => c.Attribute == LeaveSetting.LEAVE_FOR_PERFORMERS_NEW.ToString());
-                                                        if (performers != null)
-                                                        {
-                                                            defaultLeave = Convert.ToInt32(performers.CurrentValue);
-                                                        }
-                                                    }
-                                                }
-                                            }
-                                        }
-                                        if (leaveEntitlePrevAdded.Amount < defaultLeave)
-                                        {
-                                            entitle.Amount = defaultLeave;
-                                            entitle.Balance = defaultLeave;
                                         }
                                         else
                                         {
-                                            entitle.Amount = leaveEntitlePrevAdded.Amount;
-                                            entitle.Balance = leaveEntitlePrevAdded.Amount;
-                                        }
-
-                                        entitle.EmployeeId = emp.EmployeeId;
-                                        entitle.GlFiscalYearId = currentPeriod.GlFiscalYearId;
-                                        entitle.DateCreated = DateTime.Now;
-                                        entitle.LastModified = null;
-                                        entitle.CreatedBy = User.Identity.Name;
-                                        entitle.ModifiedBy = null;
-                                        entitle.OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name);
-
-                                        db.LeavesEntitle.Add(entitle);
-                                        db.SaveChanges();
-                                    }
-                                    var leaveEntitlePrevNotAdded = db.LeavesEntitle.FirstOrDefault(x => x.EmployeeId == emp.EmployeeId && x.GlFiscalYearId == prevYear.GlFiscalYearId && !x.IsAdded);
-                                    if (leaveEntitlePrevNotAdded != null)
-                                    {
-                                        db = new ExceedDbContext();
-                                        EmployeeIdView = new EmployeeIdView();
-                                        EmployeeIdView.PersonId = leaveEntitlePrevNotAdded.EmployeeId;
-                                        EmployeeIdView.EmployeeCode = leaveEntitlePrevNotAdded.EmployeeCode;
-                                        EmployeeIdView.IsActive = emp.IsActive;
-                                        EmployeeIdView.FullName = emp.FirstName + " " + emp.MiddleName + " " + emp.LastName;
-
-                                        //entitle.EmployeeId = emp.EmployeeId;
-                                        //entitle.Amount = leaveEntitlePrevNotAdded.Amount + 1;
-                                        //entitle.Balance = leaveEntitlePrevNotAdded.Amount + 1;
-                                        //entitle.IsAdded = true;
-                                        //entitle.GlFiscalYearId = currentPeriod.GlFiscalYearId;
-                                        //entitle.DateCreated = DateTime.Now;
-                                        //entitle.LastModified = null;
-                                        //entitle.CreatedBy = User.Identity.Name;
-                                        //entitle.ModifiedBy = null;
-                                        //entitle.OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name);
-
-
-                                        var initialSetting = db.Configurations.FirstOrDefault(x => x.Category == "HRM" && x.Attribute == LeaveHrmSetting.InitialYear.ToString());
-                                        if (initialSetting != null)
-                                        {
-                                            int yearInitial = Convert.ToInt32(initialSetting.CurrentValue);
-
-                                            var intialFiscalYear = db.GLFiscalYears.FirstOrDefault(x => x.DateFrom.Year == yearInitial /*&& x.DateTo.Year >= year*/);
-                                            if (intialFiscalYear != null && emp.HiredDate < intialFiscalYear.DateTo)
+                                            if (leaveEntitlePrev.IsAdded)
                                             {
-                                                double currentExpriance = GetCurrentExperienceLeaveDays(emp.EmployeeId, currentPeriod, intialFiscalYear);
+                                                decimal defaultLeave = Convert.ToDecimal(GetInitialLeaveValue(emp, currentPeriod, initialGlFiscalYear));
 
-                                                DateTime hireDate = emp.HiredDate;
+                                                if (leaveEntitlePrev.Amount < defaultLeave)
+                                                {
+                                                    entitle.Amount = defaultLeave;
+                                                    entitle.Balance = defaultLeave;
+                                                }
+                                                else
+                                                {
+                                                    entitle.Amount = leaveEntitlePrev.Amount;
+                                                    entitle.Balance = leaveEntitlePrev.Amount;
+                                                }
 
-                                                double totalDays = (currentPeriod.DateTo - emp.HiredDate).TotalDays;
-                                                var totalYears = Math.Truncate(totalDays / 365);
-                                                var totalMonths = Math.Truncate((totalDays % 365) / 30);
-                                                var remainingDays = Math.Truncate((totalDays % 365) % 30);
+                                                var placement = db.Placements.FirstOrDefault(x => x.EmployeeId == entitle.EmployeeId && x.isCurrent);
+                                                if (placement != null)
+                                                {
+                                                    entitle.BranchId = placement.BranchId;
+                                                    entitle.OrgBranchName = placement.BranchId.ToString();
+                                                }
+
+                                                entitle.EmployeeId = emp.EmployeeId;
+                                                entitle.GlFiscalYearId = currentPeriod.GlFiscalYearId;
+                                                entitle.IsAdded = false;
+                                                entitle.DateCreated = DateTime.Now;
+                                                entitle.LastModified = null;
+                                                entitle.CreatedBy = User.Identity.Name;
+                                                entitle.ModifiedBy = null;
+
+                                                db.LeavesEntitle.Add(entitle);
+                                                db.SaveChanges();
+                                            }
+                                            else if (!leaveEntitlePrev.IsAdded)
+                                            {
+                                                double currentExpriance = GetCurrentExperienceLeaveDaysNew(emp.EmployeeId, currentPeriod, initialGlFiscalYear);
 
                                                 double externalExperience = 0;
                                                 if (check)
@@ -908,97 +584,20 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                                                 entitle.EmployeeId = emp.EmployeeId;
                                                 entitle.EmployeeCode = emp.EmployeeCode;
 
-                                                double totalExpriance = currentExpriance + externalExperience;
-
-                                                var role = db.Placements.FirstOrDefault(pl => pl.EmployeeId == emp.EmployeeId && pl.isCurrent);
-
-                                               
-                                                
-
-                                                double LeaveBaseLine = 0;
-
-                                                var oldEndYear = db.Configurations.FirstOrDefault(c => c.Attribute == LeaveSetting.Old_Initial_Leave_End_Year.ToString());
-
-                                                if (oldEndYear != null)
+                                                var placement = db.Placements.FirstOrDefault(x => x.EmployeeId == entitle.EmployeeId && x.isCurrent);
+                                                if (placement != null)
                                                 {
-                                                    var oldEndBudgetYear = db.GLFiscalYears.FirstOrDefault(x => x.Name.Trim() == oldEndYear.CurrentValue.Trim());
-
-                                                    if (oldEndBudgetYear != null)
-                                                    {
-
-                                                        if (role != null && emp.HiredDate < oldEndBudgetYear.DateFrom)
-                                                        {
-                                                            var baseLine = 0;
-
-                                                            if (role.ResponsibilityLevel == ResponsibilityLevel.TOP_MANAGMENT)
-                                                            {
-                                                                var leaders = db.Configurations.FirstOrDefault(c => c.Attribute == LeaveSetting.LEAVE_FOR_LEADRES_OLD.ToString());
-                                                                if (leaders != null)
-                                                                {
-                                                                    LeaveBaseLine = Convert.ToInt32(leaders.CurrentValue);
-                                                                    baseLine = Convert.ToInt32(leaders.CurrentValue);
-                                                                }
-                                                            }
-                                                            else
-                                                            {
-                                                                var performers = db.Configurations.FirstOrDefault(c => c.Attribute == LeaveSetting.LEAVE_FOR_PERFORMERS_OLD.ToString());
-                                                                if (performers != null)
-                                                                {
-                                                                    LeaveBaseLine = Convert.ToInt32(performers.CurrentValue);
-                                                                    baseLine = Convert.ToInt32(performers.CurrentValue);
-                                                                }
-                                                            }
-                                                            if (totalYears == 0)
-                                                            {
-                                                                //currentExpriance = 0;
-                                                                // currentExpriance = ym/12;
-                                                                //  totalExpriance = currentExpriance + externalExperience;
-                                                                LeaveBaseLine = totalMonths / 12 * baseLine;
-
-                                                            }
-
-                                                        }
-                                                        else if (role != null && emp.HiredDate >= oldEndBudgetYear.DateFrom)
-                                                        {
-                                                            var baseLine = 0;
-
-                                                            if (role.ResponsibilityLevel == ResponsibilityLevel.TOP_MANAGMENT)
-                                                            {
-                                                                var leaders = db.Configurations.FirstOrDefault(c => c.Attribute == LeaveSetting.LEAVE_FOR_LEADRES_NEW.ToString());
-                                                                if (leaders != null)
-                                                                {
-                                                                    LeaveBaseLine = Convert.ToInt32(leaders.CurrentValue);
-                                                                    baseLine = Convert.ToInt32(leaders.CurrentValue);
-                                                                }
-                                                            }
-                                                            else
-                                                            {
-                                                                var performers = db.Configurations.FirstOrDefault(c => c.Attribute == LeaveSetting.LEAVE_FOR_PERFORMERS_NEW.ToString());
-                                                                if (performers != null)
-                                                                {
-                                                                    LeaveBaseLine = Convert.ToInt32(performers.CurrentValue);
-                                                                    baseLine = Convert.ToInt32(performers.CurrentValue);
-                                                                }
-                                                            }
-                                                            if (totalYears == 0)
-                                                            {
-                                                                //currentExpriance = 0;
-                                                                // currentExpriance = ym/12;
-                                                                //   totalExpriance = currentExpriance + externalExperience;
-                                                                LeaveBaseLine = totalMonths / 12 * baseLine;
-
-                                                            }
-
-                                                        }
-                                                    }
+                                                    entitle.BranchId = placement.BranchId;
+                                                    entitle.OrgBranchName = placement.BranchId.ToString();
                                                 }
-                                                // this line is commented because of it calculate the leave from the beggining but now we need ..
-                                                // to add the one to the previouse entitle
+
+                                                double LeaveBaseLine = GetInitialLeaveValue(emp, currentPeriod, initialGlFiscalYear);
 
                                                 decimal amount = Convert.ToDecimal(currentExpriance + externalExperience + LeaveBaseLine);
 
                                                 // we add 1 to the previous entitle amount
                                                 //decimal amount = leaveEntitlePrevNotAdded.Amount + 1;
+
 
                                                 entitle.Amount = amount;
                                                 entitle.Balance = amount;
@@ -1008,8 +607,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                                                 entitle.LastModified = null;
                                                 entitle.CreatedBy = User.Identity.Name;
                                                 entitle.ModifiedBy = null;
-                                                entitle.OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name);
-
 
                                                 if (Convert.ToDecimal(maximumValue) < entitle.Amount)
                                                 {
@@ -1021,77 +618,269 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                                                     entitle.Amount = 0;
                                                     entitle.Balance = 0;
                                                 }
+
                                                 db.LeavesEntitle.Add(entitle);
                                                 db.SaveChanges();
-                                                //}
-
-
-                                                EmployeeIdViews.Add(EmployeeIdView);
                                             }
                                         }
+                                    }
+                                    else
+                                    {
+                                        // check if there is only one budget year defined 
+                                        // this happens the system starts for the first time for the company 
+                                        var noOfPeriodDefined = db.GLFiscalYears.ToList();
+                                        var mindate = noOfPeriodDefined.Select(x => x.DateFrom).Min();
 
+                                        if (noOfPeriodDefined.Count() > 1 && currentPeriod.DateFrom > mindate)
+                                        {
+                                            string Message = "Check you budget year from and to value";
+                                            return new JavaScriptResult() { Script = "alert('" + Message + "');" };
+                                        }
+                                        else
+                                        {
+                                            double currentExpriance = GetCurrentExperienceLeaveDaysNew(emp.EmployeeId, currentPeriod, initialGlFiscalYear);
+
+                                            double externalExperience = 0;
+                                            if (check)
+                                            {
+                                                externalExperience = GetExternalExperienceLeaveDays(emp.EmployeeId);
+                                            }
+
+                                            entitle = new LeaveEntitle();
+
+                                            entitle.EmployeeId = emp.EmployeeId;
+                                            entitle.EmployeeCode = emp.EmployeeCode;
+
+                                            var placement = db.Placements.FirstOrDefault(x => x.EmployeeId == entitle.EmployeeId && x.isCurrent);
+                                            if (placement != null)
+                                            {
+                                                entitle.BranchId = placement.BranchId;
+                                                entitle.OrgBranchName = placement.BranchId.ToString();
+                                            }
+
+                                            double LeaveBaseLine = GetInitialLeaveValue(emp, currentPeriod, initialGlFiscalYear);
+
+                                            decimal amount = Convert.ToDecimal(currentExpriance + externalExperience + LeaveBaseLine);
+
+                                            // we add 1 to the previous entitle amount
+                                            //decimal amount = leaveEntitlePrevNotAdded.Amount + 1;
+
+                                            entitle.Amount = amount;
+                                            entitle.Balance = amount;
+                                            entitle.IsAdded = true;
+                                            entitle.GlFiscalYearId = currentPeriod.GlFiscalYearId;
+                                            entitle.DateCreated = DateTime.Now;
+                                            entitle.LastModified = null;
+                                            entitle.CreatedBy = User.Identity.Name;
+                                            entitle.ModifiedBy = null;
+
+                                            if (Convert.ToDecimal(maximumValue) < entitle.Amount)
+                                            {
+                                                entitle.Amount = maximumValue;
+                                                entitle.Balance = maximumValue;
+                                            }
+                                            if (entitle.Amount < 0)
+                                            {
+                                                entitle.Amount = 0;
+                                                entitle.Balance = 0;
+                                            }
+
+                                            db.LeavesEntitle.Add(entitle);
+                                            db.SaveChanges();
+                                        }
                                     }
                                 }
+
                             }
 
                         }
                     }
+                    else
+                    {
+                        var messagesInitial = "You set invalid initial year";
 
+                        return new JavaScriptResult() { Script = "alert('" + messagesInitial + "');" };
+                    }
                 }
+                else
+                {
+                    var messagesInitialYear = "Please define setting for initial year first";
 
+                    return new JavaScriptResult() { Script = "alert('" + messagesInitialYear + "');" };
+                }
             }
+            else
+            {
+                var messagesPeriod = "you are trying to generate for undefined Period";
+
+                return new JavaScriptResult() { Script = "alert('" + messagesPeriod + "');" };
+            }
+
             var messages = "Leave Successfully Generated";
 
             return new JavaScriptResult() { Script = "alert('" + messages + "');" };
         }
         #endregion
+
+        #region Annual Leave Generating Functions
+        public decimal GetTakenLeaveInOneBudgetYear(int empId, int yearId)
+        {
+            var leaveUsages = db.LeaveUsageTrackingForVoids.Where(x => x.EmployeeId == empId && x.GlFisicalYearId == yearId).ToList();
+            return leaveUsages.Sum(x => x.Amount);
+        }
+        public double GetInitialLeaveValue(Person_Employee emp, GlFiscalYear currentPeriod, GlFiscalYear initialGlFiscalYear)
+        {
+            double LeaveBaseLine = 0;
+
+            double days = (currentPeriod.DateTo - emp.HiredDate).Days;
+            var totalYears = Math.Truncate(days / 365);
+            var totalMonths = Math.Truncate((days % 365) / 30);
+            var remainingDays = Math.Truncate((days % 365) % 30);
+
+            var role = db.Placements.FirstOrDefault(x => x.EmployeeId == emp.EmployeeId);
+            if (role != null)
+            {
+                if (emp.HiredDate < initialGlFiscalYear.DateFrom)
+                {
+                    if (role.ResponsibilityLevel == ResponsibilityLevel.TOP_MANAGMENT)
+                    {
+                        var leaders = db.Configurations.FirstOrDefault(c => c.Attribute == LeaveSetting.LEAVE_FOR_LEADRES_OLD.ToString());
+                        if (leaders != null)
+                        {
+                            LeaveBaseLine = Convert.ToInt32(leaders.CurrentValue);
+                        }
+                    }
+                    else
+                    {
+                        var performers = db.Configurations.FirstOrDefault(c => c.Attribute == LeaveSetting.LEAVE_FOR_PERFORMERS_OLD.ToString());
+                        if (performers != null)
+                        {
+                            LeaveBaseLine = Convert.ToInt32(performers.CurrentValue);
+                        }
+                    }
+                    if (totalYears == 0 && emp.HiredDate >= currentPeriod.DateFrom && emp.HiredDate <= currentPeriod.DateTo)
+                    {
+                        LeaveBaseLine = totalMonths / 12 * LeaveBaseLine;
+                    }
+
+                }
+                else if (emp.HiredDate >= initialGlFiscalYear.DateFrom)
+                {
+                    var baseLine = 0;
+
+                    if (role.ResponsibilityLevel == ResponsibilityLevel.TOP_MANAGMENT)
+                    {
+                        var leaders = db.Configurations.FirstOrDefault(c => c.Attribute == LeaveSetting.LEAVE_FOR_LEADRES_NEW.ToString());
+                        if (leaders != null)
+                        {
+                            LeaveBaseLine = Convert.ToInt32(leaders.CurrentValue);
+                            baseLine = Convert.ToInt32(leaders.CurrentValue);
+                        }
+                    }
+                    else
+                    {
+                        var performers = db.Configurations.FirstOrDefault(c => c.Attribute == LeaveSetting.LEAVE_FOR_PERFORMERS_NEW.ToString());
+                        if (performers != null)
+                        {
+                            LeaveBaseLine = Convert.ToInt32(performers.CurrentValue);
+                            baseLine = Convert.ToInt32(performers.CurrentValue);
+                        }
+                    }
+                    if (totalYears == 0 && emp.HiredDate >= currentPeriod.DateFrom && emp.HiredDate <= currentPeriod.DateTo)
+                    {
+                        LeaveBaseLine = totalMonths / 12 * baseLine;
+                    }
+                }
+            }
+
+            return LeaveBaseLine;
+        }
+        public string Validation_For_Entitlement_Generation()
+        {
+            var forleaders0ld = db.Configurations.FirstOrDefault(c => c.Attribute == LeaveSetting.LEAVE_FOR_LEADRES_OLD.ToString());
+            if (forleaders0ld == null || forleaders0ld.CurrentValue == null)
+            {
+                var message = "you have to add Leave for leaders old initial value";
+
+                return message;
+            }
+
+            var forperformerold = db.Configurations.FirstOrDefault(c => c.Attribute == LeaveSetting.LEAVE_FOR_PERFORMERS_OLD.ToString());
+            if (forperformerold == null || forperformerold.CurrentValue == null)
+            {
+                var message = "you have to add Leave for performers old initial value";
+
+                return message;
+            }
+
+            var forleadersnew = db.Configurations.FirstOrDefault(c => c.Attribute == LeaveSetting.LEAVE_FOR_LEADRES_NEW.ToString());
+            if (forleadersnew == null || forleadersnew.CurrentValue == null)
+            {
+                var message = "you have to add Leave for leaders new initial value";
+
+                return message;
+            }
+
+            var forperformernew = db.Configurations.FirstOrDefault(c => c.Attribute == LeaveSetting.LEAVE_FOR_PERFORMERS_NEW.ToString());
+            if (forperformernew == null || forperformernew.CurrentValue == null)
+            {
+                var message = "you have to add Leave for performers new initial value";
+
+                return message;
+            }
+
+            var frequency = db.Configurations.FirstOrDefault(x => x.Category == "HRM" && x.Reference == "Leave" && x.Attribute == LeaveHrmSetting.Frequency.ToString());
+            if (frequency == null)
+            {
+                var message = "you have to add frequency in HRM Setting";
+
+                return message;
+            }
+            else if (String.IsNullOrEmpty(frequency.CurrentValue))
+            {
+                var message = "add current value in frequency first";
+
+                return message;
+            }
+
+            return null;
+        }
+        #endregion
         public double GetExternalExperienceLeaveDays(int id)
         {
-            double durationAfter = 0;
-            double durationBefore = 0;
-            double totalDuration = 0;
             double totalDays = 0;
-            var configuration = db.Configurations.FirstOrDefault(x => x.Reference == "HRM" && x.Attribute == LeaveHrmSetting.InitialYear.ToString());
-            if (configuration != null)
+            var awajInitialYear = db.LeaveNewAwajStartYears.FirstOrDefault();
+            if (awajInitialYear != null)
             {
-                var year = Convert.ToInt32(configuration.CurrentValue);
-                var expriances = db.Experiences.Where(e => e.EmployeeId == id).ToList();
-                foreach (var exp in expriances)
+                var initialPeriod = db.GLFiscalYears.FirstOrDefault(x => x.GlFiscalYearId == awajInitialYear.GlFisicalYearId);
+                if (initialPeriod != null)
                 {
-                    if (exp.From.Year <= year && exp.To.Year <= year)
+                    var expriances = db.Experiences.Where(e => e.EmployeeId == id).ToList();
+                    foreach (var exp in expriances)
                     {
-                        //double month = exp.To.Subtract(exp.From).Days / 30;
-
-                        //double y = (int)month / 12;
-
-                        //durationBefore = durationBefore + y;
-                        totalDays = (exp.To - exp.From).TotalDays;
-                    }
-                    if (exp.From.Year <= year && exp.To.Year >= year)
-                    {
-                        //double month = exp.To.Subtract(exp.From).Days / 30;
-
-                        //double y = (int)month / 12;
-
-                        //durationBefore = durationBefore + y;
-                        var frequency = db.Configurations.FirstOrDefault(x => x.Category == "HRM" && x.Reference == "Leave" && x.Attribute == LeaveHrmSetting.Frequency.ToString());
-                        if (frequency != null)
+                        if (exp.From <= initialPeriod.DateFrom && exp.To <= initialPeriod.DateFrom)
                         {
-
-                            var intialFiscalYear = db.GLFiscalYears.FirstOrDefault(x => x.DateFrom.Year == year);
-                            double first = (intialFiscalYear.DateFrom.AddDays(-1) - exp.From).TotalDays;
-                            double second = ((exp.To - intialFiscalYear.DateFrom).TotalDays) / Convert.ToInt32(frequency.CurrentValue);
-
-                            totalDays = first + second;
+                            totalDays = (exp.To - exp.From).Days;
                         }
-
-                    }
-                    else if (exp.From.Year >= year)
-                    {
-                        var frequency = db.Configurations.FirstOrDefault(x => x.Category == "HRM" && x.Reference == "Leave" && x.Attribute == LeaveHrmSetting.Frequency.ToString());
-                        if (frequency != null)
+                        else if (exp.From <= initialPeriod.DateFrom && exp.To >= initialPeriod.DateFrom)
                         {
-                            totalDays = ((exp.To - exp.From).TotalDays) / Convert.ToInt32(frequency.CurrentValue);
+                            var frequency = db.Configurations.FirstOrDefault(x => x.Category == "HRM" && x.Reference == "Leave" && x.Attribute == LeaveHrmSetting.Frequency.ToString());
+                            if (frequency != null)
+                            {
+                                double first = (initialPeriod.DateFrom - exp.From).Days;
+                                double second = ((exp.To - initialPeriod.DateFrom).Days) / Convert.ToInt32(frequency.CurrentValue);
+
+                                totalDays = first + second;
+                            }
+
+                        }
+                        else if (exp.From >= initialPeriod.DateFrom)
+                        {
+                            var frequency = db.Configurations.FirstOrDefault(x => x.Category == "HRM" && x.Reference == "Leave" && x.Attribute == LeaveHrmSetting.Frequency.ToString());
+                            if (frequency != null)
+                            {
+                                totalDays = ((exp.To - exp.From).Days) / Convert.ToInt32(frequency.CurrentValue);
+                            }
                         }
                     }
                 }
@@ -1101,10 +890,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
             var totalMonths = Math.Truncate((totalDays % 365) / 30);
             var remainingDays = Math.Truncate((totalDays % 365) % 30);
 
-
             return totalYears;
         }
-        public double GetCurrentExperienceLeaveDays(int id, GlFiscalYear currentPeriod, GlFiscalYear intialYear)
+        public double GetCurrentExperienceLeaveDaysOld(int id, GlFiscalYear currentPeriod, GlFiscalYear intialYear)
         {
             double currentExpriance = 0;
             double totalDays = 0;
@@ -1120,20 +908,15 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                 if (hireDate <= currentPeriod.DateTo && currentPeriod.DateTo <= intialYear.DateFrom)
                 {
                     // experience before the initial year 
-                    totalDays = (currentPeriod.DateTo - person.HiredDate).TotalDays;
-                    //var totalYears = Math.Truncate(totalDays / 365);
-                    //var totalMonths = Math.Truncate((totalDays % 365) / 30);
-                    //var remainingDays = Math.Truncate((totalDays % 365) % 30);
-
+                    totalDays = (currentPeriod.DateTo - person.HiredDate).Days;
                 }
                 if (currentPeriod.DateFrom >= intialYear.DateFrom && hireDate <= intialYear.DateFrom)
                 {
-
                     // first means experience before the initial year of awaj
-                    first = (intialYear.DateFrom - hireDate).TotalDays;
+                    first = (intialYear.DateFrom - hireDate).Days;
 
                     // second means experience after the initial year of awaj
-                    second = (currentPeriod.DateTo - intialYear.DateFrom).TotalDays;
+                    second = (currentPeriod.DateTo - intialYear.DateFrom).Days;
 
                     var frequency = db.Configurations.FirstOrDefault(x => x.Category == "HRM" && x.Reference == "Leave" && x.Attribute == LeaveHrmSetting.Frequency.ToString());
                     if (frequency != null)
@@ -1145,7 +928,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                 if (currentPeriod.DateFrom >= intialYear.DateFrom && hireDate >= intialYear.DateFrom)
                 {
                     // experience after the initial year 
-                    var expYear = (currentPeriod.DateTo - hireDate).TotalDays;
+                    var expYear = (currentPeriod.DateTo - hireDate).Days;
 
                     var frequency = db.Configurations.FirstOrDefault(x => x.Category == "HRM" && x.Reference == "Leave" && x.Attribute == LeaveHrmSetting.Frequency.ToString());
                     if (frequency != null)
@@ -1157,12 +940,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                 var totalYears = Math.Truncate(totalDays / 365);
                 var totalMonths = Math.Truncate((totalDays % 365) / 30);
                 var remainingDays = Math.Truncate((totalDays % 365) % 30);
-
-                //double month = (currentPeriod.DateTo - person.HiredDate).Days / 30;
-
-                //double y = (int)month / 12;
-
-                //double ym = (month % 12);
 
                 if (leaveThrashold != null && totalYears == 0 && totalMonths >= Convert.ToInt32(leaveThrashold.CurrentValue))
                 {
@@ -1181,6 +958,46 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
 
             return currentExpriance;
         }
+        // i wrote this function at 29/07/2021
+        public double GetCurrentExperienceLeaveDaysNew(int id, GlFiscalYear currentPeriod, GlFiscalYear intialYear)
+        {
+            double currentExpriance = 0;
+            double totalDays = 0;
+            var person = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == id);
+            if (person != null)
+            {
+                double first = 0;
+                double second = 0;
+
+                var leaveThrashold = db.Configurations.FirstOrDefault(x => x.Attribute == LeaveSetting.LEAVE_ENTITLE_THRESHOLD.ToString());
+
+                if (person.HiredDate <= currentPeriod.DateFrom)
+                {
+                    totalDays = (currentPeriod.DateFrom - person.HiredDate).Days;
+                }
+
+                var totalYears = Math.Truncate(totalDays / 365);
+                var totalMonths = Math.Truncate((totalDays % 365) / 30);
+                var remainingDays = Math.Truncate((totalDays % 365) % 30);
+
+                if (leaveThrashold != null && totalYears == 0 && totalMonths >= Convert.ToInt32(leaveThrashold.CurrentValue))
+                {
+                    currentExpriance = 1;
+                }
+                else if (leaveThrashold != null && totalYears == 0 && totalMonths < Convert.ToInt32(leaveThrashold.CurrentValue))
+                {
+                    currentExpriance = 0;
+                }
+                else
+                {
+                    currentExpriance = totalYears;
+                }
+
+            }
+
+            return currentExpriance;
+        }
+
         private decimal GetTakenAmount(int periodId, int empId)
         {
             var taken = db.Leaves.Where(x => x.GlFiscalYearId == periodId && x.EmployeeId == empId).ToList();
@@ -1219,13 +1036,31 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
             }
             return code;
         }
+        public decimal GetTotalEntitlement(int id)
+        {
+            var entitlements = db.LeavesEntitle.Where(x => x.EmployeeId == id && !x.IsExpired);
+            if (entitlements.Any())
+            {
+                return entitlements.Sum(x => x.Amount);
+            }
+            return 0;
+        }
+        public decimal GetTotalBalance(int id)
+        {
+            var entitlements = db.LeavesEntitle.Where(x => x.EmployeeId == id && !x.IsExpired);
+            if (entitlements.Any())
+            {
+                return entitlements.Sum(x => x.Balance);
+            }
+            return 0;
+        }
         [AuthorizeRoles(HrmConstants.HRLeaveUser, HrmConstants.HRLeaveAdmin, HrmConstants.HRAdmin)]
         public ActionResult LeavesEntitle_Read([DataSourceRequest]DataSourceRequest request)
         {
-            //GetUserBranchAllEmployees
-            //   List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
-            List<int> employees = inputs.GetUserBranchAllEmployees(User.Identity.Name);
-            IQueryable<LeaveEntitle> leavesentitle = db.LeavesEntitle.Where(x => employees.Contains(x.EmployeeId) && !x.IsExpired).OrderBy(o => o.GlFiscalYearId);
+            List<int> employees = GetActiveEmployeeFromCurrentUserBranch(User.Identity.Name);
+
+            var leavesentitle = db.LeavesEntitle.Where(x => employees.Contains(x.EmployeeId) && !x.IsExpired).OrderBy(o => o.GlFiscalYearId);
+
             DataSourceResult result = leavesentitle.ToDataSourceResult(request, leaveEntitle => new
             {
                 LeaveEntitleId = leaveEntitle.LeaveEntitleId,
@@ -1246,12 +1081,70 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                 ExpiredDate = leaveEntitle.ExpiredDate,
                 ReversedBy = leaveEntitle.ReversedBy,
                 Void = leaveEntitle.Void,
-                ReversedDate = leaveEntitle.ReversedDate
+                ReversedDate = leaveEntitle.ReversedDate,
+                SumOfBalances = GetTotalBalance(leaveEntitle.EmployeeId),
+                HireDate = leaveEntitle.Employee.HiredDate.ToShortDateString()
 
             });
 
             return Json(result);
         }
+        public ActionResult LeavesEntitle_New_Read([DataSourceRequest]DataSourceRequest request)
+        {
+            List<int> employees = GetActiveEmployeeFromCurrentUserBranch(User.Identity.Name);
+
+            var leavesentitle = db.LeavesEntitle.Where(x => employees.Contains(x.EmployeeId) && !x.IsExpired).DistinctByField(x => x.EmployeeId).OrderBy(o => o.GlFiscalYearId);
+
+            DataSourceResult result = leavesentitle.ToDataSourceResult(request, leaveEntitle => new
+            {
+                LeaveEntitleId = leaveEntitle.LeaveEntitleId,
+                EmployeeId = leaveEntitle.EmployeeId,
+                Balance = GetTotalBalance(leaveEntitle.EmployeeId),
+                BranchId = GetBranch(leaveEntitle.EmployeeId),
+                GlFiscalYearId = leaveEntitle.GlFiscalYearId,
+                Amount = GetTotalEntitlement(leaveEntitle.EmployeeId),
+                Remark = leaveEntitle.Remark,
+                DateCreated = leaveEntitle.DateCreated,
+                LastModified = leaveEntitle.LastModified,
+                CreatedBy = leaveEntitle.CreatedBy,
+                ModifiedBy = leaveEntitle.ModifiedBy,
+                EmployeeCode = GetEmployeeCode(leaveEntitle.EmployeeId),
+                TotlalAmount = leaveEntitle.TotlalAmount,
+                OrgBranchName = leaveEntitle.OrgBranchName,
+                ExpiredBy = leaveEntitle.ExpiredBy,
+                ExpiredDate = leaveEntitle.ExpiredDate,
+                ReversedBy = leaveEntitle.ReversedBy,
+                Void = leaveEntitle.Void,
+                ReversedDate = leaveEntitle.ReversedDate,
+                SumOfBalances = GetTotalBalance(leaveEntitle.EmployeeId),
+                HireDate = leaveEntitle.Employee.HiredDate.ToShortDateString()
+
+            });
+
+            return Json(result);
+        }
+        public ActionResult LeavesEntitle_OnePerson_Read([DataSourceRequest]DataSourceRequest request, int id)
+        {
+            IQueryable<LeaveEntitle> leavesentitle = db.LeavesEntitle.Where(x => x.EmployeeId == id && !x.IsExpired);//.Where(x => employees.Contains(x.EmployeeId) && !x.IsExpired).OrderBy(o => o.GlFiscalYearId);
+            DataSourceResult result = leavesentitle.ToDataSourceResult(request, leaveEntitle => new
+            {
+                LeaveEntitleId = leaveEntitle.LeaveEntitleId,
+                EmployeeId = leaveEntitle.EmployeeId,
+                Balance = leaveEntitle.Balance,
+                GlFiscalYearId = leaveEntitle.GlFiscalYearId,
+                Amount = leaveEntitle.Amount,
+                TotlalAmount = leaveEntitle.TotlalAmount,
+                OrgBranchName = leaveEntitle.OrgBranchName,
+                ExpiredBy = leaveEntitle.ExpiredBy,
+                ExpiredDate = leaveEntitle.ExpiredDate,
+                ReversedBy = leaveEntitle.ReversedBy,
+                Void = leaveEntitle.Void,
+                ReversedDate = leaveEntitle.ReversedDate,
+            });
+
+            return Json(result);
+        }
+
         [AuthorizeRoles(HrmConstants.HRLeaveUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult LeavesEntitle_Create([DataSourceRequest]DataSourceRequest request, LeaveEntitle leaveEntitle)
@@ -1326,12 +1219,12 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
         }
         private decimal GetTransfreedAmmount(int periodId, int empId)
         {
-            var transfrred = db.LeaveTransfer.Where(x => x.To == periodId && x.EmployeeId == empId).FirstOrDefault();
-            if (transfrred != null)
-            {
+            //var transfrred = db.LeaveTransfer.Where(x => x.To == periodId && x.EmployeeId == empId).FirstOrDefault();
+            //if (transfrred != null)
+            //{
 
-                return transfrred.Amount;
-            }
+            //    return transfrred.Amount;
+            //}
             return 0;                               //
         }
         [AuthorizeRoles(HrmConstants.HRLeaveUser)]
@@ -1446,6 +1339,25 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                 }
             }
             return Json(new[] { leaveEntitle }.ToDataSourceResult(request, ModelState));
+        }
+        public List<int> GetActiveEmployeeFromCurrentUserBranch(string user)
+        {
+            List<int> employeeIdLists = new List<int>();
+
+            List<string> mybraches = UserInformationHelper.GetUserBranchs(user);
+
+            var placements = db.Placements.Where(x => mybraches.Contains(x.BranchId.ToString()) && x.isCurrent).ToList();
+            foreach (var place in placements)
+            {
+                var emp = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == place.EmployeeId && x.IsActive);
+                if (emp != null)
+                {
+                    employeeIdLists.Add(place.EmployeeId);
+                }
+
+            }
+
+            return employeeIdLists;
         }
         public void ExpireEntitle(string period)
         {

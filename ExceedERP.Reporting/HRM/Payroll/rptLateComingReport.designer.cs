@@ -194,6 +194,7 @@ namespace ExceedERP.Reporting.HRM.Payroll
             this.table1e.RowGroups.Add(tableGroup6);
             this.table1e.RowGroups.Add(tableGroup8);
             this.table1e.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(6.68830680847168D), Telerik.Reporting.Drawing.Unit.Inch(0.596476674079895D));
+            this.table1e.Sortings.Add(new Telerik.Reporting.Sorting("= Fields.EmpID", Telerik.Reporting.SortDirection.Asc));
             this.table1e.StyleName = "Office.Civic";
             // 
             // textBox5

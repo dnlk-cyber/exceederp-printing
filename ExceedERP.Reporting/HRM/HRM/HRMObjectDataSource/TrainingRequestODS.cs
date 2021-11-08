@@ -24,7 +24,9 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
             if(orgStructureId !=null)
             {
-                trainingRequests = db.TrainingApplicants.Where(x=>x.OrgStructureId.ToString() == orgStructureId).ToList();
+                int.TryParse(orgStructureId, out int orgId);
+                var orgIds = db.MainCompanyStructures.Where(x=>x.OrgStructureId == orgId || x.OrgStructureId == orgId).Select(x=>x.OrgStructureId).ToList();
+                trainingRequests = db.TrainingApplicants.Where(x=>orgIds.Contains(x.OrgStructureId)).ToList();
             }
 
             foreach (var train in trainingRequests)

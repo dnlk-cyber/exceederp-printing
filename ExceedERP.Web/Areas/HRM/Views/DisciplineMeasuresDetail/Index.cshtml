@@ -8,19 +8,23 @@
           .Name("DisciplineMeasuresDetailgrid")
       .Columns(columns =>
       {
-        //columns.Bound(c => c.MeasuresId);
-        columns.Bound(c => c.Level);
-        columns.Bound(c => c.Description);
-        columns.Bound(c => c.Remark);
-        columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+          //columns.Bound(c => c.MeasuresId);
+          columns.Bound(c => c.Level);
+          columns.Bound(c => c.Description);
+          columns.Bound(c => c.Remark);
+          columns.Command(command =>
+          {
+              command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+              command.Destroy().Text(Resources.ActionButton_Cancel);
+          }).Width(200);
       })
       .ToolBar(toolbar => {
-            toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+          toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
       })
       .Editable(editable => editable.Mode(GridEditMode.InLine))
       .Selectable(selectable => {
-            selectable.Mode(GridSelectionMode.Single);
-            selectable.Type(GridSelectionType.Row);
+          selectable.Mode(GridSelectionMode.Single);
+          selectable.Type(GridSelectionType.Row);
       })
           .Scrollable(h => h.Height(500))
              .Groupable()
@@ -38,12 +42,12 @@
       .DataSource(dataSource => dataSource
           .Ajax()
                .Events(events =>
- {
-events.Error("error_handler(\"DisciplineMeasuresDetailgrid\")");
-events.RequestStart("onRequestStart(\"DisciplineMeasuresDetailgrid\")");
-events.RequestEnd("onRequestEnd(\"DisciplineMeasuresDetailgrid\")");
-})
-                      
+               {
+                   events.Error("error_handler(\"DisciplineMeasuresDetailgrid\")");
+                   events.RequestStart("onRequestStart(\"DisciplineMeasuresDetailgrid\")");
+                   events.RequestEnd("onRequestEnd(\"DisciplineMeasuresDetailgrid\")");
+               })
+
           .Model(model => model.Id(p => p.DetailMeasuresId))
               .Read(read => read.Action("DisciplineMeasuresDetail_Read", "DisciplineMeasuresDetailCourt"))
               .Create(create => create.Action("DisciplineMeasuresDetail_Create", "DisciplineMeasuresDetailCourt"))

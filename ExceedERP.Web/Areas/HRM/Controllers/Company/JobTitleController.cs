@@ -1,29 +1,29 @@
-﻿﻿using System;
+﻿using System;
 using System.Collections.Generic;
-﻿
-﻿using System.Data.Entity;
-﻿using System.Data.OleDb;
-﻿using System.Linq;
+
+using System.Data.Entity;
+using System.Data.OleDb;
+using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
- using ExceedERP.Core.Domain;
- using Kendo.Mvc.Extensions;
+using ExceedERP.Core.Domain;
+using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using ExceedERP.Core.Domain.Common;
-﻿using ExceedERP.Core.Domain.Common.HRM;
-﻿using ExceedERP.Core.Domain.HRM;
- using ExceedERP.Core.Domain.HRM.SalaryStructure;
- using ExceedERP.DataAccess.Context;
+using ExceedERP.Core.Domain.Common.HRM;
+using ExceedERP.Core.Domain.HRM;
+using ExceedERP.Core.Domain.HRM.SalaryStructure;
+using ExceedERP.DataAccess.Context;
 using ExceedERP.Web.Controllers;
 using ExceedERP.Helpers.Common;
-﻿using ExceedERP.Web.Helpers;
-﻿using Kendo.Mvc;
+using ExceedERP.Web.Helpers;
+using Kendo.Mvc;
 using ExceedERP.Core.Domain.Global;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Company
 {
-   
+
     [AuthorizeRoles(HrmConstants.HRCompanyAdmin, HrmConstants.HRCompanyUser, HrmConstants.HRAdmin)]
     public class JobTitleController : BaseController
     {
@@ -39,7 +39,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
             {
                 string searchedValue = "";
 
-            dd: if (filters.Any())
+                dd: if (filters.Any())
                 {
 
                     foreach (var filter in filters)
@@ -76,9 +76,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
                                 }
 
                             }
-                            
 
-                            
+
+
                         }
                         else if (filter is CompositeFilterDescriptor)
                         {
@@ -95,21 +95,21 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
             }
             return lookupsList.AsQueryable();
         }
-      
+
         [AuthorizeRoles(HrmConstants.HRCompanyAdmin, HrmConstants.HRCompanyUser, HrmConstants.HRAdmin)]
         public ActionResult Lookups_Read([DataSourceRequest]DataSourceRequest request)
         {
             IQueryable<Lookup> lookups = db.Lookups.Where(x => x.LookupType == LookUpTypes.JOB_TITLE);
             if (request.Filters != null)
             {
-            dd: if (request.Filters.Any())
+                dd: if (request.Filters.Any())
                 {
                     foreach (var filter in request.Filters)
                     {
                         var descriptor = filter as FilterDescriptor;
                         if (descriptor != null)
                         {
-                            if (descriptor.Member == "Description" )
+                            if (descriptor.Member == "Description")
                             {
                                 lookups = ModifyFilters(request.Filters, lookups).AsQueryable();
 
@@ -147,8 +147,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
 
             return Json(result);
         }
-       
-        [AuthorizeRoles( HrmConstants.HRCompanyUser)]
+
+        [AuthorizeRoles(HrmConstants.HRCompanyUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult Lookups_Create([DataSourceRequest]DataSourceRequest request, Lookup lookup)
         {
@@ -157,7 +157,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
             {
                 var checkExstance = db.Lookups.ToList();
                 var jobName = lookup.Description;
-                var mainCompanyStructures = checkExstance.FirstOrDefault(j => j.Description.ToUpper(XAPI.Common.exceedculture).Equals(jobName.ToUpper(XAPI.Common.exceedculture)) == jobName.ToUpper(XAPI.Common.exceedculture).Equals(jobName.ToUpper(XAPI.Common.exceedculture)));
+                var mainCompanyStructures = checkExstance.FirstOrDefault(j => j.Description.Trim().ToUpper(XAPI.Common.exceedculture).Equals(jobName.ToUpper(XAPI.Common.exceedculture)) == jobName.Trim().ToUpper(XAPI.Common.exceedculture).Equals(jobName.ToUpper(XAPI.Common.exceedculture)));
 
                 if (mainCompanyStructures != null)
                 {
@@ -188,8 +188,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
                     #region operation log
 
                     var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-                    
-                        UserHelper.OperationLog(Request.UserHostAddress, "JobTitle ", "Success", User.Identity.Name, User.Identity.Name + " Maintain new Jobtitle " + entity.Description,Modules.HRM);
+
+                    UserHelper.OperationLog(Request.UserHostAddress, "JobTitle ", "Success", User.Identity.Name, User.Identity.Name + " Maintain new Jobtitle " + entity.Description, Modules.HRM);
 
 
                     #endregion
@@ -198,7 +198,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
 
             return Json(new[] { lookup }.ToDataSourceResult(request, ModelState));
         }
-       
+
         [AuthorizeRoles(HrmConstants.HRCompanyUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult Lookups_Update([DataSourceRequest]DataSourceRequest request, Lookup lookup)
@@ -230,16 +230,16 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
                 #region operation log
 
                 var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-              
-                    UserHelper.OperationLog(Request.UserHostAddress, "Jobtitle ", "Success", User.Identity.Name, User.Identity.Name + " Update Jobtile info of " + entity.Description,Modules.HRM);
-                
+
+                UserHelper.OperationLog(Request.UserHostAddress, "Jobtitle ", "Success", User.Identity.Name, User.Identity.Name + " Update Jobtile info of " + entity.Description, Modules.HRM);
+
 
                 #endregion
             }
 
             return Json(new[] { lookup }.ToDataSourceResult(request, ModelState));
         }
-      
+
         [AuthorizeRoles(HrmConstants.HRCompanyAdmin, HrmConstants.HRAdmin)]
 
         [AcceptVerbs(HttpVerbs.Post)]
@@ -375,12 +375,12 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
                     Lookup import = new Lookup
                     {
                         Description = ds.Tables[0].Rows[j].ItemArray[0].ToString(),
-                        Remark =ds.Tables[0].Rows[j].ItemArray[1].ToString(),
-                      
+                        Remark = ds.Tables[0].Rows[j].ItemArray[1].ToString(),
+
                     };
 
                     issueImports.Add(import);
-                   
+
                 }
             }
             foreach (var lookup in issueImports)
@@ -429,8 +429,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
         }
         public ActionResult DownloadFile(string filename)
         {
-           
-
             db = new ExceedDbContext();
             try
             {
@@ -457,6 +455,16 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
             }
             HRMInputs.SelectedFile = 0;
             return null;
+        }
+        public ActionResult GetDescription()
+        {
+            var jobTitles = db.Lookups.Where(x => x.LookupType == LookUpTypes.JOB_TITLE).ToList();
+
+            return Json(jobTitles.Select(p => new
+            {
+                Description = p.Description
+            }), JsonRequestBehavior.AllowGet);
+
         }
         protected override void Dispose(bool disposing)
         {

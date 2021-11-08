@@ -17,9 +17,14 @@ using ExceedERP.Web.Controllers;
 using ExceedERP.Web.Models;
 using ExceedERP.Web.Helpers;
 using ExceedERP.Helpers.Common;
-using ExceedERP.Core.Domain.HRM.TrainingEducation;
 using ExceedERP.Core.Domain.HRM.EmployeeDetail;
-using ExceedERP.Core.Domain.Global;
+using ExceedERP.Core.Domain.HRM.TrainingEducation;
+using System.Data;
+using System.IO;
+using System.Data.OleDb;
+using System.Web.Hosting;
+using System.Net.Http.Headers;
+using System.Configuration;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
 {
@@ -63,38 +68,43 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
             GetEducationFiled();
             GetEducationLevel();
             var media = db.Lookups.Where(x => x.LookupType == LookUpTypes.MEDIA);
-            ViewData["Media"] = media;
+            ViewData["Media"] = media;     
 
-            //  List<Vacancy> list = new List<Vacancy>();
-            var vacancies = db.VaccancyPlans.Where(x => x.RecruSource == RecruitmentSource.EXTERNAL).ToList();
+            ViewData["Vacancy"] = db.VaccancyPlans.ToList();
 
-            ViewData["Vacancy"] = vacancies;
-
-            var recruitment = db.RecruitmentVacancy.ToList();
-
-            ViewData["recruitmentVacancy"] = recruitment;
+            ViewData["recruitmentVacancy"] = db.RecruitmentVacancy.ToList();
 
             var jobtitles = db.Lookups.Where(x => x.LookupType == LookUpTypes.JOB_TITLE).ToList();
             ViewData["JobTitle"] = jobtitles;
+
+            ViewData["branch"] = db.Branch.ToList();
+
+            ViewData["EducationLevel"] = db.Lookups.Where(x=>x.LookupType == LookUpTypes.EDUCATION_LEVEL).ToList();
+            ViewData["EducationField"] = db.Lookups.Where(x => x.LookupType == LookUpTypes.EDUCATION_FIELD).ToList();
+
+            ViewData["ExperienceOrgType"] = db.ExperienceOrganizationTypeSettings.ToList();
+            ViewData["ExperienceJobTitle"] = db.ExperienceJobTitles.ToList();
+            ViewData["Lookups"] = db.Lookups.Where(x=>x.LookupType == LookUpTypes.JOB_TITLE).ToList();
         }
         public JsonResult GetJobTitle(string VacancyId)
         {
             db = new ExceedDbContext();
-            var plans = db.RecruitmentVacancy.Where(x => x.VacancyId.ToString() == VacancyId).ToList();
-            List<Lookup> titleList = new List<Lookup>();
-            if (plans.Any())
+            var recruitVacancy = db.RecruitmentVacancy.Where(x => x.VacancyId.ToString() == VacancyId).ToList();
+            List<Vacancy> titleList = new List<Vacancy>();
+            if (recruitVacancy.Any())
             {
-                titleList = new List<Lookup>();
-                foreach (var p in plans)
+                titleList = new List<Vacancy>();
+                foreach (var p in recruitVacancy)
                 {
                     var detail = db.VaccancyPlans.Where(x => x.VacancyId == p.VacancyId).FirstOrDefault();
                     if (detail != null)
                     {
-                        var lookup = db.Lookups.Where(x => x.LookupId == detail.LookupId).FirstOrDefault();
-                        if (lookup != null)
-                        {
-                            titleList.Add(lookup);
-                        }
+                        //var lookup = db.Lookups.Where(x => x.LookupId == detail.LookupId).FirstOrDefault();
+                        //if (lookup != null)
+                        //{
+                        // titleList.Add(lookup);
+                        titleList.Add(detail);
+                        // }
                     }
 
 
@@ -102,8 +112,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
             }
             return Json(titleList.Select(p => new
             {
-                LookupId = p.LookupId,
-                Description = p.Description
+                LookupId = p.VacancyId,
+                Description = p.JobTitle
             }), JsonRequestBehavior.AllowGet);
 
         }
@@ -113,26 +123,26 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
 
 
             #region ApplicantScreeningResult
-            var ApplicantScreeningResult = db.ApplicantScreeningResult.Where(x => x.ApplicantRegistrationId == id && x.ReferenceType == "External").FirstOrDefault();
-            if (ApplicantScreeningResult != null)
-            {
+            //var ApplicantScreenResult = db.ApplicantScreenResult.Where(x => x.ApplicantScreeningId == id && x.ReferenceType == "External").FirstOrDefault();
+            //if (ApplicantScreenResult != null)
+            //{
 
-                ErrorMessage = "You cannot delete this Applicant .Please delete Applicant Screening result information first.";
-                return false;
+            //    ErrorMessage = "You cannot delete this Applicant .Please delete Applicant Screening result information first.";
+            //    return false;
 
 
-            }
+            //}
             #endregion
             #region ApplicantExamResult
-            var ApplicantExamResult = db.ApplicantExamResult.Where(x => x.ApplicantRegistrationId == id && x.ReferenceType == "External").FirstOrDefault();
-            if (ApplicantExamResult != null)
-            {
+            //var ApplicantExamResult = db.ApplicantExamResult.Where(x => x.ApplicantScreeningId == id && x.ReferenceType == "External").FirstOrDefault();
+            //if (ApplicantExamResult != null)
+            //{
 
-                ErrorMessage = "You cannot delete this Applicant .Please delete Applicant Exam result information first.";
-                return false;
+            //    ErrorMessage = "You cannot delete this Applicant .Please delete Applicant Exam result information first.";
+            //    return false;
 
 
-            }
+            //}
             #endregion
             #region ApplicantTraining
             var ApplicantTraining = db.ApplicantTraining.Where(x => x.ApplicantRegistrationId == id).FirstOrDefault();
@@ -229,122 +239,41 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
             ViewData["EduLevelList"] = lookups;
             return Json(lookups.Select(p => new { LookupId = p.LookupId, Description = p.Description }), JsonRequestBehavior.AllowGet);
         }
-
+        public int GetBranch(int id)
+        {
+            var vacancy = db.VaccancyPlans.FirstOrDefault(x=>x.VacancyId == id);
+            if (vacancy != null)
+            {
+                var branch = db.Branch.FirstOrDefault(x=>x.BranchId == vacancy.BranchId);
+                if(branch != null)
+                {
+                    return branch.BranchId;
+                }
+            }
+            return 0;
+        }
         [AuthorizeRoles(HrmConstants.HRRecruitmentAdmin, HrmConstants.HRAdmin, HrmConstants.HRRecruitmentUser)]
         public ActionResult ApplicantRegistration_Read([DataSourceRequest]DataSourceRequest request, string id)
         {
-            SetSettingValues();
-            var VacancyCode = "";
-            var mediaCode = "";
-            decimal screenSum = 0;
-            List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
-            IQueryable<ApplicantRegistration> applicantregistration = db.ApplicantRegistration.Where(x => mybraches.Contains(x.OrgBranchName)).OrderByDescending(x => x.RegistrationDate);
-            List<ApplicantRegistration> applicantRegi = new List<ApplicantRegistration>();
-            var SettingSum = EduField + EduLevel + RelatedExp + RelevantExp + Disabliy + Gender + Profile + Training + Dicipline;
-
-
-            if (id == "Screen")
-            {
-                foreach (var a in applicantregistration)
-                {
-                    db = new ExceedDbContext();
-                    screenSum = 0;
-                    var screen =
-                        db.ApplicantScreeningResult.Where(
-                            x => x.ApplicantRegistrationId == a.ApplicantRegistrationId && x.ReferenceType == "External")
-                            .ToList();
-                    if (screen != null)
-                    {
-
-                        screenSum = Convert.ToDecimal(screen.Sum(x => x.CurrentResult));
-                        a.TotalResult = screenSum;
-                        var exam =
-                     db.ApplicantExamResult.Where(
-                         x => x.ApplicantRegistrationId == a.ApplicantRegistrationId && x.ReferenceType == "External")
-                         .ToList();
-                        if (exam != null)
-                        {
-                            decimal exmSum = Convert.ToDecimal(exam.Sum(x => x.CurrentResult));
-                        }
-                        if (screenSum >= SettingSum)
-                        {
-                            applicantRegi.Add(a);
-
-
-                        }
-                    }
-
-                }
-                applicantregistration = applicantRegi.AsQueryable();
-            }
-            else
-            {
-                foreach (var a in applicantregistration)
-                {
-                    db = new ExceedDbContext();
-                    screenSum = 0;
-                    var screen =
-                        db.ApplicantScreeningResult.Where(
-                            x => x.ApplicantRegistrationId == a.ApplicantRegistrationId && x.ReferenceType == "External")
-                            .ToList();
-                    if (screen.Any())
-                    {
-
-                        screenSum = Convert.ToDecimal(screen.Sum(x => x.CurrentResult));
-                        a.TotalResult = screenSum;
-                        var exam =
-                  db.ApplicantExamResult.Where(
-                      x => x.ApplicantRegistrationId == a.ApplicantRegistrationId && x.ReferenceType == "External")
-                      .ToList();
-                        if (exam.Any())
-                        {
-                            decimal exmSum = Convert.ToDecimal(exam.Sum(x => x.CurrentResult)); ;
-                            a.TotalResult = a.TotalResult + exmSum;
-                        }
-                        applicantRegi.Add(a);
-                    }
-
-                    var dd = db.VaccancyPlans.Find(a.VacancyId);
-                    VacancyCode = dd.VaccancyCode;
-                    var vacancyPlanforMedia = db.VaccancyPlans.FirstOrDefault(x => x.VacancyId == a.VacancyId);
-                    var recruitmentMediaCode = db.RecruitmentVacancy.FirstOrDefault(x => x.VacancyId == vacancyPlanforMedia.VacancyId);
-                    if (recruitmentMediaCode != null)
-                    {
-                        mediaCode = recruitmentMediaCode.MediaVacancyCode;
-                    }
-
-
-                }
-            }
+               IQueryable<ApplicantRegistration> applicantregistration = db.ApplicantRegistration;
 
 
             DataSourceResult result = applicantregistration.ToDataSourceResult(request, applicantRegistration => new
             {
                 ApplicantRegistrationId = applicantRegistration.ApplicantRegistrationId,
                 VacancyId = applicantRegistration.VacancyId,
-                ApplicantName = applicantRegistration.ApplicantName,
-                //MediaVacancyCode = applicantRegistration.MediaVacancyCode,
-                FirstName = applicantRegistration.FirstName,
-                MiddleName = applicantRegistration.MiddleName,
-                LastName = applicantRegistration.LastName,
-                Age = applicantRegistration.Age,
-                LookupId = applicantRegistration.LookupId,
-                Sex = applicantRegistration.Sex,
-                RegistrationDate = applicantRegistration.RegistrationDate,
-                RegistrationPalce = applicantRegistration.RegistrationPalce,
-                RegisterBy = applicantRegistration.RegisterBy,
                 TotalResult = applicantRegistration.TotalResult,
-                RegistrationDateAm = applicantRegistration.RegistrationDateAm,
                 OrgBranchName = applicantRegistration.OrgBranchName,
                 DateCreated = applicantRegistration.DateCreated,
                 LastModified = applicantRegistration.LastModified,
                 CreatedBy = applicantRegistration.CreatedBy,
                 ModifiedBy = applicantRegistration.ModifiedBy,
                 VacancyType = applicantRegistration.VacancyType,
-                MediaVacancyCode = mediaCode,
-                VacancyCode = VacancyCode,
-                IsTransfered = applicantRegistration.IsTransfered
-
+                MediaVacancyCode = applicantRegistration.MediaVacancyCode,
+                VacancyCode = applicantRegistration.VacancyCode,
+                JobtitleName = applicantRegistration.JobtitleName,
+                IsTransfered = applicantRegistration.IsTransfered,
+                BranchId = GetBranch(applicantRegistration.VacancyId)
 
             });
 
@@ -369,287 +298,118 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
         {
             ModelState.Clear();
 
-            int vacancyId = Convert.ToInt32(applicantRegistration.IDAndTitle.Split('-')[1]);
-            int lookUpId = Convert.ToInt32(applicantRegistration.IDAndTitle.Split('-')[0]);
+            int vacancyId = 0;
+            string jobTitle = "";
+            string vacancyCode = "";
+            var mediaVacancyCode = "";           
 
+            vacancyCode = db.VaccancyPlans.Find(applicantRegistration.VacancyId)?.VaccancyCode;
+            mediaVacancyCode = db.RecruitmentVacancy.FirstOrDefault(x => x.VacancyId == applicantRegistration.VacancyId)?.MediaVacancyCode;
 
+            var vac = db.VaccancyPlans.Find(applicantRegistration.VacancyId);
+            if (vac != null)
+            {
+                var look = db.Lookups.FirstOrDefault(x => x.LookupId == vac.JobTitle);
+                if (look != null)
+                {
+                    jobTitle = look.Description;
+                }
+            }
 
             if (ModelState.IsValid)
             {
-                if (applicantRegistration.Age < 18)
+                var entity = new ApplicantRegistration
                 {
-                    ModelState.AddModelError("", "The applicant age must be more than 18!!");
-                }
-                else if (RegistnDateAm == null)
-                {
-                    ModelState.AddModelError("", "Registration date is mandatory!!");
-                }
-                else if (RegistnDate.Date > DateTime.Now.Date)
-                {
+                    VacancyId = applicantRegistration.VacancyId,
 
-                    ModelState.AddModelError("", "Registration date should be less or equal to the current date!!");
-                }
+                    IsTransfered = false,
+                    JobtitleName = jobTitle,
+                    VacancyCode = vacancyCode,
+                    MediaVacancyCode = mediaVacancyCode,
+                    OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name),
+                    DateCreated = DateTime.Now,
+                    LastModified = applicantRegistration.LastModified,
+                    CreatedBy = User.Identity.Name,
+                    ModifiedBy = applicantRegistration.ModifiedBy,
+                    VacancyType = GetType(applicantRegistration.VacancyId.ToString()),               
+                   
+                };
 
-                else
-                {
-
-                    var entity = new ApplicantRegistration
-                    {
+                db.ApplicantRegistration.Add(entity);
+                db.SaveChanges();
+                applicantRegistration.ApplicantRegistrationId = entity.ApplicantRegistrationId;
 
 
-                        VacancyId = vacancyId,
-                        FirstName = applicantRegistration.FirstName,
-                        MiddleName = applicantRegistration.MiddleName,
-                        LastName = applicantRegistration.LastName,
-                        IsTransfered = false,
-                        ApplicantName = applicantRegistration.FirstName + " " + applicantRegistration.MiddleName + " " + applicantRegistration.LastName,
-                        JobtitleName = applicantRegistration.JobtitleName,
-                        Age = applicantRegistration.Age,
-                        Sex = applicantRegistration.Sex,
-                        LookupId = lookUpId,
-                        RegistrationDate = RegistnDate,
-                        RegistrationPalce = applicantRegistration.RegistrationPalce,
-                        RegisterBy = FullName,
-                        RegistrationDateAm = RegistnDateAm,
-                        OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name),
-                        DateCreated = DateTime.Now,
-                        LastModified = applicantRegistration.LastModified,
-                        CreatedBy = User.Identity.Name,
-                        ModifiedBy = applicantRegistration.ModifiedBy,
-                        VacancyType = GetType(applicantRegistration.VacancyId.ToString()),
-
-                    };
-
-                    db.ApplicantRegistration.Add(entity);
-                    db.SaveChanges();
-                    applicantRegistration.ApplicantRegistrationId = entity.ApplicantRegistrationId;
-
-                    #region operation log
-                    
-                        UserHelper.OperationLog(Request.UserHostAddress, "Applicant Registration ", "Success", User.Identity.Name, User.Identity.Name + " add new applicant Info called " + entity.ApplicantName + " date " + DateTime.Today.ToShortDateString(),Modules.HRM);
-                    
-                    #endregion
-
-                }
             }
             return Json(new[] { applicantRegistration }.ToDataSourceResult(request, ModelState));
         }
 
-        [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult Editing_Create([DataSourceRequest] DataSourceRequest request, [Bind(Prefix = "models")]IEnumerable<ApplicantRegistration> transfer)
-        {
-            ModelState.Clear();
-            //var results = new List<Vacancy>();
-            Person_Employee personEmployee = new Person_Employee();
-            Education education;
-            Experience experience = new Experience();
-            Training training = new Training();
-            Address address = new Address();
-            List<Person_Employee> personEmployeeList = new List<Person_Employee>();
-
-
-            if (transfer != null && ModelState.IsValid)
-            {
-                string code = "NewEmploye " + DateTime.Now.Year;
-
-
-                foreach (var applicantRegistration in transfer)
-                {
-                    if (!applicantRegistration.IsTransfered)
-                    {
-
-                        if (applicantRegistration.Check)
-                        {
-                            personEmployee = new Person_Employee();
-
-                            personEmployee.EmployeeCode = code;
-                            personEmployee.IsActive = false;
-                            personEmployee.Title = 0;
-                            personEmployee.FirstName = applicantRegistration.FirstName;
-                            personEmployee.MiddleName = applicantRegistration.MiddleName;
-                            personEmployee.LastName = applicantRegistration.LastName;
-                            personEmployee.FirstNameEnglish = "Not Available";
-                            personEmployee.MiddleNameEnglish = "Not Available";
-                            personEmployee.LastNameEnglish = "Not Available";
-                            personEmployee.BirthPlace = "Not Available";
-                            personEmployee.Gender = applicantRegistration.Sex;
-                            personEmployee.OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name);
-                            personEmployee.CreatedBy = User.Identity.Name;
-                            personEmployee.DateCreated = DateTime.Now;
-                            personEmployee.LastModified = applicantRegistration.LastModified;
-                            personEmployee.CreatedBy = User.Identity.Name;
-                            personEmployee.ModifiedBy = applicantRegistration.ModifiedBy;
-                            personEmployee.HiredDate = DateTime.Now;
-                            personEmployee.DateOfBirth = DateTime.Now;
-
-
-                            db.Person_Employee.Add(personEmployee);
-                            db.SaveChanges();
-
-                            #region detailInfo
-
-
-                            personEmployee.Education = new List<Education>();
-                            var educationInfo = db.ApplicantEducation.Where(x => x.ApplicantRegistrationId == applicantRegistration.ApplicantRegistrationId).ToList();
-                            foreach (var ed in educationInfo)
-                            {
-
-                                education = new Education();
-                                var splitDateto = ed.ToAmahric.Split('/');
-                                RegistnDate = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDateto[0]), Convert.ToInt32(splitDateto[1]), Convert.ToInt32(splitDateto[2]));
-
-                                education.EmployeeId = personEmployee.EmployeeId;
-                                education.OrganizationName = "Not Available";
-                                education.OrgAddress = "Not Available";
-                                education.EduField = ed.EducField;
-                                education.EduLevel = ed.EduLevel;
-                                education.OrganizationName = ed.EducationInstitution;
-                                education.From = DateTime.Now;
-                                education.To = RegistnDate;
-                                education.ToEAmharic = ed.ToAmahric;
-                                education.FromEAmharic = "Not Available";
-
-                                //education.FromEAmharic=ed.
-
-
-                                db.Education.Add(education);
-                                db.SaveChanges();
-
-                            }
-
-                            personEmployee.Experience = new List<Experience>();
-                            var experienceInfo = db.ApplicantExperience.Where(x => x.ApplicantRegistrationId == applicantRegistration.ApplicantRegistrationId).ToList();
-                            foreach (var ex in experienceInfo)
-                            {
-                                experience = new Experience();
-                                var splitDatefrom = ex.FromAmharic.Split('/');
-                                RegistnDate = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDatefrom[0]), Convert.ToInt32(splitDatefrom[1]), Convert.ToInt32(splitDatefrom[2]));
-                                var splitDateto = ex.ToAmahric.Split('/');
-                                EndDate = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDateto[0]), Convert.ToInt32(splitDateto[1]), Convert.ToInt32(splitDateto[2]));
-
-                                experience.EmployeeId = personEmployee.EmployeeId;
-                                experience.Organozation = ex.OrganizationName;
-                                experience.OrgFullAddress = "Not Available";
-                                experience.Responsibility = ex.Postion;
-                                experience.From = ex.From;
-                                experience.TotalDuration = Convert.ToInt32(ex.Experience);
-                                experience.From = RegistnDate;// DateTime.Now;
-                                experience.To = EndDate;//DateTime.Now;
-                                experience.FromExAmharic = ex.FromAmharic;
-                                experience.ToExAmharic = ex.ToAmahric;
-                                experience.ClearanceDateTime = DateTime.Now;
-
-                                db.Experiences.Add(experience);
-                                db.SaveChanges();
-                            }
-
-                            personEmployee.Training = new List<Training>();
-                            var trainingInfo = db.ApplicantTraining.Where(x => x.ApplicantRegistrationId == applicantRegistration.ApplicantRegistrationId).ToList();
-                            foreach (var tr in trainingInfo)
-                            {
-                                training = new Training();
-
-                                training.EmployeeId = personEmployee.EmployeeId;
-                                training.TrainingName = tr.TrainingName;
-                                training.OrganizationName = "Not Available";
-                                training.OrgAddress = "Not Available";
-                                training.OrgBranchName = "Not Available";
-                                training.From = DateTime.Now;
-                                training.To = DateTime.Now;
-
-                                db.EmpTrainingEducations.Add(training);
-                                db.SaveChanges();
-                            }
-                            //var addressInfo = db.Addresses.ToList();
-                            //foreach (var ad in addressInfo)
-                            //{
-                            //    address = new Address();
-                            //    address.Category = ad.Category;
-                            //    address.Value = ad.Value;
-                            //    address.Remark = ad.Remark;
-                            //}
-                            #endregion
-
-                        }
-
-                        personEmployeeList.Add(personEmployee);
-
-                        var updateStatus = db.ApplicantRegistration.Find(applicantRegistration.ApplicantRegistrationId);
-                        updateStatus.IsTransfered = true;
-                        db.Entry(updateStatus).State = EntityState.Modified;
-                        db.SaveChanges();
-                    }
-                    else
-                    {
-                        ModelState.AddModelError("", "This Employee is Transfered Before");
-                    }
-
-                }
-            }
-
-
-            return Json(personEmployeeList.ToDataSourceResult(request, ModelState));
-        }
 
         [AuthorizeRoles(HrmConstants.HRRecruitmentAdmin, HrmConstants.HRRecruitmentUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ApplicantRegistration_Update([DataSourceRequest]DataSourceRequest request, ApplicantRegistration applicantRegistration)
         {
             ModelState.Clear();
+
+            int vacancyId = 0;
+            string jobTitle = "";
+            string vacancyCode = "";
+            var mediaVacancyCode = "";
+          
+
+            vacancyCode = db.VaccancyPlans.Find(applicantRegistration.VacancyId)?.VaccancyCode;
+            mediaVacancyCode = db.RecruitmentVacancy.FirstOrDefault(x => x.VacancyId == applicantRegistration.VacancyId)?.MediaVacancyCode;
+
+            var vac = db.VaccancyPlans.Find(applicantRegistration.VacancyId);
+            if (vac != null)
+            {
+                var look = db.Lookups.FirstOrDefault(x => x.LookupId == vac.JobTitle);
+                if(look != null)
+                {
+                    jobTitle = look.Description;
+                }
+               
+            }
+
             if (ModelState.IsValid)
             {
-                if (RegistnDateAm == null)
+                var applicant = db.ApplicantRegistration.Find(applicantRegistration.ApplicantRegistrationId);
+                if (applicant != null)
                 {
-                    RegistnDateAm = applicantRegistration.RegistrationDateAm;
-                    var splitDate = RegistnDateAm.Split('/');
-                    RegistnDate = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
-                }
-                if (applicantRegistration.Age < 18)
-                {
-                    ModelState.AddModelError("", "The applicant age must be more than 18!!");
-                }
-                else if (RegistnDate.Date > DateTime.Now.Date)
-                {
+                    applicant.VacancyId = applicantRegistration.VacancyId;
+                    applicant.IsTransfered = applicantRegistration.IsTransfered;
+                    applicant.JobtitleName = jobTitle;
+                    applicant.MediaVacancyCode = mediaVacancyCode;
+                    applicant.VacancyCode = vacancyCode;
+                    applicant.OrgBranchName = applicantRegistration.OrgBranchName;
+                    applicant.DateCreated = applicantRegistration.DateCreated;
+                    applicant.LastModified = applicantRegistration.LastModified;
+                    applicant.CreatedBy = applicantRegistration.CreatedBy;
+                    applicant.ModifiedBy = User.Identity.Name;
+                    applicant.VacancyType = applicantRegistration.VacancyType;
 
-                    ModelState.AddModelError("", "Registration date should be less or equal to the current date!!");
-                }
-                else
-                {
-                    var entity = new ApplicantRegistration
-                    {
-                        ApplicantRegistrationId = applicantRegistration.ApplicantRegistrationId,
-                        VacancyId = applicantRegistration.VacancyId,
-                        FirstName = applicantRegistration.FirstName,
-                        MiddleName = applicantRegistration.MiddleName,
-                        LastName = applicantRegistration.LastName,
-                        IsTransfered = false,
-                        ApplicantName = applicantRegistration.FirstName + " " + applicantRegistration.MiddleName + " " + applicantRegistration.LastName,
-                        Age = applicantRegistration.Age,
-                        Sex = applicantRegistration.Sex,
-                        RegistrationDate = RegistnDate,
-                        RegistrationPalce = applicantRegistration.RegistrationPalce,
-                        RegisterBy = FullName,
-                        RegistrationDateAm = RegistnDateAm,
-                        LookupId = applicantRegistration.LookupId,
-                        OrgBranchName = applicantRegistration.OrgBranchName,
-                        DateCreated = applicantRegistration.DateCreated,
-                        LastModified = DateTime.Now,
-                        CreatedBy = applicantRegistration.CreatedBy,
-                        ModifiedBy = User.Identity.Name,
-                        VacancyType = GetType(applicantRegistration.VacancyId.ToString()),
-                    };
-
-                    db.ApplicantRegistration.Attach(entity);
-                    db.Entry(entity).State = EntityState.Modified;
+                    db.Entry(applicant).State = System.Data.Entity.EntityState.Modified;
                     db.SaveChanges();
-
-                    #region operation log
-                    
-                        UserHelper.OperationLog(Request.UserHostAddress, "Applicant Registration ", "Success", User.Identity.Name, User.Identity.Name + " update applicant Info of " + entity.ApplicantName + " date " + DateTime.Today.ToShortDateString(),Modules.HRM);
-                    
-                    #endregion
-
                 }
+                //var entity = new ApplicantRegistration
+                //{
+                //    VacancyId = vacancyId,
+                //    IsTransfered = false,
+                //    JobtitleName = applicantRegistration.JobtitleName,
+                //    RegisterBy = FullName,
+                //    OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name),
+                //    DateCreated = DateTime.Now,
+                //    LastModified = applicantRegistration.LastModified,
+                //    CreatedBy = User.Identity.Name,
+                //    ModifiedBy = applicantRegistration.ModifiedBy,
+                //    VacancyType = GetType(applicantRegistration.VacancyId.ToString()),
+                //    RegistrationDate = DateTime.Now
+                //};
+
+                //db.ApplicantRegistration.Attach(entity);
+                //db.Entry(entity).State = EntityState.Modified;
+                //db.SaveChanges();
+
             }
 
             return Json(new[] { applicantRegistration }.ToDataSourceResult(request, ModelState));
@@ -660,48 +420,214 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
         public ActionResult ApplicantRegistration_Destroy([DataSourceRequest]DataSourceRequest request, ApplicantRegistration applicantRegistration)
         {
             ModelState.Clear();
+
+            if (!DeleteApplicantUnderThisVacancy(applicantRegistration.ApplicantRegistrationId))
+            {
+                ModelState.AddModelError("", "Can't delete this vacancy");
+            }
             if (ModelState.IsValid)
             {
-                if (!CheckAppRegnValidation(applicantRegistration.ApplicantRegistrationId))
+                var entity = new ApplicantRegistration
                 {
-                    ModelState.AddModelError("", ErrorMessage);
-                }
-                else
-                {
-                    var entity = new ApplicantRegistration
-                    {
-                        ApplicantRegistrationId = applicantRegistration.ApplicantRegistrationId,
-                        VacancyId = applicantRegistration.VacancyId,
-                        FirstName = applicantRegistration.FirstName,
-                        MiddleName = applicantRegistration.MiddleName,
-                        LastName = applicantRegistration.LastName,
-                        IsTransfered = false,
-                        ApplicantName = applicantRegistration.ApplicantName,
-                        Age = applicantRegistration.Age,
-                        Sex = applicantRegistration.Sex,
-                        LookupId = applicantRegistration.LookupId,
-                        RegistrationDate = applicantRegistration.RegistrationDate,
-                        RegistrationPalce = applicantRegistration.RegistrationPalce,
-                        RegisterBy = applicantRegistration.RegisterBy,
-                        RegistrationDateAm = applicantRegistration.RegistrationDateAm,
-                        OrgBranchName = applicantRegistration.OrgBranchName,
-                        DateCreated = applicantRegistration.DateCreated,
-                        LastModified = applicantRegistration.LastModified,
-                        CreatedBy = applicantRegistration.CreatedBy,
-                        ModifiedBy = applicantRegistration.ModifiedBy,
-                        VacancyType = applicantRegistration.VacancyType,
-                    };
-                    #region delete log
-                    UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted applicant  information of applicant" + applicantRegistration.ApplicantName);
-                    #endregion
-                    db.ApplicantRegistration.Attach(entity);
-                    db.ApplicantRegistration.Remove(entity);
-                    db.SaveChanges();
-                }
+                    ApplicantRegistrationId = applicantRegistration.ApplicantRegistrationId,
+                    VacancyId = applicantRegistration.VacancyId,
+                    IsTransfered = false,
+                    OrgBranchName = applicantRegistration.OrgBranchName,
+                    DateCreated = applicantRegistration.DateCreated,
+                    LastModified = applicantRegistration.LastModified,
+                    CreatedBy = applicantRegistration.CreatedBy,
+                    ModifiedBy = applicantRegistration.ModifiedBy,
+                    VacancyType = applicantRegistration.VacancyType,
+                };
+                #region delete log
+                UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted vacancy id from applicant registration" + applicantRegistration.VacancyId);
+                #endregion
+                db.ApplicantRegistration.Attach(entity);
+                db.ApplicantRegistration.Remove(entity);
+                db.SaveChanges();
             }
+
 
             return Json(new[] { applicantRegistration }.ToDataSourceResult(request, ModelState));
         }
+        public bool DeleteApplicantUnderThisVacancy(int id)
+        {
+            var applicants = db.ApplicantDetails.Where(x => x.ApplicantRegistrationId == id).ToList();
+            foreach (var app in applicants)
+            {
+                db.ApplicantDetails.Attach(app);
+                db.ApplicantDetails.Remove(app);
+                db.SaveChanges();
+            }
+
+            var checkApplicants = db.ApplicantDetails.Where(x => x.ApplicantRegistrationId == id).Count();
+            if (checkApplicants > 0)
+            {
+                return false;
+            }
+            return true;
+        }
+        public ActionResult ImportApplicantsFromExcel([DataSourceRequest]DataSourceRequest request, IEnumerable<HttpPostedFileBase> file, string id)
+        {
+
+            if (file != null)
+            {
+                string fileNamePrefix = DateTime.Now.Year + DateTime.Now.Month + DateTime.Now.Day.ToString() + DateTime.Now.Hour + DateTime.Now.Minute;
+
+                //return new JavaScriptResult() { Script = "alert('" + "Data Copied Successfully!!" + "');" };
+                DataSet ds = new DataSet();
+                #region import
+
+                foreach (HttpPostedFileBase fileBase in file)
+                {
+                    var postedFileBase = Request.Files["file"];
+                    if (postedFileBase != null)
+                    {
+                        string fileExtension = Path.GetExtension(postedFileBase.FileName);
+                        if (fileExtension == ".xls" || fileExtension == ".xlsx" || fileExtension == ".xlsm")
+                        {
+                            string fileLocation = Server.MapPath("~/App_Data/Import/") + fileNamePrefix + "-" +
+                                                  DateTime.Now.Day.ToString() + "-" + DateTime.Now.Month.ToString() + "-" + DateTime.Now.Year.ToString() + User.Identity.Name + postedFileBase.FileName;
+                            //if (System.IO.File.Exists(fileLocation))
+                            //{
+                            //    System.IO.File.Delete(fileLocation);
+                            //}
+                            postedFileBase.SaveAs(fileLocation);
+                            var excelConnectionString = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" + fileLocation +
+                                                        ";Extended Properties=\"Excel 12.0;HDR=Yes;IMEX=2\"";
+
+                            if (fileExtension == ".xls")
+                            {
+                                excelConnectionString = "Provider=Microsoft.Jet.OLEDB.4.0;Data Source=" + fileLocation +
+                                                        ";Extended Properties=\"Excel 8.0;HDR=Yes;IMEX=2\"";
+                            }
+                            //connection String for xlsx file format.
+                            else if (fileExtension == ".xlsx")
+                            {
+
+                                excelConnectionString = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" + fileLocation +
+                                                        ";Extended Properties=\"Excel 12.0;HDR=Yes;IMEX=2\"";
+                            }
+                            else if (fileExtension == ".xlsm")
+                            {
+
+                                excelConnectionString = "Provider=Microsoft.ACE.OLEDB.12.0;Data Source=" + fileLocation +
+                                                        ";Extended Properties=\"Excel 12.0;HDR=Yes;IMEX=2\"";
+                            }
+                            //Create Connection to Excel work book and add oledb namespace
+                            OleDbConnection excelConnection = new OleDbConnection(excelConnectionString);
+                            excelConnection.Open();
+                            DataTable dt = new DataTable();
+
+                            dt = excelConnection.GetOleDbSchemaTable(OleDbSchemaGuid.Tables, null);
+                            if (dt == null)
+                            {
+                                return null;
+                            }
+
+                            String[] excelSheets = new String[dt.Rows.Count];
+                            int t = 0;
+                            //excel data saves in temp file here.
+                            foreach (DataRow row in dt.Rows)
+                            {
+                                excelSheets[t] = row["TABLE_NAME"].ToString();
+                                t++;
+                            }
+                            OleDbConnection excelConnection1 = new OleDbConnection(excelConnectionString);
+                            string query = string.Format("Select * from [{0}]", excelSheets[0]);
+                            using (OleDbDataAdapter dataAdapter = new OleDbDataAdapter(query, excelConnection1))
+                            {
+                                dataAdapter.Fill(ds);
+                            }
+
+                        }
+                    }
+                }
+                #endregion
+
+
+
+                if (ModelState.IsValid)
+                {
+                    if (ds.Tables[0].Rows.Count > 0)
+                    {
+
+
+                        for (int j = 0; j <= ds.Tables[0].Rows.Count - 1; j++)
+                        {
+                            int vacancyId = 0;
+                            string jobTitle = "";
+                            string vacancyCode = ds.Tables[0].Rows[j].ItemArray[7].ToString().Trim().ToLower();
+                            var vacancy = db.VaccancyPlans.FirstOrDefault(x => x.VaccancyCode.Trim().ToLower() == vacancyCode);
+                            if (vacancy == null)
+                            {
+                                //   ModelState.AddModelError("", "you should enter correct vacancy code");
+                                string message = "you should enter correct vacancy code at line "+ j;
+                                return new JavaScriptResult() { Script = "alert('" + message + "');" };
+                            }
+                            else
+                            {
+                                vacancyId = vacancy.VacancyId;
+                                
+                                    var look = db.Lookups.FirstOrDefault(x => x.LookupId == vacancy.JobTitle);
+                                if(look != null)
+                                {
+                                    jobTitle = look.Description;
+                                }
+                                  
+                                
+                                var applicantReg = db.ApplicantRegistration.FirstOrDefault(x => x.VacancyId == vacancyId);
+                                if (applicantReg == null)
+                                {
+                                    ApplicantRegistration applicantRegistration = new ApplicantRegistration();
+
+                                    applicantRegistration.VacancyId = vacancyId;
+                                    applicantRegistration.IsTransfered = false;
+                                    applicantRegistration.JobtitleName = jobTitle;
+                                    applicantRegistration.DateCreated = DateTime.Now;
+                                    applicantRegistration.LastModified = applicantRegistration.LastModified;
+                                    applicantRegistration.CreatedBy = User.Identity.Name;
+                                    applicantRegistration.ModifiedBy = User.Identity.Name;
+                                    applicantRegistration.VacancyType = vacancy.VacancyType;
+
+                                    db.ApplicantRegistration.Add(applicantRegistration);
+                                    //  db.Entry(applicantRegistration).State = EntityState.Modified;
+                                    db.SaveChanges();
+                                }
+                                else
+                                {
+                                    ApplicantDetail applicantDetail = new ApplicantDetail();
+                                    Gender gender = Core.Domain.Common.Gender.MALE;
+                                    if (ds.Tables[0].Rows[j].ItemArray[2].ToString().Trim().ToLower() == "female" || ds.Tables[0].Rows[j].ItemArray[2].ToString().Trim().ToLower() == "f")
+                                    {
+                                        gender = Core.Domain.Common.Gender.FEMALE;
+                                    }
+
+                                    applicantDetail.ApplicantRegistrationId = applicantReg.ApplicantRegistrationId;
+                                    applicantDetail.ApplicantName = ds.Tables[0].Rows[j].ItemArray[0].ToString().Trim();
+                                    applicantDetail.Age = Convert.ToInt32(ds.Tables[0].Rows[j].ItemArray[1].ToString().Trim());
+                                    applicantDetail.Sex = gender;
+                                    applicantDetail.Address = ds.Tables[0].Rows[j].ItemArray[3].ToString().Trim();
+                                    //applicantDetail.Education = ds.Tables[0].Rows[j].ItemArray[4].ToString().Trim();
+                                    //applicantDetail.Experiance = Convert.ToDecimal(ds.Tables[0].Rows[j].ItemArray[5].ToString().Trim());
+                                    applicantDetail.Training = ds.Tables[0].Rows[j].ItemArray[6].ToString().Trim();
+                                    applicantDetail.VacancyCode = vacancy.VaccancyCode;
+
+                                    db.ApplicantDetails.Add(applicantDetail);
+                                    db.SaveChanges();
+                                }
+
+                            }
+
+                        }
+                    }
+                }
+
+            }
+
+            return RedirectToAction("Index");
+        }
+
         [HttpPost]
         public ActionResult Excel_Export_Save(string contentType, string base64, string fileName)
         {
@@ -720,46 +646,95 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
             #endregion
             return File(fileContents, contentType, fileName);
         }
-        public bool CheckApplicant(int id)
+        //public bool CheckApplicant(int id)
+        //{
+        //    IQueryable<ApplicantRegistration> applicantregistration = db.ApplicantRegistration.Where(x => x.ApplicantRegistrationId == id);
+        //    decimal screenSum = 0;
+        //    var SettingSum = EduField + EduLevel + RelatedExp + RelevantExp + Disabliy + Gender + Profile + Training + Dicipline;
+
+        //    foreach (var a in applicantregistration)
+        //    {
+        //        db = new ExceedDbContext();
+        //        screenSum = 0;
+        //        var screen =
+        //            db.ApplicantScreenResult.Where(
+        //                x => x.ApplicantScreeningId == a.ApplicantRegistrationId && x.ReferenceType == "External")
+        //                .ToList();
+        //        if (screen != null)
+        //        {
+
+        //            screenSum = Convert.ToDecimal(screen.Sum(x => x.CurrentResult));
+        //            a.TotalResult = screenSum;
+        //            var exam =
+        //         db.ApplicantExamResult.Where(
+        //             x => x.ApplicantScreeningId == a.ApplicantRegistrationId && x.ReferenceType == "External")
+        //             .ToList();
+        //            if (exam != null)
+        //            {
+        //                decimal exmSum = Convert.ToDecimal(exam.Sum(x => x.CurrentResult));
+        //            }
+        //            if (screenSum >= SettingSum)
+        //            {
+        //                return true;
+
+
+        //            }
+        //        }
+
+        //    }
+        //    return false;
+
+
+        //}
+        [HttpPost, ValidateInput(false)]
+        public ActionResult ApplyForVacancy(HttpPostedFileBase file, string idh)
         {
-            IQueryable<ApplicantRegistration> applicantregistration = db.ApplicantRegistration.Where(x => x.ApplicantRegistrationId == id);
-            decimal screenSum = 0;
-            var SettingSum = EduField + EduLevel + RelatedExp + RelevantExp + Disabliy + Gender + Profile + Training + Dicipline;
-
-            foreach (var a in applicantregistration)
+            ModelState.Clear();
+            
+            if (ModelState.IsValid)
             {
-                db = new ExceedDbContext();
-                screenSum = 0;
-                var screen =
-                    db.ApplicantScreeningResult.Where(
-                        x => x.ApplicantRegistrationId == a.ApplicantRegistrationId && x.ReferenceType == "External")
-                        .ToList();
-                if (screen != null)
-                {
+               int applicantDetailId = int.Parse(idh);
 
-                    screenSum = Convert.ToDecimal(screen.Sum(x => x.CurrentResult));
-                    a.TotalResult = screenSum;
-                    var exam =
-                 db.ApplicantExamResult.Where(
-                     x => x.ApplicantRegistrationId == a.ApplicantRegistrationId && x.ReferenceType == "External")
-                     .ToList();
-                    if (exam != null)
-                    {
-                        decimal exmSum = Convert.ToDecimal(exam.Sum(x => x.CurrentResult));
-                    }
-                    if (screenSum >= SettingSum)
-                    {
-                        return true;
+                var applicantDetail = db.ApplicantDetails.FirstOrDefault(x=>x.ApplicantDetailId == applicantDetailId);
+                if (applicantDetail != null) {
+                    #region Upload File
 
+                    //Use Namespace called :  System.IO  
+                    string FileName = Path.GetFileNameWithoutExtension(file.FileName);
 
-                    }
+                    //To Get File Extension  
+                    string FileExtension = Path.GetExtension(file.FileName);
+
+                    //Add Current Date To Attached File Name  
+                    FileName = DateTime.Now.ToString("yyyyMMdd") + "-" + FileName.Trim() + FileExtension;
+
+                    //Get Upload path from Web.Config file AppSettings.  
+                    string UploadPath = ConfigurationManager.AppSettings["UserFilePath"].ToString();
+
+                    //Its Create complete path to store in server.  
+                    var FilePath = UploadPath + FileName;
+
+                    //To copy and save file into server.  
+                     file.SaveAs(FilePath);
+                    #endregion
+
+                    #region  Update
+
+                    applicantDetail.FilePath = FilePath;
+                    applicantDetail.FileName = FileName;
+
+                    db.Entry(applicantDetail).State = System.Data.Entity.EntityState.Modified;
+                    db.SaveChanges();
+
+                    #endregion
+
                 }
 
             }
-            return false;
 
-
+            return RedirectToAction("Index");
         }
+
         protected override void Dispose(bool disposing)
         {
             db.Dispose();

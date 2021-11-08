@@ -9,8 +9,8 @@
 <div class="form">
 <div class="row fullrow">
     <div class="col-md-3 ro1">
-        <div class="form-group">
-       
+        @*<div class="form-group">
+
             @Html.LabelFor(model => model.OrgStructureId, htmlAttributes: new { @class = "control-label col-md-8" })
             <div class="col-md-6">
                 @(Html.Kendo().DropDownListFor(model => model.OrgStructureId)
@@ -28,8 +28,8 @@
                       )
                 @Html.ValidationMessageFor(model => model.OrgStructureId, "", new { @class = "text-danger" })
             </div>
-        </div>
-    
+        </div>*@
+
 
         <div class="form-group">
             @Html.LabelFor(model => model.LookupId, htmlAttributes: new { @class = "control-label col-md-8" })
@@ -37,21 +37,22 @@
             <div class="col-md-6">
 
                 @(Html.Kendo().DropDownListFor(model => model.LookupId)
-                      .OptionLabel("Select Course")
-                      .DataTextField("Description")
-                      .DataValueField("LookupId")
-                      .DataSource(dataSource =>
-                      {
-                          dataSource.Read(read => read.Action("GetCourseList", "HRMDataProvider", new { area = "HRM" }))
-                              .ServerFiltering(false);
-                      })
-                      .ValuePrimitive(true)
+                              .OptionLabel("Select Course")
+                              .Filter("contains")
+                              .DataTextField("Description")
+                              .DataValueField("LookupId")
+                              .DataSource(dataSource =>
+                              {
+                                  dataSource.Read(read => read.Action("GetCourseList", "HRMDataProvider", new { area = "HRM" }))
+                                      .ServerFiltering(false);
+                              })
+                              .ValuePrimitive(true)
 
-                      )
+                )
                 @Html.ValidationMessageFor(model => model.LookupId, "", new { @class = "text-danger" })
             </div>
         </div>
-  
+
         <div class="form-group">
             @Html.LabelFor(model => model.NoofTrainee, htmlAttributes: new { @class = "control-label col-md-8" })
 
@@ -62,6 +63,17 @@
                 @Html.ValidationMessageFor(model => model.NoofTrainee, "", new { @class = "text-danger" })
             </div>
         </div>
+
+        <div class="form-group">
+            @Html.LabelFor(model => model.TrainingRequestType, htmlAttributes: new { @class = "control-label col-md-8" })
+
+            <div class="col-md-6">
+                @(Html.EnumDropDownListFor(model => model.TrainingRequestType, htmlAttributes: new { @class = "k-dropdown-wrap k-state-default", @style = "width: 180px" })
+                )
+                @Html.ValidationMessageFor(model => model.TrainingRequestType, "", new { @class = "text-danger" })
+            </div>
+        </div>
+
     </div>
     <div class="col-md-4 ro1">
         <div class="form-group">

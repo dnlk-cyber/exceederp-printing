@@ -20,129 +20,48 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
         {
             List<EmployeeSummary> list = new List<EmployeeSummary>();
             EmployeeSummary employee = new EmployeeSummary();
-            db = new ExceedDbContext();
-            var types = db.Lookups.Where(x => x.LookupType == LookUpTypes.TERMINATIONTYPE).ToList();
+         
+            var types = db.Lookups.Where(x => x.LookupType == LookUpTypes.TERMINATIONTYPE).ToList();           
 
-            DateTime dateTow = new DateTime(to.Year, to.Month, to.Day);
-            DateTime dateOne = new DateTime(from.Year, from.Month, from.Day);
-            List<Person_Employee> employees;
-            if (branchId != null && orgStructureId != null)
+            var terminations = db.Terminations.Where(x => x.IsOnlineApproved).ToList();
+
+            var placements = db.Placements.ToList();
+            if (branchId != null)
             {
-                //employees = EmployeeHelper.GetEmployeesByBranchAndWorkUnit(Convert.ToInt32(branchId), Convert.ToInt32(orgStructureId)).ToList();
+                int.TryParse(branchId, out int braId);
+                var empIds = EmployeeHelper.GetEmployees_ByBranch_FromPlacement(placements, braId).Select(x => x.EmployeeId);
+                terminations = terminations.Where(x => empIds.Contains(x.EmployeeId)).ToList();
+            }
+            if (orgStructureId != null)
+            {
+                int.TryParse(orgStructureId, out int orgId);
+                var empIds = EmployeeHelper.GetEmployees_ByDepartment_WithCaseTeam_FromPlacement(placements, orgId).Select(x => x.EmployeeId);
+                terminations = terminations.Where(x => empIds.Contains(x.EmployeeId)).ToList();
+            }
+            if (from.Date <= to.Date)
+            {
+                terminations = terminations.Where(x => x.TerminationDate.Date >= from.Date && x.TerminationDate.Date <= to.Date).ToList();
+            }
 
-                var listE = new List<Person_Employee>();
-                var allEmployee = db.Person_Employee.ToList();
-                var placements = db.Placements.DistinctByField(x => x.EmployeeId).Where(x => x.BranchId.ToString() == branchId && x.OrgStructureId.ToString() == orgStructureId).ToList();
-                if (placements.Any())
-                {
-                    var filterdE = from f in placements
-                                   join e in allEmployee
-                                   on f.EmployeeId equals e.EmployeeId
-                                   where f.EmployeeId == e.EmployeeId
-                                   select (new { e });
+            var males = EmployeeHelper.Get_Male_EmployeesFrom_Placement(placements).Select(x => x.EmployeeId);
+            var females = EmployeeHelper.Get_Female_EmployeesFrom_Placement(placements).Select(x => x.EmployeeId);
 
-                    foreach (var p in filterdE)
-                    {
 
-                        listE.Add(p.e);
+            foreach (var type in types)
+            {
+                employee = new EmployeeSummary();
 
-                    }
-                }
-                employees = listE;
+                employee.Criteria = type.Description;
+
+                employee.NumberOfMaleEmployee = terminations.Where(x => males.Contains(x.EmployeeId)).Where(x => x.LookupId == type.LookupId).Count();
+                employee.NumberOfFemaleEmployee = terminations.Where(x => females.Contains(x.EmployeeId)).Where(x => x.LookupId == type.LookupId).Count();
+
+                employee.TotalEmployee = employee.NumberOfMaleEmployee + employee.NumberOfFemaleEmployee;
+
+                list.Add(employee);
 
             }
-            else if (branchId != null && orgStructureId == null)
-            {
-                //employees = EmployeeHelper.GetEmployeesByBranch(Convert.ToInt32(branchId)).ToList();
 
-                var listE = new List<Person_Employee>();
-                var allEmployee = db.Person_Employee.ToList();
-                var placements = db.Placements.DistinctByField(x => x.EmployeeId).Where(x => x.BranchId.ToString() == branchId).ToList();
-                if (placements.Any())
-                {
-                    foreach (var p in placements)
-                    {
-                        var check = allEmployee.Where(x => x.EmployeeId == p.EmployeeId).FirstOrDefault();
-                        if (check != null)
-                        {
-                            listE.Add(check);
-                        }
-                    }
-                }
-                employees = listE;
-            }
-            else if (branchId == null && orgStructureId != null)
-            {
-                //employees = EmployeeHelper.GetEmployeesByWorkUnit(Convert.ToInt32(orgStructureId)).ToList();
-
-                var listE = new List<Person_Employee>();
-                var allEmployee = db.Person_Employee.ToList();
-                var placements = db.Placements.DistinctByField(x => x.EmployeeId).Where(x => x.OrgStructureId.ToString() == orgStructureId).ToList();
-                if (placements.Any())
-                {
-                    foreach (var p in placements)
-                    {
-                        var check = allEmployee.Where(x => x.EmployeeId == p.EmployeeId).FirstOrDefault();
-                        if (check != null)
-                        {
-                            listE.Add(check);
-                        }
-                    }
-                }
-                employees = listE;
-            }
-            else
-            {
-
-                employees = db.Person_Employee/*.Where(x => x.IsActive)*/.ToList();
-
-            }
-            if (types.Any())
-            {
-                db = new ExceedDbContext();
-                foreach (var type in types)
-                {
-                    employee = new EmployeeSummary();
-                    var termination = db.Terminations.ToList();
-                    termination = termination.Where(x => x.LookupId == type.LookupId).ToList();
-                    employee.Criteria = type.Description;
-                    if (termination.Count() > 0)
-                    {
-                        db = new ExceedDbContext();
-                        foreach (var t in termination)
-                        {
-                            DateTime terminDate = new DateTime(t.TerminationDate.Year, t.TerminationDate.Month,
-                                t.TerminationDate.Day);
-                            if (terminDate >= dateOne && terminDate <= dateTow)
-                            {
-                                var empList = employees.Where(x => x.EmployeeId == t.EmployeeId).ToList();
-                                foreach (var e in empList)
-                                {
-                                    // employee.Criteria = "Job Title";
-
-                                    // employee.SummaryName = Name.Description;
-                                    if (e.Gender == Gender.FEMALE)
-                                    {
-                                        employee.NumberOfFemaleEmployee += 1;
-
-                                    }
-                                    if (e.Gender == Gender.MALE)
-                                    {
-                                        employee.NumberOfMaleEmployee += 1;
-
-                                    }
-
-
-
-                                }
-                            }
-                        }
-                    }
-                    employee.TotalEmployee = employee.NumberOfFemaleEmployee + employee.NumberOfMaleEmployee;
-                    list.Add(employee);
-                }
-
-            }
             return list;
         }
     }

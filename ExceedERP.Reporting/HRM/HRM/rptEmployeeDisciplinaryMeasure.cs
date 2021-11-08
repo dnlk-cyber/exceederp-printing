@@ -29,7 +29,6 @@ namespace ExceedERP.Reporting.HRM.HRM
             var culture = System.Threading.Thread.CurrentThread.CurrentUICulture.ToString();
             var cultures = new CultureInfo(culture);
             this.Date.Value = Resources.ResourceManager.GetString("Rpt_Date", cultures);
-            this.Page.Value = Resources.ResourceManager.GetString("Rpt_Page", cultures);
             this.Department.Value = Resources.ResourceManager.GetString("Rpt_Department", cultures);
             this.EmployeeId.Value = Resources.ResourceManager.GetString("Rpt_IDNumber", cultures);
             this.FullName.Value = Resources.ResourceManager.GetString("Rpt_Name", cultures);

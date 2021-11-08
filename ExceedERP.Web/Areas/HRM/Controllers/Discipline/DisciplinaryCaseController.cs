@@ -33,11 +33,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Discipline
         string ErrorMessage = "";
         public ActionResult Index()
         {
-
             PopulateViewData();
             return View();
         }
-
         private void PopulateViewData()
         {
             var list = inputs.GetEmployees(User.Identity.Name);
@@ -123,7 +121,34 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Discipline
                 CreatedBy = disciplinaryCase.CreatedBy,
                 ModifiedBy = disciplinaryCase.ModifiedBy,
                 OrgBranchName = disciplinaryCase.OrgBranchName,
+                IsActive = disciplinaryCase.IsActive
 
+            });
+
+            return Json(result);
+        }
+        public ActionResult Profile_EmpDisciplineMeasure_Read([DataSourceRequest]DataSourceRequest request, int id)
+        {
+            List<EmpDisciplineMeasure> empdisciplinemeasure = new List<EmpDisciplineMeasure>();
+            var displinaryCases = db.DisciplinaryCases.Where(e => e.EmployeeId == id);
+            foreach (var disc in displinaryCases)
+            {
+                var dmeasures = db.EmpDisciplineMeasure.Where(x => x.DisciplinaryCaseId == disc.DisciplinaryCaseId).ToList();
+                empdisciplinemeasure.AddRange(dmeasures);
+            }
+            DataSourceResult result = empdisciplinemeasure.ToDataSourceResult(request, empDisciplineMeasure => new
+            {
+                EmpDisciplineMeasureId = empDisciplineMeasure.EmpDisciplineMeasureId,
+
+                DisciplinaryCaseId = empDisciplineMeasure.DisciplinaryCaseId,
+                MeasuresId = empDisciplineMeasure.MeasuresId,
+                DetailMeasuresId = empDisciplineMeasure.DetailMeasuresId,
+                DecisionDate = empDisciplineMeasure.DecisionDate,
+                IsExpired = empDisciplineMeasure.IsExpired,
+                IsReversedByAppeal = empDisciplineMeasure.IsReversedByAppeal,
+                Remark = empDisciplineMeasure.Remark,
+                Month = empDisciplineMeasure.Month,
+                DecisionDateAm = empDisciplineMeasure.DecisionDateAm
             });
 
             return Json(result);
@@ -135,60 +160,56 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Discipline
             ModelState.Clear();
             var discipline = db.DisciplinaryCases.Where(x => x.EmployeeId == disciplinaryCase.EmployeeId).ToList();
 
+            if (TransgressionDateAm == null)
+            {
+                ModelState.AddModelError("", "Transgression Date  value is mandatory!!");
+            }
+            if (TransgressionDate.Date > DateTime.Now.Date)
+            {
+                ModelState.AddModelError("", "Transgression Date should be less or equal to the current date!!");
+            }
+
             if (ModelState.IsValid)
             {
-
-                if (TransgressionDateAm == null)
+                var entity = new DisciplinaryCase
                 {
-                    ModelState.AddModelError("", "Transgression Date  value is mandatory!!");
-                }
-                else if (TransgressionDate.Date > DateTime.Now.Date)
+                    EmployeeId = disciplinaryCase.EmployeeId,
+                    TransgressionDate = TransgressionDate,
+                    NatureofTransgression = disciplinaryCase.NatureofTransgression,
+                    Evidence = disciplinaryCase.Evidence,
+                    Remark = disciplinaryCase.Remark,
+                    EmployeeCode = inputs.GetEmployees(User.Identity.Name).Where(x => x.PersonId == disciplinaryCase.EmployeeId).FirstOrDefault().EmployeeCode,
+                    TransgressionDateAm = TransgressionDateAm,
+                    DateCreated = DateTime.Now,
+                    LastModified = disciplinaryCase.LastModified,
+                    CreatedBy = User.Identity.Name,
+                    ModifiedBy = disciplinaryCase.ModifiedBy,
+                    OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name),
+                    IsActive = true
+                };
+
+                db.DisciplinaryCases.Add(entity);
+                db.SaveChanges();
+                disciplinaryCase.DisciplinaryCaseId = entity.DisciplinaryCaseId;
+
+
+                if (discipline.Any())
                 {
+                    var count = discipline.Count();
+                    string messages = "this employee have " + count + " discipline case before ";
 
-                    ModelState.AddModelError("", "Transgression Date should be less or equal to the current date!!");
+                    return new JavaScriptResult() { Script = "alert('" + messages + "');" };
                 }
 
-                else
-                {
 
-                    var entity = new DisciplinaryCase
-                    {
-                        EmployeeId = disciplinaryCase.EmployeeId,
-                        TransgressionDate = TransgressionDate,
-                        NatureofTransgression = disciplinaryCase.NatureofTransgression,
-                        Evidence = disciplinaryCase.Evidence,
-                        Remark = disciplinaryCase.Remark,
-                        EmployeeCode = inputs.GetEmployees(User.Identity.Name).Where(x => x.PersonId == disciplinaryCase.EmployeeId).FirstOrDefault().EmployeeCode,
-                        TransgressionDateAm = TransgressionDateAm,
-                        DateCreated = DateTime.Now,
-                        LastModified = disciplinaryCase.LastModified,
-                        CreatedBy = User.Identity.Name,
-                        ModifiedBy = disciplinaryCase.ModifiedBy,
-                        OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name),
-                    };
+                #region operation log
 
-                    db.DisciplinaryCases.Add(entity);
-                    db.SaveChanges();
-                    disciplinaryCase.DisciplinaryCaseId = entity.DisciplinaryCaseId;
+                //var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
 
+                UserHelper.OperationLog(Request.UserHostAddress, "DisciplinaryCase", "Success", User.Identity.Name, User.Identity.Name + " add displine case ", Modules.HRM);
 
-                    if (discipline.Any())
-                    {
-                        var count = discipline.Count();
-                        string messages = "this employee have " + count + " discipline case before ";
+                #endregion
 
-                        return new JavaScriptResult() { Script = "alert('" + messages + "');" };
-                    }
-
-
-                    #region operation log
-
-                    //var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-
-                    UserHelper.OperationLog(Request.UserHostAddress, "DisciplinaryCase", "Success", User.Identity.Name, User.Identity.Name + " add displine case ", Modules.HRM);
-
-                    #endregion
-                }
             }
 
             return Json(new[] { disciplinaryCase }.ToDataSourceResult(request, ModelState));
@@ -198,51 +219,48 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Discipline
         public ActionResult DisciplinaryCases_Update([DataSourceRequest]DataSourceRequest request, DisciplinaryCase disciplinaryCase)
         {
             ModelState.Clear();
+
+            if (disciplinaryCase.TransgressionDateAm != null)
+            {
+                var splitDate = disciplinaryCase.TransgressionDateAm.Split('/');
+                disciplinaryCase.TransgressionDate = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
+            }
+            if (TransgressionDate.Date > DateTime.Now.Date)
+            {
+                ModelState.AddModelError("", "Transgression Date should be less or equal to the current date!!");
+            }
+
             if (ModelState.IsValid)
             {
-                if (TransgressionDateAm == null)
+                var entity = new DisciplinaryCase
                 {
-                    TransgressionDateAm = disciplinaryCase.TransgressionDateAm;
-                    var splitDate = TransgressionDateAm.Split('/');
-                    TransgressionDate = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
-                }
-                if (TransgressionDate.Date > DateTime.Now.Date)
-                {
+                    DisciplinaryCaseId = disciplinaryCase.DisciplinaryCaseId,
+                    EmployeeId = disciplinaryCase.EmployeeId,
+                    TransgressionDate = TransgressionDate,
+                    NatureofTransgression = disciplinaryCase.NatureofTransgression,
+                    Evidence = disciplinaryCase.Evidence,
+                    Remark = disciplinaryCase.Remark,
+                    TransgressionDateAm = TransgressionDateAm,
+                    EmployeeCode = inputs.GetEmployees().Where(x => x.PersonId == disciplinaryCase.EmployeeId).FirstOrDefault().EmployeeCode,
+                    DateCreated = disciplinaryCase.DateCreated,
+                    LastModified = DateTime.Now,
+                    CreatedBy = disciplinaryCase.CreatedBy,
+                    ModifiedBy = User.Identity.Name,
+                    OrgBranchName = disciplinaryCase.OrgBranchName,
+                    IsActive = disciplinaryCase.IsActive
+                };
 
-                    ModelState.AddModelError("", "Transgression Date should be less or equal to the current date!!");
-                }
+                db.DisciplinaryCases.Attach(entity);
+                db.Entry(entity).State = EntityState.Modified;
+                db.SaveChanges();
 
-                else
-                {
-                    var entity = new DisciplinaryCase
-                    {
-                        DisciplinaryCaseId = disciplinaryCase.DisciplinaryCaseId,
-                        EmployeeId = disciplinaryCase.EmployeeId,
-                        TransgressionDate = TransgressionDate,
-                        NatureofTransgression = disciplinaryCase.NatureofTransgression,
-                        Evidence = disciplinaryCase.Evidence,
-                        Remark = disciplinaryCase.Remark,
-                        TransgressionDateAm = TransgressionDateAm,
-                        EmployeeCode = inputs.GetEmployees().Where(x => x.PersonId == disciplinaryCase.EmployeeId).FirstOrDefault().EmployeeCode,
-                        DateCreated = disciplinaryCase.DateCreated,
-                        LastModified = DateTime.Now,
-                        CreatedBy = disciplinaryCase.CreatedBy,
-                        ModifiedBy = User.Identity.Name,
-                        OrgBranchName = disciplinaryCase.OrgBranchName,
-                    };
+                #region operation log
 
-                    db.DisciplinaryCases.Attach(entity);
-                    db.Entry(entity).State = EntityState.Modified;
-                    db.SaveChanges();
+                var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
 
-                    #region operation log
+                UserHelper.OperationLog(Request.UserHostAddress, "DisciplinaryCase", "Success", User.Identity.Name, User.Identity.Name + " update displine case ", Modules.HRM);
 
-                    var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-
-                    UserHelper.OperationLog(Request.UserHostAddress, "DisciplinaryCase", "Success", User.Identity.Name, User.Identity.Name + " update displine case ", Modules.HRM);
-
-                    #endregion
-                }
+                #endregion
             }
 
             return Json(new[] { disciplinaryCase }.ToDataSourceResult(request, ModelState));
@@ -252,37 +270,37 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Discipline
         public ActionResult DisciplinaryCases_Destroy([DataSourceRequest]DataSourceRequest request, DisciplinaryCase disciplinaryCase)
         {
             ModelState.Clear();
+
+            if (!CheckDisciplineValidation(disciplinaryCase.DisciplinaryCaseId))
+            {
+                ModelState.AddModelError("", ErrorMessage);
+            }
+
             if (ModelState.IsValid)
             {
-                if (!CheckDisciplineValidation(disciplinaryCase.DisciplinaryCaseId))
+                var entity = new DisciplinaryCase
                 {
-                    ModelState.AddModelError("", ErrorMessage);
-                }
-                else
-                {
-                    var entity = new DisciplinaryCase
-                    {
-                        DisciplinaryCaseId = disciplinaryCase.DisciplinaryCaseId,
-                        EmployeeId = disciplinaryCase.EmployeeId,
-                        TransgressionDate = disciplinaryCase.TransgressionDate,
-                        NatureofTransgression = disciplinaryCase.NatureofTransgression,
-                        Evidence = disciplinaryCase.Evidence,
-                        Remark = disciplinaryCase.Remark,
-                        TransgressionDateAm = disciplinaryCase.TransgressionDateAm,
-                        EmployeeCode = disciplinaryCase.EmployeeCode,
-                        DateCreated = disciplinaryCase.DateCreated,
-                        LastModified = disciplinaryCase.LastModified,
-                        CreatedBy = disciplinaryCase.CreatedBy,
-                        ModifiedBy = disciplinaryCase.ModifiedBy,
-                        OrgBranchName = disciplinaryCase.OrgBranchName,
-                    };
-                    #region delete log
-                    UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted disciplinary Case information of employee" + disciplinaryCase.EmployeeCode);
-                    #endregion
-                    db.DisciplinaryCases.Attach(entity);
-                    db.DisciplinaryCases.Remove(entity);
-                    db.SaveChanges();
-                }
+                    DisciplinaryCaseId = disciplinaryCase.DisciplinaryCaseId,
+                    EmployeeId = disciplinaryCase.EmployeeId,
+                    TransgressionDate = disciplinaryCase.TransgressionDate,
+                    NatureofTransgression = disciplinaryCase.NatureofTransgression,
+                    Evidence = disciplinaryCase.Evidence,
+                    Remark = disciplinaryCase.Remark,
+                    TransgressionDateAm = disciplinaryCase.TransgressionDateAm,
+                    EmployeeCode = disciplinaryCase.EmployeeCode,
+                    DateCreated = disciplinaryCase.DateCreated,
+                    LastModified = disciplinaryCase.LastModified,
+                    CreatedBy = disciplinaryCase.CreatedBy,
+                    ModifiedBy = disciplinaryCase.ModifiedBy,
+                    OrgBranchName = disciplinaryCase.OrgBranchName,
+                    IsActive = disciplinaryCase.IsActive
+                };
+                #region delete log
+                UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted disciplinary Case information of employee" + disciplinaryCase.EmployeeCode);
+                #endregion
+                db.DisciplinaryCases.Attach(entity);
+                db.DisciplinaryCases.Remove(entity);
+                db.SaveChanges();
             }
 
             return Json(new[] { disciplinaryCase }.ToDataSourceResult(request, ModelState));
@@ -386,8 +404,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Discipline
                 return RedirectToAction("Upload");
             }
         }
-
-
         public ActionResult Attachments_Destroy([DataSourceRequest]DataSourceRequest request, Attachment attachment)
         {
             if (ModelState.IsValid)
@@ -413,8 +429,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Discipline
 
             return Json(new[] { attachment }.ToDataSourceResult(request, ModelState));
         }
-
-
         protected override void Dispose(bool disposing)
         {
             db.Dispose();

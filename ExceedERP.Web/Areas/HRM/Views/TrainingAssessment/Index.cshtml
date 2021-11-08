@@ -14,18 +14,25 @@
           .Columns(columns =>
           {
               columns.Bound(c => c.Check).Template(@<text></text>).ClientTemplate("<input type='checkbox' #= Check ? checked='checked':'' # class='chkbx' />")
-                    .HeaderTemplate("<input type='checkbox' id='masterCheckBox' onclick='checkAll(this)'/>").Width(30);
+                    .HeaderTemplate("<input type='checkbox' id='masterCheckBox' onclick='checkAll(this)'/>").Filterable(ftb => ftb.Enabled(false)).Width(150).Width(30);
 
               columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["Depo"], "OrgStructureId", "Name").EditorTemplateName("Department").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
-              columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["PeriodList"], "GlFiscalYearId", "Name").Width(120);
+              columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["PeriodList"], "GlFiscalYearId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150).Width(120);
 
               columns.Bound(c => c.NoOfStaff).Width(100);
               //columns.Bound(c => c.RequiredTraining).Width(150);
-              columns.ForeignKey(c => c.RequiredTraining, (IEnumerable)ViewData["TargetGroup"], "LookupId", "Description").Width(120);
+              columns.ForeignKey(c => c.RequiredTraining, (IEnumerable)ViewData["TargetGroup"], "LookupId", "Description").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150).Width(120);
 
-              columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["CourseList"], "LookupId", "Description").EditorTemplateName("Course").Width(120);
-              columns.ForeignKey(c => c.Type, (IEnumerable)ViewData["TraTypeList"], "LookupId", "Description").EditorTemplateName("TrainingType").Width(120);
-              columns.Bound(c => c.Remark).Width(250);
+              columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["CourseList"], "LookupId", "Description").EditorTemplateName("Course").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150).Width(120);
+              columns.ForeignKey(c => c.Type, (IEnumerable)ViewData["TraTypeList"], "LookupId", "Description").EditorTemplateName("TrainingType").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150).Width(120);
+              // columns.Bound(c => c.Remark).Width(250);
+
+              columns.Command(command =>
+              {
+                  command.Custom("reject").Text("Reject").Click("RejectRequest").HtmlAttributes(new { @class = "fa fa-male btn btn-danger" });
+                  //command.Edit();
+                  //command.Destroy();
+              }).Width(180);
           })
           .ToolBar(toolbar =>
           {
@@ -37,59 +44,59 @@
                 @item.SaveButton()
             }
         </text>);
-      })
-        // .Events(ev => ev.DataBound("onDataBound"))
-        // .Events(ev => ev.DataBound("MasteronDataBound"))
+          })
+          // .Events(ev => ev.DataBound("onDataBound"))
+          // .Events(ev => ev.DataBound("MasteronDataBound"))
 
-                             .Editable(editable => editable.Mode(GridEditMode.InCell))
-                                      .Selectable(selectable =>
-                                                   {
-                                                selectable.Mode(GridSelectionMode.Single);
-                                                selectable.Type(GridSelectionType.Row);
-                                                          })
-                                                           .Scrollable(h => h.Height(250))
-                                                              .Groupable()
-        //.Sortable(sortable =>
-        //{
-        //    sortable.SortMode(GridSortMode.SingleColumn);
-        //})
-        //.Filterable()
+          .Editable(editable => editable.Mode(GridEditMode.InCell))
+                   .Selectable(selectable =>
+                   {
+                       selectable.Mode(GridSelectionMode.Single);
+                       selectable.Type(GridSelectionType.Row);
+                   })
+                               .Scrollable(h => h.Height(400))
+                                  .Groupable()
+               //.Sortable(sortable =>
+               //{
+               //    sortable.SortMode(GridSortMode.SingleColumn);
+               //})
+               .Filterable()
 
-                                                 .Pageable(pageable => pageable
-                                                              .Input(true)
-                                                              .Numeric(false)
-                                                                .Refresh(true)
-                                                               .PageSizes(true)
-                                                                 .ButtonCount(5))
-                                                                  .DataSource(dataSource => dataSource
-                                                                      .Ajax()
-                                                                      
-
-                                                                          .Batch(true)
-                                                                                .Events(events =>
-                                                                       {
-                                                                           events.Error("error_handler(\"TrainingAssessmentgrid\")");
-                                                                           events.RequestStart("onRequestStart(\"TrainingAssessmentgrid\")");
-                                                                           events.RequestEnd("onRequestEnd(\"TrainingAssessmentgrid\")");
-                                                                       })
-
-                                                                      .Model(model =>
-                                                                      {
-                                                                          model.Id(p => p.TrainingAssessmentViewModelId);
-
-                                                                          model.Field(p => p.OrgStructureId).Editable(false);
-                                                                          model.Field(p => p.RequiredTraining).Editable(false);
-                                                                          model.Field(p => p.NoOfStaff).Editable(false);
-                                                                          model.Field(p => p.LookupId).Editable(false);
-                                                                          model.Field(p => p.Type).Editable(false);
+               .Pageable(pageable => pageable
+                            .Input(true)
+                            .Numeric(false)
+                              .Refresh(true)
+                             .PageSizes(true)
+                               .ButtonCount(5))
+                                .DataSource(dataSource => dataSource
+                                    .Ajax()
 
 
-                                                                      })
-                                                .Read(read => read.Action("TrainingAssessments_Read", "TrainingAssessment"))
-                                                   .Create(create => create.Action("Transfer_Create", "TrainingAssessment"))
-                                                  .Update(update => update.Action("Transfer_Create", "TrainingAssessment"))
- 
-                                                                      )
+                                        .Batch(true)
+                                              .Events(events =>
+                                              {
+                                                  events.Error("error_handler(\"TrainingAssessmentgrid\")");
+                                                  events.RequestStart("onRequestStart(\"TrainingAssessmentgrid\")");
+                                                  events.RequestEnd("onRequestEnd(\"TrainingAssessmentgrid\")");
+                                              })
+
+                                    .Model(model =>
+                                    {
+                                        model.Id(p => p.TrainingAssessmentViewModelId);
+
+                                        model.Field(p => p.OrgStructureId).Editable(false);
+                                        model.Field(p => p.RequiredTraining).Editable(false);
+                                        // model.Field(p => p.NoOfStaff).Editable(false);
+                                        model.Field(p => p.LookupId).Editable(false);
+                                        model.Field(p => p.GlFiscalYearId).Editable(false);
+                                        model.Field(p => p.Type).Editable(false);
+
+                                    })
+              .Read(read => read.Action("TrainingAssessments_Read", "TrainingAssessment"))
+                 .Create(create => create.Action("Transfer_Create", "TrainingAssessment"))
+                .Update(update => update.Action("Transfer_Create", "TrainingAssessment"))
+
+                          )
 
 )
 <script>
@@ -119,8 +126,8 @@
         for (var j = 0; j < rows.length; j++) {
             var row = $(rows[j]);
             var dataItem = e.sender.dataItem(row);
+            
             if (dataItem.Status === 0) {
-
 
                 row.css("background-color", "red");
 
@@ -182,3 +189,29 @@
             }
         })
     </script>*@
+
+
+<script>
+       function RejectRequest(e) {
+           
+           var row = $(e.target).closest("tr");
+           var grid = $("#TrainingAssessmentgrid").data("kendoGrid");
+           var dataItem = grid.dataItem(row);
+           var id = dataItem.AssesmentId;
+           
+            $.ajax({
+               // contentType: "application/json; charset=utf-8",
+                url: '@Url.Action("RejectRequest", "TrainingAssessment")',
+                data: { id: id},
+                type: 'GET',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                    alert(r.Message);
+
+                    grid.dataSource.read();
+                }
+
+            });       
+    }
+</script>

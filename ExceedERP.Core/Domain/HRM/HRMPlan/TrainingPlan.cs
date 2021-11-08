@@ -31,7 +31,7 @@ namespace ExceedERP.Core.Domain.HRM.HRMPlan
         [Display(Name = "HR_HRMPlan_TrainingPlan_TrainingProvider", ResourceType = typeof(Localization.Resources))]
      
         public int MainCompanyId { get; set; }
-        public virtual MainCompany Company { get; set; }
+        //public virtual MainCompany Company { get; set; }
         [Required]
         [Display(Name = "HR_HRMPlan_TrainingPlan_CostPerPerson", ResourceType = typeof(Localization.Resources))]
         public double CostPerPerson { get; set; }

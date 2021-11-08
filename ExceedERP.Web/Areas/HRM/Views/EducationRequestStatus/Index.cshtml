@@ -96,7 +96,7 @@
                           {
                               //columns.Bound(c => c.RequestId);
                               columns.Bound(c => c.DateReqStatAm).Width(100);
-                              columns.Bound(c => c.Status).EditorTemplateName("Enum").Width(200);
+                              columns.Bound(c => c.Status).EditorTemplateName("EnumWithoutDepApprove").Width(200);
                               columns.Bound(c => c.Remark).Width(100);
                               columns.Command(command =>
                               {

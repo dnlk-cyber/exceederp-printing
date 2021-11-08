@@ -31,15 +31,14 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
         public static string ToAmharic { get; set; }
         public ActionResult Index()
         {
-
             PopulateViewData();
             GetPeriod();
             GetProvider();
             GetCourse();
             TrainingType();
             GetEmployee();
-            return View();
 
+            return View();
         }
         private void PopulateViewData()
         {
@@ -49,6 +48,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
             ViewData["plan"] = plans;
             var lookups = db.Lookups.Where(l => l.LookupType == LookUpTypes.EDUCATION_LEVEL);
             ViewData["EducationLevel"] = lookups;
+            ViewData["Criterias"] = db.TrainingEvaluationCriterias.ToList();
         }
         public void SetDate(string name, string value)
         {
@@ -116,7 +116,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
         public ActionResult CourseTrackings_Read([DataSourceRequest]DataSourceRequest request)
         {
             List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
-            IQueryable<CourseTracking> coursetrackings = db.CourseTrackings.Where(x => mybraches.Contains(x.OrgBranchName));
+            IQueryable<CourseTracking> coursetrackings = db.CourseTrackings;//.Where(x => mybraches.Contains(x.OrgBranchName));
             DataSourceResult result = coursetrackings.ToDataSourceResult(request, courseTracking => new
             {
                 CourseTrackingId = courseTracking.CourseTrackingId,
@@ -150,87 +150,77 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
         public ActionResult CourseTrackings_Create([DataSourceRequest]DataSourceRequest request, CourseTracking courseTracking)
         {
             ModelState.Clear();
+
+            var noOfTrainee = db.TrainingPlans.Where(x => x.Course == courseTracking.LookupId &&
+                          x.GlFiscalYearId == courseTracking.GlFiscalYearId);
+            int no = 0;
+            if (noOfTrainee.Any())
+            {
+                no = noOfTrainee.Sum(x => x.NoofTrainee);
+            }
+            if (no == 0)
+            {
+                no = courseTracking.NoOfTrainee;
+            }
+            if (From.Date > To.Date)
+            {
+                ModelState.AddModelError("", "Please check the date range.");
+            }
+
+            if (FromAmharic == null || ToAmharic == null)
+            {
+                ModelState.AddModelError("", "Date form and to values are mandatory!!");
+            }
+
+            if (courseTracking.TrainingType == Core.Domain.Common.TrainingType.EDUCATION)
+            {
+                courseTracking.TrainingTerm = TrainingTerm.LONG;
+            }
+            else
+            {
+                courseTracking.TrainingTerm = TrainingTerm.SHORT;
+            }
             if (ModelState.IsValid)
             {
-                var noOfTrainee = db.TrainingPlans.Where(x => x.Course == courseTracking.LookupId &&
-                              x.GlFiscalYearId == courseTracking.GlFiscalYearId);
-                int no = 0;
-                if (noOfTrainee.Any())
+                var entity = new CourseTracking
                 {
-                    no = noOfTrainee.Sum(x => x.NoofTrainee);
-                }
-                if (From.Date > To.Date)
-                {
-                    ModelState.AddModelError("", "Please check the date range.");
-                }
+                    GlFiscalYearId = courseTracking.GlFiscalYearId,
+                    TrainingPlanId = courseTracking.TrainingPlanId,
+                    NoOfTrainee = no,
+                    LookupId = courseTracking.LookupId,
+                    From = From,
+                    To = To,
+                    Cost = courseTracking.Cost,
+                    TrainingType = courseTracking.TrainingType,
+                    MainCompanyId = courseTracking.MainCompanyId,
+                    Remark = courseTracking.Remark,
+                    FromAmharic = FromAmharic,
+                    ToAmharic = ToAmharic,
+                    DateCreated = DateTime.Now,
+                    LastModified = courseTracking.LastModified,
+                    CreatedBy = User.Identity.Name,
+                    ModifiedBy = courseTracking.ModifiedBy,
+                    OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name),
+                    TrainingLocation = courseTracking.TrainingLocation,
+                    TrainingTerm = courseTracking.TrainingTerm,
+                    IsOnJob = courseTracking.IsOnJob,
+                };
 
-                //else if (From.Date > DateTime.Now.Date)
+                //var trainee = db.Trainee.Where(x => x.CourseTrackingId == entity.CourseTrackingId).ToList();
+                //foreach (var trainee1 in trainee)
                 //{
-
-                //    ModelState.AddModelError("", "Start Date should be less or equal to the current date!!");
+                //    decimal cost=trainee1.
                 //}
-                //else if (To.Date < DateTime.Now.Date)
-                //{
 
-                //    ModelState.AddModelError("", "End Date should be greater or equal to the current date!!");
-                //}
-                else if (FromAmharic == null || ToAmharic == null)
-                {
-                    ModelState.AddModelError("", "Date form and to values are mandatory!!");
-                }
-                else
-                {
+                db.CourseTrackings.Add(entity);
+                db.SaveChanges();
+                courseTracking.CourseTrackingId = entity.CourseTrackingId;
 
-                    if (courseTracking.TrainingType == Core.Domain.Common.TrainingType.EDUCATION)
-                    {
-                        courseTracking.TrainingTerm = TrainingTerm.LONG;
-                    }
-                    else
-                    {
-                        courseTracking.TrainingTerm = TrainingTerm.SHORT;
-                    }
+                #region operation log
 
-                    var entity = new CourseTracking
-                    {
-                        GlFiscalYearId = courseTracking.GlFiscalYearId,
-                        TrainingPlanId = courseTracking.TrainingPlanId,
-                        NoOfTrainee = no,
-                        LookupId = courseTracking.LookupId,
-                        From = From,
-                        To = To,
-                        Cost = courseTracking.Cost,
-                        TrainingType = courseTracking.TrainingType,
-                        MainCompanyId = courseTracking.MainCompanyId,
-                        Remark = courseTracking.Remark,
-                        FromAmharic = FromAmharic,
-                        ToAmharic = ToAmharic,
-                        DateCreated = DateTime.Now,
-                        LastModified = courseTracking.LastModified,
-                        CreatedBy = User.Identity.Name,
-                        ModifiedBy = courseTracking.ModifiedBy,
-                        OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name),
-                        TrainingLocation = courseTracking.TrainingLocation,
-                        TrainingTerm = courseTracking.TrainingTerm,
-                        IsOnJob = courseTracking.IsOnJob,
-                    };
+                UserHelper.OperationLog(Request.UserHostAddress, "Course Tracking ", "Success", User.Identity.Name, User.Identity.Name + " add new Course Tracking adding date " + DateTime.Today.ToShortDateString(), Modules.HRM);
 
-                    //var trainee = db.Trainee.Where(x => x.CourseTrackingId == entity.CourseTrackingId).ToList();
-                    //foreach (var trainee1 in trainee)
-                    //{
-                    //    decimal cost=trainee1.
-                    //}
-
-                    db.CourseTrackings.Add(entity);
-                    db.SaveChanges();
-                    courseTracking.CourseTrackingId = entity.CourseTrackingId;
-
-                    #region operation log
-                  
-                            UserHelper.OperationLog(Request.UserHostAddress, "Course Tracking ", "Success", User.Identity.Name, User.Identity.Name + " add new Course Tracking adding date "+DateTime.Today.ToShortDateString(),Modules.HRM);
-                    
-                    #endregion
-
-                }
+                #endregion
 
             }
 
@@ -242,82 +232,83 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
         public ActionResult CourseTrackings_Update([DataSourceRequest]DataSourceRequest request, CourseTracking courseTracking)
         {
             ModelState.Clear();
+
+            //var noOfTrainee = db.TrainingPlans.Where(x => x.LookupId == courseTracking.LookupId)?.ToList().Sum(x => x.NoofTrainee);
+            if (courseTracking.FromAmharic != null)
+            {
+                var splitDate = courseTracking.FromAmharic.Split('/');
+                courseTracking.From = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
+            }
+            else
+            {
+                ModelState.AddModelError("","please select initial date ");
+            }
+            if (courseTracking.ToAmharic != null)
+            {
+                var splitDate = courseTracking.ToAmharic.Split('/');
+                courseTracking.To = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
+            }
+            if (courseTracking.From.Date > courseTracking.To.Date)
+            {
+                ModelState.AddModelError("", "Please check the date range.");
+            }
+            //else if (From.Date > DateTime.Now.Date)
+            //{
+
+            //    ModelState.AddModelError("", "Start Date should be less or equal to the current date!!");
+            //}
+            //else if (To.Date > DateTime.Now.Date)
+            //{
+
+            //    ModelState.AddModelError("", "End Date should be less or equal to the current date!!");
+            //}
             if (ModelState.IsValid)
             {
-                //var noOfTrainee = db.TrainingPlans.Where(x => x.LookupId == courseTracking.LookupId)?.ToList().Sum(x => x.NoofTrainee);
-                if (FromAmharic == null)
+                if (courseTracking.TrainingType == Core.Domain.Common.TrainingType.EDUCATION)
                 {
-                    FromAmharic = courseTracking.FromAmharic;
-                    var splitDate = FromAmharic.Split('/');
-                    From = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
+                    courseTracking.TrainingTerm = TrainingTerm.LONG;
                 }
-                else if (ToAmharic == null)
-                {
-                    ToAmharic = courseTracking.ToAmharic;
-                    var splitDate = ToAmharic.Split('/');
-                    To = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
-                }
-                //if (From.Date > To.Date)
-                //{
-                //    ModelState.AddModelError("", "Please check the date range.");
-                //}
-                //else if (From.Date > DateTime.Now.Date)
-                //{
-
-                //    ModelState.AddModelError("", "Start Date should be less or equal to the current date!!");
-                //}
-                //else if (To.Date > DateTime.Now.Date)
-                //{
-
-                //    ModelState.AddModelError("", "End Date should be less or equal to the current date!!");
-                //}
                 else
                 {
-                    if (courseTracking.TrainingType == Core.Domain.Common.TrainingType.EDUCATION)
-                    {
-                        courseTracking.TrainingTerm = TrainingTerm.LONG;
-                    }
-                    else
-                    {
-                        courseTracking.TrainingTerm = TrainingTerm.SHORT;
-                    }
-                    var entity = new CourseTracking
-                    {
-                        CourseTrackingId = courseTracking.CourseTrackingId,
-                        GlFiscalYearId = courseTracking.GlFiscalYearId,
-                        //NoOfTrainee = noOfTrainee,
-                        TrainingPlanId = courseTracking.TrainingPlanId,
-                        LookupId = courseTracking.LookupId,
-                        From = From,
-                        To = To,
-                        Cost = courseTracking.Cost,
-                        TrainingType = courseTracking.TrainingType,
-                        MainCompanyId = courseTracking.MainCompanyId,
-                        Remark = courseTracking.Remark,
-                        FromAmharic = FromAmharic,
-                        DateCreated = courseTracking.DateCreated,
-                        LastModified = DateTime.Now,
-                        CreatedBy = courseTracking.CreatedBy,
-                        ModifiedBy = User.Identity.Name,
-                        OrgBranchName = courseTracking.OrgBranchName,
-                        ToAmharic = ToAmharic,
-                        TrainingLocation = courseTracking.TrainingLocation,
-                        TrainingTerm = courseTracking.TrainingTerm,
-                        IsOnJob = courseTracking.IsOnJob,
-
-                    };
-
-                    db.CourseTrackings.Attach(entity);
-                    db.Entry(entity).State = EntityState.Modified;
-                    db.SaveChanges();
-
-                    #region operation log
-                    
-                        UserHelper.OperationLog(Request.UserHostAddress, "Course Tracking ", "Success", User.Identity.Name, User.Identity.Name + " update Course Tracking updated date " + DateTime.Today.ToShortDateString(),Modules.HRM);
-                    
-                    #endregion
+                    courseTracking.TrainingTerm = TrainingTerm.SHORT;
                 }
+                var entity = new CourseTracking
+                {
+                    CourseTrackingId = courseTracking.CourseTrackingId,
+                    GlFiscalYearId = courseTracking.GlFiscalYearId,
+                    NoOfTrainee = courseTracking.NoOfTrainee,
+                    TrainingPlanId = courseTracking.TrainingPlanId,
+                    LookupId = courseTracking.LookupId,
+                    From = courseTracking.From,
+                    To = courseTracking.To,
+                    Cost = courseTracking.Cost,
+                    TrainingType = courseTracking.TrainingType,
+                    MainCompanyId = courseTracking.MainCompanyId,
+                    Remark = courseTracking.Remark,
+                    FromAmharic = courseTracking.FromAmharic,
+                    DateCreated = courseTracking.DateCreated,
+                    LastModified = DateTime.Now,
+                    CreatedBy = courseTracking.CreatedBy,
+                    ModifiedBy = User.Identity.Name,
+                    OrgBranchName = courseTracking.OrgBranchName,
+                    ToAmharic = courseTracking.ToAmharic,
+                    TrainingLocation = courseTracking.TrainingLocation,
+                    TrainingTerm = courseTracking.TrainingTerm,
+                    IsOnJob = courseTracking.IsOnJob,
+
+                };
+
+                db.CourseTrackings.Attach(entity);
+                db.Entry(entity).State = EntityState.Modified;
+                db.SaveChanges();
+
+                #region operation log
+
+                UserHelper.OperationLog(Request.UserHostAddress, "Course Tracking ", "Success", User.Identity.Name, User.Identity.Name + " update Course Tracking updated date " + DateTime.Today.ToShortDateString(), Modules.HRM);
+
+                #endregion
             }
+
 
             return Json(new[] { courseTracking }.ToDataSourceResult(request, ModelState));
         }

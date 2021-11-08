@@ -54,6 +54,7 @@ namespace ExceedERP.Reporting.HRM.HRM
             this.EntitleAmount = new Telerik.Reporting.TextBox();
             this.TransferredAmount = new Telerik.Reporting.TextBox();
             this.Status = new Telerik.Reporting.TextBox();
+            this.PeriodobjectDataSource = new Telerik.Reporting.ObjectDataSource();
             this.detail = new Telerik.Reporting.DetailSection();
             this.table1 = new Telerik.Reporting.Table();
             this.IdNUm = new Telerik.Reporting.TextBox();
@@ -86,6 +87,7 @@ namespace ExceedERP.Reporting.HRM.HRM
             this.textBox19 = new Telerik.Reporting.TextBox();
             this.textBox20 = new Telerik.Reporting.TextBox();
             this.TransfredForm = new Telerik.Reporting.TextBox();
+            this.LeaveUsageObjectDataSource = new Telerik.Reporting.ObjectDataSource();
             this.pageFooterSection1 = new Telerik.Reporting.PageFooterSection();
             this.pageHeaderSection1 = new Telerik.Reporting.PageHeaderSection();
             this.panel2 = new Telerik.Reporting.Panel();
@@ -97,8 +99,6 @@ namespace ExceedERP.Reporting.HRM.HRM
             this.reportHeaderSection1 = new Telerik.Reporting.ReportHeaderSection();
             this.LeaveUsage = new Telerik.Reporting.TextBox();
             this.shape3 = new Telerik.Reporting.Shape();
-            this.LeaveUsageObjectDataSource = new Telerik.Reporting.ObjectDataSource();
-            this.PeriodobjectDataSource = new Telerik.Reporting.ObjectDataSource();
             this.EmployeeCodeODS = new Telerik.Reporting.ObjectDataSource();
             this.Organization = new Telerik.Reporting.ObjectDataSource();
             ((System.ComponentModel.ISupportInitialize)(this)).BeginInit();
@@ -223,6 +223,12 @@ namespace ExceedERP.Reporting.HRM.HRM
             this.Status.Style.Font.Bold = true;
             this.Status.StyleName = "";
             this.Status.Value = "Status";
+            // 
+            // PeriodobjectDataSource
+            // 
+            this.PeriodobjectDataSource.DataMember = "GetLeavePeriods";
+            this.PeriodobjectDataSource.DataSource = typeof(ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource.LeavePeriodsObjectDataSource);
+            this.PeriodobjectDataSource.Name = "PeriodobjectDataSource";
             // 
             // detail
             // 
@@ -366,14 +372,14 @@ namespace ExceedERP.Reporting.HRM.HRM
             // table3
             // 
             this.table3.Bindings.Add(new Telerik.Reporting.Binding("DataSource", "= Fields.LeaveTakenDetails"));
-            this.table3.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.70841580629348755D)));
-            this.table3.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.59375005960464478D)));
-            this.table3.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.75000011920928955D)));
-            this.table3.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.624878466129303D)));
+            this.table3.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.70841586589813232D)));
+            this.table3.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.59375011920928955D)));
+            this.table3.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.75000017881393433D)));
+            this.table3.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.62487852573394775D)));
             this.table3.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.621688723564148D)));
-            this.table3.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.7783544659614563D)));
+            this.table3.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.77835452556610107D)));
             this.table3.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.3186538219451904D)));
-            this.table3.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.71883738040924072D)));
+            this.table3.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.7188374400138855D)));
             this.table3.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.22499996423721314D)));
             this.table3.Body.SetCellContent(0, 0, this.textBox21);
             this.table3.Body.SetCellContent(0, 3, this.textBox23);
@@ -543,8 +549,8 @@ namespace ExceedERP.Reporting.HRM.HRM
             this.table2.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.8512899875640869D)));
             this.table2.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.3879638910293579D)));
             this.table2.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.0000002384185791D)));
-            this.table2.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.24212273955345154D)));
-            this.table2.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.20557281374931335D)));
+            this.table2.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.24212272465229034D)));
+            this.table2.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.20557278394699097D)));
             this.table2.Body.SetCellContent(0, 0, this.textBox13);
             this.table2.Body.SetCellContent(0, 2, this.textBox16);
             this.table2.Body.SetCellContent(1, 0, this.TotalAmountTaken);
@@ -678,6 +684,15 @@ namespace ExceedERP.Reporting.HRM.HRM
             this.TransfredForm.StyleName = "";
             this.TransfredForm.Value = "Entitled Amount";
             // 
+            // LeaveUsageObjectDataSource
+            // 
+            this.LeaveUsageObjectDataSource.DataMember = "GetLeaveOneByOneDetail";
+            this.LeaveUsageObjectDataSource.DataSource = typeof(ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource.LeaveOneByOneDetailSelfCareObjectDataSource);
+            this.LeaveUsageObjectDataSource.Name = "LeaveUsageObjectDataSource";
+            this.LeaveUsageObjectDataSource.Parameters.AddRange(new Telerik.Reporting.ObjectDataSourceParameter[] {
+            new Telerik.Reporting.ObjectDataSourceParameter("periodNs", typeof(object[]), "= Parameters.periodNs.Value"),
+            new Telerik.Reporting.ObjectDataSourceParameter("id", typeof(string), "= Parameters.id.Value")});
+            // 
             // pageFooterSection1
             // 
             this.pageFooterSection1.Height = Telerik.Reporting.Drawing.Unit.Inch(0.39999985694885254D);
@@ -785,21 +800,6 @@ namespace ExceedERP.Reporting.HRM.HRM
             this.shape3.Style.BorderWidth.Bottom = Telerik.Reporting.Drawing.Unit.Point(0.5D);
             this.shape3.Style.BorderWidth.Top = Telerik.Reporting.Drawing.Unit.Point(1.5D);
             this.shape3.Style.Color = System.Drawing.Color.Transparent;
-            // 
-            // LeaveUsageObjectDataSource
-            // 
-            this.LeaveUsageObjectDataSource.DataMember = "GetLeaveOneByOneDetail";
-            this.LeaveUsageObjectDataSource.DataSource = typeof(ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource.LeaveOneByOneDetailSelfCareObjectDataSource);
-            this.LeaveUsageObjectDataSource.Name = "LeaveUsageObjectDataSource";
-            this.LeaveUsageObjectDataSource.Parameters.AddRange(new Telerik.Reporting.ObjectDataSourceParameter[] {
-            new Telerik.Reporting.ObjectDataSourceParameter("periodNs", typeof(object[]), "= Parameters.periodNs.Value"),
-            new Telerik.Reporting.ObjectDataSourceParameter("id", typeof(string), "= Parameters.id.Value")});
-            // 
-            // PeriodobjectDataSource
-            // 
-            this.PeriodobjectDataSource.DataMember = "GetLeavePeriods";
-            this.PeriodobjectDataSource.DataSource = typeof(ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource.LeavePeriodsObjectDataSource);
-            this.PeriodobjectDataSource.Name = "PeriodobjectDataSource";
             // 
             // EmployeeCodeODS
             // 

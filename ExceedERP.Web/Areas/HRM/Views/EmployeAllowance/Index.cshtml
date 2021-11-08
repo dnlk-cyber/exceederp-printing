@@ -12,18 +12,17 @@
       .Columns(columns =>
       {
           columns.Bound(c => c.EmployeeCode).Width(120);
-          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "PersonId", "FullNameWithOutCode").EditorTemplateName("PayrollListOfEmployee").Width(200);
-          columns.ForeignKey(c => c.AllowanceDefinationId, (IEnumerable)ViewData["AllowanceList"], "AllowanceDefinationId", "AllowanceName").EditorTemplateName("Allowance").Width(200);
-                   columns.Bound(c => c.Pend).ClientTemplate("<input type='checkbox' #= Pend ? checked='checked':'' # class='chkbx' />")
-                        .Width (120);
-                   columns.Bound(c => c.From).Width(150);
-                   columns.Bound(c => c.To).Width(150);
-          columns.Bound(c => c.From);
+          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "PersonId", "FullNameWithOutCode").EditorTemplateName("PayrollListOfEmployee").Filterable(f=>f.Multi(true).Search(true)).Width(200);
+          columns.ForeignKey(c => c.AllowanceDefinationId, (IEnumerable)ViewData["AllowanceList"], "AllowanceDefinationId", "AllowanceName").EditorTemplateName("Allowance").Filterable(f=>f.Multi(true).Search(true)).Width(200);
+          columns.Bound(c => c.Pend).ClientTemplate("<input type='checkbox' #= Pend ? checked='checked':'' # class='chkbx' />").Width (120);
+          columns.Bound(c => c.From).Width(150);
+          columns.Bound(c => c.To).Width(150);
+          columns.Bound(c => c.Remark).Width(150);
           columns.Command(command =>
           {
               //if (HttpContext.Current.User.IsInRole("HR_Benefit_User"))
               //{
-              //    command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+              command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
               //}
               if (HttpContext.Current.User.IsInRole("HR_Admin") || HttpContext.Current.User.IsInRole("HR_Benefit_Admin"))
               {
@@ -32,9 +31,9 @@
           }).Width(200);
       })
       .ToolBar(toolbar =>
-          {
-             
-           toolbar.Template(@<text>
+      {
+
+      toolbar.Template(@<text>
                                 <div class="toolbar">
                                     @if (HttpContext.Current.User.IsInRole("HR_Benefit_User"))
                                     {
@@ -80,7 +79,7 @@
                               
 
          </text>);
-             
+
       })
       .Editable(editable => editable.Mode(GridEditMode.InCell))
       .Excel(excel => excel
@@ -107,26 +106,39 @@
                                         .Refresh(true)
                                         .PageSizes(true)
                                         .ButtonCount(5))
+
+      // .Events(ev => ev
+
+      //  .Save(@"function(e){setTimeout(function(){$('#AllowancePerEmployeegrid').data('kendoGrid').dataSource.sync()})}")
+      //  .Remove(@"function(e){setTimeout(function(){$('#AllowancePerEmployeegrid').data('kendoGrid').dataSource.sync()})}")
+      //)
+
       .DataSource(dataSource => dataSource
           .Ajax()
           .Batch(true )
-                                                    .Events(events =>
-                                                                             {
-                                                                                 events.Error("error_handler(\"AllowancePerEmployeegrid\")");
-                                                                                 events.RequestStart("onRequestStart(\"EmpDisciplineMeasuregrid\")");
-                                                                                 events.RequestEnd("onRequestEnd(\"AllowancePerEmployeegrid\")");
-                                                                             })
-                                                   
+                 .Events(events =>
+                 {
+                     events.Error("error_handler(\"AllowancePerEmployeegrid\")");
+                     events.RequestStart("onRequestStart(\"EmpDisciplineMeasuregrid\")");
+                     events.RequestEnd("onRequestEnd(\"AllowancePerEmployeegrid\")");
+
+                 })
+
           .Model(model =>
           {
               model.Id(p => p.AllowanceId);
               model.Field(p => p.EmployeeCode).Editable(false);
+              model.Field(p => p.Remark).Editable(false);
           })
-                  .Read(read => read.Action("AllowancePerEmployees_Read", "EmployeAllowance"))
-                                      .Create(create => create.Action("Editing_Create", "EmployeAllowance"))
-                              .Update(update => update.Action("Editing_Create", "EmployeAllowance"))
-          .Destroy(destroy => destroy.Action("AllowancePerEmployees_Destroy", "EmployeAllowance"))
+          .Read(read => read.Action("AllowancePerEmployees_Read", "EmployeAllowance"))
+          .Create(create => create.Action("Editing_Create", "EmployeAllowance"))
+          .Update(update => update.Action("Editing_Create", "EmployeAllowance"))
+          .Destroy(destroy => destroy.Action("EmployeAllowance_Destroy", "EmployeAllowance"))
+
+
               )
+
+
 )
 
 

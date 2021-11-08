@@ -16,12 +16,12 @@ using ExceedERP.Core.Domain.Global;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Discipline
 {
-    
-     [AuthorizeRoles(HrmConstants.HRDisciplineUser,HrmConstants.HRAdmin)]
+
+    [AuthorizeRoles(HrmConstants.HRDisciplineUser, HrmConstants.HRAdmin)]
     public class DisciplineMeasuresController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();
-         string ErrorMessage="";
+        string ErrorMessage = "";
         public ActionResult Index()
         {
             return View();
@@ -66,21 +66,22 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Discipline
             #endregion
             return true;
         }
-     
-         [AuthorizeRoles(HrmConstants.HRDisciplineUser,HrmConstants.HRAdmin)]
+
+        [AuthorizeRoles(HrmConstants.HRDisciplineUser, HrmConstants.HRAdmin)]
         public ActionResult DisciplineMeasures_Read([DataSourceRequest]DataSourceRequest request)
         {
             IQueryable<DisciplineMeasures> disciplinemeasures = db.DisciplineMeasures;
-            DataSourceResult result = disciplinemeasures.ToDataSourceResult(request, disciplineMeasures => new {
+            DataSourceResult result = disciplinemeasures.ToDataSourceResult(request, disciplineMeasures => new
+            {
                 MeasuresId = disciplineMeasures.MeasuresId,
                 MeasuresType = disciplineMeasures.MeasuresType,
-              
+
                 Remark = disciplineMeasures.Remark
             });
 
             return Json(result);
         }
-       
+
         [AuthorizeRoles(HrmConstants.HRDisciplineUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult DisciplineMeasures_Create([DataSourceRequest]DataSourceRequest request, DisciplineMeasures disciplineMeasures)
@@ -110,9 +111,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Discipline
 
                     #region operation log
 
-                   // var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
+                    // var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
 
-                    UserHelper.OperationLog(Request.UserHostAddress, "DisciplineMeasures", "Success", User.Identity.Name, User.Identity.Name + " add displine Measure called "+entity.MeasuresType, Modules.HRM);
+                    UserHelper.OperationLog(Request.UserHostAddress, "DisciplineMeasures", "Success", User.Identity.Name, User.Identity.Name + " add displine Measure called " + entity.MeasuresType, Modules.HRM);
 
                     #endregion
                 }
@@ -120,8 +121,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Discipline
 
             return Json(new[] { disciplineMeasures }.ToDataSourceResult(request, ModelState));
         }
-       
-         [AuthorizeRoles(HrmConstants.HRDisciplineUser)]
+
+        [AuthorizeRoles(HrmConstants.HRDisciplineUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult DisciplineMeasures_Update([DataSourceRequest]DataSourceRequest request, DisciplineMeasures disciplineMeasures)
         {
@@ -131,8 +132,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Discipline
                 {
                     MeasuresId = disciplineMeasures.MeasuresId,
                     MeasuresType = disciplineMeasures.MeasuresType,
-                 
-                  
+
+
                     Remark = disciplineMeasures.Remark
                 };
 
@@ -142,7 +143,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Discipline
 
                 #region operation log
 
-               // var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
+                // var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
 
                 UserHelper.OperationLog(Request.UserHostAddress, "DisciplineMeasures", "Success", User.Identity.Name, User.Identity.Name + " update displine Measure called " + entity.MeasuresType, Modules.HRM);
 
@@ -151,8 +152,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Discipline
 
             return Json(new[] { disciplineMeasures }.ToDataSourceResult(request, ModelState));
         }
-    
-         [AuthorizeRoles(HrmConstants.HRAdmin)]
+
+        [AuthorizeRoles(HrmConstants.HRAdmin)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult DisciplineMeasures_Destroy([DataSourceRequest]DataSourceRequest request, DisciplineMeasures disciplineMeasures)
         {
@@ -162,8 +163,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Discipline
                 {
                     MeasuresId = disciplineMeasures.MeasuresId,
                     MeasuresType = disciplineMeasures.MeasuresType,
-                   
-                   
+
+
                     Remark = disciplineMeasures.Remark
                 };
                 #region delete log

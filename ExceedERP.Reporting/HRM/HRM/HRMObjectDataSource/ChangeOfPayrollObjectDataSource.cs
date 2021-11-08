@@ -143,6 +143,18 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                     changeOfPayroll.AssignmentDate = placement.AssignmentDateAmharic;
                     changeOfPayroll.AssignmentType = placement.AssignmentType.ToString();
 
+                    var approver = db.Person_Employee.FirstOrDefault(x=>x.EmployeeId == placement.ApprovedByEmpId);
+                    if(approver != null)
+                    {
+                        changeOfPayroll.ApprovedBy = approver.FullNameaEnglish;
+                    }
+
+                    var prepared = db.Person_Employee.FirstOrDefault(x=>x.EmployeeId == placement.PreparedByEmpId);
+                    if(prepared != null)
+                    {
+                        changeOfPayroll.PreparedBy = prepared.FullNameaEnglish;
+                    }
+
                     changeOfPayrolls.Add(changeOfPayroll);
                 }
             }

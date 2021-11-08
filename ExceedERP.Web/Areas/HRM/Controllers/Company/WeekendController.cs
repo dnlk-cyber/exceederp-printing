@@ -16,6 +16,8 @@ using ExceedERP.Web.Controllers;
 using ExceedERP.Web.Helpers;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Core.Domain.Global;
+using ExceedERP.Core.Domain.Common;
+using ExceedERP.Web.Hubs;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Company
 {
@@ -78,6 +80,20 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
                     db.SaveChanges();
                     weekend.WeekendId = entity.WeekendId;
 
+                    #region notification
+                    
+                    NotifModels notif = new NotifModels
+                    {
+                        UserId = User.Identity.Name,
+                        Title = "Test Notification",
+                        Message = $" {UserInformationHelper.GetEmployeeFullName(User.Identity.Name)}  has testing the notification",
+                        URL = "~/HRM/Weekend"
+                    };
+
+                    Notify.NotifyUser(notif);
+
+                    #endregion
+
                     #region operation log
 
                     var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
@@ -115,6 +131,20 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Company
                 db.Entry(entity).State = EntityState.Modified;
                 db.SaveChanges();
 
+                #region notification
+
+                string user = User.Identity.Name;
+                NotifModels notif = new NotifModels
+                {
+                    UserId = user,
+                    Title = "Test Notification",
+                    Message = $" {UserInformationHelper.GetEmployeeFullName(User.Identity.Name)}  has testing the notification",
+                    URL = "/HRM/Weekend"
+                };
+
+                Notify.NotifyUser(notif);
+
+                #endregion
 
                 #region operation log
 

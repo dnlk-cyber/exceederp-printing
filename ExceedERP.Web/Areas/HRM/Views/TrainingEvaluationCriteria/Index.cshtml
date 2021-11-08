@@ -1,0 +1,26 @@
+﻿
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.HRM.TrainingEducation.TrainingEvaluationCriteria>()
+      .Name("grid")
+      .Columns(columns =>
+      {
+        columns.Bound(c => c.TrainingEvaluationSettingCategoryId);
+        columns.Bound(c => c.Criteria);
+        columns.Bound(c => c.Score);
+        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(180);
+      })
+      .ToolBar(toolbar => {
+            toolbar.Create();
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+      .Pageable()
+      .Filterable()
+      .Scrollable()
+      .DataSource(dataSource => dataSource
+          .Ajax()
+          .Model(model => model.Id(p => p.TrainingEvaluationCriteriaId))
+          .Read(read => read.Action("TrainingEvaluationCriterias_Read", "TrainingEvaluationCriteria"))
+          .Create(create => create.Action("TrainingEvaluationCriterias_Create", "TrainingEvaluationCriteria"))
+          .Update(update => update.Action("TrainingEvaluationCriterias_Update", "TrainingEvaluationCriteria"))
+          .Destroy(destroy => destroy.Action("TrainingEvaluationCriterias_Destroy", "TrainingEvaluationCriteria"))
+      )
+)

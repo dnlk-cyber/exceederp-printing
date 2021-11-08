@@ -1,0 +1,211 @@
+﻿@using System.Collections
+@using System.Security.AccessControl
+@using ExceedERP.Web.Areas.HRM.Controllers.Profile
+
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>InActive Employees Batch</legend>
+
+@(Html.Kendo().Grid<PlacementInActiveBatchVM>()
+                          .Name("PlacementInActiveBatchVMtGrid")
+                          .Columns(columns =>
+                          {
+                          // columns.Bound(c => c.EmployeeCode).Width(150);
+                          //   columns.ForeignKey(c => c.EmployeeCode, (IEnumerable)ViewData["EmployeeCode"], "EmployeeCode", "EmployeeCode").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).HeaderHtmlAttributes(new { style = "overflow: visible; white-space: normal" }).Width(90);
+                          columns.Bound(c => c.Check).Template(@<text></text>).ClientTemplate("<input type='checkbox' #= Check ? checked='checked':'' # class='chkbx' />").Filterable(ftb => ftb.Multi(false).Search(false).Enabled(false)).Width(40);
+                //  .HeaderTemplate("<input type='checkbox' id='masterCheckBox' onclick='checkAll(this)'/>").Filterable(ftb => ftb.Multi(false).Search(false).Enabled(false)).Width(30);
+
+                              //  columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameAmharic").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
+                              columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeListEnglish"], "EmployeeId", "FullNameaEnglish").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).Title("Employee").Width(150);
+                              columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["Branch"], "BranchId", "Name").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).Title("Branch").Width(150);
+                              columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["Department"], "OrgStructureId", "Name").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).Title("Department").Width(150);
+                              columns.ForeignKey(c => c.JobTitleId, (IEnumerable)ViewData["JobTitle"], "LookupId", "Description").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).Title("JobTitle").Width(150);
+
+
+                              columns.Command(command =>
+                              {
+
+                              }).Width(100);
+                          })
+        .ToolBar(toolbar =>
+        {
+
+            // toolbar.Save().Text(Resources.ActionButton_AddNewRecord);
+
+            if (HttpContext.Current.User.IsInRole("HR_Placement_Admin") || HttpContext.Current.User.IsInRole("HR_Admin"))
+            {
+                toolbar.Excel().Text(Resources.ActionButton_ExportExcel).HtmlAttributes(new { @class = "btn btn-primary btn-xs pull-right" });
+                toolbar.Pdf().Text(Resources.ActionButton_ExportPDF).HtmlAttributes(new { @class = "btn btn-primary btn-xs pull-right" });
+            }
+
+            toolbar.Template(@<text>
+             <label>Branch</label>
+                @(Html.Kendo().DropDownList()
+                                 .Name("Project_BranchId")
+                                 .OptionLabel(Resources.Select)
+                                 .Filter("contains")
+                                 .DataTextField("Name")
+                                 .DataValueField("BranchId")
+                                 .ValuePrimitive(false)
+                                 .Events(e => e.Change("BranchChange"))
+                                 .HtmlAttributes(new { style = "width: 150px;" })
+                                 .DataSource(ds =>
+                                 {
+                                    ds.Read("GetBranchs", "EmployeePlacmentWithJ", new { Area = "HRM" });
+                                  })
+                )
+
+               
+                @*@(Html.Kendo().Button()
+                    .Name("BranchButton")
+                     .Events(e => e.Click("DeActivatePlacements"))
+                      .Content("De-Activate")
+                       .HtmlAttributes(new { @class = "btn btn-danger" }))*@
+
+                @item.SaveButton()
+
+            </text>);
+
+
+        //toolbar.Custom().Text(Resources.ActionButton_Refersh).Action("Refresh", "EmployeePlacmentWithJ");
+    })
+                              .Excel(excel => excel
+                                  .FileName(Resources.NavigatorPlacment_EmployeePlacment + ".xlsx")
+                                  .Filterable(true)
+                                  .AllPages(true)
+                                  .ProxyURL(Url.Action("Excel_Export_Save", "EmployeePlacmentWithJ"))
+                              )
+                              .Pdf(pdf => pdf
+                                  .AllPages()
+                                  .FileName(Resources.NavigatorPlacment_EmployeePlacment + ".pdf")
+                                  .ProxyURL(Url.Action("Pdf_Export_Save", "EmployeePlacmentWithJ"))
+                              )
+                              .Editable(editable => editable.Mode(GridEditMode.InCell))
+                              .Scrollable(h => h.Height(800))
+                              //.Groupable()
+
+                              .Sortable(sortable =>
+                              {
+                                  sortable.SortMode(GridSortMode.SingleColumn);
+                              })
+                              .Filterable()
+                              .Events(e =>
+                              {
+                      //e.Save("GetDate");
+                      //e.Edit("GetDate");
+                      //e.DataBound("onDataBound");
+                      //e.Edit("onEdit");
+
+                  })
+                                .Pageable(pageable => pageable
+                                        .Input(true)
+                                        .Numeric(false)
+                                          .Refresh(true)
+                                         .PageSizes(true)
+                                         .PageSizes(new int[] {30,60,100, 200 })
+                                           .ButtonCount(5))
+
+                              .DataSource(dataSource => dataSource
+                                  .Ajax()
+
+                                  .Batch(true)
+                                  // .Sort(sort => sort.Add("EmployeeCode"))
+                                  .Events(events =>
+                                  {
+                                      events.Error("error_handler(\"PlacementInActiveBatchVMtGrid\")");
+                                      events.RequestStart("onRequestStart(\"PlacementInActiveBatchVMtGrid\")");
+                                      events.RequestEnd("onRequestEnd(\"PlacementInActiveBatchVMtGrid\")");
+                                  }
+                                  )
+                                  .Model(model =>
+                                  {
+                                      model.Id(p => p.PlacementId);
+                                      model.Field(p => p.EmployeeId).Editable(false);
+                                      model.Field(p => p.BranchId).Editable(false);
+                                      model.Field(p => p.OrgStructureId).Editable(false);
+                                      model.Field(p => p.JobTitleId).Editable(false);
+                                  })
+                                     .Read(read => read.Action("PlacmentInActiveBatch_Read", "PlacmentInActiveBatch"))
+                                     .Create(create => create.Action("PlacmentInActiveBatch_Create", "PlacmentInActiveBatch"))
+                                     .Update(update => update.Action("PlacmentInActiveBatch_Create", "PlacmentInActiveBatch"))
+                              //.Destroy(destroy => destroy.Action("Placements_Destroy", "PlacmentInActiveBatch"))
+
+                              )
+)
+
+
+
+
+
+<style type="text/css">
+    div.k-edit-form-container {
+        width: 1000px;
+    }
+</style>
+
+
+<script type="text/javascript">
+    $(function () {
+        $('#PlacementInActiveBatchVMtGrid').on('click', '.chkbx', function () {
+            var checked = $(this).is(':checked');
+            var grid = $('#PlacementInActiveBatchVMtGrid').data().kendoGrid;
+            var dataItem = grid.dataItem($(this).closest('tr'));
+            dataItem.set('Check', checked);
+        })
+    })
+
+    function checkAll(ele) {
+        var state = $(ele).is(':checked');
+        var grid = $('#PlacementInActiveBatchVMtGrid').data().kendoGrid;
+        $.each(grid.dataSource.view(), function () {
+            if (this['Check'] != state)
+                this.dirty = true;
+            this['Check'] = state;
+        });
+        grid.refresh();
+    }
+
+</script>
+
+
+<script>
+    function BranchChange() {
+        var value = this.value(),
+            grid = $("#PlacementInActiveBatchVMtGrid").data("kendoGrid");
+
+        if (value) {
+            grid.dataSource.filter({ field: "BranchId", operator: "eq", value: parseInt(value) });
+        } else {
+            grid.dataSource.filter({});
+        }
+    }
+</script>
+
+
+<script>
+    function DeActivatePlacements() {
+
+        var branch = $("#Project_BranchId").data("kendoDropDownList");
+        var branchId = branch.value();
+
+        $('#loading-image').hide();
+
+            $.ajax({
+            url: '@Url.Action("DeActivateEmployeesByBranch", "EmployeePlacmentWithJ")',
+            contentType: "application/json; charset=utf-8",
+            data: { branchId: branchId },
+            type: 'GET',
+            cache: false,
+            success: function (result) {
+                r = result;
+
+                alert(r.Message);
+                $('#loading-image').hide();
+
+            }
+
+        });
+    }
+</script>

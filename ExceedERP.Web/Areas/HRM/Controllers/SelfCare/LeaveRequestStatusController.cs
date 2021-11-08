@@ -118,7 +118,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
             //leaves = leaves.Where(x=>placements.Contains(x.EmployeeId)).ToList();
 
             List<int> employees = inputs.GetUserBranchAllEmployees(User.Identity.Name);
-            leaves = leaves.Where(x => employees.Contains(x.EmployeeId)).ToList();
+            leaves = leaves;//.Where(x => employees.Contains(x.EmployeeId)).ToList();
 
 
             leaverequest = leaves.AsQueryable().OrderBy(x => x.RequestDate);

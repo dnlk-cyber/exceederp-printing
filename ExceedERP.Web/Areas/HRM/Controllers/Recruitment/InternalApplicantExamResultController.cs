@@ -1,4 +1,4 @@
-﻿﻿using System;
+﻿using System;
 using System.Collections.Generic;
 
 using System.Data.Entity;
@@ -6,21 +6,21 @@ using System.Linq;
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
- using ExceedERP.Core.Domain;
- using ExceedERP.Core.Domain.Common;
-﻿using Kendo.Mvc.Extensions;
+using ExceedERP.Core.Domain;
+using ExceedERP.Core.Domain.Common;
+using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using ExceedERP.Core.Domain.HRM;
 using ExceedERP.Core.Domain.HRM.RecruitmentManagment;
 using ExceedERP.DataAccess.Context;
-﻿using ExceedERP.Web.Areas.HRM.Controllers.Profile;
+using ExceedERP.Web.Areas.HRM.Controllers.Profile;
 using ExceedERP.Web.Controllers;
 using ExceedERP.Helpers.Common;
- using ExceedERP.Web.Helpers;
+using ExceedERP.Web.Helpers;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
 {
-   
+
     [AuthorizeRoles(HrmConstants.HRRecruitmentAdmin, HrmConstants.HRRecruitmentUser)]
     public class InternalApplicantExamResultController : BaseController
     {
@@ -75,74 +75,33 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
             }
             ViewData["Vacancy"] = list;
         }
-        private void Configartion(int applicationId)
-        {
-            ApplicantExamResult applicantScreeningResult = new ApplicantExamResult();
-            List<ApplicantExamResult> applicantScreeningResultes = new List<ApplicantExamResult>();
-            var setingvalues = db.Configurations.Where(x => x.Reference == "Recruitment" && x.Category == "Recruitment").ToList();
-            var recruitmentSetting = Enum.GetValues(typeof(RecruitmentSetting))
-                           .Cast<RecruitmentSetting>()
-                           .ToList();
-            if (recruitmentSetting.Any())
-            {
-                foreach (var p in recruitmentSetting)
-                {
-                    if (p.ToString() != "THEORY_EXAM" && p.ToString() != "PRACTICAL_EXAM" && p.ToString() != "INTERVIEW")
-                    {
-                        continue;
-                    }
-
-                    applicantScreeningResult = new ApplicantExamResult();
-                    applicantScreeningResult.Criteria = p.ToString();
-                    if (setingvalues.Any())
-                    {
-                        var oneValue = setingvalues.Where(x => x.Attribute == p.ToString()).FirstOrDefault();
-                        if (oneValue != null)
-                        {
-                            applicantScreeningResult.SettingValue = Convert.ToDecimal(oneValue.CurrentValue);
-                        }
-                    }
-                    applicantScreeningResult.ReferenceType = "Internal";
-                    applicantScreeningResult.CurrentResult = 0;
-                    applicantScreeningResult.Total = 0;
-                    applicantScreeningResult.ApplicantRegistrationId = applicationId;
-                    applicantScreeningResultes.Add(applicantScreeningResult);
-
-                }
-            }
-            db = new ExceedDbContext();
-            db.ApplicantExamResult.AddRange(applicantScreeningResultes);
-            db.SaveChanges();
-        }
-     
+       
         [AuthorizeRoles(HrmConstants.HRRecruitmentAdmin, HrmConstants.HRRecruitmentUser)]
-        public ActionResult ApplicantExamResult_Read([DataSourceRequest]DataSourceRequest request, int id)
+        public ActionResult InternalApplicantExamResult_Read([DataSourceRequest]DataSourceRequest request, int id)
         {
-            IQueryable<ApplicantExamResult> applicantexamresult = db.ApplicantExamResult.Where(x => x.ApplicantRegistrationId == id && x.ReferenceType == "Internal");
-            if (!applicantexamresult.Any())
+            IQueryable<InternalApplicantExamResult> internalApplicantexamresult = db.InternalApplicantExamResults.Where(x => x.InternalApplicantScreeningId == id);
+            //if (!internalApplicantexamresult.Any())
+            //{
+            //    Configartion(id);
+            //    applicantexamresult = db.ApplicantExamResult.Where(x => x.ApplicantScreeningId == id && x.ReferenceType == "Internal");
+            //}
+            DataSourceResult result = internalApplicantexamresult.ToDataSourceResult(request, applicantExamResult => new
             {
-                Configartion(id);
-                applicantexamresult = db.ApplicantExamResult.Where(x => x.ApplicantRegistrationId == id && x.ReferenceType == "Internal");
-            }
-            DataSourceResult result = applicantexamresult.ToDataSourceResult(request, applicantExamResult => new
-            {
-                ApplicantResultId = applicantExamResult.ApplicantResultId,
-                ApplicantRegistrationId = applicantExamResult.ApplicantRegistrationId,
-                Criteria = applicantExamResult.Criteria,
+                InternalApplicantExamResultId = applicantExamResult.InternalApplicantExamResultId,
+                InternalApplicantScreeningId = applicantExamResult.InternalApplicantScreeningId,
                 SettingValue = applicantExamResult.SettingValue,
                 CurrentResult = applicantExamResult.CurrentResult,
                 Total = applicantExamResult.Total,
-
+                ExamType = applicantExamResult.ExamType,
                 Remark = applicantExamResult.Remark,
-                ReferenceType = "Internal"
             });
 
             return Json(result);
         }
-     
-        [AuthorizeRoles( HrmConstants.HRRecruitmentUser)]
+
+        [AuthorizeRoles(HrmConstants.HRRecruitmentUser)]
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult ApplicantExamResult_Create([DataSourceRequest]DataSourceRequest request, ApplicantExamResult applicantExamResult, int id)
+        public ActionResult InternalApplicantExamResult_Create([DataSourceRequest]DataSourceRequest request, InternalApplicantExamResult applicantExamResult, int id)
         {
             ModelState.Clear();
             if (ModelState.IsValid)
@@ -151,29 +110,27 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
                 {
                     return new JavaScriptResult() { Script = "alert('" + " The result must be less or equal to the setting value!!" + "');" };
                 }
-                var entity = new ApplicantExamResult
+                var entity = new InternalApplicantExamResult
                 {
-                    ApplicantRegistrationId = id,
-                    Criteria = applicantExamResult.Criteria,
+                    InternalApplicantScreeningId = id,
                     SettingValue = applicantExamResult.SettingValue,
                     CurrentResult = applicantExamResult.CurrentResult,
                     Total = applicantExamResult.Total,
-
+                    ExamType = applicantExamResult.ExamType,
                     Remark = applicantExamResult.Remark,
-                    ReferenceType = "Internal"
                 };
 
-                db.ApplicantExamResult.Add(entity);
+                db.InternalApplicantExamResults.Add(entity);
                 db.SaveChanges();
-                applicantExamResult.ApplicantResultId = entity.ApplicantResultId;
+                applicantExamResult.InternalApplicantExamResultId = entity.InternalApplicantExamResultId;
             }
 
             return Json(new[] { applicantExamResult }.ToDataSourceResult(request, ModelState));
         }
-      
-        [AuthorizeRoles( HrmConstants.HRRecruitmentUser)]
+
+        [AuthorizeRoles(HrmConstants.HRRecruitmentUser)]
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult ApplicantExamResult_Update([DataSourceRequest]DataSourceRequest request, ApplicantExamResult applicantExamResult)
+        public ActionResult InternalApplicantExamResult_Update([DataSourceRequest]DataSourceRequest request, InternalApplicantExamResult applicantExamResult)
         {
             if (ModelState.IsValid)
             {
@@ -181,50 +138,46 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
                 {
                     return new JavaScriptResult() { Script = "alert('" + " The result must be less or equal to the setting value!!" + "');" };
                 }
-                var entity = new ApplicantExamResult
+                var entity = new InternalApplicantExamResult
                 {
-                    ApplicantResultId = applicantExamResult.ApplicantResultId,
-                    ApplicantRegistrationId = applicantExamResult.ApplicantRegistrationId,
-                    Criteria = applicantExamResult.Criteria,
+                    InternalApplicantExamResultId = applicantExamResult.InternalApplicantExamResultId,
+                    InternalApplicantScreeningId = applicantExamResult.InternalApplicantScreeningId,
                     SettingValue = applicantExamResult.SettingValue,
                     CurrentResult = applicantExamResult.CurrentResult,
                     Total = applicantExamResult.Total,
-
+                    ExamType = applicantExamResult.ExamType,
                     Remark = applicantExamResult.Remark,
-                    ReferenceType = "Internal"
                 };
 
-                db.ApplicantExamResult.Attach(entity);
+                db.InternalApplicantExamResults.Attach(entity);
                 db.Entry(entity).State = EntityState.Modified;
                 db.SaveChanges();
             }
 
             return Json(new[] { applicantExamResult }.ToDataSourceResult(request, ModelState));
         }
-      
+
         [AuthorizeRoles(HrmConstants.HRRecruitmentAdmin, HrmConstants.HRRecruitmentUser)]
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult ApplicantExamResult_Destroy([DataSourceRequest]DataSourceRequest request, ApplicantExamResult applicantExamResult)
+        public ActionResult InternalApplicantExamResult_Destroy([DataSourceRequest]DataSourceRequest request, InternalApplicantExamResult applicantExamResult)
         {
             if (ModelState.IsValid)
             {
-                var entity = new ApplicantExamResult
+                var entity = new InternalApplicantExamResult
                 {
-                    ApplicantResultId = applicantExamResult.ApplicantResultId,
-                    ApplicantRegistrationId = applicantExamResult.ApplicantRegistrationId,
-                    Criteria = applicantExamResult.Criteria,
+                    InternalApplicantExamResultId = applicantExamResult.InternalApplicantExamResultId,
+                    InternalApplicantScreeningId = applicantExamResult.InternalApplicantScreeningId,
                     SettingValue = applicantExamResult.SettingValue,
                     CurrentResult = applicantExamResult.CurrentResult,
                     Total = applicantExamResult.Total,
-
+                    ExamType = applicantExamResult.ExamType,
                     Remark = applicantExamResult.Remark,
-                    ReferenceType = "Internal"
                 };
                 #region delete log
-                UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted internal applicant information of applicant  " + applicantExamResult.ApplicantRegistrationId);
+                UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted internal applicant information of applicant  " + applicantExamResult.InternalApplicantScreeningId);
                 #endregion
-                db.ApplicantExamResult.Attach(entity);
-                db.ApplicantExamResult.Remove(entity);
+                db.InternalApplicantExamResults.Attach(entity);
+                db.InternalApplicantExamResults.Remove(entity);
                 db.SaveChanges();
             }
 

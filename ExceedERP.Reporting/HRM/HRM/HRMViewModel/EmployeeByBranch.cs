@@ -11,5 +11,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMViewModel
         public string Institution { get; set; }
         public string JobTitle { get; set; }
         public string Type { get; set; }
+        public string HireDate { get; set; }
+        public decimal Salary { get; set; }
     }
 }

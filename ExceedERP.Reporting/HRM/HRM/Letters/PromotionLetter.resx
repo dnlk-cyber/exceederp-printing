@@ -117,9 +117,4 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <data name="textBox5.Value" xml:space="preserve">
-    <value>በድርጅታችን    {=Fields.PreviousDepartement} የስራ ሂደት /ፕሮጀክት/ {=Fields.PreviousJobTitle} የስራ መደብ በመስራት ላይ መሆንዎ ይታወቃል፡፡ 
-ስለሆነም በድርጅቱ {=Fields.CurrentDepartement} የስራ ሂደት {=Fields.CurrentJobTitle} የስራ መደብ እድገት እንዲሰጥዎት ተወስኗል፡፡ በመሆኑም እ.ኤ.አ ከ{=Fields.AssignmentDate} ቀን ጀምሮ በሚያገኙት የወር ደመወዝ ላይ ብር  {=Fields.Diffrence} ({=Fields.DiffrenceAmount}) ተጨምሮ በደረጃ {=Fields.CurrentRank} ለስራ መደቡ በተወሰነው {=Fields.CurrentSalary}ደመወዝ  በወር ያልተጣራ ብር {=Fields.CurrentSalary} ({=Fields.CurrentAmount} ) እየተከፈልዎ {=Fields.CurrentDepartement} የስራ ሂደት /ፕሮጀክት/ በ{=Fields.CurrentJobTitle} የስራ መደብ በደረጃ ዕድገት ለ45 ቀን ተከታታይ የሙከራ ጊዜ የተመደቡ መሆኑን እያሳወቅን ስራውን በትጋትና በታማኝነት እንዲያከናውኑ አደራ ጭምር እያሳሰብን፤ የተመደቡበት የስራ ሂደት /ፕሮጀክትም/ የሰራተኛው ዕድገት የሙከራ ጊዜ ከመጠናቀቁ በፊት የስራ አፈፃፀም ምዘና ሞልቶ እንዲያሳውቅ እናሳስባለን፡፡ 
-</value>
-  </data>
 </root>

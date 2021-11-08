@@ -1,6 +1,6 @@
-﻿using System;
+﻿using ExceedERP.Core.Domain.Finance.GL;
+using System;
 using System.ComponentModel.DataAnnotations;
-using ExceedERP.Core.Domain.Finance.GL;
 
 namespace ExceedERP.Core.Domain.HRM.HealthAndInsurance
 {

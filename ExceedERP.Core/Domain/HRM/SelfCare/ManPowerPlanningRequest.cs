@@ -1,5 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Web.Mvc;
 using ExceedERP.Core.Domain.Common;
 
 namespace ExceedERP.Core.Domain.HRM.SelfCare
@@ -8,15 +11,16 @@ namespace ExceedERP.Core.Domain.HRM.SelfCare
     {
         [Key]
         public int ManPowerPlanningRequestId { get; set; }
-        [Required]
+      
         [Display(Name = "HR_SelfCare_RecruitmentRequest_OrgStructureId", ResourceType = typeof(Localization.Resources))]
         public int OrgStructureId { get; set; }
         [Required]
         [Display(Name = "HR_SelfCare_RecruitmentRequest_EmploymentType", ResourceType = typeof(Localization.Resources))]
         public EmployeeStatus EmploymentType { get; set; }
-        [Required]
+        
+        //[Required]
         [Display(Name = "HR_SelfCare_RecruitmentRequest_LookupId", ResourceType = typeof(Localization.Resources))]
-        public int LookupId { get; set; }
+        public int? LookupId { get; set; }
         [Required]
         [Display(Name = "HR_SelfCare_RecruitmentRequest_NoOfVaccantPostion", ResourceType = typeof(Localization.Resources))]
         public int NoOfVaccantPostion { get; set; }
@@ -24,7 +28,6 @@ namespace ExceedERP.Core.Domain.HRM.SelfCare
         public int NoOfCurrentStaff { get; set; }
         [Display(Name = "HR_SelfCare_RecruitmentRequest_NoOfShouldBeStaff", ResourceType = typeof(Localization.Resources))]
         public int NoOfShouldBeStaff { get; set; }
-
 
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}")]
@@ -43,6 +46,7 @@ namespace ExceedERP.Core.Domain.HRM.SelfCare
         [Display(Name = "HR_SelfCare_LeaveRequest_IsForOther", ResourceType = typeof(Localization.Resources))]
         public bool IsForOther { get; set; }
         public bool IsNewJobTitle { get; set; }
+        [Display(Name ="New Job Title")]
         public string JobTitle { get; set; }
     }
 }

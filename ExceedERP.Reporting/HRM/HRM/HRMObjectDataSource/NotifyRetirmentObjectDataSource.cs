@@ -21,25 +21,23 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             List<EmployeeRetirment> list = new List<EmployeeRetirment>();
             EmployeeRetirment employee = new EmployeeRetirment();
             db = new ExceedDbContext();
-            List<Person_Employee> emplist;
-            if (branchId != null && orgStructureId != null)
-            {
-                emplist = EmployeeHelper.GetEmployeesByBranchAndWorkUnit(Convert.ToInt32(branchId), Convert.ToInt32(orgStructureId)).Where(x => x.IsActive).ToList();
-            }
-            else if (branchId != null && orgStructureId == null)
-            {
-                emplist = EmployeeHelper.GetEmployeesByBranch(Convert.ToInt32(branchId)).Where(x => x.IsActive).ToList();
-            }
-            else if (branchId == null && orgStructureId != null)
-            {
-                emplist = EmployeeHelper.GetEmployeesByWorkUnit(Convert.ToInt32(orgStructureId)).Where(x => x.IsActive).ToList();
-            }
-            else
-            {
+            List<Person_Employee> emplist = db.Person_Employee.ToList();
 
-                emplist = db.Person_Employee.Where(x => x.IsActive).ToList();
+            var placements = db.Placements.ToList();
 
+            if(branchId != null)
+            {
+                int.TryParse(branchId, out int braId);
+                var empIds = EmployeeHelper.GetEmployees_ByBranch_FromPlacement(placements, braId).Select(x=>x.EmployeeId).ToList();
+                emplist = emplist.Where(x => empIds.Contains(x.EmployeeId)).ToList();
             }
+            if(orgStructureId != null)
+            {
+                int.TryParse(orgStructureId, out int orgId);
+                var empIds = EmployeeHelper.GetEmployees_ByDepartment_WithCaseTeam_FromPlacement(placements, orgId).Select(x => x.EmployeeId).ToList();
+                emplist = emplist.Where(x => empIds.Contains(x.EmployeeId)).ToList();
+            }
+
             if (value != null)
             {
                 int retirementAge = 0;
@@ -48,18 +46,16 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                 {
                     retirementAge = Convert.ToInt32(validator.CurrentValue);
 
-
-
                     foreach (var emp in emplist)
                     {
                         employee = new EmployeeRetirment();
-                        int x = (DateTime.Now - emp.DateOfBirth).Days/365;
+                        int x = (DateTime.Now - emp.DateOfBirth).Days / 365;
                         int y = retirementAge - x;
                         if (y <= Convert.ToInt32(value))
                         {
-                            employee.FullName = emp.FirstName + " " + emp.MiddleName + " " + emp.LastName;
+                            employee.FullName = emp.FullNameAmharic;
                             employee.IdNumber = emp.EmployeeCode;
-                           // employee.Sex = emp.Gender;
+
                             if (emp.Gender == Gender.MALE)
                             {
                                 employee.Sex = "ወንድ";
@@ -68,32 +64,18 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                             {
                                 employee.Sex = "ሴት";
                             }
-                            //decimal remday = x * 365 / 30;
-                            //string[] remaings = remday.ToString().Split('.');
-                            //if (remaings.Length == 2)
-                            //{
-                            //employee.RemainingDays = remday.ToString() + ">>" + remaings[0] + "Month " + remaings[1] + "Days";
-                            var retireYear = emp.DateOfBirth.AddYears(60);
-                                employee.RemainingDays = retireYear.Subtract(DateTime.Today).TotalDays.ToString();
-                            //}
-                            //if (remaings.Length == 3)
-                            //{
-                            //    employee.RemainingDays = remday.ToString() + ">>" + remaings[0] + "Year " + remaings[1] +
-                            //                             "Month " + remaings[2] +
-                            //                             "Days";
-                            //}
-                            //if (remaings.Length == 1)
-                            //{
-                            //    employee.RemainingDays = remday.ToString() + ">>" + remaings[0] + "Days ";
-                            //}
-                            DateTime date = emp .DateOfBirth.AddYears(retirementAge);
 
-                            employee.RetirmentDate = XAPI.EthiopicDateTime.GetEthiopicDate(date.Day,date.Month,date.Year);
+                            var retireYear = emp.DateOfBirth.AddYears(60);
+
+                            employee.RemainingDays = retireYear.Subtract(DateTime.Today).TotalDays.ToString();
+
+                            DateTime date = emp.DateOfBirth.AddYears(retirementAge);
+
+                            employee.RetirmentDate = XAPI.EthiopicDateTime.GetEthiopicDate(date.Day, date.Month, date.Year);
                             employee.BirthDate = emp.DateOfBirthAm;
                             list.Add(employee);
                         }
                     }
-
                 }
             }
             return list;

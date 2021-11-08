@@ -1,0 +1,15 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.Common
+@using ExceedERP.Core.Localization
+@(Html.Kendo().DropDownListFor(m => m)
+                .DataTextField("FullNameAmharic")
+                    .DataValueField("EmployeeId")
+                    .Filter("contains")
+                    .OptionLabel(Resources.Select)
+                .DataSource(dataSource =>
+                          {
+                              dataSource.Read(read => read.Action("GetActiveEmployees", "HRMDataProvider", new { area = "HRM" }))
+                                  .ServerFiltering(false);
+                          })
+                     .ValuePrimitive(true)
+)

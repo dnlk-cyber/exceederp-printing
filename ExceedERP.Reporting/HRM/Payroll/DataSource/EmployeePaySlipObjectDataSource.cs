@@ -62,11 +62,21 @@ namespace ExceedERP.Reporting.HRM.Payroll.DataSource
                                 .EmployeeCode;
                         EmployeeInfo = new PaySlip();
                         {
-                            EmployeeInfo.Deparatment = placments.MainCompanyStructure.Name;
+                            //EmployeeInfo.Deparatment = placments.MainCompanyStructure.Name;
+                            var str = db.MainCompanyStructures.Find(placments.OrgStructureId);
+                            if(str != null)
+                            {
+                                EmployeeInfo.Deparatment = str.Name;
+                            }
                         }
                         if (bankReference != null)
                         {
-                            EmployeeInfo.Deparatment = placments.MainCompanyStructure.Name;
+                            //EmployeeInfo.Deparatment = placments.MainCompanyStructure.Name;
+                            var str = db.MainCompanyStructures.Find(placments.OrgStructureId);
+                            if (str != null)
+                            {
+                                EmployeeInfo.Deparatment = str.Name;
+                            }
                         }
                         if (bank != null)
                         {

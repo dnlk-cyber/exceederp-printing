@@ -27,9 +27,18 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             {
                 term = TrainingTerm.SHORT.ToString();
             }
+
+            // include case teams under that department
+            List<int> departments = new List<int>();
+            if(workunit != null)
+            {
+                int.TryParse(workunit, out int orgId);
+                 departments = db.MainCompanyStructures.Where(x => x.OrgStructureId == orgId || x.Parent == orgId).Select(x=>x.OrgStructureId).ToList();
+            }
+          
+
             if (fisicalYear != null && workunit == null && trainingType==null)
             {
-
                 var courseTracking = db.CourseTrackings.Where(x => x.GlFiscalYearId.ToString() == fisicalYear).ToList();
                 if(branch != null)
                 {
@@ -102,7 +111,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                     var workandCostSummary = new WorkandCostSummary();
 
                     var trainingPlan =
-                        db.TrainingPlans.FirstOrDefault(x => x.TrainingPlanId == tracking.TrainingPlanId && x.WorkUnit.ToString()==workunit);
+                        db.TrainingPlans.FirstOrDefault(x => x.TrainingPlanId == tracking.TrainingPlanId && departments.Contains(x.WorkUnit));
                     if (trainingPlan != null)
                     {
 
@@ -230,7 +239,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                     var workandCostSummary = new WorkandCostSummary();
 
                     var trainingPlan =
-                        db.TrainingPlans.FirstOrDefault(x => x.TrainingPlanId == tracking.TrainingPlanId && x.WorkUnit.ToString() == workunit);
+                        db.TrainingPlans.FirstOrDefault(x => x.TrainingPlanId == tracking.TrainingPlanId && departments.Contains(x.WorkUnit));
                     if (trainingPlan != null)
                     {
 

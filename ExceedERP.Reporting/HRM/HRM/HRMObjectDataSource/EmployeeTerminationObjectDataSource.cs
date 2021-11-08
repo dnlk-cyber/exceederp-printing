@@ -16,167 +16,101 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
         private ExceedDbContext db = new ExceedDbContext();
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<EmployeeTermination> GetEmployeeTermination(string reason, DateTime from, DateTime to, string branchId, string orgStructureId)
+        public List<EmployeeTermination> GetEmployeeTermination(string reason, DateTime? from, DateTime? to, string branchId, string orgStructureId)
         {
             List<EmployeeTermination> EmployeeInfoList = new List<EmployeeTermination>();
             EmployeeTermination EmployeeInfo = new EmployeeTermination();
-            db = new ExceedDbContext();
-            var branches = db.Branch.ToList();
-            db = new ExceedDbContext();
-            var jobs = db.Lookups.ToList();
-            db = new ExceedDbContext();
-            DateTime dateTow = new DateTime(to.Year, to.Month, to.Day);
-            DateTime dateOne = new DateTime(from.Year, from.Month, from.Day);
-            var placements = db.Placements.ToList();
-            List<Person_Employee> employees = db.Person_Employee.ToList();
-           
-            if (branchId != null && orgStructureId != null)
-            {
-                employees = EmployeeHelper.GetEmployeesByBranchAndWorkUnit(Convert.ToInt32(branchId), Convert.ToInt32(orgStructureId)).ToList();
-            }
-            else if (branchId != null && orgStructureId == null)
-            {
-                employees = EmployeeHelper.GetEmployeesByBranch(Convert.ToInt32(branchId)).ToList();
-            }
-            else if (branchId == null && orgStructureId != null)
-            {
-                employees = EmployeeHelper.GetEmployeesByWorkUnit(Convert.ToInt32(orgStructureId)).ToList();
-            }
-            else
-            {
 
-                employees = db.Person_Employee.ToList();
+            var terminations = db.Terminations.Where(x=>x.IsOnlineApproved).ToList();
 
-            }
-            List<Termination> terminations = db.Terminations.ToList();
-            if (from != null && to != null)
+            if (branchId != null)
             {
-                terminations = terminations.Where(x => x.TerminationDate >= from && x.TerminationDate <= to).ToList();               
+                int.TryParse(branchId, out int braId);
+                var placements = db.Placements.Where(x => x.BranchId == braId).Select(x => x.EmployeeId).ToList();
+                terminations = terminations.Where(x => placements.Contains(x.EmployeeId)).ToList();
+            }
+            if (orgStructureId != null)
+            {
+                int.TryParse(orgStructureId, out int orgId);
+                var placements = EmployeeHelper.GetEmployees_ByDepartment_WithCaseTeam_FromPlacement(db.Placements.ToList(), orgId).Select(x => x.EmployeeId).ToList();
+                terminations = terminations.Where(x => placements.Contains(x.EmployeeId)).ToList();
             }
             if (reason != null)
             {
-                db = new ExceedDbContext();
-                terminations = terminations.Where(x => x.LookupId.ToString() == reason).ToList();
-                if (terminations.Any())
-                {
-                    foreach (var l in terminations)
-                    {
-                        db = new ExceedDbContext();
-
-                        var emplist = employees.Where(x => x.EmployeeId == l.EmployeeId).ToList();
-
-                        if (emplist.Any())
-                        {
-                            foreach (var e in emplist)
-                            {
-                                DateTime terminationDate = new DateTime(l.TerminationDate.Year, l.TerminationDate.Month,
-                                    l.TerminationDate.Day);
-                                if (terminationDate >= dateOne && terminationDate <= dateTow)
-                                {
-                                    EmployeeInfo = new EmployeeTermination();
-                                    EmployeeInfo.EmployeeId = e.EmployeeCode;
-                                    if (e.Gender == 0)
-                                    {
-                                        EmployeeInfo.Sex = "ወንድ";
-                                    }
-                                    else
-                                    {
-                                        EmployeeInfo.Sex = "ሴት";
-                                    }
-                                    EmployeeInfo.FullName = e.FirstName + " " + e.MiddleName + " " + e.LastName;
-                                    EmployeeInfo.Reason =
-                                        jobs.Where(x => x.LookupId == l.LookupId).FirstOrDefault().Description;
-                                 
-
-                                    EmployeeInfo.TerminationDate = l.TerminationDateAm;// l.TerminationDate.ToShortDateString();
-                                    var place = placements.Where(x => x.EmployeeId == e.EmployeeId).FirstOrDefault();
-                                    if (place != null)
-                                    {
-
-
-                                        EmployeeInfo.Branch =
-                                            branches.Where(x => x.BranchId == place.BranchId).FirstOrDefault().Name;
-                                        EmployeeInfo.JobTitle =
-                                            jobs.Where(x => x.LookupId == place.LookupId)
-                                                .FirstOrDefault()
-                                                .Description;
-
-
-                                        var deptt =
-                                            db.MainCompanyStructures.Where(
-                                                    x => x.OrgStructureId == place.OrgStructureId)
-                                                .FirstOrDefault();
-                                        if (deptt != null)
-                                        {
-                                            EmployeeInfo.Departement = deptt.Name;
-                                        }
-                                    }
-                                    EmployeeInfoList.Add(EmployeeInfo);
-                                }
-                            }
-
-                        }
-                    }
-                }
+                int.TryParse(reason, out int lookUpId);
+                terminations = terminations.Where(x => x.LookupId == lookUpId).ToList();
             }
-            else
+            if (from != null && to == null)
             {
+                terminations = terminations.Where(x => x.TerminationDate >= from.Value).ToList();
+            }
+            if (from == null && to != null)
+            {
+                terminations = terminations.Where(x => x.TerminationDate <= to.Value).ToList();
+            }
+            if (from != null && to != null)
+            {
+                terminations = terminations.Where(x => x.TerminationDate >= from.Value && x.TerminationDate <= to.Value).ToList();
+            }
 
+            foreach (var l in terminations)
+            {
                 db = new ExceedDbContext();
-                terminations = terminations.ToList();
-                if (terminations.Any())
+
+                var e = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == l.EmployeeId);
+
+                if (e != null)
                 {
-                    foreach (var l in terminations)
+                    EmployeeInfo = new EmployeeTermination();
+
+                    EmployeeInfo.EmployeeId = e.EmployeeCode;
+
+                    if (e.Gender == 0)
                     {
-                        db = new ExceedDbContext();
+                        EmployeeInfo.Sex = "ወንድ";
+                    }
+                    else
+                    {
+                        EmployeeInfo.Sex = "ሴት";
+                    }
 
-                        var emplist = employees.Where(x => x.EmployeeId == l.EmployeeId).ToList();
+                    EmployeeInfo.FullName = e.FullNameAmharic;
 
-                        if (emplist.Any())
+                    var look = db.Lookups.FirstOrDefault(x => x.LookupId == l.LookupId);
+                    if (look != null)
+                    {
+                        EmployeeInfo.Reason = look.Description;
+                    }
+
+                    EmployeeInfo.TerminationDate = l.TerminationDateAm;// l.TerminationDate.ToShortDateString();
+                    var place = db.Placements.FirstOrDefault(x => x.EmployeeId == e.EmployeeId);
+
+                    if (place != null)
+                    {
+                        var branch = db.Branch.FirstOrDefault(x => x.BranchId == place.BranchId);
+                        if (branch != null)
                         {
-                            foreach (var e in emplist)
-                            {
+                            EmployeeInfo.Branch = branch.Name;
+                        }
 
-                                EmployeeInfo = new EmployeeTermination();
-                                if (e.Gender == 0)
-                                {
-                                    EmployeeInfo.Sex = "ወንድ";
-                                }
-                                else
-                                {
-                                    EmployeeInfo.Sex = "ሴት";
-                                }
-                                EmployeeInfo.FullName = e.FirstName + " " + e.MiddleName + " " + e.LastName;
-                                EmployeeInfo.EmployeeId = e.EmployeeCode;
-                                var place = placements.Where(x => x.EmployeeId == e.EmployeeId).FirstOrDefault();
-                                if (place != null)
-                                {
+                        var jobTitle = db.Lookups.FirstOrDefault(x => x.LookupId == place.LookupId);
+                        if (jobTitle != null)
+                        {
+                            EmployeeInfo.JobTitle = jobTitle.Description;
+                        }
 
-
-                                    EmployeeInfo.Branch =
-                                        branches.Where(x => x.BranchId == place.BranchId).FirstOrDefault().Name;
-                                    EmployeeInfo.JobTitle =
-                                        jobs.Where(x => x.LookupId == place.LookupId).FirstOrDefault().Description;
-                                    var deptt =
-                                        db.MainCompanyStructures.Where(
-                                                x => x.OrgStructureId == place.OrgStructureId)
-                                            .FirstOrDefault();
-                                    if (deptt != null)
-                                    {
-                                        EmployeeInfo.Departement = deptt.Name;
-                                    }
-                                }
-                                EmployeeInfo.Reason =
-                                    jobs.Where(x => x.LookupId == l.LookupId).FirstOrDefault().Description;
-                                EmployeeInfo.TerminationDate = l.TerminationDateAm;// l.TerminationDate.ToShortDateString();
-                                EmployeeInfoList.Add(EmployeeInfo);
-
-                            }
-
+                        var deptt = db.MainCompanyStructures.FirstOrDefault(x => x.OrgStructureId == place.OrgStructureId);
+                        if (deptt != null)
+                        {
+                            EmployeeInfo.Departement = deptt.Name;
                         }
                     }
+
+                    EmployeeInfoList.Add(EmployeeInfo);
+
                 }
             }
+
             return EmployeeInfoList;
         }
     }

@@ -72,7 +72,7 @@
       {
           //columns.Bound(c => c.RequestId);
           columns.Bound(c => c.DateReqStatAm).Width(120);
-          columns.Bound(c => c.Status).EditorTemplateName("Enum").Width(200);
+          columns.Bound(c => c.Status).EditorTemplateName("EnumWithoutApprove").Width(200);
           columns.ForeignKey(c => c.ApproverId, (IEnumerable)ViewData["EmployeeName"], "EmployeeId", "FullNameAmharic").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
           columns.ForeignKey(c => c.ApproverDepartment, (IEnumerable)ViewData["Department"], "OrgStructureId", "Name").Width(150).Filterable(ftb => ftb.Multi(true).Search(true));
           columns.Bound(c => c.Remark).Width(100);

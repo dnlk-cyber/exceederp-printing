@@ -84,11 +84,21 @@ namespace ExceedERP.Reporting.HRM.Payroll.DataSource
                             }
                             if (placments != null)
                             {
-                                EmployeeInfo.Deparatment = placments.MainCompanyStructure.Name;
+                                //EmployeeInfo.Deparatment = placments.MainCompanyStructure.Name;
+                                var str = db.MainCompanyStructures.Find(placments.OrgStructureId);
+                                if (str != null)
+                                {
+                                    EmployeeInfo.Deparatment = str.Name;
+                                }
                             }
                             if (bankReference != null)
                             {
-                                EmployeeInfo.Deparatment = placments.MainCompanyStructure.Name;
+                                //EmployeeInfo.Deparatment = placments.MainCompanyStructure.Name;
+                                var str = db.MainCompanyStructures.Find(placments.OrgStructureId);
+                                if (str != null)
+                                {
+                                    EmployeeInfo.Deparatment = str.Name;
+                                }
                             }
                             if (bank != null)
                             {
@@ -350,7 +360,12 @@ namespace ExceedERP.Reporting.HRM.Payroll.DataSource
                                 }
                                 if (placments != null)
                                 {
-                                    EmployeeInfo.Deparatment = placments.MainCompanyStructure.Name;
+                                    //EmployeeInfo.Deparatment = placments.MainCompanyStructure.Name;
+                                    var str = db.MainCompanyStructures.Find(placments.OrgStructureId);
+                                    if (str != null)
+                                    {
+                                        EmployeeInfo.Deparatment = str.Name;
+                                    }
                                 }
                                 if (bank != null)
                                 {

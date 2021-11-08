@@ -22,9 +22,12 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
         private ExceedDbContext db = new ExceedDbContext();
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<WarrantyLetterViewModel> GetWarrantyLetter(string employee, bool header)
+        public List<WarrantyVM> GetWarrantyLetter(string employee, bool header, string toCompany, string toPerson, string companyAddress)
         {
+            List<WarrantyVM> warrantyOnePerson = new List<WarrantyVM>();
+
             List<WarrantyLetterViewModel> warrantyList = new List<WarrantyLetterViewModel>();
+
             var warranty = new WarrantyLetterViewModel();
 
             if (header)
@@ -104,44 +107,98 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                 // warrantyList.Add(warranty);
             }
 
-            var warrReq = db.ExprianceRequests.FirstOrDefault(x => x.EmployeeId.ToString() == employee);
-            if (warrReq != null)
+            if (employee != null)
             {
-                //warranty = new WarrantyLetterViewModel();
-                var empName = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == warrReq.EmployeeId);
-                var placement = db.Placements.FirstOrDefault(x => x.EmployeeId.ToString() == employee && x.isCurrent);
-                if (empName != null)
+                int.TryParse(employee, out int empId);
+                var warrReq = db.ExprianceRequests.FirstOrDefault(x => x.EmployeeId == empId);
+                if (warrReq != null)
                 {
-                    warranty.Name = empName.FullNameAmharic;
-                    warranty.Company = "";
-                    warranty.Adress = "";
-                    warranty.RequestDate = warrReq.ApplicationDateAm;
-                    //warranty.EmployeeStatus = empName.Status;
-                    if (warranty.EmployeeStatus == EmployeeStatus.PERMANENT.ToString())
-                    {
-                        warranty.EmployeeStatus = "ቋሚ";
-                    }
-                    if (warranty.EmployeeStatus == EmployeeStatus.CONTRACT.ToString())
-                    {
-                        warranty.EmployeeStatus = "ጊዜያዊ";
-                    }
-                    if (placement != null)
-                    {
-                        warranty.Salary = placement.Salary;
+                    //warranty = new WarrantyLetterViewModel();
+                    var empName = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == warrReq.EmployeeId);
 
-                        warranty.SalaryInWord =
-                                     Convert.ToInt32(warranty.Salary).ToWordAmharic();
+                    if (empName != null)
+                    {
+                        string title = "";
+                        var lookUP = db.Lookups.FirstOrDefault(x=>x.LookupId == empName.Title);
+                        if(lookUP != null)
+                        {
+                            title = lookUP.Description;
+                        }
+                        warranty.Name = title + " " + empName.FullNameAmharic;
+                        warranty.Company = "";
+                        warranty.Adress = "";
+                        warranty.RequestDate = warrReq.ApplicationDateAm;
+                        //warranty.EmployeeStatus = empName.Status;
+                        if (warranty.EmployeeStatus == EmployeeStatus.PERMANENT.ToString())
+                        {
+                            warranty.EmployeeStatus = "ቋሚ";
+                        }
+                        if (warranty.EmployeeStatus == EmployeeStatus.CONTRACT.ToString())
+                        {
+                            warranty.EmployeeStatus = "ጊዜያዊ";
+                        }
+
+                        var placement = db.Placements.FirstOrDefault(x => x.EmployeeId == empId && x.isCurrent);
+                        if (placement != null)
+                        {
+                            warranty.Salary = placement.Salary;
+
+                            warranty.SalaryInWord = Convert.ToInt32(warranty.Salary).ToWordAmharic();
+                        }
+                        var template = db.Templates.FirstOrDefault(x => x.TemplateType == TemplateTypes.WarrantyAm);
+                        if (template != null)
+                        {
+                            warranty.TempOne = template.TempOne;
+                        }
                     }
+
+                }
+                warrantyList.Add(warranty);
+
+
+
+                foreach (var war in warrantyList)
+                {
+                    var letter = new WarrantyVM();
+
+                    #region Headers
+
+                    letter.Abbreviation = war.Abbreviation;
+                    letter.Address = war.Address;
+                    letter.AmharicName = war.AmharicName;
+                    letter.City = war.City;
+                    letter.Email = war.Email;
+                    letter.Fax = war.Fax;
+                    letter.LogoFileName = war.LogoFileName;
+                    letter.AmharicName = war.AmharicName;
+                    letter.TradeName = war.TradeName;
+                    letter.Pobox = war.Pobox;
+                    letter.Tel = war.Tel;
+                    letter.WebSite = war.WebSite;
+
+                    #endregion
+
+                    letter.Title = "ዋስ ስለመሆን ይመለከታል፡፡";
+
                     var template = db.Templates.FirstOrDefault(x => x.TemplateType == TemplateTypes.WarrantyAm);
                     if (template != null)
                     {
-                        warranty.TempOne = template.TempOne;
+                        string doc = "";
+
+                        doc = template.Document.Replace("-ApplicantName-", war.Name);
+                        doc = doc.Replace("-ToName-", toPerson);
+                        doc = doc.Replace("-ApplicationDate-", war.RequestDate);
+                        string salary = war.Salary + "/" + war.SalaryInWord + "/";
+                        doc = doc.Replace("-Salary-", salary);
+
+                        letter.Warranty = doc;
+
+                        warrantyOnePerson.Add(letter);
                     }
                 }
-
             }
-            warrantyList.Add(warranty);
-            return warrantyList;
+
+            return warrantyOnePerson;
         }
         public static Image ByteArrayToImage(byte[] byteArrayIn)
         {
@@ -153,6 +210,25 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
             }
             return null;
 
+        }
+
+        public class WarrantyVM
+        {
+            public string Warranty { get; set; }
+            public string Title { get; set; }
+            public string TradeName { get; set; }
+            public string AmharicName { get; set; }
+            public string Abbreviation { get; set; }
+            public Image LogoFileName { get; set; }
+            public string OrgAddress { get; set; }
+
+            public string Email { get; set; }
+            public string WebSite { get; set; }
+            public string City { get; set; }
+            public string Fax { get; set; }
+            public string Pobox { get; set; }
+            public string Tel { get; set; }
+            public string Address { get; set; }
         }
     }
 }

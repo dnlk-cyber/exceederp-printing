@@ -16,11 +16,10 @@ using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.HRM.RecruitmentManagment;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Web.Helpers;
-using ExceedERP.Core.Domain.Global;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
 {
-
+  
     [AuthorizeRoles(HrmConstants.HRRecruitmentAdmin, HrmConstants.HRRecruitmentUser)]
     public class ApplicantExamResultController : BaseController
     {
@@ -47,7 +46,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
                     }
 
                     applicantScreeningResult = new ApplicantExamResult();
-                    applicantScreeningResult.Criteria = p.ToString();
+                   // applicantScreeningResult.Criteria = p.ToString();
                     if (setingvalues.Any())
                     {
                         var oneValue = setingvalues.Where(x => x.Attribute == p.ToString()).FirstOrDefault();
@@ -56,10 +55,10 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
                             applicantScreeningResult.SettingValue = Convert.ToDecimal(oneValue.CurrentValue);
                         }
                     }
-                    applicantScreeningResult.ReferenceType = "External";
+                  //  applicantScreeningResult.ReferenceType = "External";
                     applicantScreeningResult.CurrentResult = 0;
-                    applicantScreeningResult.Total = 0;
-                    applicantScreeningResult.ApplicantRegistrationId = applicationId;
+                 //   applicantScreeningResult.Total = 0;
+                    applicantScreeningResult.ApplicantScreeningId = applicationId;
                     applicantScreeningResultes.Add(applicantScreeningResult);
 
                 }
@@ -68,31 +67,26 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
             db.ApplicantExamResult.AddRange(applicantScreeningResultes);
             db.SaveChanges();
         }
-
+        
+    
         [AuthorizeRoles(HrmConstants.HRRecruitmentAdmin, HrmConstants.HRRecruitmentUser)]
         public ActionResult ApplicantExamResult_Read([DataSourceRequest]DataSourceRequest request, int id)
         {
-            IQueryable<ApplicantExamResult> applicantexamresult = db.ApplicantExamResult.Where(x => x.ApplicantRegistrationId == id && x.ReferenceType == "External");
-            if (!applicantexamresult.Any())
-            {
-                Configartion(id);
-                applicantexamresult = db.ApplicantExamResult.Where(x => x.ApplicantRegistrationId == id && x.ReferenceType == "External");
-            }
+            IQueryable<ApplicantExamResult> applicantexamresult = db.ApplicantExamResult.Where(x => x.ApplicantScreeningId == id);
+           
             DataSourceResult result = applicantexamresult.ToDataSourceResult(request, applicantExamResult => new
             {
                 ApplicantResultId = applicantExamResult.ApplicantResultId,
-                ApplicantRegistrationId = applicantExamResult.ApplicantRegistrationId,
-                Criteria = applicantExamResult.Criteria,
+                ApplicantScreeningId = applicantExamResult.ApplicantScreeningId,
                 SettingValue = applicantExamResult.SettingValue,
                 CurrentResult = applicantExamResult.CurrentResult,
-                Total = applicantExamResult.Total,
+                ExamType = applicantExamResult.ExamType,
                 Remark = applicantExamResult.Remark,
-                ReferenceType = "External"
             });
 
             return Json(result);
         }
-
+       
         [AuthorizeRoles(HrmConstants.HRRecruitmentUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ApplicantExamResult_Create([DataSourceRequest]DataSourceRequest request, ApplicantExamResult applicantExamResult, int id)
@@ -100,85 +94,58 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
             ModelState.Clear();
             if (ModelState.IsValid)
             {
-                if (applicantExamResult.SettingValue < applicantExamResult.CurrentResult)
+                var settingValue = db.ExamTypeSettings.FirstOrDefault(x=>x.ExamType == applicantExamResult.ExamType && x.ExamSource == RecruitmentSource.EXTERNAL);
+                if(settingValue != null)
                 {
-                    return new JavaScriptResult() { Script = "alert('" + " The result must be less or equal to the setting value!!" + "');" };
+                    applicantExamResult.SettingValue = settingValue.SettingVlaue;
                 }
                 var entity = new ApplicantExamResult
                 {
-                    ApplicantRegistrationId = id,
-                    Criteria = applicantExamResult.Criteria,
+                    ApplicantScreeningId = id,
                     SettingValue = applicantExamResult.SettingValue,
                     CurrentResult = applicantExamResult.CurrentResult,
-                    Total = applicantExamResult.Total,
-
+                    ExamType = applicantExamResult.ExamType,
                     Remark = applicantExamResult.Remark,
-                    ReferenceType = "External"
                 };
 
                 db.ApplicantExamResult.Add(entity);
                 db.SaveChanges();
                 applicantExamResult.ApplicantResultId = entity.ApplicantResultId;
-
-                #region operation log
-
-                var applicant = db.ApplicantRegistration.FirstOrDefault(x => x.ApplicantRegistrationId == entity.ApplicantRegistrationId);
-                if (applicant != null)
-                {
-                    UserHelper.OperationLog(Request.UserHostAddress, "Applicant Exam Result ", "Success", User.Identity.Name, User.Identity.Name + " add new applicant exam result for " + applicant.ApplicantName + " date " + DateTime.Today.ToShortDateString(), Modules.HRM);
-
-                }
-
-                #endregion
-
             }
 
             return Json(new[] { applicantExamResult }.ToDataSourceResult(request, ModelState));
         }
-
+     
         [AuthorizeRoles(HrmConstants.HRRecruitmentUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ApplicantExamResult_Update([DataSourceRequest]DataSourceRequest request, ApplicantExamResult applicantExamResult)
         {
             if (ModelState.IsValid)
             {
-                if (applicantExamResult.SettingValue < applicantExamResult.CurrentResult)
+                var settingValue = db.ExamTypeSettings.FirstOrDefault(x => x.ExamType == applicantExamResult.ExamType && x.ExamSource == RecruitmentSource.EXTERNAL);
+                if (settingValue != null)
                 {
-                    return new JavaScriptResult() { Script = "alert('" + " The result must be less or equal to the setting value!!" + "');" };
+                    applicantExamResult.SettingValue = settingValue.SettingVlaue;
                 }
+
                 var entity = new ApplicantExamResult
                 {
                     ApplicantResultId = applicantExamResult.ApplicantResultId,
-                    ApplicantRegistrationId = applicantExamResult.ApplicantRegistrationId,
-                    Criteria = applicantExamResult.Criteria,
+                    ApplicantScreeningId = applicantExamResult.ApplicantScreeningId,
                     SettingValue = applicantExamResult.SettingValue,
                     CurrentResult = applicantExamResult.CurrentResult,
-                    Total = applicantExamResult.Total,
-
+                    ExamType = applicantExamResult.ExamType,
                     Remark = applicantExamResult.Remark,
-                    ReferenceType = "External"
                 };
 
                 db.ApplicantExamResult.Attach(entity);
                 db.Entry(entity).State = EntityState.Modified;
                 db.SaveChanges();
-
-                #region operation log
-
-                var applicant = db.ApplicantRegistration.FirstOrDefault(x => x.ApplicantRegistrationId == entity.ApplicantRegistrationId);
-                if (applicant != null)
-                {
-                    UserHelper.OperationLog(Request.UserHostAddress, "Applicant Exam Result ", "Success", User.Identity.Name, User.Identity.Name + " update applicant exam result of " + applicant.ApplicantName + " date " + DateTime.Today.ToShortDateString(),Modules.HRM);
-
-                }
-
-                #endregion
-
             }
 
             return Json(new[] { applicantExamResult }.ToDataSourceResult(request, ModelState));
         }
-
+     
         [AuthorizeRoles(HrmConstants.HRRecruitmentAdmin, HrmConstants.HRRecruitmentUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ApplicantExamResult_Destroy([DataSourceRequest]DataSourceRequest request, ApplicantExamResult applicantExamResult)
@@ -188,17 +155,14 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Recruitment
                 var entity = new ApplicantExamResult
                 {
                     ApplicantResultId = applicantExamResult.ApplicantResultId,
-                    ApplicantRegistrationId = applicantExamResult.ApplicantRegistrationId,
-                    Criteria = applicantExamResult.Criteria,
+                    ApplicantScreeningId = applicantExamResult.ApplicantScreeningId,
                     SettingValue = applicantExamResult.SettingValue,
                     CurrentResult = applicantExamResult.CurrentResult,
-                    Total = applicantExamResult.Total,
-
+                    ExamType = applicantExamResult.ExamType,
                     Remark = applicantExamResult.Remark,
-                    ReferenceType = "External"
                 };
                 #region delete log
-                UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted applicant exam result information of applicant" + applicantExamResult.ApplicantRegistrationId);
+                UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted applicant exam result information of applicant" + applicantExamResult.ApplicantScreeningId);
                 #endregion
                 db.ApplicantExamResult.Attach(entity);
                 db.ApplicantExamResult.Remove(entity);

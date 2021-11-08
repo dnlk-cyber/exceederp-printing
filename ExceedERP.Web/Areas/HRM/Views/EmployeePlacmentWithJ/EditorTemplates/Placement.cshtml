@@ -19,6 +19,34 @@
 
                     @(Html.Kendo().DropDownListFor(model => model.EmployeeId)
                               //  .Name("EmployeeId")
+                              .DataValueField("EmployeeId")
+                              .DataTextField("FullNameaEnglish")
+                              .OptionLabel(Resources.Select)
+                              .Filter("contains")
+                              // .MinLength(2)
+                              .HtmlAttributes(new { style = "width:240px" })
+
+                               .DataSource(source =>
+                               {
+                                   source.Read(read => read.Action("GetAllEmployeesForPlacement", "HRMDataProvider"));
+
+                               })
+                               
+
+                              .ValuePrimitive(true)
+
+                    )
+
+
+
+                </div>
+
+                 @*the below code is employees list dropdown with their photo*@
+
+                @*<div class="col-md-6">
+
+                    @(Html.Kendo().DropDownListFor(model => model.EmployeeId)
+                              //  .Name("EmployeeId")
                               .DataValueField("PersonId")
                               .DataTextField("FullName")
                               .OptionLabel(Resources.Select)
@@ -56,7 +84,9 @@
 
 
 
-                </div>
+                </div>*@
+
+
             </div>
             <div class="form-group">
                 @Html.LabelFor(model => model.OrgStructureId, htmlAttributes: new { @class = "control-label col-md-8" })
@@ -73,8 +103,7 @@
 
                                   .DataSource(source =>
                                   {
-                                      source.Read(read => read.Action("GetDepartments", "HRMDataProvider"));
-
+                                      source.Read(read => read.Action("GetDepartmentsForPlacement", "HRMDataProvider"));
 
                                   })
                             // .BindTo((IEnumerable)ViewData["organization"])
@@ -125,7 +154,7 @@
                                   .DataSource(dataSource =>
                                   {
                                           //dataSource.Read(read => read.Action("GetSelectedDepartments", "HRMDataProvider", new { area = "HRM" })); Changed
-                                          dataSource.Read(read => read.Action("GetDepartments", "HRMDataProvider"));
+                                          dataSource.Read(read => read.Action("GetDepartmentsForPlacement", "HRMDataProvider"));
                                           //.ServerFiltering(false);
                                       })
 
@@ -209,7 +238,7 @@
 
                 @Html.LabelFor(model => model.AssignmentDateAmharic, htmlAttributes: new { @class = "control-label col-md-8" })
                 <div class="col-md-10">
-                    @Html.TextBoxFor(model => model.AssignmentDateAmharic, htmlAttributes: new { disabled = "disabled", @class = "et-popup-picker", @style = "width: 200px", }) <img src="~/Scripts/etp/images/calendar-blue.gif" onclick="SelectDate(this)" />
+                    @Html.TextBoxFor(model => model.AssignmentDateAmharic, htmlAttributes: new { disabled = "disabled", @class = "et-popup-picker" }) <img src="~/Scripts/etp/images/calendar-blue.gif" onclick="SelectDate(this)" />
                     @Html.ValidationMessageFor(model => model.AssignmentDateAmharic, "", new { @class = "text-danger" })
                 </div>
             </div>

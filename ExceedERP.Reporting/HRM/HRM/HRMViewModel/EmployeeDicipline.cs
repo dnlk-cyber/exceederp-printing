@@ -9,7 +9,6 @@
         public string MeasureTakenDate { get; set; }
         public string MeasureRank { get; set; }
         public string MeasureType { get; set; }
-
-
+        public string PunishmentAmount { get; set; }
     }
 }

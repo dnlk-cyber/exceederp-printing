@@ -33,8 +33,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
         }
         private void PopulateViewData()
         {
-            var structres = db.Lookups.Where(x => x.LookupType == LookUpTypes.JOB_TITLE).AsQueryable();
-            ViewData["jobTitles"] = structres;
+            ViewData["jobTitles"] = db.Lookups.Where(x => x.LookupType == LookUpTypes.JOB_TITLE).AsQueryable();
             GetDepartments();
             GetStatusType();
             HRMInputs inputs = new HRMInputs();
@@ -44,6 +43,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
 
             var employeName = db.Person_Employee.ToList();
             ViewData["EmployeeName"] = employeName;
+            ViewData["Branch"] = db.Branch.ToList();
         }
         private void GetStatusType()
         {
@@ -61,17 +61,33 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                 var checkApprove = db.RequestesStatus.FirstOrDefault(x => x.RequestId == masterId && x.ReferenceType == "Recruitment" && x.Status == RequestStatus.APPROVE);
                 if (checkApprove != null)
                 {
-                    return "approved";
+                    return "Approved";
+                }
+                var reject = db.RequestesStatus.FirstOrDefault(x => x.RequestId == masterId && x.ReferenceType == "Recruitment" && x.Status == RequestStatus.REJECT);
+                if (reject != null)
+                {
+                    return "Reject";
                 }
                 var deptApproval = db.RequestesStatus.FirstOrDefault(x => x.RequestId == masterId && x.ReferenceType == "Recruitment" && x.Status == RequestStatus.DEPARTMENT_APPROVAL);
                 if (deptApproval != null)
                 {
-                    return "Dapproved";
+                    return "De-Approved";
+                }
+                var pend = db.RequestesStatus.FirstOrDefault(x => x.RequestId == masterId && x.ReferenceType == "Recruitment" && x.Status == RequestStatus.PEND);
+                if (pend != null)
+                {
+                    return "Pend";
+                }
+                var waitingForApproval = db.RequestesStatus.FirstOrDefault(x => x.RequestId == masterId && x.ReferenceType == "Recruitment" && x.Status == RequestStatus.WAITING_FOR_APPROVAL);
+                if (waitingForApproval != null)
+                {
+                    return "WaitingForApproval";
                 }
                 return "true";
             }
             return "false";
         }
+     
         public void GetDepartments()
         {
             List<MainCompanyStructure> allDepartment = new List<MainCompanyStructure>();
@@ -111,13 +127,13 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                 {
                     requests.Add(m);
                 }
-
             }
             recruitmentrequest = requests.AsQueryable().OrderBy(x => x.Date);
             DataSourceResult result = recruitmentrequest.ToDataSourceResult(request, recruitmentRequest => new
             {
                 RecruitmentRequestId = recruitmentRequest.RecruitmentRequestId,
                 OrgStructureId = recruitmentRequest.OrgStructureId,
+                BranchId = recruitmentRequest.BranchId,
                 EmploymentType = recruitmentRequest.EmploymentType,
                 LookupId = recruitmentRequest.LookupId,
                 NoOfVaccantPostion = recruitmentRequest.NoOfVaccantPostion,
@@ -146,6 +162,16 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult RecruitmentRequest_Create([DataSourceRequest]DataSourceRequest request, RecruitmentRequest recruitmentRequest)
         {
+            int no = recruitmentRequest.NoOfShouldBeStaff - recruitmentRequest.NoOfCurrentStaff;
+            if (recruitmentRequest.NoOfVaccantPostion > no)
+            {
+                ModelState.AddModelError("", "No of Vacant Position  cannot exceed no of available vacant position");
+            }
+            var duplicate = db.RecruitmentRequest.FirstOrDefault(x => x.LookupId == recruitmentRequest.LookupId && x.OrgStructureId == recruitmentRequest.OrgStructureId && x.GlFiscalYearId == recruitmentRequest.GlFiscalYearId && x.BranchId == recruitmentRequest.BranchId);
+            if (duplicate != null)
+            {
+                ModelState.AddModelError("", "This Job is requested before");
+            }
             if (ModelState.IsValid)
             {
                 var entity = new RecruitmentRequest
@@ -156,12 +182,49 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                     NoOfVaccantPostion = recruitmentRequest.NoOfVaccantPostion,
                     NoOfCurrentStaff = recruitmentRequest.NoOfCurrentStaff,
                     PlanType = recruitmentRequest.PlanType,
-                    NoOfShouldBeStaff = recruitmentRequest.NoOfShouldBeStaff
+                    NoOfShouldBeStaff = recruitmentRequest.NoOfShouldBeStaff,
+                    Date = DateTime.Now,
+                    CreatedBy = User.Identity.Name,
+                    DateCreated = DateTime.Now,
+                    ModifiedBy = recruitmentRequest.ModifiedBy,
+                    LastModified = recruitmentRequest.LastModified,
+                    OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name),
+                    BranchId = recruitmentRequest.BranchId,
                 };
 
                 db.RecruitmentRequest.Add(entity);
                 db.SaveChanges();
                 recruitmentRequest.RecruitmentRequestId = entity.RecruitmentRequestId;
+
+                var reqWaiting = new RequestesStatus
+                {
+                    RequestId = recruitmentRequest.RecruitmentRequestId,
+                    ReferenceType = "Recruitment",
+                    Status = RequestStatus.WAITING_FOR_APPROVAL,
+                    ChangedBy = User.Identity.Name,
+                    Date = DateTime.Now,
+                    DateReqStatAm = XAPI.EthiopicDateTime.GetEthiopicDate(DateTime.Now.Day, DateTime.Now.Month, DateTime.Now.Year),                   
+                    ApproverId = 0,
+                    Remark = "Asked by HR"
+                };
+
+                db.RequestesStatus.Add(reqWaiting);
+                db.SaveChanges();
+
+                var reqDep = new RequestesStatus
+                {
+                    RequestId = recruitmentRequest.RecruitmentRequestId,
+                    ReferenceType = "Recruitment",
+                    Status = RequestStatus.DEPARTMENT_APPROVAL,
+                    ChangedBy = User.Identity.Name,
+                    Date = DateTime.Now,
+                    DateReqStatAm = XAPI.EthiopicDateTime.GetEthiopicDate(DateTime.Now.Day, DateTime.Now.Month, DateTime.Now.Year),
+                    ApproverId = 0,
+                    Remark = "Asked by HR"
+                };
+
+                db.RequestesStatus.Add(reqDep);
+                db.SaveChanges();
             }
 
             return Json(new[] { recruitmentRequest }.ToDataSourceResult(request, ModelState));

@@ -23,307 +23,152 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
             #region set Gender
 
-            Gender? gender = null;
+            string gender = "";
             switch (sex)
             {
                 case "MALE":
-                    gender = Gender.MALE;
+                    gender = "ወንድ";
                     break;
                 case "FEMALE":
-                    gender = Gender.FEMALE;
+                    gender = "ሴት";
                     break;
-
             }
 
             #endregion
-            List<Person_Employee> employees;
-            if (branchId != null && orgStructureId != null)
-            {
-                employees = EmployeeHelper.GetEmployeesByBranchAndWorkUnit(Convert.ToInt32(branchId), Convert.ToInt32(orgStructureId)).ToList();
-            }
-            else if (branchId != null && orgStructureId == null)
-            {
-                employees = EmployeeHelper.GetEmployeesByBranch(Convert.ToInt32(branchId)).ToList();
-            }
-            else if (branchId == null && orgStructureId != null)
-            {
-                employees = EmployeeHelper.GetEmployeesByWorkUnit(Convert.ToInt32(orgStructureId)).ToList();
-            }
-            else
-            {
 
-                employees = db.Person_Employee.Where(x => x.IsActive).ToList();
+            var placements = db.Placements.ToList();
 
-            }
-            if (gender != null && isPesionAveal != null)
+            if (branchId != null)
             {
+                int.TryParse(branchId, out int braId);
+                placements = EmployeeHelper.GetEmployees_ByBranch_FromPlacement(placements, braId);
+            }
+            if (orgStructureId != null)
+            {
+                int.TryParse(orgStructureId, out int orgId);
+                placements = EmployeeHelper.GetEmployees_ByDepartment_WithCaseTeam_FromPlacement(placements, orgId);
+            }
+            if (gender != null)
+            {
+                placements = EmployeeHelper.Get_Employees_ByGender_From_Placement(placements, gender);
+            }
 
-                if (isPesionAveal == "ASSIGNED")
+            placements = placements.Where(x => x.isCurrent).OrderByDescending(x => x.AssignmentDate).ToList();
+
+            if (isPesionAveal != null)
+            {
+                if (isPesionAveal != null && isPesionAveal == "ASSIGNED")
                 {
-                    db = new ExceedDbContext();
-                    var identifications = db.Identifications.ToList();
-                    db = new ExceedDbContext();
-                    var emplist =
-                        employees.Where(x => x.Gender == gender && x.IsActive).ToList();
-
-                    if (emplist.Any())
-                    {
-                        foreach (var e in emplist)
-                        {
-                            EmployeeInfo = new EmployeeInfo();
-
-                           
-                          
-                            var value =
-                                identifications.Where(
-                                    x =>
-                                        x.Reference == e.EmployeeId.ToString() && x.ReferenceType == "Employee" &&
-                                        x.Type == IdentificationType.PENSION_NO).FirstOrDefault();
-                            if (value != null)
-                            {
-                                EmployeeInfo.CriteriaName = value.IdNumber;
-
-                                if (e.Gender == Gender.MALE)
-                                {
-                                    EmployeeInfo.Sex = "ወንድ";
-                                }
-                                else
-                                {
-                                    EmployeeInfo.Sex = "ሴት";
-                                }
-                                EmployeeInfo.FullName = e.FirstName + " " + e.MiddleName + " " + e.LastName;
-                                EmployeeInfo.IdNumber = e.EmployeeCode;
-                                EmployeeInfo.Value = (DateTime.Now.Year - e.DateOfBirth.Year).ToString();
-
-                                var tin = identifications.Where(
-                                        x =>
-                                            x.Reference == e.EmployeeId.ToString() && x.ReferenceType == "Employee" &&
-                                            x.Type == IdentificationType.TIN).FirstOrDefault();
-
-                                if (tin != null)
-                                {
-                                    EmployeeInfo.TIN = tin.IdNumber;
-                                }
-
-                                EmployeeInfoList.Add(EmployeeInfo);
-                            }
-                           
-                        }
-
-                    }
-                }
-                else
-                {
-                    db = new ExceedDbContext();
-                    var identifications = db.Identifications.ToList();
-                    db = new ExceedDbContext();
-                    var emplist =
-                        employees.Where(
-                                x => x.Gender == gender && x.IsActive)
-                            .ToList();
-
-                    if (emplist.Any())
-                    {
-                        foreach (var e in emplist)
-                        {
-                            EmployeeInfo = new EmployeeInfo();
-
-                            
-
-                            var value =
-                                identifications.Where(
-                                    x =>
-                                        x.Reference == e.EmployeeId.ToString() && x.ReferenceType == "Employee" &&
-                                        x.Type == IdentificationType.PENSION_NO).FirstOrDefault();
-                            if (value == null)
-                            {
-                              
-                                EmployeeInfo.CriteriaName = "--";
-
-                                if (e.Gender == Gender.MALE)
-                                {
-                                    EmployeeInfo.Sex = "ወንድ";
-                                }
-                                else
-                                {
-                                    EmployeeInfo.Sex = "ሴት";
-                                }
-                                EmployeeInfo.IdNumber = e.EmployeeCode;
-                                EmployeeInfo.FullName = e.FirstName + " " + e.MiddleName + " " + e.LastName;
-                                EmployeeInfo.Value = (DateTime.Now.Year - e.DateOfBirth.Year).ToString();
-
-                                var tin = identifications.Where(
-                                        x =>
-                                            x.Reference == e.EmployeeId.ToString() && x.ReferenceType == "Employee" &&
-                                            x.Type == IdentificationType.TIN).FirstOrDefault();
-
-                                if (tin != null)
-                                {
-                                    EmployeeInfo.TIN = tin.IdNumber;
-                                }
-
-                                EmployeeInfoList.Add(EmployeeInfo);
-
-                            }
-
-                           
-                        }
-
-                    }
-                }
-            }
-            else if (isPesionAveal != null && gender == null)
-            {
-                if (isPesionAveal == "ASSIGNED")
-                {
-                    db = new ExceedDbContext();
-                    var identifications = db.Identifications.ToList();
-                    db = new ExceedDbContext();
-                    var emplist =
-                        employees.Where(
-                                x => x.IsActive)
-                            .ToList();
-
-                    if (emplist.Any())
-                    {
-                        foreach (var e in emplist)
-                        {
-                            
-
-                            var value =
-                                identifications.Where(
-                                    x =>
-                                        x.Reference == e.EmployeeId.ToString() && x.ReferenceType == "Employee" &&
-                                        x.Type == IdentificationType.PENSION_NO).FirstOrDefault();
-                            if (value != null)
-                            {
-                                EmployeeInfo = new EmployeeInfo();
-
-                                var tin = identifications.Where(
-                                   x =>
-                                       x.Reference == e.EmployeeId.ToString() && x.ReferenceType == "Employee" &&
-                                       x.Type == IdentificationType.TIN).FirstOrDefault();
-
-                                if (tin != null)
-                                {
-                                    EmployeeInfo.TIN = tin.IdNumber;
-                                }
-
-                                EmployeeInfo.IdNumber = e.EmployeeCode;
-
-                                if (e.Gender == Gender.MALE)
-                                {
-                                    EmployeeInfo.Sex = "ወንድ";
-                                }
-                                else
-                                {
-                                    EmployeeInfo.Sex = "ሴት";
-                                }
-                                EmployeeInfo.FullName = e.FirstName + " " + e.MiddleName + " " + e.LastName;
-                                EmployeeInfo.CriteriaName = value.IdNumber;
-                                EmployeeInfo.Value = (DateTime.Now.Year - e.DateOfBirth.Year).ToString();
-                                EmployeeInfoList.Add(EmployeeInfo);
-                            }
-                        }
-
-                    }
-                }
-                else
-                {
-                    db = new ExceedDbContext();
-                    var identifications = db.Identifications.ToList();
-                    db = new ExceedDbContext();
-                    var emplist = employees.Where(x => x.IsActive).ToList();
-
-                    if (emplist.Any())
-                    {
-                        foreach (var e in emplist)
-                        {
-                            var value =
-                                identifications.Where(
-                                    x =>
-                                        x.Reference == e.EmployeeId.ToString() && x.ReferenceType == "Employee" &&
-                                        x.Type == IdentificationType.PENSION_NO).FirstOrDefault();
-                            if (value == null)
-                            {
-                                EmployeeInfo = new EmployeeInfo();
-                                if (e.Gender == Gender.MALE)
-                                {
-                                    EmployeeInfo.Sex = "ወንድ";
-                                }
-                                else
-                                {
-                                    EmployeeInfo.Sex = "ሴት";
-                                }
-                                EmployeeInfo.IdNumber = e.EmployeeCode;
-                                EmployeeInfo.FullName = e.FirstName + " " + e.MiddleName + " " + e.LastName;
-                                EmployeeInfo.CriteriaName = "--";
-                                EmployeeInfo.Value = (DateTime.Now.Year - e.DateOfBirth.Year).ToString();
-                                EmployeeInfoList.Add(EmployeeInfo);
-                            }
-                        }
-
-                    }
-                }
-            }
-            else
-            {
-                db = new ExceedDbContext();
-                var identifications = db.Identifications.ToList();
-                db = new ExceedDbContext();
-                var emplist =
-                    employees.Where(x => x.IsActive).ToList();
-
-                if (emplist.Any())
-                {
-                    foreach (var e in emplist)
+                    foreach (var e in placements)
                     {
                         EmployeeInfo = new EmployeeInfo();
 
-                        EmployeeInfo.IdNumber = e.EmployeeCode;
-                        if (e.Gender == Gender.MALE)
-                        {
-                            EmployeeInfo.Sex = "ወንድ";
-                        }
-                        else
-                        {
-                            EmployeeInfo.Sex = "ሴት";
-                        }
-                        EmployeeInfo.FullName = e.FirstName + " " + e.MiddleName + " " + e.LastName;
-                      
-                        EmployeeInfo.Value = (DateTime.Now.Year - e.DateOfBirth.Year).ToString();
+                        var value = db.Identifications.FirstOrDefault(x => x.Reference == e.EmployeeId.ToString() && x.ReferenceType == "Employee" && x.Type == IdentificationType.PENSION_NO);
 
-
-                        var tin = identifications.Where(
-                                   x =>
-                                       x.Reference == e.EmployeeId.ToString() && x.ReferenceType == "Employee" &&
-                                       x.Type == IdentificationType.TIN).FirstOrDefault();
-
-                        if (tin != null)
-                        {
-                            EmployeeInfo.TIN = tin.IdNumber;
-                        }
-                        var value =
-                            identifications.Where(
-                                x =>
-                                    x.Reference == e.EmployeeId.ToString() && x.ReferenceType == "Employee" &&
-                                    x.Type == IdentificationType.PENSION_NO).FirstOrDefault();
                         if (value != null)
                         {
-
                             EmployeeInfo.CriteriaName = value.IdNumber;
-                           
+
+                            EmployeeInfo.Sex = gender;
+
+                            var employee = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == e.EmployeeId);
+
+                            if (employee != null)
+                            {
+                                EmployeeInfo.IdNumber = employee.EmployeeCode;
+                                EmployeeInfo.FullName = employee.FullNameAmharic;
+                                EmployeeInfo.CriteriaName = value.IdNumber;
+                                EmployeeInfo.Value = (DateTime.Now.Year - employee.DateOfBirth.Year).ToString();
+                            }
+
+                            var tin = db.Identifications.FirstOrDefault(x => x.Reference == e.EmployeeId.ToString() && x.ReferenceType == "Employee" && x.Type == IdentificationType.TIN);
+
+                            if (tin != null)
+                            {
+                                EmployeeInfo.TIN = tin.IdNumber;
+                            }
+
+                            EmployeeInfoList.Add(EmployeeInfo);
                         }
-                        else
+
+                    }
+                }
+                else
+                {
+
+                    foreach (var e in placements)
+                    {
+                        EmployeeInfo = new EmployeeInfo();
+
+                        var value = db.Identifications.FirstOrDefault(x => x.Reference == e.EmployeeId.ToString() && x.ReferenceType == "Employee" && x.Type == IdentificationType.PENSION_NO);
+
+                        if (value == null)
                         {
                             EmployeeInfo.CriteriaName = "--";
+
+                            EmployeeInfo.Sex = gender;
+
+                            var employee = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == e.EmployeeId);
+                            if (employee != null)
+                            {
+                                EmployeeInfo.IdNumber = employee.EmployeeCode;
+                                EmployeeInfo.FullName = employee.FullNameAmharic;
+                               // EmployeeInfo.CriteriaName = value.IdNumber;
+                                EmployeeInfo.Value = (DateTime.Now.Year - employee.DateOfBirth.Year).ToString();
+                            }
+
+                            var tin = db.Identifications.FirstOrDefault(x => x.Reference == e.EmployeeId.ToString() && x.ReferenceType == "Employee" && x.Type == IdentificationType.TIN);
+
+                            if (tin != null)
+                            {
+                                EmployeeInfo.TIN = tin.IdNumber;
+                            }
+
+                            EmployeeInfoList.Add(EmployeeInfo);
+
                         }
-
-                        EmployeeInfoList.Add(EmployeeInfo);
                     }
-
                 }
             }
+            else
+            {
+                foreach (var e in placements)
+                {
+                    EmployeeInfo = new EmployeeInfo();
+
+                    EmployeeInfo.IdNumber = e.EmployeeCode;
+
+                    EmployeeInfo.Sex = gender;
+
+                    var employee = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == e.EmployeeId);
+                    if (employee != null)
+                    {
+                        EmployeeInfo.IdNumber = employee.EmployeeCode;
+                        EmployeeInfo.FullName = employee.FullNameAmharic;
+                        EmployeeInfo.Value = (DateTime.Now.Year - employee.DateOfBirth.Year).ToString();
+                    }
+
+                    var tin = db.Identifications.FirstOrDefault(x => x.Reference == e.EmployeeId.ToString() && x.ReferenceType == "Employee" && x.Type == IdentificationType.TIN);
+
+                    if (tin != null)
+                    {
+                        EmployeeInfo.TIN = tin.IdNumber;
+                    }
+                    var value = db.Identifications.FirstOrDefault(x => x.Reference == e.EmployeeId.ToString() && x.ReferenceType == "Employee" && x.Type == IdentificationType.PENSION_NO);
+
+                    if (value != null)
+                    {
+                        EmployeeInfo.CriteriaName = value.IdNumber;
+                    }
+                    else
+                    {
+                        EmployeeInfo.CriteriaName = "--";
+                    }
+
+                    EmployeeInfoList.Add(EmployeeInfo);
+                }
+            }
+
             return EmployeeInfoList.OrderBy(x => x.IdNumber).ToList();
         }
     }

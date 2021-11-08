@@ -8,142 +8,232 @@
     <div class="row fullrow">
         <div class="col-md-3 ro1">
             <div class="form-group">
-  
 
                 <div>@Html.LabelFor(model => model.BranchId, htmlAttributes: new { @class = "control-label col-md-8" })</div>
                 <div class="col-md-6">
                     @(Html.Kendo().DropDownListFor(model => model.BranchId)
-                          .OptionLabel(Resources.Select)
-                          .Filter("contains")
-                          .MinLength(2)
-                           .DataTextField("Name")
-                                .DataValueField("BranchId")
-                          .DataSource(dataSource =>
-                          {
-                              dataSource.Read(read => read.Action("GetBranchFromRecruitmentPlan", "HRMDataProvider"))
-                                  .ServerFiltering(false);
-                          })
-                          .ValuePrimitive(true)
+                                                  .OptionLabel(Resources.Select)
+                                                  .Filter("contains")
+                                                  .MinLength(2)
+                                                   .DataTextField("Name")
+                                                        .DataValueField("BranchId")
+                                                  .DataSource(dataSource =>
+                                                  {
+                                                      dataSource.Read(read => read.Action("GetAllBranchs", "HRMDataProvider"))
+                                                          .ServerFiltering(false);
+                                                  })
+                                                  .ValuePrimitive(true)
 
-                          )
+                    )
                     @Html.ValidationMessageFor(model => model.BranchId, "", new { @class = "text-danger" })
                 </div>
             </div>
-        
-            <div class="form-group">
-                <div>@Html.LabelFor(model => model.OrgStructureId, htmlAttributes: new {@class = "control-label col-md-8"})</div>
-                <div class="col-md-6">
-                    @(Html.Kendo().DropDownListFor(model => model.OrgStructureId)
-                          .OptionLabel(Resources.Select)
-                          .Filter("contains")
-                          .MinLength(2)
-                           .CascadeFrom("BranchId")
-                           .DataTextField("Name")
-                         .DataValueField("OrgStructureId")
-                          .DataSource(dataSource =>
-                          {
-                              dataSource.Read(read => read.Action("GetWorkUnitFromRecruitmentPlan", "HRMDataProvider", new { area = "HRM" }).Data("filterWorkunit"))
-                                  .ServerFiltering(true);
-                          })
-                          .ValuePrimitive(true)
 
-                          )
-                    @Html.ValidationMessageFor(model => model.OrgStructureId, "", new {@class = "text-danger"})
-                </div>
+            @Html.LabelFor(model => model.Department, htmlAttributes: new { @class = "control-label col-md-8" })
+            <div class="col-md-6">
+                @(Html.Kendo().DropDownListFor(model => model.Department)
+                                   .OptionLabel(Resources.Select)
+                                   .Filter("contains")
+                                   .MinLength(2)
+                                    .CascadeFrom("BranchId")
+                                    .DataTextField("Name")
+                                         .DataValueField("OrgStructureId")
+                                   .DataSource(dataSource =>
+                                   {
+                                       dataSource.Read(read => read.Action("GetDepartments", "HRMDataProvider").Data("filterWorkunit"))
+                                           .ServerFiltering(true);
+                                   })
+                                   .ValuePrimitive(true)
+
+                )
+                @Html.ValidationMessageFor(model => model.Department, "", new { @class = "text-danger" })
             </div>
-       
 
             <div class="form-group">
-                <div>@Html.LabelFor(model => model.RecruitmentPlanId, htmlAttributes: new { @class = "control-label col-md-8" })</div>
+                @Html.LabelFor(model => model.JobTitle, htmlAttributes: new { @class = "control-label col-md-8" })
                 <div class="col-md-6">
-                    @(Html.Kendo().DropDownListFor(m => m.RecruitmentPlanId)
-                            .DataTextField("JobTitle")
-                            .DataValueField("RecruitmentPlanId")
-                           .OptionLabel(Resources.Select)
-                           .CascadeFrom("OrgStructureId")
-                          //.Filter(FilterType.Contains)
-                          .Filter("contains")
-                               //.MinLength(2)
-                               .DataSource(dataSource =>
-                               {
-                                   dataSource.Read(read => read.Action("GetJobTitleFromPlanToVac", "HRMDataProvider", new { area = "HRM" }).Data("filterJobTitle"))
-                                       .ServerFiltering(true);
-                               })
-                                  .ValuePrimitive(true)
-                          )
-                    @Html.ValidationMessageFor(model => model.RecruitmentPlanId, "", new { @class = "text-danger" })
-                </div>
-
-            </div>
-        </div>
-        <div class="col-md-3 ro1">
-            <div class="form-group">
-                @Html.LabelFor(model => model.GlFiscalYearId, htmlAttributes: new { @class = "control-label col-md-8" })
-                <div class="col-md-6">
-                    @(Html.Kendo().DropDownListFor(model => model.GlFiscalYearId)
-                                          .OptionLabel(Resources.Select)
-                                          .Filter("contains")
-                                          .MinLength(2)
-                                          .DataTextField("Name")
-                                          .DataValueField("GlFiscalYearId")
-                                          .DataSource(dataSource =>
-                                          {
-                                              dataSource.Read(read => read.Action("GetFisicalYear", "HRMDataProvider", new { area = "HRM" }))
-                                                  .ServerFiltering(false);
-                                          })
-                                          .ValuePrimitive(true)
+                    @(Html.Kendo().DropDownListFor(model => model.JobTitle)
+                                     .OptionLabel(Resources.Select)
+                                     .Filter("contains")
+                                     .MinLength(2)
+                                     .CascadeFrom("Department")
+                                      .DataTextField("Description")
+                                           .DataValueField("LookupId")
+                                     .DataSource(dataSource =>
+                                     {
+                                         dataSource.Read(read => read.Action("GetJobTitle", "HRMDataProvider").Data("filterJobTitle"))
+                                             .ServerFiltering(true);
+                                     })
+                                     .ValuePrimitive(true)
 
                     )
-                    @Html.ValidationMessageFor(model => model.GlFiscalYearId, "", new { @class = "text-danger" })
+                    @Html.ValidationMessageFor(model => model.JobTitle, "", new { @class = "text-danger" })
                 </div>
             </div>
 
             <div class="form-group">
                 @Html.LabelFor(model => model.RecruSource, htmlAttributes: new { @class = "control-label col-md-8" })
                 <div class="col-md-6">
+                    @(Html.Kendo().DropDownListFor(model => model.RecruSource)
+                                     .OptionLabel(Resources.Select)
+                                     .Filter("contains")
+                                     .MinLength(2)
+                                      .DataTextField("Name")
+                                           .DataValueField("Value")
+                                     .DataSource(dataSource =>
+                                     {
+                                         dataSource.Read(read => read.Action("GetRecruitmentSource", "Vacancy"))
+                                             .ServerFiltering(false);
+                                     })
+                                     .ValuePrimitive(true)
+
+                    )
+                    @Html.ValidationMessageFor(model => model.RecruSource, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            @*<div class="form-group">
+                @Html.LabelFor(model => model.RecruSource, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
 
                     @(Html.EnumDropDownListFor(model => model.RecruSource, htmlAttributes: new { @class = "k-dropdown-wrap k-state-default", @style = "width: 140px" })
 
                     )
-
                 </div>
-            </div>
+            </div>*@
+
             <div class="form-group">
-                @Html.LabelFor(model => model.LookupId, htmlAttributes: new { @class = "control-label col-md-8" })
+                @Html.LabelFor(model => model.NoOfVacant, htmlAttributes: new { @class = "control-label col-md-8" })
                 <div class="col-md-6">
-                    @(Html.Kendo().DropDownListFor(model => model.LookupId)
-                                                          .OptionLabel(Resources.Select)
-                                                          .Filter("contains")
-                                                          .MinLength(2)
-                                                          .DataTextField("Description")
-                                                        .DataValueField("LookupId")
-                                                          .DataSource(dataSource =>
-                                                          {
-                                                              dataSource.Read(read => read.Action("GetMedia", "HRMDataProvider", new { area = "HRM" }))
-                                                                  .ServerFiltering(false);
-                                                          })
-                                                          .ValuePrimitive(true)
 
+                    @(Html.Kendo().NumericTextBoxFor(model => model.NoOfVacant)
                     )
-                    @Html.ValidationMessageFor(model => model.LookupId, "", new { @class = "text-danger" })
+                    @Html.ValidationMessageFor(model => model.NoOfVacant, "", new { @class = "text-danger" })
                 </div>
             </div>
 
-           
         </div>
         <div class="col-md-3 ro1">
 
             <div class="form-group">
-                @Html.LabelFor(model => model.VacancyType, htmlAttributes: new { @class = "control-label col-md-8" })
+                @Html.LabelFor(model => model.ExperienceLevel, htmlAttributes: new { @class = "control-label col-md-8" })
                 <div class="col-md-6">
-
-                    @(Html.EnumDropDownListFor(model => model.VacancyType, htmlAttributes: new { @class = "k-dropdown-wrap k-state-default", @style = "width: 140px" })
+                    @(Html.Kendo().DropDownListFor(model => model.ExperienceLevel)
+                                         .OptionLabel(Resources.Select)
+                                         .Filter("contains")
+                                         .MinLength(2)
+                                          .DataTextField("Name")
+                                          .DataValueField("Value")
+                                         .DataSource(dataSource =>
+                                         {
+                                             dataSource.Read(read => read.Action("GetExperienceLevel", "Vacancy"))
+                                                 .ServerFiltering(false);
+                                         })
+                                         .ValuePrimitive(true)
 
                     )
-
+                    @Html.ValidationMessageFor(model => model.ExperienceLevel, "", new { @class = "text-danger" })
                 </div>
             </div>
 
+            @*<div class="form-group">
+            @Html.LabelFor(model => model.ExperienceLevel, htmlAttributes: new { @class = "control-label col-md-8" })
+            <div class="col-md-6">
+
+                @(Html.EnumDropDownListFor(model => model.ExperienceLevel, htmlAttributes: new { @class = "k-dropdown-wrap k-state-default", @style = "width: 140px" })
+
+                )
+
+            </div>
+        </div>*@
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.VacancyType, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @(Html.Kendo().DropDownListFor(model => model.VacancyType)
+                                         .OptionLabel(Resources.Select)
+                                         .Filter("contains")
+                                         .MinLength(2)
+                                          .DataTextField("Name")
+                                          .DataValueField("Value")
+                                         .DataSource(dataSource =>
+                                         {
+                                             dataSource.Read(read => read.Action("GetVacancyType", "Vacancy"))
+                                                 .ServerFiltering(false);
+                                         })
+                                         .ValuePrimitive(true)
+
+                    )
+                    @Html.ValidationMessageFor(model => model.VacancyType, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            @*<div class="form-group">
+            @Html.LabelFor(model => model.VacancyType, htmlAttributes: new { @class = "control-label col-md-8" })
+            <div class="col-md-6">
+
+                @(Html.EnumDropDownListFor(model => model.VacancyType, htmlAttributes: new { @class = "k-dropdown-wrap k-state-default", @style = "width: 128px" })
+
+                )
+
+            </div>
+        </div>*@
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.Language, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+                    @(Html.Kendo().DropDownListFor(model => model.Language)
+                         .OptionLabel(Resources.Select)
+                         .Filter("contains")
+                         .MinLength(2)
+                          .DataTextField("Name")
+                          .DataValueField("Value")
+                         .DataSource(dataSource =>
+                         {
+                             dataSource.Read(read => read.Action("GetLanguages", "Vacancy"))
+                                 .ServerFiltering(false);
+                         })
+                         .ValuePrimitive(true)
+
+                    )
+                    @Html.ValidationMessageFor(model => model.Language, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            @*<div class="form-group">
+            @Html.LabelFor(model => model.Language, htmlAttributes: new { @class = "control-label col-md-8" })
+            <div class="col-md-6">
+
+                @(Html.EnumDropDownListFor(model => model.Language, htmlAttributes: new { @class = "k-dropdown-wrap k-state-default", @style = "width: 128px" })
+
+                )
+
+            </div>
+        </div>*@
+
+            @*<div class="form-group">
+            @Html.LabelFor(model => model.WrittenExamSchedule, htmlAttributes: new { @class = "control-label col-md-8" })
+            <div class="col-md-10">
+                @Html.Kendo().DatePickerFor(model => model.WrittenExamSchedule)
+
+                @Html.ValidationMessageFor(model => model.WrittenExamSchedule, "", new { @class = "text-danger" })
+            </div>
+        </div>*@
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.TotalYearOfExperience, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+
+                    @(Html.Kendo().TextBoxFor(model => model.TotalYearOfExperience)
+                    )
+                    @Html.ValidationMessageFor(model => model.TotalYearOfExperience, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+
+        </div>
+
+        <div class="col-md-3 ro1">
 
             <div class="form-group">
                 @Html.LabelFor(model => model.FromVacAm, htmlAttributes: new { @class = "control-label col-md-8" })
@@ -154,7 +244,6 @@
                 </div>
             </div>
 
-
             <div class="form-group">
                 @Html.LabelFor(model => model.ToVacAm, htmlAttributes: new { @class = "control-label col-md-8" })
                 <div class="col-md-10">
@@ -164,12 +253,83 @@
                 </div>
             </div>
 
+            <div class="form-group">
+                @Html.LabelFor(model => model.Salary, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+
+                    @(Html.Kendo().TextBoxFor(model => model.Salary)
+                    )
+                    @Html.ValidationMessageFor(model => model.Salary, "", new { @class = "text-danger" })
+                </div>
+            </div>
+
+            <div class="form-group">
+                @Html.LabelFor(model => model.Gender, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
+
+                    @(Html.EnumDropDownListFor(model => model.Gender, htmlAttributes: new { @class = "k-dropdown-wrap k-state-default", @style = "width: 128px" })
+
+                    )
+
+                </div>
+            </div>
+
+            @*<div class="form-group">
+            @Html.LabelFor(model => model.InterviewSchedule, htmlAttributes: new { @class = "control-label col-md-8" })
+            <div class="col-md-10">
+                @Html.Kendo().DatePickerFor(model => model.InterviewSchedule)
+
+                @Html.ValidationMessageFor(model => model.InterviewSchedule, "", new { @class = "text-danger" })
+            </div>
+        </div>*@
 
 
+            @*<div class="form-group">
+                @Html.LabelFor(model => model.JobRequirement, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-6">
 
-
-
+                    @(Html.TextAreaFor(model => model.JobRequirement, new { style = "width: 200px;", @class = "form-control" })
+                    )
+                    @Html.ValidationMessageFor(model => model.JobRequirement, "", new { @class = "text-danger" })
+                </div>
+            </div>*@
         </div>
+
+
+   
     </div>
+
+    <div class="row">
+
+        <div class="col-lg-5">
+            <div class="form-group">
+                @Html.LabelFor(model => model.JobRequirement, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-12">
+
+                    @(Html.Kendo().EditorFor(model => model.JobRequirement)
+                    )
+
+                    @Html.ValidationMessageFor(model => model.JobRequirement, "", new { @class = "text-danger" })
+                </div>
+
+            </div>
+        </div>
+        <div class="col-lg-5">
+            <div class="form-group">
+                @Html.LabelFor(model => model.Responsibility, htmlAttributes: new { @class = "control-label col-md-8" })
+                <div class="col-md-12">
+
+                    @(Html.Kendo().EditorFor(model => model.Responsibility)
+                    )
+
+                    @Html.ValidationMessageFor(model => model.Responsibility, "", new { @class = "text-danger" })
+                </div>
+
+            </div>
+        </div>
+        <div class="col-lg-2"></div>
     </div>
+  </div>
+
+
 

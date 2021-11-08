@@ -36,11 +36,11 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                 }
             }
             var performances = db.EmployeePerformanceScores.ToList();
-            if (status == "የተሞላላቸው")
+            if (status == "Reviewed")
             {
                 performances = performances.Where(x=>x.IsApproved).ToList();
             }
-            if (status == "ያልተሞላላቸው")
+            if (status == "Not Reviewed")
             {
                 performances = performances.Where(x => !x.IsApproved).ToList();
             }
@@ -91,11 +91,11 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                             qurterList.PeriodName = p.AmharicName;
                             qurterList.Performance = performanceSinglePerson.Where(x => x.QuarterId == p.QuarterId).Sum(x => x.Result);
 
-                            if (status == "የተሞላላቸው" && qurterList.Performance > 0)
+                            if (status == "Reviewed" && qurterList.Performance > 0)
                             {
                                 EmployeeInfo.QurterList.Add(qurterList);
                             }
-                            else if(status == "ያልተሞላላቸው" && qurterList.Performance == 0)
+                            else if(status == "Not Reviewed" && qurterList.Performance == 0)
                             {
                                 var singleScore = db.EmployeePerformanceScores.FirstOrDefault(x=>x.EmployeeId == e.EmployeeId && x.QuarterId == p.QuarterId);
                                 if(singleScore != null && singleScore.Result == 0)
@@ -130,11 +130,11 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                             EmployeeInfo.Total = Math.Round(totalResult / div, 2);
                         }
                     }
-                    if (status == "የተሞላላቸው" && EmployeeInfo.Total > 0)
+                    if (status == "Reviewed" && EmployeeInfo.Total > 0)
                     {
                         EmployeeInfoList.Add(EmployeeInfo);
                     }
-                    else if(status == "ያልተሞላላቸው" && EmployeeInfo.Total == 0 && checkNullTotalResult > 0)
+                    else if(status == "Not Reviewed" && EmployeeInfo.Total == 0 && checkNullTotalResult > 0)
                     {
                         EmployeeInfoList.Add(EmployeeInfo);
                     }

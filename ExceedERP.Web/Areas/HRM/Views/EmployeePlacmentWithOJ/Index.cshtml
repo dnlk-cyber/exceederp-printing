@@ -11,7 +11,9 @@
                           .Name("PlacementGrid")
                   .Columns(columns =>
                   {
-                      columns.Bound(c => c.EmployeeCode).Width(150);
+                      // columns.Bound(c => c.EmployeeCode).Width(150);
+                      columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeCode"], "EmployeeId", "EmployeeCode").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).HeaderHtmlAttributes(new { style = "overflow: visible; white-space: normal" }).Width(90);
+
                       columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameAmharic").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
                       columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeListEnglish"], "EmployeeId", "FullNameaEnglish").EditorTemplateName("ListOfEmployee").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
                       columns.Bound(c => c.Boss).Width(150);
@@ -63,9 +65,9 @@
                       if (HttpContext.Current.User.IsInRole("GenerateDayAbsent"))
                       {
                           //toolbar.Custom()
-                           //  .Text("Update Salary")
-                           //  .Text(Resources.ActionButton_Refersh)
-                            //  .HtmlAttributes(new { id = "btnRefresh", onclick = "Refresh()" });
+                          //  .Text("Update Salary")
+                          //  .Text(Resources.ActionButton_Refersh)
+                          //  .HtmlAttributes(new { id = "btnRefresh", onclick = "Refresh()" });
 
                       }
                       if (HttpContext.Current.User.IsInRole("HR_Placement_Admin") || HttpContext.Current.User.IsInRole("HR_Admin"))

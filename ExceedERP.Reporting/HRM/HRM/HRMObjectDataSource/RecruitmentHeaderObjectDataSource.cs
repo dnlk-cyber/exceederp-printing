@@ -17,7 +17,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
         private ExceedDbContext db = new ExceedDbContext();
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<InternalApplicantDetail> GetRecruitmentHeader(string jobTitle, string vacancyCod, string vacancyId, DateTime from, DateTime to)
+        public List<InternalApplicantDetail> GetRecruitmentHeader(string vacancyId)
         {
             List<InternalApplicantDetail> applicantHeaderList = new List<InternalApplicantDetail>();
             InternalApplicantDetail applicantHeader = new InternalApplicantDetail();
@@ -81,51 +81,63 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
             }
 
-            if (vacancyCod != null && vacancyId != null)
+            if (vacancyId != null)
             {
+                int.TryParse(vacancyId, out int vacId);
 
-                var recruitmentVacancy = db.RecruitmentVacancy.FirstOrDefault(x => x.MediaVacancyCode == vacancyCod && x.VacancyId.ToString() == vacancyId);
-                if (recruitmentVacancy != null)
+                var vacancy = db.VaccancyPlans.FirstOrDefault(x => x.VacancyId == vacId);
+                if (vacancy != null)
                 {
+                    applicantHeader.Quntity = vacancy.NoOfVacant;
+                    applicantHeader.From = vacancy.From;
+                    applicantHeader.To = vacancy.To;
 
-                    var vacancy = db.VaccancyPlans.FirstOrDefault(x => x.VacancyId == recruitmentVacancy.VacancyId);
-                    if (vacancy != null)
+                    var lookup = db.Lookups.FirstOrDefault(x => x.LookupId == vacancy.JobTitle);
+                    if (lookup != null)
                     {
-                        var recruitmentPlan = db.RecruitmentPlans.FirstOrDefault(x => x.RecruitmentPlanId == vacancy.RecruitmentPlanId);
-                        if (recruitmentPlan != null)
-                        {
-                            var recruitmentRequest = db.RecruitmentRequest.FirstOrDefault(x=>x.BranchId == recruitmentPlan.BranchId && 
-                                                  x.OrgStructureId == recruitmentPlan.OrgStructureId && x.LookupId == recruitmentPlan.LookupId 
-                                                  && x.GlFiscalYearId == recruitmentPlan.GlFiscalYearId);
-                            if(recruitmentRequest != null)
-                            {
-                                applicantHeader.Quntity = recruitmentRequest.NoOfVaccantPostion;
-                            }
-                            applicantHeader.JobTitle = recruitmentPlan.JobtitleName;
-                           
-                            applicantHeader.EduandExp = recruitmentPlan.RelevantExp + ", " + recruitmentPlan.Experience;
-                            applicantHeader.Salary = recruitmentPlan.PlannedSalary;
-                            applicantHeader.Location = vacancy.Branch.Name;
-                           // applicantHeader.RecruitmentType = vacancy.VacancyType;
-                            if (vacancy.VacancyType == VacancyType.PERMANENT)
-                            {
-                                applicantHeader.RecruitmentType = "ቋሚ";
-                            }
-                            else
-                            {
-                                applicantHeader.RecruitmentType = "ጊዜያዊ";
-                            }
+                        applicantHeader.JobTitle = lookup.Description;
+                    }
 
-                            var rank = db.Ranks.FirstOrDefault(x => x.RankId == recruitmentPlan.RankId);
-                            if (rank != null)
-                            {
-                                applicantHeader.Rank = rank.RankName;
-                            }
-                            applicantHeaderList.Add(applicantHeader);
+                    var manPowerPlan = db.JobTitleMapping.FirstOrDefault(x => x.BranchId == vacancy.BranchId && x.OrgStructureId == vacancy.Department && x.LookupId == vacancy.JobTitle);
+                    if (manPowerPlan != null)
+                    {
+                        var manPowerDetail = db.JobTitleMappingDetail.FirstOrDefault(x => x.JobTitleMappingId == manPowerPlan.JobTitleMappingId);
+                        if (manPowerDetail != null)
+                        {
+                            applicantHeader.EduandExp = manPowerDetail.RelevantExp + ", " + manPowerDetail.Experience;
                         }
                     }
 
+                    applicantHeader.Salary = vacancy.Salary;
+
+                    if (applicantHeader.Salary == "0")
+                    {
+                        applicantHeader.Salary = "በድርጅቱ ስኬል ";
+                    }
+
+                    var branch = db.Branch.FirstOrDefault(x => x.BranchId == vacancy.BranchId);
+                    if (branch != null)
+                    {
+                        applicantHeader.Location = branch.Name;
+                    }
+                    // applicantHeader.RecruitmentType = vacancy.VacancyType;
+                    if (vacancy.VacancyType == VacancyType.PERMANENT)
+                    {
+                        applicantHeader.RecruitmentType = "ቋሚ";
+                    }
+                    else
+                    {
+                        applicantHeader.RecruitmentType = "ጊዜያዊ";
+                    }
+
+                    //var rank = db.Ranks.FirstOrDefault(x => x.RankId == vacancy.RankId);
+                    //if (rank != null)
+                    //{
+                    //    applicantHeader.Rank = rank.RankName;
+                    //}
+                    applicantHeaderList.Add(applicantHeader);
                 }
+
             }
             return applicantHeaderList;
         }
@@ -137,7 +149,7 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
         private ExceedDbContext db = new ExceedDbContext();
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<InternalApplicantDetail> GetRecruitmentInternalHeader(string jobTitle, string vacancyCod, string vacancyId, DateTime from, DateTime to)
+        public List<InternalApplicantDetail> GetRecruitmentInternalHeader(string vacancyId)
         {
             List<InternalApplicantDetail> applicantHeaderList = new List<InternalApplicantDetail>();
             InternalApplicantDetail applicantHeader = new InternalApplicantDetail();
@@ -200,45 +212,53 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                 }
 
             }
-            if (vacancyCod != null && vacancyId != null)
+            if (vacancyId != null)
             {
-
-                var recruitmentVacancy = db.RecruitmentVacancy.FirstOrDefault(x => x.MediaVacancyCode == vacancyCod && x.VacancyId.ToString() == vacancyId);
-                if (recruitmentVacancy != null)
+                int.TryParse(vacancyId, out int vacId);
+                var vacancy = db.VaccancyPlans.FirstOrDefault(x => x.VacancyId == vacId);
+                if (vacancy != null)
                 {
-
-                    var vacancy = db.VaccancyPlans.FirstOrDefault(x => x.VacancyId == recruitmentVacancy.VacancyId);
-                    if (vacancy != null)
+                    var jobtitle = db.Lookups.FirstOrDefault(x => x.LookupId == vacancy.JobTitle);
+                    if (jobtitle != null)
                     {
-                        var recruitmentPlan = db.RecruitmentPlans.FirstOrDefault(x => x.RecruitmentPlanId == vacancy.RecruitmentPlanId);
-                        if (recruitmentPlan != null)
-                        {
-                            applicantHeader.JobTitle = recruitmentPlan.JobtitleName;
-                            applicantHeader.Quntity = recruitmentPlan.NoOfVacantPost;
-                            applicantHeader.EduandExp = recruitmentPlan.RelevantExp + ", " + recruitmentPlan.Experience;
-                            applicantHeader.Salary = recruitmentPlan.PlannedSalary;
-                            applicantHeader.Location = vacancy.Branch.Name;
-                            //applicantHeader.RecruitmentType = vacancy.VacancyType;
-                            if (vacancy.VacancyType == VacancyType.PERMANENT)
-                            {
-                                applicantHeader.RecruitmentType = "ቋሚ";
-                            }
-                            else
-                            {
-                                applicantHeader.RecruitmentType = "ጊዜያዊ";
-                            }
-
-                            var rank = db.Ranks.FirstOrDefault(x => x.RankId == recruitmentPlan.RankId);
-                            if (rank != null)
-                            {
-                                applicantHeader.Rank = rank.RankName;
-                            }
-                            applicantHeaderList.Add(applicantHeader);
-                        }
+                        applicantHeader.JobTitle = jobtitle.Description;
                     }
 
+                    applicantHeader.Quntity = vacancy.NoOfVacant;
+
+                    applicantHeader.EduandExp = vacancy.TotalYearOfExperience.ToString();
+                    applicantHeader.ExperienceLevel = vacancy.ExperienceLevel.ToString();
+                    applicantHeader.Salary = vacancy.Salary;
+
+                    if (applicantHeader.Salary == "0")
+                    {
+                        applicantHeader.Salary = "በድርጅቱ ስኬል";
+                    }
+
+                    var branch = db.Branch.FirstOrDefault(x => x.BranchId == vacancy.BranchId);
+                    if (branch != null)
+                    {
+                        applicantHeader.Location = branch.Name;
+                    }
+                    //applicantHeader.RecruitmentType = vacancy.VacancyType;
+                    if (vacancy.VacancyType == VacancyType.PERMANENT)
+                    {
+                        applicantHeader.RecruitmentType = "ቋሚ";
+                    }
+                    else
+                    {
+                        applicantHeader.RecruitmentType = "ጊዜያዊ";
+                    }
+
+                    //var rank = db.Ranks.FirstOrDefault(x => x.RankId == vacancy.RankId);
+                    //if (rank != null)
+                    //{
+                    //    applicantHeader.Rank = rank.RankName;
+                    //}
+                    applicantHeaderList.Add(applicantHeader);
                 }
             }
+
             return applicantHeaderList;
         }
     }

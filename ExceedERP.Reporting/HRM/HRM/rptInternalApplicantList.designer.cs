@@ -145,6 +145,7 @@ namespace ExceedERP.Reporting.HRM.HRM
             this.No.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.29679009318351746D), Telerik.Reporting.Drawing.Unit.Inch(0.89978307485580444D));
             this.No.Style.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(140)))), ((int)(((byte)(174)))), ((int)(((byte)(173)))));
             this.No.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.No.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
             this.No.Style.Font.Bold = true;
             this.No.Style.Font.Name = "Nyala";
             this.No.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(9D);
@@ -157,6 +158,7 @@ namespace ExceedERP.Reporting.HRM.HRM
             this.ApplicantName.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.88943183422088623D), Telerik.Reporting.Drawing.Unit.Inch(0.89978307485580444D));
             this.ApplicantName.Style.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(140)))), ((int)(((byte)(174)))), ((int)(((byte)(173)))));
             this.ApplicantName.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.ApplicantName.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
             this.ApplicantName.Style.Font.Bold = true;
             this.ApplicantName.Style.Font.Name = "Nyala";
             this.ApplicantName.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(9D);
@@ -169,6 +171,7 @@ namespace ExceedERP.Reporting.HRM.HRM
             this.Eduaction.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(2.2992403507232666D), Telerik.Reporting.Drawing.Unit.Inch(0.89978307485580444D));
             this.Eduaction.Style.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(140)))), ((int)(((byte)(174)))), ((int)(((byte)(173)))));
             this.Eduaction.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.Eduaction.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
             this.Eduaction.Style.Font.Bold = true;
             this.Eduaction.Style.Font.Name = "Nyala";
             this.Eduaction.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(9D);
@@ -182,6 +185,7 @@ namespace ExceedERP.Reporting.HRM.HRM
             this.Training.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.46110621094703674D), Telerik.Reporting.Drawing.Unit.Inch(0.89978307485580444D));
             this.Training.Style.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(140)))), ((int)(((byte)(174)))), ((int)(((byte)(173)))));
             this.Training.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.Training.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
             this.Training.Style.Font.Bold = true;
             this.Training.Style.Font.Name = "Nyala";
             this.Training.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(9D);
@@ -195,6 +199,7 @@ namespace ExceedERP.Reporting.HRM.HRM
             this.CurrentExpriance.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(2.0984992980957031D), Telerik.Reporting.Drawing.Unit.Inch(0.89978313446044922D));
             this.CurrentExpriance.Style.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(140)))), ((int)(((byte)(174)))), ((int)(((byte)(173)))));
             this.CurrentExpriance.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.CurrentExpriance.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
             this.CurrentExpriance.Style.Font.Bold = true;
             this.CurrentExpriance.Style.Font.Name = "Nyala";
             this.CurrentExpriance.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(9D);
@@ -208,6 +213,7 @@ namespace ExceedERP.Reporting.HRM.HRM
             this.OtherExpriance.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(2.2483828067779541D), Telerik.Reporting.Drawing.Unit.Inch(0.89978313446044922D));
             this.OtherExpriance.Style.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(140)))), ((int)(((byte)(174)))), ((int)(((byte)(173)))));
             this.OtherExpriance.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.OtherExpriance.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
             this.OtherExpriance.Style.Font.Bold = true;
             this.OtherExpriance.Style.Font.Name = "Nyala";
             this.OtherExpriance.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(9D);
@@ -221,6 +227,7 @@ namespace ExceedERP.Reporting.HRM.HRM
             this.Performance.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.54166698455810547D), Telerik.Reporting.Drawing.Unit.Inch(0.89978307485580444D));
             this.Performance.Style.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(140)))), ((int)(((byte)(174)))), ((int)(((byte)(173)))));
             this.Performance.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.Performance.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
             this.Performance.Style.Font.Bold = true;
             this.Performance.Style.Font.Name = "Nyala";
             this.Performance.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(9D);
@@ -234,6 +241,7 @@ namespace ExceedERP.Reporting.HRM.HRM
             this.TotalExpriance.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.43749997019767761D), Telerik.Reporting.Drawing.Unit.Inch(0.899783194065094D));
             this.TotalExpriance.Style.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(140)))), ((int)(((byte)(174)))), ((int)(((byte)(173)))));
             this.TotalExpriance.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.TotalExpriance.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
             this.TotalExpriance.Style.Font.Bold = true;
             this.TotalExpriance.Style.Font.Name = "Nyala";
             this.TotalExpriance.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(9D);
@@ -247,6 +255,7 @@ namespace ExceedERP.Reporting.HRM.HRM
             this.EmployType.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.43750044703483582D), Telerik.Reporting.Drawing.Unit.Inch(0.89978307485580444D));
             this.EmployType.Style.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(140)))), ((int)(((byte)(174)))), ((int)(((byte)(173)))));
             this.EmployType.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.EmployType.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
             this.EmployType.Style.Font.Bold = true;
             this.EmployType.Style.Font.Name = "Nyala";
             this.EmployType.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(9D);
@@ -260,6 +269,7 @@ namespace ExceedERP.Reporting.HRM.HRM
             this.Remark.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.53124994039535522D), Telerik.Reporting.Drawing.Unit.Inch(0.89978307485580444D));
             this.Remark.Style.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(140)))), ((int)(((byte)(174)))), ((int)(((byte)(173)))));
             this.Remark.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.Remark.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
             this.Remark.Style.Font.Bold = true;
             this.Remark.Style.Font.Name = "Nyala";
             this.Remark.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(9D);
@@ -273,6 +283,7 @@ namespace ExceedERP.Reporting.HRM.HRM
             this.EdutaionTyp.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.65120255947113037D), Telerik.Reporting.Drawing.Unit.Inch(0.32313063740730286D));
             this.EdutaionTyp.Style.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(140)))), ((int)(((byte)(174)))), ((int)(((byte)(173)))));
             this.EdutaionTyp.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.EdutaionTyp.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
             this.EdutaionTyp.Style.Font.Bold = true;
             this.EdutaionTyp.Style.Font.Name = "Nyala";
             this.EdutaionTyp.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(7.5D);
@@ -284,6 +295,7 @@ namespace ExceedERP.Reporting.HRM.HRM
             this.EducLevel.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.55836528539657593D), Telerik.Reporting.Drawing.Unit.Inch(0.32313063740730286D));
             this.EducLevel.Style.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(140)))), ((int)(((byte)(174)))), ((int)(((byte)(173)))));
             this.EducLevel.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.EducLevel.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
             this.EducLevel.Style.Font.Bold = true;
             this.EducLevel.Style.Font.Name = "Nyala";
             this.EducLevel.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(7.5D);
@@ -295,6 +307,7 @@ namespace ExceedERP.Reporting.HRM.HRM
             this.EndDate.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.51654720306396484D), Telerik.Reporting.Drawing.Unit.Inch(0.32313063740730286D));
             this.EndDate.Style.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(140)))), ((int)(((byte)(174)))), ((int)(((byte)(173)))));
             this.EndDate.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.EndDate.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
             this.EndDate.Style.Font.Bold = true;
             this.EndDate.Style.Font.Name = "Nyala";
             this.EndDate.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(7.5D);
@@ -307,6 +320,7 @@ namespace ExceedERP.Reporting.HRM.HRM
             this.OrgName.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.57312536239624023D), Telerik.Reporting.Drawing.Unit.Inch(0.32313063740730286D));
             this.OrgName.Style.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(140)))), ((int)(((byte)(174)))), ((int)(((byte)(173)))));
             this.OrgName.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.OrgName.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
             this.OrgName.Style.Font.Bold = true;
             this.OrgName.Style.Font.Name = "Nyala";
             this.OrgName.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(7.5D);
@@ -319,6 +333,7 @@ namespace ExceedERP.Reporting.HRM.HRM
             this.EJobTitle.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.61975634098052979D), Telerik.Reporting.Drawing.Unit.Inch(0.43406939506530762D));
             this.EJobTitle.Style.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(140)))), ((int)(((byte)(174)))), ((int)(((byte)(173)))));
             this.EJobTitle.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.EJobTitle.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
             this.EJobTitle.Style.Font.Bold = true;
             this.EJobTitle.Style.Font.Name = "Nyala";
             this.EJobTitle.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(7.5D);
@@ -330,6 +345,7 @@ namespace ExceedERP.Reporting.HRM.HRM
             this.From.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.5192980170249939D), Telerik.Reporting.Drawing.Unit.Inch(0.43406939506530762D));
             this.From.Style.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(140)))), ((int)(((byte)(174)))), ((int)(((byte)(173)))));
             this.From.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.From.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
             this.From.Style.Font.Bold = true;
             this.From.Style.Font.Name = "Nyala";
             this.From.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(7.5D);
@@ -341,6 +357,7 @@ namespace ExceedERP.Reporting.HRM.HRM
             this.To.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.46493011713027954D), Telerik.Reporting.Drawing.Unit.Inch(0.43406939506530762D));
             this.To.Style.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(140)))), ((int)(((byte)(174)))), ((int)(((byte)(173)))));
             this.To.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.To.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
             this.To.Style.Font.Bold = true;
             this.To.Style.Font.Name = "Nyala";
             this.To.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(7.5D);
@@ -353,6 +370,7 @@ namespace ExceedERP.Reporting.HRM.HRM
             this.TExpriance.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.49451419711112976D), Telerik.Reporting.Drawing.Unit.Inch(0.43406939506530762D));
             this.TExpriance.Style.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(140)))), ((int)(((byte)(174)))), ((int)(((byte)(173)))));
             this.TExpriance.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.TExpriance.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
             this.TExpriance.Style.Font.Bold = true;
             this.TExpriance.Style.Font.Name = "Nyala";
             this.TExpriance.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(7.5D);
@@ -365,6 +383,7 @@ namespace ExceedERP.Reporting.HRM.HRM
             this.TOrgName.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.47562581300735474D), Telerik.Reporting.Drawing.Unit.Inch(0.46497911214828491D));
             this.TOrgName.Style.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(140)))), ((int)(((byte)(174)))), ((int)(((byte)(173)))));
             this.TOrgName.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.TOrgName.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
             this.TOrgName.Style.Font.Bold = true;
             this.TOrgName.Style.Font.Name = "Nyala";
             this.TOrgName.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(7.5D);
@@ -376,6 +395,7 @@ namespace ExceedERP.Reporting.HRM.HRM
             this.OFrom.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.45182552933692932D), Telerik.Reporting.Drawing.Unit.Inch(0.46497911214828491D));
             this.OFrom.Style.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(140)))), ((int)(((byte)(174)))), ((int)(((byte)(173)))));
             this.OFrom.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.OFrom.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
             this.OFrom.Style.Font.Bold = true;
             this.OFrom.Style.Font.Name = "Nyala";
             this.OFrom.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(7.5D);
@@ -387,6 +407,7 @@ namespace ExceedERP.Reporting.HRM.HRM
             this.OTo.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.40868434309959412D), Telerik.Reporting.Drawing.Unit.Inch(0.46497911214828491D));
             this.OTo.Style.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(140)))), ((int)(((byte)(174)))), ((int)(((byte)(173)))));
             this.OTo.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.OTo.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
             this.OTo.Style.Font.Bold = true;
             this.OTo.Style.Font.Name = "Nyala";
             this.OTo.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(7.5D);
@@ -399,6 +420,7 @@ namespace ExceedERP.Reporting.HRM.HRM
             this.OJobTitle.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.3614037036895752D), Telerik.Reporting.Drawing.Unit.Inch(0.46497911214828491D));
             this.OJobTitle.Style.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(140)))), ((int)(((byte)(174)))), ((int)(((byte)(173)))));
             this.OJobTitle.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.OJobTitle.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
             this.OJobTitle.Style.Font.Bold = true;
             this.OJobTitle.Style.Font.Name = "Nyala";
             this.OJobTitle.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(7.5D);
@@ -411,6 +433,7 @@ namespace ExceedERP.Reporting.HRM.HRM
             this.OTExpriance.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.5508425235748291D), Telerik.Reporting.Drawing.Unit.Inch(0.46497911214828491D));
             this.OTExpriance.Style.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(140)))), ((int)(((byte)(174)))), ((int)(((byte)(173)))));
             this.OTExpriance.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.OTExpriance.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
             this.OTExpriance.Style.Font.Bold = true;
             this.OTExpriance.Style.Font.Name = "Nyala";
             this.OTExpriance.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(7.5D);
@@ -479,14 +502,14 @@ namespace ExceedERP.Reporting.HRM.HRM
             // tblEmployeeSumm
             // 
             this.tblEmployeeSumm.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.29678994417190552D)));
-            this.tblEmployeeSumm.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.88943278789520264D)));
+            this.tblEmployeeSumm.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.88943272829055786D)));
             this.tblEmployeeSumm.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(2.2992401123046875D)));
-            this.tblEmployeeSumm.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.46110647916793823D)));
+            this.tblEmployeeSumm.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.46110644936561584D)));
             this.tblEmployeeSumm.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(2.098499059677124D)));
             this.tblEmployeeSumm.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(2.2483806610107422D)));
             this.tblEmployeeSumm.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.54166698455810547D)));
             this.tblEmployeeSumm.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.43750014901161194D)));
-            this.tblEmployeeSumm.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.43750065565109253D)));
+            this.tblEmployeeSumm.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.43750062584877014D)));
             this.tblEmployeeSumm.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.53124964237213135D)));
             this.tblEmployeeSumm.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.97270011901855469D)));
             this.tblEmployeeSumm.Body.SetCellContent(0, 0, this.textBox2);
@@ -569,6 +592,7 @@ namespace ExceedERP.Reporting.HRM.HRM
             this.textBox2.Name = "textBox2";
             this.textBox2.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.29679009318351746D), Telerik.Reporting.Drawing.Unit.Inch(0.97270011901855469D));
             this.textBox2.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.textBox2.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
             this.textBox2.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
             this.textBox2.Style.TextAlign = Telerik.Reporting.Drawing.HorizontalAlign.Center;
             this.textBox2.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Middle;
@@ -579,6 +603,7 @@ namespace ExceedERP.Reporting.HRM.HRM
             this.textBox8.Name = "textBox8";
             this.textBox8.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.88943183422088623D), Telerik.Reporting.Drawing.Unit.Inch(0.97270011901855469D));
             this.textBox8.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.textBox8.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
             this.textBox8.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(9D);
             this.textBox8.Style.TextAlign = Telerik.Reporting.Drawing.HorizontalAlign.Center;
             this.textBox8.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Middle;
@@ -625,6 +650,7 @@ namespace ExceedERP.Reporting.HRM.HRM
             this.table1.RowGroups.Add(tableGroup5);
             this.table1.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(2.2992403507232666D), Telerik.Reporting.Drawing.Unit.Inch(0.97270011901855469D));
             this.table1.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.table1.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
             this.table1.Style.TextAlign = Telerik.Reporting.Drawing.HorizontalAlign.Center;
             this.table1.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Middle;
             this.table1.StyleName = "";
@@ -634,6 +660,7 @@ namespace ExceedERP.Reporting.HRM.HRM
             this.textBox6.Name = "textBox6";
             this.textBox6.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.65120255947113037D), Telerik.Reporting.Drawing.Unit.Inch(0.64956951141357422D));
             this.textBox6.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.textBox6.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
             this.textBox6.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(7.5D);
             this.textBox6.Value = "= Fields.EduField";
             // 
@@ -642,6 +669,7 @@ namespace ExceedERP.Reporting.HRM.HRM
             this.textBox18.Name = "textBox18";
             this.textBox18.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.55836528539657593D), Telerik.Reporting.Drawing.Unit.Inch(0.64956951141357422D));
             this.textBox18.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.textBox18.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
             this.textBox18.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(7.5D);
             this.textBox18.Value = "= Fields.EduLevel";
             // 
@@ -650,6 +678,7 @@ namespace ExceedERP.Reporting.HRM.HRM
             this.textBox24.Name = "textBox24";
             this.textBox24.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.51654720306396484D), Telerik.Reporting.Drawing.Unit.Inch(0.64956951141357422D));
             this.textBox24.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.textBox24.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
             this.textBox24.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(7.5D);
             this.textBox24.StyleName = "";
             this.textBox24.Value = "=Fields.To";
@@ -659,6 +688,7 @@ namespace ExceedERP.Reporting.HRM.HRM
             this.textBox22.Name = "textBox22";
             this.textBox22.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.57312536239624023D), Telerik.Reporting.Drawing.Unit.Inch(0.64956951141357422D));
             this.textBox22.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.textBox22.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
             this.textBox22.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(7.5D);
             this.textBox22.StyleName = "";
             this.textBox22.Value = "=Fields.OrgName";
@@ -679,6 +709,7 @@ namespace ExceedERP.Reporting.HRM.HRM
             this.table2.RowGroups.Add(tableGroup7);
             this.table2.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.46110621094703674D), Telerik.Reporting.Drawing.Unit.Inch(0.97270011901855469D));
             this.table2.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.table2.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
             this.table2.Style.TextAlign = Telerik.Reporting.Drawing.HorizontalAlign.Center;
             this.table2.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Middle;
             this.table2.StyleName = "";
@@ -730,6 +761,7 @@ namespace ExceedERP.Reporting.HRM.HRM
             this.table3.RowGroups.Add(tableGroup12);
             this.table3.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(2.0984985828399658D), Telerik.Reporting.Drawing.Unit.Inch(0.97270011901855469D));
             this.table3.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.table3.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
             this.table3.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
             this.table3.Style.TextAlign = Telerik.Reporting.Drawing.HorizontalAlign.Center;
             this.table3.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Middle;
@@ -740,6 +772,7 @@ namespace ExceedERP.Reporting.HRM.HRM
             this.textBox32.Name = "textBox32";
             this.textBox32.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.61975634098052979D), Telerik.Reporting.Drawing.Unit.Inch(0.53863078355789185D));
             this.textBox32.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.textBox32.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
             this.textBox32.Value = "= Fields.JobTitleName";
             // 
             // textBox34
@@ -747,6 +780,7 @@ namespace ExceedERP.Reporting.HRM.HRM
             this.textBox34.Name = "textBox34";
             this.textBox34.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.5192980170249939D), Telerik.Reporting.Drawing.Unit.Inch(0.53863078355789185D));
             this.textBox34.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.textBox34.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
             this.textBox34.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(7.5D);
             this.textBox34.Value = "= Fields.FromString";
             // 
@@ -755,6 +789,7 @@ namespace ExceedERP.Reporting.HRM.HRM
             this.textBox35.Name = "textBox35";
             this.textBox35.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.46493011713027954D), Telerik.Reporting.Drawing.Unit.Inch(0.53863078355789185D));
             this.textBox35.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.textBox35.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
             this.textBox35.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(7.5D);
             this.textBox35.StyleName = "";
             this.textBox35.Value = "=Fields.ToString";
@@ -764,6 +799,7 @@ namespace ExceedERP.Reporting.HRM.HRM
             this.textBox40.Name = "textBox40";
             this.textBox40.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.49451419711112976D), Telerik.Reporting.Drawing.Unit.Inch(0.53863078355789185D));
             this.textBox40.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.textBox40.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
             this.textBox40.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(7.5D);
             this.textBox40.StyleName = "";
             this.textBox40.Value = "{=Fields.DYear} ዓመት ከ {=Fields.DMonth} ወር";
@@ -774,7 +810,7 @@ namespace ExceedERP.Reporting.HRM.HRM
             this.table4.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.47562581300735474D)));
             this.table4.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.45182552933692932D)));
             this.table4.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.40868431329727173D)));
-            this.table4.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.36140376329421997D)));
+            this.table4.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.36140379309654236D)));
             this.table4.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(0.55084258317947388D)));
             this.table4.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.50772100687026978D)));
             this.table4.Body.SetCellContent(0, 0, this.textBox41);
@@ -814,6 +850,7 @@ namespace ExceedERP.Reporting.HRM.HRM
             this.table4.RowGroups.Add(tableGroup18);
             this.table4.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(2.2483820915222168D), Telerik.Reporting.Drawing.Unit.Inch(0.97270011901855469D));
             this.table4.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.table4.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
             this.table4.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
             this.table4.Style.TextAlign = Telerik.Reporting.Drawing.HorizontalAlign.Center;
             this.table4.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Middle;
@@ -824,6 +861,7 @@ namespace ExceedERP.Reporting.HRM.HRM
             this.textBox41.Name = "textBox41";
             this.textBox41.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.47562581300735474D), Telerik.Reporting.Drawing.Unit.Inch(0.50772100687026978D));
             this.textBox41.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.textBox41.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
             this.textBox41.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(7.5D);
             this.textBox41.Value = "= Fields.CompanyName";
             // 
@@ -832,6 +870,7 @@ namespace ExceedERP.Reporting.HRM.HRM
             this.textBox42.Name = "textBox42";
             this.textBox42.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.45182552933692932D), Telerik.Reporting.Drawing.Unit.Inch(0.50772100687026978D));
             this.textBox42.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.textBox42.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
             this.textBox42.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(7.5D);
             this.textBox42.Value = "= Fields.From";
             // 
@@ -840,6 +879,7 @@ namespace ExceedERP.Reporting.HRM.HRM
             this.textBox43.Name = "textBox43";
             this.textBox43.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.40868434309959412D), Telerik.Reporting.Drawing.Unit.Inch(0.50772100687026978D));
             this.textBox43.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.textBox43.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
             this.textBox43.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(7.5D);
             this.textBox43.StyleName = "";
             this.textBox43.Value = "=Fields.To";
@@ -849,6 +889,7 @@ namespace ExceedERP.Reporting.HRM.HRM
             this.textBox44.Name = "textBox44";
             this.textBox44.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.3614037036895752D), Telerik.Reporting.Drawing.Unit.Inch(0.50772100687026978D));
             this.textBox44.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.textBox44.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
             this.textBox44.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(7.5D);
             this.textBox44.StyleName = "";
             this.textBox44.Value = "=Fields.JobTitleName";
@@ -858,6 +899,7 @@ namespace ExceedERP.Reporting.HRM.HRM
             this.textBox50.Name = "textBox50";
             this.textBox50.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.5508425235748291D), Telerik.Reporting.Drawing.Unit.Inch(0.50772100687026978D));
             this.textBox50.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.textBox50.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
             this.textBox50.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(7.5D);
             this.textBox50.StyleName = "";
             this.textBox50.Value = "{=Fields.DYear} ዓመት ከ {=Fields.DMonth} ወር";
@@ -867,6 +909,7 @@ namespace ExceedERP.Reporting.HRM.HRM
             this.textBox52.Name = "textBox52";
             this.textBox52.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.54166698455810547D), Telerik.Reporting.Drawing.Unit.Inch(0.97270011901855469D));
             this.textBox52.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.textBox52.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
             this.textBox52.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
             this.textBox52.Style.TextAlign = Telerik.Reporting.Drawing.HorizontalAlign.Center;
             this.textBox52.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Middle;
@@ -878,6 +921,7 @@ namespace ExceedERP.Reporting.HRM.HRM
             this.textBox54.Name = "textBox54";
             this.textBox54.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.4375002384185791D), Telerik.Reporting.Drawing.Unit.Inch(0.972699761390686D));
             this.textBox54.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.textBox54.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
             this.textBox54.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
             this.textBox54.Style.TextAlign = Telerik.Reporting.Drawing.HorizontalAlign.Center;
             this.textBox54.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Middle;
@@ -889,6 +933,7 @@ namespace ExceedERP.Reporting.HRM.HRM
             this.textBox56.Name = "textBox56";
             this.textBox56.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.43750044703483582D), Telerik.Reporting.Drawing.Unit.Inch(0.97270011901855469D));
             this.textBox56.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.textBox56.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
             this.textBox56.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
             this.textBox56.Style.TextAlign = Telerik.Reporting.Drawing.HorizontalAlign.Center;
             this.textBox56.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Middle;
@@ -900,6 +945,7 @@ namespace ExceedERP.Reporting.HRM.HRM
             this.textBox62.Name = "textBox62";
             this.textBox62.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(0.53124994039535522D), Telerik.Reporting.Drawing.Unit.Inch(0.97270011901855469D));
             this.textBox62.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.textBox62.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
             this.textBox62.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(8D);
             this.textBox62.Style.TextAlign = Telerik.Reporting.Drawing.HorizontalAlign.Center;
             this.textBox62.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Middle;

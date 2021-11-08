@@ -13,7 +13,7 @@ using ExceedERP.DataAccess.Context;
 namespace ExceedERP.Web.Areas.HRM.Controllers.Report
 {
     
-     [AuthorizeRoles(HrmConstants.HRLeaveReport, HrmConstants.HRReport, HrmConstants.HRAdmin)]
+     [AuthorizeRoles(HrmConstants.HRLeaveReport, HrmConstants.HRReport, HrmConstants.HRAdmin, HrmConstants.HREmployeeSelfService, HrmConstants.HRSelfServiceManager)]
     public class LeaveReportController : BaseController
     {
         // GET: HRM/EmployeeReport

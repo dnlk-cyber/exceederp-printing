@@ -62,74 +62,61 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
         public ActionResult Trainee_Create([DataSourceRequest]DataSourceRequest request, Trainee trainee, int id)
         {
             ModelState.Clear();
-            if (ModelState.IsValid)
+
+            int traineeCount = 0;
+            var tracking = db.CourseTrackings.FirstOrDefault(x => x.CourseTrackingId == id);
+            if (tracking != null)
             {
-                int num = 0;
-                var con = db.CourseTrackings.FirstOrDefault(x => x.CourseTrackingId == id);
-                if (con != null)
+                traineeCount = db.Trainee.Where(x => x.CourseTrackingId == tracking.CourseTrackingId).ToList().Count();
+
+                var tra = db.Trainee.FirstOrDefault(x => x.EmployeeId == trainee.EmployeeId && x.CourseTrackingId == tracking.CourseTrackingId);
+                if (tra != null)
                 {
-                    var traineeNum = db.TrainingPlans
-                        .FirstOrDefault(x => x.TrainingPlanId == con.TrainingPlanId);
-                    num = traineeNum.NoofTrainee;
-
-
-                    var traineeCount = db.Trainee.Where(x => x.CourseTrackingId == id).ToList().Count();
-
-
-                    var tra = db.Trainee.FirstOrDefault(x =>
-                        x.EmployeeId == trainee.EmployeeId && x.CourseTrackingId == id);
-                    if (tra != null)
-                    {
-                        ModelState.AddModelError("", "You are already Register, Cannot register again");
-                    }
-
-                    else
-                    {
-
-                        var entity = new Trainee
-                        {
-                            CourseTrackingId = id,
-                            EmployeeId = trainee.EmployeeId,
-                            EducationLevel = trainee.EducationLevel,
-                            IsCompleteTraining = trainee.IsCompleteTraining,
-                            Remark = trainee.Remark
-                        };
-
-                        db.Trainee.Add(entity);
-                        db.SaveChanges();
-                        trainee.TraineeId = entity.TraineeId;
-                        trainee.CourseTrackingId = id;
-                        if (trainee.IsCompleteTraining)
-                        {
-                            SaveTraining(trainee);
-                        }
-                        if (traineeCount >= num)
-                        {
-                            string messages = "Maximum Number of Trainee Registered You are Out of Plan Amount";
-                            return new JavaScriptResult() { Script = "alert('" + messages + "');" };
-                        }
-
-                        #region operation log
-                        var person = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == entity.EmployeeId);
-                        if (person != null)
-                        {
-                            var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-                            var name = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == empId);
-                            if (name != null)
-                            {
-                                UserHelper.OperationLog(Request.UserHostAddress, "Trainee ", "Success", User.Identity.Name, name.EmployeeCode + " add new Trainee name " + person.EmployeeCode,Core.Domain.Global.Modules.HRM);
-
-                            }
-                        }
-                        #endregion
-
-                    }
-
+                    ModelState.AddModelError("", "You are already Register, Cannot register again");
                 }
-            }
-            else
-            {
-                ModelState.AddModelError("", "No such Plan Cannot Register");
+
+                if (ModelState.IsValid)
+                {
+                    var entity = new Trainee
+                    {
+                        CourseTrackingId = id,
+                        EmployeeId = trainee.EmployeeId,
+                        EducationLevel = trainee.EducationLevel,
+                        IsCompleteTraining = trainee.IsCompleteTraining,
+                        Remark = trainee.Remark
+                    };
+
+                    db.Trainee.Add(entity);
+                    db.SaveChanges();
+
+                    trainee.TraineeId = entity.TraineeId;
+                    trainee.CourseTrackingId = id;
+
+                    if (trainee.IsCompleteTraining)
+                    {
+                        SaveTraining(trainee);
+                    }
+                    if (traineeCount >= tracking.NoOfTrainee)
+                    {
+                        string messages = "Maximum Number of Trainee Registered";
+                        return new JavaScriptResult() { Script = "alert('" + messages + "');" };
+                    }
+
+                    #region operation log
+                    var person = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == entity.EmployeeId);
+                    if (person != null)
+                    {
+                        var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
+                        var name = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == empId);
+                        if (name != null)
+                        {
+                            UserHelper.OperationLog(Request.UserHostAddress, "Trainee ", "Success", User.Identity.Name, name.EmployeeCode + " add new Trainee name " + person.EmployeeCode, Core.Domain.Global.Modules.HRM);
+
+                        }
+                    }
+                }
+                #endregion
+
             }
 
 
@@ -138,36 +125,44 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
         private void SaveTraining(Trainee traine)
         {
             string oneAddress = "";
-            ExceedDbContext dbs = new ExceedDbContext();
-            var courseTracking =
-                dbs.CourseTrackings.Where(x => x.CourseTrackingId == traine.CourseTrackingId).FirstOrDefault();
+
+            var courseTracking = db.CourseTrackings.FirstOrDefault(x => x.CourseTrackingId == traine.CourseTrackingId);
+
             if (courseTracking != null)
             {
-                dbs = new ExceedDbContext();
-                var address =
-                    dbs.Addresses.Where(
-                        x =>
-                            x.Reference == courseTracking.MainCompanyId.ToString() &&
-                            x.ReferenceType == "TrainingProvider").ToList();
-
+                var address = db.Addresses.Where(x => x.Reference == courseTracking.MainCompanyId.ToString() && x.ReferenceType == "TrainingProvider").ToList();
 
                 foreach (var a in address)
                 {
                     oneAddress += " " + a.Value;
                 }
                 if (oneAddress.Length == 0)
+                {
                     oneAddress = "N/A";
+                }
+                string organizationName = "";
+                var mainCompany = db.Companies.FirstOrDefault(x => x.MainCompanyId == courseTracking.MainCompanyId);
+                if (mainCompany != null)
+                {
+                    organizationName = mainCompany.TradeName;
+                }
+                string trainingName = "";
+                var lookUp = db.Lookups.FirstOrDefault(x => x.LookupId == courseTracking.LookupId);
+                if (lookUp != null)
+                {
+                    trainingName = lookUp.Description;
+                }
+
                 var entityy = new Training
                 {
-                    OrganizationName = courseTracking.MainCompany.TradeName,
+                    OrganizationName = organizationName,
                     EmployeeId = traine.EmployeeId,
                     OrgAddress = oneAddress,
                     IsTraining = true,
                     From = courseTracking.From,
                     To = courseTracking.To,
                     Score = 0,
-                    TotalCost = Convert.ToDouble(courseTracking.Cost),
-                    TrainingName = courseTracking.Lookup.Description,
+                    TrainingName = trainingName,
                     PercentCoverdByOrg = 0,
                     Remark = courseTracking.Remark,
                     DateCreated = DateTime.Now,
@@ -177,12 +172,22 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
                     FromTrAm = courseTracking.FromAmharic,
                     ToTraAm = courseTracking.ToAmharic,
                     EmpEduTrainId = 0,
-
-
+                    CourseTrackingId = courseTracking.CourseTrackingId,
                 };
-                //dbs = new ExceedDbContext();
-                dbs.EmpTrainingEducations.Add(entityy);
-                dbs.SaveChanges();
+
+                int noOfTrainee = db.Trainee.Where(x => x.CourseTrackingId == traine.CourseTrackingId).Count();
+
+                if (noOfTrainee > 0)
+                {
+                    entityy.TotalCost = Convert.ToDouble(courseTracking.Cost / noOfTrainee);
+                }
+                else
+                {
+                    entityy.TotalCost = 0;
+                }
+              
+                db.EmpTrainingEducations.Add(entityy);
+                db.SaveChanges();
             }
         }
 
@@ -205,6 +210,15 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
                 db.Entry(entity).State = EntityState.Modified;
                 db.SaveChanges();
 
+                if (trainee.IsCompleteTraining)
+                {
+                    var trainingInProfile = db.EmpTrainingEducations.FirstOrDefault(x=>x.CourseTrackingId == trainee.CourseTrackingId);
+                    if(trainingInProfile == null)
+                    {
+                        SaveTraining(trainee);
+                    }                   
+                }
+
                 #region operation log
                 var person = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == entity.EmployeeId);
                 if (person != null)
@@ -213,7 +227,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
                     var name = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == empId);
                     if (name != null)
                     {
-                        UserHelper.OperationLog(Request.UserHostAddress, "Trainee ", "Success", User.Identity.Name, name.EmployeeCode + " update Trainee info of " + person.EmployeeCode,Core.Domain.Global.Modules.HRM);
+                        UserHelper.OperationLog(Request.UserHostAddress, "Trainee ", "Success", User.Identity.Name, name.EmployeeCode + " update Trainee info of " + person.EmployeeCode, Core.Domain.Global.Modules.HRM);
 
                     }
                 }
@@ -237,10 +251,25 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
                             oneAddress += " " + a.Value;
                         }
                         if (oneAddress.Length == 0)
+                        {
                             oneAddress = "N/A";
+                        }
+
+                        string organizationName = "";
+                        var mainCompany = db.Companies.FirstOrDefault(x => x.MainCompanyId == courseTracking.MainCompanyId);
+                        if (mainCompany != null)
+                        {
+                            organizationName = mainCompany.TradeName;
+                        }
+                        string trainingName = "";
+                        var lookUp = db.Lookups.FirstOrDefault(x => x.LookupId == courseTracking.LookupId);
+                        if (lookUp != null)
+                        {
+                            trainingName = lookUp.Description;
+                        }
                         var entityy = new Training
                         {
-                            OrganizationName = courseTracking.MainCompany.TradeName,
+                            OrganizationName = organizationName,
                             EmployeeId = trainee.EmployeeId,
                             OrgAddress = oneAddress,
                             IsTraining = true,
@@ -248,7 +277,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
                             To = courseTracking.To,
                             Score = 0,
                             TotalCost = Convert.ToDouble(courseTracking.Cost),
-                            TrainingName = courseTracking.Lookup.Description,
+                            TrainingName = trainingName,
                             PercentCoverdByOrg = 0,
                             Remark = courseTracking.Remark,
                             DateCreated = DateTime.Now,

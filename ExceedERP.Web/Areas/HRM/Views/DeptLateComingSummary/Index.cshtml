@@ -10,7 +10,7 @@
       .Columns(columns =>
       {
       columns.Bound(c => c.Check).Template(@<text></text>).ClientTemplate("<input type='checkbox' #= Check ? checked='checked':'' # class='chkbx' />")
-                    .HeaderTemplate("<input type='checkbox' id='masterCheckBox' onclick='checkAll(this)'/>").Width(120);
+                    .HeaderTemplate("<input type='checkbox' id='masterCheckBox' onclick='checkAll(this)'/>").Width(50);
           columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "PersonId", "FullName").EditorTemplateName("ListOfEmployee").Width(200);
           columns.ForeignKey(c => c.GLPeriodId, (IEnumerable)ViewData["PeriodList"], "GLPeriodId", "Name").EditorTemplateName("GLPeriodSelector").Width(200);
           columns.Bound(c => c.TotalDays).Width(120);
@@ -157,8 +157,7 @@
                 r = result;
                
                     $("#grid").data("kendoGrid").dataSource.read();
-                    $("#grid").data("kendoGrid").refresh();
-                
+                    $("#grid").data("kendoGrid").refresh();                
             }
 
         });

@@ -16,8 +16,12 @@
           columns.Bound(c => c.TransgressionDateAm).EditorTemplateName("Calander").Width(200);
           columns.Bound(c => c.NatureofTransgression).Width(200);
           columns.Bound(c => c.Evidence).Width(160);
-          //columns.Bound(c => c.Remark).Width (150);
-          columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit); command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(180);
+          columns.Bound(c => c.IsActive).ClientTemplate("<input type='checkbox' disabled = 'true' #=IsActive ? checked='checked' :'' # >").Width (150);
+          columns.Command(command =>
+          {
+              command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+              command.Destroy().Text(Resources.ActionButton_Cancel);
+          }).Width(180);
       })
       .ToolBar(toolbar =>
       {
@@ -39,7 +43,6 @@
               .Events(e =>
               {
                   e.Save("GetDate");
-
                   e.Edit("GetDate");
               })
              .Pageable(pageable => pageable
@@ -51,14 +54,18 @@
       .DataSource(dataSource => dataSource
           .Ajax()
                .Events(events =>
-                                        {
-                                            events.Error("error_handler(\"DisciplinaryCasegrid\")");
-                                            events.RequestStart("onRequestStart(\"DisciplinaryCasegrid\")");
-                                            events.RequestEnd("onRequestEnd(\"DisciplinaryCasegrid\")");
-                                        })
-                       
-          .Model(model => { model.Id(p => p.DisciplinaryCaseId); 
-          model.Field(p => p.EmployeeCode).Editable (false);})
+               {
+                   events.Error("error_handler(\"DisciplinaryCasegrid\")");
+                   events.RequestStart("onRequestStart(\"DisciplinaryCasegrid\")");
+                   events.RequestEnd("onRequestEnd(\"DisciplinaryCasegrid\")");
+               })
+
+          .Model(model =>
+          {
+              model.Id(p => p.DisciplinaryCaseId);
+              model.Field(p => p.EmployeeCode).Editable (false);
+              model.Field(p => p.IsActive).Editable(false);
+          })
           .Read(read => read.Action("DisciplinaryCases_Read", "DisciplinaryCase"))
               .Create(create => create.Action("DisciplinaryCases_Create", "DisciplinaryCase"))
           .Update(update => update.Action("DisciplinaryCases_Update", "DisciplinaryCase"))
@@ -78,7 +85,7 @@
                   @(Html.Kendo().Grid<EmpDisciplinaryHearing>()
                       .Name("EmpDisciplinaryHearinggrid_#=DisciplinaryCaseId#")
       .Columns(columns =>
-      {      
+      {
           //columns.Bound(c => c.DisciplinaryCaseId);
           columns.Bound(c => c.HearingDateAmharic).EditorTemplateName ("Calander").Width (200);
           columns.Bound(c => c.HearingOutcome).Width(250);
@@ -101,21 +108,21 @@
       })
       .Filterable()
                .Events(e =>
-                      {
-                          e.Save("GetHearingDate");
+               {
+                   e.Save("GetHearingDate");
 
-                          e.Edit("GetHearingDate");
-                      })
+                   e.Edit("GetHearingDate");
+               })
       .Scrollable(h=> h.Height (500))
       .DataSource(dataSource => dataSource
           .Ajax()
                   .Events(events =>
-                                                {
-                                                    events.Error("error_handler(\"EmpDisciplinaryHearinggrid_#=DisciplinaryCaseId#\")");
-                                                    events.RequestStart("onRequestStart(\"EmpDisciplinaryHearinggrid_#=DisciplinaryCaseId#\")");
-                                                    events.RequestEnd("onRequestEnd(\"EmpDisciplinaryHearinggrid_#=DisciplinaryCaseId#\")");
-                                                })
-                                  
+                  {
+                      events.Error("error_handler(\"EmpDisciplinaryHearinggrid_#=DisciplinaryCaseId#\")");
+                      events.RequestStart("onRequestStart(\"EmpDisciplinaryHearinggrid_#=DisciplinaryCaseId#\")");
+                      events.RequestEnd("onRequestEnd(\"EmpDisciplinaryHearinggrid_#=DisciplinaryCaseId#\")");
+                  })
+
           .Model(model => model.Id(p => p.DisciplinaryHearingId))
                                   .Read(read => read.Action("EmpDisciplinaryHearing_Read", "EmpDisciplinaryHearing", new { id = "#=DisciplinaryCaseId#" }))
                                                   .Create(create => create.Action("EmpDisciplinaryHearing_Create", "EmpDisciplinaryHearing", new { id = "#=DisciplinaryCaseId#" }))
@@ -138,12 +145,18 @@
           //  columns.Bound(c => c.DisciplinaryCaseId);
           columns.ForeignKey(c => c.MeasuresId, (IEnumerable)ViewData["Measures"], "MeasuresId", "MeasuresType").EditorTemplateName("Measures").Width(150);
           columns.ForeignKey(c => c.DetailMeasuresId, (IEnumerable)ViewData["MeasuresDetails"], "DetailMeasuresId", "Description").EditorTemplateName("MeasureDetails").Width(150);
-          columns.Bound(c => c.DecisionDateAm).EditorTemplateName("Calander").Width(200);
-          columns.Bound(c => c.Month).EditorTemplateName("Months").Width(150);
+          columns.Bound(c => c.Month).EditorTemplateName("Months").Width(100);
+          columns.Bound(c => c.DecisionDateAm).EditorTemplateName("Calander").Width(100);
           //columns.Bound(c => c.IsExpired);
-          columns.Bound(c => c.IsReversedByAppeal).ClientTemplate("<input type='checkbox' disabled = 'true' \\#=IsReversedByAppeal ? checked='checked' :'' \\# />").Width(200);
-          columns.Bound(c => c.Remark).Width(150);
-          columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit); command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+          columns.Bound(c => c.IsReversedByAppeal).ClientTemplate("<input type='checkbox' disabled = 'true' \\#=IsReversedByAppeal ? checked='checked' :'' \\# />").Width(100);
+          columns.Bound(c => c.Remark).Width(50);
+         
+          columns.Command(command =>
+          {
+             // command.Custom("byMeney").Text("By Money");
+              command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+              command.Destroy().Text(Resources.ActionButton_Cancel);
+          }).Width(200);
       })
       .ToolBar(toolbar =>
       {
@@ -194,15 +207,15 @@
                       .Name("DisciplineMeasuerByMoney_#=DisciplinaryCaseId#")
       .Columns(columns =>
       {
-        //  columns.Bound(c => c.IsActive);
-          columns.ForeignKey(c => c.GLPeriodId, (IEnumerable)ViewData["PeriodList"], "GLPeriodId", "Name").EditorTemplateName("GLPeriodSelector").Width(200);
+          //  columns.Bound(c => c.IsActive);
+          columns.ForeignKey(c => c.GLPeriodId, (IEnumerable)ViewData["PeriodList"], "GLPeriodId", "Name").EditorTemplateName("GLCurrentPeriod").Width(200);
           columns.Bound(c => c.Amount);
           columns.Bound(c => c.Months);
           columns.Bound(c => c.MonthlyAmount).Width(150);
-          columns.Bound(c => c.Balance);
+         // columns.Bound(c => c.Balance);
           columns.Bound(c => c.Remark);
 
-         columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit); command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+          columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit); command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
       })
       .ToolBar(toolbar =>
       {
@@ -221,18 +234,22 @@
       .Filterable()
       .Scrollable(h => h.Height(500))
       .DataSource(dataSource => dataSource
-        
+
                     .Ajax()
                             .Events(events =>
-{
-    events.Error("error_handler(\"DisciplineMeasuerByMoney_#=DisciplinaryCaseId#\")");
-    events.RequestStart("onRequestStart(\"DisciplineMeasuerByMoney_#=DisciplinaryCaseId#\")");
-    events.RequestEnd("onRequestEnd(\"DisciplineMeasuerByMoney_#=DisciplinaryCaseId#\")");
-})
-                                           
-                  .Model(model => { model.Id(p => p.DisciplineMeasuerByMoneyId);
-                   model.Field(p => p.MonthlyAmount).Editable(false);
-              model.Field(p => p.Balance).Editable(false);})
+                            {
+                                events.Error("error_handler(\"DisciplineMeasuerByMoney_#=DisciplinaryCaseId#\")");
+                                events.RequestStart("onRequestStart(\"DisciplineMeasuerByMoney_#=DisciplinaryCaseId#\")");
+                                events.RequestEnd("onRequestEnd(\"DisciplineMeasuerByMoney_#=DisciplinaryCaseId#\")");
+                            })
+
+                  .Model(model =>
+                  {
+                      model.Id(p => p.DisciplineMeasuerByMoneyId);
+                      model.Field(p=>p.Amount).Editable(false);
+                      model.Field(p => p.MonthlyAmount).Editable(false);
+                      model.Field(p => p.Balance).Editable(false);
+                  })
                                   .Read(read => read.Action("DisciplineMeasuerByMoney_Read", "DisciplineMeasureByMoney", new { id = "#=DisciplinaryCaseId#", empId = "#=EmployeeId#" }))
                           .Create(create => create.Action("DisciplineMeasuerByMoney_Create", "DisciplineMeasureByMoney", new { idTwo = "#=DisciplinaryCaseId#", empIdTwo = "#=EmployeeId#" }))
                   .Update(update => update.Action("DisciplineMeasuerByMoney_Update", "DisciplineMeasureByMoney"))
@@ -604,6 +621,20 @@
                 }
 
             });
+        }
+    }
+</script>
+
+<script>
+    function filterMeasure() {
+        return {
+            MeasuresId: $("#MeasuresId").val()
+        };
+    }
+
+    function filterMonth() {
+        return {
+            DetailMeasuresId: $("#DetailMeasuresId").val()
         }
     }
 </script>

@@ -5,12 +5,13 @@
 .OptionLabel(Resources.Select)
                     .DataTextField("ExpireYear")
                     .DataValueField("ExpireYear")
+                    .CascadeFrom("DetailMeasuresId")
                     .OptionLabel(Resources.Select)
                     .Filter("contains")
                           .DataSource(dataSource =>
                           {
-                              dataSource.Read(read => read.Action("GetMonths", "HRMDataProvider", new { area = "HRM" }))
-                                                    .ServerFiltering(false);
+                              dataSource.Read(read => read.Action("GetMonths", "HRMDataProvider", new { area = "HRM" }).Data("filterMonth"))
+                                 .ServerFiltering(true);
                           })
                          .ValuePrimitive(true)
 )

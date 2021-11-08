@@ -4,6 +4,7 @@ using System.Linq;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Common.HRM;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Helpers.Common;
 using ExceedERP.Helpers.HR;
 using ExceedERP.Reporting.HRM.HRM.HRMViewModel;
 
@@ -20,77 +21,70 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
             List<EmployeeSummary> list = new List<EmployeeSummary>();
             EmployeeSummary employee = new EmployeeSummary();
-            db = new ExceedDbContext();
-            var lookups = db.Lookups.ToList();
+        
+            var eduFields = db.Lookups.Where(x => x.LookupType == LookUpTypes.EDUCATION_FIELD).ToList();
             
+           // emplist = HrHelper.AllPersonEmployeesOneBranch(branchId, orgStructureId, "");
 
-            #region EduLevel
-            List<Person_Employee> emplist;
-           
-            emplist = HrHelper.AllPersonEmployeesOneBranch(branchId, orgStructureId, "");
+            var placements = db.Placements.ToList();
+
+            if (branchId != null)
+            {
+                int.TryParse(branchId, out int braId);
+                placements = EmployeeHelper.GetEmployees_ByBranch_FromPlacement(placements, braId);
+            }
+            if (orgStructureId != null)
+            {
+                int.TryParse(orgStructureId, out int orgId);
+                placements = EmployeeHelper.GetEmployees_ByDepartment_WithCaseTeam_FromPlacement(placements, orgId);
+
+            }
+
             if (status == "Active")
             {
-                emplist = emplist.Where(x => x.IsActive).ToList();
+                placements = EmployeeHelper.Get_Active_EmployeesFrom_Placement(placements);
             }
             if (status == "InActive")
             {
-                emplist = emplist.Where(x => !x.IsActive).ToList();
+                placements = EmployeeHelper.Get_InActive_EmployeesFrom_Placement(placements);
             }
-            var eduFields = db.Lookups.Where( x=> x.LookupType ==LookUpTypes.EDUCATION_FIELD ).ToList();
+
             if (edufield != null)
             {
-                eduFields = eduFields.Where(x => x.LookupId.ToString() == edufield).ToList();
+                int.TryParse(edufield, out int lookupId);
+                eduFields = eduFields.Where(x => x.LookupId == lookupId).ToList();
             }
 
+
             if (eduFields.Any())
+            {
+                //var malesId = emplist.Where(x => x.Gender == Gender.MALE).Select(x => x.EmployeeId).ToList();
+                //var femalesId = emplist.Where(x => x.Gender == Gender.FEMALE).Select(x => x.EmployeeId).ToList();
+
+                var malesId = EmployeeHelper.Get_Male_EmployeesFrom_Placement(placements).Select(x => x.EmployeeId).ToList();    
+                var femalesId = EmployeeHelper.Get_Female_EmployeesFrom_Placement(placements).Select(x => x.EmployeeId).ToList();  
+
+                foreach (var l in eduFields)
                 {
-                    foreach (var l in eduFields)
+                    employee = new EmployeeSummary();
+                    employee.Criteria = "Field";
+                    employee.SummaryName = l.Description;
+
+                    employee.Criteria = "Edu level";
+                    employee.SummaryName = l.Description;
+
+                    employee.NumberOfMaleEmployee = db.Education.Where(x => x.EduField == l.LookupId && malesId.Contains(x.EmployeeId)).Count();
+                    employee.NumberOfFemaleEmployee = db.Education.Where(x => x.EduField == l.LookupId && femalesId.Contains(x.EmployeeId)).Count();
+                    employee.TotalEmployee = employee.NumberOfFemaleEmployee + employee.NumberOfMaleEmployee;
+                    
+                    if(employee.TotalEmployee > 0)
                     {
-                        employee = new EmployeeSummary();
-                        employee.Criteria = "Field";
-                        employee.SummaryName = l.Description;
-
-                        foreach (var e in emplist)
-                        {
-                            db = new ExceedDbContext();
-
-                            var lists = db.Education.Where(x => x.EduField == l.LookupId && x.EmployeeId == e.EmployeeId ).ToList();
-                            if (lists.Any())
-                            {
-
-
-
-                                if (e.Gender == Gender.FEMALE)
-                                    employee.NumberOfFemaleEmployee += 1;
-                                else
-                                    employee.NumberOfMaleEmployee += 1;
-                                employee.TotalEmployee = employee.NumberOfFemaleEmployee + employee.NumberOfMaleEmployee;
-
-
-                            }
-                        }
-                       
-
-                       
-                            //var lookup = lookups.FirstOrDefault(x => x.LookupId.ToString() == edufield);
-                            //if (lookup != null)
-                            //{
-                            //    employee.Field = lookup.Description;
-                            //}
-                        
                         list.Add(employee);
-                    }
+                    }                 
                 }
+            }
 
- return list;
-
-            
-
-            #endregion
-
-
-
-           
+            return list;
         }
     }
 }

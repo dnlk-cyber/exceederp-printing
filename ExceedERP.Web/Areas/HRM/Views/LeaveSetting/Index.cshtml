@@ -6,50 +6,96 @@
 }
 <Legend>@Resources.NavigatorLeave_LeaveSetting</Legend>
 @(Html.Kendo().Grid<Configuration>()
-      .Name("LeaveSettinggrid")
-      .Columns(columns =>
-      {
-          //columns.Bound(c => c.Reference);
-          columns.ForeignKey(c => c.Attribute, (IEnumerable)ViewData["LeaveSetting"],"Text","Text").EditorTemplateName("Setting");
-          columns.Bound(c => c.CurrentValue);
-          // columns.Bound(c => c.PreviousValue);
-         // columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["FiscalYeaer"], "GlFiscalYearId", "Name").EditorTemplateName("FiscalYear");
-          columns.Bound(c => c.Remark);
-          columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
-      })
-      .ToolBar(toolbar => {
-          toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
-      })
-      .Editable(editable => editable.Mode(GridEditMode.InLine))
-        .Scrollable(h => h.Height(500))
-             .Groupable()
-                      .Sortable(sortable =>
-                      {
-                          sortable.SortMode(GridSortMode.SingleColumn);
-                      })
-          .Filterable()
-             .Pageable(pageable => pageable
-                                        .Input(true)
-                                        .Numeric(false)
-                                        .Refresh(true)
-                                        .PageSizes(true)
-                                        .ButtonCount(5))
-      .DataSource(dataSource => dataSource
-          .Ajax()
-              .Events(events =>
-              {
-                  events.Error("error_handler(\"LeaveSettinggrid\")");
-                  events.RequestStart("onRequestStart(\"LeaveSettinggrid\")");
-                  events.RequestEnd("onRequestEnd(\"LeaveSettinggrid\")");
-              })
+          .Name("LeaveSettinggrid")
+          .Columns(columns =>
+          {
+              //columns.Bound(c => c.Reference);
 
-          .Model(model => model.Id(p => p.ConfigurationId))
-          .Read(read => read.Action("Configurations_Read", "LeaveSetting"))
-          .Create(create => create.Action("Configurations_Create", "LeaveSetting"))
-          .Update(update => update.Action("Configurations_Update", "LeaveSetting"))
-          .Destroy(destroy => destroy.Action("Configurations_Destroy", "LeaveSetting"))
-      )
+              columns.ForeignKey(c => c.Attribute, (IEnumerable)ViewData["LeaveSetting"], "Text", "Text").EditorTemplateName("Setting");
+              columns.Bound(c => c.CurrentValue);
+              // columns.Bound(c => c.PreviousValue);
+              // columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["FiscalYeaer"], "GlFiscalYearId", "Name").EditorTemplateName("FiscalYear");
+              columns.Bound(c => c.Remark);
+              columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit); command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+          })
+          .ToolBar(toolbar =>
+          {
+              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+          })
+          .Editable(editable => editable.Mode(GridEditMode.InLine))
+            .Scrollable(h => h.Height(250))
+                 .Groupable()
+                          .Sortable(sortable =>
+                          {
+                              sortable.SortMode(GridSortMode.SingleColumn);
+                          })
+              .Filterable()
+                 .Pageable(pageable => pageable
+                                            .Input(true)
+                                            .Numeric(false)
+                                            .Refresh(true)
+                                            .PageSizes(true)
+                                            .ButtonCount(5))
+          .DataSource(dataSource => dataSource
+              .Ajax()
+                  .Events(events =>
+                  {
+                      events.Error("error_handler(\"LeaveSettinggrid\")");
+                      events.RequestStart("onRequestStart(\"LeaveSettinggrid\")");
+                      events.RequestEnd("onRequestEnd(\"LeaveSettinggrid\")");
+                  })
+
+              .Model(model => model.Id(p => p.ConfigurationId))
+              .Read(read => read.Action("Configurations_Read", "LeaveSetting"))
+              .Create(create => create.Action("Configurations_Create", "LeaveSetting"))
+              .Update(update => update.Action("Configurations_Update", "LeaveSetting"))
+              .Destroy(destroy => destroy.Action("Configurations_Destroy", "LeaveSetting"))
+          )
 )
+<br/>
+<legend>Leave New Awaj Start Year</legend>
+
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.HRM.LeaveManagment.LeaveNewAwajStartYear>()
+          .Name("LeaveNewAwajStartYearGrid")
+          .Columns(columns =>
+          {
+              columns.ForeignKey(c => c.GlFisicalYearId, (IEnumerable)ViewData["FisicalYear"], "GlFiscalYearId", "Name").EditorTemplateName("FiscalYear").Title("Fiscal Year");
+              columns.Command(command =>
+              {
+                  command.Edit();
+                  command.Destroy();
+              });
+          })
+          .ToolBar(toolbar =>
+          {
+              toolbar.Create();
+          })
+          .Editable(editable => editable.Mode(GridEditMode.InLine))
+           .Filterable()
+                 .Pageable(pageable => pageable
+                                            .Input(true)
+                                            .Numeric(false)
+                                            .Refresh(true)
+                                            .PageSizes(true)
+                                            .ButtonCount(5))
+          .Scrollable()
+          .DataSource(dataSource => dataSource
+              .Ajax()
+               .Events(events =>
+                  {
+                      events.Error("error_handler(\"LeaveNewAwajStartYearGrid\")");
+                      events.RequestStart("onRequestStart(\"LeaveNewAwajStartYearGrid\")");
+                      events.RequestEnd("onRequestEnd(\"LeaveNewAwajStartYearGrid\")");
+                  })
+              .Model(model => model.Id(p => p.LeaveNewAwajStartYearId))
+              .Read(read => read.Action("LeaveNewAwajStartYears_Read", "LeaveNewAwajStartYears"))
+              .Create(create => create.Action("LeaveNewAwajStartYears_Create", "LeaveNewAwajStartYears"))
+              .Update(update => update.Action("LeaveNewAwajStartYears_Update", "LeaveNewAwajStartYears"))
+              .Destroy(destroy => destroy.Action("LeaveNewAwajStartYears_Destroy", "LeaveNewAwajStartYears"))
+          )
+)
+
+
 <script>
     //function error_handler(e) {
     //    if (e.errors) {

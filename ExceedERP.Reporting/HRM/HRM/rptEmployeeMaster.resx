@@ -117,4 +117,32 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
+  <data name="csvColumns.Source" xml:space="preserve">
+    <value>MartialStatus
+Branch
+Department
+Jobtitle
+ResponsibilityLevel
+EmployementType
+Rank
+Step
+LeaveBalance
+EducationField
+EducationLevel
+EduFrom
+EduTo
+EduInstitution
+TotalInternalExperience
+ExternalExperience
+TotalExperience
+HireDate
+BirthDate
+RetirementDate
+RecruitmentType
+Salary
+Training
+Language
+Performance
+Descipline</value>
+  </data>
 </root>

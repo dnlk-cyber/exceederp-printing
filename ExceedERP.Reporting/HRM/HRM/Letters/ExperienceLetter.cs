@@ -22,12 +22,7 @@ namespace ExceedERP.Reporting.HRM.HRM.Letters
            // reportFooterSection1.Visible = false;
             //
             // TODO: Add any constructor code after InitializeComponent call
-            this.DataSource = ExpirianceLetterObjectDataSource;
-            if(this.DataSource !=null)
-            {
-
-               // reportFooterSection1.Visible = true;
-            }
+          
         }
     }
 }

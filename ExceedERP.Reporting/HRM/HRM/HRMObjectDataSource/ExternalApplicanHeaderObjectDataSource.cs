@@ -65,7 +65,12 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                             var orDefaultses = structure.Where(x => x.OrgStructureId == r.OrgStructureId).FirstOrDefault();
                             if (orDefaultses != null)
                             {
-                                internalVacancy.Location = vacancydetail.Branch.Name;
+                                var branch = db.Branch.FirstOrDefault(x=>x.BranchId == vacancydetail.BranchId);
+                                if(branch != null)
+                                {
+                                    internalVacancy.Location = branch.Name;
+                                }
+                               
                             }
                             var mapping = db.JobTitleMapping.Where(x => x.LookupId == r.LookupId && x.OrgStructureId == r.OrgStructureId).FirstOrDefault();
                             if (mapping != null)

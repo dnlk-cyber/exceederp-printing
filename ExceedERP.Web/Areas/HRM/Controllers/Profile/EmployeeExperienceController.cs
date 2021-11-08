@@ -19,10 +19,11 @@ using ExceedERP.Core.Domain.HRM.EmployeeDetail;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Web.Helpers;
 using ExceedERP.Core.Domain.Global;
+using ExceedERP.Helpers.HR;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
 {
-   
+
     [AuthorizeRoles(HrmConstants.HRProfileAdmin, HrmConstants.HRProfileUser, HrmConstants.HRAdmin)]
     public class EmployeeExperienceController : BaseController
     {
@@ -105,7 +106,16 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
             HRMInputs.SelectedFile = 0;
             return null;
         }
-        
+        public string GetTotalExp(int empId, int expId)
+        {
+            var empExp = db.Experiences.FirstOrDefault(x=>x.EmployeeId == empId && x.ExperienceId == expId);
+            if(empExp != null)
+            {
+                return XAPI.Common.getDaystoWordsamharic((empExp.To - empExp.From).Days);
+            }
+            return null;
+        }
+
         [AuthorizeRoles(HrmConstants.HRProfileAdmin, HrmConstants.HRProfileUser, HrmConstants.HRAdmin)]
         public ActionResult Experiences_Read([DataSourceRequest] DataSourceRequest request, int idEx)
         {
@@ -130,24 +140,71 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                 EmployeeCode = experience.Employee.EmployeeCode,
                 FromExAmharic = experience.FromExAmharic,
                 ToExAmharic = experience.ToExAmharic,
-                TotalExp = experience.TotalExp,
+                TotalExp = GetTotalExp(experience.EmployeeId, experience.ExperienceId),
                 ClearanceDateTimeAm = experience.ClearanceDateTimeAm,
                 IsPrivate = experience.IsPrivate,
+                JobTitleId = experience.JobTitleId,
 
             });
 
             return Json(result);
         }
-        
+
         [AuthorizeRoles(HrmConstants.HRProfileUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult Experiences_Create([DataSourceRequest] DataSourceRequest request, Experience experience, int idExTwo)
         {
             ModelState.Clear();
+            if (experience.FromExAmharic != null)
+            {
+                var splitDate = experience.FromExAmharic.Split('/');
+                experience.From = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
+
+            }
+            else
+            {
+                ModelState.AddModelError("", "Please Enter Start Date");
+            }
+            if (experience.ToExAmharic != null)
+            {
+                var splitDate = experience.ToExAmharic.Split('/');
+                experience.To = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
+
+            }
+            else
+            {
+                ModelState.AddModelError("", "Please Enter End Date");
+            }
+
+            if (experience.ClearanceDateTimeAm != null)
+            {
+                var splitDate = experience.ClearanceDateTimeAm.Split('/');
+                experience.ClearanceDateTime = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
+
+            }
+            else
+            {
+                ModelState.AddModelError("", "Please Enter Clearance Date");
+            }
+
+            if (experience.From > experience.To)
+            {
+                ModelState.AddModelError("", "Please check the date range, The year of experience should be non negative!!");
+            }
+            if (experience.From > DateTime.Now)
+            {
+
+                ModelState.AddModelError("", "Start date should be less or equal to the current date!!");
+            }
+            if (experience.To > DateTime.Now)
+            {
+                ModelState.AddModelError("", "End date should be less or equal to the current date!!");
+            }
+
             var person = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == idExTwo);
             if (person != null)
             {
-                if (From.Date >= person.HiredDate || To.Date >= person.HiredDate)
+                if (experience.From.Date >= person.HiredDate || experience.To.Date >= person.HiredDate)
                 {
                     ModelState.AddModelError("", "external experience date should be lessthan hire date");
                 }
@@ -155,13 +212,13 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
 
             var exps = db.Experiences.Where(x => x.EmployeeId == idExTwo);
 
-            if(exps.Any())
+            if (exps.Any())
             {
-                foreach(var exp in exps)
+                foreach (var exp in exps)
                 {
-                    if((From >= exp.From && From <= exp.To) || (To >= exp.From && To <= exp.To))
+                    if ((experience.From >= exp.From && experience.From <= exp.To) || (experience.To >= exp.From && experience.To <= exp.To))
                     {
-                        ModelState.AddModelError("","experience can't overlap");
+                        ModelState.AddModelError("", "experience can't overlap");
                         break;
                     }
                 }
@@ -169,185 +226,175 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
 
             if (ModelState.IsValid)
             {
-                if (FromAmharic == null)
+
+                int days = (experience.To - experience.From).Days;
+
+                //double month = days / 30;
+
+                decimal year = Convert.ToDecimal(days / 365);
+
+                //var y = (int)month / 12;
+
+                //var ym = month % 12;
+
+                //var ex = y + " አመት ከ " + ym + " ወር";
+
+                experience.TotalExp = EmployeeHelper.GetDaystoWordsAmharic(days);
+
+                var entity = new Experience
                 {
-                    ModelState.AddModelError("", "Date from value is mandatory!!");
+                    EmployeeId = idExTwo,
+                    Organozation = experience.Organozation,
+                    OrgFullAddress = experience.OrgFullAddress,
+                    EmploymentType = experience.EmploymentType,
+                    From = experience.From,
+                    To = experience.To,
+                    TotalDuration = year,
+                    TotalExp = experience.TotalExp,
+                    Responsibility = experience.Responsibility,
+                    ClearanceDateTime = experience.ClearanceDateTime,
+                    CleranceReason = experience.CleranceReason,
+                    IncomeTaxPaymentRefNo = experience.IncomeTaxPaymentRefNo,
+                    Remark = experience.Remark,
+                    Salary = experience.Salary,
+                    EmployeeCode = experience.EmployeeCode,
+                    FromExAmharic = experience.FromExAmharic,
+                    ToExAmharic = experience.ToExAmharic,
+                    ClearanceDateTimeAm = experience.ClearanceDateTimeAm,
+                    IsPrivate = experience.IsPrivate,
+                    JobTitleId = experience.JobTitleId,
+                };
+
+                db.Experiences.Add(entity);
+                db.SaveChanges();
+                experience.ExperienceId = entity.ExperienceId;
+
+                #region operation log
+                var person1 = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == entity.EmployeeId);
+                if (person1 != null)
+                {
+                    UserHelper.OperationLog(Request.UserHostAddress, "Employee Experience", "Success", User.Identity.Name, "Experience Info for " + person1.EmployeeCode + " is Created By  " + User.Identity.Name, Modules.HRM);
+
                 }
-                else if (ToAmharic == null)
-                {
-                    ModelState.AddModelError("", "Date to value is mandatory!!");
-                }
-                else if (From.Date > To.Date)
-                {
-                    ModelState.AddModelError("", "Please check the date range, The year of experience should be non negative!!");
-                }
-                else if (From.Date > DateTime.Now.Date)
-                {
+                #endregion
 
-                    ModelState.AddModelError("", "Start date should be less or equal to the current date!!");
-                }
-                else if (To.Date > DateTime.Now.Date)
-                {
-
-                    ModelState.AddModelError("", "End date should be less or equal to the current date!!");
-                }             
-
-               
-
-                else
-                {
-
-                    int days = (To - From).Days;
-                    
-                    double month = (To - From).Days / 30;
-                  
-                    double year = (To - From).Days / 365;
-
-                    var y = (int)month / 12;
-
-                    var ym = month % 12;
-
-                    var ex = y + " አመት ከ "+ ym +" ወር";
-
-                    var entity = new Experience
-                    {
-                        EmployeeId = idExTwo,
-                        Organozation = experience.Organozation,
-                        OrgFullAddress = experience.OrgFullAddress,
-                        EmploymentType = experience.EmploymentType,
-                        From = From,
-                        To = To,
-                        TotalDuration = y,
-                        TotalExp = ex,
-                        Responsibility = experience.Responsibility,
-                        ClearanceDateTime = ClearanceDateTime,
-                        CleranceReason = experience.CleranceReason,
-                        IncomeTaxPaymentRefNo = experience.IncomeTaxPaymentRefNo,
-                        Remark = experience.Remark,
-                        Salary = experience.Salary,
-                        EmployeeCode = experience.EmployeeCode,
-                        FromExAmharic = FromAmharic,
-                        ToExAmharic = ToAmharic,
-                        ClearanceDateTimeAm = CleDateTimeAm,
-                        IsPrivate = experience.IsPrivate,
-                    };
-
-                    db.Experiences.Add(entity);
-                    db.SaveChanges();
-                    experience.ExperienceId = entity.ExperienceId;
-
-                    #region operation log
-                    var person1 = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == entity.EmployeeId);
-                    if (person1 != null)
-                    {
-                            UserHelper.OperationLog(Request.UserHostAddress, "Employee Experience", "Success", User.Identity.Name, "Experience Info for " + person1.EmployeeCode + " is Created By  " + User.Identity.Name,Modules.HRM);
-                        
-                    }
-                    #endregion
-                }
             }
 
             return Json(new[] { experience }.ToDataSourceResult(request, ModelState));
         }
-      
+
         [AuthorizeRoles(HrmConstants.HRProfileUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult Experiences_Update([DataSourceRequest] DataSourceRequest request, Experience experience)
         {
             ModelState.Clear();
+
+            if (experience.FromExAmharic != null)
+            {
+                var splitDate = experience.FromExAmharic.Split('/');
+                experience.From = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
+
+            }
+            else
+            {
+                ModelState.AddModelError("", "Please Enter Start Date");
+            }
+            if (experience.ToExAmharic != null)
+            {
+                var splitDate = experience.ToExAmharic.Split('/');
+                experience.To = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
+
+            }
+            else
+            {
+                ModelState.AddModelError("", "Please Enter End Date");
+            }
+
+            if (experience.ClearanceDateTimeAm != null)
+            {
+                var splitDate = experience.ClearanceDateTimeAm.Split('/');
+                experience.ClearanceDateTime = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
+
+            }
+            else
+            {
+                ModelState.AddModelError("", "Please Enter Clearance Date");
+            }
+
+            if (experience.From.Date > experience.To.Date)
+            {
+                ModelState.AddModelError("", "Please check the date range, The year of experience should be non negative!!");
+            }
+            else if (experience.From.Date > DateTime.Now.Date)
+            {
+
+                ModelState.AddModelError("", "Start date should be less or equal to the current date!!");
+            }
+            else if (experience.To.Date > DateTime.Now.Date)
+            {
+
+                ModelState.AddModelError("", "End date should be less or equal to the current date!!");
+            }
+
             if (ModelState.IsValid)
             {
-                if (FromAmharic == null)
+                int days = (To - From).Days;
+
+                // double month = (To - From).Days / 30;
+
+                decimal year = Convert.ToDecimal(days / 365);
+
+                //var y = (int)month / 12;
+
+                //var ym = month % 12;
+
+                //var ex = y + " አመት ከ " + ym + " ወር";
+
+                experience.TotalExp = EmployeeHelper.GetDaystoWordsAmharic(days);
+
+                var entity = new Experience
                 {
-                    FromAmharic = experience.FromExAmharic;
-                    var splitDate = FromAmharic.Split('/');
-                    From = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
-                }
-                if (ToAmharic == null)
+                    EmployeeId = experience.EmployeeId,
+                    ExperienceId = experience.ExperienceId,
+                    Organozation = experience.Organozation,
+                    OrgFullAddress = experience.OrgFullAddress,
+                    EmploymentType = experience.EmploymentType,
+                    From = experience.From,
+                    To = experience.To,
+                    TotalDuration = year,
+                    TotalExp = experience.TotalExp,
+                    Responsibility = experience.Responsibility,
+                    ClearanceDateTime = experience.ClearanceDateTime,
+                    CleranceReason = experience.CleranceReason,
+                    IncomeTaxPaymentRefNo = experience.IncomeTaxPaymentRefNo,
+                    Remark = experience.Remark,
+                    Salary = experience.Salary,
+                    EmployeeCode = experience.EmployeeCode,
+                    FromExAmharic = experience.FromExAmharic,
+                    ToExAmharic = experience.ToExAmharic,
+                    ClearanceDateTimeAm = experience.ClearanceDateTimeAm,
+                    IsPrivate = experience.IsPrivate,
+                    JobTitleId = experience.JobTitleId,
+                };
+
+                db.Experiences.Attach(entity);
+                db.Entry(entity).State = EntityState.Modified;
+                db.SaveChanges();
+
+                #region operation log
+                var person = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == entity.EmployeeId);
+                if (person != null)
                 {
-                    ToAmharic = experience.ToExAmharic;
-                    var splitDate = ToAmharic.Split('/');
-                    To = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
+                    UserHelper.OperationLog(Request.UserHostAddress, "Employee Experience", "Success", User.Identity.Name, "Experience Info of " + person.EmployeeCode + " is Updated By  " + User.Identity.Name, Modules.HRM);
+
                 }
-                if (CleDateTimeAm == null)
-                {
-                    CleDateTimeAm = experience.ClearanceDateTimeAm;
-                    var splitDate = CleDateTimeAm.Split('/');
-                    ClearanceDateTime = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDate[0]), Convert.ToInt32(splitDate[1]), Convert.ToInt32(splitDate[2]));
-                }
-                if (From.Date > To.Date)
-                {
-                    ModelState.AddModelError("", "Please check the date range, The year of experience should be non negative!!");
-                }
-                else if (From.Date > DateTime.Now.Date)
-                {
+                #endregion
 
-                    ModelState.AddModelError("", "Start date should be less or equal to the current date!!");
-                }
-                else if (To.Date > DateTime.Now.Date)
-                {
-
-                    ModelState.AddModelError("", "End date should be less or equal to the current date!!");
-                }
-
-
-                else
-                {
-                    int days = (To - From).Days;
-
-                    double month = (To - From).Days / 30;
-
-                    double year = (To - From).Days / 365;
-
-                    var y = (int)month / 12;
-
-                    var ym = month % 12;
-
-                    var ex = y + " አመት ከ " + ym + " ወር";
-
-
-                    var entity = new Experience
-                    {
-                        EmployeeId = experience.EmployeeId,
-                        ExperienceId = experience.ExperienceId,
-                        Organozation = experience.Organozation,
-                        OrgFullAddress = experience.OrgFullAddress,
-                        EmploymentType = experience.EmploymentType,
-                        From = From,
-                        To = To,
-                        TotalDuration = y,
-                        TotalExp = ex,
-                        Responsibility = experience.Responsibility,
-                        ClearanceDateTime = ClearanceDateTime,
-                        CleranceReason = experience.CleranceReason,
-                        IncomeTaxPaymentRefNo = experience.IncomeTaxPaymentRefNo,
-                        Remark = experience.Remark,
-                        Salary = experience.Salary,
-                        EmployeeCode = experience.EmployeeCode,
-                        FromExAmharic = FromAmharic,
-                        ToExAmharic = ToAmharic,
-                        ClearanceDateTimeAm = CleDateTimeAm,
-                        IsPrivate = experience.IsPrivate,
-                    };
-
-                    db.Experiences.Attach(entity);
-                    db.Entry(entity).State = EntityState.Modified;
-                    db.SaveChanges();
-
-                    #region operation log
-                    var person = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == entity.EmployeeId);
-                    if (person != null)
-                    {
-                            UserHelper.OperationLog(Request.UserHostAddress, "Employee Experience", "Success", User.Identity.Name, "Experience Info of " + person.EmployeeCode + " is Updated By  " + User.Identity.Name,Modules.HRM);
-                        
-                    }
-                    #endregion
-                }
             }
 
             return Json(new[] { experience }.ToDataSourceResult(request, ModelState));
         }
-    
+
         [AuthorizeRoles(HrmConstants.HRProfileAdmin, HrmConstants.HRAdmin)]
 
         [AcceptVerbs(HttpVerbs.Post)]
@@ -378,6 +425,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
                     TotalExp = experience.TotalExp,
                     ClearanceDateTimeAm = experience.ClearanceDateTimeAm,
                     IsPrivate = experience.IsPrivate,
+                    JobTitleId = experience.JobTitleId,
                 };
                 #region delete log
                 UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted Experience information of employee Id" + experience.EmployeeCode);
@@ -438,7 +486,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Profile
             HRMInputs.SelectedFile = id;
 
         }
-       
+
         public string GetContentType(string FileName)
         {
             string path = "~/Content/Images/" + FileName;

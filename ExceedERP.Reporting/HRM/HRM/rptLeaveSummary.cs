@@ -23,7 +23,7 @@ namespace ExceedERP.Reporting.HRM.HRM
             var culture = "am-ET";//System.Threading.Thread.CurrentThread.CurrentUICulture.ToString();
             var cultures = new CultureInfo(culture);
             this.Date.Value = Resources.ResourceManager.GetString("Rpt_Date", cultures);
-            this.Page.Value = Resources.ResourceManager.GetString("Rpt_Page", cultures);
+           // this.Page.Value = Resources.ResourceManager.GetString("Rpt_Page", cultures);
             this.IdNumber.Value = Resources.ResourceManager.GetString("Rpt_IDNumber", cultures);
             this.LeavePeriod.Value = Resources.ResourceManager.GetString("Rpt_LeavePeriod", cultures);
             this.FullName.Value = Resources.ResourceManager.GetString("Rpt_Name", cultures);

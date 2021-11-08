@@ -81,7 +81,11 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
                 providerlist = providerlist.Where(c => c.Category == "1" && c.IsActive).ToList();
             }
             ViewData["Companies"] = providerlist.Count > 0 ? providerlist.ToList() : new List<MainCompany>();
-            return Json(providerlist.Select(p => new { MainCompanyId = p.MainCompanyId, TradeName = p.TradeName }), JsonRequestBehavior.AllowGet);
+            return Json(providerlist.Select(p => new
+            {
+                MainCompanyId = p.MainCompanyId,
+                TradeName = p.TradeName
+            }), JsonRequestBehavior.AllowGet);
         }
         private void TraininigPlans()
         {
@@ -157,29 +161,27 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
         public ActionResult TrainingPlans_Read([DataSourceRequest]DataSourceRequest request)
         {
 
-            List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
-            var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
+            //List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
+            //var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
 
-            List<int> orgId = new List<int>();
-            var placement = db.Placements.FirstOrDefault(x=>x.isCurrent && x.EmployeeId == empId && x.IsHead);
-            if(placement != null)
-            {
-                var mainCompany = db.MainCompanyStructures.Where(x=>x.Parent == placement.OrgStructureId || x.OrgStructureId == placement.OrgStructureId);
-                if(mainCompany.Any())
-                {
-                    var org = mainCompany.Select(x=>x.OrgStructureId);
-                    if(org.Any())
-                    {
-                        orgId.AddRange(org);
-                    }
-                   
-                }
-            }
-            IQueryable<TrainingPlan> trainingplans = db.TrainingPlans.Where(x => mybraches.Contains(x.OrgBranchName) && orgId.Contains(x.WorkUnit));
+            //List<int> orgId = new List<int>();
+            //var placement = db.Placements.FirstOrDefault(x => x.isCurrent && x.EmployeeId == empId && x.IsHead);
+            //if (placement != null)
+            //{
+            //    var mainCompany = db.MainCompanyStructures.Where(x => x.Parent == placement.OrgStructureId || x.OrgStructureId == placement.OrgStructureId);
+            //    if (mainCompany.Any())
+            //    {
+            //        var org = mainCompany.Select(x => x.OrgStructureId);
+            //        if (org.Any())
+            //        {
+            //            orgId.AddRange(org);
+            //        }
+            //    }
+            //}
+            IQueryable<TrainingPlan> trainingplans = db.TrainingPlans;//.Where(x => mybraches.Contains(x.OrgBranchName) && orgId.Contains(x.WorkUnit));
             DataSourceResult result = trainingplans.ToDataSourceResult(request, trainingPlan => new
             {
                 TrainingPlanId = trainingPlan.TrainingPlanId,
-
                 GlFiscalYearId = trainingPlan.GlFiscalYearId,
                 Course = trainingPlan.Course,
                 WorkUnit = trainingPlan.WorkUnit,
@@ -198,7 +200,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
 
             return Json(result);
         }
-     
+
         [AuthorizeRoles(HrmConstants.HRTrainingUser)]
 
         [AcceptVerbs(HttpVerbs.Post)]
@@ -235,7 +237,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
 
             return Json(new[] { trainingPlan }.ToDataSourceResult(request, ModelState));
         }
-        
+
         [AuthorizeRoles(HrmConstants.HRTrainingUser)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult TrainingPlans_Update([DataSourceRequest]DataSourceRequest request, TrainingPlan trainingPlan)
@@ -270,7 +272,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
 
             return Json(new[] { trainingPlan }.ToDataSourceResult(request, ModelState));
         }
-        
+
         [AuthorizeRoles(HrmConstants.HRTrainingUser, HrmConstants.HRAdmin)]
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult TrainingPlans_Destroy([DataSourceRequest]DataSourceRequest request, TrainingPlan trainingPlan)
@@ -299,7 +301,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.TrainingAndEducation
 
                 };
                 #region delete log
-                 UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted training plan information of fiscal year" + trainingPlan.GlFiscalYear.Name + " and training provider " + trainingPlan.Course);
+                UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted training plan information of fiscal year" + trainingPlan.GlFiscalYear.Name + " and training provider " + trainingPlan.Course);
                 #endregion
                 db.TrainingPlans.Attach(entity);
                 db.TrainingPlans.Remove(entity);

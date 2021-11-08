@@ -103,12 +103,19 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
         }
         public ActionResult RecruitmentRequest_Read([DataSourceRequest]DataSourceRequest request)
         {
+            int orgStructureId = 0;
+
+            var employeeid = UserInformationHelper.GetEmployeeId(User.Identity.Name);
+            var place = db.Placements.FirstOrDefault(x => x.EmployeeId == employeeid);
+            if (place != null)
+            {
+                orgStructureId = place.OrgStructureId;
+            }
 
             List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
-            IQueryable<RecruitmentRequest> recruitmentrequest = db.RecruitmentRequest.Where(x => mybraches.Contains(x.OrgBranchName)).OrderBy(x => x.Date);
 
-            //var employeeid = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-            //List<int> employeeids = EmployeeHelper.GetSubordinates(employeeid);
+            IQueryable<RecruitmentRequest> recruitmentrequest = db.RecruitmentRequest.Where(x => mybraches.Contains(x.OrgBranchName) && x.OrgStructureId == orgStructureId).OrderBy(x => x.Date);
+
             //IQueryable<LeaveRequest> leaverequest = db.RecruitmentRequest.Where(x => employeeids.Contains(x.EmployeeId)).OrderBy(x => x.RequestDate);
 
             DataSourceResult result = recruitmentrequest.ToDataSourceResult(request, recruitmentRequest => new
@@ -155,7 +162,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
             {
                 jobTitleQuantity = jobTitle.Quntity;
             }
-            var plan = db.JobTitleMapping.FirstOrDefault(x=>x.BranchId == recruitmentRequest.BranchId && x.OrgStructureId == recruitmentRequest.OrgStructureId && x.LookupId == recruitmentRequest.LookupId);
+            var plan = db.JobTitleMapping.FirstOrDefault(x => x.BranchId == recruitmentRequest.BranchId && x.OrgStructureId == recruitmentRequest.OrgStructureId && x.LookupId == recruitmentRequest.LookupId);
+
             if (recruitmentRequest.NoOfVaccantPostion == 0 && plan.PlanType == JobTitlePlan.BOUNDED)
             {
                 //ModelState.AddModelError("", "No of Vacant Position  should be greater than 0!!");
@@ -184,7 +192,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
             }
             else
             {
-
                 int no = tobe - current;
                 if (recruitmentRequest.NoOfVaccantPostion > no)
                 {
@@ -210,13 +217,10 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
 
                 if (ModelState.IsValid)
                 {
-                  
-
-
                     if (recruitmentRequest.NoOfVaccantPostion == 0)
+                    {
                         recruitmentRequest.NoOfVaccantPostion = tobe - current;
-
-
+                    }
 
                     var entity = new RecruitmentRequest
                     {
