@@ -5050,12 +5050,6 @@
     <EmbeddedResource Include="HRM\HRM\Deligation.resx">
       <DependentUpon>Deligation.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\EmployeeBirthDate.en-AS.resx">
-      <DependentUpon>EmployeeBirthDate.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="HRM\HRM\EmployeeBirthDate.en.resx">
-      <DependentUpon>EmployeeBirthDate.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\EmployeeBirthDate.resx">
       <DependentUpon>EmployeeBirthDate.cs</DependentUpon>
     </EmbeddedResource>
