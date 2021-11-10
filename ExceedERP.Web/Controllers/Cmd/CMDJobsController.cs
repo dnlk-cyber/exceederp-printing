@@ -3,6 +3,7 @@ using System.Linq;
 using System.Web.Mvc;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Finance;
+using ExceedERP.Web.Areas.HRM.Controllers;
 using Hangfire;
 
 namespace ExceedERP.Web.Controllers.Cmd
@@ -27,6 +28,16 @@ namespace ExceedERP.Web.Controllers.Cmd
 
             
             RecurringJob.AddOrUpdate(() => _accountHelper.SplitBookAccountCombination(), "0 22 * * *");//10pm
+
+            #region HRM
+            //RecurringJob.AddOrUpdate(() => HRMJobs.DeActivateContractEmployees(), "04 * * * *");//7pm
+            RecurringJob.AddOrUpdate(() => HRMJobs.DeActivateContractEmployees(), "0 19 * * *");//1pm                                                                                      
+            RecurringJob.AddOrUpdate(() => HRMJobs.CopyEducationFromCourseTrackingToProfile(), "0 20 * * *");//1pm  
+            //RecurringJob.AddOrUpdate(() => HRMJobs.CopyTrainingFromCourseTrackingToProfile(), "0 21 * * *");//1pm  we don't need it because we can add it when we add trainee under course tracking. if the training is 'Is Complet = true' we can add it to profile automaticaly 
+            RecurringJob.AddOrUpdate(() => HRMJobs.CheckDiscipline(), "0 23 * * *");//1pm  
+            RecurringJob.AddOrUpdate(() => HRMJobs.CheckAndDeleteNotification(), "0 21 * * *");//9 pm  
+
+            #endregion
 
             //RecurringJob.AddOrUpdate(() => new AlarmGenerator().GenerateGuaranteeAlarms(), Cron.Daily);
             //RecurringJob.AddOrUpdate(() => new AlarmGenerator().ContractAlarms(), Cron.Daily);

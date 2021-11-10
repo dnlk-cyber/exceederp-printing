@@ -310,6 +310,7 @@ namespace ExceedERP.Web.Controllers
             new ApplicationRole("HR_Recruitment_Report","View recruitment  reports","HR"),
             new ApplicationRole("HR_Placement_Admin","Manage placement functionalities by HR personnel","HR"),
             new ApplicationRole("HR_Placement_User","Manage placement functionalities by HR personnel","HR"),
+            new ApplicationRole("PlacementApprover", "Approve Placements", "HR"),
             new ApplicationRole("HR_Attendance_User","Manage attendance functionalities by HR personnel","HR"),
             new ApplicationRole("HR_Benefit_Admin","Manage benefit functionalities by HR personnel","HR"),
             new ApplicationRole("HR_Benefit_User","Manage benefit functionalities by HR personnel","HR"),
