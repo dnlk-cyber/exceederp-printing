@@ -1,4 +1,5 @@
 ﻿using ExceedERP.Core.Domain.Common;
+using ExceedERP.Core.Domain.HRM.EmployeeDetail;
 using ExceedERP.Core.Domain.PrintingEstimation.Setting;
 using System;
 using System.Collections.Generic;
@@ -11,13 +12,13 @@ namespace ExceedERP.Core.Domain.JobCosting
     public class DailyLaborRate : TrackUserSettingOperation
     {
         public int DailyLaborRateId { get; set; }
-        public int CostCenterId { get; set; }
+        public string CostCenter { get; set; }
         public int GlFiscalYearId { get; set; }
         public int GLPeriodId { get; set; }
         public decimal? TotalSalary { get; set; }
         public decimal? TotalExpectedHour { get; set; }
         public decimal? DLR { get; set; }
-        public JCEmployeeType EmployeeType { get; set; }
+        public EmployementType EmployeeType { get; set; }
     }
 
     public class DLRSalary : TrackUserSettingOperation

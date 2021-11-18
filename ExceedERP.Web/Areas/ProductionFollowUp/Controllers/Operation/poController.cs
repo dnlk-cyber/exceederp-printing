@@ -1,5 +1,6 @@
 ﻿﻿using System;
 using System.Collections.Generic;
+
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
@@ -32,8 +33,8 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                 ValidityDate = proforma.ValidityDate,
                 InvoiceNo = proforma.InvoiceNo,
                 CustomerName = proforma.CustomerName,
-                ContactName = proforma.ContactName,
-                ContactPhone = proforma.ContactPhone,
+                BrandName = proforma.BrandName,
+                TinNo = proforma.TinNo,
                 ProformaNo = proforma.ProformaNo
             });
 

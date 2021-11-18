@@ -32,26 +32,14 @@ namespace ExceedERP.Core.Domain.ProductionFollowUp
         public string Estimatedby { get; set; }
         public string Code { get; set; }
         public string Approvedby { get; set; }
-        [Display(Name = "Contact Name")]
-        public string ContactName { get; set; }
-        [Display(Name = "Contact Phone")]
-        public string ContactPhone { get; set; }
-        public string City { get; set; }
-        [Display(Name = "Sub City")]
-        public string SubCity { get; set; }
-        public string Woreda { get; set; }
-        public decimal? CustomerVAT { get; set; }
-        public decimal? CustomerMargin { get; set; }
-        public decimal? CustomerOverHead { get; set; }
-        [Display(Name = "P.O. Box")]
-        public string POBox { get; set; }
-        public string CustomerDescription { get; set; }
-        public PrintingOrderType OrderType { get; set; }
+        [Display(Name = "Brand Name")]
+        public string BrandName { get; set; }
+        [Display(Name = "Tin No ")]
+        public string TinNo { get; set; }
 
         [Display(Name = "Job Type")]
         public int JobTypeId { get; set; }
-        [Display(Name = "Job Type Item")]
-        public int? JobTypeItemId { get; set; }
+        [Display(Name = "Pages")]
        
         public int Pages { get; set; }
         public int Copies { get; set; }

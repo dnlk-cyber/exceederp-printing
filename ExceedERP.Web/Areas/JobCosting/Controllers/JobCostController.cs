@@ -1,5 +1,6 @@
 ﻿﻿using System;
 using System.Collections.Generic;
+
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
@@ -21,7 +22,10 @@ namespace ExceedERP.Web.Areas.JobCosting.Controllers
             ViewData["FiscalYears"] = db.GLFiscalYears.ToList();
             ViewData["CostCenters"] = db.GLChartOfAccountCostCenters.ToList();
             ViewData["Periods"] = db.GLPeriods.ToList();
-            ViewData["Customers"] = db.Customers.ToList();
+            ViewData["Customers"] = db.OrganizationCustomers.Select(s => new {
+                 s.OrganizationCustomerID,
+               s.TradeName
+            }).ToList();
             ViewData["JobOrders"] = db.Jobs.ToList();
             ViewData["JobCategories"] = db.JobCategories.ToList();
             return View();

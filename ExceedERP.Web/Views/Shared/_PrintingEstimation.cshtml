@@ -1,4 +1,4 @@
-﻿@{
+@{
     ViewBag.Title = "_PrintingEstimation";
 }
 
@@ -13,8 +13,8 @@
     <b class="arrow"></b>
     <ul class="submenu">
         @*@if (HttpContext.Current.User.IsInRole("Sales_Quote_User")
-                )
-            {*@
+            )
+        {*@
 
         <li class="">
             <a href="#" class="dropdown-toggle">
@@ -25,26 +25,28 @@
             <b class="arrow"></b>
             <ul class="submenu">
                 <li id="mega-printing-001" class="actionlinlk">@Html.ActionLink("EstimationForm", "Index", "EstimationForm", new { area = "PrintingEstimation" }, null)<b class="arrow"></b></li>
-                <li class="">
-                    <a href="#" class="dropdown-toggle">
-                        <i class="menu-icon fa fa-caret-right"></i>
-                        Settings
-                        <b class="arrow fa fa-angle-down"></b>
-                    </a>
-                    <b class="arrow"></b>
-                    <ul class="submenu">
-                        <li id="mega-printing-001" class="actionlinlk">@Html.ActionLink("Customer", "Index", "Customer", new { area = "PrintingEstimation" }, null)<b class="arrow"></b></li>
-                        <li id="mega-printing-002" class="actionlinlk">@Html.ActionLink("Material", "Index", "Material", new { area = "PrintingEstimation" }, null)<b class="arrow"></b></li>
-                        <li id="mega-printing-004" class="actionlinlk">@Html.ActionLink("PrintingStep", "Index", "PrintingStep", new { area = "PrintingEstimation" }, null)<b class="arrow"></b></li>
-                    </ul>
-
-
             </ul>
         </li>
 
+        <li class="">
+            <a href="#" class="dropdown-toggle">
+                <i class="menu-icon fa fa-caret-right"></i>
+                Settings
+                <b class="arrow fa fa-angle-down"></b>
+            </a>
+            <b class="arrow"></b>
+            <ul class="submenu">
+                <li id="mega-printing-004" class="actionlinlk">@Html.ActionLink("PrintingStep", "Index", "PrintingStep", new { area = "PrintingEstimation" }, null)<b class="arrow"></b></li>
+            </ul>
 
+
+
+        </li>
     </ul>
-</li>
+
+
+
+
 
 
 

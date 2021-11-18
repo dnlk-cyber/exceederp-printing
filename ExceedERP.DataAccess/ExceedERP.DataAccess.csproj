@@ -106,6 +106,14 @@
     <Compile Include="Migrations\202111081238033_HRMReplaced.Designer.cs">
       <DependentUpon>202111081238033_HRMReplaced.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202111181303459_PrintingModulesModification.cs" />
+    <Compile Include="Migrations\202111181303459_PrintingModulesModification.Designer.cs">
+      <DependentUpon>202111181303459_PrintingModulesModification.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202111181353275_PrintingModuleEstimationCustomerRemove.cs" />
+    <Compile Include="Migrations\202111181353275_PrintingModuleEstimationCustomerRemove.Designer.cs">
+      <DependentUpon>202111181353275_PrintingModuleEstimationCustomerRemove.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -142,6 +150,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202111081238033_HRMReplaced.resx">
       <DependentUpon>202111081238033_HRMReplaced.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202111181303459_PrintingModulesModification.resx">
+      <DependentUpon>202111181303459_PrintingModulesModification.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202111181353275_PrintingModuleEstimationCustomerRemove.resx">
+      <DependentUpon>202111181353275_PrintingModuleEstimationCustomerRemove.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

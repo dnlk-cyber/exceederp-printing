@@ -26,7 +26,6 @@
                     .ButtonCount(5))
               .DataSource(dataSource => dataSource
                   .Ajax()
-                  .Sort(x => x.Add("LastModified").Descending())
                   .Model(model => model.Id(p => p.PrintingStepId))
                   .Read(read => read.Action("PrintingSteps_Read", "PrintingStep"))
                   .Create(create => create.Action("PrintingSteps_Create", "PrintingStep"))

@@ -17,18 +17,19 @@
                 </div>
                 <div>
                     @(Html.Kendo().DropDownListFor(m => m.InventoryCategoryId)
-                                          .OptionLabel(Resources.Select)
-                                          .DataTextField("Name")
-                                          .DataValueField("Code")
-                                          //    .BindTo((IEnumerable)ViewData["Items"])
-                                          .DataSource(dataSource =>
-                                          {
-                                              dataSource.Read(read => read.Action("GetSparePartMaterialCategory", "DataProvider", new { Area = "Inventory" }));
-                                              //.ServerFiltering(true);
-                                          })
-                                          .Filter("contains")
-                                          .MinLength(2)
-                                          .ValuePrimitive(true)
+                                                  .OptionLabel(Resources.Select)
+                                                   .OptionLabel(Resources.Select)
+                                                      .DataTextField("Name")
+                                                      .DataValueField("ItemCategoryCode")
+                                                      //    .BindTo((IEnumerable)ViewData["Items"])
+                                                      .DataSource(dataSource =>
+                                                      {
+                                                          dataSource.Read(read => read.Action("GetItemCategory", "DataProvider", new { Area = "Inventory" }));
+                                                              //.ServerFiltering(true);
+                                                          })
+                                                      .Filter("contains")
+                                                      .MinLength(2)
+                                                      .ValuePrimitive(true)
                     )
                 </div>
             </div>
@@ -45,28 +46,26 @@
                     </div>
                     <div>
                         @(Html.Kendo().DropDownListFor(model => model.InventoryId)
-                                                                                                                    .ValuePrimitive(true)
-                                                                                                                    .OptionLabel(Resources.Select)
-                                                                                                                    .DataTextField("Name")
-                                                                                                                    .DataValueField("Code")
-                                                                                                                    .Events(ev =>
-                                                                                                                    {
-                                                                                                                        ev.Change("selectProduct");
+                                                                                                                            .DataTextField("Name")
+                                                                                                                           .DataValueField("ItemCode")
+                                                                                                                           .Events(ev =>
+                                                                                                                           {
+                                                                                                                               ev.Change("selectProduct");
 
-                                                                                                                    })
-                                                                                                                                    //    .BindTo((IEnumerable)ViewData["Items"])
-                                                                                                                                    .DataSource(dataSource =>
-                                                                                                                                    {
-                                                                                                                                        dataSource.Read(read => read.Action("GetItemsUnderCategory", "DataProvider", new { Area = "Inventory" }).Data("filterCategories"))
-                                                                                                                                        .ServerFiltering(true);
-                                                                                                                                    })
-                                                                                                                                    .CascadeFrom("InventoryCategoryId")
-                                                                                                                                    //.Events(ev => {
-                                                                                                                                    //    ev.Change("materialChanged");
-                                                                                                                                    //})
-                                                                                                                                    .Filter("contains")
-                                                                                                                                    .MinLength(2)
-                                                                                                                                    .ValuePrimitive(true)
+                                                                                                                           })
+                                                                                                                                           //    .BindTo((IEnumerable)ViewData["Items"])
+                                                                                                                                           .DataSource(dataSource =>
+                                                                                                                                           {
+                                                                                                                                               dataSource.Read(read => read.Action("GetItems1", "DataProvider", new { Area = "Inventory" }).Data("filterCategories"))
+                                                                                                                                               .ServerFiltering(true);
+                                                                                                                                           })
+                                                                                                                                           .CascadeFrom("InventoryCategoryId")
+                                                                                                                                           //.Events(ev => {
+                                                                                                                                           //    ev.Change("materialChanged");
+                                                                                                                                           //})
+                                                                                                                                           .Filter("contains")
+                                                                                                                                           .MinLength(2)
+                                                                                                                                           .ValuePrimitive(true)
                         )
                     </div>
                 </div>

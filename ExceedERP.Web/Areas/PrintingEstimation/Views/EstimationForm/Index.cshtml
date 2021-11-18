@@ -5,9 +5,8 @@
     .Columns(columns =>
     {
         columns.Bound(c => c.Date).EditorTemplateName("Date").Width("100px").Format("{0:dd/MM/yyyy}");
-        columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customers"], "CustomerId", "Name")
-        .Width("110px")
-        .Title("Customer");
+        columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customers"], "Code", "Name")
+        .Width(110).Title("Customer");
         columns.Bound(c => c.JobNumber).Width(100);
         columns.Bound(c => c.Quantity).Width(100);
         columns.Bound(c => c.Size).Width(80);
@@ -51,7 +50,7 @@
     .PageSize(10)
     .Sort(sort =>
     {
-        sort.Add(e => e.LastModified).Descending();
+        sort.Add(e => e.EstimationFormId).Descending();
 
     }))
      .Resizable(resize => resize.Columns(true))
@@ -79,6 +78,8 @@ itemn.Add().Text("Material Costs").Content(@<text>
             .Columns(columns =>
             {
                 columns.Bound(c => c.MaterialCostId).Hidden(true).Filterable(false);
+                columns.ForeignKey(c => c.InventoryCategoryId, (IEnumerable)ViewData["Categorys"], "Code", "Name")
+                   .Width(90);
                 columns.ForeignKey(c => c.InventoryId, (IEnumerable)ViewData["Inventories"], "Code", "Name")
                    .Width(90);
                 columns.Bound(c => c.Quantity).Width(80);
@@ -134,7 +135,7 @@ itemn.Add().Text("Labor Costs").Content(@<text>
                             columns.Bound(c => c.PrintingSteps).EditorTemplateName("PrintingCategory").
                             Title("Printing Category").Width(100);
                             columns.ForeignKey(c => c.PrintingStepId, (IEnumerable)ViewData["PrintingSteps"], "PrintingStepId", "Name")
-                            .EditorTemplateName("PrintingStepValueCascading").Title("Name").Width(100);
+                            .Title("Name").Width(100);
                             columns.Bound(o => o.WorkingTime).Width(80);
                             columns.Bound(o => o.CostPerHour).Width(80);
                             columns.Bound(o => o.TotalCost).Width(150).ClientFooterTemplate("Labor Cost: \\#=sum\\# ");
@@ -298,7 +299,7 @@ itemn.Add().Text("Labor Costs").Content(@<text>
         //      send the filtering text along with the parent widget's value
         //var dropdownlist = $("#ItemCode").data("kendoDropDownList");
         return {
-            categoryId: $("#InventoryCategoryId").val()
+            ItemCategoryCode: $("#InventoryCategoryId").val()
         };
     }
     function onSave(e) {

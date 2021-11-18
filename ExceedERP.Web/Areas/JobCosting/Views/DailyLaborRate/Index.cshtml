@@ -4,7 +4,7 @@
           .Columns(columns =>
           {
 
-              columns.ForeignKey(c => c.CostCenterId, (IEnumerable)ViewData["CostCenters"], "CostCenterID", "Values")
+              columns.ForeignKey(c => c.CostCenter, (IEnumerable)ViewData["CostCenters"], "Values", "Values")
 .Title("Cost Center").Width(120);
               columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["FiscalYears"], "GlFiscalYearId", "Name")
 .Title("Fiscal Year").Width(90);

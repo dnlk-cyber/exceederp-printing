@@ -1,5 +1,6 @@
 ﻿﻿using System;
 using System.Collections.Generic;
+
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
@@ -11,6 +12,7 @@ using ExceedERP.Core.Domain.ProductionFollowUp;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Core.Domain.PrintingEstimation;
 using ExceedERP.Web.Areas.ProductionFollowUp.Models;
+using ExceedERP.Core.Domain.CRM;
 
 namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
 {
@@ -22,9 +24,15 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
         {
              
             ViewData["EstimationForms"] = db.EstimationForms.ToList();
-            ViewData["Customers"] = db.Customers.ToList();
-            ViewData["JobType"] = db.JobTypes.ToList();
-            ViewData["JobTypeItem"] = db.JobTypeItems.ToList();
+            ViewData["Customers"] = db.OrganizationCustomers.Select(s => new {
+                Code = s.OrganizationCustomerID,
+                Name = s.TradeName
+            }).ToList();
+             var jobCategories= db.JobCategories.Select(s => new {
+                JobTypeId = s.JobCategoryId,
+                type = s.HaveParent ?s.ParentId + " " + s.JobName : s.JobName
+            }).ToList();
+            ViewData["JobType"] = jobCategories;
             ViewBag.data = GetData();
             return View();
         }
@@ -49,9 +57,9 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                 ValidityDate = proforma.ValidityDate,
                 PaymentTerm = proforma.PaymentTerm,
                 InvoiceNo = proforma.InvoiceNo,
-                ContactName = proforma.ContactName,
+                BrandName = proforma.BrandName,
                 ProformaNo = proforma.ProformaNo,
-                ContactPhone = proforma.ContactPhone
+                TinNo = proforma.TinNo
             });
 
             return Json(result);
@@ -63,11 +71,13 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
             if (ModelState.IsValid)
             {
                 var estimationForm = new EstimationForm();
-                var customer = new Customer();
+                var customer = new OrganizationCustomer();
                 if (!proforma.HaveEstimation && !proforma.IsExistingCustomer)
                 {
                     customer = AddNewCustomer.Save(proforma);
-                    db.Customers.Add(customer);
+                    db.OrganizationCustomers.Add(customer);
+                    db.SaveChanges();
+
 
                 }
                 else if (proforma.HaveEstimation)
@@ -81,16 +91,16 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                     Time = proforma.Time,
                     HaveEstimation = proforma.HaveEstimation,
                     IsExistingCustomer = proforma.IsExistingCustomer,
-                    CustomerId = proforma.HaveEstimation ? estimationForm.CustomerId : customer.CustomerId | proforma.CustomerId,
+                    CustomerId = proforma.HaveEstimation ? estimationForm.CustomerId : customer.OrganizationCustomerID | proforma.CustomerId,
                     EstimationFormId = proforma.EstimationFormId,
                     InvoiceDate = proforma.InvoiceDate,
                     DeliveryDate = proforma.DeliveryDate,
                     ValidityDate = proforma.ValidityDate,
                     PaymentTerm = proforma.PaymentTerm,
                     InvoiceNo = proforma.InvoiceNo,
-                    ContactName = proforma.ContactName,
+                    BrandName = proforma.BrandName,
                     ProformaNo = proforma.ProformaNo,
-                    ContactPhone = proforma.ContactPhone
+                    TinNo = proforma.TinNo
                 };
 
                 db.Proformas.Add(entity);
@@ -142,11 +152,11 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
             if (ModelState.IsValid)
             {
                 var estimationForm = new EstimationForm();
-                var customer = new Customer();
+                var customer = new OrganizationCustomer();
                 if (!proforma.HaveEstimation && !proforma.IsExistingCustomer)
                 {
                     customer = AddNewCustomer.Save(proforma);
-                    db.Customers.Add(customer);
+                    db.OrganizationCustomers.Add(customer);
 
                 }
                 else if (proforma.HaveEstimation)
@@ -161,16 +171,16 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                     Time = proforma.Time,
                     HaveEstimation = proforma.HaveEstimation,
                     IsExistingCustomer = proforma.IsExistingCustomer,
-                    CustomerId = proforma.HaveEstimation ? estimationForm.CustomerId : customer.CustomerId|proforma.CustomerId,
+                    CustomerId = proforma.HaveEstimation ? estimationForm.CustomerId : customer.OrganizationCustomerID|proforma.CustomerId,
                     EstimationFormId = proforma.EstimationFormId,
                     InvoiceDate = proforma.InvoiceDate,
                     DeliveryDate = proforma.DeliveryDate,
                     ValidityDate = proforma.ValidityDate,
                     PaymentTerm = proforma.PaymentTerm,
                     InvoiceNo = proforma.InvoiceNo,
-                    ContactName = proforma.ContactName,
+                    BrandName = proforma.BrandName,
                     ProformaNo = proforma.ProformaNo,
-                    ContactPhone = proforma.ContactPhone
+                    TinNo = proforma.TinNo
                 };
                 db.Proformas.Attach(entity);
                 db.Entry(entity).State = EntityState.Modified;

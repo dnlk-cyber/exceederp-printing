@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
@@ -180,7 +181,7 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
         }
         public ActionResult GetBeforeVatAndTotalPerice(int jobTypeId, int quantity, double unitPrice)
         {
-            var jobType = db.JobTypes.FirstOrDefault(x => x.JobTypeId == jobTypeId);
+            var jobType = db.JobCategories.FirstOrDefault(x => x.JobCategoryId == jobTypeId);
             if (jobType != null)
             {
                 var tax = db.GLTaxRates.FirstOrDefault(x => x.GLTaxRateID == jobType.GLTaxRateID);

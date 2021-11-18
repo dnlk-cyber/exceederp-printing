@@ -1,6 +1,11 @@
 ﻿using ExceedERP.Core.Domain.PrintingEstimation.Setting;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
 
 namespace ExceedERP.Core.Domain.ProductionFollowUp
 {
@@ -24,20 +29,11 @@ namespace ExceedERP.Core.Domain.ProductionFollowUp
         [Display(Name = "Customer Name")]
         public string CustomerName { get; set; }
         [StringLength(50)]
-        [Display(Name = "Contact Name")]
-        public string ContactName { get; set; }
-        [StringLength(50)]
-        [Display(Name = "Contact Phone")]
-        public string ContactPhone { get; set; }
-        public string City { get; set; }
-        public string SubCity { get; set; }
-        public string Woreda { get; set; }
-        public string POBox { get; set; }
+        [Display(Name = "Brand Name")]
+        public string BrandName { get; set; }
+        [Display(Name = "Tin No ")]
+        public string TinNo { get; set; }
 
-        public decimal? CustomerVAT { get; set; }
-        public decimal? CustomerMargin { get; set; }
-        public decimal? CustomerOverHead { get; set; }
-        public string CustomerDescription { get; set; }
     }
     public class PFProformaItems
     {
@@ -45,16 +41,16 @@ namespace ExceedERP.Core.Domain.ProductionFollowUp
         public int ProformaId { get; set; }
         [Display(Name = "Job Type")]
         public int JobTypeId { get; set; }
-
+       
         [Display(Name = ("Quantity"))]
         public int Quantity { get; set; }
         public string Size { get; set; }
         [Display(Name = ("Unit Price"))]
-        public decimal UnitPrice { get; set; }
+        public decimal UnitPrice { get; set; }     
         public decimal BeforeTax { get; set; }
         [Display(Name = ("Tax"))]
         public decimal Tax { get; set; }
-        [Display(Name = ("Total Price"))]
+        [Display(Name=("Total Price"))]
         public decimal TotalPrice { get; set; }
         public string Description { get; set; }
     }

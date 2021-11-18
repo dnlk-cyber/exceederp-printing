@@ -1,5 +1,6 @@
 ﻿﻿using System;
 using System.Collections.Generic;
+
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
@@ -30,9 +31,12 @@ namespace ExceedERP.Web.Areas.PrintingEstimation.Controllers
                    Name = i.ItemCategoryCode + "_" + i.Name,
                    Code = i.ItemCategoryCode
                }).ToList();
-            //ViewData["Items"] = selecteditems;
-            //ViewData["Category"] = categories;
-            IList<Customer> myCustomers = db.Customers.ToList();
+            ViewData["Categorys"] = categories;
+            var myCustomers = db.OrganizationCustomers.Select(
+                s=>new {
+                Code = s.OrganizationCustomerID,
+                Name = s.TradeName
+                }).ToList();
             ViewData["Customers"] = myCustomers;
 
             //IList<Inventory> inventories = db.Inventories.ToList();
@@ -49,6 +53,11 @@ namespace ExceedERP.Web.Areas.PrintingEstimation.Controllers
         {
             var data = db.EstimationForms;
             return Json(data.Select(s => new { s.EstimationFormId, s.JobNumber }), JsonRequestBehavior.AllowGet);
+        }
+        public JsonResult GetAllCustomers()
+        {
+            var data = db.OrganizationCustomers;
+            return Json(data.Select(s => new { Code = s.OrganizationCustomerID, Name = s.TradeName }), JsonRequestBehavior.AllowGet);
         }
 
         public ActionResult EstimationForms_Read([DataSourceRequest]DataSourceRequest request)

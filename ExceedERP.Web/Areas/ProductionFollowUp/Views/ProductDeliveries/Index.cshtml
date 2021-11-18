@@ -8,7 +8,7 @@
               .Columns(columns =>
               {
                   columns.ForeignKey(c => c.JobId,(ICollection)ViewData["JobOrder"],"JobId","JobNo").EditorTemplateName("JobOrders").Title("Job No");
-                  columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customers"], "CustomerId", "Name")
+                  columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customers"], "Code", "Name")
                                                                  .Width("110px")
                                                                  .Title("Customer");
                   columns.Bound(c => c.CustomerRefNo);
@@ -39,7 +39,10 @@
                                    .Scrollable(h => h.Height(500))
               .DataSource(dataSource => dataSource
                   .Ajax()
-                  .Model(model => model.Id(p => p.ProductDeliveryId))
+                  .Model(model => {
+                      model.Id(p => p.ProductDeliveryId);
+                      model.Field(p => p.CustomerId).Editable(false);
+                  })
                   .Read(read => read.Action("ProductDeliveries_Read", "ProductDeliveries"))
                   .Create(create => create.Action("ProductDeliveries_Create", "ProductDeliveries"))
                   .Update(update => update.Action("ProductDeliveries_Update", "ProductDeliveries"))

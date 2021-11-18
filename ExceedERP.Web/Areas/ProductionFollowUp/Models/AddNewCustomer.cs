@@ -1,4 +1,5 @@
-﻿using ExceedERP.Core.Domain.PrintingEstimation;
+﻿using ExceedERP.Core.Domain.CRM;
+using ExceedERP.Core.Domain.PrintingEstimation;
 using ExceedERP.Core.Domain.ProductionFollowUp;
 using ExceedERP.DataAccess.Context;
 using System;
@@ -12,42 +13,35 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Models
     {
         private ExceedDbContext db = new ExceedDbContext();
 
-        internal static Customer Save(Proforma proforma)
+        internal static OrganizationCustomer Save(Proforma proforma)
         {
-            var customer = new Customer
+            
+                var customer = new OrganizationCustomer
             {
-                Name = proforma.CustomerName,
-                ContactName = proforma.ContactName,
-                Phone = proforma.ContactPhone,
-                City = proforma.City,
-                SubCity = proforma.SubCity,
-                Woreda = proforma.Woreda,
-                Pobox = proforma.POBox,
-                VAT = proforma.CustomerVAT,
-                Margin = proforma.CustomerVAT,
-                OverHead = proforma.CustomerOverHead,
-                Description = proforma.CustomerDescription
+                TradeName = proforma.CustomerName,
+                BrandName = proforma.BrandName,
+                TinNo = proforma.TinNo,
+                IsActive = true,
+                IsCredit = false,
+                IsTemporary = true,
+                BusinessType="Private",
+                Category="category",
 
-
-            };
+                };
             return customer;
         }
-        internal static Customer Add(Job job)
+        internal static OrganizationCustomer Add(Job job)
         {
-            var customer = new Customer
+            var customer = new OrganizationCustomer
             {
-                Name = job.CustomerName,
-                ContactName = job.ContactName,
-                Phone = job.ContactPhone,
-                City = job.City,
-                SubCity = job.SubCity,
-                Woreda = job.Woreda,
-                Pobox = job.POBox,
-                VAT = job.CustomerVAT,
-                Margin = job.CustomerVAT,
-                OverHead = job.CustomerOverHead,
-                Description = job.CustomerDescription
-
+                TradeName = job.CustomerName,
+                BrandName = job.BrandName,
+                TinNo = job.TinNo,
+                IsActive = true,
+                IsCredit = false,
+                IsTemporary = true,
+                BusinessType = "Private",
+                Category = "category",
 
             };
             return customer;

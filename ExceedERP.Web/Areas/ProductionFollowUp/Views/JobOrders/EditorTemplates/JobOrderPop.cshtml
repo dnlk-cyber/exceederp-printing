@@ -65,13 +65,13 @@
 
                                                                          .OptionLabel("--Select--")
                                                                                 .DataTextField("Name")
-                                                                                        .DataValueField("CustomerId")
+                                                                                        .DataValueField("Code")
                                                                                          .Filter("contains")
 
                                                                                          .Enable(false)
                                                                                  .DataSource(dataSource =>
                                                                                  {
-                                                                                     dataSource.Read(read => read.Action("GetAllCustomers", "Customer", new { area = "PrintingEstimation" }))
+                                                                                     dataSource.Read(read => read.Action("GetAllCustomers", "EstimationForm", new { area = "PrintingEstimation" }))
                                                                                               .ServerFiltering(false);
                                                                                  })
                                                                               .ValuePrimitive(true))
@@ -111,28 +111,28 @@
                             </div>
                             <div class="col-sm-3">
                                 <div class="form-group">
-                                    @Html.LabelFor(model => model.ContactName, htmlAttributes: new { @class = "control-label col-md-8" })
+                                    @Html.LabelFor(model => model.BrandName, htmlAttributes: new { @class = "control-label col-md-8" })
                                     <div>
 
-                                        @(Html.Kendo().TextBoxFor(model => model.ContactName)
+                                        @(Html.Kendo().TextBoxFor(model => model.BrandName)
                                         )
-                                        @Html.ValidationMessageFor(model => model.ContactName, "", new { @class = "text-danger" })
+                                        @Html.ValidationMessageFor(model => model.BrandName, "", new { @class = "text-danger" })
                                     </div>
                                 </div>
                             </div>
                             <div class="col-sm-3">
                                 <div class="form-group">
-                                    @Html.LabelFor(model => model.ContactPhone, htmlAttributes: new { @class = "control-label col-md-8" })
+                                    @Html.LabelFor(model => model.TinNo, htmlAttributes: new { @class = "control-label col-md-8" })
                                     <div>
 
-                                        @(Html.Kendo().TextBoxFor(model => model.ContactPhone)
+                                        @(Html.Kendo().TextBoxFor(model => model.TinNo)
                                         )
-                                        @Html.ValidationMessageFor(model => model.ContactPhone, "", new { @class = "text-danger" })
+                                        @Html.ValidationMessageFor(model => model.TinNo, "", new { @class = "text-danger" })
                                     </div>
                                 </div>
                             </div>
                         </div>
-                        <div class="row ">
+                        @*<div class="row ">
                             <div class="col-sm-3">
 
                                 <div class="form-group">
@@ -227,7 +227,7 @@
                                     </div>
                                 </div>
                             </div>
-                        </div>
+                        </div>*@
 
                     </div>
 
@@ -259,7 +259,7 @@
                                                                                                                                 .Name("JobTypeId")
                                                                                                                                 .ValuePrimitive(true)
                                                                                                                                 .Placeholder("--select--")
-                                                                                                                                //.Events(ev => ev.Change("onSelectLoading"))
+                                                                                                                                .Events(ev => ev.Change("onChange"))
                                                                                                                                 .BindTo((IEnumerable<DropDownTreeItemModel>)ViewBag.data))
 
                                     @Html.ValidationMessageFor(model => model.JobTypeId, "", new { @class = "text-danger" })

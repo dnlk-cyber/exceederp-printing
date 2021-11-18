@@ -1,0 +1,17 @@
+﻿@(Html.Kendo().DropDownListFor(model => model)
+                                                                                      .ValuePrimitive(true)
+                                                                                      .OptionLabel("Select Period...")
+                                                                                      .DataTextField("Name")
+                                                                                      .DataValueField("GLPeriodId")
+                                                                                      .CascadeFrom("StoreCode")
+                                                                                      .Filter("contains")
+                                                                                      .Events(e =>
+                                                                                      {
+                                                                                          e.Change("onSelectedPeriod");
+                                                                                      })
+                                                                                      .DataSource(dataSource =>
+                                                                                      {
+                                                                                          dataSource.Read(read => read.Action("GetOpenInventoryPeriodsByStore", "ProductionDataProvider").Data("filterPeriodsByStore"))
+                                                                                              .ServerFiltering(true);
+                                                                                      })
+)

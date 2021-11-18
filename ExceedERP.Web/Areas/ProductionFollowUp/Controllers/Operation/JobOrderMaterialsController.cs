@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
@@ -31,7 +32,7 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
             var jobOrder = db.Jobs.FirstOrDefault(x => x.JobId == id);
             if (jobOrder != null)
             {
-                var jobType = db.JobTypes.FirstOrDefault(x => x.JobTypeId == jobOrder.JobTypeId);
+                var jobType = db.JobCategories.FirstOrDefault(x => x.JobCategoryId == jobOrder.JobTypeId);
                 if (jobType != null)
                 {
                     var tax = db.GLTaxRates.FirstOrDefault(x => x.GLTaxRateID == jobType.GLTaxRateID);

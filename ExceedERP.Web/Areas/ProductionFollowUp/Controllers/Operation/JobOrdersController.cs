@@ -1,5 +1,6 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
+
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
@@ -12,6 +13,7 @@ using ExceedERP.Web.Areas.ProductionFollowUp.Controllers.ViewModel;
 using ExceedERP.Core.Domain.ProductionFollowUp;
 using ExceedERP.Core.Domain.PrintingEstimation;
 using ExceedERP.Web.Areas.ProductionFollowUp.Models;
+using ExceedERP.Core.Domain.CRM;
 
 namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
 {
@@ -22,23 +24,63 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
         public ActionResult Index()
         {
             ViewData["Proforma"] = db.Proformas.ToList();
-            ViewData["JobType"] = db.JobTypes.ToList();
-            ViewData["Customers"] = db.Customers.ToList();
-            ViewData["JobTypeItem"] = db.JobTypeItems.ToList();
-            var selecteditems = db.InventoryItems.Select(
-               i => new
-               {
-                   Name = i.ItemCode + "_" + i.Name,
-                   Code = i.ItemCode
-               }).ToList();
-            var categories = db.ItemCategorys.Select(
-               i => new
-               {
-                   Name = i.ItemCategoryCode + "_" + i.Name,
-                   Code = i.ItemCategoryCode
-               }).ToList();
-            ViewData["InventoryItems"] = selecteditems;
-            ViewData["ItemCategorys"] = categories;
+            ViewData["JobType"] = db.JobCategories.Select(s => new {
+                JobTypeId = s.JobCategoryId,
+                type = s.HaveParent ? s.ParentId+" "+s.JobName : s.JobName
+            }).ToList();
+            ViewData["Customers"] = db.OrganizationCustomers.Select(s => new {
+                Code = s.OrganizationCustomerID,
+                Name = s.TradeName
+            }).ToList();
+
+           
+            var categories = db.ItemCategorys;
+            var items = db.InventoryItems;
+            var costCenter = db.BranchCostCenter;
+            var branches = db.Branch;
+
+            var inventoryPeriods = db.InventoryPeriods;
+            var selectedinventoryPeriods = inventoryPeriods.Select(
+             i => new
+             {
+                 Name = i.Name,
+                 GLPeriodId = i.InventoryPeriodId
+             }).AsQueryable();
+            ViewData["inventoryPeriods"] = selectedinventoryPeriods;
+
+            ViewData["Branches"] = branches;
+
+            var selecteditems = items.Select(
+                i => new
+                {
+                    Name = i.ItemCode + "_" + i.Name,
+                    ItemCode = i.ItemCode
+                }).ToList();
+            ViewData["Items"] = selecteditems;
+            ViewData["Category"] = categories;
+            ViewData["defaultCategory"] = categories.FirstOrDefault();
+
+            var store = db.InventoryStores.AsQueryable();
+            ViewData["storesInCompany"] = store;
+
+            var employee = db.Person_Employee;
+            var selectedEmployee = employee.Select(
+                i => new
+                {
+                    Name = i.FirstNameEnglish + " " + i.MiddleNameEnglish + " " + i.LastNameEnglish,
+                    Code = i.EmployeeId
+                }).AsQueryable();
+            ViewData["personEmployees"] = selectedEmployee;
+
+            var selectedcostCenter = costCenter.Select(
+                i => new
+                {
+                    Name = i.MainCompanyStructure.Name,
+                    Code = i.OrgStructureId
+                }).AsQueryable();
+
+            ViewData["costCenters"] = selectedcostCenter;
+            
             ViewBag.data = GetData();
 
             return View();
@@ -60,19 +102,13 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                 ProformaId = job.ProformaId,
                 JobNo = job.JobNo,
                 CustomerName = job.CustomerName,
-                OrderType = job.OrderType,
                 CustomerId = job.CustomerId,
                 Estimatedby = job.Estimatedby,
                 Code = job.Code,
                 Approvedby = job.Approvedby,
-                ContactName = job.ContactName,
-                ContactPhone = job.ContactPhone,
-                City = job.City,
-                SubCity = job.SubCity,
-                Woreda = job.Woreda,
-                POBox = job.POBox,
+                BrandName = job.BrandName,
+                TinNo = job.TinNo,
                 JobTypeId = job.JobTypeId,
-                JobTypeItemId = job.JobTypeItemId,
                 UnitPrice = job.UnitPrice,
                 BeforeTax = job.BeforeTax,
                 Quant = job.Quant,
@@ -113,11 +149,13 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
             if (ModelState.IsValid)
             {
                 var proforma = new Proforma();
-                var customer = new Customer();
-                if (!job.hv && !proforma.IsExistingCustomer)
+                var customer = new OrganizationCustomer();
+                if (!job.hv && !job.IsExistingCustomer)
                 {
                     customer = AddNewCustomer.Add(job);
-                    db.Customers.Add(customer);
+                    db.OrganizationCustomers.Add(customer);
+                    db.SaveChanges();
+
 
                 }
                 else if (job.hv)
@@ -125,7 +163,7 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                     proforma = db.Proformas.Find(job.ProformaId);
 
                 }
-                job.CustomerId = job.hv ? proforma.CustomerId : customer.CustomerId| job.CustomerId;
+                job.CustomerId = job.hv ? proforma.CustomerId : customer.OrganizationCustomerID| job.CustomerId;
                 var entity = (Job)this.GetObject(job);
 
                 db.Jobs.Add(entity);
@@ -142,11 +180,13 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
             {
 
                 var proforma = new Proforma();
-                var customer = new Customer();
-                if (!job.hv && !proforma.IsExistingCustomer)
+                var customer = new OrganizationCustomer();
+                if (!job.hv && !job.IsExistingCustomer)
                 {
                     customer = AddNewCustomer.Add(job);
-                    db.Customers.Add(customer);
+                    db.OrganizationCustomers.Add(customer);
+                    db.SaveChanges();
+
 
                 }
                 else if (job.hv)
@@ -154,7 +194,7 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                     proforma = db.Proformas.Find(job.ProformaId);
 
                 }
-                job.CustomerId = job.hv ? proforma.CustomerId : customer.CustomerId | job.CustomerId;
+                job.CustomerId = job.hv ? proforma.CustomerId : customer.OrganizationCustomerID | job.CustomerId;
                 var entity = (Job)this.GetObject(job);
                 if(job.JobId!=0)
                 {
@@ -197,8 +237,8 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                 {
                     Status = "OK",
                     CustomerName = proforma.CustomerName,
-                    ContactName = proforma.ContactName,
-                    ContactPhone = proforma.ContactPhone
+                    BrandName = proforma.BrandName,
+                    TinNo = proforma.TinNo
                 });
 
                 return customerData;
@@ -254,7 +294,7 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
         }
         public ActionResult GetBeforeVatAndTotalPerice(int jobTypeId, int quant, double unitPrice)
         {
-            var jobType = db.JobTypes.FirstOrDefault(x => x.JobTypeId == jobTypeId);
+            var jobType = db.JobCategories.FirstOrDefault(x => x.JobCategoryId == jobTypeId);
             if (jobType != null)
             {
                 var tax = db.GLTaxRates.FirstOrDefault(x => x.GLTaxRateID == jobType.GLTaxRateID);
@@ -289,7 +329,7 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
             var job = db.Jobs.FirstOrDefault(x => x.JobId == jobId);
             if (job != null)
             {
-                var jobType = db.JobTypes.FirstOrDefault(x => x.JobTypeId == job.JobTypeId);
+                var jobType = db.JobCategories.FirstOrDefault(x => x.JobCategoryId == job.JobTypeId);
                 if (jobType != null)
                 {
                     var tax = db.GLTaxRates.FirstOrDefault(x => x.GLTaxRateID == jobType.GLTaxRateID);
@@ -364,8 +404,6 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                 PrintingExpectedCompletetion = job.PrintingExpectedCompletetion,
                 FinishExpectedCompletetion = job.FinishExpectedCompletetion,
                 Status = job.Status,
-                CustomerDescription = job.CustomerDescription,
-                OrderType = job.OrderType,
                 FinishingWorkflow = job.FinishingWorkflow
             };
             return entity;

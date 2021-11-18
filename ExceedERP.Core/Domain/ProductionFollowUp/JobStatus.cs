@@ -12,6 +12,7 @@ namespace ExceedERP.Core.Domain.ProductionFollowUp
     {
         public int JobStatusId { get; set; }
         public int JobId { get; set; }
+        [Display(Name = "User")]
         public string UserId { get; set; }
         //started time
         [DataType(DataType.Date)]

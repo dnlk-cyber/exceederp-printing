@@ -41,14 +41,6 @@ namespace ExceedERP.DataAccess.Context
             this.HasKey<int>(t => t.LaborCostId);
         }
     }
-    class CustomerEntityConfiguration : EntityTypeConfiguration<Customer>
-    {
-        public CustomerEntityConfiguration()
-        {
-            this.ToTable("Customers", "PrintingEstimation");
-            this.HasKey<int>(t => t.CustomerId);
-        }
-    }
    
     class PrintingStepEntityConfiguration : EntityTypeConfiguration<PrintingStep>
     {

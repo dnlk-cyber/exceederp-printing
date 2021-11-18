@@ -134,54 +134,6 @@ namespace ExceedERP.DataAccess.Context
                 this.HasKey<int>(t => t.IdleTimeNonProductiveNonControllableID);
             }
         }
-        //public class GLChartOfAccountCostCenterEntityTypeConfiguration : EntityTypeConfiguration<GLChartOfAccountCostCenter>
-        //{
-        //    public GLChartOfAccountCostCenterEntityTypeConfiguration()
-        //    {
-        //        this.ToTable("GLChartOfAccountCostCentres", "JobCosting");
-        //        this.HasKey<int>(t => t.CostCenterID);
-        //    }
-        //}
-        //public class GLChartOfAccountAccountEntityTypeConfiguration : EntityTypeConfiguration<GLChartOfAccountAccount>
-        //{
-        //    public GLChartOfAccountAccountEntityTypeConfiguration()
-        //    {
-        //        this.ToTable("GLChartOfAccountAccounts", "JobCosting");
-        //        this.HasKey<int>(t => t.GLChartOfAccountAccountID);
-        //    }
-        //}
-        //public class GLFiscalYearEntityTypeConfiguration : EntityTypeConfiguration<GlFiscalYear>
-        //{
-        //    public GLFiscalYearEntityTypeConfiguration()
-        //    {
-        //        this.ToTable("GLFiscalYears", "JobCosting");
-        //        this.HasKey<int>(t => t.GlFiscalYearId);
-        //    }
-        //}
-        //public class GLPeriodEntityTypeConfiguration : EntityTypeConfiguration<GLPeriod>
-        //{
-        //    public GLPeriodEntityTypeConfiguration()
-        //    {
-        //        this.ToTable("GLPeriods", "JobCosting");
-        //        this.HasKey<int>(t => t.GLPeriodId);
-        //    }
-        //}
-        //public class GLTaxRateEntityTypeConfiguration : EntityTypeConfiguration<GLTaxRate>
-        //{
-        //    public GLTaxRateEntityTypeConfiguration()
-        //    {
-        //        this.ToTable("GLTaxRates", "JobCosting");
-        //        this.HasKey<int>(t => t.GLTaxRateID);
-        //    }
-        //}
-        //public class PensionEntityTypeConfiguration : EntityTypeConfiguration<Pension>
-        //{
-        //    public PensionEntityTypeConfiguration()
-        //    {
-        //        this.ToTable("Pensions", "JobCosting");
-        //        this.HasKey<int>(t => t.PensionId);
-        //    }
-        //}
         public class YearlyOverHeadRateEntityTypeConfiguration : EntityTypeConfiguration<YearlyOverHeadRate>
         {
             public YearlyOverHeadRateEntityTypeConfiguration()
@@ -198,14 +150,6 @@ namespace ExceedERP.DataAccess.Context
         //        this.HasKey<int>(t => t.MachineTypeId);
         //    }
         //}
-        //public class MainCompanyEntityTypeConfiguration : EntityTypeConfiguration<MainCompany>
-        //{
-        //    public MainCompanyEntityTypeConfiguration()
-        //    {
-        //        this.ToTable("MainCompanies", "JobCosting");
-        //        this.HasKey<int>(t => t.MainCompanyId);
-        //    }
-        //}
         public class MachineEntityTypeConfiguration : EntityTypeConfiguration<Machine>
         {
             public MachineEntityTypeConfiguration()
@@ -214,23 +158,9 @@ namespace ExceedERP.DataAccess.Context
                 this.HasKey<int>(t => t.MachineId);
             }
         }
-        public class UnitEntityTypeConfiguration : EntityTypeConfiguration<Unit>
-        {
-            public UnitEntityTypeConfiguration()
-            {
-                this.ToTable("Units", "JobCosting");
-                this.HasKey<int>(t => t.UnitId);
-            }
-        }
+      
 
-        public class JobCategoryEntityTypeConfiguration : EntityTypeConfiguration<JobCategory>
-        {
-            public JobCategoryEntityTypeConfiguration()
-            {
-                this.ToTable("JobCategories", "JobCosting");
-                this.HasKey<int>(t => t.JobCategoryId);
-            }
-        }  public class IdleTimeCategoryEntityTypeConfiguration : EntityTypeConfiguration<IdleTimeCategory>
+        public class IdleTimeCategoryEntityTypeConfiguration : EntityTypeConfiguration<IdleTimeCategory>
         {
             public IdleTimeCategoryEntityTypeConfiguration()
             {

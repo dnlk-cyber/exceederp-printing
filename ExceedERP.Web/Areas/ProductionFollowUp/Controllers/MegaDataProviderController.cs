@@ -18,22 +18,22 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers
 
         public JsonResult GetJobTypes()
         {
-            var types = db.JobTypes.ToList();
+            var types = db.JobCategories.ToList();
 
             return Json(types.Select(p => new
             {
-                JobTypeId = p.JobTypeId,
-                Type = p.Type,
+                JobTypeId = p.JobCategoryId,
+                Type = p.JobName,
             }), JsonRequestBehavior.AllowGet);
         }
         public JsonResult GetJobTypeItems(int jobTypeId)
         {
-            var types = db.JobTypeItems.Where(x => x.JobTypeId == jobTypeId).ToList();
+            var types = db.JobCategories.Where(x => x.JobCategoryId == jobTypeId&& x.HaveParent).ToList();
 
             return Json(types.Select(p => new
             {
-                JobTypeItemId = p.JobTypeItemId,
-                Name = p.Name,
+                JobTypeItemId = p.JobCategoryId,
+                Name = p.JobName,
             }), JsonRequestBehavior.AllowGet);
         }
         public JsonResult GetTaxTypes()
@@ -59,18 +59,18 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers
 
         public JsonResult GetJobTypesByProforma(int proformaId = 0)
         {
-            var jobTypes = db.JobTypes.ToList();
+            var jobTypes = db.JobCategories.ToList();
 
             var proformaItems = db.PFProformaItems.Where(x => x.ProformaId == proformaId).Select(x => x.JobTypeId).ToList();
             if (proformaItems.Any())
             {
-                jobTypes = jobTypes.Where(x => proformaItems.Contains(x.JobTypeId)).ToList();
+                jobTypes = jobTypes.Where(x => proformaItems.Contains(x.JobCategoryId)).ToList();
             }
 
             return Json(jobTypes.Select(p => new
             {
-                JobTypeId = p.JobTypeId,
-                Type = p.Type,
+                JobTypeId = p.JobCategoryId,
+                Type = p.JobName,
             }), JsonRequestBehavior.AllowGet);
         }
         public JsonResult GetJobOrders()

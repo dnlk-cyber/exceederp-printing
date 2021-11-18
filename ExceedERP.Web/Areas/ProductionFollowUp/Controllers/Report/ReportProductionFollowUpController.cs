@@ -28,6 +28,11 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Report
             ViewBag.id = id;
             return View();
         }
+        public ActionResult ReportViewerView1(int id)
+        {
+            ViewBag.id = id;
+            return View();
+        }
         public ActionResult FinishedGoodReceival(int id)
         {
             ViewBag.id = id;

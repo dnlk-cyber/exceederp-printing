@@ -69,12 +69,11 @@
                     <label for="CostCenterId">Cost Center</label>
                 </div>
                 <div>
-                    @(Html.Kendo().DropDownListFor(model => model.CostCenterId)
-                                                                                        .Name("CostCenterId")
+                    @(Html.Kendo().DropDownListFor(model => model.CostCenter)
                                                                                         .ValuePrimitive(true)
                                                                                         .OptionLabel("---Cost centers---")
                                                                                         .DataTextField("Values")
-                                                                                        .DataValueField("CostCenterID")
+                                                                                        .DataValueField("Values")
                                                                                         .Filter("contains")
                                                                                         .DataSource(dataSource =>
                                                                                         {

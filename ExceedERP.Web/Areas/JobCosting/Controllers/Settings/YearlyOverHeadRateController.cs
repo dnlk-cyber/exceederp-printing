@@ -1,5 +1,6 @@
 ﻿﻿using System;
 using System.Collections.Generic;
+
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
@@ -29,7 +30,7 @@ namespace ExceedERP.Web.Areas.JobCosting.Controllers.Settings
             DataSourceResult result = yearlyoverheadrates.ToDataSourceResult(request, yearlyOverHeadRate => new {
                 YearlyOverHeadRateId = yearlyOverHeadRate.YearlyOverHeadRateId,
                 GlFiscalYearId = yearlyOverHeadRate.GlFiscalYearId,
-                CostCenterID = yearlyOverHeadRate.CostCenterID,
+                Values = yearlyOverHeadRate.Values,
                 Rate = yearlyOverHeadRate.Rate,
                 Description = yearlyOverHeadRate.Description,
                 DateCreated = yearlyOverHeadRate.DateCreated,
@@ -91,7 +92,7 @@ namespace ExceedERP.Web.Areas.JobCosting.Controllers.Settings
             {
                 YearlyOverHeadRateId = yearlyOverHeadRate.YearlyOverHeadRateId,
                 GlFiscalYearId = yearlyOverHeadRate.GlFiscalYearId,
-                CostCenterID = yearlyOverHeadRate.CostCenterID,
+                Values = yearlyOverHeadRate.Values,
                 Rate = yearlyOverHeadRate.Rate,
                 Description = yearlyOverHeadRate.Description,
                 DateCreated = yearlyOverHeadRate.DateCreated,

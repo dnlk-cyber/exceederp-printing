@@ -1,5 +1,6 @@
 ﻿﻿using System;
 using System.Collections.Generic;
+
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
@@ -29,7 +30,7 @@ namespace ExceedERP.Web.Areas.JobCosting.Controllers
             IQueryable<DailyLaborRate> dailylaborrates = db.DailyLaborRates;
             DataSourceResult result = dailylaborrates.ToDataSourceResult(request, dailyLaborRate => new {
                 DailyLaborRateId = dailyLaborRate.DailyLaborRateId,
-                CostCenterId = dailyLaborRate.CostCenterId,
+                CostCenter = dailyLaborRate.CostCenter,
                 GlFiscalYearId = dailyLaborRate.GlFiscalYearId,
                 GLPeriodId = dailyLaborRate.GLPeriodId,
                 TotalSalary = dailyLaborRate.TotalSalary,
@@ -97,7 +98,7 @@ namespace ExceedERP.Web.Areas.JobCosting.Controllers
             var entity = new DailyLaborRate
             {
                 DailyLaborRateId = dailyLaborRate.DailyLaborRateId,
-                CostCenterId = dailyLaborRate.CostCenterId,
+                CostCenter = dailyLaborRate.CostCenter,
                 GlFiscalYearId = dailyLaborRate.GlFiscalYearId,
                 GLPeriodId = dailyLaborRate.GLPeriodId,
                 TotalSalary = dailyLaborRate.TotalSalary,

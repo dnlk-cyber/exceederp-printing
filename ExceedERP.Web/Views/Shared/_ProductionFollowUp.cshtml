@@ -1,5 +1,4 @@
-﻿
-<li class="">
+﻿<li class="">
     <a href="#" class="dropdown-toggle">
         <i class="menu-icon fa fa-tasks"></i>
         <span class="menu-text">
@@ -23,27 +22,25 @@
             <b class="arrow"></b>
 
             <ul class="submenu">
-                <li id="productionFollowUp001001sdf002" class="actionlinlk">
-                    @Html.ActionLink("Tax", "Index", "GLTaxRates", new { area = "Common" }, null)<b class="arrow"></b>
-                </li>
-                <li id="productionFollowUp001001001" class="actionlinlk">
+                
+                @*<li id="productionFollowUp001001001" class="actionlinlk">
                     @Html.ActionLink("Common Setting", "Index", "CommonSettings", new { area = "Common" }, null)<b class="arrow"></b>
-                </li>
+                </li>*@
                 <li id="productionFollowUp001001001" class="actionlinlk">
-                    @Html.ActionLink("Job Type", "Index", "JobTypes", new { area = "ProductionFollowUp" }, null)<b class="arrow"></b>
+                    @Html.ActionLink("Job Type", "Index", "JobCategory", new { area = "ProductionFollowUp" }, null)<b class="arrow"></b>
                 </li>
-                <li id="productionFollowUp001001001" class="actionlinlk">
+                @*<li id="productionFollowUp001001001" class="actionlinlk">
                     @Html.ActionLink("Job Order Material", "Index", "JobOrderMaterials", new { area = "ProductionFollowUp" }, null)<b class="arrow"></b>
-                </li>
+                </li>*@
                 @*<li id="productionFollowUp001001001" class="actionlinlk">
                         @Html.ActionLink("Commercial Items", "Index", "CommertialItems", new { area = "ProductionFollowUp" }, null)<b class="arrow"></b>
                     </li>
                     <li id="productionFollowUp001001002" class="actionlinlk">
                         @Html.ActionLink("Machines", "Index", "Machines", new { area = "ProductionFollowUp" }, null)<b class="arrow"></b>
                     </li>*@
-                <li id="productionFollowUp001001sdf002" class="actionlinlk">
+                @*<li id="productionFollowUp001001sdf002" class="actionlinlk">
                     @Html.ActionLink("Cost Center", "Index", "CostCenters", new { area = "Common" }, null)<b class="arrow"></b>
-                </li>
+                </li>*@
             </ul>
         </li>
 
@@ -66,7 +63,7 @@
                     @Html.ActionLink("Job Order", "Index", "JobOrders", new { area = "ProductionFollowUp" }, null)<b class="arrow"></b>
                 </li>
                 <li id="productdfionFollowUpReceiving0100100871" class="actionlinlk">
-                    @Html.ActionLink("Finished Good Receival", "Index", "FinishedGoodReceivings", new { area = "ProductionFollowUp" }, null)<b class="arrow"></b>
+                    @Html.ActionLink("Finished Good Receival", "Index", "PrintingProductionStoreReceive", new { area = "ProductionFollowUp" }, null)<b class="arrow"></b>
                 </li>
                 <li id="productdfionFollowUpReceiving0100100871" class="actionlinlk">
                     @Html.ActionLink("Product Delivery", "Index", "ProductDeliveries", new { area = "ProductionFollowUp" }, null)<b class="arrow"></b>
@@ -98,4 +95,3 @@
 
     </ul>
 </li>
-

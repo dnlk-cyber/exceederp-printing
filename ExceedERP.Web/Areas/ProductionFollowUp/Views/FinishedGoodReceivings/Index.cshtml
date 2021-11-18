@@ -1,15 +1,15 @@
-﻿@using System.Collections
+﻿@*@using System.Collections
 @{
 
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 
-@(Html.Kendo().Grid<ExceedERP.Core.Domain.ProductionFollowUp.FinishedGoodReceiving>()
+@(Html.Kendo().Grid<ExceedERP.Core.Domain.ProductionFollowUp.PrintingProductionFinishedGoodsStoreReceive>()
                       .Name("grid")
                       .Columns(columns =>
                       {
                           columns.ForeignKey(c => c.JobId, (IEnumerable)ViewData["JobOrder"], "JobId", "JobNo").EditorTemplateName("JobOrders").Title("Job No");
-                          columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customers"], "CustomerId", "Name")
+                          columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customers"], "Code", "Name")
                                                                  .Width("110px")
                                                                  .Title("Customer");
                           columns.Bound(c => c.VoucherNo);
@@ -36,7 +36,7 @@
                                          .ButtonCount(5))
                                    .Filterable()
                                    .Scrollable(h => h.Height(500))
-                                   .Events(ev => ev.BeforeEdit("hideColumn").Save("showColumn"))
+                                  .Events(ev => ev.BeforeEdit("hideColumn").Save("showColumn"))
 
                       .DataSource(dataSource => dataSource
                           .Ajax()
@@ -44,7 +44,11 @@
                     .RequestStart("onRequestStart(\"grid\")")
                     .RequestEnd("onRequestEnd(\"grid\")"))
                     .ServerOperation(false)
-                          .Model(model => model.Id(p => p.FinishedGoodReceivingId))
+                          .Model(model => {
+                              model.Id(p => p.FinishedGoodsStoreReceiveId);
+                              model.Field(p => p.CustomerId).Editable(false);
+
+                          })
                           .Read(read => read.Action("FinishedGoodReceivings_Read", "FinishedGoodReceivings"))
                           .Create(create => create.Action("FinishedGoodReceivings_Create", "FinishedGoodReceivings"))
                           .Update(update => update.Action("FinishedGoodReceivings_Update", "FinishedGoodReceivings"))
@@ -55,17 +59,17 @@
 
 <script id="Detail" type="text/kendo-tmpl">
     @(Html.Kendo().TabStrip()
-                                 .Name("tabstrip2_#=FinishedGoodReceivingId#")
+                                 .Name("tabstrip2_#=FinishedGoodsStoreReceiveId#")
                                 .SelectedIndex(0)
                                 .Items(items =>
                                 {
 
                                     items.Add().Text("Finished Goods").Content(
                         @<text>
-                            <a href='@Url.Action("FinishedGoodReceival", "ReportProductionFollowUp")/?id=#=FinishedGoodReceivingId#' target="_blank" title="Print Finished Good Receiving Form"><i class="fa fa-print fa-2x"></i></a>
+                            <a href='@Url.Action("FinishedGoodReceival", "ReportProductionFollowUp")/?id=#=FinishedGoodsStoreReceiveId#' target="_blank" title="Print Finished Good Receiving Form"><i class="fa fa-print fa-2x"></i></a>
 
                             @(Html.Kendo().Grid<ExceedERP.Core.Domain.ProductionFollowUp.FinishedGoods>()
-                                                   .Name("FinishedGoods#=FinishedGoodReceivingId#")
+                                                   .Name("FinishedGoods#=FinishedGoodsStoreReceiveId#")
                                                            .Columns(columns =>
                                                            {
                                                                        columns.Bound(c => c.CodeNo).Width(100);
@@ -102,19 +106,20 @@
                                                                      //  .Sort(s => s.Add(x => x.ProformaId).Descending())
                                                                      .Events(events =>
                                                                      {
-                                                                                 events.Error("error_handler(\"FinishedGoods#=FinishedGoodReceivingId#\")");
-                                                                                 events.RequestStart("onRequestStart(\"FinishedGoods#=FinishedGoodReceivingId#\")");
-                                                                                 events.RequestEnd("onRequestEnd(\"FinishedGoods#=FinishedGoodReceivingId#\")");
+                                                                                 events.Error("error_handler(\"FinishedGoods#=FinishedGoodsStoreReceiveId#\")");
+                                                                                 events.RequestStart("onRequestStart(\"FinishedGoods#=FinishedGoodsStoreReceiveId#\")");
+                                                                                 events.RequestEnd("onRequestEnd(\"FinishedGoods#=FinishedGoodsStoreReceiveId#\")");
                                                                              }
                                                                         )
 
                                                                         .Model(model =>
                                                                         {
                                                                                     model.Id(p => p.FinishedGoodsId);
+                                                                                    model.Field(p => p.Unit).Editable(false);
                                                                                 })
 
-                                                        .Read(read => read.Action("FinishedGoods_Read", "FinishedGoods", new { id = "#=FinishedGoodReceivingId#" }))
-                                                       .Create(create => create.Action("FinishedGoods_Create", "FinishedGoods", new { id = "#=FinishedGoodReceivingId#" }))
+                                                        .Read(read => read.Action("FinishedGoods_Read", "FinishedGoods", new { id = "#=FinishedGoodsStoreReceiveId#" }))
+                                                       .Create(create => create.Action("FinishedGoods_Create", "FinishedGoods", new { id = "#=FinishedGoodsStoreReceiveId#" }))
                                                        .Update(update => update.Action("FinishedGoods_Update", "FinishedGoods"))
                                                        .Destroy(destroy => destroy.Action("FinishedGoods_Destroy", "FinishedGoods"))
 
@@ -137,4 +142,4 @@
         var grid = $('#grid').data('kendoGrid');
         grid.showColumn('CustomerId');
     }
-</script>
+</script>*@

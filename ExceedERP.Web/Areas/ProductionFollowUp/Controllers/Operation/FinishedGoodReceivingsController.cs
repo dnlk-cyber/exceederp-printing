@@ -1,5 +1,6 @@
 ﻿﻿using System;
 using System.Collections.Generic;
+
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
@@ -18,7 +19,10 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
 
         public ActionResult Index()
         {
-            ViewData["Customers"] = db.Customers.ToList();
+            ViewData["Customers"] = db.OrganizationCustomers.Select(s=>new {
+            Code = s.OrganizationCustomerID,
+            Name = s.TradeName
+            }).ToList();
 
             ViewData["JobOrder"] = db.Jobs.ToList();
             return View();
@@ -26,12 +30,12 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
 
         public ActionResult FinishedGoodReceivings_Read([DataSourceRequest]DataSourceRequest request)
         {
-            IQueryable<FinishedGoodReceiving> finishedgoodreceivings = db.FinishedGoodReceivings;
+            IQueryable<PrintingProductionFinishedGoodsStoreReceive> finishedgoodreceivings = db.PrintingProductionFinishedGoodsStoreReceives;
             DataSourceResult result = finishedgoodreceivings.ToDataSourceResult(request, finishedGoodReceiving => new {
-                FinishedGoodReceivingId = finishedGoodReceiving.FinishedGoodReceivingId,
+                FinishedGoodReceivingId = finishedGoodReceiving.FinishedGoodsStoreReceiveId,
                 VoucherNo = finishedGoodReceiving.VoucherNo,
                 CustomerId = finishedGoodReceiving.CustomerId,
-                Store = finishedGoodReceiving.Store,
+                StoreCode = finishedGoodReceiving.StoreCode,
                 JobId = finishedGoodReceiving.JobId,
                 DeliveredBy = finishedGoodReceiving.DeliveredBy,
                 ReceivedBy = finishedGoodReceiving.ReceivedBy,
@@ -42,50 +46,50 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult FinishedGoodReceivings_Create([DataSourceRequest]DataSourceRequest request, FinishedGoodReceiving finishedGoodReceiving)
+        public ActionResult FinishedGoodReceivings_Create([DataSourceRequest]DataSourceRequest request, PrintingProductionFinishedGoodsStoreReceive finishedGoodReceiving)
         {
             if (ModelState.IsValid)
             {
                 var jobOrder = db.Jobs.Find(finishedGoodReceiving.JobId);
 
-                var entity = new FinishedGoodReceiving
+                var entity = new PrintingProductionFinishedGoodsStoreReceive
                 {
                     VoucherNo = finishedGoodReceiving.VoucherNo,
                     CustomerId = jobOrder.CustomerId,
-                    Store = finishedGoodReceiving.Store,
+                    StoreCode = finishedGoodReceiving.StoreCode,
                     JobId = finishedGoodReceiving.JobId,
                     DeliveredBy = finishedGoodReceiving.DeliveredBy,
                     ReceivedBy = finishedGoodReceiving.ReceivedBy,
                     Supervisor = finishedGoodReceiving.Supervisor
                 };
 
-                db.FinishedGoodReceivings.Add(entity);
+                db.PrintingProductionFinishedGoodsStoreReceives.Add(entity);
                 db.SaveChanges();
-                finishedGoodReceiving.FinishedGoodReceivingId = entity.FinishedGoodReceivingId;
+                finishedGoodReceiving.FinishedGoodsStoreReceiveId = entity.FinishedGoodsStoreReceiveId;
             }
 
             return Json(new[] { finishedGoodReceiving }.ToDataSourceResult(request, ModelState));
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult FinishedGoodReceivings_Update([DataSourceRequest]DataSourceRequest request, FinishedGoodReceiving finishedGoodReceiving)
+        public ActionResult FinishedGoodReceivings_Update([DataSourceRequest]DataSourceRequest request, PrintingProductionFinishedGoodsStoreReceive finishedGoodReceiving)
         {
             if (ModelState.IsValid)
             {
                 var jobOrder = db.Jobs.Find(finishedGoodReceiving.JobId);
-                var entity = new FinishedGoodReceiving
+                var entity = new PrintingProductionFinishedGoodsStoreReceive
                 {
-                    FinishedGoodReceivingId = finishedGoodReceiving.FinishedGoodReceivingId,
+                    FinishedGoodsStoreReceiveId = finishedGoodReceiving.FinishedGoodsStoreReceiveId,
                     CustomerId = jobOrder.CustomerId,
                     VoucherNo = finishedGoodReceiving.VoucherNo,
-                    Store = finishedGoodReceiving.Store,
+                    StoreCode = finishedGoodReceiving.StoreCode,
                     JobId = finishedGoodReceiving.JobId,
                     DeliveredBy = finishedGoodReceiving.DeliveredBy,
                     ReceivedBy = finishedGoodReceiving.ReceivedBy,
                     Supervisor = finishedGoodReceiving.Supervisor
                 };
 
-                db.FinishedGoodReceivings.Attach(entity);
+                db.PrintingProductionFinishedGoodsStoreReceives.Attach(entity);
                 db.Entry(entity).State = EntityState.Modified;
                 db.SaveChanges();
             }
@@ -94,24 +98,24 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult FinishedGoodReceivings_Destroy([DataSourceRequest]DataSourceRequest request, FinishedGoodReceiving finishedGoodReceiving)
+        public ActionResult FinishedGoodReceivings_Destroy([DataSourceRequest]DataSourceRequest request, PrintingProductionFinishedGoodsStoreReceive finishedGoodReceiving)
         {
             if (ModelState.IsValid)
             {
-                var entity = new FinishedGoodReceiving
+                var entity = new PrintingProductionFinishedGoodsStoreReceive
                 {
-                    FinishedGoodReceivingId = finishedGoodReceiving.FinishedGoodReceivingId,
+                    FinishedGoodsStoreReceiveId = finishedGoodReceiving.FinishedGoodsStoreReceiveId,
                     VoucherNo = finishedGoodReceiving.VoucherNo,
                     CustomerId = finishedGoodReceiving.CustomerId,
-                    Store = finishedGoodReceiving.Store,
+                    StoreCode = finishedGoodReceiving.StoreCode,
                     JobId = finishedGoodReceiving.JobId,
                     DeliveredBy = finishedGoodReceiving.DeliveredBy,
                     ReceivedBy = finishedGoodReceiving.ReceivedBy,
                     Supervisor = finishedGoodReceiving.Supervisor
                 };
 
-                db.FinishedGoodReceivings.Attach(entity);
-                db.FinishedGoodReceivings.Remove(entity);
+                db.PrintingProductionFinishedGoodsStoreReceives.Attach(entity);
+                db.PrintingProductionFinishedGoodsStoreReceives.Remove(entity);
                 db.SaveChanges();
             }
 

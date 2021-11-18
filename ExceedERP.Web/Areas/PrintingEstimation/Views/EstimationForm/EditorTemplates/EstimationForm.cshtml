@@ -29,11 +29,11 @@
                                                                         .ValuePrimitive(true)
                                                                         .OptionLabel("Select Customer...")
                                                                         .DataTextField("Name")
-                                                                        .DataValueField("CustomerId")
+                                                                        .DataValueField("Code")
                                                                         .Filter("contains")
                                                                         .DataSource(dataSource =>
                                                                         {
-                                                                            dataSource.Read(read => read.Action("GetAllCustomers", "Customer", new { area = "PrintingEstimation" }))
+                                                                            dataSource.Read(read => read.Action("GetAllCustomers", "EstimationForm"))
                                                                                 .ServerFiltering(false);
                                                                         }))
                 </div>

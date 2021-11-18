@@ -10,6 +10,15 @@ namespace ExceedERP.DataAccess.Context
 {
    public class ProductFollowUpEntityConfiguration
     {
+        public class JobCategoryEntityTypeConfiguration : EntityTypeConfiguration<JobCategory>
+        {
+            public JobCategoryEntityTypeConfiguration()
+            {
+                this.ToTable("JobCategories", "ProductFollowUp");
+                this.HasKey<int>(t => t.JobCategoryId);
+            }
+        }
+
         public class ProformaEntityTypeConfiguration : EntityTypeConfiguration<Proforma>
         {
             public ProformaEntityTypeConfiguration()
@@ -59,22 +68,7 @@ namespace ExceedERP.DataAccess.Context
             }
         }
         
-        public class JobTypeEntityTypeConfiguration : EntityTypeConfiguration<JobType>
-        {
-            public JobTypeEntityTypeConfiguration()
-            {
-                this.ToTable("JobType", "ProductFollowUp");
-                this.HasKey<int>(t => t.JobTypeId);
-            }
-        }
-        public class JobTypeItemEntityTypeConfiguration : EntityTypeConfiguration<JobTypeItem>
-        {
-            public JobTypeItemEntityTypeConfiguration()
-            {
-                this.ToTable("JobTypeItem", "ProductFollowUp");
-                this.HasKey<int>(t => t.JobTypeItemId);
-            }
-        }
+      
 
         public class JobOrderMaterialEntityTypeConfiguration : EntityTypeConfiguration<JobOrderMaterial>
         {
@@ -85,12 +79,36 @@ namespace ExceedERP.DataAccess.Context
             }
         }
 
-        public class FinishedGoodReceivingEntityTypeConfiguration : EntityTypeConfiguration<FinishedGoodReceiving>
+        public class PrintingProductionFinishedGoodsStoreReceiveEntityTypeConfiguration : EntityTypeConfiguration<PrintingProductionFinishedGoodsStoreReceive>
         {
-            public FinishedGoodReceivingEntityTypeConfiguration()
+            public PrintingProductionFinishedGoodsStoreReceiveEntityTypeConfiguration()
             {
-                this.ToTable("FinishedGoodReceiving", "ProductFollowUp");
-                this.HasKey<int>(t => t.FinishedGoodReceivingId);
+                this.ToTable("FinishedGoodsStoreReceive", "ProductFollowUp");
+                this.HasKey<int>(t => t.FinishedGoodsStoreReceiveId);
+            }
+        }
+        public class PrintingProductionFinishedGoodsStoreReceiveItemEntityTypeConfiguration : EntityTypeConfiguration<PrintingProductionFinishedGoodsStoreReceiveItem>
+        {
+            public PrintingProductionFinishedGoodsStoreReceiveItemEntityTypeConfiguration()
+            {
+                this.ToTable("FinishedGoodsStoreReceiveItem", "ProductFollowUp");
+                this.HasKey<int>(t => t.FinishedGoodsStoreReceiveItemId);
+            }
+        }
+        public class PrintingProductionFinishedGoodsStoreReceiveValidationEntityTypeConfiguration : EntityTypeConfiguration<PrintingProductionFinishedGoodsStoreReceiveValidation>
+        {
+            public PrintingProductionFinishedGoodsStoreReceiveValidationEntityTypeConfiguration()
+            {
+                this.ToTable("FinishedGoodsStoreReceiveValidation", "ProductFollowUp");
+                this.HasKey<int>(t => t.FinishedGoodsStoreReceiveValidationId);
+            }
+        }
+        public class PrintingProductionFinishedGoodsStoreReceiveDistributionEntityTypeConfiguration : EntityTypeConfiguration<PrintingProductionFinishedGoodsStoreReceiveDistribution>
+        {
+            public PrintingProductionFinishedGoodsStoreReceiveDistributionEntityTypeConfiguration()
+            {
+                this.ToTable("FinishedGoodsStoreReceiveDistribution", "ProductFollowUp");
+                this.HasKey<int>(t => t.FinishedGoodsStoreReceiveDistributionId);
             }
         }
 
@@ -120,6 +138,13 @@ namespace ExceedERP.DataAccess.Context
                 this.HasKey<int>(t => t.ProductDeliveryItemsId);
             }
         }
-
+        public class PFProformaItemsEntityTypeConfiguration : EntityTypeConfiguration<PFProformaItems>
+        {
+            public PFProformaItemsEntityTypeConfiguration()
+            {
+                this.ToTable("PFProformaItems", "ProductFollowUp");
+                this.HasKey<int>(t => t.PFProformaItemsId);
+            }
+        }
     }
 }

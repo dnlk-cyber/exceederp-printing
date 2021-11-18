@@ -3,7 +3,7 @@
                                   .Name("ProformaGrid")
                                   .Columns(columns =>
                                   {
-                                      columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customers"], "CustomerId", "Name")
+                                      columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customers"], "Code", "Name")
                                            .Width("110px")
                                            .Title("Customer");
                                       columns.Bound(c => c.ProformaNo).Width(100).Title("Proforma No");
@@ -76,7 +76,7 @@
 
                                 <a href='@Url.Action("ProformaPrint", "ReportProductionFollowUp")/?id=#=ProformaId#' target="_blank" title="Print Proforma"><i class="fa fa-print fa-2x"></i></a>
 
-                                @(Html.Kendo().Grid<ExceedERP.Core.Domain.ProductionFollowUp.ProformaItems>()
+                                @(Html.Kendo().Grid<ExceedERP.Core.Domain.ProductionFollowUp.PFProformaItems>()
                                                                        .Name("ProformaItems#=ProformaId#")
                                                            .Columns(columns =>
                                                            {
@@ -131,7 +131,7 @@
                                                                           }
                                                                                                     )
 
-                                                                           .Model(model => model.Id(p => p.ProformaItemsId))
+                                                                           .Model(model => model.Id(p => p.PFProformaItemsId))
 
 
                                                                                           .Read(read => read.Action("ProformaItems_Read", "ProformaItems", new { id = "#=ProformaId#" }))
@@ -193,57 +193,36 @@
 
             $("#EstimationFormId").data("kendoDropDownList").enable(true);
             $("#CustomerId").data("kendoDropDownList").enable(false);
+            $("#CustomerId").data("kendoDropDownList").value(0);//.trigger("change");
+
             $("#IsExistingCustomer").attr("disabled", true);
             $("#CustomerName").prop("readonly", true);
-            $("#ContactName").prop("readonly", true);
-            $("#ContactPhone").prop("readonly", true);
-            $("#CustomerVAT").data("kendoNumericTextBox").enable(false);
-            $("#CustomerMargin").data("kendoNumericTextBox").enable(false);
-            $("#CustomerOverHead").data("kendoNumericTextBox").enable(false);
-            $("#POBox").prop("readonly", true);
-            $("#City").prop("readonly", true);
-            $("#SubCity").prop("readonly", true);
-            $("#Woreda").prop("readonly", true);
-            $("#CustomerDescription").prop("readonly", true);
+            $("#BrandName").prop("readonly", true);
+            $("#TinNo").prop("readonly", true);
         }
         else {
             $("#IsExistingCustomer").attr("disabled", false);
             $("#EstimationFormId").data("kendoDropDownList").enable(false);
-
+            $("#EstimationFormId").data("kendoDropDownList").value(0);//.trigger("change");
             var y = $('#IsExistingCustomer').is(':checked');
             if (y == true) {
 
                 $("#CustomerId").data("kendoDropDownList").enable(true);
                 $("#HaveEstimation").attr("disabled", true);
                 $("#CustomerName").prop("readonly", true);
-                $("#ContactName").prop("readonly", true);
-                $("#ContactPhone").prop("readonly", true);
-                $("#CustomerVAT").data("kendoNumericTextBox").enable(false);
-                $("#CustomerMargin").data("kendoNumericTextBox").enable(false);
-                $("#CustomerOverHead").data("kendoNumericTextBox").enable(false);
-                $("#POBox").prop("readonly", true);
-                $("#City").prop("readonly", true);
-                $("#SubCity").prop("readonly", true);
-                $("#Woreda").prop("readonly", true);
-                $("#CustomerDescription").prop("readonly", true);
+                $("#CustomerName").prop("readonly", true);
+                $("#BrandName").prop("readonly", true);
+                $("#TinNo").prop("readonly", true);
             }
             else {
 
                 $("#CustomerId").data("kendoDropDownList").enable(false);
                 $("#HaveEstimation").attr("disabled", false);
                 $("#CustomerName").prop("readonly", false);
-                $("#ContactName").prop("readonly", false);
-                $("#ContactPhone").prop("readonly", false);
-                $("#CustomerVAT").data("kendoNumericTextBox").enable(true);
-                $("#CustomerMargin").data("kendoNumericTextBox").enable(true);
-                $("#CustomerOverHead").data("kendoNumericTextBox").enable(true);
-                $("#POBox").prop("readonly", false);
-                $("#City").prop("readonly", false);
-                $("#SubCity").prop("readonly", false);
-                $("#Woreda").prop("readonly", false);
-                $("#CustomerDescription").prop("readonly", false);
+                $("#BrandName").prop("readonly", false);
+                $("#TinNo").prop("readonly", false);
 
-                $("#EstimationId").data("kendoDropDownList").value(0);//.trigger("change");
+                $("#EstimationFormId").data("kendoDropDownList").value(0);//.trigger("change");
                 $("#CustomerName").val("");
                 $("#ContactName").val("");
                 $("#ContactPhone").val("");
@@ -259,36 +238,20 @@
 
             $("#CustomerId").data("kendoDropDownList").enable(true);
             $("#CustomerName").prop("readonly", true);
-            $("#ContactName").prop("readonly", true);
-            $("#ContactPhone").prop("readonly", true);
-            $("#CustomerVAT").data("kendoNumericTextBox").enable(false);
-            $("#CustomerMargin").data("kendoNumericTextBox").enable(false);
-            $("#CustomerOverHead").data("kendoNumericTextBox").enable(false);
-            $("#POBox").prop("readonly", true);
-            $("#City").prop("readonly", true);
-            $("#SubCity").prop("readonly", true);
-            $("#Woreda").prop("readonly", true);
-            $("#CustomerDescription").prop("readonly", true);
+            $("#BrandName").prop("readonly", true);
+            $("#TinNo").prop("readonly", true);
         }
         else {
 
             $("#CustomerId").data("kendoDropDownList").enable(false);
             $("#CustomerName").prop("readonly", false);
-            $("#ContactName").prop("readonly", false);
-            $("#ContactPhone").prop("readonly", false);
-            $("#CustomerVAT").data("kendoNumericTextBox").enable(true);
-            $("#CustomerMargin").data("kendoNumericTextBox").enable(true);
-            $("#CustomerOverHead").data("kendoNumericTextBox").enable(true);
-            $("#POBox").prop("readonly", false);
-            $("#City").prop("readonly", false);
-            $("#SubCity").prop("readonly", false);
-            $("#Woreda").prop("readonly", false);
-            $("#CustomerDescription").prop("readonly", false);
+            $("#BrandName").prop("readonly", false);
+            $("#TinNo").prop("readonly", false);
 
             $("#EstimationFormId").data("kendoDropDownList").value(0);//.trigger("change");
             $("#CustomerName").val("");
-            $("#ContactName").val("");
-            $("#ContactPhone").val("");
+            $("#BrandName").val("");
+            $("#TinNo").val("");
         }
 
 

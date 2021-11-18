@@ -1,5 +1,6 @@
 ﻿﻿using System;
 using System.Collections.Generic;
+
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
@@ -18,8 +19,10 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
 
         public ActionResult Index()
         {
-            ViewData["Customers"] = db.Customers.ToList();
-
+            ViewData["Customers"] = db.OrganizationCustomers.Select(s => new {
+                Code = s.OrganizationCustomerID,
+                Name = s.TradeName
+            }).ToList();
             return View();
         }
 
@@ -44,12 +47,12 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
         {
             if (ModelState.IsValid)
             {
+                
                 var entity = new FinishedGoods
                 {
                     FinishedGoodReceivingId = id,
                     CodeNo = finishedGoods.CodeNo,
                     Description = finishedGoods.Description,
-                    Unit = finishedGoods.Unit,
                     Quantity = finishedGoods.Quantity,
                     Remark = finishedGoods.Remark
                 };

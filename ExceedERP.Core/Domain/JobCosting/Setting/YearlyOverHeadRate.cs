@@ -11,7 +11,7 @@ namespace ExceedERP.Core.Domain.JobCosting.Setting
     {
         public int YearlyOverHeadRateId { get; set; }
         public int GlFiscalYearId { get; set; }
-        public int CostCenterID { get; set; }
+        public string Values { get; set; }
         public decimal Rate { get; set; }
         public string Description { get; set; }
     }

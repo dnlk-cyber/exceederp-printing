@@ -1,5 +1,6 @@
 ﻿﻿using System;
 using System.Collections.Generic;
+
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
@@ -27,7 +28,7 @@ namespace ExceedERP.Web.Areas.JobCosting.Controllers
             DataSourceResult result = jobmaterialreturns.ToDataSourceResult(request, jobMaterialReturn => new {
                 JobMaterialReturnId = jobMaterialReturn.JobMaterialReturnId,
                 JobCostId = jobMaterialReturn.JobCostId,
-                CostCenterId = jobMaterialReturn.CostCenterId,
+                CostCenter = jobMaterialReturn.CostCenter,
                 GlFiscalYearId = jobMaterialReturn.GlFiscalYearId,
                 GLPeriodId = jobMaterialReturn.GLPeriodId,
                 Date = jobMaterialReturn.Date,
@@ -100,7 +101,7 @@ namespace ExceedERP.Web.Areas.JobCosting.Controllers
             {
                 JobMaterialReturnId = jobMaterialReturn.JobMaterialReturnId,
                 JobCostId = jobMaterialReturn.JobCostId,
-                CostCenterId = jobMaterialReturn.CostCenterId,
+                CostCenter = jobMaterialReturn.CostCenter,
                 GlFiscalYearId = jobMaterialReturn.GlFiscalYearId,
                 GLPeriodId = jobMaterialReturn.GLPeriodId,
                 Date = jobMaterialReturn.Date,

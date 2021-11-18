@@ -1,5 +1,6 @@
 ﻿﻿using System;
 using System.Collections.Generic;
+
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
@@ -27,7 +28,7 @@ namespace ExceedERP.Web.Areas.JobCosting.Controllers
             DataSourceResult result = joblaborcosts.ToDataSourceResult(request, jobLaborCost => new {
                 JobLaborCostId = jobLaborCost.JobLaborCostId,
                 JobCostId = jobLaborCost.JobCostId,
-                CostCenterId = jobLaborCost.CostCenterId,
+                CostCenter = jobLaborCost.CostCenter,
                 GlFiscalYearId = jobLaborCost.GlFiscalYearId,
                 GLPeriodId = jobLaborCost.GLPeriodId,
                 Reference = jobLaborCost.Reference,
@@ -101,7 +102,7 @@ namespace ExceedERP.Web.Areas.JobCosting.Controllers
             {
                 JobLaborCostId = jobLaborCost.JobLaborCostId,
                 JobCostId = jobLaborCost.JobCostId,
-                CostCenterId = jobLaborCost.CostCenterId,
+                CostCenter = jobLaborCost.CostCenter,
                 GlFiscalYearId = jobLaborCost.GlFiscalYearId,
                 GLPeriodId = jobLaborCost.GLPeriodId,
                 Reference = jobLaborCost.Reference,

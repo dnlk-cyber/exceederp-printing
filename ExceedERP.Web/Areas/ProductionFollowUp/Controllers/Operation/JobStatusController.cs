@@ -1,5 +1,6 @@
 ﻿﻿using System;
 using System.Collections.Generic;
+
 using System.Data.Entity;
 using System.Linq;
 using System.Net;
@@ -94,7 +95,7 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
             {
                 JobStatusId = jobStatus.JobStatusId,
                 JobId = jobStatus.JobId,
-                UserId = jobStatus.UserId,
+                UserId = User.Identity.Name,
                 Time = jobStatus.Time,
                 Date = jobStatus.Date,
                 JobPhase = jobStatus.JobPhase,
