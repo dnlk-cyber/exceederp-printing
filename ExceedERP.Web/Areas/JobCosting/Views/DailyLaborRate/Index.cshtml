@@ -8,7 +8,7 @@
 .Title("Cost Center").Width(120);
               columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["FiscalYears"], "GlFiscalYearId", "Name")
 .Title("Fiscal Year").Width(90);
-              columns.ForeignKey(c => c.GLPeriodId, (IEnumerable)ViewData["Periods"], "GLPeriodId", "PeriodName")
+              columns.ForeignKey(c => c.GLPeriodId, (IEnumerable)ViewData["Periods"], "GLPeriodId", "Name")
 .EditorTemplateName("YearCascading").Title("Month").Width(90);
               columns.Bound(c => c.TotalSalary).EditorTemplateName("ReadOnlyTemplate").Width(90);
               columns.Bound(c => c.TotalExpectedHour).EditorTemplateName("ReadOnlyTemplate").Title("Expected Hour").Width(90);
