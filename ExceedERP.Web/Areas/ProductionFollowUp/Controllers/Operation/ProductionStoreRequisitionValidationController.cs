@@ -24,7 +24,7 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
 
         public ActionResult Index()
         {
-            return View();
+            return View(); 
         }
 
 

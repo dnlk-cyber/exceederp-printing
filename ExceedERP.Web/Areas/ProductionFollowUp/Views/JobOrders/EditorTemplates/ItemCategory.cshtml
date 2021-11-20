@@ -7,7 +7,7 @@
         //    .BindTo((IEnumerable)ViewData["Items"])
         .DataSource(dataSource =>
         {
-            dataSource.Read(read => read.Action("GetItemCategory", "DataProvider", new { area = "Inventory" }));
+            dataSource.Read(read => read.Action("GetItemCategory", "ProductionDataProvider"));
             //.ServerFiltering(true);
         })
         .Filter("contains")

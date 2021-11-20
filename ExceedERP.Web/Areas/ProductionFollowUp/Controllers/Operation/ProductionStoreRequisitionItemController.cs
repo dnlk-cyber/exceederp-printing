@@ -19,7 +19,7 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
         private ExceedDbContext db = new ExceedDbContext();
 
         public ActionResult Index()
-        {
+        {  
             return View();
         }
 
@@ -29,9 +29,9 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
         {
             IQueryable<StoreRequisitionItem> storerequisitionItems = db.StoreRequisitionItems.Where(p => p.StoreRequisitionID == id);
             DataSourceResult result = storerequisitionItems.ToDataSourceResult(request, storeRequisitionItem => new {
-                
-                ProductionStoreRequisitionItemID = storeRequisitionItem.StoreRequisitionItemID,
-                ProductionStoreRequisitionID = storeRequisitionItem.StoreRequisitionID,
+
+                StoreRequisitionItemID = storeRequisitionItem.StoreRequisitionItemID,
+                StoreRequisitionID = storeRequisitionItem.StoreRequisitionID,
                 ItemCategoryCode = storeRequisitionItem.ItemCategoryCode,
                 ItemCode = storeRequisitionItem.ItemCode,
                 PartNo = storeRequisitionItem.PartNo,

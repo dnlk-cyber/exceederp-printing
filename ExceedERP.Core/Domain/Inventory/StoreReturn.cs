@@ -37,6 +37,8 @@ namespace ExceedERP.Core.Domain.Inventory
         public virtual ICollection<StoreReturnValidation> StoreReturnValidation { get; set; }
         public virtual ICollection<StoreReturnDistribution> StoreReturnDistribution { get; set; }
         public virtual ICollection<StoreReturnAttachment> StoreReturnAttachments { get; set; }
+        public string IssueNumber { get; set; }
+        public string JobOrderId { get; set; }
     }
     public class StoreReturnItems : TrackUserOperation
     {

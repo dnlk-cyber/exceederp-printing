@@ -99,7 +99,6 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
             //IQueryable<StoreRequisition> storerequisitions = db.StoreRequisitions.Where(x => x.IsFuel == false).Where(x => mybraches.Contains(x.OrgBranchName));
             var job = _db.Jobs.Where(q=>q.JobId == id).FirstOrDefault()?.JobId;
             var storeRequisitions = _db.StoreRequisitions.Where(q=>q.JobOrderNo == job.ToString()).Where(x => x.IsFuel == false)
-                //.Where(q=>q.IsForMaintenance==true)
                 .AsQueryable();
 
             //if (System.Web.HttpContext.Current.User.IsInRole(InventoryConstants.UserDepartment)
@@ -448,7 +447,6 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                 var entity = new StoreRequisition
                     {
                         StoreRequisitionID = storeRequisition.StoreRequisitionID,
-                    Reference = storeRequisition.Reference,
                         BranchId = storeRequisition.BranchId,
                         OrgStructureId = storeRequisition.OrgStructureId,
                         EmployeeId = storeRequisition.EmployeeId,

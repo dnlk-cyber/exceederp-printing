@@ -1,7 +1,6 @@
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.Core.Domain.Procurement;
-using ExceedERP.Core.Domain.Production;
 using ExceedERP.Core.Domain.ProductionFollowUp;
 using ExceedERP.DataAccess.Context;
 using Kendo.Mvc.Extensions;

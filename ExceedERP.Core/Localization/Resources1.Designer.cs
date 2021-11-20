@@ -2743,6 +2743,15 @@ namespace ExceedERP.Core.Localization {
         }
         
         /// <summary>
+        ///   Looks up a localized string similar to OLD_JOB_TITLE.
+        /// </summary>
+        public static string Enum_LookUpTypes_OLD_JOB_TITLE {
+            get {
+                return ResourceManager.GetString("Enum_LookUpTypes_OLD_JOB_TITLE", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   Looks up a localized string similar to OTHER_BENEFIT.
         /// </summary>
         public static string Enum_LookUpTypes_OTHER_BENEFIT {

@@ -66,7 +66,10 @@
                               {
                                   model.Id(f => f.FinishedGoodsStoreReceiveId);
                               })
-
+                              .Sort(sort =>
+                                    {
+                                        sort.Add(l => l.FinishedGoodsStoreReceiveId).Descending();
+                                    })
                               .Read(read => read.Action("StoreReceives_Read", "PrintingProductionStoreReceive"))
                               .Create(create => create.Action("StoreReceive_Create", "PrintingProductionStoreReceive"))
                               .Update(update => update.Action("StoreReceive_Update", "PrintingProductionStoreReceive"))
