@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 
 using System.Data.Entity;
@@ -60,8 +60,7 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
             ViewData["Category"] = categories;
             ViewData["defaultCategory"] = categories.FirstOrDefault();
 
-            var store = db.InventoryStores.AsQueryable();
-            ViewData["storesInCompany"] = store;
+         
 
             var employee = db.Person_Employee;
             var selectedEmployee = employee.Select(
@@ -83,8 +82,42 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
             
             ViewBag.data = GetData();
 
+            PopulateViewData();
             return View();
         }
+
+        private void PopulateViewData()
+        {
+            var categories = db.ItemCategorys;
+            var items = db.InventoryItems;
+            var stores = db.InventoryStores;
+            var branches = db.Branch;
+            var costCenter = db.BranchCostCenter;
+            var selectedcostCenter = costCenter.Select(
+              i => new
+              {
+                  Name = i.MainCompanyStructure.Name,
+                  Code = i.OrgStructureId
+              }).AsQueryable();
+
+            var inventoryPeriods = db.InventoryPeriods;
+            
+
+            ViewData["costCenters"] = selectedcostCenter;
+            ViewData["stores"] = stores;
+            ViewData["Branches"] = branches;
+            var selecteditems = items.Select(
+                i => new
+                {
+                    Name = i.ItemCode + "_" + i.Name,
+                    ItemCode = i.ItemCode
+                }).ToList();
+            ViewData["Items"] = selecteditems;
+            ViewData["Category"] = categories;
+
+            ViewData["defaultCategory"] = categories.FirstOrDefault();
+        }
+
         public JsonResult GetAllJobOrders()
         {
             var data = db.Jobs;
@@ -375,7 +408,7 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                 Estimatedby = job.Estimatedby,
                 Code = job.Code,
                 Approvedby = job.Approvedby,
-                JobTypeId = job.JobTypeId,
+                JobTypeId =  job.JobTypeId,
                 BeforeTax = job.BeforeTax,
                 UnitPrice = job.UnitPrice,
                 Quant = job.Quant,
@@ -419,7 +452,7 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                 DropDownTreeItemModel jobType = new DropDownTreeItemModel();
                 List<DropDownTreeItemModel> jobTypes = new List<DropDownTreeItemModel>();
 
-                var childs = db.JobCategories.Where(q => q.ParentId == jobCategory.JobCategoryId).ToList();
+                var childs = db.JobCategories.Where(q => q.ParentId == jobCategory.JobCategoryId&&q.HaveParent).ToList();
                 foreach (var child in childs)
                 {
                     i++;
@@ -430,6 +463,7 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                     jobTypes.Add(prt);
                 }
                 jobType.Text = jobCategory.JobName;
+                jobType.HasChildren = true;
 
                 jobType.Value = jobCategory.JobCategoryId.ToString();
                 jobType.Items = jobTypes;

@@ -11,7 +11,6 @@ using System.Threading.Tasks;
 namespace ExceedERP.Reporting.PrintingEstimation.DataSource
 {
     [DataObject]
-
     public class EstimationFormOds
     {
         private readonly ExceedDbContext db = new ExceedDbContext();

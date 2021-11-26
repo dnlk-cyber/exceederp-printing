@@ -4,7 +4,7 @@
               .Columns(columns =>
               {
                   columns.ForeignKey(c => c.YearId, (IEnumerable)ViewData["FiscalYears"], "GlFiscalYearId", "Name").Title("Year");
-                  columns.ForeignKey(c => c.PeriodId, (IEnumerable)ViewData["Periods"], "GLPeriodId", "PeriodName").EditorTemplateName("YearCascading").Title("Month");
+                  columns.ForeignKey(c => c.PeriodId, (IEnumerable)ViewData["Periods"], "GLPeriodId", "Name").EditorTemplateName("YearCascading").Title("Month");
 
                   columns.Command(command =>
                   {

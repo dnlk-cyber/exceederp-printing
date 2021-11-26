@@ -1145,7 +1145,11 @@
     <Compile Include="Domain\Production\SellingPriceModels.cs" />
     <Compile Include="Domain\Production\SettingModels.cs" />
     <Compile Include="Localization\Resources.am.Designer.cs" />
-    <Compile Include="Localization\Resources.Designer.cs" />
+    <Compile Include="Localization\Resources1.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -1164,7 +1168,10 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Localization\Resources.am.resx" />
-    <EmbeddedResource Include="Localization\Resources.resx" />
+    <EmbeddedResource Include="Localization\Resources.resx">
+      <Generator>PublicResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources1.Designer.cs</LastGenOutput>
+    </EmbeddedResource>
     <EmbeddedResource Include="Localization\Resources.ti.resx" />
   </ItemGroup>
   <ItemGroup>

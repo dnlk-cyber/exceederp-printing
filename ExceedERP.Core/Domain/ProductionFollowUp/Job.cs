@@ -37,6 +37,9 @@ namespace ExceedERP.Core.Domain.ProductionFollowUp
         [Display(Name = "Tin No ")]
         public string TinNo { get; set; }
 
+
+
+
         [Display(Name = "Job Type")]
         public int JobTypeId { get; set; }
         [Display(Name = "Pages")]

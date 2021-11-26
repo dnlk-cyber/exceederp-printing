@@ -18,6 +18,95 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
         {
             return View();
         }
+        public JsonResult GetItemCategory()
+        {
+            var itemCategory = db.ItemCategorys
+                .Where(x => x.HaveParent == false)
+                .ToList();//exclude sub categories
+            return Json(itemCategory.Select(p => new
+            {
+                Name = p.ItemCategoryCode + "-" + p.Name,
+                ItemCategoryCode = p.ItemCategoryCode
+            }),
+                JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult GetPeriodDateRangeById(int id)
+        {
+
+            var glPeriod = db.InventoryPeriods.Find(id);
+            if (glPeriod != null)
+            {
+                var formattedData = new
+                {
+                    Min = glPeriod.DateFrom,
+                    Max = glPeriod.DateTo
+                };
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+
+            }
+
+            return null;
+        }
+
+        public JsonResult GetWorkUnitCostCenters()
+        {
+            var costCenter = db.MainCompanyStructures;
+            return
+                Json(
+                    costCenter.Select(
+                        i => new
+                        {
+                            Name = i.Name,
+                            Code = i.OrgStructureId
+                        }), JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult GetStoreByKeeper()
+        {
+            //List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
+            //var store = db.InventoryStores.Where(x => mybraches.Contains(x.BranchId.ToString())).Where(x => x.Enable).AsQueryable();
+
+            // List<string> userStores = UserInformationHelper.GetUserStores(User.Identity.Name);
+            var store = db.InventoryStores.Where(x => x.Enable).AsQueryable();
+
+            return Json(store.Select(p => new
+            {
+                StoreCode = p.StoreCode,
+                Name = p.StoreCode + "-" + p.Name
+            }), JsonRequestBehavior.AllowGet);
+
+        }
+
+        public JsonResult GetItemsUnderCategory(string ItemCategoryCode)
+        {
+
+            var inventoryItems = db.InventoryItems.Where(q => q.ItemCategoryCode == ItemCategoryCode).ToList().Select(s => new
+            {
+
+                s.ItemCode,
+                s.Name
+            });
+            return Json(inventoryItems, JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult GetAllStoresByBranch(string BranchId)
+        {
+            var store = db.InventoryStores.Where(x => x.Enable && x.BranchId.ToString() == BranchId).AsQueryable();
+            return Json(store.Select(p => new
+            {
+                StoreCode = p.StoreCode,
+                Name = p.StoreCode + "-" + p.Name
+            }), JsonRequestBehavior.AllowGet);
+
+        }
+
+        public JsonResult GetUnitPrice(string itemCode)
+        {
+            var item = db.StoreItemAssignments.Where(q=>q.ItemCode== itemCode).FirstOrDefault();
+
+            return Json(new { item .ItemCode, item.AvgPrice } , JsonRequestBehavior.AllowGet);
+        }
         public JsonResult GetAllBranches()
         {
             var branches = db.Branch.Select(s => new

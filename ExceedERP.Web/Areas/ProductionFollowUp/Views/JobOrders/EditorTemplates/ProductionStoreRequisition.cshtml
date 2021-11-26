@@ -77,7 +77,7 @@
                                                                                                                                        .CascadeFrom("BranchId")
                                                                                                                                       .DataSource(dataSource =>
                                                                                                                                       {
-                                                                                                                                          dataSource.Read(read => read.Action("GetAllStoresByBranch", "DataProvider", new { area = "Inventory" }).Data("filterStoresByBranch"))
+                                                                                                                                          dataSource.Read(read => read.Action("GetAllStoresByBranch", "ProductionDataProvider").Data("filterStoresByBranch"))
                                                                                                                                               .ServerFiltering(true);
                                                                                                                                       })
                     )
