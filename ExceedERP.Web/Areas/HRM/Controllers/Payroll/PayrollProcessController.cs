@@ -17283,6 +17283,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                     return new JavaScriptResult() { Script = "alert('" + message + "');" };
                 }
                 #endregion
+                string sourceid = gLPeriod.GlFiscalYearId + "-" + gLPeriod.GLPeriodId + "-" + branchId.ToString();
                 if (distribution.Any())
                 {
                     GlRecordJournal journal = new GlRecordJournal
@@ -17322,8 +17323,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                             OrgBranchName = defaultBranch,
                             CreatedBy = User.Identity.Name,
                             GLRecordJournal = journal,
-                            AccountCode = i.AccountCode,
-                            AccountDesc = accountHelper.GetAccountDesc(i.AccountCode),
+                            AccountCode = i.AccountCode.Trim(),
+                            AccountDesc = accountHelper.GetAccountDesc(i.AccountCode.Trim()),
                             Debit = Math.Round(i.Debit, 4),
                             Credit = Math.Round(i.Credit, 4)
                         };
@@ -17334,19 +17335,18 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                         //check if this is bank account
                         if (accountHelper.IsBankAccount(i.AccountCode))
                         {
-                            string sourceid = gLPeriod.GlFiscalYearId + "-" + gLPeriod.GLPeriodId;
                             var book = new ReconciliationBookAccount
                             {
                                 CreatedBy = User.Identity.Name,
                                 DateCreated = DateTime.Now,
-                                AccountCode = i.AccountCode,
+                                AccountCode = i.AccountCode.Trim(),
                                 Debit = i.Debit,
                                 Credit = i.Credit,
                                 Date = gLPeriod.DateTo.Date,
                                 Type = "Payroll",
-                                ReferenceDoc = "",
-                                Reference = "",
-                                Source =JournalSources.Payroll.ToString(),
+                                ReferenceDoc = $"Payroll {id} {branchId}",
+                                Reference = $"Payroll {id} {branchId}",
+                                Source = JournalSources.Payroll.ToString(),
                                 SourceID = sourceid,
                                 AccountSegment = accountHelper.GetNaturalAccountSegment(i.AccountCode),
                                 SubAccountSegment = accountHelper.GetSubAccountSegment(i.AccountCode)
