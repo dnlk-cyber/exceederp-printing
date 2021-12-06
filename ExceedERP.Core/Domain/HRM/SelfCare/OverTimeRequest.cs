@@ -37,6 +37,14 @@ namespace ExceedERP.Core.Domain.HRM.SelfCare
         public DateTime ToTime { get; set; }
         [Display(Name = "HR_SelfCare_OverTimeRequest_Description", ResourceType = typeof(Localization.Resources))]
         public string Description { get; set; }
+        public OverTimeType Type { get; set; }
+    }
 
+    public enum OverTimeType
+    {
+        Norma_lHour,
+        Night_Hour,
+        Holiday_Hour,
+        Rest_Day_Hour
     }
 }
