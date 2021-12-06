@@ -5100,6 +5100,7 @@
     <Content Include="Areas\ProductionFollowUp\Views\ProductDeliveries\EditorTemplates\Issue.cshtml" />
     <Content Include="Areas\ProductionFollowUp\Views\ProductDeliveries\EditorTemplates\IssueItem.cshtml" />
     <Content Include="Areas\ProductionFollowUp\Views\ProductDeliveries\EditorTemplates\ValidationStatus.cshtml" />
+    <Content Include="Areas\HRM\Views\LeaveEntitle\EditorTemplates\LeaveEntitlePop.cshtml" />
     <None Include="Properties\PublishProfiles\Brana.pubxml" />
     <None Include="Properties\PublishProfiles\mega.pubxml" />
     <None Include="Scripts\kendo\2018.3.911\kendo.all-vsdoc.js" />

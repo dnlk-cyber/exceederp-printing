@@ -598,9 +598,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                                                 // we add 1 to the previous entitle amount
                                                 //decimal amount = leaveEntitlePrevNotAdded.Amount + 1;
 
-
-                                                entitle.Amount = amount;
-                                                entitle.Balance = amount;
+                                                // the reason i substrac 1 from amount is because the when we add the experience the year adds 2 day
+                                                entitle.Amount = amount - 1;
+                                                entitle.Balance = amount - 1;
                                                 entitle.IsAdded = true;
                                                 entitle.GlFiscalYearId = currentPeriod.GlFiscalYearId;
                                                 entitle.DateCreated = DateTime.Now;
@@ -665,8 +665,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                                             // we add 1 to the previous entitle amount
                                             //decimal amount = leaveEntitlePrevNotAdded.Amount + 1;
 
-                                            entitle.Amount = amount;
-                                            entitle.Balance = amount;
+                                            entitle.Amount = amount - 1;
+                                            entitle.Balance = amount - 1;
                                             entitle.IsAdded = true;
                                             entitle.GlFiscalYearId = currentPeriod.GlFiscalYearId;
                                             entitle.DateCreated = DateTime.Now;
@@ -971,10 +971,26 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
 
                 var leaveThrashold = db.Configurations.FirstOrDefault(x => x.Attribute == LeaveSetting.LEAVE_ENTITLE_THRESHOLD.ToString());
 
-                if (person.HiredDate <= currentPeriod.DateFrom)
+                var startDate = db.LeaveEntitleStartingDates.FirstOrDefault();
+                if (startDate != null)
                 {
-                    totalDays = (currentPeriod.DateFrom - person.HiredDate).Days;
+                    if (startDate.Start == LeaveEntitleStarting.Fiscal_Year_Initial_Date)
+                    {
+                        if (person.HiredDate <= currentPeriod.DateFrom)
+                        {
+                            totalDays = (currentPeriod.DateFrom - person.HiredDate).Days;
+                        }
+                    }
+                    else if (startDate.Start == LeaveEntitleStarting.Fiscal_Year_End_Date)
+                    {
+                        if (person.HiredDate <= currentPeriod.DateTo)
+                        {
+                            totalDays = (currentPeriod.DateTo - person.HiredDate).Days;
+                        }
+                    }
+
                 }
+
 
                 var totalYears = Math.Truncate(totalDays / 365);
                 var totalMonths = Math.Truncate((totalDays % 365) / 30);
@@ -1093,7 +1109,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
         {
             List<int> employees = GetActiveEmployeeFromCurrentUserBranch(User.Identity.Name);
 
-            var leavesentitle = db.LeavesEntitle.Where(x => employees.Contains(x.EmployeeId) && !x.IsExpired).DistinctByField(x => x.EmployeeId).OrderBy(o => o.GlFiscalYearId);
+            var leavesentitle = db.LeavesEntitle.DistinctByField(x => x.EmployeeId).Where(x => employees.Contains(x.EmployeeId) && !x.IsExpired).Select(x => new { x.LeaveEntitleId, x.EmployeeId, x.EmployeeCode, x.BranchId, x.HireDate, x.TotlalAmount, x.SumOfBalances }).ToList();
 
             DataSourceResult result = leavesentitle.ToDataSourceResult(request, leaveEntitle => new
             {
@@ -1101,23 +1117,23 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                 EmployeeId = leaveEntitle.EmployeeId,
                 Balance = GetTotalBalance(leaveEntitle.EmployeeId),
                 BranchId = GetBranch(leaveEntitle.EmployeeId),
-                GlFiscalYearId = leaveEntitle.GlFiscalYearId,
+                // GlFiscalYearId = leaveEntitle.GlFiscalYearId,
                 Amount = GetTotalEntitlement(leaveEntitle.EmployeeId),
-                Remark = leaveEntitle.Remark,
-                DateCreated = leaveEntitle.DateCreated,
-                LastModified = leaveEntitle.LastModified,
-                CreatedBy = leaveEntitle.CreatedBy,
-                ModifiedBy = leaveEntitle.ModifiedBy,
+                // Remark = leaveEntitle.Remark,
+                //  DateCreated = leaveEntitle.DateCreated,
+                //  LastModified = leaveEntitle.LastModified,
+                //  CreatedBy = leaveEntitle.CreatedBy,
+                // ModifiedBy = leaveEntitle.ModifiedBy,
                 EmployeeCode = GetEmployeeCode(leaveEntitle.EmployeeId),
                 TotlalAmount = leaveEntitle.TotlalAmount,
-                OrgBranchName = leaveEntitle.OrgBranchName,
-                ExpiredBy = leaveEntitle.ExpiredBy,
-                ExpiredDate = leaveEntitle.ExpiredDate,
-                ReversedBy = leaveEntitle.ReversedBy,
-                Void = leaveEntitle.Void,
-                ReversedDate = leaveEntitle.ReversedDate,
+                //  OrgBranchName = leaveEntitle.OrgBranchName,
+                //  ExpiredBy = leaveEntitle.ExpiredBy,
+                // ExpiredDate = leaveEntitle.ExpiredDate,
+                // ReversedBy = leaveEntitle.ReversedBy,
+                //  Void = leaveEntitle.Void,
+                // ReversedDate = leaveEntitle.ReversedDate,
                 SumOfBalances = GetTotalBalance(leaveEntitle.EmployeeId),
-                HireDate = leaveEntitle.Employee.HiredDate.ToShortDateString()
+                // HireDate = leaveEntitle.Employee.HiredDate.ToShortDateString()
 
             });
 
@@ -1125,7 +1141,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
         }
         public ActionResult LeavesEntitle_OnePerson_Read([DataSourceRequest]DataSourceRequest request, int id)
         {
-            IQueryable<LeaveEntitle> leavesentitle = db.LeavesEntitle.Where(x => x.EmployeeId == id && !x.IsExpired);//.Where(x => employees.Contains(x.EmployeeId) && !x.IsExpired).OrderBy(o => o.GlFiscalYearId);
+            var leavesentitle = db.LeavesEntitle.Where(x => x.EmployeeId == id && !x.IsExpired).Select(x => new { x.LeaveEntitleId, x.EmployeeId, x.Amount, x.Balance, x.GlFiscalYearId, x.Remark }).ToList();
             DataSourceResult result = leavesentitle.ToDataSourceResult(request, leaveEntitle => new
             {
                 LeaveEntitleId = leaveEntitle.LeaveEntitleId,
@@ -1133,13 +1149,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
                 Balance = leaveEntitle.Balance,
                 GlFiscalYearId = leaveEntitle.GlFiscalYearId,
                 Amount = leaveEntitle.Amount,
-                TotlalAmount = leaveEntitle.TotlalAmount,
-                OrgBranchName = leaveEntitle.OrgBranchName,
-                ExpiredBy = leaveEntitle.ExpiredBy,
-                ExpiredDate = leaveEntitle.ExpiredDate,
-                ReversedBy = leaveEntitle.ReversedBy,
-                Void = leaveEntitle.Void,
-                ReversedDate = leaveEntitle.ReversedDate,
             });
 
             return Json(result);
@@ -1155,64 +1164,64 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
             {
                 ModelState.AddModelError("", "Balance can't exceed entitle amount");
             }
+
             var maximumLeave = db.Configurations.FirstOrDefault(c => c.Attribute == LeaveSetting.MAXIMUM_LEAVE_ENTITLEMENT.ToString());
-            if (maximumLeave != null && (leaveEntitle.Balance > Convert.ToDecimal(maximumLeave.CurrentValue) || leaveEntitle.Amount > Convert.ToDecimal(maximumLeave.CurrentValue)))
+            if (maximumLeave != null)
             {
-                ModelState.AddModelError("", "Entitle amount can't exceed leave maximum setting");
+                if (leaveEntitle.Balance > Convert.ToDecimal(maximumLeave.CurrentValue) || leaveEntitle.Amount > Convert.ToDecimal(maximumLeave.CurrentValue))
+                {
+                    ModelState.AddModelError("", "Entitle amount can't exceed leave maximum setting");
+                }
             }
+
+            var year = db.LeavesEntitle.FirstOrDefault(x => x.GlFiscalYearId == leaveEntitle.GlFiscalYearId && x.EmployeeId == leaveEntitle.EmployeeId);
+            if (year != null)
+            {
+                ModelState.AddModelError("", "Cannot Register more than once per ayear");
+            }
+
             if (ModelState.IsValid)
             {
-
-                var fisicalYear = db.GLFiscalYears.Find(leaveEntitle.GlFiscalYearId);
-                var year = db.LeavesEntitle.Where(x => x.GlFiscalYearId == fisicalYear.GlFiscalYearId && x.EmployeeId == leaveEntitle.EmployeeId).FirstOrDefault();
-                if (year != null)
+                var branch = db.Placements.FirstOrDefault(x => x.EmployeeId == leaveEntitle.EmployeeId && x.isCurrent);
+                if (branch != null)
                 {
-                    ModelState.AddModelError("", "Cannot Register more than once per ayear");
+                    leaveEntitle.BranchId = branch.BranchId;
                 }
-                else
+                var employee = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == leaveEntitle.EmployeeId);
+                if (employee != null)
                 {
-                    var branchId = 0;
-
-                    var branch = db.Placements.FirstOrDefault(x => x.EmployeeId == leaveEntitle.EmployeeId && x.isCurrent);
-                    if (branch != null)
-                    {
-                        branchId = branch.BranchId;
-                    }
-
-                    var entity = new LeaveEntitle
-                    {
-                        EmployeeId = leaveEntitle.EmployeeId,
-                        BranchId = branchId,
-                        TotlalAmount = leaveEntitle.TotlalAmount,
-                        GlFiscalYearId = leaveEntitle.GlFiscalYearId,
-                        Amount = leaveEntitle.Amount,
-                        Balance = leaveEntitle.Balance,
-                        Remark = leaveEntitle.Remark,
-                        DateCreated = DateTime.Now,
-                        LastModified = leaveEntitle.LastModified,
-                        CreatedBy = User.Identity.Name,
-                        ModifiedBy = leaveEntitle.ModifiedBy,
-                        EmployeeCode = inputs.GetEmployees().Where(x => x.PersonId == leaveEntitle.EmployeeId).FirstOrDefault().EmployeeCode,
-
-                        OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name),
-                    };
-                    entity.TotlalAmount = entity.Amount + GetTransfreedAmmount(leaveEntitle.GlFiscalYearId, leaveEntitle.EmployeeId);
-                    db.LeavesEntitle.Add(entity);
-                    db.SaveChanges();
-                    leaveEntitle.LeaveEntitleId = entity.LeaveEntitleId;
-
-                    #region operation log
-                    var person = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == entity.EmployeeId);
-                    if (person != null)
-                    {
-                        var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-
-                        UserHelper.OperationLog(Request.UserHostAddress, "Leave Entitle", "Success", User.Identity.Name, "Leave Entitle for " + person.EmployeeCode + " is Created By  " + User.Identity.Name, Modules.HRM);
-
-                    }
-                    #endregion
-
+                    leaveEntitle.EmployeeCode = employee.EmployeeCode;
                 }
+
+                var entity = new LeaveEntitle
+                {
+                    EmployeeId = leaveEntitle.EmployeeId,
+                    BranchId = leaveEntitle.BranchId,
+                    TotlalAmount = leaveEntitle.TotlalAmount,
+                    GlFiscalYearId = leaveEntitle.GlFiscalYearId,
+                    Amount = leaveEntitle.Amount,
+                    Balance = leaveEntitle.Balance,
+                    Remark = leaveEntitle.Remark,
+                    DateCreated = DateTime.Now,
+                    LastModified = leaveEntitle.LastModified,
+                    CreatedBy = User.Identity.Name,
+                    ModifiedBy = leaveEntitle.ModifiedBy,
+                    EmployeeCode = leaveEntitle.EmployeeCode,
+                    OrgBranchName = UserInformationHelper.GetUserDefaultBranch(User.Identity.Name),
+                };
+
+                entity.TotlalAmount = entity.Amount + GetTransfreedAmmount(leaveEntitle.GlFiscalYearId, leaveEntitle.EmployeeId);
+
+                db.LeavesEntitle.Add(entity);
+                db.SaveChanges();
+
+                leaveEntitle.LeaveEntitleId = entity.LeaveEntitleId;
+
+                #region operation log
+
+                UserHelper.OperationLog(Request.UserHostAddress, "Leave Entitle", "Success", User.Identity.Name, "Leave Entitle for " + entity.EmployeeCode + " is Created By  " + User.Identity.Name, Modules.HRM);
+
+                #endregion
             }
             return Json(new[] { leaveEntitle }.ToDataSourceResult(request, ModelState));
 
@@ -1243,47 +1252,19 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
             }
             if (ModelState.IsValid)
             {
-                var branchId = 0;
-
-                var branch = db.Placements.FirstOrDefault(x => x.EmployeeId == leaveEntitle.EmployeeId && x.isCurrent);
-                if (branch != null)
+                var entitle = db.LeavesEntitle.FirstOrDefault(x => x.LeaveEntitleId == leaveEntitle.LeaveEntitleId);
+                if (entitle != null)
                 {
-                    branchId = branch.BranchId;
+                    entitle.Amount = leaveEntitle.Amount;
+                    entitle.Balance = leaveEntitle.Balance;
+
+                    db.Entry(entitle).State = EntityState.Modified;
+                    db.SaveChanges();
+
+                    #region operation log
+                    UserHelper.OperationLog(Request.UserHostAddress, "Leave Entitle", "Success", User.Identity.Name, "Leave Entitle of " + entitle.EmployeeCode + " is Updated By  " + User.Identity.Name, Modules.HRM);
+                    #endregion
                 }
-
-                var entity = new LeaveEntitle
-                {
-                    LeaveEntitleId = leaveEntitle.LeaveEntitleId,
-                    EmployeeId = leaveEntitle.EmployeeId,
-                    BranchId = branchId,
-                    Balance = leaveEntitle.Balance,
-                    TotlalAmount = leaveEntitle.TotlalAmount,
-                    GlFiscalYearId = leaveEntitle.GlFiscalYearId,
-                    Amount = leaveEntitle.Amount,
-                    Remark = leaveEntitle.Remark,
-                    DateCreated = leaveEntitle.DateCreated,
-                    LastModified = DateTime.Now,
-                    CreatedBy = leaveEntitle.CreatedBy,
-                    ModifiedBy = User.Identity.Name,
-                    EmployeeCode = inputs.GetEmployees().FirstOrDefault(x => x.PersonId == leaveEntitle.EmployeeId).EmployeeCode,
-                    OrgBranchName = leaveEntitle.OrgBranchName
-                };
-                //
-                entity.TotlalAmount = entity.Amount + GetTransfreedAmmount(leaveEntitle.GlFiscalYearId, leaveEntitle.EmployeeId);
-                db.LeavesEntitle.Attach(entity);
-                db.Entry(entity).State = EntityState.Modified;
-                db.SaveChanges();
-
-                #region operation log
-                var person = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == entity.EmployeeId);
-                if (person != null)
-                {
-                    var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-
-                    UserHelper.OperationLog(Request.UserHostAddress, "Leave Entitle", "Success", User.Identity.Name, "Leave Entitle of " + person.EmployeeCode + " is Updated By  " + User.Identity.Name, Modules.HRM);
-
-                }
-                #endregion
             }
 
             return Json(new[] { leaveEntitle }.ToDataSourceResult(request, ModelState));

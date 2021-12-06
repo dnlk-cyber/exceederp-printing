@@ -23,21 +23,21 @@
               columns.Bound(c => c.Balance).Width(150);
               // columns.Bound(c => c.TotlalAmount).Width(150);
 
-              //  columns.Bound(c => c.Void).Width(100);
-              //  columns.Bound(c => c.HireDate).Width(100);
-              // columns.Bound(c => c.SumOfBalances).Width(100);
+              //columns.Bound(c => c.Void).Width(100);
+              //columns.Bound(c => c.HireDate).Width(100);
+              //columns.Bound(c => c.SumOfBalances).Width(100);
               columns.Bound(c => c.Remark).Width(100);
 
               columns.Command(command =>
               {
-                  if (HttpContext.Current.User.IsInRole("HR_Leave_User"))
-                  {
-                      command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
-                  }
-                  if (HttpContext.Current.User.IsInRole("HR_Admin") || HttpContext.Current.User.IsInRole("HR_Leave_Admin"))
-                  {
-                      command.Destroy().Text(Resources.ActionButton_Cancel);
-                  }
+                  //if (HttpContext.Current.User.IsInRole("HR_Leave_User"))
+                  //{
+                  //    command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                  //}
+                  //if (HttpContext.Current.User.IsInRole("HR_Admin") || HttpContext.Current.User.IsInRole("HR_Leave_Admin"))
+                  //{
+                  //    command.Destroy().Text(Resources.ActionButton_Cancel);
+                  //}
               }).Width(200);
           })
           .ToolBar(toolbar =>
@@ -47,31 +47,27 @@
 <div class="toolbar">
     @if (HttpContext.Current.User.IsInRole("HR_Leave_User"))
                 {
-        @item.CreateButton(Resources.ActionButton_AddNewRecord);
+                @item.CreateButton(Resources.ActionButton_AddNewRecord);
                 }
-    @(Html.Kendo().CheckBox()
-                           .Name("chkIsInclude")
-                           //.HtmlAttributes(new { @checked  = "Check" } )
-                           .Label(Resources.IncludeExternalExperience))
+               @(Html.Kendo().CheckBox()
+                   .Name("chkIsInclude")
+                   //.HtmlAttributes(new { @checked  = "Check" } )
+                   .Label(Resources.IncludeExternalExperience))
 
-    @(Html.Kendo().DropDownList()
-                           .Name("GlFiscalYear")
-
-                           .ValuePrimitive(true)
-                           .OptionLabel(Resources.Select)
-                           .DataTextField("Name")
-                            .DataValueField("GlFiscalYearId")
+              @(Html.Kendo().DropDownList()
+                       .Name("GlFiscalYear")
+                       .ValuePrimitive(true)
+                       .OptionLabel(Resources.Select)
+                       .DataTextField("Name")
+                       .DataValueField("GlFiscalYearId")
                        .Filter("contains")
                        .DataSource(dataSource =>
                        {
-                                     dataSource.Read(read => read.Action("GetFisicalYear", "HRMDataProvider", new { area = "HRM" }))
-                                     .ServerFiltering(false);
+                          dataSource.Read(read => read.Action("GetFisicalYear", "HRMDataProvider", new { area = "HRM" }))
+                          .ServerFiltering(false);
                         }))
 
-
-
-
-    @(Html.Kendo().Button()
+               @(Html.Kendo().Button()
                        .Name("btnRefresh")
                         .HtmlAttributes(new { type = "button", @class = "k-primary" })
                           .Events(e => e.Click("Refresh"))
@@ -87,40 +83,35 @@
     &nbsp;&nbsp;&nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;
 
     @if (HttpContext.Current.User.IsInRole("LeaveExpire"))
-                {
-        @(Html.Kendo().Button()
-
+        {
+                @(Html.Kendo().Button()
                         .Name("btnExpire")
                          .HtmlAttributes(new { type = "button", @class = "k-primary" })
                              .Events(e => e.Click("Expire"))
                               .Content("Expire Leave"))
-                }
+       }
    
     @if (HttpContext.Current.User.IsInRole("LeaveExpireReverse"))
                 {
-        @(Html.Kendo().Button()
-
+                  @(Html.Kendo().Button()
                           .Name("btnReverseExpire")
                            .HtmlAttributes(new { type = "button", @class = "k-primary" })
                                .Events(e => e.Click("ReverseExpire"))
                                 .Content("Reverse Expire Leave"))
-                }
-   
-
+                }  
 
     @if (HttpContext.Current.User.IsInRole("HR_Admin") || HttpContext.Current.User.IsInRole("HR_Leave_Admin"))
-                {
-        @*@item.Pdf(Resources.ActionButton_ExportPDF).HtmlAttributes(new { @class = "btn btn-primary btn-xs pull-right" });*@
-        @item.CustomCommandToolBarButton("Excel", "<span class='k-icon k-i-excel'></span>" + Resources.ActionButton_ExportExcel, "Excel_Export_Save", "Lookups", "", new { @class = "k-button k-button-icontext k-grid-excel btn btn-primary btn-xs pull-right" });
-                }
+        {
+           @*@item.Pdf(Resources.ActionButton_ExportPDF).HtmlAttributes(new { @class = "btn btn-primary btn-xs pull-right" });*@
+           @item.CustomCommandToolBarButton("Excel", "<span class='k-icon k-i-excel'></span>" + Resources.ActionButton_ExportExcel, "Excel_Export_Save", "Lookups", "", new { @class = "k-button k-button-icontext k-grid-excel btn btn-primary btn-xs pull-right" });
+        }
 
-</div>
+          </div>
             </text>);
 
-              
-                })
-                      
-                .Editable(editable => editable.Mode(GridEditMode.InLine))
+          })
+
+                .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("LeaveEntitlePop").Window(window => { window.Title("Leave Entitlement"); window.Scrollable(false); }))
                 .Selectable(selectable =>
                 {
                     selectable.Mode(GridSelectionMode.Single);
@@ -134,11 +125,11 @@
                                 })
                     .Filterable()
                        .Pageable(pageable => pageable
-                                                  .Input(true)
-                                                  .Numeric(false)
-                                                  .Refresh(true)
-                                                  .PageSizes(true)
-                                                  .ButtonCount(5))
+                            .Input(true)
+                            .Numeric(false)
+                            .Refresh(true)
+                            .PageSizes(true)
+                            .ButtonCount(5))
                 .DataSource(dataSource => dataSource
                     .Ajax()
                         .Events(events =>
@@ -153,55 +144,46 @@
                             model.Id(p => p.LeaveEntitleId);
                             model.Field(p => p.EmployeeCode).Editable(false);
                             model.Field(p => p.TotlalAmount).Editable(false);
+                            model.Field(p => p.BranchId).Editable(false);
+                            model.Field(p => p.HireDate).Editable(false);
+                            //model.Field(p => p.Balance).Editable(false);
+                            model.Field(p => p.SumOfBalances).Editable(false);
+                           // model.Field(p => p.Amount).Editable(false);
                         })
                     .Read(read => read.Action("LeavesEntitle_New_Read", "LeaveEntitle"))
-                            .Create(create => create.Action("LeavesEntitle_Create", "LeaveEntitle"))
-                            .Update(update => update.Action("LeavesEntitle_Update", "LeaveEntitle"))
-                    .Destroy(destroy => destroy.Action("LeavesEntitle_Destroy", "LeaveEntitle"))
+                     .Create(create => create.Action("LeavesEntitle_Create", "LeaveEntitle"))
+                     //.Update(update => update.Action("LeavesEntitle_Update", "LeaveEntitle"))
+                    //.Destroy(destroy => destroy.Action("LeavesEntitle_Destroy", "LeaveEntitle"))
                 ).ClientDetailTemplateId("template")
 )
 <script id="template" type="text/kendo-tmpl">
     @(Html.Kendo().TabStrip()
-                                   .Name("tabstrip_#=LeaveEntitleId#")
-                                   .SelectedIndex(0)
-                                   .Items(items =>
-                                   {
-
-                                         items.Add().Text("Entitle Detail").Content(
+             .Name("tabstrip_#=LeaveEntitleId#")
+             .SelectedIndex(0)
+             .Items(items =>
+             {
+             items.Add().Text("Entitle Detail").Content(
                 @<text>
 
                     @(Html.Kendo().Grid<LeaveEntitle>()
-                                                   .Name("LeaveEntitleOld_#=LeaveEntitleId#")
+                                      .Name("LeaveEntitleOld_#=LeaveEntitleId#")
                                        .Columns(columns =>
                                        {
-                                           //columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "PersonId", "FullNameWithOutCode").EditorTemplateName("ListOfEmployee").Width(150);
-                                           // columns.Bound(c => c.EmployeeCode).Width(150);
-                                           //  columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameAmharic").Width(200).EditorTemplateName("EmployeeLists").Filterable(ftb => ftb.Multi(true).Search(true));
-                                           //   columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["PeriodList"], "GlFiscalYearId", "Name").EditorTemplateName("GLYearSelector").Width(80);
-
                                            columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["PeriodList"], "GlFiscalYearId", "Name").Width(150).EditorTemplateName("FiscalYear");//.Filterable(ftb => ftb.Multi(true).Search(true));
-                                                                                                                                                                                                // columns.ForeignKey(c => c.BranchId, (IEnumerable)ViewData["branch"], "BranchId", "Name").Width(150).Title("Branch");//.Filterable(ftb => ftb.Multi(true).Search(true));
-                                           columns.Bound(c => c.Amount).Width(150);
-                                           columns.Bound(c => c.Balance).Width(150);
-                                           // columns.Bound(c => c.TotlalAmount).Width(150);
-
-                                           //  columns.Bound(c => c.Void).Width(100);
-                                           //  columns.Bound(c => c.HireDate).Width(100);
-                                           //  columns.Bound(c => c.SumOfBalances).Width(100);
-
+                                           columns.Bound(c => c.Amount).Width(100);
+                                           columns.Bound(c => c.Balance).Width(100);
                                            columns.Bound(c => c.Remark).Width(100);
-                                           //  columns.Bound(c => c.Remark);
                                            columns.Command(command =>
                                            {
-
+                                               command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit).HtmlAttributes(new { id="btnStyle"});
                                            }).Width(200);
                                        })
-                          .ToolBar(toolbar =>
-                          {
+                             //.ToolBar(toolbar =>
+                             //{
 
-                          })
-                                              .Editable(editable => editable.Mode(GridEditMode.InLine))//.TemplateName("Education").Window(window => { window.Title(Resources.Navigator_Employee_Education); window.Scrollable(false); }))
-                             .Scrollable(h => h.Height(500))
+                             //})
+                             .Editable(editable => editable.Mode(GridEditMode.InLine))//.TemplateName("Education").Window(window => { window.Title(Resources.Navigator_Employee_Education); window.Scrollable(false); }))
+                             .Scrollable(h => h.Height("auto"))
 
                            .DataSource(dataSource => dataSource
                                .Ajax()
@@ -212,36 +194,37 @@
                                             events.RequestEnd("onRequestEnd(\"LeaveEntitleOld_#=LeaveEntitleId#\")");
                                         })
 
-                               .Model(model => model.Id(p => p.LeaveEntitleId))
-                                               .Read(read => read.Action("LeavesEntitle_OnePerson_Read", "LeaveEntitle", new { id = "#=EmployeeId#" }))
-                                               .Create(create => create.Action("LeavesEntitle_Create", "LeaveEntitle", new { id = "#=EmployeeId#" }))
+                               .Model(model =>
+                               {
+                                   model.Id(p => p.LeaveEntitleId);
+                                   model.Field(p => p.GlFiscalYearId).Editable(false);
+                               })
+                                    .Read(read => read.Action("LeavesEntitle_OnePerson_Read", "LeaveEntitle", new { id = "#=EmployeeId#" }))
+                                    //.Create(create => create.Action("LeavesEntitle_Create", "LeaveEntitle", new { id = "#=EmployeeId#" }))
                                     .Update(update => update.Action("LeavesEntitle_Update", "LeaveEntitle"))
-                    .Destroy(destroy => destroy.Action("LeavesEntitle_Destroy", "LeaveEntitle"))
+                               //.Destroy(destroy => destroy.Action("LeavesEntitle_Destroy", "LeaveEntitle"))
                                ).ToClientTemplate()
                     )
                 </text>
 );
 
 
-                                       items.Add().Text(Resources.Details).Content(
+                items.Add().Text(Resources.Details).Content(
                  @<text>
-
                      @(Html.Kendo().PanelBar()
-                                           .Name("panelbar_#=LeaveEntitleId#")
-                                          .ExpandMode(PanelBarExpandMode.Single)
-                                          .Items(panelbar =>
-                                          {
-                                           panelbar.Add().Text("Status")
+                             .Name("panelbar_#=LeaveEntitleId#")
+                             .ExpandMode(PanelBarExpandMode.Single)
+                             .Items(panelbar =>
+                              {
+                              panelbar.Add().Text("Status")
                                .Expanded(true)
                                .Content(
 
-                                    "<div>" +
+                        "<div>" +
                          "<table class='table'>" +
-
                           "<tr>" +
                              "<td>" + "<div class='employee-details'>" +
                                    "<ul>" +
-
                                    "<li><label>" + "Created By " + ": &nbsp; </label>#=CreatedBy #</li>" +
                                    // "<li><label>Title:  </label>#=Title #</li>" +
                                    "<li><label>" + "Created Date " + ":&nbsp;  </label>#=DateCreated #</li>" +
@@ -265,14 +248,20 @@
 
                      )
                  </text>
-                                                                         );
-
-                                           }).ToClientTemplate())
+                    );
+             }).ToClientTemplate())
 </script>
+
+
 
 <style type="text/css">
     div.k-edit-form-container {
-        width: 700px;
+        width: 400px;
+    }
+
+    #btnStyle {
+        padding-top: 2px;
+        padding-bottom: 2px;
     }
 
     .Employee-photo {
