@@ -479,6 +479,7 @@ namespace ExceedERP.DataAccess.Context
             #endregion
 
             #region HRM
+            modelBuilder.Configurations.Add(new LeaveEntitleStartingDateEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new PlacementAfterSystemtEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new MonthlyLeavePlanEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new MonthlyLeavePlanDetailEntityTypeConfiguration());
@@ -2027,6 +2028,7 @@ namespace ExceedERP.DataAccess.Context
         #endregion
 
         #region Leave Management
+        public System.Data.Entity.DbSet<LeaveEntitleStartingDate> LeaveEntitleStartingDates { get; set; }
         public System.Data.Entity.DbSet<LeaveNewAwajStartYear> LeaveNewAwajStartYears { get; set; }
         public System.Data.Entity.DbSet<MonthlyLeavePlan> MonthlyLeavePlans { get; set; }
         public System.Data.Entity.DbSet<MonthlyLeavePlanDetail> MonthlyLeavePlanDetails { get; set; }

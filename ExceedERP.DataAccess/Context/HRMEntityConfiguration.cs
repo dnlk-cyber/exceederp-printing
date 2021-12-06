@@ -34,7 +34,15 @@ namespace ExceedERP.DataAccess
 {
 
     #region HRM
-    
+    public class LeaveEntitleStartingDateEntityTypeConfiguration : EntityTypeConfiguration<LeaveEntitleStartingDate>
+    {
+        public LeaveEntitleStartingDateEntityTypeConfiguration()
+        {
+            this.ToTable("LeaveEntitleStartingDate", "HRM");
+            this.HasKey<int>(o => o.LeaveEntitleStartingDateId);
+        }
+    }
+
     public class EmployeeCodeSequenceSettingEntityTypeConfiguration : EntityTypeConfiguration<EmployeeCodeSequenceSetting>
     {
 

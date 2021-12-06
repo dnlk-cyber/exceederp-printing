@@ -831,6 +831,7 @@
     <Compile Include="Domain\HRM\HRMPlan\TrainingPlan.cs" />
     <Compile Include="Domain\HRM\LeaveManagment\Leave.cs" />
     <Compile Include="Domain\HRM\LeaveManagment\LeaveEntitle.cs" />
+    <Compile Include="Domain\HRM\LeaveManagment\LeaveEntitleStartingDate.cs" />
     <Compile Include="Domain\HRM\LeaveManagment\LeaveManagment.cs" />
     <Compile Include="Domain\HRM\LeaveManagment\LeaveNewAwajStartYear.cs" />
     <Compile Include="Domain\HRM\LeaveManagment\LeavePaid.cs" />
