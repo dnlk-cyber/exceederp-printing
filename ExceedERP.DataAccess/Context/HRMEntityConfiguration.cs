@@ -34,6 +34,15 @@ namespace ExceedERP.DataAccess
 {
 
     #region HRM
+
+    public class EvaluationCriteriaActionTypeEntityTypeConfiguration : EntityTypeConfiguration<EvaluationCriteriaActionType>
+    {
+        public EvaluationCriteriaActionTypeEntityTypeConfiguration()
+        {
+            this.ToTable("EvaluationCriteriaActionType", "Performance");
+            this.HasKey<int>(o => o.EvaluationCriteriaActionTypeId);
+        }
+    }
     public class LeaveEntitleStartingDateEntityTypeConfiguration : EntityTypeConfiguration<LeaveEntitleStartingDate>
     {
         public LeaveEntitleStartingDateEntityTypeConfiguration()

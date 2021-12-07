@@ -867,6 +867,7 @@
     <Compile Include="Domain\HRM\PerformanceManagment\EmployeePerformanceAction.cs" />
     <Compile Include="Domain\HRM\PerformanceManagment\EmployeePerformanceScore.cs" />
     <Compile Include="Domain\HRM\PerformanceManagment\EmpMeasurmentDefinition.cs" />
+    <Compile Include="Domain\HRM\PerformanceManagment\EvaluationCriteriaActionType.cs" />
     <Compile Include="Domain\HRM\PerformanceManagment\Measurement.cs" />
     <Compile Include="Domain\HRM\PerformanceManagment\MeasurementDefinition.cs" />
     <Compile Include="Domain\HRM\PerformanceManagment\PerformanceAction.cs" />

@@ -9,7 +9,7 @@
           .Name("OverTimegrid")
       .Columns(columns =>
       {
-          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "PersonId", "FullName").EditorTemplateName("PayrollListOfEmployee").Width(260);
+          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "PersonId", "FullName").EditorTemplateName("PayrollListOfEmployee").Width(260).Filterable(ftb => ftb.Multi(true).Search(true));
           columns.ForeignKey(c => c.GLPeriodId, (IEnumerable)ViewData["PeriodList"], "GLPeriodId", "Name").EditorTemplateName("GLPeriod").Width(120);
          columns.Bound(c => c.NormalHours).Width (100).Title("Normal.Hr");
         columns.Bound(c => c.NightHours).Width (100).Title ("Night.Hr");
@@ -23,7 +23,7 @@
       })
       .Editable(editable => editable.Mode(GridEditMode.InLine))
         .Scrollable(h => h.Height(500))
-             .Groupable()
+        
                       .Sortable(sortable =>
                       {
                           sortable.SortMode(GridSortMode.SingleColumn);

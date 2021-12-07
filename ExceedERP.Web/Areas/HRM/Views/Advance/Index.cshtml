@@ -9,22 +9,22 @@
       .Columns(columns =>
       {
 
-        columns.Bound(c => c.Description).Width(150);
-        columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "PersonId", "FullNameWithOutCode").EditorTemplateName("ListOfEmployee").Width(150);
-        columns.ForeignKey(c => c.GLPeriodId, (IEnumerable)ViewData["PeriodList"], "GLPeriodId", "Name").EditorTemplateName("GLPeriodSelector").Width(120);
-        columns.Bound(c => c.AdvanceAmount).Width(140);
-        columns.Bound(c => c.Months).Width(100);
-        columns.Bound(c => c.MonthlyAmount).Width(120);
-        columns.Bound(c => c.Balance).Width (120); 
-        
-        columns.Bound(c => c.JumpHoliday).ClientTemplate("<input type='checkbox'  disabled='true' value='#=JumpHoliday #' " + " # if (JumpHoliday) { #" + "checked='checked'" + "# } #" + " />").Width(130);
-        columns.Bound(c => c.IsActive).ClientTemplate("<input type='checkbox'  disabled='true' value='#=IsActive #' " + " # if (IsActive) { #" + "checked='checked'" + "# } #" + " />").Width(130);
-        columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+          columns.Bound(c => c.Description).Width(150);
+          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "PersonId", "FullNameWithOutCode").EditorTemplateName("ListOfEmployee").Width(200).Filterable(ftb => ftb.Multi(true).Search(true));
+          columns.ForeignKey(c => c.GLPeriodId, (IEnumerable)ViewData["PeriodList"], "GLPeriodId", "Name").EditorTemplateName("GLPeriodSelector").Width(120);
+          columns.Bound(c => c.AdvanceAmount).Width(140);
+          columns.Bound(c => c.Months).Width(100);
+          columns.Bound(c => c.MonthlyAmount).Width(120);
+          columns.Bound(c => c.Balance).Width (120);
+
+          columns.Bound(c => c.JumpHoliday).ClientTemplate("<input type='checkbox'  disabled='true' value='#=JumpHoliday #' " + " # if (JumpHoliday) { #" + "checked='checked'" + "# } #" + " />").Width(130);
+          columns.Bound(c => c.IsActive).ClientTemplate("<input type='checkbox'  disabled='true' value='#=IsActive #' " + " # if (IsActive) { #" + "checked='checked'" + "# } #" + " />").Width(130);
+          columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
       })
       .ToolBar(toolbar => {
-            toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
-                              toolbar.Excel().Text(Resources.ActionButton_ExportExcel).HtmlAttributes(new { @class = "btn btn-primary btn-xs pull-right" });
-                              toolbar.Pdf().Text(Resources.ActionButton_ExportPDF).HtmlAttributes(new { @class = "btn btn-primary btn-xs pull-right" });
+          toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+          toolbar.Excel().Text(Resources.ActionButton_ExportExcel).HtmlAttributes(new { @class = "btn btn-primary btn-xs pull-right" });
+          toolbar.Pdf().Text(Resources.ActionButton_ExportPDF).HtmlAttributes(new { @class = "btn btn-primary btn-xs pull-right" });
       })
               .Editable(editable => editable.Mode(GridEditMode.PopUp).TemplateName("Advance").Window(window => { window.Title(Resources.NavigatorPayroll_Advance); window.Scrollable(false); }))
          .Scrollable(h => h.Height(500))
@@ -39,7 +39,7 @@
           .FileName(Resources.NavigatorPayroll_Advance + ".pdf")
           .ProxyURL(Url.Action("Pdf_Export_Save", "Advance"))
       )
-             .Groupable()
+             
                       .Sortable(sortable =>
                       {
                           sortable.SortMode(GridSortMode.SingleColumn);
@@ -54,13 +54,13 @@
       .DataSource(dataSource => dataSource
           .Ajax()
                 .Events(events =>
-                                                  {
-                                                      events.Error("error_handler(\"Advancegrid\")");
-                                                      events.RequestStart("onRequestStart(\"Advancegrid\")");
-                                                      events.RequestEnd("onRequestEnd(\"Advancegrid\")");
-                                                  }
+                {
+                    events.Error("error_handler(\"Advancegrid\")");
+                    events.RequestStart("onRequestStart(\"Advancegrid\")");
+                    events.RequestEnd("onRequestEnd(\"Advancegrid\")");
+                }
                                                   )
-                      
+
           .Model(model =>
           {
               model.Id(p => p.AdvanceId);

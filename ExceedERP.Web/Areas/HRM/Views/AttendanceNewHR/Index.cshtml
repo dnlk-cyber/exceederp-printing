@@ -29,11 +29,11 @@
 
                           columns.Bound(c => c.IsApproved).ClientTemplate("<input type='checkbox' disabled = 'true' #=IsApproved ? checked='checked' :'' # >").Width(100);
 
-                          columns.Command(command =>
-                          {
-                              //command.Edit();
-                              //command.Destroy();
-                          }).Width(180);
+                          //columns.Command(command =>
+                          //{
+                          //    //command.Edit();
+                          //    //command.Destroy();
+                          //}).Width(180);
                       })
 
                           .ToolBar(toolbar =>
@@ -98,7 +98,7 @@
                  model.Field(p => p.IsApproved).Editable(false);
                  model.Field(p => p.IsDepartmentApproved).Editable(false);
              })
-              .Read(read => read.Action("AttendanceNews_Read", "AttendanceNewHR"))
+              .Read(read => read.Action("AttendanceNews_Read", "AttendanceNewHR").Data("filterData"))
           )
 )
 
@@ -124,13 +124,61 @@
     }
 </script>
 
-<script>
+@*<script>
     function GetAttendance() {
 
         var grid = $("#grid").data("kendoGrid");
 
         grid.dataSource.read();
     }
+</script>*@
+
+<script>
+    function GetAttendance() {
+
+        $("#grid").data("kendoGrid").dataSource.data([]);
+
+        var grid = $("#grid").data("kendoGrid");
+
+        grid.dataSource.read();
+
+        var attendanceDate = $("#AttendanceDate").val();
+
+       // $("span.k-link").text(attendanceDate);
+
+           $.ajax({
+            url: '@Url.Action("GetDayOfWeek", "AttendancesNew")',
+            //contentType: "application/json; charset=utf-8",
+            data: { date: attendanceDate },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                r = result;
+                $("span.k-link").text(attendanceDate +" ("+r.Message+")");
+            }
+         });
+
+    }
+</script>
+
+
+<script>
+
+     $(document).ready(function () {
+
+       $.ajax({
+        url: '@Url.Action("GetCurrentDateInAmharic", "AttendancesNew")',
+        //contentType: "application/json; charset=utf-8",
+        // data: { date: attendanceDate },
+        type: 'POST',
+        cache: false,
+        success: function (result) {
+            r = result;
+            $("span.k-link").text(r.Message);
+        }
+     });
+   });
+
 </script>
 
 <script>

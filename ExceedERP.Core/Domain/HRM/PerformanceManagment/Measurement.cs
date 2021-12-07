@@ -7,7 +7,6 @@ namespace ExceedERP.Core.Domain.HRM.PerformanceManagment
         [Key]
         public int MeasurementId { get; set; }
         public int MeasurementDefinitionId { get; set; }
-        //  public virtual MeasurementDefinition MeasurementDefinition { get; set; }
         [Required ]
         [Display(Name = "HR_PerformanceManagment_Measurement_MeasurementName", ResourceType = typeof(Localization.Resources))]
         public string MeasurementName { get; set; }

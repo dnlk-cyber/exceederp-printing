@@ -352,6 +352,41 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Attendance
             };
             return Json(formattedData3, JsonRequestBehavior.AllowGet);
         }
+        public JsonResult GetCurrentDateInAmharic()
+        {
+            var now = XAPI.EthiopicDateTime.GetEthiopicDate(DateTime.Now.Day, DateTime.Now.Month, DateTime.Now.Year);
+
+            var formattedData = new
+            {
+                Message = now + " (" + DateTime.Now.DayOfWeek + ")"
+            };
+
+            return Json(formattedData, JsonRequestBehavior.AllowGet);
+        }
+
+        public JsonResult GetDayOfWeek(string date)
+        {
+            if (!string.IsNullOrEmpty(date))
+            {
+                var splitDateTo = date.Split('/');
+                var dayOfWeek = XAPI.EthiopicDateTime.GetGregorianDate(Convert.ToInt32(splitDateTo[0]), Convert.ToInt32(splitDateTo[1]), Convert.ToInt32(splitDateTo[2]));
+
+                var formattedData = new
+                {
+                    Message = dayOfWeek.DayOfWeek.ToString()
+                };
+
+                return Json(formattedData, JsonRequestBehavior.AllowGet);
+            }
+
+            var formattedData1 = new
+            {
+                Message = ""
+            };
+
+            return Json(formattedData1, JsonRequestBehavior.AllowGet);
+        }
+
         public string GetEmployeeAndDepartment()
         {
             var id = UserInformationHelper.GetEmployeeId(User.Identity.Name);

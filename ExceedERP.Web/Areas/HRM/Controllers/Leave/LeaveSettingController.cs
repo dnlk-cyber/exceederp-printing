@@ -12,6 +12,8 @@ using ExceedERP.Core.Domain.Global;
 using ExceedERP.Web.Controllers;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Web.Helpers;
+using ExceedERP.Core.Domain.HRM.LeaveManagment;
+using ExceedERP.Core.Domain.HRM;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
 {
@@ -23,6 +25,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
         string ErrorMessage = "";
         public ActionResult Index()
         {
+
+            GenerateLeaveStartDateSetting();
             PopulateViewData();
             return View();
         }
@@ -36,6 +40,22 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
             var LeaveSettings = LeaveSetting.Select(s => new { Text = s.ToString(), Value = s.ToString() });
             ViewData["LeaveSetting"] = LeaveSettings;
             ViewData["FiscalYeaer"] = db.GLFiscalYears.ToList();
+        }
+        public void GenerateLeaveStartDateSetting()
+        {
+            var leaveStartDate = db.LeaveEntitleStartingDates.FirstOrDefault();
+
+            if (leaveStartDate == null)
+            {
+                var entity = new LeaveEntitleStartingDate
+                {
+                    Start = LeaveEntitleStarting.Fiscal_Year_End_Date,
+                    Remark = "Default Setting"
+                };
+
+                db.LeaveEntitleStartingDates.Add(entity);
+                db.SaveChanges();
+            }
         }
         public ActionResult Configurations_Read([DataSourceRequest]DataSourceRequest request)
         {
@@ -76,11 +96,11 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
             {
                 ModelState.AddModelError("", "you already set value for this setting");
             }
-            
-            if(configuration.Attribute == LeaveSetting.Old_Initial_Leave_End_Year.ToString() )
+
+            if (configuration.Attribute == LeaveSetting.Old_Initial_Leave_End_Year.ToString())
             {
                 var glfiscayear = db.GLFiscalYears.FirstOrDefault(x => x.Name.Trim() == configuration.CurrentValue.Trim());
-                if(glfiscayear == null)
+                if (glfiscayear == null)
                 {
                     ModelState.AddModelError("", "Check the year you write it must be from defined budget years");
                 }
@@ -234,6 +254,26 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Leave
             return Json(new[] { configuration }.ToDataSourceResult(request, ModelState));
         }
 
+        public JsonResult CheckNewAwajDataIfExists()
+        {
+            var newAwaj = db.LeaveNewAwajStartYears.FirstOrDefault();
+            if (newAwaj != null)
+            {
+                var mm = new
+                {
+                    Message = "OK"
+                };
+
+                return Json(mm);
+            }
+
+            var mm1 = new
+            {
+                Message = "FAIL"
+            };
+
+            return Json(mm1);
+        }
         protected override void Dispose(bool disposing)
         {
             db.Dispose();

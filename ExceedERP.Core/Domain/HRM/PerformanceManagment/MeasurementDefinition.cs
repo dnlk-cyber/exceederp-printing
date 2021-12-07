@@ -23,7 +23,6 @@ namespace ExceedERP.Core.Domain.HRM.PerformanceManagment
         public decimal Result { get; set; }
       
         public int EmployeeId { get; set; }
-        // public virtual Person_Employee Employee { get; set; }
         [Display(Name = "HR_PerformanceManagment_MeasurementDefinition_Role", ResourceType = typeof(Localization.Resources))]
         public ResponsibilityLevel Role { get; set; }
         [Display(Name = "Remark", ResourceType = typeof(Localization.Resources))]

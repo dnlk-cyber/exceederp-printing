@@ -34,12 +34,12 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
 
 
             #region EmployeeMeasurement
-            var EmployeeMeasurement = db.EmployeePerformanceAction.Where(x => x.ActionId == id).FirstOrDefault();
-            if (EmployeeMeasurement != null)
-            {
-                ErrorMessage = "You cannot delete this Measurment Defination. Employees are evaluated by this measurement.";
-                return false;
-            }
+            //var EmployeeMeasurement = db.EmployeePerformanceAction.Where(x => x.ActionId == id).FirstOrDefault();
+            //if (EmployeeMeasurement != null)
+            //{
+            //    ErrorMessage = "You cannot delete this Measurment Defination. Employees are evaluated by this measurement.";
+            //    return false;
+            //}
             #endregion
 
 

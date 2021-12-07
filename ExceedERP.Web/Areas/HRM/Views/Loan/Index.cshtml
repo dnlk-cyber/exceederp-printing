@@ -8,7 +8,7 @@
           .Name("Loangrid")
       .Columns(columns =>
       {
-          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "PersonId", "FullNameWithOutCode").EditorTemplateName("ListOfEmployee").Width(150);
+          columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "PersonId", "FullNameWithOutCode").EditorTemplateName("ListOfEmployee").Width(200).Filterable(ftb => ftb.Multi(true).Search(true));
           columns.ForeignKey(c => c.GLPeriodId, (IEnumerable)ViewData["PeriodList"], "GLPeriodId", "Name").EditorTemplateName("GLPeriodSelector").Width(120);
           columns.Bound(c => c.LoanAmount).Width (110);
           columns.Bound(c => c.Months).Width (100);
@@ -38,7 +38,7 @@
           .ProxyURL(Url.Action("Pdf_Export_Save", "Loan"))
       )
           .Scrollable(h => h.Height(500))
-             .Groupable()
+         
                       .Sortable(sortable =>
                       {
                           sortable.SortMode(GridSortMode.SingleColumn);

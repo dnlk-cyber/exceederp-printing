@@ -18,11 +18,9 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
         [DataObjectMethod(DataObjectMethodType.Select)]
         public List<Person_Employee> GetEmployees()
         {
-            List<Person_Employee> list = new List<Person_Employee> { };
-            var employee = db.Person_Employee.ToList();
+            var employees = db.Person_Employee.ToList();
 
-            list.AddRange(employee);
-            return list;
+            return employees;
         }
     }
 }

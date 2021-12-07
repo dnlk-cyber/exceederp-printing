@@ -9,22 +9,22 @@ using ExceedERP.Reporting.SharedDataSources;
 namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 {
     [DataObject]
-    public class EvaluationTypeObjectDataSource : PerformanceSummary
+    public class EvaluationTypeObjectDataSource : EmployeePerformanceVM
     {
         private ExceedDbContext db = new ExceedDbContext();
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public PerformanceSummary GetEvaluationType(string id, string period)
+        public EmployeePerformanceVM GetEvaluationType(string empId, string quarterId, string criteriaId)
         {
 
-            PerformanceSummary EmployeeInfo = new PerformanceSummary();
-            var Organization = db.Companies.Where(x => x.Category == "0").FirstOrDefault();
+            var empPerformance = new EmployeePerformanceVM();
+            var Organization = db.Companies.FirstOrDefault(x => x.Category == "0");
 
             if (Organization != null)
             {
-                EmployeeInfo.Name = Organization.TradeName;
-                EmployeeInfo.AmharicName = Organization.AmharicName;
-                EmployeeInfo.Abbreviation = Organization.Abbreviation;
+                empPerformance.Name = Organization.TradeName;
+                empPerformance.AmharicName = Organization.AmharicName;
+                empPerformance.Abbreviation = Organization.Abbreviation;
                 var address =
                     db.Addresses.Where(
                         a =>
@@ -36,51 +36,19 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                     {
                         if (a.Category == AddressType.KIFLEKETEMA)
                         {
-                            EmployeeInfo.Address = "Subcity: " + a.Value + " ";
+                            empPerformance.Address = "Subcity: " + a.Value + " ";
                         }
                         if (a.Category == AddressType.KEBELE)
                         {
-                            EmployeeInfo.Address += "Kebele: " + a.Value + " ";
+                            empPerformance.Address += "Kebele: " + a.Value + " ";
                         }
                         if (a.Category == AddressType.CITYPROVINCE)
                         {
-                            if (EmployeeInfo.Address == null)
+                            if (empPerformance.Address == null)
                             {
-                                EmployeeInfo.Address += a.Value + " -Ethiopia";
+                                empPerformance.Address += a.Value + " -Ethiopia";
                             }
                         }
-                        else if (a.Category == AddressType.POBOX)
-                        {
-
-                            EmployeeInfo.Pobox = "P.O.Box: " + a.Value;
-
-                        }
-                        else if (a.Category == AddressType.OFFICE_EMAIL)
-                        {
-
-                            EmployeeInfo.Email = "Email: " + a.Value;
-
-                        }
-                        else if (a.Category == AddressType.WEBSITE)
-                        {
-
-                            EmployeeInfo.WebSite = "Website:" + a.Value;
-
-                        }
-                        else if (a.Category == AddressType.FAX)
-                        {
-
-                            EmployeeInfo.Fax = "Fax:" + a.Value;
-
-                        }
-                        else if (a.Category == AddressType.OFFICE_PHONE)
-                        {
-
-                            EmployeeInfo.Tel = "Tel:" + a.Value;
-
-                        }
-
-
                     }
 
                 }
@@ -91,88 +59,153 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
                             a.ReferenceType == AttachmentType.LOGO).FirstOrDefault();
                 if (logo != null)
                 {
-                    EmployeeInfo.LogoFileName = OrganizationObjectDataSource.ByteArrayToImage(logo.BinaryFile);
+                    empPerformance.LogoFileName = OrganizationObjectDataSource.ByteArrayToImage(logo.BinaryFile);
                 }
             }
 
-            var periods = db.Quarters.FirstOrDefault(x => x.QuarterId.ToString() == period);
 
-            int GLPeriodId = 0;
-            if (periods != null)
+            if (empId != null)
             {
-                GLPeriodId = periods.QuarterId;
-            }
-            if (id != null)
-            {
-                var personEmployee = db.Person_Employee.FirstOrDefault(x => x.EmployeeId.ToString() == id);
+                int.TryParse(empId, out int employeeId);
+                int.TryParse(quarterId, out int quartId);
+                int.TryParse(criteriaId, out int evaluationCriteriaId);
 
-                if (personEmployee != null)
+                var employeePerformance = db.EmployeePerformances.FirstOrDefault(x => x.EmployeeId == employeeId && x.GlPeriodId == quartId && x.EvaluationCriteriaTypeId == evaluationCriteriaId && x.IsApproved);
+
+                if (employeePerformance != null)
                 {
-                    EmployeeInfo.FullName = personEmployee.FullNameAmharic;
+                    var person = db.Person_Employee.FirstOrDefault(x => x.EmployeeId == employeePerformance.EmployeeId);
+                    if (person != null)
+                    {
+                        empPerformance.FullName = person.FullNameaEnglish;
+                    }
 
-                    var responsibilityLevel = ResponsibilityLevel.STAFF;
-                    var place = db.Placements.FirstOrDefault(x => x.EmployeeId == personEmployee.EmployeeId && x.isCurrent);
+                    var place = db.Placements.FirstOrDefault(x => x.EmployeeId == employeePerformance.EmployeeId && x.isCurrent);
                     if (place != null)
                     {
-                        responsibilityLevel = place.ResponsibilityLevel;
+                        var branch = db.Branch.FirstOrDefault(x => x.BranchId == place.BranchId);
+                        if (branch != null)
+                        {
+                            empPerformance.Branch = branch.Name;
+                        }
 
-                        var look = db.Lookups.FirstOrDefault(x => x.LookupId == place.LookupId && x.LookupType == LookUpTypes.JOB_TITLE);
+                        var mainCompany = db.MainCompanyStructures.FirstOrDefault(x => x.OrgStructureId == place.OrgStructureId);
+                        if (mainCompany != null)
+                        {
+                            empPerformance.Department = mainCompany.Name;
+                        }
+
+                        var look = db.Lookups.FirstOrDefault(x => x.LookupId == place.LookupId);
                         if (look != null)
                         {
-                            EmployeeInfo.JobTitle = look.Description;
-                        }
-
-                        var mainCompanyStructure = db.MainCompanyStructures.FirstOrDefault(x => x.OrgStructureId == place.OrgStructureId);
-                        if (mainCompanyStructure != null)
-                        {
-                            EmployeeInfo.Department = mainCompanyStructure.Name;
+                            empPerformance.Jobtitle = look.Description;
                         }
                     }
 
-                    var empid = personEmployee.EmployeeId;
-                    var evaluationTypes = db.MeasurementDefinitions.Where(x => x.Role == responsibilityLevel);//db.Lookups.Where(x => x.LookupType == LookUpTypes.EVALUATION_TYPE).ToList();
-
-                    EvaluationTypes type = new EvaluationTypes();
-                    decimal result = 0;
-
-                    if (evaluationTypes.Any())
+                    var year = db.GLFiscalYears.FirstOrDefault(x => x.GlFiscalYearId == employeePerformance.GlFiscalYearId);
+                    if (year != null)
                     {
-                        EmployeeInfo.Types = new List<EvaluationTypes>();
+                        empPerformance.Year = year.Name;
+                    }
 
-                        var empResult = db.EmployeePerformanceScores.Where(x => x.EmployeeId == empid).ToList();
-                        if (GLPeriodId != 0)
+                    var period = db.Quarters.FirstOrDefault(x => x.QuarterId == employeePerformance.GlPeriodId);
+                    if (period != null)
+                    {
+                        empPerformance.Period = period.Name;
+                    }
+
+                    var evaluationCriteria = db.MeasurementDefinitions.FirstOrDefault(x => x.MeasurementDefinitionId == employeePerformance.EvaluationCriteriaTypeId);
+                    if (evaluationCriteria != null)
+                    {
+                        empPerformance.EvaluationCriteriaName = evaluationCriteria.EvaluationCriteria;
+                        empPerformance.Role = evaluationCriteria.Role.ToString();
+                        empPerformance.Weight = evaluationCriteria.DefnPercentageofWeight;
+                        empPerformance.Result = GetPerformanceScore(employeePerformance.EmployeePerformanceId);
+                        var look = db.Lookups.FirstOrDefault(x => x.LookupId == evaluationCriteria.LookupId);
+                        if (look != null)
                         {
-                            empResult = empResult.Where(x => x.QuarterId == GLPeriodId).ToList();
-                        }
-
-                        foreach (var d in evaluationTypes)
-                        {
-                            type = new EvaluationTypes();
-                            result = 0;
-                            type.AssignedAmount = evaluationTypes.Where(x => x.LookupId == d.LookupId).Sum(x => x.DefnPercentageofWeight);
-                            type.Type = d.EvaluationCriteria;
-
-                            var measurments = db.Measurements.Where(x => x.MeasurementDefinitionId == d.MeasurementDefinitionId).ToList();
-                            foreach (var m in measurments)
-                            {
-                                result = result + empResult.Where(x => x.MeasurementId == m.MeasurementId).Sum(x => x.Result);
-                            }
-                            type.ActualAmount = result;
-
-                            type.ActualFrom100 = result * 100 / type.AssignedAmount;
-
-                            EmployeeInfo.Types.Add(type);
-
+                            empPerformance.EvaluationType = look.Description;
                         }
                     }
 
-                   
+                    var employeeMeasurments = db.EmployeeMeasurement.Where(x => x.EmployeePerformanceId == employeePerformance.EmployeePerformanceId).ToList();
+
+                    empPerformance.EmployeeMeasurmentList = new List<EmployeeMeasurementVM>();
+
+                    foreach (var empMeaur in employeeMeasurments)
+                    {
+                        var employeeMeasure = new EmployeeMeasurementVM();
+
+                        var measur = db.Measurements.FirstOrDefault(x => x.MeasurementId == empMeaur.MeasurmentId);
+                        if (measur != null)
+                        {
+                            employeeMeasure.MeasurmentName = measur.MeasurementName;
+                            employeeMeasure.Weight = measur.MesPercentageofWeight;
+                        }
+
+                        employeeMeasure.Result = GetEmployeeMeasurment(empMeaur.EmpMeasurementId);
+
+                        var employeePerformanceScores = db.EmployeePerformanceScores.Where(x => x.EmployeeMeasurementId == empMeaur.EmpMeasurementId).ToList();
+
+                        employeeMeasure.EmployeePerformanceScoreVMList = new List<EmployeePerformanceScoreVM>();
+
+                        foreach (var perfAction in employeePerformanceScores)
+                        {
+                            var performanceScore = new EmployeePerformanceScoreVM();
+
+                            var performanceAction = db.PerformanceActions.FirstOrDefault(x => x.ActionId == perfAction.PerformanceActionId);
+                            if (performanceAction != null)
+                            {
+                                performanceScore.ActionName = performanceAction.ActionName;
+                                performanceScore.Weight = performanceAction.AcPercentageofWeight;
+                            }
+
+                            performanceScore.Score = perfAction.Score;
+
+                            employeeMeasure.EmployeePerformanceScoreVMList.Add(performanceScore);
+                        }
+
+                        empPerformance.EmployeeMeasurmentList.Add(employeeMeasure);
+                    }
 
                 }
             }
-            return EmployeeInfo;
+
+            return empPerformance;
         }
 
+        public decimal GetEmployeeMeasurment(int empMeasurmentId)
+        {
+            var performanceScores = db.EmployeePerformanceScores.Where(x => x.EmployeeMeasurementId == empMeasurmentId);
+
+            if (performanceScores.Any())
+            {
+                return performanceScores.Sum(x => x.Score);
+            }
+
+            return 0;
+        }
+
+        public decimal GetPerformanceScore(int empPerformanceId)
+        {
+            decimal totalScore = 0;
+
+            var empMeasurs = db.EmployeeMeasurement.Where(x => x.EmployeePerformanceId == empPerformanceId).ToList();
+
+            foreach (var em in empMeasurs)
+            {
+                var scores = db.EmployeePerformanceScores.Where(x => x.EmployeeMeasurementId == em.EmpMeasurementId);
+
+                if (scores.Any())
+                {
+                    totalScore = totalScore + scores.Sum(x => x.Score);
+                }
+            }
+
+            return totalScore;
+        }
 
     }
+
+
 }
