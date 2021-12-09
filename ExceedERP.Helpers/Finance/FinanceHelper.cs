@@ -1265,13 +1265,26 @@ namespace ExceedERP.Helpers.Finance
                         #endregion
 
                         #region check and remove if book
-
-                        var bookline = db.ReconcilationBookAccounts.FirstOrDefault(x => x.SourceID == sourceid);
-
-                        if (bookline != null)
+                        if (journal.SourcesName == "GL" || journal.Source == "Payroll")
                         {
-                            db.ReconcilationBookAccounts.Attach(bookline);
-                            db.ReconcilationBookAccounts.Remove(bookline);
+                            var bookline = db.ReconcilationBookAccounts.FirstOrDefault(x => x.SourceID == sourceid);
+
+                            if (bookline != null)
+                            {
+                                db.ReconcilationBookAccounts.Attach(bookline);
+                                db.ReconcilationBookAccounts.Remove(bookline);
+                            }
+                        }
+                        else
+                        {
+                            var booklines = db.ReconcilationBookAccounts
+                                .Where(x => x.Source == journal.Source)
+                                .Where(x => x.SourceID.StartsWith(journal.SourceId + "-")).ToList();
+
+                            if (booklines.Any())
+                            {
+                                db.ReconcilationBookAccounts.RemoveRange(booklines);
+                            }
                         }
                         #endregion
                     }

@@ -2,7 +2,11 @@
 
 namespace ExceedERP.Core.Domain.HRM
 {
-
+    public enum LeaveEntitleStarting
+    {
+        Fiscal_Year_Initial_Date,
+        Fiscal_Year_End_Date
+    }
     public enum PerformanceSelfEvaluation
     {
         Enable_Self_Evaluation

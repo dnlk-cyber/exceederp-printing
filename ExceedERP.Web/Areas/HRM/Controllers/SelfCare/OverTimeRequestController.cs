@@ -1,4 +1,4 @@
-﻿﻿using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
@@ -7,18 +7,18 @@ using System.Web;
 using System.Web.Mvc;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain;
- using ExceedERP.Core.Domain.Common;
-﻿using Kendo.Mvc.Extensions;
+using ExceedERP.Core.Domain.Common;
+using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using ExceedERP.Core.Domain.HRM;
 using ExceedERP.Core.Domain.HRM.SelfCare;
 using ExceedERP.DataAccess.Context;
-﻿using ExceedERP.Web.Areas.Common.Controllers;
-﻿using ExceedERP.Web.Areas.HRM.Controllers.Profile;
+using ExceedERP.Web.Areas.Common.Controllers;
+using ExceedERP.Web.Areas.HRM.Controllers.Profile;
 using ExceedERP.Web.Controllers;
 using ExceedERP.Web.Helpers;
 using ExceedERP.Helpers.Common;
- using ExceedERP.Web.Hubs;
+using ExceedERP.Web.Hubs;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
 {
@@ -35,7 +35,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
         public static DateTime ToDate { get; set; }
         public ActionResult Index()
         {
-
             PopulateViewData();
             return View();
         }
@@ -44,13 +43,14 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
             HRMInputs inputs = new HRMInputs();
             EmployeeId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
             var list = UserInformationHelper.GetEmployeesByReportsTo(User.Identity.Name);
-            ViewData["EmployeeList"] = list.Where(x => x.IsActive);
+
             reportsToEmployee = list.Select(x => x.PersonId.ToString()).ToList();
             reportsToEmployee.Add(EmployeeId.ToString());
             var structres = db.MainCompanyStructures;
             ViewData["organization"] = structres;
-            var employeName = db.Person_Employee.ToList();
-            ViewData["EmployeeName"] = employeName;
+            var employees = db.Person_Employee.ToList();
+            
+            ViewData["EmployeeList"] = employees.Select(x => new { x.EmployeeId, x.FirstName, x.MiddleName, x.LastName, x.FirstNameEnglish, x.MiddleNameEnglish, x.LastNameEnglish, x.FullNameAmharic, x.FullNameaEnglish });
         }
         public void SetDate(string name, string value)
         {
@@ -77,87 +77,87 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
             {
                 messages = "You should to add one or more employee!!";
                 // return  ModelState.AddModelError("xx", messages );
-                 return new JavaScriptResult() { Script = "alert('" + messages + "');" };
-               // ModelState.AddModelError("", "You should to add one or more employee!!");
+                return new JavaScriptResult() { Script = "alert('" + messages + "');" };
+                // ModelState.AddModelError("", "You should to add one or more employee!!");
             }
-           
-                var status =
-                      db.RequestesStatus.Where(x => x.RequestId == HRMInputs.RequestId && x.ReferenceType == HRMInputs.ReferenceType).ToList();
 
-                if (status.Any())
+            var status =
+                  db.RequestesStatus.Where(x => x.RequestId == HRMInputs.RequestId && x.ReferenceType == HRMInputs.ReferenceType).ToList();
+
+            if (status.Any())
+            {
+                foreach (var s in status)
                 {
-                    foreach (var s in status)
+                    if (s.Status == RequestStatus.DEPARTMENT_APPROVAL)
                     {
-                        if (s.Status == RequestStatus.DEPARTMENT_APPROVAL)
-                        {
-                            messages = "The Request is already approved!!";
-                            //  return new JavaScriptResult() { Script = "alert('" + messages + "');" };
-                            ModelState.AddModelError("xx", messages);
-                            return null;
-                        }
-                        if (s.Status == RequestStatus.WAITING_FOR_APPROVAL)
-                        {
-                            messages = "The Request is already send for approval!!";
-                            // return  ModelState.AddModelError("xx", messages );
-                            return new JavaScriptResult() { Script = "alert('" + messages + "');" };
-                        }
-
+                        messages = "The Request is already approved!!";
+                        //  return new JavaScriptResult() { Script = "alert('" + messages + "');" };
+                        ModelState.AddModelError("xx", messages);
+                        return null;
                     }
+                    if (s.Status == RequestStatus.WAITING_FOR_APPROVAL)
+                    {
+                        messages = "The Request is already send for approval!!";
+                        // return  ModelState.AddModelError("xx", messages );
+                        return new JavaScriptResult() { Script = "alert('" + messages + "');" };
+                    }
+
                 }
-                RequestesStatus requestesStatus;
-                db = new ExceedDbContext();
-                requestesStatus =
-                    db.RequestesStatus.Where(
-                        x =>
-                            x.RequestId == HRMInputs.RequestId &&
-                            x.ReferenceType == HRMInputs.ReferenceType && x.Status == RequestStatus.WAITING_FOR_APPROVAL).FirstOrDefault();
-                db = new ExceedDbContext();
-                if (requestesStatus == null)
+            }
+            RequestesStatus requestesStatus;
+            db = new ExceedDbContext();
+            requestesStatus =
+                db.RequestesStatus.Where(
+                    x =>
+                        x.RequestId == HRMInputs.RequestId &&
+                        x.ReferenceType == HRMInputs.ReferenceType && x.Status == RequestStatus.WAITING_FOR_APPROVAL).FirstOrDefault();
+            db = new ExceedDbContext();
+            if (requestesStatus == null)
+            {
+                var entityy = new RequestesStatus
                 {
-                    var entityy = new RequestesStatus
-                    {
-                        RequestId = HRMInputs.RequestId,
-                        ReferenceType = HRMInputs.ReferenceType,
-                        Status = RequestStatus.WAITING_FOR_APPROVAL,
-                        Date = DateTime.Now,
-                        DateReqStatAm = XAPI.EthiopicDateTime.GetEthiopicDate(DateTime.Now.Day, DateTime.Now.Month, DateTime.Now.Year)
-                    };
+                    RequestId = HRMInputs.RequestId,
+                    ReferenceType = HRMInputs.ReferenceType,
+                    Status = RequestStatus.WAITING_FOR_APPROVAL,
+                    Date = DateTime.Now,
+                    DateReqStatAm = XAPI.EthiopicDateTime.GetEthiopicDate(DateTime.Now.Day, DateTime.Now.Month, DateTime.Now.Year)
+                };
 
-                    db.RequestesStatus.Add(entityy);
-                    db.SaveChanges();
-                }
-                else
+                db.RequestesStatus.Add(entityy);
+                db.SaveChanges();
+            }
+            else
+            {
+                var entity = new RequestesStatus
                 {
-                    var entity = new RequestesStatus
-                    {
-                        RequestStatusId = requestesStatus.RequestStatusId,
-                        RequestId = requestesStatus.RequestId,
-                        ReferenceType = requestesStatus.ReferenceType,
-                        Status = requestesStatus.Status,
-                        Date = requestesStatus.Date,
-                        Remark = requestesStatus.Remark,
-                        DateReqStatAm = XAPI.EthiopicDateTime.GetEthiopicDate(requestesStatus.Date.Day, requestesStatus.Date.Month, requestesStatus.Date.Year),
-                    };
+                    RequestStatusId = requestesStatus.RequestStatusId,
+                    RequestId = requestesStatus.RequestId,
+                    ReferenceType = requestesStatus.ReferenceType,
+                    Status = requestesStatus.Status,
+                    Date = requestesStatus.Date,
+                    Remark = requestesStatus.Remark,
+                    DateReqStatAm = XAPI.EthiopicDateTime.GetEthiopicDate(requestesStatus.Date.Day, requestesStatus.Date.Month, requestesStatus.Date.Year),
+                };
 
-                    db.RequestesStatus.Attach(entity);
-                    db.RequestesStatus.Remove(entity);
-                    db.SaveChanges();
-                    db = new ExceedDbContext();
+                db.RequestesStatus.Attach(entity);
+                db.RequestesStatus.Remove(entity);
+                db.SaveChanges();
+                db = new ExceedDbContext();
 
-                    var entityy = new RequestesStatus
-                    {
-                        RequestId = HRMInputs.RequestId,
-                        ReferenceType = HRMInputs.ReferenceType,
-                        Status = RequestStatus.WAITING_FOR_APPROVAL,
-                        Date = DateTime.Now,
-                        DateReqStatAm = XAPI.EthiopicDateTime.GetEthiopicDate(DateTime.Now.Day, DateTime.Now.Month, DateTime.Now.Year)
-                    };
+                var entityy = new RequestesStatus
+                {
+                    RequestId = HRMInputs.RequestId,
+                    ReferenceType = HRMInputs.ReferenceType,
+                    Status = RequestStatus.WAITING_FOR_APPROVAL,
+                    Date = DateTime.Now,
+                    DateReqStatAm = XAPI.EthiopicDateTime.GetEthiopicDate(DateTime.Now.Day, DateTime.Now.Month, DateTime.Now.Year)
+                };
 
-                    db.RequestesStatus.Add(entityy);
-                    db.SaveChanges();
-                }
-           
-            
+                db.RequestesStatus.Add(entityy);
+                db.SaveChanges();
+            }
+
+
 
             return RedirectToAction("Index");
         }
@@ -263,8 +263,16 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
         }
         public ActionResult OverTimeRequest_Read([DataSourceRequest]DataSourceRequest request)
         {
+            int orgId = 0;
+            int empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
+            var placement = db.Placements.FirstOrDefault(x => x.EmployeeId == empId && x.isCurrent);
+            if(placement != null)
+            {
+                orgId = placement.OrgStructureId;
+            }
 
-            IQueryable<OverTimeRequest> overtimerequest = db.OverTimeRequest;
+            IQueryable<OverTimeRequest> overtimerequest = db.OverTimeRequest.Where(x => x.OrgStructureId == orgId);
+
             DataSourceResult result = overtimerequest.ToDataSourceResult(request, overTimeRequest => new
             {
                 OverTimeRequestId = overTimeRequest.OverTimeRequestId,
@@ -276,6 +284,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                 Description = overTimeRequest.Description,
                 FromDateAm = overTimeRequest.FromDateAm,
                 ToDateAm = overTimeRequest.ToDateAm,
+                Type = overTimeRequest.Type
             });
 
             return Json(result);
@@ -304,8 +313,8 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                 if (overTimeRequest.FromDate.Date > overTimeRequest.ToDate.Date)
                 {
                     ModelState.AddModelError("", "Please check the date range!!");
-                }              
-                   
+                }
+
 
                 else
                 {
@@ -319,6 +328,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                         Description = overTimeRequest.Description,
                         FromDateAm = overTimeRequest.FromDateAm,
                         ToDateAm = overTimeRequest.ToDateAm,
+                        Type = overTimeRequest.Type
                     };
 
                     db.OverTimeRequest.Add(entity);
@@ -326,9 +336,9 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                     overTimeRequest.OverTimeRequestId = entity.OverTimeRequestId;
 
                     #region operation log
-                    
-                        UserHelper.OperationLog(Request.UserHostAddress, "OverTimeRequest ", "Success", User.Identity.Name, User.Identity.Name + " add new Overtime Request at date " + DateTime.Today.ToShortDateString(), Modules.HRM);
-                   
+
+                    UserHelper.OperationLog(Request.UserHostAddress, "OverTimeRequest ", "Success", User.Identity.Name, User.Identity.Name + " add new Overtime Request at date " + DateTime.Today.ToShortDateString(), Modules.HRM);
+
                     #endregion
 
                     #region notification
@@ -379,7 +389,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                 }
                 else
                 {
-                    
+
                     var entity = new OverTimeRequest
                     {
                         OverTimeRequestId = overTimeRequest.OverTimeRequestId,
@@ -391,6 +401,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                         Description = overTimeRequest.Description,
                         FromDateAm = FromDateAm,
                         ToDateAm = ToDateAm,
+                        Type = overTimeRequest.Type
                     };
 
                     db.OverTimeRequest.Attach(entity);
@@ -417,11 +428,11 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
             {
                 ModelState.AddModelError("", "Fom date value  is mandatory!!");
             }
-                if (ToDateAm == null)
-                {
-                    ModelState.AddModelError("", "To date value  is mandatory!!");
-                }
-                if (ModelState.IsValid)
+            if (ToDateAm == null)
+            {
+                ModelState.AddModelError("", "To date value  is mandatory!!");
+            }
+            if (ModelState.IsValid)
             {
                 var entity = new OverTimeRequest
                 {
@@ -434,6 +445,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                     Description = overTimeRequest.Description,
                     FromDateAm = FromDateAm,
                     ToDateAm = ToDateAm,
+                    Type = overTimeRequest.Type
                 };
                 #region delete log
                 UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted over time request of work unit" + overTimeRequest.OrgStructureId);
@@ -475,11 +487,24 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                 Description = overTimeRequest.Description,
                 FromDateAm = overTimeRequest.FromDateAm,
                 ToDateAm = overTimeRequest.ToDateAm,
+                Type = overTimeRequest.Type
             });
 
             return Json(result);
         }
+        public JsonResult GetEmployeesUnderLogedInUserDepartment()
+        {
+            int empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
+            var empIds = EmployeeHelper.GetSubordinates(empId);
 
+            var employees = db.Person_Employee.Where(x => empIds.Contains(x.EmployeeId) && x.IsActive).ToList();
+
+            return Json(employees.Select(p => new
+            {
+                EmployeeId = p.EmployeeId,
+                FullNameaEnglish = p.FullNameaEnglish
+            }), JsonRequestBehavior.AllowGet);
+        }
         protected override void Dispose(bool disposing)
         {
             db.Dispose();

@@ -3,15 +3,15 @@
 @using ExceedERP.Core.Domain.Common
 @(Html.Kendo().DropDownListFor(m => m)
                          .OptionLabel(Resources.Select)
-                                    .DataTextField("Name")
-                                    .DataValueField("GlFiscalYearId")
-                    .Filter("contains")
-          .DataSource(dataSource =>
-          {
-              dataSource.Read(read => read.Action("GetFisicalYear", "HRMDataProvider", new { area = "HRM" }))
-                  .ServerFiltering(false);
+                         .DataTextField("Name")
+                         .DataValueField("GlFiscalYearId")
+                         .Filter("contains")
+                          .DataSource(dataSource =>
+                          {
+                              dataSource.Read(read => read.Action("GetFisicalYear", "HRMDataProvider", new { area = "HRM" }))
+                                  .ServerFiltering(false);
 
-          })
+                          })
                         //.BindTo((IEnumerable)ViewData["PeriodList"])
                         .ValuePrimitive(true)
 )

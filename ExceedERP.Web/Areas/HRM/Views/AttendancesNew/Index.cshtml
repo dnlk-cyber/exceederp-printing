@@ -28,8 +28,8 @@
                         {
                             columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameaEnglish").Filterable(ftb => ftb.Multi(true).Search(true)).Width(150);
                             columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["Department"], "OrgStructureId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(200);
-                // columns.Bound(c => c.Date);
-                columns.Bound(c => c.DateAm).Width(120);
+                            // columns.Bound(c => c.Date);
+                            columns.Bound(c => c.DateAm).Width(120);
 
                             columns.Group(group => group
 
@@ -44,19 +44,19 @@
                             columns.Bound(c => c.IsDepartmentApproved).ClientTemplate("<input type='checkbox' disabled = 'true' #=IsDepartmentApproved ? checked='checked' :'' # >").Width(100);
                             columns.Bound(c => c.IsApproved).ClientTemplate("<input type='checkbox' disabled = 'true' #=IsApproved ? checked='checked' :'' # >").Width(100);
                             columns.Bound(c=>c.IsGenerated).Visible(false);
-                            columns.Command(command =>
-                            {
+                            // columns.Command(command =>
+                            // {
 
-                    //command.Edit();
-                    //command.Destroy();
-                }).Width(180);
+                            //   //command.Edit();
+                            //   //command.Destroy();
+                            //}).Width(180);
                         })
                         .ToolBar(toolbar =>
                         {
-                // toolbar.Create();
-                //toolbar.Save();
-              
-                toolbar.Template(@<text>
+                        // toolbar.Create();
+                        //toolbar.Save();
+
+                        toolbar.Template(@<text>
 
                         @item.SaveButton()
 
@@ -162,7 +162,7 @@
     }
 </script>
 
-<script>
+@*<script>
     function GetAttendance() {
 
         var grid = $("#grid").data("kendoGrid");
@@ -170,8 +170,53 @@
         grid.dataSource.read();
        
     }
+</script>*@
+
+<script>
+    function GetAttendance() {
+
+        var grid = $("#grid").data("kendoGrid");
+
+        grid.dataSource.read();
+
+        var attendanceDate = $("#AttendanceDate").val();
+
+       // $("span.k-link").text(attendanceDate);
+
+           $.ajax({
+            url: '@Url.Action("GetDayOfWeek", "AttendancesNew")',
+            //contentType: "application/json; charset=utf-8",
+            data: { date: attendanceDate },
+            type: 'POST',
+            cache: false,
+            success: function (result) {
+                r = result;
+                $("span.k-link").text(attendanceDate +" ("+r.Message+")");
+            }
+         });
+
+    }
 </script>
 
+
+<script>
+
+     $(document).ready(function () {
+
+       $.ajax({
+        url: '@Url.Action("GetCurrentDateInAmharic", "AttendancesNew")',
+        //contentType: "application/json; charset=utf-8",
+        // data: { date: attendanceDate },
+        type: 'POST',
+        cache: false,
+        success: function (result) {
+            r = result;
+            $("span.k-link").text(r.Message);
+        }
+     });
+   });
+
+</script>
 
 
 

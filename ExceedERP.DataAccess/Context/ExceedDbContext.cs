@@ -479,7 +479,9 @@ namespace ExceedERP.DataAccess.Context
             #endregion
 
             #region HRM
+            modelBuilder.Configurations.Add(new EvaluationCriteriaActionTypeEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new PlacementAfterSystemtEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new LeaveEntitleStartingDateEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new MonthlyLeavePlanEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new MonthlyLeavePlanDetailEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new EmployeePerformanceActionsEntityTypeConfiguration());
@@ -2027,6 +2029,7 @@ namespace ExceedERP.DataAccess.Context
         #endregion
 
         #region Leave Management
+        public System.Data.Entity.DbSet<LeaveEntitleStartingDate> LeaveEntitleStartingDates { get; set; }
         public System.Data.Entity.DbSet<LeaveNewAwajStartYear> LeaveNewAwajStartYears { get; set; }
         public System.Data.Entity.DbSet<MonthlyLeavePlan> MonthlyLeavePlans { get; set; }
         public System.Data.Entity.DbSet<MonthlyLeavePlanDetail> MonthlyLeavePlanDetails { get; set; }
@@ -2045,6 +2048,7 @@ namespace ExceedERP.DataAccess.Context
         #endregion
 
         #region PerformanceManagment
+        public System.Data.Entity.DbSet<EvaluationCriteriaActionType> EvaluationCriteriaActionTypes { get; set; }
         public DbSet<EmployeePerformanceScore> EmployeePerformanceScores { get; set; }
         public System.Data.Entity.DbSet<ProbationPerformanceSetting> ProbationPerformanceSettings { get; set; }
         public System.Data.Entity.DbSet<MeasurementDefinition> MeasurementDefinitions { get; set; }

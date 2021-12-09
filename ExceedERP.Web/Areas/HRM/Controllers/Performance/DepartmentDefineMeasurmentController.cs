@@ -46,6 +46,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                 return false;
             }
             #endregion
+
             #region Measurement
             var Measurement = db.Measurements.Where(x => x.MeasurementDefinitionId == id).FirstOrDefault();
             if (Measurement != null)
@@ -55,14 +56,14 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
             }
             #endregion
 
-            #region EmployeeMeasurement
-            var EmployeeMeasurement = db.EmployeeMeasurementDefinition.Where(x => x.MeasurementDefinitionId == id).FirstOrDefault();
-            if (EmployeeMeasurement != null)
-            {
-                ErrorMessage = "You cannot delete this Measurment Defination. Employees are evaluated by this definition.";
-                return false;
-            }
-            #endregion
+            //#region EmployeeMeasurement
+            //var EmployeeMeasurement = db.EmployeeMeasurementDefinition.Where(x => x.MeasurementDefinitionId == id).FirstOrDefault();
+            //if (EmployeeMeasurement != null)
+            //{
+            //    ErrorMessage = "You cannot delete this Measurment Defination. Employees are evaluated by this definition.";
+            //    return false;
+            //}
+            //#endregion
 
             return true;
         }

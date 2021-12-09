@@ -1,0 +1,190 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Domain.HRM.PerformanceManagment
+@using ExceedERP.Core.Localization
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<legend>@Resources.NavigatorPerformance_EvaluationCriteria</legend>
+@(Html.Kendo().Grid<MeasurementDefinition>()
+          .Name("MeasurementDefinitiongrid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.EvaluationCriteria);
+          columns.ForeignKey(c => c.LookupId, (IEnumerable)ViewData["EvaluationTypes"], "LookupId", "Description").EditorTemplateName("EvaluationTypes");
+          columns.Bound(c => c.Role).EditorTemplateName("Enum");
+          columns.Bound(c => c.DefnPercentageofWeight);
+          columns.Bound(c => c.Remark);
+          columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit); command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+      })
+      .ToolBar(toolbar =>
+      {
+          toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+           .Scrollable(h => h.Height(500))
+                 .Groupable()
+                          .Sortable(sortable =>
+                          {
+                              sortable.SortMode(GridSortMode.SingleColumn);
+                          })
+              .Filterable()
+                 .Pageable(pageable => pageable
+                      .Input(true)
+                      .Numeric(false)
+                      .Refresh(true)
+                      .PageSizes(true)
+                      .ButtonCount(5))
+      .DataSource(dataSource => dataSource
+          .Ajax()
+               .Events(events =>
+               {
+                   events.Error("error_handler(\"MeasurementDefinitiongrid\")");
+                   events.RequestStart("onRequestStart(\"MeasurementDefinitiongrid\")");
+                   events.RequestEnd("onRequestEnd(\"MeasurementDefinitiongrid\")");
+               })
+
+          .Model(model => model.Id(p => p.MeasurementDefinitionId))
+          .Read(read => read.Action("EvaluationCritetias_Read", "EvaluationCritetias"))
+          .Create(create => create.Action("EvaluationCritetias_Create", "EvaluationCritetias"))
+          .Update(update => update.Action("EvaluationCritetias_Update", "EvaluationCritetias"))
+          .Destroy(destroy => destroy.Action("EvaluationCritetias_Destroy", "EvaluationCritetias"))
+          ).ClientDetailTemplateId("template")
+)
+<script id="template" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+          .Name("tabstrip_#=MeasurementDefinitionId#")
+          .SelectedIndex(0)
+          .Items(items =>
+          {
+              //**************************************Identification****************************************************//
+              items.Add().Text(Resources.HR_PerformanceManagment_EmployeeMeasurement_MeasurementType).Content(
+                @<text>
+                    @* <legend>Measurement</legend>*@
+                    @(Html.Kendo().Grid<Measurement>()
+                  .Name("Measurementgrid_#=MeasurementDefinitionId#")
+          .Columns(columns =>
+          {
+              columns.Bound(c => c.MeasurementName);
+              columns.Bound(c => c.MesPercentageofWeight);
+              columns.Bound(c => c.Remark);
+              columns.Command(command =>
+              {
+                  command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                  command.Destroy().Text(Resources.ActionButton_Cancel);
+              }).Width(180);
+          })
+          .ToolBar(toolbar =>
+          {
+              toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+          })
+                   .ClientDetailTemplateId("Action")
+          .Editable(editable => editable.Mode(GridEditMode.InLine))
+          .Scrollable(h => h.Height(500))
+          .DataSource(dataSource => dataSource
+              .Ajax()
+                  .Events(events =>
+                  {
+                      events.Error("error_handler(\"Measurementgrid_#=MeasurementDefinitionId#\")");
+                      events.RequestStart("onRequestStart(\"Measurementgrid_#=MeasurementDefinitionId#\")");
+                      events.RequestEnd("onRequestEnd(\"Measurementgrid_#=MeasurementDefinitionId#\")");
+                  })
+              .Model(model => model.Id(p => p.MeasurementId))
+              .Read(read => read.Action("EvaluationCriteriaDetail_Read", "EvaluationCriteriaDetail", new { id = "#=MeasurementDefinitionId#" }))
+              .Create(create => create.Action("EvaluationCriteriaDetail_Create", "EvaluationCriteriaDetail", new { id = "#=MeasurementDefinitionId#" }))
+              .Update(update => update.Action("EvaluationCriteriaDetail_Update", "EvaluationCriteriaDetail"))
+              .Destroy(destroy => destroy.Action("EvaluationCriteriaDetail_Destroy", "EvaluationCriteriaDetail"))
+          ).ToClientTemplate()
+                    )
+
+
+                </text>
+
+
+                  );
+            
+             
+
+          }).ToClientTemplate())
+</script>
+
+<script id="Action" type="text/kendo-tmpl">
+    @(Html.Kendo().TabStrip()
+                          .Name("tabstrip_#=MeasurementId#")
+          .SelectedIndex(0)
+          .Items(items =>
+          {
+
+              items.Add().Text(Resources.HR_PerformanceManagment_PerformanceAction_PerformanceAction).Content(
+                @<text>
+
+                    @(Html.Kendo().Grid<PerformanceAction>()
+                                 .Name("PerformanceActiongrid_#=MeasurementId#")
+                         .Columns(columns =>
+                         {
+                             columns.Bound(c => c.ActionName);
+                             columns.Bound(c => c.AcPercentageofWeight);
+
+                             columns.Bound(c => c.Remark);
+                             columns.Command(command =>
+                             {
+                                 command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+                                 command.Destroy().Text(Resources.ActionButton_Cancel);
+                             }).Width(180);
+                         })
+                         .ToolBar(toolbar =>
+                         {
+                             toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+                         })
+                         .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                  .Scrollable(h => h.Height(500))
+                         .DataSource(dataSource => dataSource
+                             .Ajax()
+                              .Events(events =>
+                              {
+                                  events.Error("error_handler(\"PerformanceActiongrid_#=MeasurementId#\")");
+                                  events.RequestStart("onRequestStart(\"PerformanceActiongrid_#=MeasurementId#\")");
+                                  events.RequestEnd("onRequestEnd(\"PerformanceActiongrid_#=MeasurementId#\")");
+                              })
+                             .Model(model => model.Id(p => p.ActionId))
+                                     .Read(read => read.Action("EvaluationCriteriaSecondDetail_Read", "EvaluationCriteriaSecondDetail", new { defid = "#=MeasurementDefinitionId#", mesid = "#=MeasurementId#" }))
+                             .Create(create => create.Action("EvaluationCriteriaSecondDetail_Create", "EvaluationCriteriaSecondDetail", new { defid = "#=MeasurementDefinitionId#", mesid = "#=MeasurementId#" }))
+                             .Update(update => update.Action("EvaluationCriteriaSecondDetail_Update", "EvaluationCriteriaSecondDetail"))
+                             .Destroy(destroy => destroy.Action("EvaluationCriteriaSecondDetail_Destroy", "EvaluationCriteriaSecondDetail"))
+                         ).ToClientTemplate()
+                    )
+
+
+                </text>
+                  );
+
+          }).ToClientTemplate())
+</script>
+
+
+
+
+
+
+
+<script>
+    //function error_handler(e) {
+    //    if (e.errors) {
+    //        var message = "Errors:\n";
+    //        $.each(e.errors, function(key, value) {
+    //            if ('errors' in value) {
+    //                $.each(value.errors, function() {
+    //                    message += this + "\n";
+    //                });
+    //            }
+    //        });
+    //        alert(message);
+
+    //    }
+
+    //}
+
+    function sync_handler(e) {
+        this.read();
+
+    }
+</script>

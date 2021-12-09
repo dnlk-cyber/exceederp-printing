@@ -1971,6 +1971,8 @@
     <Compile Include="HRM\HRM\HRMObjectDataSource\DepartmentAttendanceListObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeePerformanceDepartmentODS.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeePerformanceParametrODS.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\EmployeesInOneDepartmentODS.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\EvaluationCriteriaODS.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\EvaluationStatusODS.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\ExperienceAmharicTwoODS.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\ExperienceEnglishTwoODS.cs" />
@@ -1982,9 +1984,12 @@
     <Compile Include="HRM\HRM\HRMObjectDataSource\LeaveOneByOneDetailSelfCareObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\ManPowerPlanningRequestODS.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\MonthlySalaryPerPeriodObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\MyEmployeePerformanceODS.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\NotPlacedEmployeesObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\ProbationPerformanceMeasureODS.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\ProjectObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\QuarterLengthODS.cs" />
+    <Compile Include="HRM\HRM\HRMObjectDataSource\QuarterODS.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\ReferalSheetObjectDataSource.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\TrainingAndEducationOneByOneODS.cs" />
     <Compile Include="HRM\HRM\HRMObjectDataSource\TrainingEvaluationEvaluaterInfoODS.cs" />
@@ -2004,6 +2009,7 @@
     <Compile Include="HRM\HRM\HRMViewModel\DelegationCCVM.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\DeligationVM.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\EmployeeHealthPayment.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\EmployeePerformanceVM.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\EmployeeTypeReportParameterViewModel.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\EmployementTypeVM.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\ExperienceVM.cs" />
@@ -2021,6 +2027,8 @@
     <Compile Include="HRM\HRM\HRMViewModel\NotPlacedEmployeeVM.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\ProbationMeasureDetailVM.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\ProbationMeasureVM.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\QuarterLengthVM.cs" />
+    <Compile Include="HRM\HRM\HRMViewModel\QuarterVM.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\ReferalSheetVM.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\TerminationAcceptanceLetterVM.cs" />
     <Compile Include="HRM\HRM\HRMViewModel\TrainingAndEducationOneByeOneVM.cs" />
@@ -2115,6 +2123,12 @@
     </Compile>
     <Compile Include="HRM\HRM\Letters\TrainingRequestObjectDataSource.cs" />
     <Compile Include="HRM\HRM\Letters\TransferToClinicObjectDataSource.cs" />
+    <Compile Include="HRM\HRM\MyPerformance.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="HRM\HRM\MyPerformance.designer.cs">
+      <DependentUpon>MyPerformance.cs</DependentUpon>
+    </Compile>
     <Compile Include="HRM\HRM\NotPlacedEmployees.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -5216,6 +5230,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\Letters\VacancyForMedia.resx">
       <DependentUpon>VacancyForMedia.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="HRM\HRM\MyPerformance.resx">
+      <DependentUpon>MyPerformance.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="HRM\HRM\NotPlacedEmployees.resx">
       <DependentUpon>NotPlacedEmployees.cs</DependentUpon>

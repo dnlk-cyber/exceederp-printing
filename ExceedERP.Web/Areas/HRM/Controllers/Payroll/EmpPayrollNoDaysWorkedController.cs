@@ -66,11 +66,13 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                 var periodLists = periodList.Where(x => x.GlFiscalYearId == glyear.GlFiscalYearId).ToList();
                 foreach (var pl in periodLists)
                 {
-                    var checkexistancep = db.PayrollProcessViewModel.FirstOrDefault(x => x.GLPeriodId == pl.GLPeriodId);
-                    if (checkexistancep == null)
-                    {
-                        gLPeriods.Add(pl);
-                    }
+                    gLPeriods.Add(pl);
+
+                    //var checkexistancep = db.PayrollProcessViewModel.FirstOrDefault(x => x.GLPeriodId == pl.GLPeriodId);
+                    //if (checkexistancep == null)
+                    //{
+                    //    gLPeriods.Add(pl);
+                    //}
                 }
 
             }
@@ -618,10 +620,17 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                 ModelState.AddModelError("", "this employee is already recoreded");
             }
 
-            var checkexistancep = db.PayrollProcessViewModel.FirstOrDefault(x => x.GLPeriodId == empPayrollNoDaysWorked.GLPeriodId);
+            int branchId = 0;
+            var placement = db.Placements.FirstOrDefault(x => x.EmployeeId == empPayrollNoDaysWorked.EmployeeId && x.isCurrent);
+            if (placement != null)
+            {
+                branchId = placement.BranchId;
+            }
+
+            var checkexistancep = db.PayrollProcessViewModel.FirstOrDefault(x => x.GLPeriodId == empPayrollNoDaysWorked.GLPeriodId && x.BranchId == branchId);
             if (checkexistancep != null)
             {
-                ModelState.AddModelError("", "You cannot create this data. It already processed!!");
+                ModelState.AddModelError("", "You can't create this data. It already processed!!");
             }
 
             if (ModelState.IsValid)
@@ -657,11 +666,17 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
         {
             ModelState.Clear();
 
-            var checkexistance = db.PayrollProcessViewModel.FirstOrDefault(x => x.EmployeeId == empPayrollNoDaysWorked.EmployeeId && x.GLPeriodId == empPayrollNoDaysWorked.GLPeriodId);
+            int branchId = 0;
+            var placement = db.Placements.FirstOrDefault(x => x.EmployeeId == empPayrollNoDaysWorked.EmployeeId && x.isCurrent);
+            if (placement != null)
+            {
+                branchId = placement.BranchId;
+            }
+
+            var checkexistance = db.PayrollProcessViewModel.FirstOrDefault(x => x.GLPeriodId == empPayrollNoDaysWorked.GLPeriodId && x.BranchId == branchId);
             if (checkexistance != null)
             {
-
-                ModelState.AddModelError("", "You cannot delete this data. It already processed!!");
+                ModelState.AddModelError("", "You can't create this data. It already processed!!");
             }
 
             if (ModelState.IsValid)

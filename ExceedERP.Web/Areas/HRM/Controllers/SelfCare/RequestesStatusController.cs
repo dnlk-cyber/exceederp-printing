@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 using System.Data.Entity;
@@ -27,6 +27,7 @@ using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.HRM.TrainingEducation;
 using ExceedERP.Core.Domain.HRM.RecruitmentManagment;
 using ExceedERP.Helpers.HR;
+using ExceedERP.Core.Domain.HRM.Payroll;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
 {
@@ -2393,7 +2394,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                 }
                 #endregion
 
-
                 #region Notifications
 
                 if (requestesStatus.ReferenceType == "Leave")
@@ -3250,6 +3250,107 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.SelfCare
                 }
 
                 #endregion
+
+                #region Overtime request Send to overtime table 
+
+                decimal NormalHour = 0, NightHours = 0, RestDay = 0, HolidayHours = 0;
+
+                if (requestesStatus.ReferenceType == "OverTime" && requestesStatus.Status == RequestStatus.APPROVE)
+                {
+                    var overtime = db.OverTimeRequest.FirstOrDefault(x => x.OverTimeRequestId == requestesStatus.RequestId);
+                    if (overtime != null)
+                    {
+                        int periodId = 0;
+                        string department = "";
+                        string periodName = "";
+
+                        var period = db.GLPeriods.FirstOrDefault(x => x.DateFrom <= overtime.FromDate && x.DateTo >= overtime.FromDate);
+                        if (period != null)
+                        {
+                            periodId = period.GLPeriodId;
+                            periodName = period.Name;
+                        }
+                        var dep = db.MainCompanyStructures.FirstOrDefault(x => x.OrgStructureId == overtime.OrgStructureId);
+                        if (dep != null)
+                        {
+                            department = dep.Name;
+                        }
+
+                        var overtimeEmployees = db.OverTimeRequestEmployee.Where(x => x.OverTimeRequestId == overtime.OverTimeRequestId).ToList();
+
+                        foreach (var over in overtimeEmployees)
+                        {
+                            double duration = (overtime.ToTime - overtime.FromTime).TotalHours;
+                            int diff = overtime.ToDate.Subtract(overtime.FromDate).Days + 1;
+
+                            var checkOverTime = db.OverTimes.FirstOrDefault(x => x.EmployeeId == over.EmployeeId && x.GLPeriodId == periodId);
+                            if (checkOverTime != null)
+                            {
+                                checkOverTime.EmployeeId = over.EmployeeId;
+                                checkOverTime.GLPeriodId = periodId;
+
+                                if (overtime.Type == OverTimeType.Norma_lHour)
+                                {
+                                    checkOverTime.NormalHours = checkOverTime.NormalHours + Convert.ToDecimal(duration * diff);
+                                }
+                                else if (overtime.Type == OverTimeType.Night_Hour)
+                                {
+                                    checkOverTime.NightHours = checkOverTime.NormalHours + Convert.ToDecimal(duration * diff);
+                                }
+                                else if (overtime.Type == OverTimeType.Rest_Day_Hour)
+                                {
+                                    checkOverTime.RestdayHours = checkOverTime.NormalHours + Convert.ToDecimal(duration * diff);
+                                }
+                                else if (overtime.Type == OverTimeType.Holiday_Hour)
+                                {
+                                    checkOverTime.HolidayHours = checkOverTime.NormalHours + Convert.ToDecimal(duration * diff);
+                                }
+
+                                #region operation log
+                                UserHelper.OperationLog(Request.UserHostAddress, "payroll overtime", "Success", User.Identity.Name, $"approve overtime requests form department  {department} period {periodName} normal {checkOverTime.NormalHours} night {checkOverTime.NightHours} holiday {checkOverTime.HolidayHours} rest {checkOverTime.RestdayHours} ", Modules.Payroll);
+                                #endregion
+
+                                db.Entry(checkOverTime).State = EntityState.Modified;
+                                db.SaveChanges();
+                            }
+                            else
+                            {
+                                var empOver = new OverTime();
+
+                                empOver.EmployeeId = over.EmployeeId;
+                                empOver.GLPeriodId = periodId;
+
+                                if (overtime.Type == OverTimeType.Norma_lHour)
+                                {
+                                    empOver.NormalHours = empOver.NormalHours + Convert.ToDecimal(duration * diff);
+                                }
+                                else if (overtime.Type == OverTimeType.Night_Hour)
+                                {
+                                    empOver.NightHours = empOver.NormalHours + Convert.ToDecimal(duration * diff);
+                                }
+                                else if (overtime.Type == OverTimeType.Rest_Day_Hour)
+                                {
+                                    empOver.RestdayHours = empOver.NormalHours + Convert.ToDecimal(duration * diff);
+                                }
+                                else if (overtime.Type == OverTimeType.Holiday_Hour)
+                                {
+                                    empOver.HolidayHours = empOver.NormalHours + Convert.ToDecimal(duration * diff);
+                                }
+
+                                #region operation log
+                                UserHelper.OperationLog(Request.UserHostAddress, "payroll overtime", "Success", User.Identity.Name, $"approve overtime requests form department  {department} period {periodName} normal {empOver.NormalHours} night {empOver.NightHours} holiday {empOver.HolidayHours} rest {empOver.RestdayHours} ", Modules.Payroll);
+                                #endregion
+
+                                db.OverTimes.Add(empOver);
+                                db.SaveChanges();
+                            }
+
+                        }
+                    }
+                }
+
+                #endregion
+
             }
             return Json(new[] { requestesStatus }.ToDataSourceResult(request, ModelState));
         }

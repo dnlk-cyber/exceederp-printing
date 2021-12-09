@@ -2,18 +2,23 @@
 @using ExceedERP.Core.Domain.Common
 @using ExceedERP.Core.Domain.HRM
 
-@(Html.Kendo().DropDownList( ) 
+@(Html.Kendo().DropDownList( )
       .Name("EmployeeId")
-      .DataValueField("PersonId")
-      .DataTextField("FullName")
+      .DataValueField("EmployeeId")
+      .DataTextField("FullNameaEnglish")
       .OptionLabel("Select Employee")
       .Filter("contains")
       .MinLength(2)
       .HtmlAttributes(new { style = "width:100%" })
       .BindTo((IEnumerable) ViewData["EmployeeList"])
+       .DataSource(dataSource =>
+       {
+           dataSource.Read(read => read.Action("GetEmployeesUnderLogedInUserDepartment", "OverTimeRequest", new { area = "HRM" }))
+               .ServerFiltering(false);
+       })
      .ValuePrimitive( true)
-                          
-                                               
+
+
       .Height(400)
 //      .HeaderTemplate("<div class=\"dropdown-header k-widget k-header\">" +
 //                      "<span>Photo</span>" +

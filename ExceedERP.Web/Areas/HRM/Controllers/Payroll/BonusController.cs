@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 using System.Data.Entity;
@@ -270,17 +270,29 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                         if (year != null)
                         {
                             var quarters = db.Quarters.Where(x => x.QuarterLengthId == year.QuarterLengthId).Select(x => x.QuarterId).ToList();
-                            var performanceScore = db.EmployeePerformanceScores.Where(x => x.EmployeeId == l.PersonId && quarters.Contains(x.QuarterId));
 
-                            if (performanceScore.Any())
+                            var employeePerformances = db.EmployeePerformances.Where(x => x.EmployeeId == l.PersonId && quarters.Contains(x.GlPeriodId)).Select(x => x.EmployeePerformanceId).ToList();
+
+                            if (employeePerformances.Any())
                             {
-                                score = performanceScore.Sum(x => x.Result)/year.Length;
+                                var employeeMeasurements = db.EmployeeMeasurement.Where(x => employeePerformances.Contains(x.EmployeePerformanceId)).Select(x => x.EmpMeasurementId).ToList();
+
+                                if (employeeMeasurements.Any())
+                                {
+                                    var performanceScores = db.EmployeePerformanceScores.Where(x => employeeMeasurements.Contains(x.EmployeeMeasurementId) && x.Score > 0).ToList();
+
+                                    if (performanceScores.Any())
+                                    {
+                                        score = performanceScores.Sum(x => x.Score) / year.Length;
+                                    }
+                                }
                             }
-                            var rank = db.PerformanceRank.FirstOrDefault(x=>x.Minimum <= score && x.Maximum >= score);
-                            if(rank != null)
+
+                            var rank = db.PerformanceRank.FirstOrDefault(x => x.Minimum <= score && x.Maximum >= score);
+                            if (rank != null)
                             {
                                 var checkMultiplayer = bonusSetting.FirstOrDefault(x => x.Multiplier.ToLower() == rank.Description.ToLower());
-                                if(checkMultiplayer != null)
+                                if (checkMultiplayer != null)
                                 {
                                     entity.BounsFactor = checkMultiplayer.CurrentValue;
                                     entity.PerformanceRate = checkMultiplayer.Multiplier;
@@ -292,14 +304,14 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                                         var singleEmpBonus = placemet.Salary * checkMultiplayer.CurrentValue;
                                         var singleEmpBonusRound = Math.Round(singleEmpBonus, 2);
                                         entity.BonusType = BonusType.WITH_PERFORMANCE;
-                                        
+
 
                                         entity.TotalBonus = Convert.ToDouble(singleEmpBonusRound);//Convert.ToDouble((salary * bFactor) * (Convert.ToInt32(entity.PerformanceRate) / 100));
 
                                         entity.TotalIncomeTax = Math.Round(XAPI.IncomeTax.GetIncomeTax((float)entity.TotalBonus), 2);
                                     }
                                 }
-                            }                          
+                            }
 
                             entity.Remark = bonus.Remark;
                             entity.DateCreated = DateTime.Now;
@@ -413,25 +425,32 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
             if (qauretrLength != null)
             {
                 var quarters = db.Quarters.Where(x => x.QuarterLengthId == qauretrLength.QuarterLengthId).Select(x => x.QuarterId);
-                var performances = db.EmployeeMeasurementDefinition.Where(x => quarters.Contains(x.QuarterId)).ToList();
-                var performanceRanks = db.PerformanceRank.ToList();
+
+                var performances = db.EmployeePerformances.Where(x => x.EmployeeId == empId && quarters.Contains(x.GlPeriodId)).Select(x => x.EmployeePerformanceId);
+
                 if (performances.Any())
                 {
-                    var result = performances.Sum(x => x.Result) / performances.Count;
-                    var getoneRate = performanceRanks.Where(x => x.Minimum <= result && x.Maximum >= result).FirstOrDefault();
-                    if (getoneRate != null)
+                    var empMeasurments = db.EmployeeMeasurement.Where(x => performances.Contains(x.EmployeePerformanceId)).Select(x => x.EmpMeasurementId).ToList();
+
+                    if (empMeasurments.Any())
                     {
+                        var employeePerformanceScores = db.EmployeePerformanceScores.Where(x => empMeasurments.Contains(x.EmployeeMeasurementId) && x.Score > 0).ToList();
 
-                        if (getoneRate.BonusRate != 0)
+                        if (employeePerformanceScores.Any())
                         {
-                            pRate = getoneRate.BonusRate;
+                            var result = employeePerformanceScores.Sum(x => x.Score) / quarters.Count();
+                            var getoneRate = db.PerformanceRank.FirstOrDefault(x => x.Minimum <= result && x.Maximum >= result);
+                            if (getoneRate != null)
+                            {
+                                if (getoneRate.BonusRate != 0)
+                                {
+                                    pRate = getoneRate.BonusRate;
+                                }
+                            }
                         }
-
                     }
-
                 }
             }
-
 
             return pRate;
         }

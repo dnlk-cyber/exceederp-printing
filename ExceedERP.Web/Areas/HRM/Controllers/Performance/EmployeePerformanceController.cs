@@ -19,6 +19,7 @@ using ExceedERP.Core.Domain.HRM.PerformanceManagment;
 using ExceedERP.Web.Helpers;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Helpers.HR;
+using ExceedERP.Web.Models;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
 {
@@ -27,499 +28,105 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
     public class EmployeePerformanceController : BaseController
     {
         private ExceedDbContext db = new ExceedDbContext();
-        static int EvaluationType { get; set; }
-        static int Employee { get; set; }
-        static int Period { get; set; }
-        static bool depLevel { get; set; }
-        static string DefinationRemark { get; set; }
-        static string MeasureRemark { get; set; }
-        static string ActionRemark { get; set; }
+
         public ActionResult Index()
         {
+            ViewData["Measurments"] = db.Measurements.ToList();
+            ViewData["PerformanceActions"] = db.PerformanceActions.ToList();
 
-            ViewData["EvaluationTypes"] = db.Lookups.Where(x => x.LookupType == LookUpTypes.EVALUATION_TYPE).ToList();
-
-            var periods = db.GLPeriods.ToList();
-            ViewData["Periods"] = periods;
-            HRMInputs inputs = new HRMInputs();
-            var list = inputs.GetEmployees(User.Identity.Name);
-            ViewData["EmployeeList"] = list.Where(x => x.IsActive);
-            ViewData["Employee"] = db.Person_Employee.AsQueryable();
-            ViewData["PerformanceActions"] = db.PerformanceActions.AsQueryable();
             return View();
         }
-        public decimal GetPerformanceResult(int empId, string period, string lookupid, string evaluationLevel)
+
+        public ActionResult EmployeeMeasurements_Read([DataSourceRequest] DataSourceRequest request, string empId, string fiscalYearId, string periodId, string evaluationCriteriaId)
         {
-            decimal result = 0;
+            int.TryParse(empId, out int employeeId);
+            int.TryParse(fiscalYearId, out int glFiscalYearId);
+            int.TryParse(periodId, out int glPeriodId);
+            int.TryParse(evaluationCriteriaId, out int evalCriteriaId);
 
-            var measurementdefinitions = db.MeasurementDefinitions.Select(x => x.MeasurementDefinitionId);
-            if (!String.IsNullOrEmpty(lookupid))
+            int employeePerformanceId = 0;
+
+            if (employeeId != 0 && glFiscalYearId != 0 && glPeriodId != 0 && evalCriteriaId != 0)
             {
-                measurementdefinitions = db.MeasurementDefinitions.Where(x => x.LookupId.ToString() == lookupid).Select(x => x.MeasurementDefinitionId);
-            }
-            if(!String.IsNullOrEmpty(evaluationLevel))
-            {
-                if (evaluationLevel == "1")
-                {
-                    measurementdefinitions = db.MeasurementDefinitions.Where(x => x.LookupId.ToString() == lookupid && !x.IsDepartmentLevel).Select(x => x.MeasurementDefinitionId);
-                }
-                else if (evaluationLevel == "2")
-                {
-                    measurementdefinitions = db.MeasurementDefinitions.Where(x => x.LookupId.ToString() == lookupid && x.IsDepartmentLevel).Select(x => x.MeasurementDefinitionId);
-                }
-            }
-            if (measurementdefinitions.Any())
-            {
-                var measurments = db.Measurements.Where(x => measurementdefinitions.Contains(x.MeasurementDefinitionId)).Select(x => x.MeasurementId).ToList();
-                if (measurments.Any())
-                {
-                    var score = db.EmployeePerformanceScores.Where(x => measurments.Contains(x.MeasurementId.Value) && x.EmployeeId == empId && x.QuarterId.ToString() == period).ToList();
-                    if (!String.IsNullOrEmpty(evaluationLevel))
-                    {
-                        if (evaluationLevel == "1")
-                        {
-                            score = db.EmployeePerformanceScores.Where(x => measurments.Contains(x.MeasurementId.Value) && x.EmployeeId == empId && x.QuarterId.ToString() == period && !x.IsDepartmentLevel).ToList();
-                        }
-                        else if (evaluationLevel == "2")
-                        {
-                            score = db.EmployeePerformanceScores.Where(x => measurments.Contains(x.MeasurementId.Value) && x.EmployeeId == empId && x.QuarterId.ToString() == period && x.IsDepartmentLevel).ToList();
-                        }
-                    }
-                    if (score.Any())
-                    {
-                        result = score.Sum(x => x.Result);
-                    }
-                }
+                employeePerformanceId = GenerateEmployeeForPerofmanceEvaluation(employeeId, glFiscalYearId, glPeriodId, evalCriteriaId);
             }
 
-            return result;
-        }
-        public decimal GetPerformanceWeight(int empId, string period, string lookupid, string evaluationLevel)
-        {
-            decimal result = 0;
-            bool isDepartmentLevel = false;
+            IQueryable<EmployeeMeasurement> measurements = db.EmployeeMeasurement.Where(x => x.EmployeePerformanceId == employeePerformanceId);
 
-            var measurementdefinitions = db.MeasurementDefinitions.Select(x => x.MeasurementDefinitionId);
-            if (!String.IsNullOrEmpty(lookupid))
+            DataSourceResult result = measurements.ToDataSourceResult(request, measur => new
             {
-                measurementdefinitions = db.MeasurementDefinitions.Where(x => x.LookupId.ToString() == lookupid).Select(x => x.MeasurementDefinitionId);
-            }
-            if (!String.IsNullOrEmpty(evaluationLevel))
-            {
-                if (evaluationLevel == "1")
-                {
-                    measurementdefinitions = db.MeasurementDefinitions.Where(x => x.LookupId.ToString() == lookupid && !x.IsDepartmentLevel).Select(x => x.MeasurementDefinitionId);
-                }
-                else if (evaluationLevel == "2")
-                {
-                    measurementdefinitions = db.MeasurementDefinitions.Where(x => x.LookupId.ToString() == lookupid && x.IsDepartmentLevel).Select(x => x.MeasurementDefinitionId);
-                }
-            }
-            if (measurementdefinitions.Any())
-            {
-                var measurments = db.Measurements.Where(x => measurementdefinitions.Contains(x.MeasurementDefinitionId)).Select(x => x.MeasurementId).ToList();
-                if (measurments.Any())
-                {
-                    var score = db.EmployeePerformanceScores.Where(x => measurments.Contains(x.MeasurementId.Value) && x.EmployeeId == empId && x.QuarterId.ToString() == period).ToList();
-                    if (!String.IsNullOrEmpty(evaluationLevel))
-                    {
-                        if (evaluationLevel == "1")
-                        {
-                            score = db.EmployeePerformanceScores.Where(x => measurments.Contains(x.MeasurementId.Value) && x.EmployeeId == empId && x.QuarterId.ToString() == period && !x.IsDepartmentLevel).ToList();
-                        }
-                        else if (evaluationLevel == "2")
-                        {
-                            score = db.EmployeePerformanceScores.Where(x => measurments.Contains(x.MeasurementId.Value) && x.EmployeeId == empId && x.QuarterId.ToString() == period && x.IsDepartmentLevel).ToList();
-                        }
-                    }
-                    if (score.Any())
-                    {
-                        result = score.Sum(x => x.EmpPerfPercentageofWeight);
-                    }
-                }
-            }
+                EmpMeasurementId = measur.EmpMeasurementId,
+                EmployeePerformanceId = measur.EmployeePerformanceId,
+                MeasurmentId = measur.MeasurmentId,
+                Weight = measur.Weight,
+                Result = GetResult(measur.EmpMeasurementId),
+                Remark = measur.Remark
+            });
 
-            return result;
-        }
-        public string GetGrade(int empId, string period, string lookupid, string evaluationLevel)
-        {
-            string grade = "";
-            var measurementdefinitions = db.MeasurementDefinitions.ToList();
-            if (!String.IsNullOrEmpty(lookupid))
-            {
-                measurementdefinitions = measurementdefinitions.Where(x => x.LookupId.ToString() == lookupid).ToList();
-            }
-            if (!String.IsNullOrEmpty(evaluationLevel))
-            {
-                if (evaluationLevel == "1")
-                {
-                    measurementdefinitions = measurementdefinitions.Where(x => !x.IsDepartmentLevel).ToList();
-                }
-                else if (evaluationLevel == "2")
-                {
-                    measurementdefinitions = measurementdefinitions.Where(x => x.IsDepartmentLevel).ToList();
-                }
-            }
-            if (measurementdefinitions.Any())
-            {
-                var measurDefintions = measurementdefinitions.Select(x => x.MeasurementDefinitionId);
-                var measurments = db.Measurements.Where(x => measurDefintions.Contains(x.MeasurementDefinitionId)).Select(x => x.MeasurementId).ToList();
-                if (measurments.Any())
-                {
-                    var score = db.EmployeePerformanceScores.Where(x => measurments.Contains(x.MeasurementId.Value) && x.EmployeeId == empId && x.QuarterId.ToString() == period).ToList();
-                    if (score.Any())
-                    {
-                        var result = score.Sum(x => x.Result);
-                        var performanceRank = db.PerformanceRank.FirstOrDefault(x => x.Minimum <= result && x.Maximum >= result);
-                        if (performanceRank != null)
-                        {
-                            grade = performanceRank.Description;
-                        }
-                    }
-                }
-            }
-
-            return grade;
-        }
-        public decimal GetMeasurResult(int empId, string period, string lookupid, int measuDefId, int measurId, string evaluationLevel)
-        {
-            decimal result = 0;
-            var measurementdefinition = db.MeasurementDefinitions.FirstOrDefault(x => x.MeasurementDefinitionId == measuDefId);
-            if (!String.IsNullOrEmpty(evaluationLevel))
-            {
-                if (evaluationLevel == "1")
-                {
-                    measurementdefinition = db.MeasurementDefinitions.FirstOrDefault(x => x.MeasurementDefinitionId == measuDefId && !x.IsDepartmentLevel);
-                }
-                else if (evaluationLevel == "2")
-                {
-                    measurementdefinition = db.MeasurementDefinitions.FirstOrDefault(x => x.MeasurementDefinitionId == measuDefId && x.IsDepartmentLevel);
-                }
-            }
-            if (measurementdefinition != null)
-            {
-                var measurment = db.Measurements.FirstOrDefault(x => x.MeasurementDefinitionId == measurementdefinition.MeasurementDefinitionId && x.MeasurementId == measurId);
-                if (measurment != null)
-                {
-                    var score = db.EmployeePerformanceScores.Where(x => x.MeasurementDefinitionId == measurementdefinition.MeasurementDefinitionId && x.MeasurementId == measurment.MeasurementId && x.EmployeeId == empId && x.QuarterId.ToString() == period).ToList();
-                    if (!String.IsNullOrEmpty(evaluationLevel))
-                    {
-                        if (evaluationLevel == "1")
-                        {
-                            score = db.EmployeePerformanceScores.Where(x => x.MeasurementDefinitionId == measurementdefinition.MeasurementDefinitionId && x.MeasurementId == measurment.MeasurementId && x.EmployeeId == empId && x.QuarterId.ToString() == period && !x.IsDepartmentLevel).ToList();
-                        }
-                        else if (evaluationLevel == "2")
-                        {
-                            score = db.EmployeePerformanceScores.Where(x => x.MeasurementDefinitionId == measurementdefinition.MeasurementDefinitionId && x.MeasurementId == measurment.MeasurementId && x.EmployeeId == empId && x.QuarterId.ToString() == period && x.IsDepartmentLevel).ToList();
-                        }
-                    }
-                    if (score.Any())
-                    {
-                        result = score.Sum(x => x.Result);
-                    }
-                }
-            }
-
-            return result;
-        }
-        public decimal GetMeasurWeight(int empId, string period, string lookupid, int measuDefId, int measurId)
-        {
-            decimal result = 0;
-            var measurementdefinition = db.MeasurementDefinitions.FirstOrDefault(x => x.MeasurementDefinitionId == measuDefId);
-            if (measurementdefinition != null)
-            {
-                var measurment = db.Measurements.FirstOrDefault(x => x.MeasurementDefinitionId == measurementdefinition.MeasurementDefinitionId && x.MeasurementId == measurId);
-                if (measurment != null)
-                {
-                    var score = db.EmployeePerformanceScores.Where(x => x.MeasurementDefinitionId == measurementdefinition.MeasurementDefinitionId && x.MeasurementId == measurment.MeasurementId && x.EmployeeId == empId && x.QuarterId.ToString() == period).ToList();
-                    if (score.Any())
-                    {
-                        result = score.Sum(x => x.EmpPerfPercentageofWeight);
-                    }
-                }
-            }
-
-            return result;
-        }
-        public decimal GetMeasurDefinitionResult(int empId, string period, string lookupid, int measuDefId, string evaluationLevel)
-        {
-            decimal result = 0;
-            var measurementdefinition = db.MeasurementDefinitions.FirstOrDefault(x => x.MeasurementDefinitionId == measuDefId);
-       
-            if (evaluationLevel == "1")
-            {
-                measurementdefinition = db.MeasurementDefinitions.FirstOrDefault(x => x.MeasurementDefinitionId == measuDefId && !x.IsDepartmentLevel);
-            }
-            else if (evaluationLevel == "2")
-            {
-                measurementdefinition = db.MeasurementDefinitions.FirstOrDefault(x => x.MeasurementDefinitionId == measuDefId && x.IsDepartmentLevel);
-            }
-
-            if (measurementdefinition != null)
-            {
-                var measurment = db.Measurements.Where(x => x.MeasurementDefinitionId == measurementdefinition.MeasurementDefinitionId).Select(x => x.MeasurementId).ToList();
-                if (measurment.Any())
-                {
-                    var score = db.EmployeePerformanceScores.Where(x => x.MeasurementDefinitionId == measurementdefinition.MeasurementDefinitionId && measurment.Contains(x.MeasurementId.Value) && x.EmployeeId == empId && x.QuarterId.ToString() == period).ToList();
-                    if (evaluationLevel == "1")
-                    {
-                        score = db.EmployeePerformanceScores.Where(x => x.MeasurementDefinitionId == measurementdefinition.MeasurementDefinitionId && measurment.Contains(x.MeasurementId.Value) && x.EmployeeId == empId && x.QuarterId.ToString() == period && !x.IsDepartmentLevel).ToList();
-                    }
-                    else if (evaluationLevel == "2")
-                    {
-                        score = db.EmployeePerformanceScores.Where(x => x.MeasurementDefinitionId == measurementdefinition.MeasurementDefinitionId && measurment.Contains(x.MeasurementId.Value) && x.EmployeeId == empId && x.QuarterId.ToString() == period && x.IsDepartmentLevel).ToList();
-                    }
-                    if (score.Any())
-                    {
-                        result = score.Sum(x => x.Result);
-                    }
-                }
-            }
-
-            return result;
-        }
-        public decimal GetMeasurDefinitionWeight(int empId, string period, string lookupid, int measuDefId)
-        {
-            decimal result = 0;
-            var measurementdefinition = db.MeasurementDefinitions.FirstOrDefault(x => x.MeasurementDefinitionId == measuDefId);
-            if (measurementdefinition != null)
-            {
-                var measurment = db.Measurements.Where(x => x.MeasurementDefinitionId == measurementdefinition.MeasurementDefinitionId).Select(x => x.MeasurementId).ToList();
-                if (measurment.Any())
-                {
-                    var score = db.EmployeePerformanceScores.Where(x => x.MeasurementDefinitionId == measurementdefinition.MeasurementDefinitionId && measurment.Contains(x.MeasurementId.Value) && x.EmployeeId == empId && x.QuarterId.ToString() == period).ToList();
-                    if (score.Any())
-                    {
-                        result = score.Sum(x => x.EmpPerfPercentageofWeight);
-                    }
-                }
-            }
-
-            return result;
-        }
-        public bool GetApproveStatus(int empId, string period)
-        {
-            var performanceScore = db.EmployeePerformanceScores.FirstOrDefault(x=>x.EmployeeId == empId && x.QuarterId.ToString() == period && x.IsApproved);
-            if(performanceScore != null)
-            {
-                return true;
-            }
-            return false;
-        }
-        public ActionResult EmployeePerformance_Read([DataSourceRequest] DataSourceRequest request, string employee, string period, string LookupId, string Evaluation)
-        {
-            var logedEmp = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-            var subordinates = EmployeeHelper.GetSubordinates(logedEmp);
-            var employeePerformance = db.EmployeePerformances.Where(x => subordinates.Contains(x.EmployeeId)).ToList();
-            if (!string.IsNullOrEmpty(employee))
-            {
-                employeePerformance = db.EmployeePerformances.Where(x => x.EmployeeId.ToString() == employee).ToList();
-            }
-            var config = db.Configurations.FirstOrDefault(x => x.Category == "HRM" && x.Attribute == PerformanceSelfEvaluation.Enable_Self_Evaluation.ToString());
-            if (config == null)
-            {
-                subordinates.Remove(logedEmp);
-                employeePerformance = employeePerformance.Where(x => x.EmployeeId != logedEmp).ToList();
-            }
-            #region Generate Performace 
-            if (subordinates.Count() > employeePerformance.Count() && String.IsNullOrEmpty(employee))
-            {
-                foreach (var sub in subordinates)
-                {
-                    var empPerformance = db.EmployeePerformances.FirstOrDefault(x => x.EmployeeId == sub);
-                    if (empPerformance == null)
-                    {
-                        var entity = new EmployeePerformance
-                        {
-                            EmployeeId = sub,
-                            Weight = 0,
-                            Result = 0
-                        };
-                        db.EmployeePerformances.Add(entity);
-                        db.SaveChanges();
-                    }
-                }
-
-                employeePerformance = db.EmployeePerformances.Where(x => subordinates.Contains(x.EmployeeId)).ToList();
-            }
-            if (!employeePerformance.Any() && !string.IsNullOrEmpty(employee))
-            {
-                var id = Convert.ToInt32(employee);
-                var entity = new EmployeePerformance
-                {
-                    EmployeeId = id,
-                    Weight = 0,
-                    Result = 0
-                };
-
-                db.EmployeePerformances.Add(entity);
-                db.SaveChanges();
-            }
-            #endregion
-
-            DataSourceResult result = employeePerformance.ToDataSourceResult(request,
-                emp => new
-                {
-                    EmployeePerformanceId = emp.EmployeePerformanceId,
-                    EmployeeId = emp.EmployeeId,
-                    Weight = GetPerformanceWeight(emp.EmployeeId, period, LookupId, Evaluation),
-                    Result = GetPerformanceResult(emp.EmployeeId, period, LookupId, Evaluation),
-                    Grade = GetGrade(emp.EmployeeId, period, LookupId, Evaluation),
-                    IsApproved = GetApproveStatus(emp.EmployeeId,period),
-                    Remark = emp.Remark,
-                });
             return Json(result);
-
         }
-
-        public ActionResult MeasurementDefinitions_Read([DataSourceRequest] DataSourceRequest request, string employee, string period, string LookupId, string Evaluation, int empId)
-        {                 
-
-
-            IQueryable<MeasurementDefinition> measurementdefinitions = db.MeasurementDefinitions;
-
-            if(!String.IsNullOrEmpty(Evaluation))
-            {
-                if (Evaluation == "1")
-                {
-                    measurementdefinitions = measurementdefinitions.Where(x=>!x.IsDepartmentLevel);
-                }
-                else if (Evaluation == "2")
-                {
-                    measurementdefinitions = measurementdefinitions.Where(x => x.IsDepartmentLevel);
-                }
-            }
-
-            if (!String.IsNullOrEmpty(LookupId))
-            {
-                measurementdefinitions = measurementdefinitions.Where(x => x.LookupId.ToString() == LookupId);
-            }
-
-
-
-            DataSourceResult result = measurementdefinitions.ToDataSourceResult(request,
-                measurementDefinition => new
-                {
-                    MeasurementDefinitionId = measurementDefinition.MeasurementDefinitionId,
-                    EvaluationCriteria = measurementDefinition.EvaluationCriteria,
-                    LookupId = measurementDefinition.LookupId,
-                    Role = measurementDefinition.Role,
-                    EmployeeId = measurementDefinition.EmployeeId,
-                    Result = GetMeasurDefinitionResult(empId, period, LookupId, measurementDefinition.MeasurementDefinitionId,Evaluation),
-                    DefnPercentageofWeight = measurementDefinition.DefnPercentageofWeight,//GetMeasurDefinitionWeight(empId, period, LookupId, measurementDefinition.MeasurementDefinitionId),
-                    Remark = measurementDefinition.Remark,
-                    // IsApproved = IsPerformanceApproved(measurementDefinition.MeasurementDefinitionId),
-                    CheckEmpId = UserInformationHelper.GetEmployeeId(User.Identity.Name)
-                });
-            return Json(result);
-
-        }
-        public ActionResult Measurements_Read([DataSourceRequest] DataSourceRequest request, string mdid, string period, string LookupId, int empId, string Evaluation)
+        public double GetResult(int employeeMeasurmentId)
         {
+            var employeePerformanceScore = db.EmployeePerformanceScores.FirstOrDefault(x => x.EmployeeMeasurementId == employeeMeasurmentId && x.Score > 0);
 
-            IQueryable<Measurement> measurements = db.Measurements.Where(x => x.MeasurementDefinitionId.ToString() == mdid);
+            if (employeePerformanceScore != null)
+            {
+                return Convert.ToDouble(employeePerformanceScore.Score);
+            }
 
-            DataSourceResult result = measurements.ToDataSourceResult(request,
-                measur => new
-                {
-                    MeasurementId = measur.MeasurementId,
-                    MeasurementDefinitionId = measur.MeasurementDefinitionId,
-                    MeasurementName = measur.MeasurementName,
-                    MesPercentageofWeight = measur.MesPercentageofWeight,//GetMeasurWeight(empId, period, LookupId, measur.MeasurementDefinitionId, measur.MeasurementId),
-                    Result = GetMeasurResult(empId, period, LookupId, measur.MeasurementDefinitionId, measur.MeasurementId,Evaluation),
-                    Remark = measur.Remark
-                });
-            return Json(result);
-
+            return 0;
         }
+        ////////////////
 
-        public ActionResult PerformanceActions_Read([DataSourceRequest] DataSourceRequest request, string employee, string period, string LookupId, string Evaluation, string mesid, string empId, int measurmentDefinitionId)
+        public ActionResult PerformanceActions_Read([DataSourceRequest] DataSourceRequest request, string empMeasurId)
         {
-            bool isDepartmentLevel = false;
-           
+            int.TryParse(empMeasurId, out int employeeMeasurementId);
 
-            IQueryable<EmployeePerformanceScore> actions = db.EmployeePerformanceScores.Where(x => x.QuarterId.ToString() == period && x.EmployeeId.ToString() == empId && x.MeasurementId.ToString() == mesid && x.MeasurementDefinitionId == measurmentDefinitionId);
-            if (Evaluation == "1")
-            {
-                Evaluation = EvaluationLevel.Global.ToString();
-                isDepartmentLevel = false;
-                actions = actions.Where(x => !x.IsDepartmentLevel);
-            }
-            else if (Evaluation == "2")
-            {
-                Evaluation = EvaluationLevel.Department.ToString();
-                isDepartmentLevel = true;
-                actions = actions.Where(x => x.IsDepartmentLevel);
-            }
-          
-            if (!actions.Any())
-            {
-                if ((!String.IsNullOrEmpty(employee) || !String.IsNullOrEmpty(empId)) && !String.IsNullOrEmpty(period))
-                {
+            IQueryable<EmployeePerformanceScore> actions = db.EmployeePerformanceScores.Where(x => x.EmployeeMeasurementId == employeeMeasurementId);
 
-                    var performanceActions = db.PerformanceActions.Where(x => x.MeasurementId.ToString() == mesid).ToList();
-                    foreach (var pa in performanceActions)
-                    {
-                        var id = Convert.ToInt32(empId);
-                        var quarter = Convert.ToInt32(period);
-                        var entity = new EmployeePerformanceScore
-                        {
-                            ActionId = pa.ActionId,
-                            EmployeeId = id,
-                            QuarterId = quarter,
-                            MeasurementId = pa.MeasurementId,
-                            MeasurementDefinitionId = measurmentDefinitionId,
-                            EmpPerfPercentageofWeight = pa.AcPercentageofWeight,
-                            IsApproved = false,
-                            IsDepartmentLevel = isDepartmentLevel
-                        };
-                        db.EmployeePerformanceScores.Add(entity);
-                        db.SaveChanges();
-                    }
-
-                }
-            }
             DataSourceResult result = actions.ToDataSourceResult(request,
                 measur => new
                 {
                     EmployeePerformanceScoreId = measur.EmployeePerformanceScoreId,
-                    MeasurementId = measur.MeasurementId,
-                    MeasurementDefinitionId = measur.MeasurementDefinitionId,
-                    ActionId = measur.ActionId,
-                    QuarterId = measur.QuarterId,
-                    EmployeeId = measur.EmployeeId,
-                    Result = measur.Result,
+                    PerformanceActionId = measur.PerformanceActionId,
+                    EmployeeMeasurementId = measur.EmployeeMeasurementId,
+                    Weight = measur.Weight,
+                    Score = measur.Score,
+                    //IsChecked = measur.IsChecked,
                     Remark = measur.Remark,
-                    FiscalYearId = measur.FiscalYearId,
-                    IsDepartmentLevel = measur.IsDepartmentLevel,
-                    IsApproved = measur.IsApproved,
-                    EmpPerfPercentageofWeight = measur.EmpPerfPercentageofWeight
+
                 });
             return Json(result);
 
         }
         public ActionResult PerformanceActions_Update([DataSourceRequest] DataSourceRequest request, EmployeePerformanceScore employeePerformanceScore)
         {
-            if (employeePerformanceScore.Result > employeePerformanceScore.EmpPerfPercentageofWeight)
+            if(employeePerformanceScore.Score > employeePerformanceScore.Weight)
             {
-                ModelState.AddModelError("", "Result should less or equal to percentage weight");
-            }
+                ModelState.AddModelError("","Score can't exceed the weight");
+            }           
+
             if (ModelState.IsValid)
             {
+                var revertOther = db.EmployeePerformanceScores.Where(x => x.EmployeeMeasurementId == employeePerformanceScore.EmployeeMeasurementId && x.EmployeePerformanceScoreId != employeePerformanceScore.EmployeePerformanceScoreId).ToList();
+                foreach (var rev in revertOther)
+                {
+                    //rev.IsChecked = false;
+                    rev.Score = 0;
+
+                    db.Entry(rev).State = EntityState.Modified;
+                    db.SaveChanges();
+                }
+
                 var entity = new EmployeePerformanceScore
                 {
                     EmployeePerformanceScoreId = employeePerformanceScore.EmployeePerformanceScoreId,
-                    ActionId = employeePerformanceScore.ActionId,
-                    FiscalYearId = employeePerformanceScore.FiscalYearId,
-                    MeasurementDefinitionId = employeePerformanceScore.MeasurementDefinitionId,
-                    MeasurementId = employeePerformanceScore.MeasurementId,
-                    QuarterId = employeePerformanceScore.QuarterId,
-                    EmployeeId = employeePerformanceScore.EmployeeId,
+                    PerformanceActionId = employeePerformanceScore.PerformanceActionId,
+                    EmployeeMeasurementId = employeePerformanceScore.EmployeeMeasurementId,
+                    Weight = employeePerformanceScore.Weight,
+                    Score = employeePerformanceScore.Score,
+                    // IsChecked = employeePerformanceScore.IsChecked,
                     Remark = employeePerformanceScore.Remark,
-                    Result = employeePerformanceScore.Result,
-                    IsDepartmentLevel = employeePerformanceScore.IsDepartmentLevel,
-                    IsApproved = employeePerformanceScore.IsApproved,
-                    EmpPerfPercentageofWeight = employeePerformanceScore.EmpPerfPercentageofWeight,
                 };
 
                 db.EmployeePerformanceScores.Attach(entity);
@@ -528,7 +135,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
 
                 #region operation log
 
-                UserHelper.OperationLog(Request.UserHostAddress, "Employee Performance  ", "Success", User.Identity.Name, User.Identity.Name + " update Employee performance of employee id " + entity.EmployeeId, Modules.HRM);
+                // UserHelper.OperationLog(Request.UserHostAddress, "Employee Performance  ", "Success", User.Identity.Name, User.Identity.Name + " update Employee performance of employee id " + entity.EmployeeId, Modules.HRM);
 
                 #endregion
 
@@ -536,27 +143,30 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
 
             return Json(new[] { employeePerformanceScore }.ToDataSourceResult(request, ModelState));
         }
-        private int GetActionId(int mesId, int perormanceAction, int emId, int period)
+        ///////////////
+
+        public ActionResult PerformanceSummary()
         {
-            var performance =
-                db.EmployeePerformanceAction.FirstOrDefault(
-                    x =>
-                        x.MeasurementId == mesId && x.QuarterId == period &&
-                        x.EmployeeId == emId && x.ActionId == perormanceAction);
-            if (performance != null)
+            return View();
+        }
+        public ActionResult PerformanceSummaryDepartment()
+        {
+            ApplicationDbContext adb = new ApplicationDbContext();
+            string username = User.Identity.Name;
+            var user = adb.Users.FirstOrDefault(x => x.UserName == username);
+
+            if (user != null)
             {
-                return performance.EmpActionId;
+                ViewBag.id = user.EmployeeId;
             }
-;
-            return 0;
+
+            return View();
         }
 
         public JsonResult GetFiscalYear()
         {
 
             var fiscalYear = db.GLFiscalYears.ToList();
-
-
 
             return Json(fiscalYear.Select(p =>
             new
@@ -576,8 +186,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                 quarterList.AddRange(quarter);
             }
 
-
-
             return Json(quarterList.Select(p => new
             {
                 QuarterId = p.QuarterId,
@@ -585,174 +193,149 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
 
             }), JsonRequestBehavior.AllowGet);
         }
-        public JsonResult GetPeriodListssss()
+        public string ApproveEvaluation(int year, int period, int employee, int evaluationCriteria)
         {
-            var currentFiscalYear = from gl in db.GLFiscalYears
-                                    join ql in db.QuarterLengths
-                                    on gl.GlFiscalYearId equals ql.GlFiscalYearId
-                                    join q in db.Quarters
-                                    on ql.QuarterLengthId equals q.QuarterLengthId
+            var employeePerformance = db.EmployeePerformances.FirstOrDefault(x => x.GlFiscalYearId == year && x.GlPeriodId == period && x.EmployeeId == employee && x.EvaluationCriteriaTypeId == evaluationCriteria);
 
-                                    where gl.Status == FiscalYearStatus.Open
-                                    select (new { q });
-
-            var periodList = currentFiscalYear.Select(x => x.q).ToList();
-            ViewData["PeriodList"] = periodList != null ? periodList.ToList() : new List<Quarter>();
-
-            return Json(periodList.Select(p => new { QuarterId = p.QuarterId, Name = p.Name }), JsonRequestBehavior.AllowGet);
-        }
-        public ActionResult GetEmployee(int employee)
-        {
-            Employee = employee;
-
-            return Index();
-        }
-        public ActionResult GetPeriod(int period)
-        {
-            Period = period;
-
-            return Index();
-        }
-        public ActionResult PerformanceSummary()
-        {
-            return View();
-        }
-        public ActionResult PerformanceSummaryDepartment()
-        {
-            return View();
-        }
-        public JsonResult GetLevel()
-        {
-            List<string> attributes = Enum.GetValues(typeof(EvaluationLevel))
-                .Cast<EvaluationLevel>()
-                .Select(v => v.ToString())
-                .ToList();
-
-            return Json(attributes.Select(s => new { Text = s.ToString() }), JsonRequestBehavior.AllowGet);
-        }
-        public JsonResult GetCurrentLogUser()
-        {
-            var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-
-            var person = db.Person_Employee.Where(x => x.EmployeeId == empId).ToList();
-
-            return Json(person.Select(p => new
+            if (employeePerformance != null)
             {
-                EmployeeId = p.EmployeeId,
-                FullNameaEnglish = p.FullNameaEnglish
-            }), JsonRequestBehavior.AllowGet);
-        }
-        private decimal GetPerformanceActionResult(int actionId, /*int defId,*/ int mesId)
-        {
-            try
-            {
-                db = new ExceedDbContext();
-                var employeePerformanceAction =
-                    db.EmployeePerformanceAction.Where(
-                        x =>
-                            x.ActionId == actionId && /*x.MeasurementDefinitionId == defId &&*/ x.MeasurementId == mesId &&
-                            x.EmployeeId == Employee && x.QuarterId == Period).ToList();
+                employeePerformance.IsApproved = true;
 
-                if (employeePerformanceAction.Any())
-                {
-                    var result =
-                        employeePerformanceAction.Sum(x => x.Result);
-                    ActionRemark = employeePerformanceAction.FirstOrDefault().Remark;
-                    return result;
-                }
-            }
-            catch (Exception)
-            {
-
-                //throw;
-            }
-            return 0;
-        }
-        public string Approve(int period)
-        {
-            var empId = UserInformationHelper.GetEmployeeId(User.Identity.Name);
-            var subordinates = EmployeeHelper.GetSubordinates(empId);
-         
-            var config = db.Configurations.FirstOrDefault(x => x.Category == "HRM" && x.Attribute == PerformanceSelfEvaluation.Enable_Self_Evaluation.ToString());
-            if (config == null)
-            {
-                subordinates.Remove(empId);
-            }
-
-            var performanceScores = db.EmployeePerformanceScores.Where(x => x.QuarterId == period && subordinates.Contains(x.EmployeeId)).ToList();
-            foreach (var per in performanceScores)
-            {
-                per.IsApproved = true;
-
-                db.Entry(per).State = EntityState.Modified;
+                db.Entry(employeePerformance).State = EntityState.Modified;
                 db.SaveChanges();
+
+                return "true";
             }
 
-            return "true";
+            return "false";
         }
-        private string Criteria(int id)
-        {
-            var Defn = db.MeasurementDefinitions.Where(x => x.MeasurementDefinitionId == id).FirstOrDefault();
-            if (Defn != null)
-            {
-                return Defn.EvaluationCriteria;
-            }
-            return "";
-        }
-
-        private ResponsibilityLevel Role(int id)
-        {
-            var Defn = db.MeasurementDefinitions.Where(x => x.MeasurementDefinitionId == id).FirstOrDefault();
-            if (Defn != null)
-            {
-                return Defn.Role;
-            }
-            return ResponsibilityLevel.TOP_MANAGMENT;
-        }
-
-        private decimal GetActionSummaryResult(int defId, int mesId)
+        public JsonResult GetEvaluationWeightandResult(int evaluationCriteriaId, int employeeId, int yearId, int periodId)
         {
             decimal result = 0;
-            try
+            string approval = "Not Approved";
+
+            var employeePerformance = db.EmployeePerformances.FirstOrDefault(x => x.EmployeeId == employeeId && x.GlFiscalYearId == yearId && x.GlPeriodId == periodId);
+            if (employeePerformance != null)
             {
-
-
-                db = new ExceedDbContext();
-                if (defId == 0)
+                if (employeePerformance.IsApproved)
                 {
-                    var firstOrDefaultt =
-                        db.EmployeePerformanceAction.Where(
-                            x => x.MeasurementId == mesId && x.EmployeeId == Employee && x.QuarterId == Period)
-                            .ToList();
-                    if (firstOrDefaultt.Any())
-                    {
-                        result = firstOrDefaultt.Sum(x => x.Result);
-
-
-                    }
+                    approval = "Approved";
                 }
-                if (mesId == 0)
+                else
                 {
-                    var firstOrDefaultt =
-                        db.EmployeePerformanceAction.Where(
-                            x => x.MeasurementDefinitionId == defId && x.EmployeeId == Employee && x.QuarterId == Period)
-                            .ToList();
-                    if (firstOrDefaultt.Any())
+                    approval = "Not Approved";
+                }
+
+                var empMeasurments = db.EmployeeMeasurement.Where(x => x.EmployeePerformanceId == employeePerformance.EmployeePerformanceId).ToList();
+
+                foreach (var em in empMeasurments)
+                {
+                    var score = db.EmployeePerformanceScores.FirstOrDefault(x => x.EmployeeMeasurementId == em.EmpMeasurementId && x.Score > 0);
+
+                    if (score != null)
                     {
-                        result = firstOrDefaultt.Sum(x => x.Result);
-
-
+                        result = result + score.Score;
                     }
                 }
             }
-            catch (Exception)
-            {
 
-                //throw;
+            var ev = db.MeasurementDefinitions.FirstOrDefault(x => x.MeasurementDefinitionId == evaluationCriteriaId);
+            if (ev != null)
+            {
+                var eval = new
+                {
+                    Weight = ev.DefnPercentageofWeight,
+                    Result = result,
+                    Approval = approval
+                };
+
+                return Json(eval);
             }
-            return result;
+
+            var eval1 = new
+            {
+                Weight = 0,
+                Result = result,
+                Approval = approval
+            };
+
+            return Json(eval1);
         }
+        public int GenerateEmployeeForPerofmanceEvaluation(int empId, int fiscalYearId, int periodId, int evaluationCriteriaId)
+        {
+            var empPerformance = db.EmployeePerformances.FirstOrDefault(x => x.EmployeeId == empId && x.GlFiscalYearId == fiscalYearId && x.GlPeriodId == periodId && x.EvaluationCriteriaTypeId == evaluationCriteriaId);
+            if (empPerformance == null)
+            {
+                var entity = new EmployeePerformance
+                {
+                    EmployeeId = empId,
+                    GlFiscalYearId = fiscalYearId,
+                    GlPeriodId = periodId,
+                    EvaluationCriteriaTypeId = evaluationCriteriaId,
+                    Weight = 0,
+                    Result = 0
+                };
 
+                db.EmployeePerformances.Add(entity);
+                db.SaveChanges();
+
+                var measurments = db.Measurements.Where(x => x.MeasurementDefinitionId == entity.EvaluationCriteriaTypeId).ToList();
+
+                foreach (var meas in measurments)
+                {
+                    var checkExit = db.EmployeeMeasurement.FirstOrDefault(x => x.MeasurmentId == meas.MeasurementId && x.EmployeePerformanceId == entity.EmployeePerformanceId);
+
+                    if (checkExit == null)
+                    {
+                        var empMeasure = new EmployeeMeasurement();
+
+                        empMeasure.MeasurmentId = meas.MeasurementId;
+                        empMeasure.EmployeePerformanceId = entity.EmployeePerformanceId;
+                        empMeasure.Weight = meas.MesPercentageofWeight;
+                        empMeasure.Result = 0;
+
+                        db.EmployeeMeasurement.Add(empMeasure);
+                        db.SaveChanges();
+
+                        var performanceActions = db.PerformanceActions.Where(x => x.MeasurementId == empMeasure.MeasurmentId).ToList();
+
+                        foreach (var per in performanceActions)
+                        {
+                            var performanceActionScore = new EmployeePerformanceScore
+                            {
+                                PerformanceActionId = per.ActionId,
+                                EmployeeMeasurementId = empMeasure.EmpMeasurementId,
+                                Weight = per.AcPercentageofWeight,
+                                Score = 0,
+                                Remark = "",
+                            };
+
+                            db.EmployeePerformanceScores.Add(performanceActionScore);
+                            db.SaveChanges();
+                        }
+                    }
+                }
+
+                return entity.EmployeePerformanceId;
+                //var returnvalue = new
+                //{
+                //    EmployeePerformanceId = entity.EmployeePerformanceId
+                //};
+
+                //return Json(returnvalue, JsonRequestBehavior.AllowGet);
+            }
+            else
+            {
+                return empPerformance.EmployeePerformanceId;
+                //var returnvalue1 = new
+                //{
+                //    EmployeePerformanceId = empPerformance.EmployeePerformanceId
+                //};
+
+                //return Json(returnvalue1, JsonRequestBehavior.AllowGet);
+            }
+
+        }
         protected override void Dispose(bool disposing)
         {
             db.Dispose();

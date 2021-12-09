@@ -67,9 +67,12 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
             {
                 ModelState.AddModelError("", "This Fiscal Year is already registred!!");
             }
+            if (QuarterLength.Length != 1 && QuarterLength.Length != 2 && QuarterLength.Length != 3 && QuarterLength.Length != 4 && QuarterLength.Length != 12)
+            {
+                ModelState.AddModelError("","Quarter length should eqluas one of the folowing 1/Yearly, 2/Half Year, 3/ 1/3 Year, 4/Quarterly ,12 Monthly");
+            }
             if (ModelState.IsValid)
             {
-
                 var entity = new QuarterLength
                 {
                     //QuarterLengthId = QuarterLength.QuarterLengthId,
@@ -81,6 +84,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                 db.QuarterLengths.Add(entity);
                 db.SaveChanges();
                 QuarterLength.QuarterLengthId = entity.QuarterLengthId;
+
                 GenerateQuarter(QuarterLength.Length, QuarterLength.QuarterLengthId);
 
                 #region operation log
@@ -131,12 +135,12 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
         {
             var usedQurterList = db.Quarters.Where(x => x.QuarterLengthId == QuarterLength.QuarterLengthId)
                 .Select(x => x.QuarterId);
-            var checkExistance = db.EmployeeMeasurementDefinition.Where(x => usedQurterList.Contains(x.QuarterId));
-            if (checkExistance.Any())
-            {
-                ModelState.AddModelError("",
-                    "You can not delete this quarter length. \nUnder this qurter there is evaluated employees!!");
-            }
+            //var checkExistance = db.EmployeeMeasurementDefinition.Where(x => usedQurterList.Contains(x.QuarterId));
+            //if (checkExistance.Any())
+            //{
+            //    ModelState.AddModelError("",
+            //        "You can not delete this quarter length. \nUnder this qurter there is evaluated employees!!");
+            //}
             if (ModelState.IsValid)
             {
                 var entity = new QuarterLength
@@ -173,35 +177,43 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                     for (int i = 1; i <= length; i++)
                     {
                         var entity = new Quarter();
+
                         amname = "ኛ ሩብ ዓመት ";
                         name = "Qurter ";
+
                         entity.QuarterLengthId = quarterLId;
+
                         if (length == 1)
                         {
-                            name = "Yearly ";// +year.Name;
-                            amname = "ዓመታዊ ";// +year.Name;
+                            name = "Yearly ";
+                            amname = "ዓመታዊ ";
                         }
                         else if (length == 2)
                         {
-                            name = "Half Year " + i /*+"/ "+year.Name*/;
-                            amname = "ግማሽ ዓመት " + i;// +"/ "+year.Name;
+                            name = "Half Year " + i;
+                            amname = i + "ኛ ግማሽ ዓመት ";
+                        }
+                        else if (length == 3)
+                        {
+                            name = "1/3 Year " + i;
+                            amname = i + " ኛ ሲሶ ዓመት ";
+                        }
+                        else if (length == 4)
+                        {
+                            name = "Quarter " + i;
+                            amname = i + "ኛ ሩብ አመት ";
                         }
                         else if (length == 12)
                         {
-                            name = "Month " + i;// + "/ " + year.Name;
-                            amname = "ወር " + i;// + "/ " + year.Name;
+                            name = "Month " + i;
+                            amname = i + "ኛ ወር ";
                         }
-                        else
-                        {
-                            name = name + i;// + "/ " + year.Name;
-                            amname = i + amname;// + "/ " + year.Name;
 
-
-                        }
 
                         entity.Name = name;
                         entity.AmharicName = amname;
                         entity.Sequence = i;
+
                         db.Quarters.Add(entity);
                         db.SaveChanges();
 

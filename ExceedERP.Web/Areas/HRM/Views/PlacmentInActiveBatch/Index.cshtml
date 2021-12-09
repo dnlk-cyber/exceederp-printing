@@ -6,7 +6,7 @@
 @{
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
-<legend>InActive Employees Batch</legend>
+<legend>DeActivate Employees In Batch</legend>
 
 @(Html.Kendo().Grid<PlacementInActiveBatchVM>()
                           .Name("PlacementInActiveBatchVMtGrid")
@@ -69,8 +69,8 @@
             </text>);
 
 
-        //toolbar.Custom().Text(Resources.ActionButton_Refersh).Action("Refresh", "EmployeePlacmentWithJ");
-    })
+            //toolbar.Custom().Text(Resources.ActionButton_Refersh).Action("Refresh", "EmployeePlacmentWithJ");
+        })
                               .Excel(excel => excel
                                   .FileName(Resources.NavigatorPlacment_EmployeePlacment + ".xlsx")
                                   .Filterable(true)
@@ -83,7 +83,7 @@
                                   .ProxyURL(Url.Action("Pdf_Export_Save", "EmployeePlacmentWithJ"))
                               )
                               .Editable(editable => editable.Mode(GridEditMode.InCell))
-                              .Scrollable(h => h.Height(800))
+                              .Scrollable(h => h.Height(8000))
                               //.Groupable()
 
                               .Sortable(sortable =>
@@ -93,19 +93,19 @@
                               .Filterable()
                               .Events(e =>
                               {
-                      //e.Save("GetDate");
-                      //e.Edit("GetDate");
-                      //e.DataBound("onDataBound");
-                      //e.Edit("onEdit");
+                                  //e.Save("GetDate");
+                                  //e.Edit("GetDate");
+                                  //e.DataBound("onDataBound");
+                                  //e.Edit("onEdit");
 
-                  })
-                                .Pageable(pageable => pageable
-                                        .Input(true)
-                                        .Numeric(false)
-                                          .Refresh(true)
-                                         .PageSizes(true)
-                                         .PageSizes(new int[] {30,60,100, 200 })
-                                           .ButtonCount(5))
+                              })
+                              //.Pageable(pageable => pageable
+                              //        .Input(true)
+                              //        .Numeric(false)
+                              //          .Refresh(true)
+                              //         .PageSizes(true)
+                              //         .PageSizes(new int[] {30,60,100, 200 })
+                              //           .ButtonCount(5))
 
                               .DataSource(dataSource => dataSource
                                   .Ajax()

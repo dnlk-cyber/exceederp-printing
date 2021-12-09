@@ -39,14 +39,14 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                 return false;
             }
             #endregion
-            #region EmployeeMeasurement
-            var EmployeeMeasurement = db.EmployeeMeasurement.Where(x => x.MeasurementId == id).FirstOrDefault();
-            if (EmployeeMeasurement != null)
-            {
-                ErrorMessage = "You cannot delete this Measurment Defination. Employees are evaluated by this measurement.";
-                return false;
-            }
-            #endregion
+            //#region EmployeeMeasurement
+            //var EmployeeMeasurement = db.EmployeeMeasurement.Where(x => x.MeasurementId == id).FirstOrDefault();
+            //if (EmployeeMeasurement != null)
+            //{
+            //    ErrorMessage = "You cannot delete this Measurment Defination. Employees are evaluated by this measurement.";
+            //    return false;
+            //}
+            //#endregion
 
 
             return true;
@@ -82,6 +82,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                     ModelState.AddModelError("", "Sum of detail Weight can't exceed it parent weight!!");
                 }
             }
+
             if (ModelState.IsValid)
             {
                 var entity = new Measurement

@@ -1,0 +1,65 @@
+﻿@using System.Collections
+@using Kendo.Mvc.UI
+@using ExceedERP.Core.Localization
+@model ExceedERP.Core.Domain.HRM.LeaveManagment.LeaveEntitle
+<form>
+    <div class="k-edit-form-container">
+       
+            <div class="editor-label">
+                @Html.LabelFor(model => model.EmployeeId)
+            </div>
+            <div class="editor-field">
+                @(Html.Kendo().DropDownListFor(model => model.EmployeeId)
+                     .OptionLabel(Resources.Select)
+                     .DataTextField("FullNameaEnglish")
+                     .DataValueField("EmployeeId")
+                     .Filter("contains")
+                     .DataSource(dataSource =>
+                     {
+                         dataSource.Read(read => read.Action("GetAllEmployees", "HRMDataProvider", new { area = "HRM" }))
+                        .ServerFiltering(false);
+                     })
+                         .ValuePrimitive(true)
+                  )
+            </div>    
+           
+            <div class="editor-label">
+                @Html.LabelFor(model => model.GlFiscalYearId)
+            </div>
+            <div class="editor-field">
+                @(Html.Kendo().DropDownListFor(model => model.GlFiscalYearId)
+                         .OptionLabel(Resources.Select)
+                         .DataTextField("Name")
+                         .DataValueField("GlFiscalYearId")
+                         .Filter("contains")
+                         .DataSource(dataSource =>
+                         {
+                             dataSource.Read(read => read.Action("GetFisicalYear", "HRMDataProvider", new { area = "HRM" }))
+                             .ServerFiltering(false);
+                         })
+                        .ValuePrimitive(true)
+                )
+                
+            </div>
+         
+        
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.Amount)
+        </div>
+        <div class="editor-field">
+            @(Html.Kendo().NumericTextBoxFor(m => m.Amount))
+        </div>
+
+        <div class="editor-label">
+            @Html.LabelFor(model => model.Balance)
+        </div>
+        <div class="editor-field">
+            @(Html.Kendo().NumericTextBoxFor(m => m.Balance))
+        </div>
+    </div>
+</form>
+
+
+
+

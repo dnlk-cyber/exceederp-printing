@@ -118,9 +118,17 @@
     <Compile Include="Migrations\202111200923165_ProductionFollowUpStoreReturnUpdate.Designer.cs">
       <DependentUpon>202111200923165_ProductionFollowUpStoreReturnUpdate.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\202111221233157_ProductionFollowupModified.cs" />
-    <Compile Include="Migrations\202111221233157_ProductionFollowupModified.Designer.cs">
-      <DependentUpon>202111221233157_ProductionFollowupModified.cs</DependentUpon>
+    <Compile Include="Migrations\202112061355277_hrm-leaventitle.cs" />
+    <Compile Include="Migrations\202112061355277_hrm-leaventitle.Designer.cs">
+      <DependentUpon>202112061355277_hrm-leaventitle.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202112061416207_hrm-ot.cs" />
+    <Compile Include="Migrations\202112061416207_hrm-ot.Designer.cs">
+      <DependentUpon>202112061416207_hrm-ot.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202112071524205_hrm-updates.cs" />
+    <Compile Include="Migrations\202112071524205_hrm-updates.Designer.cs">
+      <DependentUpon>202112071524205_hrm-updates.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -168,8 +176,14 @@
     <EmbeddedResource Include="Migrations\202111200923165_ProductionFollowUpStoreReturnUpdate.resx">
       <DependentUpon>202111200923165_ProductionFollowUpStoreReturnUpdate.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202111221233157_ProductionFollowupModified.resx">
-      <DependentUpon>202111221233157_ProductionFollowupModified.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\202112061355277_hrm-leaventitle.resx">
+      <DependentUpon>202112061355277_hrm-leaventitle.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202112061416207_hrm-ot.resx">
+      <DependentUpon>202112061416207_hrm-ot.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202112071524205_hrm-updates.resx">
+      <DependentUpon>202112071524205_hrm-updates.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

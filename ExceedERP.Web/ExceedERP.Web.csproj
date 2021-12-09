@@ -1556,6 +1556,7 @@
     <Compile Include="Areas\HRM\Controllers\Insurance\PPEInsuranceController.cs" />
     <Compile Include="Areas\HRM\Controllers\Insurance\VehicleAccidentDetailController.cs" />
     <Compile Include="Areas\HRM\Controllers\Leave\GenerateLeaveEntitlementController.cs" />
+    <Compile Include="Areas\HRM\Controllers\Leave\LeaveEntitleStartingDateController.cs" />
     <Compile Include="Areas\HRM\Controllers\Leave\LeaveModel.cs" />
     <Compile Include="Areas\HRM\Controllers\Leave\LeaveNewAwajStartYearsController.cs" />
     <Compile Include="Areas\HRM\Controllers\Leave\LeaveReturnController.cs" />
@@ -1679,7 +1680,9 @@
     <Compile Include="Areas\HRM\Controllers\Performance\DepartmentDefineMeasurmentController.cs" />
     <Compile Include="Areas\HRM\Controllers\Performance\DepartmentMeasurmentController.cs" />
     <Compile Include="Areas\HRM\Controllers\Performance\DepartmentPerformanceActionController.cs" />
-    <Compile Include="Areas\HRM\Controllers\Performance\EmployeeMeasurmentController.cs" />
+    <Compile Include="Areas\HRM\Controllers\Performance\EvaluationCriteriaDetailController.cs" />
+    <Compile Include="Areas\HRM\Controllers\Performance\EvaluationCriteriaSecondDetailController.cs" />
+    <Compile Include="Areas\HRM\Controllers\Performance\EvaluationCritetiasController.cs" />
     <Compile Include="Areas\HRM\Controllers\Performance\EvaluationPeriodController.cs" />
     <Compile Include="Areas\HRM\Controllers\Performance\ProbationPerformanceController.cs" />
     <Compile Include="Areas\HRM\Controllers\Performance\ProbationPerformanceDetailController.cs" />
@@ -2194,7 +2197,6 @@
     <Compile Include="Areas\HRM\Controllers\Letter\OutgoingController.cs" />
     <Compile Include="Areas\HRM\Controllers\Letter\OutgoingStatusController.cs" />
     <Compile Include="Areas\HRM\Controllers\Performance\DefineMeasurmentController.cs" />
-    <Compile Include="Areas\HRM\Controllers\Performance\EmployeeMeasurementController.cs" />
     <Compile Include="Areas\HRM\Controllers\Performance\EmployeeMeasurementDefinationController.cs" />
     <Compile Include="Areas\HRM\Controllers\Performance\EmployeePerformanceActionController.cs" />
     <Compile Include="Areas\HRM\Controllers\Performance\EmployeePerformanceController.cs" />
@@ -5100,6 +5102,11 @@
     <Content Include="Areas\ProductionFollowUp\Views\ProductDeliveries\EditorTemplates\Issue.cshtml" />
     <Content Include="Areas\ProductionFollowUp\Views\ProductDeliveries\EditorTemplates\IssueItem.cshtml" />
     <Content Include="Areas\ProductionFollowUp\Views\ProductDeliveries\EditorTemplates\ValidationStatus.cshtml" />
+    <Content Include="Areas\HRM\Views\LeaveEntitle\EditorTemplates\LeaveEntitlePop.cshtml" />
+    <Content Include="Areas\HRM\Views\EmployeePlacmentWithOJ.rar" />
+    <Content Include="Areas\HRM\Views\EvaluationCritetias\EditorTemplates\EvaluationTypes.cshtml" />
+    <Content Include="Areas\HRM\Views\EvaluationCritetias\EditorTemplates\Role.cshtml" />
+    <Content Include="Areas\HRM\Views\EvaluationCritetias\Index.cshtml" />
     <None Include="Properties\PublishProfiles\Brana.pubxml" />
     <None Include="Properties\PublishProfiles\mega.pubxml" />
     <None Include="Scripts\kendo\2018.3.911\kendo.all-vsdoc.js" />

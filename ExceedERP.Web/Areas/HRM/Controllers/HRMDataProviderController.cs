@@ -21,6 +21,7 @@ using System.Net;
 using ExceedERP.Core.Domain.HRM;
 using ExceedERP.Core.Domain.Common.ViewModel;
 using ExceedERP.Core.Domain.Finance.GL.Dynamic;
+using ExceedERP.Core.Domain.HRM.PerformanceManagment;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers
 {
@@ -31,6 +32,36 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
         ExceedDbContext db = new ExceedDbContext();
         //new
         private HRMInputs inputs = new HRMInputs();
+
+        public JsonResult GetEvaluationCriterias(string level)
+        {
+            List<MeasurementDefinition> measurments = db.MeasurementDefinitions.ToList();
+
+            if (level == "Global" || level == "1")
+            {
+                measurments = db.MeasurementDefinitions.Where(x => !x.IsDepartmentLevel).ToList();
+            }
+            else if (level == "Department" || level == "2")
+            {
+                measurments = db.MeasurementDefinitions.Where(x => x.IsDepartmentLevel).ToList();
+            }
+
+            return Json(measurments.Select(p => new
+            {
+                MeasurementDefinitionId = p.MeasurementDefinitionId,
+                Name = p.EvaluationCriteria + " - " + GetEvaluationTypeName(p.LookupId) + " - " + p.Role.ToString()
+            }), JsonRequestBehavior.AllowGet);
+        }
+        public string GetEvaluationTypeName(int lookupId)
+        {
+            var lookup = db.Lookups.FirstOrDefault(x => x.LookupId == lookupId);
+            if (lookup != null)
+            {
+                return lookup.Description;
+            }
+
+            return "";
+        }
 
         public JsonResult GetOldandNewJobTitles()
         {

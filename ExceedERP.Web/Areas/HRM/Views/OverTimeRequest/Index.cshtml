@@ -6,50 +6,56 @@
 }
 <legend>@Resources.HR_SelfCare_OverTimeRequest_OverTimeRequest</legend>
 @(Html.Kendo().Grid<OverTimeRequest>()
-          .Name("OverTimeRequestgrid")
+      .Name("OverTimeRequestgrid")
       .Columns(columns =>
       {
           columns.ForeignKey(c => c.OrgStructureId, (IEnumerable)ViewData["organization"], "OrgStructureId", "Name").EditorTemplateName("Organization").Width(150);
-          columns.Bound(c => c.Description);
+          columns.Bound(c => c.Description).Width(100);
+          columns.Bound(c => c.Type).EditorTemplateName("Enum").Width(130);
           columns.Bound(c => c.FromDateAm).EditorTemplateName("Calander").Width(180);//.Format("{0:yyyy-MM-dd}");
           columns.Bound(c => c.ToDateAm).EditorTemplateName("Calander").Width(180);//.Format("{0:yyyy-MM-dd}");
-        columns.Bound(c => c.FromTime);//.Format("{0:hh:mm:ss}");
-        columns.Bound(c => c.ToTime);//.Format("{0:hh:mm:ss}");
-      
-        columns.Command(command => { command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);command.Destroy().Text(Resources.ActionButton_Cancel); }).Width(200);
+          columns.Bound(c => c.FromTime).Width(100);//.Format("{0:hh:mm:ss}");
+          columns.Bound(c => c.ToTime).Width(100);//.Format("{0:hh:mm:ss}");
+
+          columns.Command(command =>
+          {
+              command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+              command.Destroy().Text(Resources.ActionButton_Cancel);
+          }).Width(200);
       })
       .ToolBar(toolbar => {
-            toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+          toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
       })
              .Events(events => events.DetailExpand("onDetailExpandUser"))
-      .Editable(editable => editable.Mode(GridEditMode.InLine))
-         .Scrollable(h => h.Height(500))
-                                         .Groupable()
-                                                  .Sortable(sortable =>
-                                                  {
-                                                      sortable.SortMode(GridSortMode.SingleColumn);
-                                                  })
-                                      .Filterable()
-                                         .Pageable(pageable => pageable
-                                                                    .Input(true)
-                                                                    .Numeric(false)
-                                                                    .Refresh(true)
-                                                                    .PageSizes(true)
-                                                                    .ButtonCount(5))
-                                                                     .Events(x =>
-    {
-        x.Edit("GetDate");
-        x.Save("GetDate");
-    })
+             .Editable(editable => editable.Mode(GridEditMode.InLine))
+             .Scrollable(h => h.Height(500))
+               .Groupable()
+                        .Sortable(sortable =>
+                        {
+                            sortable.SortMode(GridSortMode.SingleColumn);
+                        })
+            .Filterable()
+               .Pageable(pageable => pageable
+                    .Input(true)
+                    .Numeric(false)
+                    .Refresh(true)
+                    .PageSizes(true)
+                    .ButtonCount(5))
+                       .Events(x =>
+                       {
+                           x.Edit("GetDate");
+                           x.Save("GetDate");
+                       })
       .DataSource(dataSource => dataSource
           .Ajax()
+          .Sort(s=>s.Add(x=>x.OverTimeRequestId).Descending())
                 .Events(events =>
-                                                                {
-                                                                    events.Error("error_handler(\"OverTimeRequestgrid\")");
-                                                                    events.RequestStart("onRequestStart(\"OverTimeRequestgrid\")");
-                                                                    events.RequestEnd("onRequestEnd(\"OverTimeRequestgrid\")");
-                                                                }) 
-                        
+                {
+                    events.Error("error_handler(\"OverTimeRequestgrid\")");
+                    events.RequestStart("onRequestStart(\"OverTimeRequestgrid\")");
+                    events.RequestEnd("onRequestEnd(\"OverTimeRequestgrid\")");
+                })
+
           .Model(model => model.Id(p => p.OverTimeRequestId))
           .Read(read => read.Action("OverTimeRequest_Read", "OverTimeRequest"))
           .Create(create => create.Action("OverTimeRequest_Create", "OverTimeRequest"))
@@ -67,14 +73,11 @@
 
               items.Add().Text(Resources.HR_SelfCare_OverTimeRequest_Emploees).Content(
                 @<text>
-
-
                     @(Html.Kendo().Grid<OverTimeRequestEmployee>()
-                                                  .Name("OverTimeRequestEmployee#=OverTimeRequestId#")
+                          .Name("OverTimeRequestEmployee#=OverTimeRequestId#")
                           .Columns(columns =>
                           {
-
-                              columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "PersonId", "FullNameWithOutCode").EditorTemplateName("ListOfEmployee").Width(300);
+                              columns.ForeignKey(c => c.EmployeeId, (IEnumerable)ViewData["EmployeeList"], "EmployeeId", "FullNameaEnglish").EditorTemplateName("ListOfEmployee").Width(300);
                              
                               columns.Bound(c => c.Remark);
                               columns.Command(command =>
@@ -99,13 +102,13 @@
                           .DataSource(dataSource => dataSource
                               .Ajax()
                                       .Events(events =>
-                                                                        {
-                                                                            events.Error("error_handler(\"OverTimeRequestEmployee#=OverTimeRequestId#\")");
-                                                                            events.RequestStart("onRequestStart(\"OverTimeRequestEmployee#=OverTimeRequestId#\")");
-                                                                            events.RequestEnd("onRequestEnd(\"OverTimeRequestEmployee#=OverTimeRequestId#\")");
-                                                                        }) 
-                                                    
-           .Model(model =>
+                                           {
+                                               events.Error("error_handler(\"OverTimeRequestEmployee#=OverTimeRequestId#\")");
+                                               events.RequestStart("onRequestStart(\"OverTimeRequestEmployee#=OverTimeRequestId#\")");
+                                               events.RequestEnd("onRequestEnd(\"OverTimeRequestEmployee#=OverTimeRequestId#\")");
+                                           }) 
+                                         
+                                           .Model(model =>                                            
                                               {
                                                   model.Id(p => p.OverTimeRequestEmployeeId);
                                                   
@@ -149,12 +152,12 @@
                           .DataSource(dataSource => dataSource
                               .Ajax()
                                         .Events(events =>
-                                                                                {
-                                                                                    events.Error("error_handler(\"RequestesStatusgrid_#=OverTimeRequestId#\")");
-                                                                                    events.RequestStart("onRequestStart(\"RequestesStatusgrid_#=OverTimeRequestId#\")");
-                                                                                    events.RequestEnd("onRequestEnd(\"RequestesStatusgrid_#=OverTimeRequestId#\")");
-                                                                                }) 
-                                                      
+                                             {
+                                                 events.Error("error_handler(\"RequestesStatusgrid_#=OverTimeRequestId#\")");
+                                                 events.RequestStart("onRequestStart(\"RequestesStatusgrid_#=OverTimeRequestId#\")");
+                                                 events.RequestEnd("onRequestEnd(\"RequestesStatusgrid_#=OverTimeRequestId#\")");
+                                             }) 
+                                                                     
            .Model(model =>
                                               {
                                                   model.Id(p => p.RequestStatusId);
