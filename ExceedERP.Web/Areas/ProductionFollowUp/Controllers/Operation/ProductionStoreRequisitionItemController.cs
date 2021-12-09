@@ -12,9 +12,9 @@ using Kendo.Mvc.UI;
 
 namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
 {
-   // [AuthorizeRoles(MaintenanceRoles.MaintenanceOrderUser)]
 
     public class ProductionStoreRequisitionItemController : Controller
+
     {
         private ExceedDbContext db = new ExceedDbContext();
 

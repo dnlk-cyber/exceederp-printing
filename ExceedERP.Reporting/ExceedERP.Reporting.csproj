@@ -4268,7 +4268,7 @@
       <Name>ExceedERP.Core</Name>
     </ProjectReference>
     <ProjectReference Include="..\ExceedERP.DataAccess\ExceedERP.DataAccess.csproj">
-      <Project>{53F3F01C-6956-4BC4-A772-89847397A93B}</Project>
+      <Project>{53f3f01c-6956-4bc4-a772-89847397a93b}</Project>
       <Name>ExceedERP.DataAccess</Name>
     </ProjectReference>
     <ProjectReference Include="..\ExceedERP.Helpers\ExceedERP.Helpers.csproj">

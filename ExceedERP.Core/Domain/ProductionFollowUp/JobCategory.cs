@@ -19,7 +19,6 @@ namespace ExceedERP.Core.Domain.ProductionFollowUp
         public string AccountNumber { get; set; }
         public string Description { get; set; }
 
-
     }
  
 }
