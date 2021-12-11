@@ -96,6 +96,24 @@ namespace ExceedERP.Web.Areas.FixedAsset.Controllers
 
             }), JsonRequestBehavior.AllowGet);
         }
+
+        public JsonResult GetFixedAssetDataForUserCard(string id)
+        {
+            int did = int.Parse(id);
+            var assetRegistrations = db.AssetRegistrations.Where(x=>x.AssetRegistrationId==did).AsQueryable();
+            return Json(assetRegistrations.Select(i => new
+            {
+                Quanity = i.Quanity,
+                UnitPrice = i.PurchasePrice,
+                ItemName = i.Name,
+                Unit = i.Unit,
+                Tag = i.Tag,
+                SerialNo = i.SerialNo,
+                GRNDate = i.GRNDate,
+                GRN = i.GRN
+            }), JsonRequestBehavior.AllowGet);
+         
+        }
         public JsonResult GetFixedAssetForUserCard(string text)
         {
             var assetRegistrations = db.AssetRegistrations.AsNoTracking().AsQueryable();

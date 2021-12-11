@@ -162,4 +162,34 @@
             subcategory: $("#SubCategoryCode").data("kendoDropDownList").value()
         };
     }
+
+      function onSelectType(e) {
+          var assetid = $("#AssetRegistrationId").data("kendoDropDownList").value();
+
+
+        $.ajax({
+            type: "POST",
+            url: '@Url.Action("GetFixedAssetDataForUserCard", "FixedAssetDataProvider", new { area = "FixedAsset" })',
+            data: { id: assetid },
+            success: function (result) {
+                if (result.length > 0) {
+
+                    for (var i = 0; i < result.length; i++) {
+                        $("#Name").val(result[i].ItemName).trigger("change");
+                        $("#UOM").val(result[i].Unit).trigger("change");
+                        $("#Quanity").val(result[i].Quanity).trigger("change");
+                        $("#UnitPrice").val(result[i].UnitPrice).trigger("change");
+                        $("#Tag").val(result[i].Tag).trigger("change");
+                        $("#SerialNo").val(result[i].SerialNo).trigger("change");
+                        $("#GRNDate").val(result[i].GRNDate).trigger("change");
+                        $("#GRN").val(result[i].GRN).trigger("change");
+                    }
+                }
+            }, //end succ
+            error: function (result) {
+                alert(result);
+            }
+        });
+    }
+
 </script>

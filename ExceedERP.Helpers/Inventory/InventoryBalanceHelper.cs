@@ -96,15 +96,11 @@ namespace ExceedERP.Helpers.Inventory
                             {
                                 #region grn Transfer Receive
 
-                                totalQty = startingLine.BalanceQTY; //+ cardLinesArray[i].ReceivedQTY;
-                                cardLinesArray[i].BalanceQTY = totalQty;
-
-                                totalPrice =
-                                    (startingLine.BalanceQTY * startingLine.BalanceUPrice)
-                                    + (cardLinesArray[i].ReceivedQTY * cardLinesArray[i].ReceivedUPrice);
+                                
+                                cardLinesArray[i].BalanceQTY = startingLine.BalanceQTY;                            
 
                                 cardLinesArray[i].ReceivedTPrice = cardLinesArray[i].ReceivedQTY * cardLinesArray[i].ReceivedUPrice;
-                                cardLinesArray[i].BalanceUPrice = totalQty == 0 ? 0 : totalPrice / totalQty;
+                                cardLinesArray[i].BalanceUPrice = startingLine.BalanceUPrice;
                                 cardLinesArray[i].BalanceTPrice = cardLinesArray[i].BalanceUPrice * cardLinesArray[i].BalanceQTY;
 
                                 #endregion
@@ -112,10 +108,8 @@ namespace ExceedERP.Helpers.Inventory
 
                             else if (cardLinesArray[i].ReferenceDoc.StartsWith("Return"))
                             {
-                                #region return
-
-                                totalQty = startingLine.BalanceQTY;// + cardLinesArray[i].ReceivedQTY;
-                                cardLinesArray[i].BalanceQTY = totalQty;
+                                #region return                               
+                                cardLinesArray[i].BalanceQTY = startingLine.BalanceQTY;
 
                                 cardLinesArray[i].ReceivedTPrice = cardLinesArray[i].ReceivedQTY * cardLinesArray[i].ReceivedUPrice;
                                 cardLinesArray[i].BalanceUPrice = startingLine.BalanceUPrice;
@@ -128,9 +122,8 @@ namespace ExceedERP.Helpers.Inventory
                                         cardLinesArray[i].ReferenceDoc.StartsWith("Void SalesDonation"))
                             {
                                 #region Void Issue
-
-                                totalQty = startingLine.BalanceQTY; //+ cardLinesArray[i].ReceivedQTY;
-                                cardLinesArray[i].BalanceQTY = totalQty;
+                                
+                                cardLinesArray[i].BalanceQTY = startingLine.BalanceQTY;
 
                                 cardLinesArray[i].ReceivedUPrice = Math.Abs(cardLinesArray[i].ReceivedUPrice);
                                 cardLinesArray[i].ReceivedTPrice = cardLinesArray[i].ReceivedQTY * cardLinesArray[i].ReceivedUPrice;
@@ -143,9 +136,7 @@ namespace ExceedERP.Helpers.Inventory
                             else if (cardLinesArray[i].ReferenceDoc.StartsWith("Void Shipment"))
                             {
                                 #region Void shipment
-
-                                totalQty = startingLine.BalanceQTY; //+ cardLinesArray[i].ReceivedQTY;
-                                cardLinesArray[i].BalanceQTY = totalQty;
+                                cardLinesArray[i].BalanceQTY = startingLine.BalanceQTY;
 
                                 cardLinesArray[i].ReceivedUPrice = Math.Abs(cardLinesArray[i].ReceivedUPrice);
                                 cardLinesArray[i].ReceivedTPrice = cardLinesArray[i].ReceivedQTY * cardLinesArray[i].ReceivedUPrice;
@@ -158,9 +149,7 @@ namespace ExceedERP.Helpers.Inventory
                             else if (cardLinesArray[i].ReferenceDoc.StartsWith("Void Transfer Send"))
                             {
                                 #region Void Transfer Send
-
-                                totalQty = startingLine.BalanceQTY; //+ cardLinesArray[i].ReceivedQTY;
-                                cardLinesArray[i].BalanceQTY = totalQty;
+                                cardLinesArray[i].BalanceQTY = startingLine.BalanceQTY; 
 
                                 cardLinesArray[i].ReceivedTPrice = cardLinesArray[i].ReceivedQTY * cardLinesArray[i].ReceivedUPrice;
                                 cardLinesArray[i].BalanceUPrice = startingLine.BalanceUPrice;
@@ -183,9 +172,7 @@ namespace ExceedERP.Helpers.Inventory
                                 cardLinesArray[i].IssuedTPrice =
                                     cardLinesArray[i].IssuedUPrice * cardLinesArray[i].IssuedQTY;
 
-                                totalQty = startingLine.BalanceQTY /*- cardLinesArray[i].IssuedQTY*/;
-
-                                cardLinesArray[i].BalanceQTY = totalQty;
+                                cardLinesArray[i].BalanceQTY = startingLine.BalanceQTY;
                                 cardLinesArray[i].IssuedTPrice = cardLinesArray[i].IssuedQTY * cardLinesArray[i].IssuedUPrice;
                                 cardLinesArray[i].BalanceUPrice = startingLine.BalanceUPrice;
                                 cardLinesArray[i].BalanceTPrice = cardLinesArray[i].BalanceUPrice * cardLinesArray[i].BalanceQTY;
@@ -198,14 +185,11 @@ namespace ExceedERP.Helpers.Inventory
 
                                 #region Void Receive
 
-                                totalQty = startingLine.BalanceQTY /*- cardLinesArray[i].IssuedQTY*/;
-                                //get issued price from original record if possible
-                                //totalpricebefore = cardLines[i].BalanceTPrice -
-                                //                   (cardLines[i].IssuedQTY * cardLines[i].IssuedUPrice);
-
-                                cardLinesArray[i].BalanceQTY = totalQty;
+                               
+                               
+                                cardLinesArray[i].BalanceQTY = startingLine.BalanceQTY;
                                 cardLinesArray[i].IssuedTPrice = cardLinesArray[i].IssuedQTY * cardLinesArray[i].IssuedUPrice;
-                                cardLinesArray[i].BalanceUPrice = totalQty == 0 ? 0 : startingLine.BalanceUPrice;
+                                cardLinesArray[i].BalanceUPrice = startingLine.BalanceUPrice;
                                 cardLinesArray[i].BalanceTPrice = cardLinesArray[i].BalanceUPrice * cardLinesArray[i].BalanceQTY;
 
                                 #endregion
@@ -217,8 +201,7 @@ namespace ExceedERP.Helpers.Inventory
 
                                 #region Void Transfer Receive
 
-                                totalQty = startingLine.BalanceQTY /*- cardLinesArray[i].IssuedQTY*/;
-                                //get issued price from original record if possible
+                                totalQty = startingLine.BalanceQTY;
                                 totalpricebefore = cardLinesArray[i].BalanceTPrice -
                                                    (cardLinesArray[i].IssuedQTY * cardLinesArray[i].IssuedUPrice);
 
@@ -233,9 +216,8 @@ namespace ExceedERP.Helpers.Inventory
                             {
                                 #region Void Return
 
-                                totalQty = startingLine.BalanceQTY /*- cardLinesArray[i].IssuedQTY*/;
 
-                                cardLinesArray[i].BalanceQTY = totalQty;
+                                cardLinesArray[i].BalanceQTY = startingLine.BalanceQTY;
                                 cardLinesArray[i].IssuedTPrice = cardLinesArray[i].IssuedQTY * cardLinesArray[i].IssuedUPrice;
                                 cardLinesArray[i].BalanceUPrice = startingLine.BalanceUPrice;
                                 cardLinesArray[i].BalanceTPrice = cardLinesArray[i].BalanceUPrice * cardLinesArray[i].BalanceQTY;

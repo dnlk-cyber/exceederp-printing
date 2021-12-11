@@ -10,7 +10,7 @@
 
         <div class="col-md-3 ro1">
             <div class="form-group">
-                @Html.LabelFor(model => model.EmployeeId, "Employee Id", htmlAttributes: new { @class = "control-label col-md-8" })
+                @Html.LabelFor(model => model.EmployeeId, "Employee ID", htmlAttributes: new { @class = "control-label col-md-8" })
                 <div class="col-md-6">
                     @(Html.Kendo().DropDownListFor(model => model.EmployeeId)
                            .ValuePrimitive(true)
@@ -38,6 +38,10 @@
                           .DataTextField("Name")
                           .DataValueField("AssetRegistrationId")
                           .Filter("contains")
+                           .Events(e =>
+                          {
+                              e.Change("onSelectType");
+                          })
                           .DataSource(dataSource =>
                           {
                               dataSource.Read(read => read.Action("GetFixedAssetForUserCard", "FixedAssetDataProvider", new { area = "FixedAsset" }).Data("filterAssetsForCard"))
