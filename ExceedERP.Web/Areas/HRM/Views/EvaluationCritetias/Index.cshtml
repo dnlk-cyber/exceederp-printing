@@ -21,8 +21,8 @@
           toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
       })
       .Editable(editable => editable.Mode(GridEditMode.InLine))
-           .Scrollable(h => h.Height(500))
-                 .Groupable()
+           .Scrollable(h => h.Height("auto"))
+                // .Groupable()
                           .Sortable(sortable =>
                           {
                               sortable.SortMode(GridSortMode.SingleColumn);
@@ -161,8 +161,57 @@
 </script>
 
 
+<br/>
+<legend>Evaluation Criteria Action Type</legend>
+@(Html.Kendo().Grid<EvaluationCriteriaActionType>()
+          .Name("EvaluationCriteriaActionTypeGrid")
+      .Columns(columns =>
+      {
+          columns.Bound(c => c.PerformanceCriteriaActionType);
+          columns.Bound(c => c.IsActive).ClientTemplate("<input type='checkbox' disabled = 'true' #=IsActive ? checked='checked' :'' # >");
 
+          columns.Command(command =>
+          {
+              command.Edit().UpdateText(Resources.ActionButton_Update).CancelText(Resources.ActionButton_CancelUpdate).Text(Resources.ActionButton_Edit);
+              // command.Destroy().Text(Resources.ActionButton_Cancel);
+          });
+      })
+      .ToolBar(toolbar =>
+      {
+          // toolbar.Create().Text(Resources.ActionButton_AddNewRecord);
+      })
+      .Editable(editable => editable.Mode(GridEditMode.InLine))
+          .Scrollable(h => h.Height("auto"))
+               //  .Groupable()
+                          .Sortable(sortable =>
+                          {
+                              sortable.SortMode(GridSortMode.SingleColumn);
+                          })
+                // .Filterable()
+              //.Pageable(pageable => pageable
+              //     .Input(true)
+              //     .Numeric(false)
+              //     .Refresh(true)
+              //     .PageSizes(true)
+              //     .ButtonCount(5))
+              .DataSource(dataSource => dataSource
+              .Ajax()
+                   .Events(events =>
+                   {
+                       events.Error("error_handler(\"EvaluationCriteriaActionTypeGrid\")");
+                       events.RequestStart("onRequestStart(\"EvaluationCriteriaActionTypeGrid\")");
+                       events.RequestEnd("onRequestEnd(\"EvaluationCriteriaActionTypeGrid\")");
+                   })
 
+          .Model(model =>
+          {
+              model.Id(p => p.EvaluationCriteriaActionTypeId);
+              model.Field(p => p.PerformanceCriteriaActionType).Editable(false);
+          })
+          .Read(read => read.Action("EvaluationCriteriaActionType_Read", "EvaluationCriteriaActionType"))
+          .Update(update => update.Action("EvaluationCriteriaActionType_Update", "EvaluationCriteriaActionType"))
+      )
+)
 
 
 

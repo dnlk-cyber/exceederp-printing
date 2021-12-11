@@ -1680,6 +1680,7 @@
     <Compile Include="Areas\HRM\Controllers\Performance\DepartmentDefineMeasurmentController.cs" />
     <Compile Include="Areas\HRM\Controllers\Performance\DepartmentMeasurmentController.cs" />
     <Compile Include="Areas\HRM\Controllers\Performance\DepartmentPerformanceActionController.cs" />
+    <Compile Include="Areas\HRM\Controllers\Performance\EvaluationCriteriaActionTypeController.cs" />
     <Compile Include="Areas\HRM\Controllers\Performance\EvaluationCriteriaDetailController.cs" />
     <Compile Include="Areas\HRM\Controllers\Performance\EvaluationCriteriaSecondDetailController.cs" />
     <Compile Include="Areas\HRM\Controllers\Performance\EvaluationCritetiasController.cs" />
@@ -5107,6 +5108,8 @@
     <Content Include="Areas\HRM\Views\EvaluationCritetias\EditorTemplates\EvaluationTypes.cshtml" />
     <Content Include="Areas\HRM\Views\EvaluationCritetias\EditorTemplates\Role.cshtml" />
     <Content Include="Areas\HRM\Views\EvaluationCritetias\Index.cshtml" />
+    <Content Include="Areas\HRM\Views\EvaluationCriteriaActionType\EditorTemplates\Period.cshtml" />
+    <Content Include="Areas\HRM\Views\EvaluationCriteriaActionType\Index.cshtml" />
     <None Include="Properties\PublishProfiles\Brana.pubxml" />
     <None Include="Properties\PublishProfiles\mega.pubxml" />
     <None Include="Scripts\kendo\2018.3.911\kendo.all-vsdoc.js" />
