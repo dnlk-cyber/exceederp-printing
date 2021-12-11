@@ -45,16 +45,16 @@
                                 {
                         //columns.Bound(c => c.Time);
                         columns.ForeignKey(c => c.ProformaId, (IEnumerable)ViewData["Proforma"], "ProformaId", "ProformaNo");
-                                    columns.ForeignKey(c => c.JobTypeId, (IEnumerable)ViewData["JobType"], "JobTypeId", "Type");
+                                    columns.ForeignKey(c => c.JobTypeId, (IEnumerable)ViewData["JobType"], "JobTypeId", "Type").Width(130);
 
                                     columns.Bound(c => c.JobNo).Width(90).Title("JobNo");
                                     columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customers"], "Code", "Name")
-                                                                              .Width("110px")
+                                                                              .Width(110)
                                                                               .Title("Customer");
-                                    columns.Bound(c => c.Quant);
-                                    columns.Bound(c => c.UnitPrice);
-                                    columns.Bound(c => c.BeforeTax);
-                                    columns.Bound(c => c.TotalPrice);
+                                    columns.Bound(c => c.Quant).Width(90);
+                                    columns.Bound(c => c.UnitPrice).Width(90);
+                                    columns.Bound(c => c.BeforeTax).Width(90);
+                                    columns.Bound(c => c.TotalPrice).Width(90);
 
                                     columns.Command(command =>
                                     {
@@ -1210,7 +1210,6 @@
         }
         var x = $('#hv').is(':checked');
         console.log(x);
-
         if (x == true) {
 
             $("#ProformaId").data("kendoDropDownList").enable(true);
@@ -1385,8 +1384,8 @@
             }
         }
     }
-    function onSelectLoading() {
-        var dropdowntree = $("#JobTypeId").data("kendoDropDownTree");
+    function onSelectLoading() {             
+        var dropdowntree = $("#JT").data("kendoDropDownTree");
         var treeviewSelect = function (e) {
             if (e.sender.dataItem(e.node).hasChildren) {
                 e.preventDefault()
@@ -1394,7 +1393,6 @@
         };
 
         dropdowntree.treeview.bind("select", treeviewSelect);
-        $("#JobTypeId").value(parseInt(dropdowntree.value())).trigger("change");
 
     }
 </script>

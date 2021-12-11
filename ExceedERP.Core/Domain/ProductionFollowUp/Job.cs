@@ -1,4 +1,5 @@
-﻿using ExceedERP.Core.Domain.PrintingEstimation.Setting;
+﻿using ExceedERP.Core.Domain.Common;
+using ExceedERP.Core.Domain.PrintingEstimation.Setting;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -9,7 +10,7 @@ using System.Threading.Tasks;
 
 namespace ExceedERP.Core.Domain.ProductionFollowUp
 {
-    public class Job
+    public class Job : TrackUserSettingOperation
     {
         public int JobId { get; set; }
         [DataType(DataType.Date)]
@@ -42,6 +43,7 @@ namespace ExceedERP.Core.Domain.ProductionFollowUp
 
         [Display(Name = "Job Type")]
         public int JobTypeId { get; set; }
+        public string JT { get; set; }
         [Display(Name = "Pages")]
        
         public int Pages { get; set; }

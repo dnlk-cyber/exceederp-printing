@@ -26,7 +26,7 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
             ViewData["Proforma"] = db.Proformas.ToList();
             ViewData["JobType"] = db.JobCategories.Select(s => new {
                 JobTypeId = s.JobCategoryId,
-                type = s.HaveParent ? s.ParentId+" "+s.JobName : s.JobName
+                type = s.HaveParent?db.JobCategories.Where(q=>q.JobCategoryId==s.ParentId).FirstOrDefault().JobName+"-"+ s.JobName : s.JobName
             }).ToList();
             ViewData["Customers"] = db.OrganizationCustomers.Select(s => new {
                 Code = s.OrganizationCustomerID,
@@ -123,6 +123,25 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
             var data = db.Jobs;
             return Json(data.Select(s => new { s.JobId, s.JobNo }), JsonRequestBehavior.AllowGet);
         }
+        public JsonResult GetJobCategoryTree()
+        {
+            var jobCategories = db.JobCategories.ToList();
+
+            var result = jobCategories.Where(q => !q.HaveParent).Select(q => new
+            {
+                ID = q.JobCategoryId,
+                Name = q.JobName,
+                HasChildren = db.JobCategories.Where(xc => xc.HaveParent).Where(s => s.ParentId == q.JobCategoryId)
+                .Select(se => new
+                {
+                    ID = se.JobCategoryId,
+                    Name = se.JobName,
+                }).ToList()
+            }).ToList();
+
+            return Json(result, JsonRequestBehavior.AllowGet);
+        }
+
         public ActionResult Jobs_Read([DataSourceRequest]DataSourceRequest request)
         {
             IQueryable<Job> jobs = db.Jobs;
@@ -142,6 +161,7 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                 BrandName = job.BrandName,
                 TinNo = job.TinNo,
                 JobTypeId = job.JobTypeId,
+                JT = job.JobTypeId.ToString(),
                 UnitPrice = job.UnitPrice,
                 BeforeTax = job.BeforeTax,
                 Quant = job.Quant,
@@ -179,6 +199,7 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult Jobs_Create([DataSourceRequest]DataSourceRequest request, Job job)
         {
+            job.JobTypeId = Int16.Parse(job.JT);
             if (ModelState.IsValid)
             {
                 var proforma = new Proforma();
@@ -209,6 +230,8 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult Jobs_Update([DataSourceRequest]DataSourceRequest request, Job job)
         {
+            job.JobTypeId = Int16.Parse(job.JT);
+
             if (ModelState.IsValid)
             {
 
@@ -362,7 +385,7 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
             var job = db.Jobs.FirstOrDefault(x => x.JobId == jobId);
             if (job != null)
             {
-                var jobType = db.JobCategories.FirstOrDefault(x => x.JobCategoryId == job.JobTypeId);
+                var jobType = db.JobCategories.Find(job.JobTypeId);
                 if (jobType != null)
                 {
                     var tax = db.GLTaxRates.FirstOrDefault(x => x.GLTaxRateID == jobType.GLTaxRateID);
@@ -408,7 +431,7 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                 Estimatedby = job.Estimatedby,
                 Code = job.Code,
                 Approvedby = job.Approvedby,
-                JobTypeId =  job.JobTypeId,
+                JobTypeId = job.JobTypeId,
                 BeforeTax = job.BeforeTax,
                 UnitPrice = job.UnitPrice,
                 Quant = job.Quant,
@@ -452,18 +475,18 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                 DropDownTreeItemModel jobType = new DropDownTreeItemModel();
                 List<DropDownTreeItemModel> jobTypes = new List<DropDownTreeItemModel>();
 
-                var childs = db.JobCategories.Where(q => q.ParentId == jobCategory.JobCategoryId&&q.HaveParent).ToList();
+                var childs = db.JobCategories.Where(q => q.ParentId == jobCategory.JobCategoryId).ToList();
                 foreach (var child in childs)
                 {
                     i++;
                     DropDownTreeItemModel prt = new DropDownTreeItemModel();
                     prt.Text = child.JobName;
+                    prt.Selected = true;
                     prt.HasChildren = false;
                     prt.Value = child.JobCategoryId.ToString();
                     jobTypes.Add(prt);
                 }
                 jobType.Text = jobCategory.JobName;
-                jobType.HasChildren = true;
 
                 jobType.Value = jobCategory.JobCategoryId.ToString();
                 jobType.Items = jobTypes;
@@ -476,6 +499,7 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
 
             return jobs;
         }
+
 
         protected override void Dispose(bool disposing)
         {

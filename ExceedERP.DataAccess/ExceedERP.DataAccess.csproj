@@ -130,6 +130,10 @@
     <Compile Include="Migrations\202112071524205_hrm-updates.Designer.cs">
       <DependentUpon>202112071524205_hrm-updates.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202112091222042_MergeAndMigrationConflictResolve.cs" />
+    <Compile Include="Migrations\202112091222042_MergeAndMigrationConflictResolve.Designer.cs">
+      <DependentUpon>202112091222042_MergeAndMigrationConflictResolve.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -184,6 +188,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202112071524205_hrm-updates.resx">
       <DependentUpon>202112071524205_hrm-updates.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202112091222042_MergeAndMigrationConflictResolve.resx">
+      <DependentUpon>202112091222042_MergeAndMigrationConflictResolve.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
