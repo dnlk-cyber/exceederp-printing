@@ -43,14 +43,16 @@
                                 .Name("JobGrid")
                                 .Columns(columns =>
                                 {
-                        //columns.Bound(c => c.Time);
-                        columns.ForeignKey(c => c.ProformaId, (IEnumerable)ViewData["Proforma"], "ProformaId", "ProformaNo");
+                                    //columns.Bound(c => c.Time);
+                                    columns.ForeignKey(c => c.ProformaId, (IEnumerable)ViewData["Proforma"], "ProformaId", "ProformaNo");
                                     columns.ForeignKey(c => c.JobTypeId, (IEnumerable)ViewData["JobType"], "JobTypeId", "Type").Width(130);
 
                                     columns.Bound(c => c.JobNo).Width(90).Title("JobNo");
                                     columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customers"], "Code", "Name")
                                                                               .Width(110)
                                                                               .Title("Customer");
+                                    columns.ForeignKey(c => c.MachineId, (IEnumerable)ViewData["Machines"], "Code", "Name")
+                                                                              .Width(110);
                                     columns.Bound(c => c.Quant).Width(90);
                                     columns.Bound(c => c.UnitPrice).Width(90);
                                     columns.Bound(c => c.BeforeTax).Width(90);
@@ -114,8 +116,39 @@
                                                                            .SelectedIndex(0)
                                                                            .Items(items =>
                                                                            {
+                                                                               items.Add().Text("Details").Content(
+"<div class='row'>" +
+                "<div class='col-sm-4' id='detailone'>"
+                + "<ul> " +
+                   "<li  id = detailList><label>Pages:</label>#= Pages #</li>" +
+                   "<li  id = detailList><label>Copies:</label>#= Copies #</li>" +
+                   "<li  id = detailList><label>Text Weight:</label>#= TextWeight #</li>" +
+                   "<li  id = detailList><label>Cover Weight:</label>#= CoverWeight #</li>" +
+                   "<li  id = detailList><label>Color Text:</label>#= ColorText #</li>" +
+                   "<li id = detailList><label>Color Cover :</label>#= Colorcover #</li>" +
+                    "<li  id = detailList><label>Finishing Size:</label>#= FinishingSize #</li>" +
+                   "<li  id = detailList><label>Printing Line:</label>#= PrintingLine #</li>" +
 
-                                                                               items.Add().Text("Materials Type").Content(@<text>
+                   "</ul>" +
+                "</div>" +
+                "<div class='col-sm-4' id='detailone'>"
+                + "<ul> " +
+                  
+                   "<li id = detailList><label>Total Impression:</label>#= TotalImpression #</li>" +
+                   "<li id = detailList><label>Printing Machine:</label>#= PrintingMachine #</li>" +
+                   "<li id = detailList><label>Estimated By:</label>#= EstimatedBy #</li>" +
+                   "<li id = detailList><label>Approved By:</label>#= ApprovedBy #</li>" +
+                   "<li id = detailList><label>Delivery Date:</label>#= DeliveryDate #</li>" +
+                   "<li id = detailList><label>Graphic Design Expected Completetion:</label>#= GraphicDesignExpectedCompletetion #</li>" +
+                   "<li id = detailList><label>Printing Expected Completetion:</label>#= PrintingExpectedCompletetion #</li>" +
+                   "<li id = detailList><label>Finish Expected Completetion:</label>#= FinishExpectedCompletetion #</li>" +
+
+                   "</ul>" +
+                "</div>" +
+                "</div>"
+        );
+
+                                                                               items.Add().Text("Materials").Content(@<text>
                                                                                 <a href='@Url.Action("JobOrder", "ReportProductionFollowUp")/?id=#=JobId#' target="_blank" title="Print Job Order"><i class="fa fa-print fa-2x"></i></a>
 
 
@@ -1101,7 +1134,7 @@
     function onChange() {
         var unitPrice = $("#UnitPrice").val();
         var quant = $("#Quant").val();
-        var jobTypeId = $("#JobTypeId").val();
+        var jobTypeId = $("#JT").val();
 
         if (quant !== "" && unitPrice !== "" && jobTypeId !== "") {
 

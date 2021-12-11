@@ -110,6 +110,8 @@ namespace ExceedERP.Core.Domain.Inventory
         public string Name { get; set; }
         [Display(Name = "Work Item Code")] 
         public string WorkItemCode { get; set; }
+
+        public string JobNo { get; set; }
     }
     public class IssueValidation : VoucherValidation
     {

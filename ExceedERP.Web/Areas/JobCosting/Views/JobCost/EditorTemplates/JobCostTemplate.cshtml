@@ -21,6 +21,7 @@
                                                                                 .OptionLabel("Select Jobs...")
                                                                                 .DataTextField("JobNo")
                                                                                 .DataValueField("JobId")
+                                                                                .Events(ev=>ev.Change("onChangeJobOrder"))
                                                                                 .Filter("contains")
                                                                                 .DataSource(dataSource =>
                                                                                 {
@@ -53,7 +54,7 @@
                     <label for="Quantity">Quantity</label>
                 </div>
                 <div>
-                    @(Html.Kendo().NumericTextBoxFor(model => model.Quantity))
+                    @(Html.Kendo().NumericTextBoxFor(model => model.Quantity).Enable(false))
                 </div>
             </div>
         </div>
@@ -63,7 +64,7 @@
                     <label for="SellingPrice">Selling Price</label>
                 </div>
                 <div>
-                    @(Html.Kendo().NumericTextBoxFor(model => model.SellingPrice))
+                    @(Html.Kendo().NumericTextBoxFor(model => model.SellingPrice).Enable(false))
                                                 @*.Name("UnitPrice").Events(ev => ev.Change("onChange")))*@
                 </div>
             </div>

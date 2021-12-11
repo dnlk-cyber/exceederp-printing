@@ -30,19 +30,16 @@ namespace ExceedERP.Core.Domain.ProductionFollowUp
         [Display(Name = "Customer Name")]
         public string CustomerName { get; set; }
         [Display(Name = "Estimated By")]
-        public string Estimatedby { get; set; }
+        public string EstimatedBy { get; set; }
         public string Code { get; set; }
-        public string Approvedby { get; set; }
         [Display(Name = "Brand Name")]
         public string BrandName { get; set; }
         [Display(Name = "Tin No ")]
         public string TinNo { get; set; }
 
-
-
-
         [Display(Name = "Job Type")]
         public int JobTypeId { get; set; }
+        [Display(Name = "Job Type")]
         public string JT { get; set; }
         [Display(Name = "Pages")]
        
@@ -106,6 +103,11 @@ namespace ExceedERP.Core.Domain.ProductionFollowUp
         [StringLength(50)]
         [Display(Name = "Finishing Workflow")]
         public string FinishingWorkflow { get; set; }
+        [Display(Name = "Machine")]
+        public int MachineId { get; set; }
+       
+        [Display(Name = "Approved By")]
+        public string ApprovedBy { get; set; }
         public string Reason { get; set; }
 
     }

@@ -30,6 +30,7 @@ namespace ExceedERP.Core.Domain.Inventory
         public int StoreRequisitionItemID { get; set; }
         public int StoreRequisitionID { get; set; }
         public virtual StoreRequisition StoreRequisition { get; set; }
+        public string JobNo { get; set; }
     }
 
     public class StoreRequisitionValidation : StoreRequisitionValidationBase

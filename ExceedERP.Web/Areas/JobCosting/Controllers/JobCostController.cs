@@ -28,6 +28,10 @@ namespace ExceedERP.Web.Areas.JobCosting.Controllers
             }).ToList();
             ViewData["JobOrders"] = db.Jobs.ToList();
             ViewData["JobCategories"] = db.JobCategories.ToList();
+            var itemCategorys = db.ItemCategorys.Select(s => new { Code = s.ItemCategoryCode, NAme = s.Name }).ToList();
+            ViewData["ItemCategorys"] = itemCategorys;
+            var items = db.InventoryItems.Select(s => new { Code = s.ItemCode, Name=s.Name }).ToList();
+            ViewData["Items"] = items;
             return View();
         }
 
@@ -117,7 +121,7 @@ namespace ExceedERP.Web.Areas.JobCosting.Controllers
                 JobCostId = jobCost.JobCostId,
                 JobId = jobCost.JobId,
                 JobCategoryId = status?jobOrder.JobTypeId:jobCost.JobCategoryId,
-                CustomerId = status?jobOrder.CustomerId : jobCost.CustomerId,
+                CustomerId = jobOrder.CustomerId,
                 JobReceivedDate = jobCost.JobReceivedDate,
                 Date = jobCost.Date,
                 ReciptNo = jobCost.ReciptNo,

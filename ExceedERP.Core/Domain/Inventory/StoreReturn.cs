@@ -59,6 +59,7 @@ namespace ExceedERP.Core.Domain.Inventory
         public decimal Quantity { get; set; }
         [Display(Name = "Unit Price")]
         public decimal UnitPrice { get; set; }
+        public string JobNo { get; set; }
     }
     public class StoreReturnValidation : TrackUserSettingOperation
     {

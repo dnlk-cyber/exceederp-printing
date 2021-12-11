@@ -13,7 +13,7 @@ namespace ExceedERP.Core.Domain.ProductionFollowUp
     {
         public int MachineId { get; set; }
         [Display(Name = "Machine Name")]
-        public String MachineName { get; set; }
+        public string MachineName { get; set; }
         [Display(Name = "Category")]
         public Category Category { get; set; }
 
