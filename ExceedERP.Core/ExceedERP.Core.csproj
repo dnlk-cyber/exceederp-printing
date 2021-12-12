@@ -995,7 +995,6 @@
     <Compile Include="Domain\JobCosting\JobOrderTimeSheet.cs" />
     <Compile Include="Domain\JobCosting\PermanentDLR.cs" />
     <Compile Include="Domain\JobCosting\Setting\IdleTimeCategory.cs" />
-    <Compile Include="Domain\JobCosting\Setting\MachineType.cs" />
     <Compile Include="Domain\JobCosting\Setting\Unit.cs" />
     <Compile Include="Domain\JobCosting\Setting\YearlyOverHeadRate.cs" />
     <Compile Include="Domain\JobCosting\Tax.cs" />
@@ -1123,6 +1122,7 @@
     <Compile Include="Domain\ProductionFollowUp\JobOrderMaterial.cs" />
     <Compile Include="Domain\ProductionFollowUp\JobStatus.cs" />
     <Compile Include="Domain\ProductionFollowUp\JobType.cs" />
+    <Compile Include="Domain\ProductionFollowUp\MachineType.cs" />
     <Compile Include="Domain\ProductionFollowUp\PrePrinting.cs" />
     <Compile Include="Domain\ProductionFollowUp\Printing.cs" />
     <Compile Include="Domain\ProductionFollowUp\PrintingFinishedGoodReceiving.cs" />

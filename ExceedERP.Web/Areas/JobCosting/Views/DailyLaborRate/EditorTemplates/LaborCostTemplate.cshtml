@@ -15,6 +15,7 @@
                     <label for="GlFiscalYearId">Fiscal Year</label>
                 </div>
                 <div>
+<<<<<<< HEAD:ExceedERP.Web/Areas/JobCosting/Views/DailyLaborRate/EditorTemplates/LaborCostTemplate.cshtml
                     @(Html.Kendo().DropDownListFor(model => model.GlFiscalYearId)
                                                                                 .Name("GlFiscalYearId")
                                                                                 .ValuePrimitive(true)
@@ -27,6 +28,20 @@
                                                                                     dataSource.Read(read => read.Action("GetAllFiscalYears", "GlFiscalYear", new { area = "Finance" }))
                                                                                     .ServerFiltering(false);
                                                                                 }))
+=======
+                    @(Html.Kendo().DropDownListFor(model => model.DriverId)
+                                                                                                                                .Name("DriverId")
+                                                                                                                                .ValuePrimitive(true)
+                                                                                                                                .OptionLabel("Select Drivers...")
+                                                                                                                                .DataTextField("FullName")
+                                                                                                                                .DataValueField("TraderId")
+                                                                                                                                .Filter("contains")
+                                                                                                                                .DataSource(dataSource =>
+                                                                                                                                {
+                                                                                                                                    dataSource.Read(read => read.Action("GetAllTraders", "Trader", new { area = "ImportExport" }))
+                                                                                                                                        .ServerFiltering(false);
+                                                                                                                                }))
+>>>>>>> 03a634ed9d130568d09e9abe10d8be7eae61664f:ExceedERP.Web/Areas/TransportManagement/Views/DriverAdvancePayment/EditorTemplates/DriverAdvancePaymentTemplate.cshtml
                 </div>
             </div>
         </div>

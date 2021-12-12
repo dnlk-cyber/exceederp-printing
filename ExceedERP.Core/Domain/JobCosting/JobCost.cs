@@ -55,12 +55,13 @@ namespace ExceedERP.Core.Domain.JobCosting
     {
         public int JobMaterialCostId { get; set; }
         public int JobCostId { get; set; }
-        public string CostCenter { get; set; }
-        public int GlFiscalYearId { get; set; }
-        public int GLPeriodId { get; set; }
+        public string ItemCategoryCode { get; set; }
+        public string ItemCode { get; set; }
         public DateTime Date { get; set; }
         public string Reference { get; set; }
         public decimal Quantity { get; set; }
+        public decimal SubTotal { get; set; }
+        public decimal TaxAmount { get; set; }
         public decimal UnitPrice { get; set; }
         public decimal Cost { get; set; }
         public string ItemDescription { get; set; }
@@ -70,12 +71,13 @@ namespace ExceedERP.Core.Domain.JobCosting
     {
         public int JobMaterialReturnId { get; set; }
         public int JobCostId { get; set; }
-        public string CostCenter { get; set; }
-        public int GlFiscalYearId { get; set; }
-        public int GLPeriodId { get; set; }
         public DateTime Date { get; set; }
+        public string ItemCategoryCode { get; set; }
+        public string ItemCode { get; set; }
         public string Reference { get; set; }
         public decimal Quantity { get; set; }
+        public decimal SubTotal { get; set; }
+        public decimal TaxAmount { get; set; }
         public decimal UnitPrice { get; set; }
         public decimal Cost { get; set; }
         public string ItemDescription { get; set; }

@@ -32,6 +32,10 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                 Code = s.OrganizationCustomerID,
                 Name = s.TradeName
             }).ToList();
+            ViewData["Machines"] = db.Machines.Select(s => new {
+                Code = s.MachineId,
+                Name = s.MachineName
+            }).ToList();
 
            
             var categories = db.ItemCategorys;
@@ -123,6 +127,11 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
             var data = db.Jobs;
             return Json(data.Select(s => new { s.JobId, s.JobNo }), JsonRequestBehavior.AllowGet);
         }
+        public JsonResult GetJobOrder(int jobId)
+        {
+            var jobOrder = db.Jobs.Find(jobId);
+            return Json(jobOrder,JsonRequestBehavior.AllowGet);
+        }
         public JsonResult GetJobCategoryTree()
         {
             var jobCategories = db.JobCategories.ToList();
@@ -152,12 +161,13 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                 hv = job.hv,
                 IsExistingCustomer = job.IsExistingCustomer,
                 ProformaId = job.ProformaId,
+                MachineId = job.MachineId,
                 JobNo = job.JobNo,
                 CustomerName = job.CustomerName,
                 CustomerId = job.CustomerId,
-                Estimatedby = job.Estimatedby,
+                EstimatedBy = job.EstimatedBy,
                 Code = job.Code,
-                Approvedby = job.Approvedby,
+                ApprovedBy = job.ApprovedBy,
                 BrandName = job.BrandName,
                 TinNo = job.TinNo,
                 JobTypeId = job.JobTypeId,
@@ -170,7 +180,7 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                 TotalPrice = job.TotalPrice,
                 Contract = job.Contract,
                 TotalImpression = job.TotalImpression,
-                DeliveryDate = job.DeliveryDate,
+                DeliveryDate = job.DeliveryDate?.ToString("yyyy-MM-dd"),
                 TextWeight = job.TextWeight,
                 CoverWeight = job.CoverWeight,
                 ColorText = job.ColorText,
@@ -186,9 +196,9 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                 Varnish = job.Varnish,
                 Perforate = job.Perforate,
                 Camsur = job.Camsur,
-                GraphicDesignExpectedCompletetion = job.GraphicDesignExpectedCompletetion,
-                PrintingExpectedCompletetion = job.PrintingExpectedCompletetion,
-                FinishExpectedCompletetion = job.FinishExpectedCompletetion,
+                GraphicDesignExpectedCompletetion = job.GraphicDesignExpectedCompletetion?.ToString("yyyy-MM-dd"),
+                PrintingExpectedCompletetion = job.PrintingExpectedCompletetion?.ToString("yyyy-MM-dd"),
+                FinishExpectedCompletetion = job.FinishExpectedCompletetion?.ToString("yyyy-MM-dd"),
                 Status = job.Status,
                 FinishingWorkflow = job.FinishingWorkflow
             });
@@ -348,9 +358,9 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
 
             return RedirectToAction("Index");
         }
-        public ActionResult GetBeforeVatAndTotalPerice(int jobTypeId, int quant, double unitPrice)
+        public ActionResult GetBeforeVatAndTotalPerice(string jobTypeId, int quant, double unitPrice)
         {
-            var jobType = db.JobCategories.FirstOrDefault(x => x.JobCategoryId == jobTypeId);
+            var jobType = db.JobCategories.FirstOrDefault(x => x.JobCategoryId.ToString() == jobTypeId);
             if (jobType != null)
             {
                 var tax = db.GLTaxRates.FirstOrDefault(x => x.GLTaxRateID == jobType.GLTaxRateID);
@@ -422,15 +432,15 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
             {
                 JobId = job.JobId,
                 hv = job.hv,
-                IsExistingCustomer = job.IsExistingCustomer,
+                MachineId = job.MachineId,
+                EstimatedBy = job.EstimatedBy,
+                ApprovedBy = job.ApprovedBy,
                 Time = job.Time,
                 ProformaId = job.ProformaId,
                 JobNo = job.JobNo,
                 CustomerName = job.CustomerName,
                 CustomerId = job.CustomerId,
-                Estimatedby = job.Estimatedby,
                 Code = job.Code,
-                Approvedby = job.Approvedby,
                 JobTypeId = job.JobTypeId,
                 BeforeTax = job.BeforeTax,
                 UnitPrice = job.UnitPrice,

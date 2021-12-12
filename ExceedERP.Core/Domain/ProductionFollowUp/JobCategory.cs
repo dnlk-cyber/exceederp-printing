@@ -18,6 +18,8 @@ namespace ExceedERP.Core.Domain.ProductionFollowUp
         public int GLTaxRateID { get; set; }
         public string AccountNumber { get; set; }
         public string Description { get; set; }
+        public  JobCategory JobCategorys { get; set; }
+
 
     }
  

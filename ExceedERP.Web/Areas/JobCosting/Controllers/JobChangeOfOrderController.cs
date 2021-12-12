@@ -10,6 +10,7 @@ using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using ExceedERP.Core.Domain.JobCosting;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Core.Domain.ProductionFollowUp;
 
 namespace ExceedERP.Web.Areas.JobCosting.Controllers
 {
@@ -24,13 +25,18 @@ namespace ExceedERP.Web.Areas.JobCosting.Controllers
 
         public ActionResult JobChangeOfOrders_Read([DataSourceRequest]DataSourceRequest request,int id)
         {
-            IQueryable<JobChangeOfOrder> jobchangeoforders = db.JobChangeOfOrders.Where(q=>q.JobCostId==id);
+            var jobCost = db.JobCosts.Find(id);
+            if(jobCost!=null)
+            {
+
+            
+            IQueryable<ChangeOrder> jobchangeoforders = db.ChangeOrders.Where(q=>q.JobId==jobCost.JobId);
             DataSourceResult result = jobchangeoforders.ToDataSourceResult(request, jobChangeOfOrder => new {
-                JobChangeOfOrderId = jobChangeOfOrder.JobChangeOfOrderId,
-                JobCostId = jobChangeOfOrder.JobCostId,
+                JobChangeOfOrderId = jobChangeOfOrder.ChangeOrderId,
+                JobCostId = id,
                 ChangeOrderId = jobChangeOfOrder.ChangeOrderId,
-                AdditionalChange = jobChangeOfOrder.AdditionalChange,
-                ChargeAmount = jobChangeOfOrder.ChargeAmount,
+                AdditionalChange = jobChangeOfOrder.Quantity,
+                ChargeAmount = jobChangeOfOrder.Total,
                 Reason = jobChangeOfOrder.Reason,
                 DateCreated = jobChangeOfOrder.DateCreated,
                 LastModified = jobChangeOfOrder.LastModified,
@@ -39,6 +45,9 @@ namespace ExceedERP.Web.Areas.JobCosting.Controllers
             });
 
             return Json(result);
+            }
+            return Json(request);
+
         }
         public ActionResult JobChangeOfOrders_Create([DataSourceRequest]DataSourceRequest request, JobChangeOfOrder jobChangeOfOrder, int id)
         {

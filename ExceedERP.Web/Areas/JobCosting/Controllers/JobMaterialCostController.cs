@@ -24,18 +24,49 @@ namespace ExceedERP.Web.Areas.JobCosting.Common
 
         public ActionResult JobMaterialCosts_Read([DataSourceRequest]DataSourceRequest request, int id)
         {
-            IQueryable<JobMaterialCost> jobmaterialcosts = db.JobMaterialCosts.Where(q => q.JobCostId == id); ;
+            IList<JobMaterialCost> jobmaterialcosts = new List<JobMaterialCost>();
+            var jobCost = db.JobCosts.Find(id);
+            if(jobCost != null)
+            {
+
+                var items = db.IssueItems.Where(q => q.JobNo == jobCost.JobId.ToString());
+                foreach(var item in items)
+                {
+                    JobMaterialCost jobMaterial = new JobMaterialCost();
+
+                    jobMaterial.JobMaterialCostId = item.IssueItemID;
+                    jobMaterial.JobCostId = id;
+                    jobMaterial.ItemCode = item.ItemCode;
+                    jobMaterial.ItemCategoryCode = item.ItemCategoryCode;
+                    jobMaterial.Date = DateTime.Now;
+                    jobMaterial.Reference = item.JobNo;
+                    jobMaterial.Quantity = item.IssuedQuantity;
+                    jobMaterial.UnitPrice = item.UnitPrice;
+                    jobMaterial.Cost = item.Total;
+                    jobMaterial.SubTotal = item.UnitPrice * item.IssuedQuantity;
+                  jobMaterial.TaxAmount = item.Total-(item.UnitPrice * item.IssuedQuantity);
+                    jobMaterial.ItemDescription = jobCost.Description;
+                    jobMaterial.DateCreated = item.DateCreated;
+                  jobMaterial.LastModified = item.LastModified;
+                 jobMaterial.CreatedBy = item.CreatedBy;
+                    jobMaterial.ModifiedBy = item.ModifiedBy;
+                    jobmaterialcosts.Add(jobMaterial);
+                }
+                
+            }
+
             DataSourceResult result = jobmaterialcosts.ToDataSourceResult(request, jobMaterialCost => new {
                 JobMaterialCostId = jobMaterialCost.JobMaterialCostId,
                 JobCostId = jobMaterialCost.JobCostId,
-                CostCenter = jobMaterialCost.CostCenter,
-                GlFiscalYearId = jobMaterialCost.GlFiscalYearId,
-                GLPeriodId = jobMaterialCost.GLPeriodId,
+                ItemCode = jobMaterialCost.ItemCode,
+                ItemCategoryCode = jobMaterialCost.ItemCategoryCode,
                 Date = jobMaterialCost.Date,
                 Reference = jobMaterialCost.Reference,
                 Quantity = jobMaterialCost.Quantity,
                 UnitPrice = jobMaterialCost.UnitPrice,
                 Cost = jobMaterialCost.Cost,
+                SubTotal = jobMaterialCost.SubTotal,
+                TaxAmount = jobMaterialCost.TaxAmount,
                 ItemDescription = jobMaterialCost.ItemDescription,
                 DateCreated = jobMaterialCost.DateCreated,
                 LastModified = jobMaterialCost.LastModified,
@@ -101,13 +132,14 @@ namespace ExceedERP.Web.Areas.JobCosting.Common
             {
                 JobMaterialCostId = jobMaterialCost.JobMaterialCostId,
                 JobCostId = jobMaterialCost.JobCostId,
-                CostCenter = jobMaterialCost.CostCenter,
-                GlFiscalYearId = jobMaterialCost.GlFiscalYearId,
-                GLPeriodId = jobMaterialCost.GLPeriodId,
+                ItemCategoryCode = jobMaterialCost.ItemCategoryCode,
+                ItemCode = jobMaterialCost.ItemCode,
                 Date = jobMaterialCost.Date,
                 Reference = jobMaterialCost.Reference,
                 Quantity = jobMaterialCost.Quantity,
                 UnitPrice = jobMaterialCost.UnitPrice,
+                SubTotal = jobMaterialCost.SubTotal,
+                TaxAmount = jobMaterialCost.TaxAmount,
                 Cost = jobMaterialCost.Cost,
                 ItemDescription = jobMaterialCost.ItemDescription,
                 DateCreated = jobMaterialCost.DateCreated,

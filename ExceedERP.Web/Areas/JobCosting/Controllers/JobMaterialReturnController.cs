@@ -24,17 +24,47 @@ namespace ExceedERP.Web.Areas.JobCosting.Controllers
 
         public ActionResult JobMaterialReturns_Read([DataSourceRequest]DataSourceRequest request, int id)
         {
-            IQueryable<JobMaterialReturn> jobmaterialreturns = db.JobMaterialReturns.Where(q=>q.JobCostId==id);
+            IList<JobMaterialReturn> jobmaterialreturns = new List<JobMaterialReturn>();
+            var jobCost = db.JobCosts.Find(id);
+            if (jobCost != null)
+            {
+
+                var items = db.IssueItems.Where(q => q.JobNo == jobCost.JobId.ToString());
+                foreach (var item in items)
+                {
+                    JobMaterialReturn jobMaterialReturn = new JobMaterialReturn();
+
+                    jobMaterialReturn.JobMaterialReturnId = item.IssueItemID;
+                    jobMaterialReturn.JobCostId = id;
+                    jobMaterialReturn.ItemCode = item.ItemCode;
+                    jobMaterialReturn.ItemCategoryCode = item.ItemCategoryCode;
+                    jobMaterialReturn.Date = DateTime.Now;
+                    jobMaterialReturn.Reference = item.JobNo;
+                    jobMaterialReturn.Quantity = item.IssuedQuantity;
+                    jobMaterialReturn.UnitPrice = item.UnitPrice;
+                    jobMaterialReturn.Cost = item.Total;
+                    jobMaterialReturn.SubTotal = item.UnitPrice * item.IssuedQuantity;
+                    jobMaterialReturn.TaxAmount = item.Total - (item.UnitPrice * item.IssuedQuantity);
+                    jobMaterialReturn.ItemDescription = jobCost.Description;
+                    jobMaterialReturn.DateCreated = item.DateCreated;
+                    jobMaterialReturn.LastModified = item.LastModified;
+                    jobMaterialReturn.CreatedBy = item.CreatedBy;
+                    jobMaterialReturn.ModifiedBy = item.ModifiedBy;
+                    jobmaterialreturns.Add(jobMaterialReturn);
+                }
+
+            }
             DataSourceResult result = jobmaterialreturns.ToDataSourceResult(request, jobMaterialReturn => new {
                 JobMaterialReturnId = jobMaterialReturn.JobMaterialReturnId,
                 JobCostId = jobMaterialReturn.JobCostId,
-                CostCenter = jobMaterialReturn.CostCenter,
-                GlFiscalYearId = jobMaterialReturn.GlFiscalYearId,
-                GLPeriodId = jobMaterialReturn.GLPeriodId,
+                ItemCategoryCode = jobMaterialReturn.ItemCategoryCode,
+                ItemCode = jobMaterialReturn.ItemCode,
                 Date = jobMaterialReturn.Date,
                 Reference = jobMaterialReturn.Reference,
                 Quantity = jobMaterialReturn.Quantity,
                 UnitPrice = jobMaterialReturn.UnitPrice,
+                TaxAmount = jobMaterialReturn.TaxAmount,
+                SubTotal = jobMaterialReturn.SubTotal,
                 Cost = jobMaterialReturn.Cost,
                 ItemDescription = jobMaterialReturn.ItemDescription,
                 DateCreated = jobMaterialReturn.DateCreated,
@@ -101,13 +131,14 @@ namespace ExceedERP.Web.Areas.JobCosting.Controllers
             {
                 JobMaterialReturnId = jobMaterialReturn.JobMaterialReturnId,
                 JobCostId = jobMaterialReturn.JobCostId,
-                CostCenter = jobMaterialReturn.CostCenter,
-                GlFiscalYearId = jobMaterialReturn.GlFiscalYearId,
-                GLPeriodId = jobMaterialReturn.GLPeriodId,
+                ItemCategoryCode = jobMaterialReturn.ItemCategoryCode,
+                ItemCode = jobMaterialReturn.ItemCode,
                 Date = jobMaterialReturn.Date,
                 Reference = jobMaterialReturn.Reference,
                 Quantity = jobMaterialReturn.Quantity,
                 UnitPrice = jobMaterialReturn.UnitPrice,
+                TaxAmount = jobMaterialReturn.TaxAmount,
+                SubTotal = jobMaterialReturn.SubTotal,
                 Cost = jobMaterialReturn.Cost,
                 ItemDescription = jobMaterialReturn.ItemDescription,
                 DateCreated = jobMaterialReturn.DateCreated,
