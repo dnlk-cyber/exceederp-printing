@@ -991,7 +991,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
 
                         }
                         //get unpaid leave deductions
-                        if (payroldata.UnpaidLeaveDays > 0 && !DeductUnpaidLeave)
+                        if (payroldata.UnpaidLeaveDays > 0 && DeductUnpaidLeave)
                         {
                             deductiondata = new PayrollProcessDeductions();
                             deductiondata.CreatedOn = DateTime.Now.Date;
