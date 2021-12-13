@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 
 using System.Data.Entity;
@@ -180,7 +180,8 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                 TotalPrice = job.TotalPrice,
                 Contract = job.Contract,
                 TotalImpression = job.TotalImpression,
-                DeliveryDate = job.DeliveryDate?.ToString("yyyy-MM-dd"),
+                DeliveryDate = job.DeliveryDate,
+                ReceivedDate = job.ReceivedDate,
                 TextWeight = job.TextWeight,
                 CoverWeight = job.CoverWeight,
                 ColorText = job.ColorText,
@@ -196,9 +197,9 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                 Varnish = job.Varnish,
                 Perforate = job.Perforate,
                 Camsur = job.Camsur,
-                GraphicDesignExpectedCompletetion = job.GraphicDesignExpectedCompletetion?.ToString("yyyy-MM-dd"),
-                PrintingExpectedCompletetion = job.PrintingExpectedCompletetion?.ToString("yyyy-MM-dd"),
-                FinishExpectedCompletetion = job.FinishExpectedCompletetion?.ToString("yyyy-MM-dd"),
+                GraphicDesignExpectedCompletetion = job.GraphicDesignExpectedCompletetion,
+                PrintingExpectedCompletetion = job.PrintingExpectedCompletetion,
+                FinishExpectedCompletetion = job.FinishExpectedCompletetion,
                 Status = job.Status,
                 FinishingWorkflow = job.FinishingWorkflow
             });
@@ -451,6 +452,7 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                 Contract = job.Contract,
                 TotalImpression = job.TotalImpression,
                 DeliveryDate = job.DeliveryDate,
+                ReceivedDate = job.ReceivedDate,
                 TextWeight = job.TextWeight,
                 CoverWeight = job.CoverWeight,
                 ColorText = job.ColorText,
