@@ -251,30 +251,31 @@
                     <div class="row">
                         <div class="col-sm-2">
                             <div class="form-group">
-                                @Html.LabelFor(model => model.JT, htmlAttributes: new { @class = "control-label col-sm-8" })
+                                @Html.LabelFor(model => model.JobNo, htmlAttributes: new { @class = "control-label col-sm-8" })
                                 <div>
 
-                                    @(Html.Kendo().DropDownTreeFor(model => model.JT)
-
-                                                                                                                                .ValuePrimitive(true)
-                                                                                                                                .Placeholder("--select--")
-                                                                                                                                .Events(ev=>ev.Change("onSelectLoading"))
-                                                                                                                                .BindTo((IEnumerable<DropDownTreeItemModel>)ViewBag.data))
-
-                                    @Html.ValidationMessageFor(model => model.JT, "", new { @class = "text-danger" })
+                                    @(Html.Kendo().TextBoxFor(model => model.JobNo))
+                                    @Html.ValidationMessageFor(model => model.JobNo, "", new { @class = "text-danger" })
                                 </div>
                             </div>
                         </div>
                         <div class="col-sm-2">
                             <div class="form-group">
-                                @Html.LabelFor(model => model.JobNo, htmlAttributes: new { @class = "control-label col-sm-8" })
+                                @Html.LabelFor(model => model.JT, htmlAttributes: new { @class = "control-label col-sm-8" })
                                 <div>
 
-                                    @(Html.Kendo().TextBoxFor(model => model.JobNo))        
-                                    @Html.ValidationMessageFor(model => model.JobNo, "", new { @class = "text-danger" })
+                                    @(Html.Kendo().DropDownTreeFor(model => model.JT)
+
+                                                                                                                                        .ValuePrimitive(true)
+                                                                                                                                        .Placeholder("--select--")
+                                                                                                                                        .Events(ev => ev.Change("onSelectLoading"))
+                                                                                                                                        .BindTo((IEnumerable<DropDownTreeItemModel>)ViewBag.data))
+
+                                    @Html.ValidationMessageFor(model => model.JT, "", new { @class = "text-danger" })
                                 </div>
                             </div>
                         </div>
+
                         <div class="col-sm-2">
                             <div class="form-group">
                                 @Html.LabelFor(model => model.Pages, htmlAttributes: new { @class = "control-label col-sm-8" })
@@ -491,6 +492,17 @@
                                     @(Html.Kendo().TextBoxFor(model => model.ApprovedBy)
                                     )
                                     @Html.ValidationMessageFor(model => model.ApprovedBy, "", new { @class = "text-danger" })
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-sm-2">
+                            <div class="form-group">
+                                @Html.LabelFor(model => model.ReceivedDate, htmlAttributes: new { @class = "control-label col-sm-8" })
+                                <div>
+
+                                    @(Html.Kendo().DateTimePickerFor(model => model.ReceivedDate)
+                                    )
+                                    @Html.ValidationMessageFor(model => model.ReceivedDate, "", new { @class = "text-danger" })
                                 </div>
                             </div>
                         </div>

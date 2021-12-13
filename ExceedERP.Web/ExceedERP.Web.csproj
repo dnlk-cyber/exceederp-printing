@@ -5112,6 +5112,7 @@
     <Content Include="Areas\ProductionFollowUp\Views\Machine\EditorTemplates\HaveParentMapping.cshtml" />
     <Content Include="Areas\ProductionFollowUp\Views\Machine\EditorTemplates\SubcategoryMappingTemplate.cshtml" />
     <Content Include="Areas\ProductionFollowUp\Views\Machine\Index.cshtml" />
+    <Content Include="Areas\ProductionFollowUp\Views\JobOrders\EditorTemplates\Item.cshtml" />
     <None Include="Properties\PublishProfiles\Brana.pubxml" />
     <None Include="Properties\PublishProfiles\mega.pubxml" />
     <None Include="Scripts\kendo\2018.3.911\kendo.all-vsdoc.js" />

@@ -1,0 +1,26 @@
+﻿@using System.Collections
+@using ExceedERP.Core.Localization
+@(Html.Kendo().DropDownListFor(model => model)
+                                                                                                                   .ValuePrimitive(true)
+                                                                                                                   .OptionLabel(Resources.Select)
+                                                                                                                   .DataTextField("Name")
+                                                                                                                   .DataValueField("ItemCode")
+                                                                                                                   .Events(ev =>
+                                                                                                                   {
+                                                                                                                       ev.Change("selectProduct");
+
+                                                                                                                   })
+                                                                                                                                   //    .BindTo((IEnumerable)ViewData["Items"])
+                                                                                                                                   .DataSource(dataSource =>
+                                                                                                                                   {
+                                                                                                                                       dataSource.Read(read => read.Action("GetItems2", "DataProvider", new { Area = "Inventory" }).Data("filterCategories"))
+                                                                                                                                       .ServerFiltering(true);
+                                                                                                                                   })
+                                                                                                                                   .CascadeFrom("Name")
+                                                                                                                                   //.Events(ev => {
+                                                                                                                                   //    ev.Change("materialChanged");
+                                                                                                                                   //})
+                                                                                                                                   .Filter("contains")
+                                                                                                                                   .MinLength(2)
+                                                                                                                                   .ValuePrimitive(true)
+)

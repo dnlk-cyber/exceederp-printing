@@ -44,10 +44,9 @@
                                 .Columns(columns =>
                                 {
                                     //columns.Bound(c => c.Time);
+                                    columns.Bound(c => c.JobNo).Width(90).Title("JobNo");
                                     columns.ForeignKey(c => c.ProformaId, (IEnumerable)ViewData["Proforma"], "ProformaId", "ProformaNo");
                                     columns.ForeignKey(c => c.JobTypeId, (IEnumerable)ViewData["JobType"], "JobTypeId", "Type").Width(130);
-
-                                    columns.Bound(c => c.JobNo).Width(90).Title("JobNo");
                                     columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customers"], "Code", "Name")
                                                                               .Width(110)
                                                                               .Title("Customer");
@@ -138,6 +137,7 @@
                    "<li id = detailList><label>Printing Machine:</label>#= PrintingMachine #</li>" +
                    "<li id = detailList><label>Estimated By:</label>#= EstimatedBy #</li>" +
                    "<li id = detailList><label>Approved By:</label>#= ApprovedBy #</li>" +
+                   "<li id = detailList><label>Received Date:</label>#= ReceivedDate #</li>" +
                    "<li id = detailList><label>Delivery Date:</label>#= DeliveryDate #</li>" +
                    "<li id = detailList><label>Graphic Design Expected Completetion:</label>#= GraphicDesignExpectedCompletetion #</li>" +
                    "<li id = detailList><label>Printing Expected Completetion:</label>#= PrintingExpectedCompletetion #</li>" +

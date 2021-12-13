@@ -1,4 +1,4 @@
-﻿using ExceedERP.Core.Domain.Common;
+using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.PrintingEstimation.Setting;
 using System;
 using System.Collections.Generic;
@@ -61,6 +61,11 @@ namespace ExceedERP.Core.Domain.ProductionFollowUp
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime? DeliveryDate { get; set; }
+        [Display(Name = "Received Date")]
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+        public DateTime? ReceivedDate { get; set; }
+
         [Display(Name = "Text Weight")]
         public double TextWeight { get; set; }
         [Display(Name = "Cover Weight")]

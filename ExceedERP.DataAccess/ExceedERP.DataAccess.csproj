@@ -138,6 +138,10 @@
     <Compile Include="Migrations\202112110955595_ProdFlwUpAndJbCostingModified.Designer.cs">
       <DependentUpon>202112110955595_ProdFlwUpAndJbCostingModified.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202112131305285_jobfollowup.cs" />
+    <Compile Include="Migrations\202112131305285_jobfollowup.Designer.cs">
+      <DependentUpon>202112131305285_jobfollowup.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -198,6 +202,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202112110955595_ProdFlwUpAndJbCostingModified.resx">
       <DependentUpon>202112110955595_ProdFlwUpAndJbCostingModified.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202112131305285_jobfollowup.resx">
+      <DependentUpon>202112131305285_jobfollowup.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
