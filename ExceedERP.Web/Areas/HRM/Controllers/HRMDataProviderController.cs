@@ -22,6 +22,8 @@ using ExceedERP.Core.Domain.HRM;
 using ExceedERP.Core.Domain.Common.ViewModel;
 using ExceedERP.Core.Domain.Finance.GL.Dynamic;
 using ExceedERP.Core.Domain.HRM.PerformanceManagment;
+using ExceedERP.Core.Domain.HRM.Payroll.Vm;
+using ExceedERP.Core.Domain.HRM.ArchiveManagement;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers
 {
@@ -2081,33 +2083,33 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
                 FullNameaEnglish = p.FullNameaEnglish
             }), JsonRequestBehavior.AllowGet);
         }
-        //public JsonResult GetSubjectType()
-        //{           
-        //    IQueryable<SubjectType> subjectTypes = db.SubjectTypes;
-        //    return Json(subjectTypes.Select(p => new
-        //    {
-        //        SubjectTypeId = p.SubjectTypeId,
-        //        SubjectTypeName = p.SubjectTypeName
-        //    }), JsonRequestBehavior.AllowGet);
-        //}
-        //public ActionResult GetPayrollEmployeeList([DataSourceRequest] DataSourceRequest request)
-        //{
-        //    List<EmployeeSelectorVm> list = new List<EmployeeSelectorVm>();
-        //    db = new ExceedDbContext();
-        //    var employees = inputs.GetPayrollPlacmentEmployees(User.Identity.Name);
+        public JsonResult GetSubjectType()
+        {
+            IQueryable<SubjectType> subjectTypes = db.SubjectTypes;
+            return Json(subjectTypes.Select(p => new
+            {
+                SubjectTypeId = p.SubjectTypeId,
+                SubjectTypeName = p.SubjectTypeName
+            }), JsonRequestBehavior.AllowGet);
+        }
+        public ActionResult GetPayrollEmployeeList([DataSourceRequest] DataSourceRequest request)
+        {
+            List<EmployeeSelectorVm> list = new List<EmployeeSelectorVm>();
+            db = new ExceedDbContext();
+            var employees = inputs.GetPayrollPlacmentEmployees(User.Identity.Name);
 
-        //    foreach (var emp in employees)
-        //    {
+            foreach (var emp in employees)
+            {
 
-        //        var record = new EmployeeSelectorVm();
-        //        record.PersonId = emp.PersonId;
-        //        record.FullName = emp.FullName;
-        //        list.Add(record);
+                var record = new EmployeeSelectorVm();
+                record.PersonId = emp.PersonId;
+                record.FullName = emp.FullName;
+                list.Add(record);
 
-        //    }
+            }
 
-        //    return Json(list.ToDataSourceResult(request), JsonRequestBehavior.AllowGet);
-        //}
+            return Json(list.ToDataSourceResult(request), JsonRequestBehavior.AllowGet);
+        }
         public ActionResult PayrollEmployee_ValueMapper(string value)
         {
 
