@@ -1,4 +1,4 @@
-﻿using ExceedERP.Core.Domain.Common;
+using ExceedERP.Core.Domain.Common;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -18,7 +18,7 @@ namespace ExceedERP.Core.Domain.ProductionFollowUp
         public int GLTaxRateID { get; set; }
         public string AccountNumber { get; set; }
         public string Description { get; set; }
-        public  JobCategory JobCategorys { get; set; }
+        
 
 
     }
