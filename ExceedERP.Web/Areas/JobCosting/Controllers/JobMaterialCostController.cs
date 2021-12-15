@@ -29,7 +29,7 @@ namespace ExceedERP.Web.Areas.JobCosting.Common
             if(jobCost != null)
             {
 
-                var items = db.IssueItems.Where(q => q.JobNo == jobCost.JobId.ToString());
+                var items = db.IssueItems.Where(q => q.ProductionJobNo == jobCost.JobId.ToString());
                 foreach(var item in items)
                 {
                     JobMaterialCost jobMaterial = new JobMaterialCost();
@@ -39,7 +39,7 @@ namespace ExceedERP.Web.Areas.JobCosting.Common
                     jobMaterial.ItemCode = item.ItemCode;
                     jobMaterial.ItemCategoryCode = item.ItemCategoryCode;
                     jobMaterial.Date = DateTime.Now;
-                    jobMaterial.Reference = item.JobNo;
+                    jobMaterial.Reference = item.ProductionJobNo;
                     jobMaterial.Quantity = item.IssuedQuantity;
                     jobMaterial.UnitPrice = item.UnitPrice;
                     jobMaterial.Cost = item.Total;

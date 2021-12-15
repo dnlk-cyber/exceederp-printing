@@ -37,6 +37,8 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Returns
                 UnitPrice = storeReturnItems.UnitPrice,
                 Quantity = storeReturnItems.Quantity,
                 StoreReturnID = storeReturnItems.StoreReturnID,
+                ProductionJobNo = storeReturnItems.ProductionJobNo,
+                MaintenanceJobNo = storeReturnItems.MaintenanceJobNo,
                
             });
 
@@ -74,7 +76,9 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Returns
                     Quantity = storeReturnItems.Quantity,
                     CreatedBy = User.Identity.Name,
                     DateCreated = DateTime.Now,
-                    
+                    ProductionJobNo = storeReturnItems.ProductionJobNo,
+                    MaintenanceJobNo = storeReturnItems.MaintenanceJobNo,
+
                 };
 
                 db.StoreReturnItemss.Add(entity);
@@ -124,6 +128,8 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Returns
                     Quantity = storeReturnItems.Quantity,
                     ModifiedBy = User.Identity.Name,
                     LastModified = DateTime.Now,
+                    ProductionJobNo = storeReturnItems.ProductionJobNo,
+                    MaintenanceJobNo = storeReturnItems.MaintenanceJobNo,
                 };
 
                 db.StoreReturnItemss.Attach(entity);
@@ -158,6 +164,8 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Returns
                      Quantity = storeReturnItems.Quantity,
                      ModifiedBy = User.Identity.Name,
                      LastModified = DateTime.Now,
+                     ProductionJobNo = storeReturnItems.ProductionJobNo,
+                     MaintenanceJobNo = storeReturnItems.MaintenanceJobNo,
                  };
 
                  db.StoreReturnItemss.Attach(entity);

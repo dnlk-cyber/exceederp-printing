@@ -146,6 +146,10 @@
     <Compile Include="Migrations\202112141118001_jobfollow.Designer.cs">
       <DependentUpon>202112141118001_jobfollow.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202112151233159_MntAndProdJobNoAdded.cs" />
+    <Compile Include="Migrations\202112151233159_MntAndProdJobNoAdded.Designer.cs">
+      <DependentUpon>202112151233159_MntAndProdJobNoAdded.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -212,6 +216,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202112141118001_jobfollow.resx">
       <DependentUpon>202112141118001_jobfollow.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202112151233159_MntAndProdJobNoAdded.resx">
+      <DependentUpon>202112151233159_MntAndProdJobNoAdded.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

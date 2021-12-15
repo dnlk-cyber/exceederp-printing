@@ -44,6 +44,8 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                 Total = issueItem.Total,
                 AdditionalCost = issueItem.AdditionalCost,
                 WorkItemCode = issueItem.WorkItemCode,
+                ProductionJobNo = issueItem.ProductionJobNo,
+                MaintenanceJobNo = issueItem.MaintenanceJobNo,
 
 
                 OrgBranchName = issueItem.OrgBranchName,
@@ -99,6 +101,8 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                     WorkItemCode = issueItem.WorkItemCode,
                     AdditionalCost = issueItem.AdditionalCost,
                     UnitPrice = avgPrice,
+                    ProductionJobNo = issueItem.ProductionJobNo,
+                    MaintenanceJobNo = issueItem.MaintenanceJobNo,
                     Total = issueItem.IssuedQuantity*avgPrice,
                     OrgBranchName = issueItem.OrgBranchName,
                     DateCreated = DateTime.Now,
@@ -169,6 +173,8 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                     ApprovedQuantity = issueItem.ApprovedQuantity,
                     IssuedQuantity = issueItem.IssuedQuantity,
                     UnitPrice = avgPrice,
+                    ProductionJobNo = issueItem.ProductionJobNo,
+                    MaintenanceJobNo = issueItem.MaintenanceJobNo,
                     Total = issueItem.IssuedQuantity * avgPrice,
                     OrgBranchName = issueItem.OrgBranchName,
                     LastModified = DateTime.Now,
@@ -208,7 +214,8 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
                     UnitPrice = issueItem.UnitPrice,
 
                     Total = issueItem.Total,
-                   
+                    ProductionJobNo = issueItem.ProductionJobNo,
+                    MaintenanceJobNo = issueItem.MaintenanceJobNo,
 
                     OrgBranchName = issueItem.OrgBranchName,
                     DateCreated = issueItem.DateCreated,
