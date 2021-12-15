@@ -30,7 +30,9 @@ namespace ExceedERP.Core.Domain.Inventory
         public int StoreRequisitionItemID { get; set; }
         public int StoreRequisitionID { get; set; }
         public virtual StoreRequisition StoreRequisition { get; set; }
+        [Display(Name ="Job No")]
         public string ProductionJobNo { get; set; }
+        [Display(Name = "Job No")]
         public string MaintenanceJobNo { get; set; }
     }
 
