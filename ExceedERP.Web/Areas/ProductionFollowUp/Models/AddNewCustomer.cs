@@ -15,12 +15,11 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Models
 
         internal static OrganizationCustomer Save(Proforma proforma)
         {
-            
                 var customer = new OrganizationCustomer
             {
                 TradeName = proforma.CustomerName,
-                BrandName = proforma.BrandName,
-                TinNo = proforma.TinNo,
+                    BrandName = proforma.BrandName,
+                    TinNo = proforma.TinNo,
                 IsActive = true,
                 IsCredit = false,
                 IsTemporary = true,

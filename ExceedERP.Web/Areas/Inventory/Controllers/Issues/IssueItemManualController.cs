@@ -65,7 +65,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
             var issue = db.Issues.Find(id);
 
             var exist = db.IssueItems.Where(x => x.IssueID == id)
-             .Where(x => x.ItemCode == issueItem.ItemCode)
+             .Where(x => x.ItemCode == issueItem.ItemCode && x.ProductionJobNo == issueItem.ProductionJobNo)
              .AsQueryable();
             if (exist.Any())
             {
@@ -133,7 +133,7 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Issues
 
             var exist = db.IssueItems.Where(x => x.IssueID == id)
                 .Where(x => x.IssueItemID != issueItem.IssueItemID)
-          .Where(x => x.ItemCode == issueItem.ItemCode)
+          .Where(x => x.ItemCode == issueItem.ItemCode && x.ProductionJobNo == issueItem.ProductionJobNo)
           .AsQueryable();
             if (exist.Any())
             {

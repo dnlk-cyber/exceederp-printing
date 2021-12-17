@@ -1,4 +1,5 @@
-﻿using ExceedERP.Core.Domain.PrintingEstimation.Setting;
+﻿using ExceedERP.Core.Domain.Common;
+using ExceedERP.Core.Domain.PrintingEstimation.Setting;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -8,7 +9,7 @@ using System.Threading.Tasks;
 
 namespace ExceedERP.Core.Domain.ProductionFollowUp
 {
-    public class JobStatus
+    public class JobStatus: TrackUserSettingOperation
     {
         public int JobStatusId { get; set; }
         public int JobId { get; set; }
@@ -32,4 +33,27 @@ namespace ExceedERP.Core.Domain.ProductionFollowUp
         public JobState Status { get; set; }
     }
 
+    public class JobStatusLineItem : TrackUserSettingOperation
+    {
+        public int JobStatusLineItemId { get; set; }
+        public int JobStatusId { get; set; }
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+        [Display(Name = "Date")]
+        public DateTime Date { get; set; }
+        [Display(Name = "Quantity")]
+        public decimal Quantiy { get; set; }
+        [Display(Name = "Total Price")]
+        public decimal TotalPrice { get; set; }
+        [Display(Name = "Invoice")]
+        public string Invoice { get; set; }
+        [Display(Name = "Sales Voucher No")]
+        public string SalesVoucherNo { get; set; }
+        [Display(Name = "Cash")]
+        public decimal? Cash { get; set; }
+        [Display(Name = "Credit")]
+        public decimal? Credit { get; set; }
+        [Display(Name = "Cash Credit Invoice")]
+        public string CashCreditInvoice { get; set; }
+    }
 }

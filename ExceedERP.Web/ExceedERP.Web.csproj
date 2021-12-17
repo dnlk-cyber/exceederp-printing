@@ -2013,6 +2013,7 @@
     <Compile Include="Areas\ProductionFollowUp\Controllers\Operation\JobOrderMaterialsController.cs" />
     <Compile Include="Areas\ProductionFollowUp\Controllers\Operation\JobOrdersController.cs" />
     <Compile Include="Areas\ProductionFollowUp\Controllers\Operation\JobStatusController.cs" />
+    <Compile Include="Areas\ProductionFollowUp\Controllers\Operation\JobStatusLineItemController.cs" />
     <Compile Include="Areas\ProductionFollowUp\Controllers\Operation\poController.cs" />
     <Compile Include="Areas\ProductionFollowUp\Controllers\Operation\PrintingProductionStoreReceiveController.cs" />
     <Compile Include="Areas\ProductionFollowUp\Controllers\Operation\PrintingProductionStoreReceiveDistributionController.cs" />
@@ -5113,6 +5114,8 @@
     <Content Include="Areas\ProductionFollowUp\Views\Machine\EditorTemplates\SubcategoryMappingTemplate.cshtml" />
     <Content Include="Areas\ProductionFollowUp\Views\Machine\Index.cshtml" />
     <Content Include="Areas\ProductionFollowUp\Views\JobOrders\EditorTemplates\Item.cshtml" />
+    <Content Include="Areas\ProductionFollowUp\Views\JobOrders\EditorTemplates\QuantityEditorTemplate.cshtml" />
+    <Content Include="Areas\ProductionFollowUp\Views\JobStatusLineItem\Index.cshtml" />
     <None Include="Properties\PublishProfiles\Brana.pubxml" />
     <None Include="Properties\PublishProfiles\mega.pubxml" />
     <None Include="Scripts\kendo\2018.3.911\kendo.all-vsdoc.js" />

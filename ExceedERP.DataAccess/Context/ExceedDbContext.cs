@@ -1459,6 +1459,7 @@ namespace ExceedERP.DataAccess.Context
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.ProductFollowUpEntityConfiguration.ProductDeliveryEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.ProductFollowUpEntityConfiguration.ProductDeliveryItemsEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.ProductFollowUpEntityConfiguration.PFProformaItemsEntityTypeConfiguration());
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.ProductFollowUpEntityConfiguration.JobStatusLineItemEntityTypeConfiguration());
             #endregion
 
             #region Job Costing Entity Configuration
@@ -3407,9 +3408,8 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<PrintingProductionFinishedGoodsStoreReceiveDistribution> PrintingProductionFinishedGoodsStoreReceiveDistributions { get; set; }
         public DbSet<FinishedGoods> FinishedGoods { get; set; }
         public DbSet<ProductDelivery> ProductDeliveries { get; set; }
-
         public DbSet<ProductDeliveryItems> ProductDeliveryItems { get; set; }
-
+        public DbSet<JobStatusLineItem> JobStatusLineItems { get; set; }
         #endregion
         #region Job Costing
         public DbSet<IdleTimeCategory> IdleTimeCategories { get; set; }

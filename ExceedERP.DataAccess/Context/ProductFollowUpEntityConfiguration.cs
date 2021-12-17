@@ -10,7 +10,23 @@ namespace ExceedERP.DataAccess.Context
 {
    public class ProductFollowUpEntityConfiguration
     {
-        public class JobCategoryEntityTypeConfiguration : EntityTypeConfiguration<JobCategory>
+        public class JobStatusLineItemEntityTypeConfiguration : EntityTypeConfiguration<JobStatusLineItem>
+        {
+            public JobStatusLineItemEntityTypeConfiguration()
+            {
+                this.ToTable("JobStatusLineItems", "ProductFollowUp");
+                this.HasKey<int>(t => t.JobStatusLineItemId);
+            }
+        }
+        public class MachineTypeEntityTypeConfiguration : EntityTypeConfiguration<Machine>
+        {
+            public MachineTypeEntityTypeConfiguration()
+            {
+                this.ToTable("MachineTypes", "ProductFollowUp");
+                this.HasKey<int>(t => t.MachineId);
+            }
+        }
+         public class JobCategoryEntityTypeConfiguration : EntityTypeConfiguration<JobCategory>
         {
             public JobCategoryEntityTypeConfiguration()
             {
@@ -25,6 +41,14 @@ namespace ExceedERP.DataAccess.Context
             {
                 this.ToTable("Proforma", "ProductFollowUp");
                 this.HasKey<int>(t => t.ProformaId);
+            }
+        }
+        public class PFProformaItemsEntityTypeConfiguration : EntityTypeConfiguration<PFProformaItems>
+        {
+            public PFProformaItemsEntityTypeConfiguration()
+            {
+                this.ToTable("PFProformaItems", "ProductFollowUp");
+                this.HasKey<int>(t => t.PFProformaItemsId);
             }
         }
 
@@ -138,13 +162,6 @@ namespace ExceedERP.DataAccess.Context
                 this.HasKey<int>(t => t.ProductDeliveryItemsId);
             }
         }
-        public class PFProformaItemsEntityTypeConfiguration : EntityTypeConfiguration<PFProformaItems>
-        {
-            public PFProformaItemsEntityTypeConfiguration()
-            {
-                this.ToTable("PFProformaItems", "ProductFollowUp");
-                this.HasKey<int>(t => t.PFProformaItemsId);
-            }
-        }
+
     }
 }
