@@ -67,11 +67,11 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
         }
         public double GetResult(int employeeMeasurmentId)
         {
-            var employeePerformanceScore = db.EmployeePerformanceScores.Where(x => x.EmployeeMeasurementId == employeeMeasurmentId).ToList();
+            var employeePerformanceScore = db.EmployeePerformanceScores.FirstOrDefault(x => x.EmployeeMeasurementId == employeeMeasurmentId && x.Score > 0);
 
-            if (employeePerformanceScore.Any())
+            if (employeePerformanceScore != null)
             {
-                return Convert.ToDouble(employeePerformanceScore.Sum(x => x.Score));
+                return Convert.ToDouble(employeePerformanceScore.Score);
             }
 
             return 0;
@@ -101,13 +101,12 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
         }
         public ActionResult PerformanceActions_Update([DataSourceRequest] DataSourceRequest request, EmployeePerformanceScore employeePerformanceScore)
         {
-            if (employeePerformanceScore.Score > employeePerformanceScore.Weight)
+            if(employeePerformanceScore.Score > employeePerformanceScore.Weight)
             {
-                ModelState.AddModelError("", "Score can't exceed the weight");
-            }
+                ModelState.AddModelError("","Score can't exceed the weight");
+            }           
 
-            var criteriaType = db.EvaluationCriteriaActionTypes.FirstOrDefault(x => x.IsActive);
-            if (criteriaType != null && criteriaType.PerformanceCriteriaActionType == PerformanceCriteriaActionType.Open)
+            if (ModelState.IsValid)
             {
                 var revertOther = db.EmployeePerformanceScores.Where(x => x.EmployeeMeasurementId == employeePerformanceScore.EmployeeMeasurementId && x.EmployeePerformanceScoreId != employeePerformanceScore.EmployeePerformanceScoreId).ToList();
                 foreach (var rev in revertOther)
@@ -118,10 +117,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
                     db.Entry(rev).State = EntityState.Modified;
                     db.SaveChanges();
                 }
-            }
-
-            if (ModelState.IsValid)
-            {
 
                 var entity = new EmployeePerformanceScore
                 {
@@ -235,11 +230,11 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Performance
 
                 foreach (var em in empMeasurments)
                 {
-                    var score = db.EmployeePerformanceScores.Where(x => x.EmployeeMeasurementId == em.EmpMeasurementId);
+                    var score = db.EmployeePerformanceScores.FirstOrDefault(x => x.EmployeeMeasurementId == em.EmpMeasurementId && x.Score > 0);
 
-                    if (score.Any())
+                    if (score != null)
                     {
-                        result = result + score.Sum(x => x.Score);
+                        result = result + score.Score;
                     }
                 }
             }

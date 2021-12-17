@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Web;
@@ -29,21 +29,12 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Report
         public ActionResult EmployeePerformanceDepartment()
         {
             ApplicationDbContext adb = new ApplicationDbContext();
-            ExceedDbContext db = new ExceedDbContext();
             string username = User.Identity.Name;
             var user = adb.Users.FirstOrDefault(x => x.UserName == username);
 
             if (user != null)
             {
                 ViewBag.id = user.EmployeeId;
-
-                int.TryParse(user.EmployeeId, out int empId);
-                var place = db.Placements.FirstOrDefault(x => x.EmployeeId == empId && x.isCurrent);
-
-                if(place != null)
-                {
-                    ViewBag.dep = place.OrgStructureId;
-                }
             }
 
             return View();
@@ -61,7 +52,6 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Report
         {
             return View();
         }
-        [AllowAnonymous]
         public ActionResult MyPerformance()
         {
             var adb = new ApplicationDbContext();
