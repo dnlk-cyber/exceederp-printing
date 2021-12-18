@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -23,8 +23,13 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
             var LeaveSummaryone = new LeaveSummaryList();
 
-
             var placements = db.Placements.ToList();
+
+            if (id != null)
+            {
+                int.TryParse(id, out int empId);
+                placements = placements.Where(x => x.EmployeeId == empId).ToList();
+            }
 
             if (branchId != null)
             {
@@ -80,11 +85,10 @@ namespace ExceedERP.Reporting.HRM.HRM.HRMObjectDataSource
 
                 var activePeriods = db.LeavesEntitle.Where(x => !x.IsExpired && x.EmployeeId == e.EmployeeId).Select(x => x.GlFiscalYearId).ToList();
 
-                periods = periods.Where(x => activePeriods.Contains(x.GlFiscalYearId)).ToList();
+                var empActivePeriods = periods.Where(x => activePeriods.Contains(x.GlFiscalYearId)).ToList();
 
-                foreach (var period in periods)
+                foreach (var period in empActivePeriods)
                 {
-
                     LeaveSummaryone = new LeaveSummaryList();
 
                     LeaveSummaryone.LeavePeriod = period.Name;

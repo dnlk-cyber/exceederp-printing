@@ -30,6 +30,9 @@
                         @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorReport_Detail_Myprofile, "MyProfile", "MyProfile", new { area = "HRM" }, null)<b class="arrow"></b>
                     </li>
                     <li id="selfservice76" class="actionlinlk">
+                        @Html.ActionLink("My Performance", "MyPerformance", "PerformanceReport", new { area = "HRM" }, null)<b class="arrow"></b>
+                    </li>
+                    <li id="selfservice76" class="actionlinlk">
                         @Html.ActionLink("Date Converter", "Index", "DateConverter", new { area = "HRM" }, null)<b class="arrow"></b>
                     </li>
                     <li id="selfservice07127" class="actionlinlk">
@@ -139,8 +142,29 @@
                             @*}
                                 @if (HttpContext.Current.User.IsInRole("HR_Department_Head"))
                                 {*@
-                            <li id="selfservice094" class="actionlinlk">
-                                @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorPerformance_EmployeePerformance, "Index", "EmployeePerformance", new { area = "HRM" }, null)<b class="arrow"></b>
+                            <li class="">
+                                <a href="#" class="dropdown-toggle">
+                                    <i class="menu-icon fa fa-male"></i>
+                                    Employee Performance
+                                    <b class="arrow fa fa-angle-down"></b>
+                                </a>
+
+                                <b class="arrow"></b>
+
+                                <ul class="submenu">
+                                    <li id="selfservice094performance" class="actionlinlk">
+                                        @Html.ActionLink(ExceedERP.Core.Localization.Resources.NavigatorPerformance_EmployeePerformance, "Index", "EmployeePerformance", new { area = "HRM" }, null)<b class="arrow fa-"></b>
+                                    </li>
+                                    <li id="selfservice0110performance" class="actionlinlk">
+                                        @Html.ActionLink("Department Level Criteria", "Index", "DepartmentDefineMeasurment", new { area = "HRM" }, null)<b class="arrow"></b>
+                                    </li>
+                                    <li id="selfservice0111performance" class="actionlinlk">
+                                        @Html.ActionLink("Performance Summary", "PerformanceSummaryDepartment", "EmployeePerformance", new { area = "HRM" }, null)<b class="arrow"></b>
+                                    </li>
+                                    <li id="selfservice0112performance" class="actionlinlk">
+                                        @Html.ActionLink("Employee Performance", "EmployeePerformanceDepartment", "PerformanceReport", new { area = "HRM" }, null)<b class="arrow"></b>
+                                    </li>
+                                </ul>
                             </li>
                             <li id="selfservice095" class="actionlinlk">
                                 @Html.ActionLink(ExceedERP.Core.Localization.Resources.Finance_Selfcare_Payment, "Index", "PaymentRequest", new { area = "Finance" }, null)<b class="arrow"></b>
@@ -228,15 +252,7 @@
                             <li id="prc0007788serrec" class="actionlinlk">
                                 @Html.ActionLink("Service Receive", "Index", "ServiceReceive", new { area = "Procurement" }, null)<b class="arrow"></b>
                             </li>
-                            <li id="selfservice0110" class="actionlinlk">
-                                @Html.ActionLink("Department Level Criteria", "Index", "DepartmentDefineMeasurment", new { area = "HRM" }, null)<b class="arrow"></b>
-                            </li>
-                            <li id="selfservice0111" class="actionlinlk">
-                                @Html.ActionLink("Performance Summary", "PerformanceSummaryDepartment", "EmployeePerformance", new { area = "HRM" }, null)<b class="arrow"></b>
-                            </li>
-                            <li id="selfservice0111" class="actionlinlk">
-                                @Html.ActionLink("Employee Performance", "EmployeePerformanceDepartment", "PerformanceReport", new { area = "HRM" }, null)<b class="arrow"></b>
-                            </li>
+                           
                             <li id="selfservice0111345" class="actionlinlk">
                                 @Html.ActionLink("Complain Response", "Index", "ComplainResponseDepartment", new { area = "HRM" }, null)<b class="arrow"></b>
                             </li>
