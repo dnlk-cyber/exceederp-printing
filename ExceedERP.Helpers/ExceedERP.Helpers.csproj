@@ -55,6 +55,7 @@
     <Reference Include="System" />
     <Reference Include="System.Configuration" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.IO.Compression" />
     <Reference Include="System.Runtime.Caching">
       <Private>True</Private>
@@ -118,6 +119,7 @@
     <Compile Include="Common\GlobalHelper.cs" />
     <Compile Include="Common\Logger.cs" />
     <Compile Include="Common\Security.cs" />
+    <Compile Include="Common\WaterMarkHelper.cs" />
     <Compile Include="Construction\BillingHelper.cs" />
     <Compile Include="Construction\ConsSettingHelper.cs" />
     <Compile Include="Construction\ConstructionDashboardHelper.cs" />

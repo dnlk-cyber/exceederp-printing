@@ -154,6 +154,10 @@
     <Compile Include="Migrations\202112171252504_ProductionFUPStatusLineAdded.Designer.cs">
       <DependentUpon>202112171252504_ProductionFUPStatusLineAdded.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202112190937511_hrm.cs" />
+    <Compile Include="Migrations\202112190937511_hrm.Designer.cs">
+      <DependentUpon>202112190937511_hrm.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -226,6 +230,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202112171252504_ProductionFUPStatusLineAdded.resx">
       <DependentUpon>202112171252504_ProductionFUPStatusLineAdded.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202112190937511_hrm.resx">
+      <DependentUpon>202112190937511_hrm.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

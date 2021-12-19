@@ -35,6 +35,14 @@ namespace ExceedERP.DataAccess
 
     #region HRM
 
+    public class WaterMarkEntityTypeConfiguration : EntityTypeConfiguration<WaterMark>
+    {
+        public WaterMarkEntityTypeConfiguration()
+        {
+            this.ToTable("WaterMark", "HRM");
+            this.HasKey<int>(o => o.WaterMarkId);
+        }
+    }
     public class EvaluationCriteriaActionTypeEntityTypeConfiguration : EntityTypeConfiguration<EvaluationCriteriaActionType>
     {
         public EvaluationCriteriaActionTypeEntityTypeConfiguration()
