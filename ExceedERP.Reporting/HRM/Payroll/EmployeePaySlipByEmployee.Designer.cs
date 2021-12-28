@@ -83,7 +83,7 @@ namespace ExceedERP.Reporting.HRM.Payroll
             // periodObjectDataSource
             // 
             this.periodObjectDataSource.DataMember = "GetPayrollPeriods";
-            this.periodObjectDataSource.DataSource = typeof(PayrollPeriodsObjectDataSource);
+            this.periodObjectDataSource.DataSource = typeof(ExceedERP.Reporting.HRM.Payroll.DataSource.PayrollPeriodsObjectDataSource);
             this.periodObjectDataSource.Name = "periodObjectDataSource";
             // 
             // BranchObjectDataSource
@@ -95,7 +95,7 @@ namespace ExceedERP.Reporting.HRM.Payroll
             // costCenterObjectDataSource
             // 
             this.costCenterObjectDataSource.DataMember = "GetPayrollCostCenters";
-            this.costCenterObjectDataSource.DataSource = typeof(PayrollCostCenterObjectDataSource);
+            this.costCenterObjectDataSource.DataSource = typeof(ExceedERP.Reporting.HRM.Payroll.DataSource.PayrollCostCenterObjectDataSource);
             this.costCenterObjectDataSource.Name = "costCenterObjectDataSource";
             // 
             // empStatusObjectDataSource
@@ -113,12 +113,12 @@ namespace ExceedERP.Reporting.HRM.Payroll
             // 
             // table1
             // 
-            this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.74896240234375D)));
-            this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.81753408908844D)));
-            this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.5729182958602905D)));
+            this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.7489622831344605D)));
+            this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.8175339698791504D)));
+            this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.572918176651001D)));
             this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.4375005960464478D)));
             this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.3854167461395264D)));
-            this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.208332896232605D)));
+            this.table1.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.2083327770233154D)));
             this.table1.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.11900615692138672D)));
             this.table1.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.23801231384277344D)));
             this.table1.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.24221353232860565D)));
@@ -364,12 +364,12 @@ namespace ExceedERP.Reporting.HRM.Payroll
             // table3
             // 
             this.table3.Bindings.Add(new Telerik.Reporting.Binding("DataSource", "= Fields.PayrollProcessDeductions"));
-            this.table3.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.592887282371521D)));
+            this.table3.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.5928870439529419D)));
             this.table3.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.4194951057434082D)));
             this.table3.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.3745536804199219D)));
-            this.table3.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.2172330617904663D)));
-            this.table3.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.19850420951843262D)));
-            this.table3.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.19409637153148651D)));
+            this.table3.Body.Columns.Add(new Telerik.Reporting.TableBodyColumn(Telerik.Reporting.Drawing.Unit.Inch(1.2172329425811768D)));
+            this.table3.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.198504239320755D)));
+            this.table3.Body.Rows.Add(new Telerik.Reporting.TableBodyRow(Telerik.Reporting.Drawing.Unit.Inch(0.19409638643264771D)));
             this.table3.Body.SetCellContent(0, 0, this.textBox35);
             this.table3.Body.SetCellContent(0, 1, this.textBox37);
             this.table3.Body.SetCellContent(1, 0, this.textBox1);
@@ -544,7 +544,7 @@ namespace ExceedERP.Reporting.HRM.Payroll
             // PaySlipObjectDataSource
             // 
             this.PaySlipObjectDataSource.DataMember = "GetLoggedinEmployeePaySlipReport";
-            this.PaySlipObjectDataSource.DataSource = typeof(EmployeePaySlipObjectDataSource);
+            this.PaySlipObjectDataSource.DataSource = typeof(ExceedERP.Reporting.HRM.Payroll.DataSource.EmployeePaySlipObjectDataSource);
             this.PaySlipObjectDataSource.Name = "PaySlipObjectDataSource";
             this.PaySlipObjectDataSource.Parameters.AddRange(new Telerik.Reporting.ObjectDataSourceParameter[] {
             new Telerik.Reporting.ObjectDataSourceParameter("period", typeof(string), "= Parameters.period.Value"),
@@ -571,7 +571,7 @@ namespace ExceedERP.Reporting.HRM.Payroll
             // employeeObjectDataSource
             // 
             this.employeeObjectDataSource.DataMember = "GetEmployeesList";
-            this.employeeObjectDataSource.DataSource = typeof(EmployeeListObjectDataSource);
+            this.employeeObjectDataSource.DataSource = typeof(ExceedERP.Reporting.HRM.Payroll.DataSource.EmployeeListObjectDataSource);
             this.employeeObjectDataSource.Name = "employeeObjectDataSource";
             // 
             // EmployeePaySlipByEmployee

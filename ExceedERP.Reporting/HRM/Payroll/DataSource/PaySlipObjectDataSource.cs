@@ -16,7 +16,7 @@ namespace ExceedERP.Reporting.HRM.Payroll.DataSource
         private ExceedDbContext db = new ExceedDbContext();
 
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<PaySlip> GetEmployeePaySlipReport(string period, string costCenter, string empStatus, string employee, string branchId, string workUnit, string jobtitle, string user)
+        public List<PaySlip> GetEmployeePaySlipReport(string period, string costCenter, string empStatus, string employee, string branchId, string workUnit, string jobtitle, string user,string addlength)
         {
             List<PaySlip> list = new List<PaySlip> { };
             PaySlip EmployeeInfo = new PaySlip();
@@ -546,10 +546,43 @@ namespace ExceedERP.Reporting.HRM.Payroll.DataSource
                 }
             }
 
+            if (!String.IsNullOrEmpty(addlength) && addlength == "True")
+            {
+                #region add empty content to make it same length
+                int maxAddition = list.Max(x => x.PayrollProcessAdditions.Count);
+                int maxDeduction = list.Max(x => x.PayrollProcessDeductions.Count);
+                int max = maxAddition > maxDeduction ? maxAddition : maxDeduction;
+
+                foreach (var item in list)
+                {
+                    if (item.PayrollProcessAdditions.Count < max)
+                    {
+                        int diff = max - item.PayrollProcessAdditions.Count;
+                        for (int i = 0; i < diff; i++)
+                        {
+                            var r = new PayrollProcessAdditions
+                            {
+                                Name = "..."
+                            };
+                            item.PayrollProcessAdditions.Add(r);
+                        }
+                    }
+                    if (item.PayrollProcessDeductions.Count < max)
+                    {
+                        int diff = max - item.PayrollProcessDeductions.Count;
+                        for (int i = 0; i < diff; i++)
+                        {
+                            var r = new PayrollProcessDeductions
+                            {
+                                Name = "..."
+                            };
+                            item.PayrollProcessDeductions.Add(r);
+                        }
+                    }
+                }
+                #endregion
+            }
             return list;
-
-
-
         }
 
         public string GetFiscalYearName(int glPeriodId)
