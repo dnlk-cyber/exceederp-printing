@@ -9,8 +9,8 @@ namespace ExceedERP.DataAccess.Migrations
         {
             DropForeignKey("JobCosting.IdleTimes", "Period_GLPeriodId", "EXCEED.GLPeriod");
             DropForeignKey("JobCosting.IdleTimes", "Year_GlFiscalYearId", "EXCEED.GlFiscalYear");
-            DropIndex("JobCosting.IdleTimes", new[] { "Period_GLPeriodId" });
-            DropIndex("JobCosting.IdleTimes", new[] { "Year_GlFiscalYearId" });
+            //DropIndex("JobCosting.IdleTimes", new[] { "Period_GLPeriodId" });
+            //DropIndex("JobCosting.IdleTimes", new[] { "Year_GlFiscalYearId" });
             CreateTable(
                 "HRM.LeaveEntitleStartingDate",
                 c => new
@@ -21,8 +21,8 @@ namespace ExceedERP.DataAccess.Migrations
                     })
                 .PrimaryKey(t => t.LeaveEntitleStartingDateId);
             
-            DropColumn("JobCosting.IdleTimes", "Period_GLPeriodId");
-            DropColumn("JobCosting.IdleTimes", "Year_GlFiscalYearId");
+           // DropColumn("JobCosting.IdleTimes", "Period_GLPeriodId");
+           // DropColumn("JobCosting.IdleTimes", "Year_GlFiscalYearId");
         }
         
         public override void Down()

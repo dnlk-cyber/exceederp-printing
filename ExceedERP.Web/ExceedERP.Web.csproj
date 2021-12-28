@@ -1680,6 +1680,7 @@
     <Compile Include="Areas\HRM\Controllers\Performance\DepartmentDefineMeasurmentController.cs" />
     <Compile Include="Areas\HRM\Controllers\Performance\DepartmentMeasurmentController.cs" />
     <Compile Include="Areas\HRM\Controllers\Performance\DepartmentPerformanceActionController.cs" />
+    <Compile Include="Areas\HRM\Controllers\Performance\EvaluationCriteriaActionTypeController.cs" />
     <Compile Include="Areas\HRM\Controllers\Performance\EvaluationCriteriaDetailController.cs" />
     <Compile Include="Areas\HRM\Controllers\Performance\EvaluationCriteriaSecondDetailController.cs" />
     <Compile Include="Areas\HRM\Controllers\Performance\EvaluationCritetiasController.cs" />
