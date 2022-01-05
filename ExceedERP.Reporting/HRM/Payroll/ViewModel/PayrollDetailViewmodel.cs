@@ -7,6 +7,7 @@
         public string AccountCode { get; set; }
         public string AccountDesc { get; set; }
         public decimal BasicSalary { get; set; }
+        public decimal AdjustedSalary { get; set; }//brana after absent deduction
         //awwce added
         public decimal TotalAbsent { get; set; }
         public decimal Overtime { get; set; }

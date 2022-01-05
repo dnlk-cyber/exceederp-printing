@@ -106,6 +106,7 @@ namespace ExceedERP.Reporting.HRM.Payroll.DataSource
                         EmployeeInfo.AccountDesc = payrolldata.CostCenterAccountDesc;
                         EmployeeInfo.BasicSalary = payrolldata.BasicSalary;
                         EmployeeInfo.TotalAbsent = payrolldata.AbsentDeduction;
+                        EmployeeInfo.AdjustedSalary = payrolldata.BasicSalary- payrolldata.AbsentDeduction;
                         EmployeeInfo.Overtime = payrolldata.TotalOvertime;
 
                         EmployeeInfo.TotalTaxableAllowance = payrolldata.TaxableAllowance;
