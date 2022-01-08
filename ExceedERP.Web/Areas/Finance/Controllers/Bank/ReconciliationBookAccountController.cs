@@ -170,6 +170,8 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Bank
                         RecordType = reconciliationBankAccount.RecordType,
                         Reconciled = reconciliationBankAccount.Reconciled,
                         Check = reconciliationBankAccount.Check,
+                        Source = reconciliationBankAccount.Source,
+                        SourceID = reconciliationBankAccount.SourceID,
                         AccountSegment = reconciliationBankAccount.AccountSegment,
                         BranchSegment = reconciliationBankAccount.BranchSegment,
                         CostCenterSegment = reconciliationBankAccount.CostCenterSegment,
