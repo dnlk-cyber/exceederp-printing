@@ -232,6 +232,7 @@ namespace ExceedERP.Reporting.Inventory.Print
             // 
             this.textBox92.Name = "textBox92";
             this.textBox92.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(2.2294306755065918D), Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D));
+            this.textBox92.Style.BackgroundColor = System.Drawing.Color.Gray;
             this.textBox92.Style.Font.Bold = false;
             this.textBox92.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(9D);
             this.textBox92.Style.Font.Strikeout = false;
@@ -242,6 +243,7 @@ namespace ExceedERP.Reporting.Inventory.Print
             // 
             this.textBox93.Name = "textBox93";
             this.textBox93.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.7378544807434082D), Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D));
+            this.textBox93.Style.BackgroundColor = System.Drawing.Color.Gray;
             this.textBox93.Style.Font.Bold = false;
             this.textBox93.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(9D);
             this.textBox93.Style.Font.Strikeout = false;
@@ -252,6 +254,7 @@ namespace ExceedERP.Reporting.Inventory.Print
             // 
             this.textBox94.Name = "textBox94";
             this.textBox94.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.2180252075195313D), Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D));
+            this.textBox94.Style.BackgroundColor = System.Drawing.Color.Gray;
             this.textBox94.Style.Font.Bold = false;
             this.textBox94.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(9D);
             this.textBox94.Style.Font.Strikeout = false;
@@ -262,6 +265,7 @@ namespace ExceedERP.Reporting.Inventory.Print
             // 
             this.textBox95.Name = "textBox95";
             this.textBox95.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.1528922319412231D), Telerik.Reporting.Drawing.Unit.Inch(0.20000000298023224D));
+            this.textBox95.Style.BackgroundColor = System.Drawing.Color.Gray;
             this.textBox95.Style.Font.Bold = false;
             this.textBox95.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(9D);
             this.textBox95.Style.Font.Strikeout = false;
