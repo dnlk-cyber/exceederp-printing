@@ -117,6 +117,16 @@ namespace ExceedERP.Reporting.Inventory.DataSource.Print
         public List<GoodReceiveItem> GoodReceiveItem(int id)
         {
             List<GoodReceiveItem> goodReceiveItems = _db.GoodReceiveItems.Where(x => x.GoodReceiveId == id).ToList();
+            if (InventoryConfigurationHelper.IsHidePriceOnPrintEnabled())
+            {
+                foreach(var item in goodReceiveItems)
+                {
+                    item.UnitPrice = 0;
+                    item.TaxAmount = 0;
+                    item.SubTotal = 0;
+                    item.Total = 0;
+                }
+            }
             return goodReceiveItems;
         }
 

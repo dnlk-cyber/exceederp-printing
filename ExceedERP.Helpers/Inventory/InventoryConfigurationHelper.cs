@@ -55,5 +55,20 @@ namespace ExceedERP.Helpers.Inventory
             else
                 return false;
         }
+        public static bool IsHidePriceOnPrintEnabled()
+        {
+            ExceedDbContext db = new ExceedDbContext();
+
+            var conf = db.Configurations
+                    .Where(x => x.Category == "Inventory")
+                    .Where(x => x.Reference == "HIDE_PRICE_ON_PRINT")
+                    .Where(x => x.Attribute == "TRUE")
+                    .FirstOrDefault();
+
+            if (conf != null)
+                return true;
+            else
+                return false;
+        }
     }
 }

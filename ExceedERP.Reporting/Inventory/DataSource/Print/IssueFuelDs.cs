@@ -94,6 +94,11 @@ namespace ExceedERP.Reporting.Inventory.DataSource.Print
             {
                 InventoryItem inventoryitem = dbContext.InventoryItems.Find(issueitem.ItemCode);
                 if (inventoryitem != null) issueitem.ItemCode = inventoryitem.Name;
+                if (InventoryConfigurationHelper.IsHidePriceOnPrintEnabled())
+                {
+                    issueitem.UnitPrice = 0;
+                    issueitem.Total = 0;
+                }
             }
             return issueItems;
         }    

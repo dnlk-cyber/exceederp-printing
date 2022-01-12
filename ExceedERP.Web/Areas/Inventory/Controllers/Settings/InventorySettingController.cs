@@ -221,6 +221,13 @@ namespace ExceedERP.Web.Areas.Inventory.Controllers.Settings
                               .Select(v => v.ToString())
                               .ToList();
                     break;
+                case "HIDE_PRICE_ON_PRINT":
+                    attributes =
+                          Enum.GetValues(typeof(BooleanTypeAttributes))
+                              .Cast<BooleanTypeAttributes>()
+                              .Select(v => v.ToString())
+                              .ToList();
+                    break;
 
             }
 

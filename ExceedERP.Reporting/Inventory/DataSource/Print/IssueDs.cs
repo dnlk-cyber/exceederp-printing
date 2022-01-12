@@ -86,7 +86,15 @@ namespace ExceedERP.Reporting.Inventory.DataSource.Print
         public List<IssueItem> IssueItems(int id)
         {
             List<IssueItem> issueItems = dbContext.IssueItems.Where(x => x.IssueID == id).ToList();
-           return issueItems;
+            if (InventoryConfigurationHelper.IsHidePriceOnPrintEnabled())
+            {
+                foreach (var item in issueItems)
+                {
+                    item.UnitPrice = 0;
+                    item.Total = 0;
+                }
+            }
+            return issueItems;
         }
     }
 }
