@@ -13,6 +13,7 @@ using ExceedERP.DataAccess.Context;
 
 namespace ExceedERP.Web.Areas.JobCosting.Controllers
 {
+    // [AuthorizeRoles(JobCostingRoles.JobCostingIdleTime)]
     public class IdleTimeProductiveController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();

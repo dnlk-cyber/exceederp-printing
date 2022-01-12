@@ -15,6 +15,22 @@ namespace ExceedERP.Web.Areas.JobCosting.Common
         {
             return View();
         }
+        public JsonResult GetAllFiscalYears()
+        {
+            var data = db.GLFiscalYears;
+            return Json(data.Select(s => new { s.GlFiscalYearId, s.Name }), JsonRequestBehavior.AllowGet);
+        }
+        public ActionResult GetAllPeriods(int YearId)
+        {
+            var periods = db.GLPeriods.Select(s => new
+            {
+                GLPeriodId = s.GLPeriodId,
+                Name = s.Name
+            }).ToList();
+            return Json(periods, JsonRequestBehavior.AllowGet);
+        }
+
+
         public JsonResult GetJobOrders()
         {
             var jobs = db.Jobs.ToList();

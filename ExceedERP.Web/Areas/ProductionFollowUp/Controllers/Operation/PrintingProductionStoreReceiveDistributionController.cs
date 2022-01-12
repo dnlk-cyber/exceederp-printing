@@ -1,5 +1,6 @@
 using ExceedERP.Core.Domain.ProductionFollowUp;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using System;
@@ -11,6 +12,7 @@ using System.Web.Mvc;
 
 namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
 {
+    //[AuthorizeRoles(ProductionFollowUpRoles.ProductionFollowUpRJobOrderUser)]
     public class PrintingProductionStoreReceiveDistributionController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();

@@ -989,6 +989,7 @@
     <Compile Include="Domain\JobCosting\Items.cs" />
     <Compile Include="Domain\JobCosting\JobCost.cs" />
     <Compile Include="Domain\JobCosting\JobCostingEnums.cs" />
+    <Compile Include="Domain\JobCosting\JobCostingRoles.cs" />
     <Compile Include="Domain\JobCosting\JobOrderSummary.cs" />
     <Compile Include="Domain\JobCosting\JobOrderSummaryCostCenter.cs" />
     <Compile Include="Domain\JobCosting\JobOrderSummaryCostCenterDetail.cs" />
@@ -1004,6 +1005,7 @@
     <Compile Include="Domain\PrintingEstimation\MaterialCost.cs" />
     <Compile Include="Domain\PrintingEstimation\OverallCost.cs" />
     <Compile Include="Domain\PrintingEstimation\PrintingEnum.cs" />
+    <Compile Include="Domain\PrintingEstimation\PrintingEstimationRoles.cs" />
     <Compile Include="Domain\PrintingEstimation\PrintingStep.cs" />
     <Compile Include="Domain\PrintingEstimation\Setting\CommonEnum.cs" />
     <Compile Include="Domain\Procurement\Contract\ContractTerminationAttachment.cs" />
@@ -1130,6 +1132,7 @@
     <Compile Include="Domain\ProductionFollowUp\PrintingMachineEfficiency.cs" />
     <Compile Include="Domain\ProductionFollowUp\ProductDelivery.cs" />
     <Compile Include="Domain\ProductionFollowUp\ProductDeliveryItems.cs" />
+    <Compile Include="Domain\ProductionFollowUp\ProductionFollowUpRoles.cs" />
     <Compile Include="Domain\ProductionFollowUp\Proforma.cs" />
     <Compile Include="Domain\ProductionFollowUp\Settings.cs" />
     <Compile Include="Domain\Production\ActivityModels.cs" />

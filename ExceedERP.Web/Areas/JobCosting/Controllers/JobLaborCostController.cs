@@ -13,6 +13,7 @@ using ExceedERP.DataAccess.Context;
 
 namespace ExceedERP.Web.Areas.JobCosting.Controllers
 {
+    //[AuthorizeRoles(JobCostingRoles.JobCostingJobCostUser)]
     public class JobLaborCostController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();

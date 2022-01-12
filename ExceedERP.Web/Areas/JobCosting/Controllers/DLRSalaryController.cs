@@ -14,6 +14,7 @@ using ExceedERP.Web.Areas.JobCosting.Models;
 
 namespace ExceedERP.Web.Areas.JobCosting.Controllers
 {
+    //[AuthorizeRoles(JobCostingRoles.JobCostingDailyLaborRate)]
     public class DLRSalaryController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();

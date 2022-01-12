@@ -14,9 +14,11 @@ using ExceedERP.Core.Domain.ProductionFollowUp;
 using ExceedERP.Core.Domain.PrintingEstimation;
 using ExceedERP.Web.Areas.ProductionFollowUp.Models;
 using ExceedERP.Core.Domain.CRM;
+using ExceedERP.Web.Helpers;
 
 namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
 {
+    //[AuthorizeRoles(ProductionFollowUpRoles.ProductionFollowUpRJobOrderUser)]
     public class JobOrdersController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();
@@ -163,13 +165,13 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                 ProformaId = job.ProformaId,
                 MachineId = job.MachineId,
                 JobNo = job.JobNo,
-                CustomerName = job.CustomerName,
                 CustomerId = job.CustomerId,
                 EstimatedBy = job.EstimatedBy,
                 Code = job.Code,
                 ApprovedBy = job.ApprovedBy,
                 BrandName = job.BrandName,
                 TinNo = job.TinNo,
+                CustomerName = job.CustomerName,
                 JobTypeId = job.JobTypeId,
                 JT = job.JobTypeId.ToString(),
                 UnitPrice = job.UnitPrice,
@@ -248,7 +250,7 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
 
                 var proforma = new Proforma();
                 var customer = new OrganizationCustomer();
-                if (!job.hv && !job.IsExistingCustomer)
+                if (!job.hv && !job.IsExistingCustomer&&job.CustomerId.ToString()==null)
                 {
                     customer = AddNewCustomer.Add(job);
                     db.OrganizationCustomers.Add(customer);
@@ -373,8 +375,8 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                     var calculatedField = Json(new
                     {
                         Status = "OK",
-                        BeforeTax = beforeTax,
-                        TotalPrice = withTax
+                        BeforeTax = Math.Round(beforeTax,5),
+                        TotalPrice = Math.Round(withTax,5)
                     });
 
                     return calculatedField;
@@ -408,8 +410,8 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                         var calculatedField = Json(new
                         {
                             Status = "OK",
-                            Tax = taxBirr,
-                            Total = withTax
+                            Tax = Math.Round(taxBirr,5),
+                            Total = Math.Round(withTax,5)
                         });
 
                         return calculatedField;
@@ -456,6 +458,8 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                 TextWeight = job.TextWeight,
                 CoverWeight = job.CoverWeight,
                 ColorText = job.ColorText,
+                TinNo = job.TinNo,
+                BrandName = job.BrandName,
                 Colorcover = job.Colorcover,
                 FinishingSize = job.FinishingSize,
                 PrintingLine = job.PrintingLine,

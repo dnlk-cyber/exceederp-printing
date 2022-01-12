@@ -10,9 +10,11 @@ using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using ExceedERP.Core.Domain.ProductionFollowUp;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Web.Helpers;
 
 namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
 {
+    //[AuthorizeRoles(ProductionFollowUpRoles.ProductionFollowUpFinishedGoodUser)]
     public class FinishedGoodReceivingsController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();

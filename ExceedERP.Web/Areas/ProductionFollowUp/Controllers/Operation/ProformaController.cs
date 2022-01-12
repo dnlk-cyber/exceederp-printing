@@ -13,9 +13,11 @@ using ExceedERP.DataAccess.Context;
 using ExceedERP.Core.Domain.PrintingEstimation;
 using ExceedERP.Web.Areas.ProductionFollowUp.Models;
 using ExceedERP.Core.Domain.CRM;
+using ExceedERP.Web.Helpers;
 
 namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
 {
+    //[AuthorizeRoles(ProductionFollowUpRoles.ProductionFollowUpProformaUser)]
     public class ProformaController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();
@@ -153,7 +155,7 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
             {
                 var estimationForm = new EstimationForm();
                 var customer = new OrganizationCustomer();
-                if (!proforma.HaveEstimation && !proforma.IsExistingCustomer)
+                if (!proforma.HaveEstimation && !proforma.IsExistingCustomer && proforma.CustomerId.ToString() == null)
                 {
                     customer = AddNewCustomer.Save(proforma);
                     db.OrganizationCustomers.Add(customer);

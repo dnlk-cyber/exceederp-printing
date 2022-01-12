@@ -11,9 +11,11 @@ using Kendo.Mvc.UI;
 using ExceedERP.Core.Domain.JobCosting;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Web.Areas.JobCosting.Models;
+using ExceedERP.Web.Helpers;
 
 namespace ExceedERP.Web.Areas.JobCosting.Controllers
 {
+    //[AuthorizeRoles(JobCostingRoles.JobCostingDailyLaborRate)]
     public class DLRHourController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();

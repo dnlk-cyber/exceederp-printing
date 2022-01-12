@@ -13,6 +13,7 @@ using Kendo.Mvc.UI;
 namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
 {
 
+    //[AuthorizeRoles(ProductionFollowUpRoles.ProductionFollowUpRJobOrderUser)]
     public class ProductionStoreRequisitionItemController : Controller
 
     {

@@ -126,6 +126,15 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
             }).ToList();
             return Json(stores, JsonRequestBehavior.AllowGet);
         }
+        public JsonResult GetCustomers()
+        {
+            var stores = db.OrganizationCustomers.Select(s => new
+            {
+                Code = s.OrganizationCustomerID,
+                Name = s.TradeName
+            }).ToList();
+            return Json(stores, JsonRequestBehavior.AllowGet);
+        }
         public JsonResult GetOpenInventoryPeriodsByStore(string store)
         {
             var periodStatuses = db.InventoryStorePeriodStatuses

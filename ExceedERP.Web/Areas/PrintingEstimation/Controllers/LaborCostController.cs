@@ -11,9 +11,11 @@ using Kendo.Mvc.UI;
 using ExceedERP.Core.Domain.PrintingEstimation;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Web.Areas.PrintingEstimation.Models;
+using ExceedERP.Web.Helpers;
 
 namespace ExceedERP.Web.Areas.PrintingEstimation.Controllers
 {
+    //[AuthorizeRoles(PrintingEstimationRoles.PrintingEstimationFormUser, PrintingEstimationRoles.PrintingEstimationAdmin)]
     public class LaborCostController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();

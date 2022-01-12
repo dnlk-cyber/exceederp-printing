@@ -1,4 +1,4 @@
-@model ExceedERP.Core.Domain.JobCosting.JobLaborCost
+﻿@model ExceedERP.Core.Domain.JobCosting.JobLaborCost
 
 <form id="lineForm" method="post">
 
@@ -24,7 +24,7 @@
                                                                                 .Filter("contains")
                                                                                 .DataSource(dataSource =>
                                                                                 {
-                                                                                    dataSource.Read(read => read.Action("GetAllFiscalYears", "JobCost"))
+                                                                                    dataSource.Read(read => read.Action("GetAllFiscalYears", "JobCostingDataProvider"))
                                                                                     .ServerFiltering(false);
                                                                                 }))
                 </div>
@@ -45,7 +45,7 @@
                                         .CascadeFrom("GlFiscalYearId")
                                         .DataSource(dataSource =>
                                         {
-                                            dataSource.Read(read => read.Action("GetAllPeriods", "JobCost")
+                                            dataSource.Read(read => read.Action("GetAllPeriods", "JobCostingDataProvider")
                                             .Data("filterPeriods"))
 
                                             .ServerFiltering(true);

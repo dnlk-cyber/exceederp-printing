@@ -1,53 +1,57 @@
+﻿@using ExceedERP.Core.Domain.PrintingEstimation;
 @{
     ViewBag.Title = "_PrintingEstimation";
 }
 
-<li class="">
-    <a href="#" class="dropdown-toggle">
-        <i class="menu-icon fa fa-print"></i>
-        <span class="menu-text">
-            Printing Estimation
-        </span>
-        <b class="arrow fa fa-angle-down"></b>
-    </a>
-    <b class="arrow"></b>
-    <ul class="submenu">
-        @*@if (HttpContext.Current.User.IsInRole("Sales_Quote_User")
-            )
-        {*@
+@if (HttpContext.Current.User.IsInRole(PrintingEstimationRoles.PrintingEstimationAdmin)
+     || HttpContext.Current.User.IsInRole(PrintingEstimationRoles.PrintingEstimationFormUser))
+{
 
-        <li class="">
-            <a href="#" class="dropdown-toggle">
-                <i class="menu-icon fa fa-caret-right"></i>
-                Estimation Form
-                <b class="arrow fa fa-angle-down"></b>
-            </a>
-            <b class="arrow"></b>
-            <ul class="submenu">
-                <li id="mega-printing-001" class="actionlinlk">@Html.ActionLink("EstimationForm", "Index", "EstimationForm", new { area = "PrintingEstimation" }, null)<b class="arrow"></b></li>
-            </ul>
+    <li class="">
+        <a href="#" class="dropdown-toggle">
+            <i class="menu-icon fa fa-print"></i>
+            <span class="menu-text">
+                Printing Estimation
+            </span>
+            <b class="arrow fa fa-angle-down"></b>
+        </a>
+        <b class="arrow"></b>
+        <ul class="submenu">
+
+            @*@if (HttpContext.Current.User.IsInRole(PrintingEstimationRoles.PrintingEstimationAdmin) ||
+                HttpContext.Current.User.IsInRole(PrintingEstimationRoles.PrintingEstimationFormUser))
+            {*@
+                <li class="">
+                    <a href="#" class="dropdown-toggle">
+                        <i class="menu-icon fa fa-caret-right"></i>
+                        Estimation Form
+                        <b class="arrow fa fa-angle-down"></b>
+                    </a>
+                    <b class="arrow"></b>
+                    <ul class="submenu">
+                        <li id="mega-printing-001" class="actionlinlk">@Html.ActionLink("EstimationForm", "Index", "EstimationForm", new { area = "PrintingEstimation" }, null)<b class="arrow"></b></li>
+                    </ul>
+                </li>
+                //}
+            @*@if (HttpContext.Current.User.IsInRole(PrintingEstimationRoles.PrintingEstimationAdmin) ||
+                   HttpContext.Current.User.IsInRole(PrintingEstimationRoles.PrintingEstimationFormUser))
+            {*@
+            <li class="">
+                <a href="#" class="dropdown-toggle">
+                    <i class="menu-icon fa fa-caret-right"></i>
+                    Settings
+                    <b class="arrow fa fa-angle-down"></b>
+                </a>
+                <b class="arrow"></b>
+                <ul class="submenu">
+                    <li id="mega-printing-004" class="actionlinlk">@Html.ActionLink("PrintingStep", "Index", "PrintingStep", new { area = "PrintingEstimation" }, null)<b class="arrow"></b></li>
+                </ul>
+
+
+
+            </li>
+           @* }*@
+        </ul>
         </li>
 
-        <li class="">
-            <a href="#" class="dropdown-toggle">
-                <i class="menu-icon fa fa-caret-right"></i>
-                Settings
-                <b class="arrow fa fa-angle-down"></b>
-            </a>
-            <b class="arrow"></b>
-            <ul class="submenu">
-                <li id="mega-printing-004" class="actionlinlk">@Html.ActionLink("PrintingStep", "Index", "PrintingStep", new { area = "PrintingEstimation" }, null)<b class="arrow"></b></li>
-            </ul>
-
-
-
-        </li>
-    </ul>
-
-
-
-
-
-
-
-
+  }

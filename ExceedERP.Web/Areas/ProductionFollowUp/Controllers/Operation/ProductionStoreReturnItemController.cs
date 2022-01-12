@@ -5,6 +5,7 @@ using System.Web.Mvc;
 using ExceedERP.Core.Domain.Finance;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Inventory;
+using ExceedERP.Core.Domain.ProductionFollowUp;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Helpers.Inventory;
@@ -15,6 +16,7 @@ using Kendo.Mvc.UI;
 namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
 {
 
+    //[AuthorizeRoles(ProductionFollowUpRoles.ProductionFollowUpRJobOrderUser)]
     public class ProductionStoreReturnItemController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();

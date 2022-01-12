@@ -2026,12 +2026,14 @@
     <Compile Include="Areas\ProductionFollowUp\Controllers\Operation\ProductionIssueDistributionController.cs" />
     <Compile Include="Areas\ProductionFollowUp\Controllers\Operation\ProductionIssueItemController.cs" />
     <Compile Include="Areas\ProductionFollowUp\Controllers\Operation\ProductionIssueValidationController.cs" />
+    <Compile Include="Areas\ProductionFollowUp\Controllers\Operation\ProductionssueItemManualController.cs" />
     <Compile Include="Areas\ProductionFollowUp\Controllers\Operation\ProductionStoreRequisitionController.cs" />
     <Compile Include="Areas\ProductionFollowUp\Controllers\Operation\ProductionStoreRequisitionItemController.cs" />
     <Compile Include="Areas\ProductionFollowUp\Controllers\Operation\ProductionStoreRequisitionValidationController.cs" />
     <Compile Include="Areas\ProductionFollowUp\Controllers\Operation\ProductionStoreReturnController.cs" />
     <Compile Include="Areas\ProductionFollowUp\Controllers\Operation\ProductionStoreReturnItemController.cs" />
     <Compile Include="Areas\ProductionFollowUp\Controllers\Operation\ProductionStoreReturnValidationController.cs" />
+    <Compile Include="Areas\ProductionFollowUp\Controllers\Operation\ProductIssueItemManualController.cs" />
     <Compile Include="Areas\ProductionFollowUp\Controllers\Operation\ProformaController.cs" />
     <Compile Include="Areas\ProductionFollowUp\Controllers\Operation\ProformaItemsController.cs" />
     <Compile Include="Areas\ProductionFollowUp\Controllers\Report\ReportProductionFollowUpController.cs" />
@@ -4912,7 +4914,6 @@
     <Content Include="Areas\JobCosting\Views\IdleTimeNonProductiveNonControllable\Index.cshtml" />
     <Content Include="Areas\JobCosting\Views\IdleTimeOT\Index.cshtml" />
     <Content Include="Areas\JobCosting\Views\IdleTimeProductive\Index.cshtml" />
-    <Content Include="Areas\JobCosting\Views\IdleTime\EditorTemplates\YearCascading.cshtml" />
     <Content Include="Areas\JobCosting\Views\IdleTime\Index.cshtml" />
     <Content Include="Areas\JobCosting\Views\JobCategory\EditorTemplates\HaveParentMapping.cshtml" />
     <Content Include="Areas\JobCosting\Views\JobCategory\Index.cshtml" />
@@ -5114,11 +5115,12 @@
     <Content Include="Areas\ProductionFollowUp\Views\Machine\EditorTemplates\HaveParentMapping.cshtml" />
     <Content Include="Areas\ProductionFollowUp\Views\Machine\EditorTemplates\SubcategoryMappingTemplate.cshtml" />
     <Content Include="Areas\ProductionFollowUp\Views\Machine\Index.cshtml" />
-    <Content Include="Areas\ProductionFollowUp\Views\JobOrders\EditorTemplates\Item.cshtml" />
     <Content Include="Areas\ProductionFollowUp\Views\JobOrders\EditorTemplates\QuantityEditorTemplate.cshtml" />
     <Content Include="Areas\ProductionFollowUp\Views\JobStatusLineItem\Index.cshtml" />
     <Content Include="Areas\HRM\Views\PerformanceReport\MyPerformance.cshtml" />
     <Content Include="Areas\HRM\Views\Delegation\IndexHr.cshtml" />
+    <Content Include="Areas\ProductionFollowUp\Views\Proforma\EditorTemplates\CustomerEditor.cshtml" />
+    <Content Include="Areas\JobCosting\Views\Shared\EditorTemplates\YearCascading.cshtml" />
     <None Include="Properties\PublishProfiles\Brana.pubxml" />
     <None Include="Properties\PublishProfiles\mega.pubxml" />
     <None Include="Scripts\kendo\2018.3.911\kendo.all-vsdoc.js" />
@@ -7893,8 +7895,8 @@
     <Folder Include="Areas\Inventory\Views\StoreItemAssignment\EditorTemplates\" />
     <Folder Include="Areas\Inventory\Views\StoreItemBalance\EditorTemplates\" />
     <Folder Include="Areas\Inventory\Views\StoreKeeperAssignment\EditorTemplates\" />
+    <Folder Include="Areas\JobCosting\Views\IdleTime\EditorTemplates\" />
     <Folder Include="Areas\JobCosting\Views\JobCostingDataProvider\" />
-    <Folder Include="Areas\JobCosting\Views\Shared\EditorTemplates\" />
     <Folder Include="Areas\Procurement\Views\TenderParticipantItems\EditorTemplates\" />
     <Folder Include="Areas\ProductionFollowUp\Views\MegaDataProvider\" />
     <Folder Include="Areas\ProductionFollowUp\Views\ProductionDataProvider\" />

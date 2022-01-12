@@ -10,9 +10,12 @@ using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using ExceedERP.Core.Domain.JobCosting.Setting;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Web.Helpers;
+using ExceedERP.Core.Domain.JobCosting;
 
 namespace ExceedERP.Web.Areas.JobCosting.Controllers.Settings
 {
+    //[AuthorizeRoles(JobCostingRoles.JobCostingAdmin)]
     public class IdleTimeCategoryController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();

@@ -14,6 +14,7 @@ using System.Web.Mvc;
 
 namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
 {
+    //[AuthorizeRoles(ProductionFollowUpRoles.ProductionFollowUpFinishedGoodUser)]
     public class PrintingProductionStoreReceiveValidationController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();

@@ -10,9 +10,11 @@ using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Core.Domain.ProductionFollowUp;
+using ExceedERP.Web.Helpers;
 
 namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Settings
 {
+    //[AuthorizeRoles(ProductionFollowUpRoles.ProductionFollowUpAdmin)]
     public class JobCategoryController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();

@@ -77,7 +77,7 @@
                                                 <br />
                                                 # } #
 
-                                                <div>
+                                                @*<div>
                                                     <hr>
                                                     <dl class="dl-horizontal">
                                                         <dt>
@@ -152,7 +152,7 @@
                                                             #=kendo.toString(kendo.parseDate(LastModified), 'dd/MM/yyyy') #
                                                         </dd>
                                                     </dl>
-                                                </div>
+                                                </div>*@
                                                 <hr>
 
                                                 # if (IsOnlineApproved&&!IsVoid&&!IsOnlineTransferred)
@@ -203,7 +203,7 @@
                                                           toolbar.Create();
                                                       })
                                               .Events(ev => ev.Edit("onItemEdit"))
-                                              .Events(x => x.DataBound("onDataBoundLines"))
+                                           //   .Events(x => x.DataBound("onDataBoundLines"))
                                               .Editable(editable => editable.Mode(GridEditMode.InLine))
                                               .Scrollable()
                                               .Selectable()
@@ -231,10 +231,10 @@
                                                               model.Field(p => p.LastModified).Editable(false);
 
                                                           })
-                                                  .Read(read => read.Action("IssueItems_Read", "ProductIssueItemManual", new { id = "#=ProductDeliveryId#" }))
-                                                  .Create(create => create.Action("IssueItems_Create", "ProductIssueItemManual", new { id = "#=ProductDeliveryId#" }))
-                                                  .Update(update => update.Action("IssueItems_Update", "ProductIssueItemManual", new { id = "#=ProductDeliveryId#" }))
-                                                  .Destroy(destroy => destroy.Action("IssueItems_Destroy", "ProductIssueItemManual"))
+                                                  .Read(read => read.Action("IssueItems_Read", "ProductionIssueItemManual", new { id = "#=ProductDeliveryId#" }))
+                                                  .Create(create => create.Action("IssueItems_Create", "ProductionIssueItemManual", new { id = "#=ProductDeliveryId#" }))
+                                                  .Update(update => update.Action("IssueItems_Update", "ProductionIssueItemManual", new { id = "#=ProductDeliveryId#" }))
+                                                  .Destroy(destroy => destroy.Action("IssueItems_Destroy", "ProductionIssueItemManual"))
                                               ).ToClientTemplate())
 
             </text>
@@ -264,7 +264,7 @@
                                               })
                                       .Editable(editable => editable.Mode(GridEditMode.InLine))
                                       .Scrollable()
-                                      .Events(x => x.DataBound("onDataBoundFisrtValidation"))
+                                     // .Events(x => x.DataBound("onDataBoundFisrtValidation"))
                                       .DataSource(dataSource => dataSource
                                           .Ajax()
                                           .Events(ev => ev
@@ -281,10 +281,10 @@
                                                       model.Field(p => p.LastModified).Editable(false);
                                                   }
                                           )
-                                          .Read(read => read.Action("IssueValidations_Read", "ProductIssueValidation", new { id = "#=ProductDeliveryId#" }))
-                                          .Create(create => create.Action("IssueValidations_Create", "ProductIssueValidation", new { id = "#=ProductDeliveryId#" }))
-                                          .Update(update => update.Action("IssueValidations_Update", "ProductIssueValidation"))
-                                          .Destroy(destroy => destroy.Action("IssueValidations_Destroy", "ProductIssueValidation"))
+                                          .Read(read => read.Action("IssueValidations_Read", "ProductionIssueValidation", new { id = "#=ProductDeliveryId#" }))
+                                          .Create(create => create.Action("IssueValidations_Create", "ProductionIssueValidation", new { id = "#=ProductDeliveryId#" }))
+                                          .Update(update => update.Action("IssueValidations_Update", "ProductionIssueValidation"))
+                                          .Destroy(destroy => destroy.Action("IssueValidations_Destroy", "ProductionIssueValidation"))
                                       ).ToClientTemplate())
 
 
@@ -319,7 +319,7 @@
                                   .Editable(editable => editable.Mode(GridEditMode.InLine))
                                   .Pageable()
                                   .Scrollable()
-                                  .Events(ev => ev.DataBound("itemTransfered"))
+                                  //.Events(ev => ev.DataBound("itemTransfered"))
                                   .DataSource(dataSource => dataSource
                                       .Ajax()
                                       .Model(model =>
@@ -329,10 +329,10 @@
                                           model.Field(p => p.Debit).Editable(false);
                                           model.Field(p => p.Credit).Editable(false);
                                       })
-                                      .Read(read => read.Action("IssueDistributions_Read", "ProductIssueDistribution", new { id = "#=ProductDeliveryId#" }))
-                                      .Create(create => create.Action("IssueDistributions_Create", "ProductIssueDistribution", new { id = "#=ProductDeliveryId#" }))
-                                      .Update(update => update.Action("IssueDistributions_Update", "ProductIssueDistribution"))
-                                      .Destroy(destroy => destroy.Action("IssueDistributions_Destroy", "ProductIssueDistribution"))
+                                      .Read(read => read.Action("IssueDistributions_Read", "ProductionIssueDistribution", new { id = "#=ProductDeliveryId#" }))
+                                      .Create(create => create.Action("IssueDistributions_Create", "ProductionIssueDistribution", new { id = "#=ProductDeliveryId#" }))
+                                      .Update(update => update.Action("IssueDistributions_Update", "ProductionIssueDistribution"))
+                                      .Destroy(destroy => destroy.Action("IssueDistributions_Destroy", "ProductionIssueDistribution"))
                                   ).ToClientTemplate())
 
 </script>
@@ -540,6 +540,23 @@
 
 
         //itemCode = selectedItem.ItemCode;
+
+    }
+    function dataBoundLines() {
+
+        var grid = this;
+        var gridData = grid.dataSource.view();
+
+        for (var i = 0; i < gridData.length; i++) {
+            var currentUid = gridData[i].uid;
+
+            var currenRow = grid.table.find("tr[data-uid='" + currentUid + "']");
+            var editButton = $(currenRow).find(".k-grid-edit");
+            var deleteButton = $(currenRow).find(".k-grid-delete");
+            // editButton.hide();
+            // deleteButton.hide();
+        }
+
 
     }
     function onDataBound(e) {

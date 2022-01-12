@@ -26,7 +26,6 @@ namespace ExceedERP.Core.Domain.ProductionFollowUp
         // [RegularExpression(@"^(\d{5})$", ErrorMessage = "Enter a valid 5 digit Job No")]
         [Display(Name = "Job No.")]
         public string JobNo { get; set; }
-        [StringLength(50)]
         [Display(Name = "Customer Name")]
         public string CustomerName { get; set; }
         [Display(Name = "Estimated By")]
@@ -109,7 +108,7 @@ namespace ExceedERP.Core.Domain.ProductionFollowUp
         [Display(Name = "Finishing Workflow")]
         public string FinishingWorkflow { get; set; }
         [Display(Name = "Machine")]
-        public int MachineId { get; set; }
+        public int? MachineId { get; set; }
        
         [Display(Name = "Approved By")]
         public string ApprovedBy { get; set; }
