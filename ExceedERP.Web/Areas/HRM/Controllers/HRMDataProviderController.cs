@@ -24,6 +24,7 @@ using ExceedERP.Core.Domain.Finance.GL.Dynamic;
 using ExceedERP.Core.Domain.HRM.PerformanceManagment;
 using ExceedERP.Core.Domain.HRM.Payroll.Vm;
 using ExceedERP.Core.Domain.HRM.ArchiveManagement;
+using ExceedERP.Helpers.Finance;
 
 namespace ExceedERP.Web.Areas.HRM.Controllers
 {
@@ -1693,66 +1694,66 @@ namespace ExceedERP.Web.Areas.HRM.Controllers
 
         }
 
-        //public JsonResult GetCostCenter(int BranchId)
-        //{
+        public JsonResult GetCostCenter(int BranchId)
+        {
 
-        //    GlCostCenterTypes type;
-        //    List<SelectorVm> costcenterList = new List<SelectorVm>();
-        //    var branch = db.Branch.FirstOrDefault(x => x.BranchId == BranchId);
-        //    if (branch != null)
-        //    {
-        //        if (branch.BranchTypes == BranchTypes.HEAD_OFFICE)
-        //        {
-        //            type = GlCostCenterTypes.HeadOffice;
-        //        }
-        //        else
-        //        {
-        //            type = GlCostCenterTypes.Project;
-        //        }
-        //        AccountHelper accountHelper = new AccountHelper();
-        //        if (accountHelper.IsDynamicCoA())
-        //        {
-        //            var glCostCenterSeg = db.GlSegmentSetups.Where(x => x.SegmentType == DynamicSegmentTypes.CostCenter).FirstOrDefault();
-        //            if (glCostCenterSeg != null)
-        //            {
-        //                var glcostcenters=db.GlChartOfAccountSegments.Where(x=>x.GLSegmentSetupId== glCostCenterSeg.GLSegmentSetupId).Where(x=> x.Enable && !x.Parent).ToList();
-        //                foreach(var item in glcostcenters)
-        //                {
-        //                    var record = new SelectorVm
-        //                    {
-        //                        Code = item.Values,
-        //                        Name = item.Description
-        //                    };
-        //                    costcenterList.Add(record);
-        //                }
-        //            }
-        //        }
-        //        else
-        //        {
-        //            var staticcostcenters = db.GLChartOfAccountCostCenters
-        //                .Where(x => x.Type == type && x.Enable && !x.Parent)
-        //               .ToList();
-        //            foreach (var item in staticcostcenters)
-        //            {
-        //                var record = new SelectorVm
-        //                {
-        //                    Code = item.Values,
-        //                    Name = item.Description
-        //                };
-        //                costcenterList.Add(record);
-        //            }
-        //        }
+            GlCostCenterTypes type;
+            List<SelectorVm> costcenterList = new List<SelectorVm>();
+            var branch = db.Branch.FirstOrDefault(x => x.BranchId == BranchId);
+            if (branch != null)
+            {
+                if (branch.BranchTypes == BranchTypes.HEAD_OFFICE)
+                {
+                    type = GlCostCenterTypes.HeadOffice;
+                }
+                else
+                {
+                    type = GlCostCenterTypes.Project;
+                }
+                AccountHelper accountHelper = new AccountHelper();
+                if (accountHelper.IsDynamicCoA())
+                {
+                    var glCostCenterSeg = db.GlSegmentSetups.Where(x => x.SegmentType == DynamicSegmentTypes.CostCenter).FirstOrDefault();
+                    if (glCostCenterSeg != null)
+                    {
+                        var glcostcenters = db.GlChartOfAccountSegments.Where(x => x.GLSegmentSetupId == glCostCenterSeg.GLSegmentSetupId).Where(x => x.Enable && !x.Parent).ToList();
+                        foreach (var item in glcostcenters)
+                        {
+                            var record = new SelectorVm
+                            {
+                                Code = item.Values,
+                                Name = item.Description
+                            };
+                            costcenterList.Add(record);
+                        }
+                    }
+                }
+                else
+                {
+                    var staticcostcenters = db.GLChartOfAccountCostCenters
+                        .Where(x => x.Type == type && x.Enable && !x.Parent)
+                       .ToList();
+                    foreach (var item in staticcostcenters)
+                    {
+                        var record = new SelectorVm
+                        {
+                            Code = item.Values,
+                            Name = item.Description
+                        };
+                        costcenterList.Add(record);
+                    }
+                }
 
-        //    }
+            }
 
-        //    return Json(costcenterList.Select(p => new
-        //    {
-        //        Values = p.Code,
-        //        Description = p.Name
-        //    }), JsonRequestBehavior.AllowGet);
+            return Json(costcenterList.Select(p => new
+            {
+                Values = p.Code,
+                Description = p.Name
+            }), JsonRequestBehavior.AllowGet);
 
 
-        //}
+        }
         public JsonResult GetVacancyPlan()
         {
             var list = db.VaccancyPlans.ToList();
