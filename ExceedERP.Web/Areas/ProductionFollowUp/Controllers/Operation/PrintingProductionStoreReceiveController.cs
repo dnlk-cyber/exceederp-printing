@@ -3,6 +3,7 @@ using ExceedERP.Core.Domain.Finance.GL;
 using ExceedERP.Core.Domain.Inventory;
 using ExceedERP.Core.Domain.ProductionFollowUp;
 using ExceedERP.DataAccess.Context;
+using ExceedERP.Web.Helpers;
 using Kendo.Mvc.Extensions;
 using Kendo.Mvc.UI;
 using System;
@@ -13,6 +14,7 @@ using System.Web.Mvc;
 
 namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
 {
+    //[AuthorizeRoles(ProductionFollowUpRoles.ProductionFollowUpFinishedGoodUser)]
     public class PrintingProductionStoreReceiveController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();

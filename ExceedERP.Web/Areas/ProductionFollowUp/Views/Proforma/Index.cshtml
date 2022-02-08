@@ -4,6 +4,7 @@
                                   .Columns(columns =>
                                   {
                                       columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customers"], "Code", "Name")
+                                            .EditorTemplateName("CustomerEditor")
                                            .Width("110px")
                                            .Title("Customer");
                                       columns.Bound(c => c.ProformaNo).Width(100).Title("Proforma No");
@@ -39,9 +40,10 @@
                                                      .ButtonCount(5))
                               .Filterable()
                                .Scrollable(h => h.Height(500))
-                               .Events(ev=>ev.Edit("EnableDisableEstimation"))
+                               .Events(ev=>ev.Edit("EnableDisableEstimation").Save("onSave"))
                                   .DataSource(dataSource => dataSource
                                       .Ajax()
+                                      .ServerOperation(true)
                                            .Events(events =>
                                            {
                                                events.Error("error_handler(\"ProformaGrid\")");
@@ -149,7 +151,15 @@
 </script>
 <script>
 
-
+    function onSave() {
+        var masterGrid = $("#ProformaGrid").data("kendoGrid");
+        var cus = $("#CustomerId").data("kendoDropDownList");
+        cus.dataSource.read();
+        masterGrid.dataSource.read();
+        masterGrid.refresh();
+        location.reload();
+        console.log(2233333)
+    }
     function onChangeEstimation() {
 
         var proformaId = this.dataItem().ProformaId;

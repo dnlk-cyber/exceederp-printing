@@ -13,6 +13,7 @@ using ExceedERP.DataAccess.Context;
 
 namespace ExceedERP.Web.Areas.JobCosting.Controllers
 {
+    //[AuthorizeRoles(JobCostingRoles.JobCostingJobCostUser)]
     public class JobCostController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();
@@ -39,22 +40,7 @@ namespace ExceedERP.Web.Areas.JobCosting.Controllers
             var data = db.GLChartOfAccountCostCenters;
             return Json(data.Select(s => new { s.Values }), JsonRequestBehavior.AllowGet);
         }
-        public JsonResult GetAllFiscalYears()
-        {
-            var data = db.GLFiscalYears;
-            return Json(data.Select(s => new { s.GlFiscalYearId, s.Name }), JsonRequestBehavior.AllowGet);
-        }
-        public JsonResult GetAllPeriods(int? YearId)
-        {
-            var periods = db.GLPeriods.AsQueryable();
-
-            if (YearId != null)
-            {
-                periods = periods.Where(p => p.GlFiscalYearId == YearId);
-            }
-
-            return Json(periods.ToList(), JsonRequestBehavior.AllowGet);
-        }
+       
         public ActionResult JobCosts_Read([DataSourceRequest]DataSourceRequest request)
         {
             IQueryable<JobCost> jobcosts = db.JobCosts;

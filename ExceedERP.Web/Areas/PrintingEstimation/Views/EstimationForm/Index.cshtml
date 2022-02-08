@@ -262,7 +262,7 @@ itemn.Add().Text("Labor Costs").Content(@<text>
        
          $.ajax({
                 type: 'GET',
-             url: '@Url.Action("GetUom", "DataProvider", new { area = "Inventory" })',
+             url: '@Url.Action("GetUnitPrice", "ProductionDataProvider", new { area = "ProductionFollowUp" })',
              data: {
                  itemCode: productId,
 

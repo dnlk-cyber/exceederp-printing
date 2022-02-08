@@ -1,3 +1,9 @@
+﻿@using ExceedERP.Core.Domain.JobCosting
+@if (HttpContext.Current.User.IsInRole(JobCostingRoles.JobCostingAdmin)
+             || HttpContext.Current.User.IsInRole(JobCostingRoles.JobCostingDailyLaborRateUser)
+             || HttpContext.Current.User.IsInRole(JobCostingRoles.JobCostingIdleTimeUser)
+             || HttpContext.Current.User.IsInRole(JobCostingRoles.JobCostingJobCostUser))
+{
 <li class="">
     <a href="#" class="dropdown-toggle">
         <i class="menu-icon fa fa-lastfm-square"></i>
@@ -14,123 +20,107 @@
             </a>
             <b class="arrow"></b>
             <ul class="submenu">
-                <li class="">
-                    <a href="#" class="dropdown-toggle">
-                        <i class="menu-icon fa fa-caret-right"></i>
-                        Job Cost
-                        <b class="arrow fa fa-angle-down"></b>
-                    </a>
-                    <b class="arrow"></b>
-                    <ul class="submenu">
-                        <li id="JobCosting00100100871" class="actionlinlk">
-                            @Html.ActionLink("Job Cost", "Index", "JobCost", new { area = "JobCosting" }, null)<b class="arrow"></b>
-                        </li>
-                    </ul>
-                </li>
-                <li class="">
-                    <a href="#" class="dropdown-toggle">
-                        <i class="menu-icon fa fa-caret-right"></i>
-                        Idle Time
-                        <b class="arrow fa fa-angle-down"></b>
-                    </a>
-                    <b class="arrow"></b>
-                    <ul class="submenu">
-                        <li id="JobCosting00100100871" class="actionlinlk">
-                            @Html.ActionLink("Idle Time", "Index", "IdleTime", new { area = "JobCosting" }, null)<b class="arrow"></b>
-                        </li>
-                    </ul>
-                </li>
-                <li class="">
-                    <a href="#" class="dropdown-toggle">
-                        <i class="menu-icon fa fa-caret-right"></i>
-                        DLR
-                        <b class="arrow fa fa-angle-down"></b>
-                    </a>
-                    <b class="arrow"></b>
-                    <ul class="submenu">
+                @*@if (HttpContext.Current.User.IsInRole(JobCostingRoles.JobCostingJobCostUser))
+                {*@
+                    <li class="">
+                        <a href="#" class="dropdown-toggle">
+                            <i class="menu-icon fa fa-caret-right"></i>
+                            Job Cost
+                            <b class="arrow fa fa-angle-down"></b>
+                        </a>
+                        <b class="arrow"></b>
+                        <ul class="submenu">
+                            <li id="JobCosting00100100871" class="actionlinlk">
+                                @Html.ActionLink("Job Cost", "Index", "JobCost", new { area = "JobCosting" }, null)<b class="arrow"></b>
+                            </li>
+                        </ul>
+                    </li>
+                @*}
+                @if (HttpContext.Current.User.IsInRole(JobCostingRoles.JobCostingIdleTimeUser))
+                {*@
+                    <li class="">
+                        <a href="#" class="dropdown-toggle">
+                            <i class="menu-icon fa fa-caret-right"></i>
+                            Idle Time
+                            <b class="arrow fa fa-angle-down"></b>
+                        </a>
+                        <b class="arrow"></b>
+                        <ul class="submenu">
+                            <li id="JobCosting00100100871" class="actionlinlk">
+                                @Html.ActionLink("Idle Time", "Index", "IdleTime", new { area = "JobCosting" }, null)<b class="arrow"></b>
+                            </li>
+                        </ul>
+                    </li>
+                @*}
+                @if (HttpContext.Current.User.IsInRole(JobCostingRoles.JobCostingDailyLaborRateUser))
+                {*@
+                    <li class="">
+                        <a href="#" class="dropdown-toggle">
+                            <i class="menu-icon fa fa-caret-right"></i>
+                            DLR
+                            <b class="arrow fa fa-angle-down"></b>
+                        </a>
+                        <b class="arrow"></b>
+                        <ul class="submenu">
 
-                        <li id="JobCosting00100100871" class="actionlinlk">
-                            @Html.ActionLink("Daily Labor Rate", "Index", "DailyLaborRate", new { area = "JobCosting" }, null)<b class="arrow"></b>
-                        </li>
-                        @*<li id="JobCosting00100100871" class="actionlinlk">
-                            @Html.ActionLink("Permanent DLR", "Index", "PermanentDLR", new { area = "JobCosting" }, null)<b class="arrow"></b>
-                        </li>
-                        <li id="JobCosting00100100871" class="actionlinlk">
-                            @Html.ActionLink("Contrat DLR", "Index", "ContratDLR", new { area = "JobCosting" }, null)<b class="arrow"></b>
-                        </li>*@
-                    </ul>
-                </li>
+                            <li id="JobCosting00100100871" class="actionlinlk">
+                                @Html.ActionLink("Daily Labor Rate", "Index", "DailyLaborRate", new { area = "JobCosting" }, null)<b class="arrow"></b>
+                            </li>
+                           
+                        </ul>
+                    </li>
+                    //}
+                </ul>
+                    </li>
+                    <li class="">
+                        <a href = "#" class="dropdown-toggle">
+                            <i class="menu-icon fa fa-caret-right"></i>
+                            Reports
+                            <b class="arrow fa fa-angle-down"></b>
+                        </a>
+                        <b class="arrow"></b>
+                        <ul class="submenu">
 
+                            <li id = "JobCosting00100100871" class="actionlinlk">
+                                @Html.ActionLink("Job Cost", "Index", "JobCost", new { area = "JobCosting" }, null)<b class="arrow"></b>
+                            </li>
+                            <li id = "JobCosting00100100871" class="actionlinlk">
+                                @Html.ActionLink("Idle Time", "Index", "IdleTime", new { area = "JobCosting" }, null)<b class="arrow"></b>
+                            </li>
 
-                @*<li id="JobCostineg0010010re0898" class="actionlinlk">
-                    @Html.ActionLink("Job Order Summary By Cost Center", "Index", "JobOrderSummaryCostCenters", new { area = "JobCosting" }, null)<b class="arrow"></b>
-                </li>
-                <li id="JobCostineg0010010re0871" class="actionlinlk">
-                    @Html.ActionLink("Job Order Summary", "Index", "JobOrderSummaries", new { area = "JobCosting" }, null)<b class="arrow"></b>
-                </li>*@
+                            <li id = "JobCosting00100100871" class="actionlinlk">
+                                @Html.ActionLink("Permanent DLR", "Index", "PermanentDLR", new { area = "JobCosting" }, null)<b class="arrow"></b>
+                            </li>
+                            <li id = "JobCosting00100100871" class="actionlinlk">
+                                @Html.ActionLink("Contrat DLR", "Index", "ContratDLR", new { area = "JobCosting" }, null)<b class="arrow"></b>
+                            </li>
+                        </ul>
+                    </li>
+                    <li class="">
+                        <a href = "#" class="dropdown-toggle">
+                            <i class="menu-icon fa fa-caret-right"></i>
+                            Settings
+                            <b class="arrow fa fa-angle-down"></b>
+                        </a>
+                        <b class="arrow"></b>
+                        <ul class="submenu">
 
-            </ul>
+                            @*@if (HttpContext.Current.User.IsInRole(JobCostingRoles.JobCostingAdmin)||
+                                HttpContext.Current.User.IsInRole(JobCostingRoles.JobCostingJobCostUser))
+                            {*@
+
+                                <li id="JobCosting00100100871" class="actionlinlk">
+                                    @Html.ActionLink("Idle Time Category", "Index", "IdleTimeCategory", new { area = "JobCosting" }, null)<b class="arrow"></b>
+                                </li>
+
+                                <li id="JobCosting00100100871" class="actionlinlk">
+                                    @Html.ActionLink("Yearly Overhead Rate", "Index", "YearlyOverHeadRate", new { area = "JobCosting" }, null)<b class="arrow"></b>
+                                </li>
+                           @* }*@
+
+                            </ul>
         </li>
-        <li class="">
-            <a href="#" class="dropdown-toggle">
-                <i class="menu-icon fa fa-caret-right"></i>
-                Reports
-                <b class="arrow fa fa-angle-down"></b>
-            </a>
-            <b class="arrow"></b>
-            <ul class="submenu">
-
-                <li id="JobCosting00100100871" class="actionlinlk">
-                    @Html.ActionLink("Job Cost", "Index", "JobCost", new { area = "JobCosting" }, null)<b class="arrow"></b>
-                </li>
-                <li id="JobCosting00100100871" class="actionlinlk">
-                    @Html.ActionLink("Idle Time", "Index", "IdleTime", new { area = "JobCosting" }, null)<b class="arrow"></b>
-                </li>
-
-                <li id="JobCosting00100100871" class="actionlinlk">
-                    @Html.ActionLink("Permanent DLR", "Index", "PermanentDLR", new { area = "JobCosting" }, null)<b class="arrow"></b>
-                </li>
-                <li id="JobCosting00100100871" class="actionlinlk">
-                    @Html.ActionLink("Contrat DLR", "Index", "ContratDLR", new { area = "JobCosting" }, null)<b class="arrow"></b>
-                </li>
-            </ul>
-        </li>
-        <li class="">
-            <a href="#" class="dropdown-toggle">
-                <i class="menu-icon fa fa-caret-right"></i>
-                Settings
-                <b class="arrow fa fa-angle-down"></b>
-            </a>
-            <b class="arrow"></b>
-            <ul class="submenu">
-
-               
-                
-                <li id="JobCosting00100100871" class="actionlinlk">
-                    @Html.ActionLink("Idle Time Category", "Index", "IdleTimeCategory", new { area = "JobCosting" }, null)<b class="arrow"></b>
-                </li>
-                
-                <li id="JobCosting00100100871" class="actionlinlk">
-                    @Html.ActionLink("Yearly Overhead Rate", "Index", "YearlyOverHeadRate", new { area = "JobCosting" }, null)<b class="arrow"></b>
-                </li>
-                @*<li id="JobCosting00100100871" class="actionlinlk">
-                    @Html.ActionLink("Machine Type", "Index", "MachineType", new { area = "JobCosting" }, null)<b class="arrow"></b>
-                </li>
-                <li id="JobCosting00100100871" class="actionlinlk">
-                    @Html.ActionLink("Machine Details", "Index", "Machine", new { area = "JobCosting" }, null)<b class="arrow"></b>
-                </li>*@
-              
-
-                @*<li id="JobCostineg0010010re0898" class="actionlinlk">
-                    @Html.ActionLink("Job Order Summary By Cost Center", "Index", "JobOrderSummaryCostCenters", new { area = "JobCosting" }, null)<b class="arrow"></b>
-                </li>
-                <li id="JobCostineg0010010re0871" class="actionlinlk">
-                    @Html.ActionLink("Job Order Summary", "Index", "JobOrderSummaries", new { area = "JobCosting" }, null)<b class="arrow"></b>
-                </li>*@
-
-            </ul>
-        </li>
-
-
     </ul>
 </li>
+
+ } 

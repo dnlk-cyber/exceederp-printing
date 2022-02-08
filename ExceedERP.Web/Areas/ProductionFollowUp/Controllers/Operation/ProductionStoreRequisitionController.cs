@@ -7,6 +7,7 @@ using System.Web.Mvc;
 using ExceedERP.Core.Domain.Common;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Inventory;
+using ExceedERP.Core.Domain.ProductionFollowUp;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Web.Helpers;
@@ -18,8 +19,7 @@ using EntityState = System.Data.Entity.EntityState;
 namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
 {
 
-    //[AuthorizeRoles(MaintenanceRoles.MaintenanceOrderUser)]
-
+    //[AuthorizeRoles(ProductionFollowUpRoles.ProductionFollowUpRJobOrderUser)]
     public class ProductionStoreRequisitionController : Controller
     {
         private readonly ExceedDbContext _db = new ExceedDbContext();

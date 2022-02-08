@@ -11,9 +11,11 @@ using Kendo.Mvc.UI;
 using ExceedERP.Core.Domain.JobCosting;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Core.Domain.ProductionFollowUp;
+using ExceedERP.Web.Helpers;
 
 namespace ExceedERP.Web.Areas.JobCosting.Controllers
 {
+    //[AuthorizeRoles(JobCostingRoles.JobCostingJobCostUser)]
     public class JobChangeOfOrderController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();

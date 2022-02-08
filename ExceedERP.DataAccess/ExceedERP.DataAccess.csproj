@@ -158,6 +158,10 @@
     <Compile Include="Migrations\202112190937511_hrm.Designer.cs">
       <DependentUpon>202112190937511_hrm.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202201101216119_ProdFollowUpMod.cs" />
+    <Compile Include="Migrations\202201101216119_ProdFollowUpMod.Designer.cs">
+      <DependentUpon>202201101216119_ProdFollowUpMod.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -233,6 +237,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202112190937511_hrm.resx">
       <DependentUpon>202112190937511_hrm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202201101216119_ProdFollowUpMod.resx">
+      <DependentUpon>202201101216119_ProdFollowUpMod.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

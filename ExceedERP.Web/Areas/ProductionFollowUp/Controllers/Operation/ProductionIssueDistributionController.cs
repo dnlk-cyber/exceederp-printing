@@ -4,6 +4,7 @@ using System.Web.Mvc;
 using ExceedERP.Core.Domain.Finance;
 using ExceedERP.Core.Domain.Global;
 using ExceedERP.Core.Domain.Inventory;
+using ExceedERP.Core.Domain.ProductionFollowUp;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Helpers.Common;
 using ExceedERP.Web.Helpers;
@@ -14,6 +15,7 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
 {
 
 
+    //[AuthorizeRoles(ProductionFollowUpRoles.ProductionFollowUpDeliveryUser)]
     public class ProductionIssueDistributionController : Controller
     {
         private ExceedDbContext db = new ExceedDbContext();

@@ -77,7 +77,7 @@
                                             window.Title("Job Order");
                                         }))
 
-                                                           .Events(ev => ev.DetailExpand("MasterOnExpand").DataBound("jobDataBound"))
+                                                           .Events(ev => ev.DetailExpand("MasterOnExpand").DataBound("jobDataBound").Save("onSave"))
 
                                         .Pageable(pageable => pageable
                                                      .Input(true)
@@ -91,10 +91,9 @@
 
                                          .DataSource(dataSource => dataSource
                                              .Ajax()
-                                            .Sort(sort =>
-                                            {
-                                                sort.Add(l => l.JobId).Descending();
-                                            }).Events(events =>
+                                             .ServerOperation(true)
+
+                                            .Events(events =>
                                             {
                                                 events.Error("error_handler(\"JobGrid\")");
                                                 events.RequestStart("onRequestStart(\"JobGrid\")");
@@ -105,7 +104,10 @@
                                              .Create(create => create.Action("Jobs_Create", "JobOrders"))
                                              .Update(update => update.Action("Jobs_Update", "JobOrders"))
                                              .Destroy(destroy => destroy.Action("Jobs_Destroy", "JobOrders"))
-                                          ).ClientDetailTemplateId("Detail")
+                                             .Sort(sort =>
+                                             {
+                                                 sort.Add(l => l.JobId).Descending();
+                                             })).ClientDetailTemplateId("Detail")
 )
 
 
@@ -1121,9 +1123,31 @@
     var jobPhase;
 
     function jobDataBound() {
-    this.expandRow(this.tbody.find("tr.k-master-row").first());
+    //this.expandRow(this.tbody.find("tr.k-master-row").first());
     }
+    function onSave() {
+        var masterGrid = $("#JobGrid").data("kendoGrid");
+        masterGrid.dataSource.read();
+        masterGrid.refresh();
+        location.reload();
+        console.log(2233333)
+    }
+        function onGridEdit(e) {
+            e.sender.one("dataBound", function (e) {
+                e.sender.dataSource.read();
+            });
+        }
 
+        function bindDataAndRefresh(e) {
+            var grid = $("#JobGrid").data("kendoGrid");
+            grid.bind("dataBound", onGridEdit(e));
+        }
+
+        $(document).ready(function () {
+            var grid = $("#JobGrid").data("kendoGrid");
+            grid.bind("save", bindDataAndRefresh);
+            console.log("uuuuuu");
+        });    
     function MasterOnExpand(e) {
 
     var masterRow = e.masterRow;
@@ -1377,7 +1401,6 @@
     return {
     ItemCategoryCode: $("#ItemCategoryCode").val()
     };
-    console.log(9000);
     }
     function filterJobTypeByProforma() {
     return {

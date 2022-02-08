@@ -8,7 +8,7 @@
             .CascadeFrom("YearId")
             .DataSource(dataSource =>
             {
-                dataSource.Read(read => read.Action("GetAllPeriods", "GlPeriod", new { area = "Finance" })
+                dataSource.Read(read => read.Action("GetAllPeriods", "JobCostingDataProvider")
                 .Data("filterPeriods"))
                 
                 .ServerFiltering(true);

@@ -2,6 +2,7 @@
 using ExceedERP.Core.Domain.PrintingEstimation.Setting;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -57,7 +58,8 @@ namespace ExceedERP.Core.Domain.JobCosting
         public int JobCostId { get; set; }
         public string ItemCategoryCode { get; set; }
         public string ItemCode { get; set; }
-        public DateTime Date { get; set; }
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)] public DateTime Date { get; set; }
         public string Reference { get; set; }
         public decimal Quantity { get; set; }
         public decimal SubTotal { get; set; }
@@ -71,7 +73,8 @@ namespace ExceedERP.Core.Domain.JobCosting
     {
         public int JobMaterialReturnId { get; set; }
         public int JobCostId { get; set; }
-        public DateTime Date { get; set; }
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)] public DateTime Date { get; set; }
         public string ItemCategoryCode { get; set; }
         public string ItemCode { get; set; }
         public string Reference { get; set; }
