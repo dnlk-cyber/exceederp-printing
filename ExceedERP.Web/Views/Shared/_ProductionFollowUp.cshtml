@@ -1,11 +1,11 @@
 ﻿@using ExceedERP.Core.Domain.ProductionFollowUp
-@if (HttpContext.Current.User.IsInRole(ProductionFollowUpRoles.ProductionFollowUpAdmin)
+@*@if (HttpContext.Current.User.IsInRole(ProductionFollowUpRoles.ProductionFollowUpAdmin)
          || HttpContext.Current.User.IsInRole(ProductionFollowUpRoles.ProductionFollowUpProformaUser)
          || HttpContext.Current.User.IsInRole(ProductionFollowUpRoles.ProductionFollowUpJobOrderUser)
          || HttpContext.Current.User.IsInRole(ProductionFollowUpRoles.ProductionFollowUpFinishedGoodUser)
          || HttpContext.Current.User.IsInRole(ProductionFollowUpRoles.ProductionFollowUpDeliveryUser)
          || HttpContext.Current.User.IsInRole(ProductionFollowUpRoles.ProductionFollowUpDeliveryUser))
-{
+{*@
 
 <li class="">
     <a href="#" class="dropdown-toggle">
@@ -84,4 +84,4 @@
     </ul>
 </li>
 
- }
+@* }*@

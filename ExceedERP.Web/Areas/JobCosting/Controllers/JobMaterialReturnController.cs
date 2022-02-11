@@ -29,31 +29,35 @@ namespace ExceedERP.Web.Areas.JobCosting.Controllers
             var jobCost = db.JobCosts.Find(id);
             if (jobCost != null)
             {
-              //  var sr = db.StoreReturns.Where(q => q.JobOrderId == jobCost.JobId.ToString()).First();
-                var items = db.StoreReturnItemss.Where(q => q.ProductionJobNo == jobCost.JobId.ToString()).ToList();
-                foreach (var item in items)
+                var job = db.Jobs.Find(jobCost.JobId);
+                if(job != null)
                 {
-                    var dt = DateTime.Now;
-                    JobMaterialReturn jobMaterialReturn = new JobMaterialReturn();
+                    var items = db.StoreReturnItemss.Where(q => q.ProductionJobNo == job.JobNo).ToList();
+                    foreach (var item in items)
+                    {
+                        var dt = DateTime.Now;
+                        JobMaterialReturn jobMaterialReturn = new JobMaterialReturn();
 
-                    jobMaterialReturn.JobMaterialReturnId = item.StoreReturnItemsID;
-                    jobMaterialReturn.JobCostId = id;
-                    jobMaterialReturn.ItemCode = item.ItemCode;
-                    jobMaterialReturn.ItemCategoryCode = item.ItemCategoryCode;
-                    jobMaterialReturn.Date = dt;
-                    jobMaterialReturn.Reference = item.ProductionJobNo;
-                    jobMaterialReturn.Quantity = item.Quantity;
-                    jobMaterialReturn.UnitPrice = item.UnitPrice;
-                    jobMaterialReturn.Cost = item.Quantity * item.UnitPrice;
-                    jobMaterialReturn.SubTotal = item.UnitPrice * item.Quantity;
-                    jobMaterialReturn.TaxAmount = item.Quantity * item.UnitPrice - (item.UnitPrice * item.Quantity);
-                    jobMaterialReturn.ItemDescription = jobCost.Description;
-                    jobMaterialReturn.DateCreated = item.DateCreated;
-                    jobMaterialReturn.LastModified = item.LastModified;
-                    jobMaterialReturn.CreatedBy = item.CreatedBy;
-                    jobMaterialReturn.ModifiedBy = item.ModifiedBy;
-                    jobmaterialreturns.Add(jobMaterialReturn);
+                        jobMaterialReturn.JobMaterialReturnId = item.StoreReturnItemsID;
+                        jobMaterialReturn.JobCostId = id;
+                        jobMaterialReturn.ItemCode = item.ItemCode;
+                        jobMaterialReturn.ItemCategoryCode = item.ItemCategoryCode;
+                        jobMaterialReturn.Date = dt;
+                        jobMaterialReturn.Reference = item.ProductionJobNo;
+                        jobMaterialReturn.Quantity = item.Quantity;
+                        jobMaterialReturn.UnitPrice = item.UnitPrice;
+                        jobMaterialReturn.Cost = item.Quantity * item.UnitPrice;
+                        jobMaterialReturn.SubTotal = item.UnitPrice * item.Quantity;
+                        jobMaterialReturn.TaxAmount = item.Quantity * item.UnitPrice - (item.UnitPrice * item.Quantity);
+                        jobMaterialReturn.ItemDescription = jobCost.Description;
+                        jobMaterialReturn.DateCreated = item.DateCreated;
+                        jobMaterialReturn.LastModified = item.LastModified;
+                        jobMaterialReturn.CreatedBy = item.CreatedBy;
+                        jobMaterialReturn.ModifiedBy = item.ModifiedBy;
+                        jobmaterialreturns.Add(jobMaterialReturn);
+                    }
                 }
+                
 
             }
             DataSourceResult result = jobmaterialreturns.ToDataSourceResult(request, jobMaterialReturn => new {

@@ -1,9 +1,9 @@
 ﻿@using ExceedERP.Core.Domain.JobCosting
-@if (HttpContext.Current.User.IsInRole(JobCostingRoles.JobCostingAdmin)
+@*@if (HttpContext.Current.User.IsInRole(JobCostingRoles.JobCostingAdmin)
              || HttpContext.Current.User.IsInRole(JobCostingRoles.JobCostingDailyLaborRateUser)
              || HttpContext.Current.User.IsInRole(JobCostingRoles.JobCostingIdleTimeUser)
              || HttpContext.Current.User.IsInRole(JobCostingRoles.JobCostingJobCostUser))
-{
+{*@
 <li class="">
     <a href="#" class="dropdown-toggle">
         <i class="menu-icon fa fa-lastfm-square"></i>
@@ -123,4 +123,4 @@
     </ul>
 </li>
 
- } 
+@* }*@ 
