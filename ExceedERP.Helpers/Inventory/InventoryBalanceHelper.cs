@@ -29,6 +29,9 @@ namespace ExceedERP.Helpers.Inventory
                 .FirstOrDefault(x => x.BinCardLineID == bincardId);
             if (startingLine != null)
             {
+                if (startingLine.ReferenceDoc.StartsWith("Count on date"))
+                    useNextYear = true;// if it is count usually it is end of year ,no transaction to recalculate unless it goes to next year
+
                 var currentYear = db.GLFiscalYears.FirstOrDefault(y => startingLine.Date >= y.DateFrom && startingLine.Date <= y.DateTo);
                 // for recalculate all we shall use the next year since it starts from previous year
                 if (useNextYear)
@@ -494,7 +497,7 @@ namespace ExceedERP.Helpers.Inventory
                     {
                         #region Transfer Receive
 
-                        string id = card.ReferenceDoc.Split('_')[1];
+                        string id = card.ReferenceDoc.Split('_')[2];
                         int recordid = int.Parse(id);
                         #region update record
                         var record = db.ItemTransferReceive.Find(recordid);
@@ -614,7 +617,7 @@ namespace ExceedERP.Helpers.Inventory
                     {
                         #region transfer send
 
-                        string id = card.ReferenceDoc.Split(' ')[1];
+                        string id = card.ReferenceDoc.Split(' ')[2];
                         int recordid = int.Parse(id);
                         #region update record
                         var record = db.ItemTransfers.Find(recordid);

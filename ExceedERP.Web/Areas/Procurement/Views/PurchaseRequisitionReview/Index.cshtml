@@ -44,7 +44,7 @@
       .Scrollable()
       .Sortable()
       .Filterable()
-      .Groupable()
+     
 
 
       .Events(x => x.DataBound("onDataBoundMasterPurchase"))
@@ -390,7 +390,7 @@
 </script>
 
 <script id="asseignmentDetail" type="text/Kendo-tmpl">
-    @(Html.Kendo().TabStrip().Name("tabStrip_#=PurchaseRequisitionAssignmentId#").SelectedIndex(0).Items(itemn =>
+    @(Html.Kendo().TabStrip().Name("tabStrip_reassignment#=PurchaseRequisitionAssignmentId#").SelectedIndex(0).Items(itemn =>
       {
           itemn.Add().Text("Reassignment Items").Content(
               @<text>
