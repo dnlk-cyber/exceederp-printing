@@ -1,6 +1,6 @@
 ﻿
 @(Html.Kendo().DropDownListFor(m => m)
-            .Name("GLPeriodId")
+            .Name("PeriodId")
             .ValuePrimitive(true)
             .OptionLabel("--Months--")
             .DataTextField("Name")
@@ -8,7 +8,7 @@
             .CascadeFrom("GlFiscalYearId")
             .DataSource(dataSource =>
             {
-                dataSource.Read(read => read.Action("GetAllPeriods", "GlPeriod", new { area = "Finance" })
+                dataSource.Read(read => read.Action("GetAllPeriods", "JobCostingDataProvider")
                 .Data("filterPeriods"))
                 
                 .ServerFiltering(true);

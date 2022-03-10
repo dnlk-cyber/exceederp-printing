@@ -997,6 +997,7 @@
     <Compile Include="Domain\JobCosting\JobOrderTimeSheet.cs" />
     <Compile Include="Domain\JobCosting\PermanentDLR.cs" />
     <Compile Include="Domain\JobCosting\Setting\IdleTimeCategory.cs" />
+    <Compile Include="Domain\JobCosting\Setting\JCPension.cs" />
     <Compile Include="Domain\JobCosting\Setting\Unit.cs" />
     <Compile Include="Domain\JobCosting\Setting\YearlyOverHeadRate.cs" />
     <Compile Include="Domain\JobCosting\Tax.cs" />

@@ -222,7 +222,7 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                     customer = AddNewCustomer.Add(job);
                     db.OrganizationCustomers.Add(customer);
                     db.SaveChanges();
-
+                    Index();
 
                 }
                 else if (job.hv)

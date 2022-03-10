@@ -1464,6 +1464,7 @@ namespace ExceedERP.DataAccess.Context
             #endregion
 
             #region Job Costing Entity Configuration
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobCostingEntityConfiguration.JcPensionEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobCostingEntityConfiguration.IdleTimeCategoryEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobCostingEntityConfiguration.JobOrderTimeSheetEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobCostingEntityConfiguration.JobOrderTimeRegistrationEntityTypeConfiguration());
@@ -3415,6 +3416,7 @@ namespace ExceedERP.DataAccess.Context
         #endregion
         #region Job Costing
         public DbSet<IdleTimeCategory> IdleTimeCategories { get; set; }
+        public DbSet<JcPension> JcPensions { get; set; }
         public DbSet<YearlyOverHeadRate> YearlyOverHeadRates { get; set; }
         public DbSet<Machine> Machines { get; set; }
         public DbSet<Unit> Units { get; set; }

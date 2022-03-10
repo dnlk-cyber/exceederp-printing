@@ -26,11 +26,12 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
         {
              
             ViewData["EstimationForms"] = db.EstimationForms.ToList();
-            ViewData["Customers"] = db.OrganizationCustomers.Select(s => new {
-                Code = s.OrganizationCustomerID,
-                Name = s.TradeName
-            }).ToList();
-             var jobCategories= db.JobCategories.Select(s => new {
+                
+           
+            var customers = getCustomers();
+       
+
+             var jobCategories = db.JobCategories.Select(s => new {
                 JobTypeId = s.JobCategoryId,
                 type = s.HaveParent ?s.ParentId + " " + s.JobName : s.JobName
             }).ToList();
@@ -38,7 +39,23 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
             ViewBag.data = GetData();
             return View();
         }
+        public IList<OrganizationCustomer> getCustomers(Proforma proforma=null)
+        {
+            var customers = db.OrganizationCustomers.ToList();
+            if(proforma != null&& !proforma.HaveEstimation && !proforma.IsExistingCustomer)
+            {
+                var entity = new OrganizationCustomer()
+                {
+                    OrganizationCustomerID = proforma.CustomerId,
+                    BrandName = proforma.BrandName,
+                    TradeName = proforma.CustomerName
+                };
+                customers.Add(entity);
+            }
 
+            ViewData["Customers"] = customers;
+            return customers;
+        }
         public JsonResult GetAllProformas()
         {
             var data = db.Proformas;
@@ -108,10 +125,13 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                 db.Proformas.Add(entity);
                 db.SaveChanges();
                 proforma.ProformaId = entity.ProformaId;
+                proforma.CustomerId = entity.CustomerId;
+                //Index();
+              
+            ViewData["Customers"] = db.OrganizationCustomers.ToList();
+            #region
 
-                #region
-
-                if (proforma.ProformaId.ToString().Length == 1)
+            if (proforma.ProformaId.ToString().Length == 1)
                 {
                     entity.ProformaNo = "pro-000000" + proforma.ProformaId;
                 }
@@ -145,7 +165,7 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                 #endregion
             }
 
-            return Json(new[] { proforma }.ToDataSourceResult(request, ModelState));
+           return Json(new[] { proforma }.ToDataSourceResult(request, ModelState));
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
@@ -188,6 +208,7 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                 db.Entry(entity).State = EntityState.Modified;
                 db.SaveChanges();
             }
+            return RedirectToAction("Index", "Proforma", new { area = "ProductionFollowUp" });
 
             return Json(new[] { proforma }.ToDataSourceResult(request, ModelState));
         }

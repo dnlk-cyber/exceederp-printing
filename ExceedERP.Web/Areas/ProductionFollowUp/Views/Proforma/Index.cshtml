@@ -3,7 +3,7 @@
                                   .Name("ProformaGrid")
                                   .Columns(columns =>
                                   {
-                                      columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customers"], "Code", "Name")
+                                      columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customers"], "OrganizationCustomerID", "TradeName")
                                             .EditorTemplateName("CustomerEditor")
                                            .Width("110px")
                                            .Title("Customer");

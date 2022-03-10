@@ -168,6 +168,14 @@ namespace ExceedERP.DataAccess.Context
                 this.HasKey<int>(t => t.IdleTimeCategoryId);
             }
         }
+        public class JcPensionEntityTypeConfiguration : EntityTypeConfiguration<JcPension>
+        {
+            public JcPensionEntityTypeConfiguration()
+            {
+                this.ToTable("JcPensions", "JobCosting");
+                this.HasKey<int>(t => t.JcPensionId);
+            }
+        }
         public class JobOrderTimeRegistrationEntityTypeConfiguration : EntityTypeConfiguration<JobOrderTimeRegistration>
         {
             public JobOrderTimeRegistrationEntityTypeConfiguration()

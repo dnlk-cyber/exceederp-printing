@@ -21,4 +21,5 @@ namespace ExceedERP.Core.Domain.JobCosting
         [Display(Name = "Tax Rate(%)")]
         public float TaxRate { get; set; }
     }
-}
+ 
+    }
