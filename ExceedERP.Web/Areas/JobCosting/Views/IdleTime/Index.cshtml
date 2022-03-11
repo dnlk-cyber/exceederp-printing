@@ -3,19 +3,19 @@
               .Name("grid")
               .Columns(columns =>
               {
-                  columns.ForeignKey(c => c.YearId, (IEnumerable)ViewData["FiscalYears"], "GlFiscalYearId", "Name").Title("Year");
-                  columns.ForeignKey(c => c.PeriodId, (IEnumerable)ViewData["Periods"], "GLPeriodId", "Name").EditorTemplateName("YearCascading").Title("Month");
+              columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["FiscalYears"], "GlFiscalYearId", "Name").Title("Year");
+              columns.ForeignKey(c => c.GLPeriodId, (IEnumerable)ViewData["Periods"], "GLPeriodId", "Name").EditorTemplateName("YearCascading").Title("Month");
 
-                  columns.Command(command =>
-                  {
-                      command.Edit();
-                      command.Destroy();
-                  }).Width(180);
-              })
+    columns.Command(command =>
+    {
+        command.Edit();
+        command.Destroy();
+    }).Width(180);
+})
                       .ToolBar(toolbar =>
                       {
-                          toolbar.Create();
-                      })
+    toolbar.Create();
+})
                       .Editable(editable => editable.Mode(GridEditMode.InLine))
                       .Pageable(pageable => pageable
                                                  .Input(true)
@@ -27,6 +27,7 @@
                                            .Scrollable(h => h.Height(500))
                       .DataSource(dataSource => dataSource
                     .Ajax()
+                    .Sort(sort=>sort.Add(s=>s.IdleTimeID).Descending())
                     .Model(model => model.Id(p => p.IdleTimeID))
                     .Read(read => read.Action("IdleTimes_Read", "IdleTime"))
                     .Create(create => create.Action("IdleTimes_Create", "IdleTime"))
@@ -266,7 +267,7 @@
 <script>
     function filterPeriods() {
         return {
-            YearId: $("#YearId").val()
+            YearId: $("#GlFiscalYearId").val()
 
         };
     }

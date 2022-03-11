@@ -11,10 +11,9 @@ namespace ExceedERP.Core.Domain.JobCosting
     {
         public int IdleTimeID { get; set; }
         [Required]
-        [UIHint("Year")]
-        public int YearId { get; set; }
+        public int GlFiscalYearId { get; set; }
         [Required]
-        public int PeriodId { get; set; }
+        public int GLPeriodId { get; set; }
         public virtual ICollection<IdleTimeOT> IdleTimeOT { get; set; }
         public virtual ICollection<IdleTimeProductive> IdleTimeProductive { get; set; }
         public virtual ICollection<IdleTimeNonProductiveControllable> IdleTimeNonProductiveControllable { get; set; }

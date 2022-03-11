@@ -33,8 +33,8 @@ namespace ExceedERP.Web.Areas.JobCosting.Controllers
             IQueryable<IdleTime> idletimes = db.IdleTimes;
             DataSourceResult result = idletimes.ToDataSourceResult(request, idleTime => new {
                 IdleTimeID = idleTime.IdleTimeID,
-                YearId = idleTime.YearId,
-                PeriodId = idleTime.PeriodId
+                GlFiscalYearId = idleTime.GlFiscalYearId,
+                GLPeriodId = idleTime.GLPeriodId
             });
 
             return Json(result);
@@ -89,8 +89,8 @@ namespace ExceedERP.Web.Areas.JobCosting.Controllers
             var entity = new IdleTime
             {
                 IdleTimeID = idleTime.IdleTimeID,
-                YearId = idleTime.YearId,
-                PeriodId = idleTime.PeriodId
+                GlFiscalYearId = idleTime.GlFiscalYearId,
+                GLPeriodId = idleTime.GLPeriodId
 
             };
             return entity;

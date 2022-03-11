@@ -26,19 +26,20 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                 {
                     var delivery = new ProductDeliveryVM();
 
-                    delivery.PrepareBy = productDelivery.PreparedBy != null ? productDelivery.PreparedBy : "________";
-                    delivery.ApprovedBy = productDelivery.ApprovedBy != null ? productDelivery.ApprovedBy : "________";
-                    delivery.IdentificationNo = productDelivery.IdentificationNo != null ? productDelivery.IdentificationNo : "________";
-                    delivery.CreditSaleNo = productDelivery.CreditSaleNo != null ? productDelivery.CreditSaleNo : "________";
-                    delivery.CashSaleNo = productDelivery.CashSaleNo != null ? productDelivery.CashSaleNo : "________";
+                    delivery.PrepareBy = productDelivery.PreparedBy ;
+                    delivery.ApprovedBy =  productDelivery.ApprovedBy ;
+                    delivery.IdentificationNo = productDelivery.IdentificationNo;
+                    delivery.CreditSaleNo = productDelivery.CreditSaleNo;
+                    delivery.CashSaleNo = productDelivery.CashSaleNo;
 
 
-                    var job = db.Jobs.FirstOrDefault(x=>x.JobId == productDelivery.JobId);
-                    if(job != null)
+                    var job = db.OrganizationCustomers.FirstOrDefault(x => x.OrganizationCustomerID == productDelivery.CustomerId);
+                    if (job != null)
                     {
                         //delivery.Tel1 = job.ContactPhone != null ? job.ContactPhone : "________"; 
                         //delivery.POBox = job.POBox != null ? job.POBox : "________";
-                        //delivery.CustomerName = job.CustomerName != null ? job.CustomerName : "________";
+                        delivery.CustomerName = job.TradeName;
+                        delivery.BrandName = job.BrandName;
                         //delivery.ContactName = job.ContactName != null ? job.ContactName : "________";
                         //delivery.City = job.City != null ? job.City : "________";
                         //delivery.Address = job.SubCity != null ? job.SubCity : "________";
@@ -54,8 +55,11 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                         var product = new ProductDeliveryItemsVM();
 
                         product.ItemCode = item.ItemCode;
+                        product.JobNumber = db.Jobs.Find(item.JobId)?.JobNo;
                         product.Description = item.Description;
-                        product.Unit = unit.UOM;
+                        product.JobNumber = db.Jobs.Find(item.JobId)?.JobNo;
+                        product.Unit = unit?.UOM;
+                        product.Quantity = item.Quantity;
                         product.UnitCost = item.UnitCost;
                         product.TotalPrice = item.TotalCost;
 

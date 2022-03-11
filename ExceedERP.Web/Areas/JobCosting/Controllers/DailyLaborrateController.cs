@@ -53,6 +53,7 @@ namespace ExceedERP.Web.Areas.JobCosting.Controllers
             if (ModelState.IsValid)
             {
                 var entity = (DailyLaborRate)this.GetObject(dailyLaborRate);
+                
                 db.DailyLaborRates.Add(entity);
                 db.SaveChanges();
                 dailyLaborRate.DailyLaborRateId = entity.DailyLaborRateId;

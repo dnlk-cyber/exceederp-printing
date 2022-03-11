@@ -5120,9 +5120,10 @@
     <Content Include="Areas\HRM\Views\PerformanceReport\MyPerformance.cshtml" />
     <Content Include="Areas\HRM\Views\Delegation\IndexHr.cshtml" />
     <Content Include="Areas\ProductionFollowUp\Views\Proforma\EditorTemplates\CustomerEditor.cshtml" />
-    <Content Include="Areas\JobCosting\Views\Shared\EditorTemplates\YearCascading.cshtml" />
-    <Content Include="Areas\JobCosting\Views\DailyLaborRate\EditorTemplates\YearCascading.cshtml" />
     <Content Include="Areas\JobCosting\Views\JcPension\Index.cshtml" />
+    <Content Include="Areas\JobCosting\Views\Shared\EditorTemplates\YearCascading.cshtml" />
+    <Content Include="Areas\ProductionFollowUp\Views\ProductDeliveries\Index - Copy.cshtml" />
+    <Content Include="Areas\ProductionFollowUp\Views\ProductDeliveries\EditorTemplates\CustomerEditor.cshtml" />
     <None Include="Properties\PublishProfiles\Brana.pubxml" />
     <None Include="Properties\PublishProfiles\mega.pubxml" />
     <None Include="Scripts\kendo\2018.3.911\kendo.all-vsdoc.js" />
@@ -7897,7 +7898,6 @@
     <Folder Include="Areas\Inventory\Views\StoreItemAssignment\EditorTemplates\" />
     <Folder Include="Areas\Inventory\Views\StoreItemBalance\EditorTemplates\" />
     <Folder Include="Areas\Inventory\Views\StoreKeeperAssignment\EditorTemplates\" />
-    <Folder Include="Areas\JobCosting\Views\IdleTime\EditorTemplates\" />
     <Folder Include="Areas\JobCosting\Views\JobCostingDataProvider\" />
     <Folder Include="Areas\Procurement\Views\TenderParticipantItems\EditorTemplates\" />
     <Folder Include="Areas\ProductionFollowUp\Views\MegaDataProvider\" />

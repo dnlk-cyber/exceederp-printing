@@ -37,7 +37,8 @@
              .Events(ev => ev.DetailExpand("onDetailExpand").DataBound("onDataBound"))
             .DataSource(dataSource => dataSource
         .Ajax()
-        .ServerOperation(false)
+                            .Sort(sort => sort.Add(s => s.DailyLaborRateId).Descending())
+
         .Model(model =>
         {
             model.Id(p => p.DailyLaborRateId);
@@ -96,7 +97,7 @@
                                                                                                            {
                                                                                                                aggregates.Add(c => c.TotalSalary).Sum();
                                                                                                            })
-                                                                                                           .ServerOperation(false)
+                                                                                                           .Sort(sort => sort.Add(s => s.DLRSalaryId).Descending())
                                                                                                            .Events(ev => ev.Error("error_handler(\"DLRSalary#=DailyLaborRateId#\")")
                                                                                                            .RequestStart("onRequestStart(\"DLRSalary#=DailyLaborRateId#\")")
                                                                                                            .RequestEnd("onRequestEnd(\"DLRSalary#=DailyLaborRateId#\")"))
@@ -246,7 +247,7 @@
         var total = netSalary - LessAbsence;
         $("#NetSalary").val(netSalary).trigger("change");
         $("#Total").val(total).trigger("change");
-        $("#Pension").val(100).trigger("change");
+      //  $("#Pension").val(100).trigger("change");
         $("#TotalSalary").val(total + 100).trigger("change");
 
         var NoOfDay = $("#NoOfDay").val();

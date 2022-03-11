@@ -56,6 +56,17 @@ namespace ExceedERP.Web.Areas.JobCosting.Controllers
 
             if (ModelState.IsValid)
             {
+                var pensionRate = db.JcPensions.FirstOrDefault();
+                if(pensionRate!=null)
+                {
+                    dLRSalary.Pension = Math.Round((decimal)dLRSalary.Total * pensionRate.Rate/100,3);
+
+                }
+                else
+                {
+                    dLRSalary.Pension = 0;
+                }
+                dLRSalary.TotalSalary = dLRSalary.Pension+ dLRSalary.Total;
                 var entity = (DLRSalary)this.GetObject(dLRSalary, true, id);
                 dlr.UpdateDLRRow(entity, hr = null, db);
                 db.DLRSalaries.Add(entity);

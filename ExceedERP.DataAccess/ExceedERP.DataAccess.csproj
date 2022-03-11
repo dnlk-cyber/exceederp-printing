@@ -166,6 +166,14 @@
     <Compile Include="Migrations\202202111315275_PensionAdded.Designer.cs">
       <DependentUpon>202202111315275_PensionAdded.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202203101148356_IdleTiemUpdate.cs" />
+    <Compile Include="Migrations\202203101148356_IdleTiemUpdate.Designer.cs">
+      <DependentUpon>202203101148356_IdleTiemUpdate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202203101250104_DeliverUpdate.cs" />
+    <Compile Include="Migrations\202203101250104_DeliverUpdate.Designer.cs">
+      <DependentUpon>202203101250104_DeliverUpdate.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -247,6 +255,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202202111315275_PensionAdded.resx">
       <DependentUpon>202202111315275_PensionAdded.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202203101148356_IdleTiemUpdate.resx">
+      <DependentUpon>202203101148356_IdleTiemUpdate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202203101250104_DeliverUpdate.resx">
+      <DependentUpon>202203101250104_DeliverUpdate.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
