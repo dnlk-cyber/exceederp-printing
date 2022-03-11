@@ -1134,6 +1134,7 @@
     <Compile Include="Domain\ProductionFollowUp\ProductDelivery.cs" />
     <Compile Include="Domain\ProductionFollowUp\ProductDeliveryItems.cs" />
     <Compile Include="Domain\ProductionFollowUp\ProductionFollowUpRoles.cs" />
+    <Compile Include="Domain\ProductionFollowUp\ProductionPlan.cs" />
     <Compile Include="Domain\ProductionFollowUp\Proforma.cs" />
     <Compile Include="Domain\ProductionFollowUp\Settings.cs" />
     <Compile Include="Domain\Production\ActivityModels.cs" />

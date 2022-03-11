@@ -1445,6 +1445,7 @@ namespace ExceedERP.DataAccess.Context
             #endregion
 
             #region Production Follow UP Entity Configuration
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.ProductFollowUpEntityConfiguration.ProductionPlanEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.ProductFollowUpEntityConfiguration.JobCategoryEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.ProductFollowUpEntityConfiguration.ProformaEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.ProductFollowUpEntityConfiguration.GraphicEntityTypeConfiguration());
@@ -3399,6 +3400,7 @@ namespace ExceedERP.DataAccess.Context
         #endregion
         #region Production Follow UP
         public DbSet<Proforma> Proformas { get; set; }
+        public DbSet<ProductionPlan> ProductionPlans { get; set; }
         public DbSet<PFProformaItems> PFProformaItems { get; set; }
         public DbSet<JobCategory> JobCategories { get; set; }
         public DbSet<Job> Jobs { get; set; }

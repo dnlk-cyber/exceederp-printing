@@ -2039,6 +2039,7 @@
     <Compile Include="Areas\ProductionFollowUp\Controllers\Operation\ProformaItemsController.cs" />
     <Compile Include="Areas\ProductionFollowUp\Controllers\Report\ReportProductionFollowUpController.cs" />
     <Compile Include="Areas\ProductionFollowUp\Controllers\Setting\JobCategoryController.cs" />
+    <Compile Include="Areas\ProductionFollowUp\Controllers\Setting\ProductionPlanController.cs" />
     <Compile Include="Areas\ProductionFollowUp\Controllers\Setting\MachineController.cs" />
     <Compile Include="Areas\ProductionFollowUp\Controllers\ViewModel\ChangeOfOrderVM.cs" />
     <Compile Include="Areas\ProductionFollowUp\Models\AddNewCustomer.cs" />
@@ -5124,6 +5125,10 @@
     <Content Include="Areas\JobCosting\Views\Shared\EditorTemplates\YearCascading.cshtml" />
     <Content Include="Areas\ProductionFollowUp\Views\ProductDeliveries\Index - Copy.cshtml" />
     <Content Include="Areas\ProductionFollowUp\Views\ProductDeliveries\EditorTemplates\CustomerEditor.cshtml" />
+    <Content Include="Areas\ProductionFollowUp\Views\ProductionPlan\EditorTemplates\CategoryMappingTemplate.cshtml" />
+    <Content Include="Areas\ProductionFollowUp\Views\ProductionPlan\EditorTemplates\HaveParentMapping.cshtml" />
+    <Content Include="Areas\ProductionFollowUp\Views\ProductionPlan\EditorTemplates\SubcategoryMappingTemplate.cshtml" />
+    <Content Include="Areas\ProductionFollowUp\Views\ProductionPlan\Index.cshtml" />
     <None Include="Properties\PublishProfiles\Brana.pubxml" />
     <None Include="Properties\PublishProfiles\mega.pubxml" />
     <None Include="Scripts\kendo\2018.3.911\kendo.all-vsdoc.js" />
