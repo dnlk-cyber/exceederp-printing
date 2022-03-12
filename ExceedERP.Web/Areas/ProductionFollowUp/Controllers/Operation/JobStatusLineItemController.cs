@@ -31,6 +31,7 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                 JobStatusId = jobStatusLineItem.JobStatusId,
                 Date = jobStatusLineItem.Date,
                 Quantiy = jobStatusLineItem.Quantiy,
+                RemainigQuantiy = jobStatusLineItem.RemainigQuantiy,
                 TotalPrice = jobStatusLineItem.TotalPrice,
                 Invoice = jobStatusLineItem.Invoice,
                 SalesVoucherNo = jobStatusLineItem.SalesVoucherNo,
@@ -44,9 +45,19 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
 
         public ActionResult JobStatusLineItems_Create([DataSourceRequest]DataSourceRequest request, JobStatusLineItem jobStatusLineItem, int id)
         {
+            var jobStstus = db.JobStatuses.Find(id);
+            var job = db.Jobs.Find(jobStstus?.JobId);
+            var jobStatus = db.JobStatusLineItems.Where(q=>q.JobStatusId== id).ToList();
+            var totQuan = jobStatus.Sum(s => s.Quantiy) + jobStatusLineItem.Quantiy;
+            var orderedQuant = jobStatus.Sum(s => s.Quantiy);
+            if (totQuan > orderedQuant)
+            {
+                ModelState.AddModelError("Error","The items sum must be equals to the ordered quantity");
+            }
 
             if (ModelState.IsValid)
             {
+                jobStatusLineItem.RemainigQuantiy = orderedQuant - orderedQuant;
                 var entity = (JobStatusLineItem)this.GetObject(jobStatusLineItem, true, id);
                 db.JobStatusLineItems.Add(entity);
                 db.SaveChanges();
@@ -61,8 +72,20 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult JobStatusLineItems_Update([DataSourceRequest]DataSourceRequest request, JobStatusLineItem jobStatusLineItem)
         {
+            var jobStstus = db.JobStatuses.Find(jobStatusLineItem.JobStatusId);
+            var job = db.Jobs.Find(jobStstus?.JobId);
+            var jobStatus = db.JobStatusLineItems.Where(q => q.JobStatusId == jobStatusLineItem.JobStatusId
+            && q.JobStatusLineItemId != jobStatusLineItem.JobStatusLineItemId).ToList();
+            var totQuan = jobStatus.Sum(s => s.Quantiy) + jobStatusLineItem.Quantiy;
+            var orderedQuant = jobStatus.Sum(s => s.Quantiy);
+            if (totQuan > orderedQuant)
+            {
+                ModelState.AddModelError("Error", "The items sum must be equals to the ordered quantity");
+            }
+
             if (ModelState.IsValid)
             {
+                jobStatusLineItem.RemainigQuantiy = orderedQuant - orderedQuant;
                 var entity = (JobStatusLineItem)this.GetObject(jobStatusLineItem, false);
 
                 db.JobStatusLineItems.Attach(entity);
