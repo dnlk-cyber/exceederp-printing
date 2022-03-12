@@ -21,9 +21,9 @@ namespace ExceedERP.Reporting.ProductionFollowUp.ViewModel
         public string Pobox { get; set; }
         public string TypeOfJob { get; set; }
         public string SubJobType { get; set; }
-        public int Quantity { get; set; }
-        public int Copies { get; set; }
-        public int TotalImpression { get; set; }
+        public decimal Quantity { get; set; }
+        public decimal Copies { get; set; }
+        public decimal TotalImpression { get; set; }
         public double TextWeight { get; set; }
         public bool Contract { get; set; }
         public int ColorText { get; set; }
@@ -42,7 +42,7 @@ namespace ExceedERP.Reporting.ProductionFollowUp.ViewModel
         public DateTime? GraphicDesignExpectedCompletetion { get; set; }
         public DateTime? PrintingExpectedCompletetion { get; set; }
         public DateTime? FinishExpectedCompletetion { get; set; }
-        public int NoOfPage { get; set; }
+        public decimal NoOfPage { get; set; }
         public decimal PriceBeforeVat { get; set; }
         public decimal Tax { get; set; }
         public decimal TotalPrice { get; set; }

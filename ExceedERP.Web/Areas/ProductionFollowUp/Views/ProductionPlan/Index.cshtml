@@ -4,14 +4,14 @@
       .Name("grid")
       .Columns(columns =>
       {
-          columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["FiscalYears"], "GlFiscalYearId", "Name").Width(100);
-          columns.Bound(c => c.TotalProduct);
-          columns.Bound(c => c.TotalPrice);
+          columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["FiscalYears"], "GlFiscalYearId", "Name").Width(150);
+          columns.Bound(c => c.TotalProduct).Width(150);
+          columns.Bound(c => c.TotalPrice).Width(150);
           columns.Command(command =>
           {
               command.Edit();
               command.Destroy();
-          }).Width(180);
+          }).Width(250);
       })
           .ToolBar(toolbar =>
           {
@@ -28,6 +28,9 @@
                                .Scrollable(h => h.Height(500))
           .DataSource(dataSource => dataSource
         .Ajax()
+        .Events(ev => ev.Error("error_handler(\"grid\")")
+                           .RequestStart("onRequestStart(\"grid\")")
+                           .RequestEnd("onRequestEnd(\"grid\")"))
         .Model(model => model.Id(p => p.ProductionPlanId))
         .Read(read => read.Action("ProductionPlans_Read", "ProductionPlan"))
         .Create(create => create.Action("ProductionPlans_Create", "ProductionPlan"))

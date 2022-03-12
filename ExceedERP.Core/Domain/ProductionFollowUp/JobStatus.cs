@@ -43,6 +43,10 @@ namespace ExceedERP.Core.Domain.ProductionFollowUp
         public DateTime Date { get; set; }
         [Display(Name = "Quantity")]
         public decimal Quantiy { get; set; }
+        [Display(Name = "Remainig Quantity")]
+        public decimal RemainigQuantiy { get; set; }
+        [Display(Name = "Total Quantity")]
+        public decimal TotalQuantiy { get; set; }
         [Display(Name = "Total Price")]
         public decimal TotalPrice { get; set; }
         [Display(Name = "Invoice")]

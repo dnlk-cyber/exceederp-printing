@@ -4865,7 +4865,6 @@
     <Content Include="Areas\ProductionFollowUp\Views\JobOrderPaperTypes\Index.cshtml" />
     <Content Include="Areas\ProductionFollowUp\Views\JobOrders\EditorTemplates\backupitems.cshtml" />
     <Content Include="Areas\ProductionFollowUp\Views\JobOrders\EditorTemplates\JobOrderPop.cshtml" />
-    <Content Include="Areas\ProductionFollowUp\Views\JobOrders\EditorTemplates\JobOrders.cshtml" />
     <Content Include="Areas\ProductionFollowUp\Views\JobOrders\EditorTemplates\JobPopUp.cshtml" />
     <Content Include="Areas\ProductionFollowUp\Views\JobOrders\Index.cshtml" />
     <Content Include="Areas\ProductionFollowUp\Views\JobTypeItems\Index.cshtml" />

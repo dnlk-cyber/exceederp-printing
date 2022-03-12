@@ -42,7 +42,13 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
 
         public ActionResult JobStatuses_Create([DataSourceRequest]DataSourceRequest request, JobStatus jobStatus, int id)
         {
-
+            var jobS = db.JobStatuses.Where(q => q.JobPhase == jobStatus.JobPhase
+            && q.Status == jobStatus.Status
+            &&q.JobId==id).FirstOrDefault();
+            if(jobS!=null)
+            {
+                ModelState.AddModelError("Error","Existed Phase");
+            }
             if (ModelState.IsValid)
             {
                 var entity = (JobStatus)this.GetObject(jobStatus, true, id);
@@ -59,6 +65,14 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult JobStatuses_Update([DataSourceRequest]DataSourceRequest request, JobStatus jobStatus)
         {
+            var jobS = db.JobStatuses.Where(q => q.JobPhase == jobStatus.JobPhase 
+            && q.Status == jobStatus.Status
+            && q.JobStatusId!= jobStatus.JobStatusId
+            && q.JobId == jobStatus.JobId).FirstOrDefault();
+            if (jobS != null)
+            {
+                ModelState.AddModelError("Error", "Existed Phase");
+            }
             if (ModelState.IsValid)
             {
                 var entity = (JobStatus)this.GetObject(jobStatus, false);

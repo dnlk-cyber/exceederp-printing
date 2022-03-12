@@ -42,6 +42,11 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Settings
 
         public ActionResult ProductionPlans_Create([DataSourceRequest]DataSourceRequest request, ProductionPlan ProductionPlan)
         {
+            var plan = db.ProductionPlans.Where(q => q.GlFiscalYearId == ProductionPlan.GlFiscalYearId).FirstOrDefault();
+            if(plan!=null)
+            {
+                ModelState.AddModelError("Error","Fiscal Year Plan Already Existed!");
+            }
             if (ModelState.IsValid)
             {
                 var entity = (ProductionPlan)this.GetObject(ProductionPlan);
@@ -56,6 +61,13 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Settings
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ProductionPlans_Update([DataSourceRequest]DataSourceRequest request, ProductionPlan ProductionPlan)
         {
+            var plan = db.ProductionPlans.Where(q => q.GlFiscalYearId == ProductionPlan.GlFiscalYearId
+            &&q.ProductionPlanId!= ProductionPlan.ProductionPlanId
+            ).FirstOrDefault();
+            if (plan != null)
+            {
+                ModelState.AddModelError("Error", "Fiscal Year Plan Already Existed!");
+            }
             if (ModelState.IsValid)
             {
                 var entity = (ProductionPlan)this.GetObject(ProductionPlan);

@@ -12,8 +12,10 @@ namespace ExceedERP.Core.Domain.ProductionFollowUp
         public int ProductionPlanId { get; set; }
         [Display(Name="Fiscal Year")]
         public int GlFiscalYearId   { get; set; }
+        [DisplayFormat(DataFormatString = "{0:n}", ApplyFormatInEditMode = true)]
         [Display(Name = "Total Production Plan")]
         public decimal? TotalProduct { get; set; }
+        [DisplayFormat(DataFormatString = "{0:C}", ApplyFormatInEditMode = true)]
         [Display(Name = "Total Sales Plan")]
         public decimal TotalPrice { get; set; }
     }

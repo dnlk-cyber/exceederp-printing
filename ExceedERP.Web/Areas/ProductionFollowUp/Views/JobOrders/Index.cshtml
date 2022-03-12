@@ -52,7 +52,7 @@
                                                                               .Title("Customer");
                                     columns.ForeignKey(c => c.MachineId, (IEnumerable)ViewData["Machines"], "Code", "Name")
                                                                               .Width(110);
-                                    columns.Bound(c => c.Quant).Width(90);
+                                    columns.Bound(c => c.Quantity).Width(90);
                                     columns.Bound(c => c.UnitPrice).Width(90);
                                     columns.Bound(c => c.BeforeTax).Width(90);
                                     columns.Bound(c => c.TotalPrice).Width(90);
@@ -1158,7 +1158,7 @@
 
     var masterDataItem = masterGrid.dataItem(masterRow);
     codeid = masterDataItem.JobId;
-    unitPrice = masterDataItem.TotalPrice / masterDataItem.Quant;
+    unitPrice = masterDataItem.TotalPrice / masterDataItem.Quantity;
     }
 
     function jobStatusExpand(e) {
@@ -1244,7 +1244,7 @@
         var quantity = $("#Quantiy").val();
         console.log(quantity);
 
-        var totalPrice = $("#TotalPrice").val(quantity * unitPrice);
+        var totalPrice = $("#TotalPrice").val((quantity * unitPrice).toFixed(2));
         totalPrice.trigger("change");
 
     }
@@ -1321,7 +1321,7 @@
     }
     function onChange() {
     var unitPrice = $("#UnitPrice").val();
-    var quant = $("#Quant").val();
+    var quant = $("#Quantity").val();
     var jobTypeId = $("#JT").val();
 
     if (quant !== "" && unitPrice !== "" && jobTypeId !== "") {
@@ -1987,9 +1987,9 @@
         width: 170px;
     }
 
-    .row .col-sm-3 {
+    /*.row .col-sm-3 {
         width: 250px;
-    }
+    }*/
 
     /*.row .col-md-3 {
         margin: 40px;
