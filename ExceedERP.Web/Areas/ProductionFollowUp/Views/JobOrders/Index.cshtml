@@ -1061,6 +1061,7 @@
               {
                   columns.Bound(c => c.Date);
                   columns.Bound(c => c.Quantiy).EditorTemplateName("QuantityEditorTemplate");
+                  columns.Bound(c => c.RemainigQuantiy);
                   columns.Bound(c => c.TotalPrice);
                   columns.Bound(c => c.Invoice);
                   columns.Bound(c => c.SalesVoucherNo);
@@ -1104,7 +1105,7 @@
                                                 .Model(model =>
                                                 {
                                                     model.Id(p => p.JobStatusLineItemId);
-                                                 //   model.Field(p => p.TotalPrice).Editable(false);
+                                                 model.Field(p => p.RemainigQuantiy).Editable(false);
 
                                                 })
 

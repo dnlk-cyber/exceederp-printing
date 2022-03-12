@@ -44,9 +44,9 @@ namespace ExceedERP.Core.Domain.ProductionFollowUp
         [Display(Name = "Quantity")]
         public decimal Quantiy { get; set; }
         [Display(Name = "Remainig Quantity")]
-        public decimal RemainigQuantiy { get; set; }
+        public decimal? RemainigQuantiy { get; set; }
         [Display(Name = "Total Quantity")]
-        public decimal TotalQuantiy { get; set; }
+        public decimal? TotalQuantiy { get; set; }
         [Display(Name = "Total Price")]
         public decimal TotalPrice { get; set; }
         [Display(Name = "Invoice")]

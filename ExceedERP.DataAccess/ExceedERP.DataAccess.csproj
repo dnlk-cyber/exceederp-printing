@@ -186,6 +186,10 @@
     <Compile Include="Migrations\202203120640449_JobStatusItemUpdate.Designer.cs">
       <DependentUpon>202203120640449_JobStatusItemUpdate.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202203120710233_JobStatusItemUpdateNullable.cs" />
+    <Compile Include="Migrations\202203120710233_JobStatusItemUpdateNullable.Designer.cs">
+      <DependentUpon>202203120710233_JobStatusItemUpdateNullable.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -282,6 +286,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202203120640449_JobStatusItemUpdate.resx">
       <DependentUpon>202203120640449_JobStatusItemUpdate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202203120710233_JobStatusItemUpdateNullable.resx">
+      <DependentUpon>202203120710233_JobStatusItemUpdateNullable.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

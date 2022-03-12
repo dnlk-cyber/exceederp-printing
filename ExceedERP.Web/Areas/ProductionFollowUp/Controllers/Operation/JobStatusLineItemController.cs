@@ -49,7 +49,7 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
             var job = db.Jobs.Find(jobStstus?.JobId);
             var jobStatus = db.JobStatusLineItems.Where(q=>q.JobStatusId== id).ToList();
             var totQuan = jobStatus.Sum(s => s.Quantiy) + jobStatusLineItem.Quantiy;
-            var orderedQuant = jobStatus.Sum(s => s.Quantiy);
+            var orderedQuant = job?.Quantity;
             if (totQuan > orderedQuant)
             {
                 ModelState.AddModelError("Error","The items sum must be equals to the ordered quantity");
@@ -57,7 +57,7 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
 
             if (ModelState.IsValid)
             {
-                jobStatusLineItem.RemainigQuantiy = orderedQuant - orderedQuant;
+                jobStatusLineItem.RemainigQuantiy = orderedQuant - totQuan;
                 var entity = (JobStatusLineItem)this.GetObject(jobStatusLineItem, true, id);
                 db.JobStatusLineItems.Add(entity);
                 db.SaveChanges();
@@ -77,7 +77,7 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
             var jobStatus = db.JobStatusLineItems.Where(q => q.JobStatusId == jobStatusLineItem.JobStatusId
             && q.JobStatusLineItemId != jobStatusLineItem.JobStatusLineItemId).ToList();
             var totQuan = jobStatus.Sum(s => s.Quantiy) + jobStatusLineItem.Quantiy;
-            var orderedQuant = jobStatus.Sum(s => s.Quantiy);
+            var orderedQuant = job?.Quantity;
             if (totQuan > orderedQuant)
             {
                 ModelState.AddModelError("Error", "The items sum must be equals to the ordered quantity");
@@ -85,7 +85,7 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
 
             if (ModelState.IsValid)
             {
-                jobStatusLineItem.RemainigQuantiy = orderedQuant - orderedQuant;
+                jobStatusLineItem.RemainigQuantiy = orderedQuant - totQuan;
                 var entity = (JobStatusLineItem)this.GetObject(jobStatusLineItem, false);
 
                 db.JobStatusLineItems.Attach(entity);
@@ -124,6 +124,7 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                 JobStatusId = jobStatusLineItem.JobStatusId,
                 Date = jobStatusLineItem.Date,
                 Quantiy = jobStatusLineItem.Quantiy,
+                RemainigQuantiy = jobStatusLineItem.RemainigQuantiy,
                 TotalPrice = jobStatusLineItem.TotalPrice,
                 Invoice = jobStatusLineItem.Invoice,
                 SalesVoucherNo = jobStatusLineItem.SalesVoucherNo,
