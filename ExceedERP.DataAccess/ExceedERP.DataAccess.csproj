@@ -194,6 +194,10 @@
     <Compile Include="Migrations\202203120751235_JobStatusStartAndEndDateAdded.Designer.cs">
       <DependentUpon>202203120751235_JobStatusStartAndEndDateAdded.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202203150838437_JobStatusEndDateRequired.cs" />
+    <Compile Include="Migrations\202203150838437_JobStatusEndDateRequired.Designer.cs">
+      <DependentUpon>202203150838437_JobStatusEndDateRequired.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -296,6 +300,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202203120751235_JobStatusStartAndEndDateAdded.resx">
       <DependentUpon>202203120751235_JobStatusStartAndEndDateAdded.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202203150838437_JobStatusEndDateRequired.resx">
+      <DependentUpon>202203150838437_JobStatusEndDateRequired.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

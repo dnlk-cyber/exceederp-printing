@@ -52,7 +52,8 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
             }
             if (ModelState.IsValid)
             {
-                var entity = (JobStatus)this.GetObject(jobStatus, true, id);
+                jobStatus.EndDate = jobStatus.StartDate;
+                   var entity = (JobStatus)this.GetObject(jobStatus, true, id);
                 db.JobStatuses.Add(entity);
                 db.SaveChanges();
                 jobStatus.JobStatusId = entity.JobStatusId;
@@ -78,9 +79,16 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
             {
                 var entity = (JobStatus)this.GetObject(jobStatus, false);
 
+                if (entity.JobPhase == JobPhase.Graphic)
+                {
+                    jobStatus.EndDate = DateTime.Now;
+                }
                 db.JobStatuses.Attach(entity);
                 db.Entry(entity).State = EntityState.Modified;
+                
+            
                 db.SaveChanges();
+
             }
 
             return Json(new[] { jobStatus }.ToDataSourceResult(request, ModelState));

@@ -28,7 +28,7 @@ namespace ExceedERP.Core.Domain.ProductionFollowUp
         [Display(Name = "End Date")]
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
-        public DateTime? EndDate { get; set; }
+        public DateTime EndDate { get; set; }
         // [Required]
         [Display(Name = "Phase")]
         public JobPhase JobPhase { get; set; }

@@ -61,10 +61,8 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                 jobStatusLineItem.RemainigQuantiy = orderedQuant - totQuan;
                 var entity = (JobStatusLineItem)this.GetObject(jobStatusLineItem, true, id);
                 db.JobStatusLineItems.Add(entity);
-                if (jobStatusLineItem.RemainigQuantiy == 0)
-                {
+               
                     ChangeJobStatus(jobStstus,jobStatusLineItem.RemainigQuantiy);                   
-                }
                 db.SaveChanges();
 
                 jobStatusLineItem.JobStatusId = entity.JobStatusId;
@@ -76,7 +74,11 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
         private void ChangeJobStatus(JobStatus jobStstus, decimal? remainigQuantiy)
         {
             jobStstus.EndDate = DateTime.Now;
-            jobStstus.Status = JobState.Finished;
+            if(remainigQuantiy==0)
+            {
+                jobStstus.Status = JobState.Finished;
+
+            }
             db.JobStatuses.Attach(jobStstus);
             db.Entry(jobStstus).State = EntityState.Modified;
         }

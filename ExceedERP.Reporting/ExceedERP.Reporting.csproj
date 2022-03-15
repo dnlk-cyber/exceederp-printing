@@ -53,21 +53,21 @@
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
-    <Reference Include="Telerik.Reporting, Version=12.2.18.912, Culture=neutral, PublicKeyToken=a9d7983dfcc261be, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\ExceedERP.Web\Bin\Telerik.Reporting.dll</HintPath>
+    <Reference Include="Telerik.Reporting, Version=12.2.18.912, Culture=neutral, PublicKeyToken=a9d7983dfcc261be">
+      <HintPath>C:\Program Files (x86)\Progress\Telerik Reporting R3 2018\bin\Telerik.Reporting.dll</HintPath>
+      <SpecificVersion>True</SpecificVersion>
     </Reference>
-    <Reference Include="Telerik.Reporting.Services.WebApi, Version=12.2.18.912, Culture=neutral, PublicKeyToken=a9d7983dfcc261be, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\ExceedERP.Web\Bin\Telerik.Reporting.Services.WebApi.dll</HintPath>
+    <Reference Include="Telerik.Reporting.Services.WebApi, Version=12.2.18.912, Culture=neutral, PublicKeyToken=a9d7983dfcc261be">
+      <HintPath>C:\Program Files (x86)\Progress\Telerik Reporting R3 2018\bin\Telerik.Reporting.Services.WebApi.dll</HintPath>
+      <SpecificVersion>True</SpecificVersion>
     </Reference>
-    <Reference Include="Telerik.Reporting.XpsRendering, Version=12.2.18.912, Culture=neutral, PublicKeyToken=a9d7983dfcc261be, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\ExceedERP.Web\Bin\Telerik.Reporting.XpsRendering.dll</HintPath>
+    <Reference Include="Telerik.Reporting.XpsRendering, Version=12.2.18.912, Culture=neutral, PublicKeyToken=a9d7983dfcc261be">
+      <HintPath>C:\Program Files (x86)\Progress\Telerik Reporting R3 2018\bin\Telerik.Reporting.XpsRendering.dll</HintPath>
+      <SpecificVersion>True</SpecificVersion>
     </Reference>
-    <Reference Include="Telerik.ReportViewer.Mvc, Version=12.2.18.912, Culture=neutral, PublicKeyToken=a9d7983dfcc261be, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\ExceedERP.Web\Bin\Telerik.ReportViewer.Mvc.dll</HintPath>
+    <Reference Include="Telerik.ReportViewer.Mvc, Version=12.2.18.912, Culture=neutral, PublicKeyToken=a9d7983dfcc261be">
+      <HintPath>C:\Program Files (x86)\Progress\Telerik Reporting R3 2018\bin\Telerik.ReportViewer.Mvc.dll</HintPath>
+      <SpecificVersion>True</SpecificVersion>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -3990,6 +3990,7 @@
     <Compile Include="Procurements\ViewModel\WinningSupplierDetailVM.cs" />
     <Compile Include="ProductionFollowUp\DataSource\ChangeOfOrderODS.cs" />
     <Compile Include="ProductionFollowUp\DataSource\FinishedGoodReceivalODS.cs" />
+    <Compile Include="ProductionFollowUp\DataSource\FinishedProductsReceivingNoteODS.cs" />
     <Compile Include="ProductionFollowUp\DataSource\JobOrderNoParameterODS.cs" />
     <Compile Include="ProductionFollowUp\DataSource\JobOrderODS.cs" />
     <Compile Include="ProductionFollowUp\DataSource\JobOrderTimeSheetODS.cs" />
@@ -4009,6 +4010,12 @@
     </Compile>
     <Compile Include="ProductionFollowUp\Designer\rptFinishedGoodReceivalForm.Designer.cs">
       <DependentUpon>rptFinishedGoodReceivalForm.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ProductionFollowUp\Designer\rptFinishedProductsReceivingNote.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ProductionFollowUp\Designer\rptFinishedProductsReceivingNote.Designer.cs">
+      <DependentUpon>rptFinishedProductsReceivingNote.cs</DependentUpon>
     </Compile>
     <Compile Include="ProductionFollowUp\Designer\rptJobOrder.cs">
       <SubType>Component</SubType>
@@ -4037,7 +4044,7 @@
     <Compile Include="ProductionFollowUp\ViewModel\ChangeOfOrderVM.cs" />
     <Compile Include="ProductionFollowUp\ViewModel\FinishedGoodReceivalVM.cs" />
     <Compile Include="ProductionFollowUp\ViewModel\FinishedGoodsVM.cs" />
-    <Compile Include="ProductionFollowUp\ViewModel\FinishedProductsReceivingNote.cs" />
+    <Compile Include="ProductionFollowUp\ViewModel\FinishedProductsReceivingNoteVM.cs" />
     <Compile Include="ProductionFollowUp\ViewModel\JobOrderMaterialVM.cs" />
     <Compile Include="ProductionFollowUp\ViewModel\JobOrderTimeListVM.cs" />
     <Compile Include="ProductionFollowUp\ViewModel\JobOrderVM.cs" />
