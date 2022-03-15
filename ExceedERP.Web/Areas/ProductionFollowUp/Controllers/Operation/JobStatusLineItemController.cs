@@ -10,6 +10,7 @@ using Kendo.Mvc.UI;
 using ExceedERP.Core.Domain.ProductionFollowUp;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Web.Helpers;
+using ExceedERP.Core.Domain.PrintingEstimation.Setting;
 
 namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
 {
@@ -60,14 +61,25 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                 jobStatusLineItem.RemainigQuantiy = orderedQuant - totQuan;
                 var entity = (JobStatusLineItem)this.GetObject(jobStatusLineItem, true, id);
                 db.JobStatusLineItems.Add(entity);
+                if (jobStatusLineItem.RemainigQuantiy == 0)
+                {
+                    ChangeJobStatus(jobStstus,jobStatusLineItem.RemainigQuantiy);                   
+                }
                 db.SaveChanges();
+
                 jobStatusLineItem.JobStatusId = entity.JobStatusId;
             }
 
             return Json(new[] { jobStatusLineItem }.ToDataSourceResult(request, ModelState));
         }
 
-
+        private void ChangeJobStatus(JobStatus jobStstus, decimal? remainigQuantiy)
+        {
+            jobStstus.EndDate = DateTime.Now;
+            jobStstus.Status = JobState.Finished;
+            db.JobStatuses.Attach(jobStstus);
+            db.Entry(jobStstus).State = EntityState.Modified;
+        }
 
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult JobStatusLineItems_Update([DataSourceRequest]DataSourceRequest request, JobStatusLineItem jobStatusLineItem)
@@ -90,7 +102,12 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
 
                 db.JobStatusLineItems.Attach(entity);
                 db.Entry(entity).State = EntityState.Modified;
+                if (jobStatusLineItem.RemainigQuantiy == 0)
+                {
+                    ChangeJobStatus(jobStstus, jobStatusLineItem.RemainigQuantiy);
+                }
                 db.SaveChanges();
+
             }
 
             return Json(new[] { jobStatusLineItem }.ToDataSourceResult(request, ModelState));

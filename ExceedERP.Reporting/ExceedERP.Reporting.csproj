@@ -4037,6 +4037,7 @@
     <Compile Include="ProductionFollowUp\ViewModel\ChangeOfOrderVM.cs" />
     <Compile Include="ProductionFollowUp\ViewModel\FinishedGoodReceivalVM.cs" />
     <Compile Include="ProductionFollowUp\ViewModel\FinishedGoodsVM.cs" />
+    <Compile Include="ProductionFollowUp\ViewModel\FinishedProductsReceivingNote.cs" />
     <Compile Include="ProductionFollowUp\ViewModel\JobOrderMaterialVM.cs" />
     <Compile Include="ProductionFollowUp\ViewModel\JobOrderTimeListVM.cs" />
     <Compile Include="ProductionFollowUp\ViewModel\JobOrderVM.cs" />

@@ -21,10 +21,14 @@ namespace ExceedERP.Core.Domain.ProductionFollowUp
         public DateTime Time { get; set; }
         //finished time
         //[Required]
-        [Display(Name = "Date")]
+        [Display(Name = "Start Date")]
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
-        public DateTime Date { get; set; }
+        public DateTime StartDate { get; set; }
+        [Display(Name = "End Date")]
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+        public DateTime? EndDate { get; set; }
         // [Required]
         [Display(Name = "Phase")]
         public JobPhase JobPhase { get; set; }

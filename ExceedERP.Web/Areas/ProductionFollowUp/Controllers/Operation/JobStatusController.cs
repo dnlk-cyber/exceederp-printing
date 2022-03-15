@@ -32,7 +32,8 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                 JobId = jobStatus.JobId,
                 UserId = jobStatus.UserId,
                 Time = jobStatus.Time,
-                Date = jobStatus.Date,
+                StartDate = jobStatus.StartDate,
+                EndDate = jobStatus.EndDate,
                 JobPhase = jobStatus.JobPhase,
                 Status = jobStatus.Status
             });
@@ -113,7 +114,8 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                 JobId = jobStatus.JobId,
                 UserId = User.Identity.Name,
                 Time = jobStatus.Time,
-                Date = jobStatus.Date,
+                StartDate = jobStatus.StartDate,
+                EndDate = jobStatus.EndDate,
                 JobPhase = jobStatus.JobPhase,
                 Status = jobStatus.Status
 

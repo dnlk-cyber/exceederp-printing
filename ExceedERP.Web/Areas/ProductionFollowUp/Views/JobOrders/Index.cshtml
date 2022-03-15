@@ -420,7 +420,8 @@
                                 .Columns(columns =>
                                 {
                                                                             columns.Bound(c => c.UserId);
-                                                                            columns.Bound(c => c.Date);
+                                                                            columns.Bound(c => c.StartDate);
+                                                                            columns.Bound(c => c.EndDate);
                                                                             columns.Bound(c => c.JobPhase).EditorTemplateName("JobPhaseTemplate");
                                                                             columns.Bound(c => c.Status).EditorTemplateName("JobstatusTemplate"); ;
                                                                 //columns.Bound(c => c.Remark).Width(100);
@@ -435,7 +436,8 @@
                                         {
                                                                                 toolbar.Create();
                                                                             })
-                                            .NoRecords("No Data Registered")
+                                    .NoRecords("No Data Registered")
+                                    .Events(ev=>ev.Edit("onJobStatusEdit"))
                                     .Editable(editable => editable.Mode(GridEditMode.InLine).Window(window =>
                                     {
 
@@ -451,7 +453,7 @@
                                 .ClientDetailTemplateId("JobStatusLineItem")
                                 .DataSource(dataSource => dataSource
                                     .Ajax()
-                                            //  .Sort(s => s.Add(x => x.ProformaId).Descending())
+                                             .Sort(s => s.Add(x => x.JobStatusId).Descending())
                                             .Events(events =>
                                             {
                                                                                     events.Error("error_handler(\"JobStatus#=JobId#\")");
@@ -464,6 +466,7 @@
                                                 {
                                                                                         model.Id(p => p.JobStatusId);
                                                                                         model.Field(p => p.UserId).Editable(false);
+                                                                                        //model.Field(p => p.Status).Editable(false);
 
                                                                                     })
 
@@ -1101,7 +1104,7 @@
                                                 events.RequestEnd("onRequestEnd(\"JobStatusLineItem#=JobStatusId#\")");
                                             }
                                                 )
-
+                                                .Sort(sort=>sort.Add(s=>s.JobStatusLineItemId).Descending())
                                                 .Model(model =>
                                                 {
                                                     model.Id(p => p.JobStatusLineItemId);
@@ -1122,6 +1125,7 @@
     var unitPrice;
     var jobStatusId;
     var jobPhase;
+    var jobState;
 
     function jobDataBound() {
     //this.expandRow(this.tbody.find("tr.k-master-row").first());
@@ -1170,22 +1174,33 @@
     var childMasterDataItem = childMasterGrid.dataItem(childMasterRow);
     jobStatusId = childMasterDataItem.JobStatusId;
     jobPhase = childMasterDataItem.JobPhase;
+        jobState = childMasterDataItem.Status;
+        if (jobState == 1) {
+            $(".k-grid-top", $("#JobStatusLineItem" + jobStatusId)).hide();
+
+        }
     }
 
-    function jobStatusDataBound() {
-    var dataSource = this.dataSource;
+    function jobStatusDataBound(e) {
+        var dataSource = this.dataSource;
+       
     this.element.find('tr.k-master-row').each(function () {
-    var row = $(this);
-    var data = dataSource.getByUid(row.data('uid'));
-    // this example will work if ReportId is null or 0 (if the row has no details)
-    if (data.JobPhase ==1) {
+        var row = $(this);
+
+        var data = dataSource.getByUid(row.data('uid'));
+        if (data.Status == 1) {
+            row.find(".k-grid-delete").hide();
+            row.find(".k-grid-edit").hide();
+        }
+        if (data.JobPhase == 1) {
     row.find('.k-hierarchy-cell a').css({ opacity: 0.0, cursor: 'default' }).click(function (e) { e.stopImmediatePropagation(); return false; });
     }
     });
     }
+
+
     function jobStatusLineItemDataBound()
     {
-        console.log(jobPhase);
         var grid = $('#JobStatusLineItem' + jobStatusId).data('kendoGrid');
 
     if(jobPhase==3)
@@ -1211,8 +1226,16 @@
     grid.hideColumn('Credit');
     grid.hideColumn('CashCreditInvoice');
     grid.hideColumn('Invoice');
-    }
+        }
 
+
+        var grid = this;
+        grid.tbody.find("tr[role='row']").each(function (e) {
+            if (jobState == 1) {
+                $(this).find(".k-grid-delete").remove();
+                $(this).find(".k-grid-edit").remove();
+            }
+        });
     }
     function jobStatusLineItemEdit()
     {
@@ -1920,6 +1943,24 @@
                 editButton.hide();
                 deleteButton.hide();
             }
+        }
+    }
+    function onJobStatusEdit(e) {
+        var statusOption = e.sender.editable.options.model.Status;
+        var statusInput = $('[data-role="editable"] input#Status');
+        if (!e.model.isNew()) {
+            if (statusOption == 0) {
+                $("#Status").data("kendoDropDownList").enable(true);
+                console.log(statusOption);
+            } else {
+                console.log(statusOption);
+                $("#Status").data("kendoDropDownList").enable(false);
+            }
+        }
+        else {
+            $("#Status").data("kendoDropDownList").enable(false);
+            console.log(10000);
+
         }
     }
     function onDataBoundLines(e) {
