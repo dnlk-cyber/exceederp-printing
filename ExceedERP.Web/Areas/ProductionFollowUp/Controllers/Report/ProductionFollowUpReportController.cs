@@ -50,5 +50,15 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Report
             ViewBag.UserName = User.Identity.Name;
             return View();
         }
+        public ActionResult GetPrintingAndFinishingTeamPerformance()
+        {
+            return View();
+
+        }
+        public ActionResult GetDeliveryTeamPerformance()
+        {
+            return View();
+
+        }
     }
 }

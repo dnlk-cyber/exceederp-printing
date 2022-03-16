@@ -205,7 +205,11 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                 PrintingExpectedCompletetion = job.PrintingExpectedCompletetion,
                 FinishExpectedCompletetion = job.FinishExpectedCompletetion,
                 Status = job.Status,
-                FinishingWorkflow = job.FinishingWorkflow
+                FinishingWorkflow = job.FinishingWorkflow,
+                CreatedBy = job.CreatedBy,
+                DateCreated = job.DateCreated,
+                ModifiedBy = job.ModifiedBy,
+                LastModified = job.LastModified
             });
 
             return Json(result);
@@ -217,6 +221,8 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
             job.JobTypeId = Int16.Parse(job.JT);
             if (ModelState.IsValid)
             {
+                job.CreatedBy = User.Identity.Name;
+                job.DateCreated = DateTime.Now;
                 var proforma = new Proforma();
                 var customer = new OrganizationCustomer();
                 if (!job.hv && !job.IsExistingCustomer)
@@ -249,7 +255,8 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
 
             if (ModelState.IsValid)
             {
-
+                job.ModifiedBy = User.Identity.Name;
+                job.LastModified = DateTime.Now;
                 var proforma = new Proforma();
                 var customer = new OrganizationCustomer();
                 if (!job.hv && !job.IsExistingCustomer&&job.CustomerId.ToString()==null)
@@ -480,7 +487,10 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                 PrintingExpectedCompletetion = job.PrintingExpectedCompletetion,
                 FinishExpectedCompletetion = job.FinishExpectedCompletetion,
                 Status = job.Status,
-                FinishingWorkflow = job.FinishingWorkflow
+                CreatedBy = job.CreatedBy,
+                DateCreated = job.DateCreated,
+                ModifiedBy = job.ModifiedBy,
+                LastModified = job.LastModified
             };
             return entity;
         }

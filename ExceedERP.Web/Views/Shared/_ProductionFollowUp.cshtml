@@ -70,10 +70,16 @@
                     HttpContext.Current.User.IsInRole(ProductionFollowUpRoles.ProductionFollowUpRJobOrderUser))
                 {*@
                 <li id="productionFollowUp001001001" class="actionlinlk">
-                    @Html.ActionLink("Finished Products Receiving Note", "GetFinishedProductsReceivingNote", "ProductionFollowUpReport", new { area = "ProductionFollowUp" }, null)<b class="arrow"></b>
+                    @Html.ActionLink("Finished Products Receiving Note", "GetFinishedProductsReceivingNote", "ProductionFollowUpReport", new { area = "ProductionFollowUp" }, null)
+                    <b class="arrow"></b>
+                </li> 
+                <li id="productionFollowUp001001001" class="actionlinlk">
+                    @Html.ActionLink("Printing and Finishing Team Performance", "GetPrintingAndFinishingTeamPerformance", "ProductionFollowUpReport", new { area = "ProductionFollowUp" }, null)
+                    <b class="arrow"></b>
                 </li>
                 <li id="productionFollowUp001001001" class="actionlinlk">
-                    @Html.ActionLink("Machine Type", "Index", "Machine", new { area = "ProductionFollowUp" }, null)<b class="arrow"></b>
+                    @Html.ActionLink("Delivery Team Performance", "GetDeliveryTeamPerformance", "ProductionFollowUpReport", new { area = "ProductionFollowUp" }, null)
+                    <b class="arrow"></b>
                 </li>
                 <li id="productionFollowUp001001001" class="actionlinlk">
                     @Html.ActionLink("Production Plan", "Index", "ProductionPlan", new { area = "ProductionFollowUp" }, null)<b class="arrow"></b>
