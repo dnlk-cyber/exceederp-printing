@@ -26,6 +26,6 @@ namespace ExceedERP.Reporting.ProductionFollowUp.ViewModel
         public decimal Quantity { get; set; }
         public decimal TotalPriceBirr { get; set; }
         public decimal TotalPriceCent { get; set; }
-        public string Remarks { get; set; }
+        public string Remark { get; set; }
     }
 }

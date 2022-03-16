@@ -2037,7 +2037,7 @@
     <Compile Include="Areas\ProductionFollowUp\Controllers\Operation\ProductIssueItemManualController.cs" />
     <Compile Include="Areas\ProductionFollowUp\Controllers\Operation\ProformaController.cs" />
     <Compile Include="Areas\ProductionFollowUp\Controllers\Operation\ProformaItemsController.cs" />
-    <Compile Include="Areas\ProductionFollowUp\Controllers\Report\ReportProductionFollowUpController.cs" />
+    <Compile Include="Areas\ProductionFollowUp\Controllers\Report\ProductionFollowUpReportController.cs" />
     <Compile Include="Areas\ProductionFollowUp\Controllers\Setting\JobCategoryController.cs" />
     <Compile Include="Areas\ProductionFollowUp\Controllers\Setting\ProductionPlanController.cs" />
     <Compile Include="Areas\ProductionFollowUp\Controllers\Setting\MachineController.cs" />
@@ -4881,12 +4881,12 @@
     <Content Include="Areas\ProductionFollowUp\Views\Proformas\EditorTemplates\Upload.cshtml" />
     <Content Include="Areas\ProductionFollowUp\Views\Proformas\EditorTemplates\UploadDocument.cshtml" />
     <Content Include="Areas\ProductionFollowUp\Views\Proformas\Index.cshtml" />
-    <Content Include="Areas\ProductionFollowUp\Views\ReportProductionFollowUp\ChangeOfOrder.cshtml" />
-    <Content Include="Areas\ProductionFollowUp\Views\ReportProductionFollowUp\FinishedGoodReceival.cshtml" />
-    <Content Include="Areas\ProductionFollowUp\Views\ReportProductionFollowUp\JobOrder.cshtml" />
-    <Content Include="Areas\ProductionFollowUp\Views\ReportProductionFollowUp\ProductDelivery.cshtml" />
-    <Content Include="Areas\ProductionFollowUp\Views\ReportProductionFollowUp\ProformaPrint.cshtml" />
-    <Content Include="Areas\ProductionFollowUp\Views\ReportProductionFollowUp\testp.cshtml" />
+    <Content Include="Areas\ProductionFollowUp\Views\ProductionFollowUpReport\ChangeOfOrder.cshtml" />
+    <Content Include="Areas\ProductionFollowUp\Views\ProductionFollowUpReport\FinishedGoodReceival.cshtml" />
+    <Content Include="Areas\ProductionFollowUp\Views\ProductionFollowUpReport\JobOrder.cshtml" />
+    <Content Include="Areas\ProductionFollowUp\Views\ProductionFollowUpReport\ProductDelivery.cshtml" />
+    <Content Include="Areas\ProductionFollowUp\Views\ProductionFollowUpReport\ProformaPrint.cshtml" />
+    <Content Include="Areas\ProductionFollowUp\Views\ProductionFollowUpReport\testp.cshtml" />
     <Content Include="Areas\ProductionFollowUp\Views\Shared\_Layout.cshtml" />
     <Content Include="Areas\ProductionFollowUp\Views\web.config" />
     <Content Include="Areas\ProductionFollowUp\Views\_ViewStart.cshtml" />
@@ -5079,7 +5079,7 @@
     <Content Include="Areas\ProductionFollowUp\Views\PrintingProductionStoreReceive\EditorTemplates\StatusEditorTemplate.cshtml" />
     <Content Include="Areas\ProductionFollowUp\Views\PrintingProductionStoreReceive\EditorTemplates\StoreEditorTemplate.cshtml" />
     <Content Include="Areas\ProductionFollowUp\Views\PrintingProductionStoreReceive\Index.cshtml" />
-    <Content Include="Areas\ProductionFollowUp\Views\ReportProductionFollowUp\ReportViewerView1.cshtml" />
+    <Content Include="Areas\ProductionFollowUp\Views\ProductionFollowUpReport\ReportViewerView1.cshtml" />
     <Content Include="Areas\ProductionFollowUp\Views\Shared\EditorTemplates\Item.cshtml" />
     <Content Include="Areas\PrintingEstimation\Views\Customer\Index.cshtml" />
     <Content Include="Areas\PrintingEstimation\Views\EstimationForm\EditorTemplates\Date.cshtml" />
@@ -5128,6 +5128,7 @@
     <Content Include="Areas\ProductionFollowUp\Views\ProductionPlan\EditorTemplates\HaveParentMapping.cshtml" />
     <Content Include="Areas\ProductionFollowUp\Views\ProductionPlan\EditorTemplates\SubcategoryMappingTemplate.cshtml" />
     <Content Include="Areas\ProductionFollowUp\Views\ProductionPlan\Index.cshtml" />
+    <Content Include="Areas\ProductionFollowUp\Views\ProductionFollowUpReport\GetFinishedProductsReceivingNote.cshtml" />
     <None Include="Properties\PublishProfiles\Brana.pubxml" />
     <None Include="Properties\PublishProfiles\mega.pubxml" />
     <None Include="Scripts\kendo\2018.3.911\kendo.all-vsdoc.js" />

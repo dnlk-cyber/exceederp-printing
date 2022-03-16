@@ -6,7 +6,7 @@ using System.Web.Mvc;
 
 namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Report
 {
-    public class ReportProductionFollowUpController : Controller
+    public class ProductionFollowUpReportController : Controller
     {
         // GET: ProductionFollowUp/ReportProductionFollowUp
         public ActionResult Index()
@@ -42,6 +42,12 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Report
         public ActionResult ProductDelivery(int id)
         {
             ViewBag.id = id;
+            return View();
+        }
+
+        public ActionResult GetFinishedProductsReceivingNote()
+        {
+            ViewBag.UserName = User.Identity.Name;
             return View();
         }
     }

@@ -4053,6 +4053,7 @@
     <Compile Include="ProductionFollowUp\ViewModel\JobTypeVM.cs" />
     <Compile Include="ProductionFollowUp\ViewModel\ProductDeliveryItemsVM.cs" />
     <Compile Include="ProductionFollowUp\ViewModel\ProductDeliveryVM.cs" />
+    <Compile Include="ProductionFollowUp\DataSource\ProFollowupParameterODs.cs" />
     <Compile Include="ProductionFollowUp\ViewModel\ProformaItemVM.cs" />
     <Compile Include="ProductionFollowUp\ViewModel\ProformaVM.cs" />
     <Compile Include="Production\DataSource\GeneralDataSources.cs" />
@@ -5778,6 +5779,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="ProductionFollowUp\Designer\rptFinishedGoodReceivalForm.resx">
       <DependentUpon>rptFinishedGoodReceivalForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ProductionFollowUp\Designer\rptFinishedProductsReceivingNote.resx">
+      <DependentUpon>rptFinishedProductsReceivingNote.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ProductionFollowUp\Designer\rptJobOrder.resx">
       <DependentUpon>rptJobOrder.cs</DependentUpon>

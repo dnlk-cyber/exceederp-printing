@@ -1343,17 +1343,27 @@
     $(".k-grid-edit", detailGrid).hide();
     }
     }
+    let quantity = 0;
+    function onChangeQuan() {
+        var value = this.value();
+        quantity = value;
+        onChange();
+    }
     function onChange() {
-    var unitPrice = $("#UnitPrice").val();
-    var quant = $("#Quantity").val();
+        var unitPrice = $("#UnitPrice").val();
+        var quantitynumerictextbox = $("#Quantity");
     var jobTypeId = $("#JT").val();
+        console.log(unitPrice);
+        console.log(jobTypeId);
 
-    if (quant !== "" && unitPrice !== "" && jobTypeId !== "") {
-
+        console.log(quantity);
+        if (quantity !== "" && unitPrice !== "" && jobTypeId != "") {
+        console.log(unitPrice);
+        console.log(111111111111111111);
     $.ajax({
     url: '@Url.Action("GetBeforeVatAndTotalPerice", "JobOrders")',
 
-    data: { jobTypeId: jobTypeId, quant: quant, unitPrice: unitPrice },
+        data: { jobTypeId: jobTypeId, quant: quantity, unitPrice: unitPrice },
     type: 'POST',
     cache: false,
     success: function (result) {

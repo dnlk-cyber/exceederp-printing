@@ -17,7 +17,7 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
         [DataObjectMethod(DataObjectMethodType.Select)]
         public FinishedProductsReceivingNoteVM GetFinishedProducts(DateTime? startDate, DateTime? endDate, string jobPhase, string userName)
         {
-            var jobs = db.JobStatuses.ToList().Where(q => q.CreatedBy == userName
+            var jobs = db.JobStatuses.ToList().Where(q => q.UserId == userName
                                         && q.JobPhase.ToString() == jobPhase
                                         && q.StartDate.Date >= startDate.Value.Date
                                         && q.EndDate.Date >= endDate.Value.Date
@@ -56,7 +56,7 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                     decimal TotalBirr = Math.Round(item.Quantity * (decimal)jobOrder.UnitPrice,2);
                     item.TotalPriceBirr = (int)TotalBirr;
                     item.TotalPriceCent = (TotalBirr % 1) * 100;
-                    item.Remarks = "";
+                    item.Remark = "";
                     item.JobType = db.JobCategories.Find(jobOrder.JobTypeId)?.JobName;
                     items.Add(item);
 
