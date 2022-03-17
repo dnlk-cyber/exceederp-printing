@@ -13,7 +13,9 @@ namespace ExceedERP.Reporting.ProductionFollowUp.ViewModel
         public string Description { get; set; }
         public string Unit { get; set; }
         public double Quantity { get; set; }
-        public decimal UnitCost { get; set; }
-        public decimal TotalPrice { get; set; }
+        public decimal UnitCostBirr { get; set; }
+        public int UnitCostCent { get; set; }
+        public decimal TotalPriceBirr { get; set; }
+        public int TotalPriceCent { get; set; }
     }
 }

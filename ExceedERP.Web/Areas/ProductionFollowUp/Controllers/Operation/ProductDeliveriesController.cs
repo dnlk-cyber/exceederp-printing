@@ -25,7 +25,13 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                 Code = s.OrganizationCustomerID,
                 Name = s.TradeName
             }).ToList();
-            ViewData["JobOrder"] = db.Jobs.ToList();
+            ViewData["JobOrder"] = db.Jobs.ToList().Select(s=>
+            new {
+                JobId =s.JobId,
+                JobNo = s.JobNo,
+                JobType = db.JobCategories.Find(s.JobTypeId)?.JobName
+
+            }).ToList();
             ViewData["Units"] = db.Units.ToList();
             PopulateViewData();
 

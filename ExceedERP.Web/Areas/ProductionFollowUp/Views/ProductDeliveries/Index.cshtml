@@ -56,17 +56,19 @@
 
                             items.Add().Text("Delivery Items").Content(
                 @<text>
-                    <a href='@Url.Action("ProductDelivery", "ReportProductionFollowUp")/?id=#=ProductDeliveryId#' target="_blank" title="Print Finished Good Receiving Form"><i class="fa fa-print fa-2x"></i></a>
+                    <a href='@Url.Action("GetDeliveryNote", "ProductionFollowUpReport")/?id=#=ProductDeliveryId#' target="_blank" title="Print Finished Good Receiving Form"><i class="fa fa-print fa-2x"></i></a>
 
                     @(Html.Kendo().Grid<ExceedERP.Core.Domain.ProductionFollowUp.ProductDeliveryItems>()
                                 .Name("ProductDeliveryItems#=ProductDeliveryId#")
                                         .Columns(columns =>
                                         {
                                             columns.ForeignKey(c => c.JobId, (ICollection)ViewData["JobOrder"], "JobId", "JobNo").EditorTemplateName("JobOrders").Title("Job No");
-                                            columns.Bound(c => c.ItemCategory).Width(100);
-                                            columns.Bound(c => c.ItemCode).Width(100);
+                                            columns.ForeignKey(c => c.JobId, (ICollection)ViewData["JobOrder"], "JobId", "JobType").EditorTemplateName("JobOrders").Title("Job Type");
+
+                                            //columns.Bound(c => c.ItemCategory).Width(100);
+                                            //columns.Bound(c => c.ItemCode).Width(100);
                                             columns.Bound(c => c.Description).Width(100);
-                                            columns.Bound(c => c.UnitId).Width(70);
+                                         //   columns.Bound(c => c.UnitId).Width(70);
                                             columns.Bound(c => c.Quantity).Width(70).EditorTemplateName("NumericTextBox");
                                             columns.Bound(c => c.UnitCost).Width(70).EditorTemplateName("NumericTextBox");
                                             columns.Bound(c => c.TotalCost).Width(70);
@@ -75,7 +77,7 @@
                                             {
                                                 command.Edit();
                                                 command.Destroy();
-                                            }).Width(150);
+                                            }).Width(250);
                                         })
                                                    .ToolBar(toolbar =>
                                                    {

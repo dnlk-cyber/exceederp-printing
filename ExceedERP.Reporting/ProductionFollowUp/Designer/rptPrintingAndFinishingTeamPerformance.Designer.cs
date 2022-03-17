@@ -37,9 +37,14 @@
             this.textBox55 = new Telerik.Reporting.TextBox();
             this.textBox49 = new Telerik.Reporting.TextBox();
             this.textBox9 = new Telerik.Reporting.TextBox();
+            this.JobPhaseOds = new Telerik.Reporting.ObjectDataSource();
             this.pageHeaderSection1 = new Telerik.Reporting.PageHeaderSection();
             this.htmlTextBox2 = new Telerik.Reporting.HtmlTextBox();
             this.htmlTextBox1 = new Telerik.Reporting.HtmlTextBox();
+            this.pbOrgLogo = new Telerik.Reporting.PictureBox();
+            this.htmlTextBox3 = new Telerik.Reporting.HtmlTextBox();
+            this.htmlTextBox42 = new Telerik.Reporting.HtmlTextBox();
+            this.htmlTextBox43 = new Telerik.Reporting.HtmlTextBox();
             this.detail = new Telerik.Reporting.DetailSection();
             this.htmlTextBox4 = new Telerik.Reporting.HtmlTextBox();
             this.htmlTextBox5 = new Telerik.Reporting.HtmlTextBox();
@@ -96,14 +101,9 @@
             this.htmlTextBox39 = new Telerik.Reporting.HtmlTextBox();
             this.htmlTextBox38 = new Telerik.Reporting.HtmlTextBox();
             this.htmlTextBox40 = new Telerik.Reporting.HtmlTextBox();
-            this.pageFooterSection1 = new Telerik.Reporting.PageFooterSection();
-            this.pbOrgLogo = new Telerik.Reporting.PictureBox();
-            this.htmlTextBox3 = new Telerik.Reporting.HtmlTextBox();
-            this.htmlTextBox42 = new Telerik.Reporting.HtmlTextBox();
-            this.htmlTextBox43 = new Telerik.Reporting.HtmlTextBox();
-            this.PandFTPOds = new Telerik.Reporting.ObjectDataSource();
-            this.JobPhaseOds = new Telerik.Reporting.ObjectDataSource();
             this.htmlTextBox45 = new Telerik.Reporting.HtmlTextBox();
+            this.pageFooterSection1 = new Telerik.Reporting.PageFooterSection();
+            this.PandFTPOds = new Telerik.Reporting.ObjectDataSource();
             ((System.ComponentModel.ISupportInitialize)(this)).BeginInit();
             // 
             // textBox17
@@ -113,7 +113,8 @@
             this.textBox17.Style.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(140)))), ((int)(((byte)(174)))), ((int)(((byte)(173)))));
             this.textBox17.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox17.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
-            this.textBox17.Style.Color = System.Drawing.Color.White;
+            this.textBox17.Style.Color = System.Drawing.Color.Black;
+            this.textBox17.Style.Font.Bold = true;
             this.textBox17.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox17.StyleName = "";
             this.textBox17.Value = "ኮድ";
@@ -125,7 +126,8 @@
             this.textBox22.Style.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(140)))), ((int)(((byte)(174)))), ((int)(((byte)(173)))));
             this.textBox22.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox22.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
-            this.textBox22.Style.Color = System.Drawing.Color.White;
+            this.textBox22.Style.Color = System.Drawing.Color.Black;
+            this.textBox22.Style.Font.Bold = true;
             this.textBox22.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox22.StyleName = "";
             this.textBox22.Value = "የምርት ዓይነት";
@@ -137,7 +139,8 @@
             this.textBox1.Style.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(140)))), ((int)(((byte)(174)))), ((int)(((byte)(173)))));
             this.textBox1.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox1.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
-            this.textBox1.Style.Color = System.Drawing.Color.White;
+            this.textBox1.Style.Color = System.Drawing.Color.Black;
+            this.textBox1.Style.Font.Bold = true;
             this.textBox1.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox1.Value = "ካለፈው ሳምንት የዞረ";
             // 
@@ -148,7 +151,8 @@
             this.textBox3.Style.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(140)))), ((int)(((byte)(174)))), ((int)(((byte)(173)))));
             this.textBox3.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox3.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
-            this.textBox3.Style.Color = System.Drawing.Color.White;
+            this.textBox3.Style.Color = System.Drawing.Color.Black;
+            this.textBox3.Style.Font.Bold = true;
             this.textBox3.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox3.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(12D);
             this.textBox3.Value = "በሳምንት የታዘዘ";
@@ -160,7 +164,8 @@
             this.textBox5.Style.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(140)))), ((int)(((byte)(174)))), ((int)(((byte)(173)))));
             this.textBox5.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox5.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
-            this.textBox5.Style.Color = System.Drawing.Color.White;
+            this.textBox5.Style.Color = System.Drawing.Color.Black;
+            this.textBox5.Style.Font.Bold = true;
             this.textBox5.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox5.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(12D);
             this.textBox5.Value = "ኣጠቃላይ";
@@ -172,7 +177,8 @@
             this.textBox7.Style.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(140)))), ((int)(((byte)(174)))), ((int)(((byte)(173)))));
             this.textBox7.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox7.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
-            this.textBox7.Style.Color = System.Drawing.Color.White;
+            this.textBox7.Style.Color = System.Drawing.Color.Black;
+            this.textBox7.Style.Font.Bold = true;
             this.textBox7.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox7.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(12D);
             this.textBox7.StyleName = "";
@@ -185,7 +191,8 @@
             this.textBox55.Style.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(140)))), ((int)(((byte)(174)))), ((int)(((byte)(173)))));
             this.textBox55.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox55.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
-            this.textBox55.Style.Color = System.Drawing.Color.White;
+            this.textBox55.Style.Color = System.Drawing.Color.Black;
+            this.textBox55.Style.Font.Bold = true;
             this.textBox55.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox55.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(12D);
             this.textBox55.StyleName = "";
@@ -198,7 +205,8 @@
             this.textBox49.Style.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(140)))), ((int)(((byte)(174)))), ((int)(((byte)(173)))));
             this.textBox49.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox49.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
-            this.textBox49.Style.Color = System.Drawing.Color.White;
+            this.textBox49.Style.Color = System.Drawing.Color.Black;
+            this.textBox49.Style.Font.Bold = true;
             this.textBox49.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox49.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(12D);
             this.textBox49.StyleName = "";
@@ -211,11 +219,18 @@
             this.textBox9.Style.BackgroundColor = System.Drawing.Color.FromArgb(((int)(((byte)(140)))), ((int)(((byte)(174)))), ((int)(((byte)(173)))));
             this.textBox9.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
             this.textBox9.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
-            this.textBox9.Style.Color = System.Drawing.Color.White;
+            this.textBox9.Style.Color = System.Drawing.Color.Black;
+            this.textBox9.Style.Font.Bold = true;
             this.textBox9.Style.Font.Name = "Microsoft Sans Serif";
             this.textBox9.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(12D);
             this.textBox9.StyleName = "";
             this.textBox9.Value = "%";
+            // 
+            // JobPhaseOds
+            // 
+            this.JobPhaseOds.DataMember = "GetJobPhases";
+            this.JobPhaseOds.DataSource = typeof(ExceedERP.Reporting.ProductionFollowUp.DataSource.ProFollowupParameterODs);
+            this.JobPhaseOds.Name = "JobPhaseOds";
             // 
             // pageHeaderSection1
             // 
@@ -253,6 +268,56 @@
             this.htmlTextBox1.Style.TextAlign = Telerik.Reporting.Drawing.HorizontalAlign.Center;
             this.htmlTextBox1.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Bottom;
             this.htmlTextBox1.Value = "=Fields.Name";
+            // 
+            // pbOrgLogo
+            // 
+            this.pbOrgLogo.Bindings.Add(new Telerik.Reporting.Binding("Value", "= Fields.LogoFileName"));
+            this.pbOrgLogo.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(0.14190292358398438D), Telerik.Reporting.Drawing.Unit.Inch(0.27559056878089905D));
+            this.pbOrgLogo.Name = "pbOrgLogo";
+            this.pbOrgLogo.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.433687686920166D), Telerik.Reporting.Drawing.Unit.Inch(1.1023228168487549D));
+            this.pbOrgLogo.Sizing = Telerik.Reporting.Drawing.ImageSizeMode.Stretch;
+            this.pbOrgLogo.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
+            // 
+            // htmlTextBox3
+            // 
+            this.htmlTextBox3.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(1.2204724550247192D), Telerik.Reporting.Drawing.Unit.Inch(1.6339765787124634D));
+            this.htmlTextBox3.Name = "htmlTextBox3";
+            this.htmlTextBox3.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(5.9448823928833008D), Telerik.Reporting.Drawing.Unit.Inch(0.2559056282043457D));
+            this.htmlTextBox3.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.None;
+            this.htmlTextBox3.Style.BorderStyle.Left = Telerik.Reporting.Drawing.BorderType.None;
+            this.htmlTextBox3.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
+            this.htmlTextBox3.Style.Font.Bold = true;
+            this.htmlTextBox3.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Pixel(13D);
+            this.htmlTextBox3.Style.TextAlign = Telerik.Reporting.Drawing.HorizontalAlign.Center;
+            this.htmlTextBox3.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Middle;
+            this.htmlTextBox3.Value = "ለሕትመትና ቴክኒክ ኦፕሬሽን መምሪያ እና ለዕቅድ ጥራትና ኣሰራር&nbsp;ማሻሻያ ኣገልግሎት&nbsp;";
+            // 
+            // htmlTextBox42
+            // 
+            this.htmlTextBox42.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(1.4173229932785034D), Telerik.Reporting.Drawing.Unit.Inch(1.3779921531677246D));
+            this.htmlTextBox42.Name = "htmlTextBox42";
+            this.htmlTextBox42.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(5.0783476829528809D), Telerik.Reporting.Drawing.Unit.Inch(0.2559056282043457D));
+            this.htmlTextBox42.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.None;
+            this.htmlTextBox42.Style.BorderStyle.Left = Telerik.Reporting.Drawing.BorderType.None;
+            this.htmlTextBox42.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
+            this.htmlTextBox42.Style.Font.Bold = true;
+            this.htmlTextBox42.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Pixel(14D);
+            this.htmlTextBox42.Style.TextAlign = Telerik.Reporting.Drawing.HorizontalAlign.Center;
+            this.htmlTextBox42.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Middle;
+            this.htmlTextBox42.Value = "የማተምና ማጠናቀቅ ቡድን ኣፈጻጸም ሪፖርት";
+            // 
+            // htmlTextBox43
+            // 
+            this.htmlTextBox43.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(1.5756692886352539D), Telerik.Reporting.Drawing.Unit.Inch(0.70866137742996216D));
+            this.htmlTextBox43.Name = "htmlTextBox43";
+            this.htmlTextBox43.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(5.1561822891235352D), Telerik.Reporting.Drawing.Unit.Inch(0.66925191879272461D));
+            this.htmlTextBox43.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
+            this.htmlTextBox43.Style.BorderStyle.Left = Telerik.Reporting.Drawing.BorderType.None;
+            this.htmlTextBox43.Style.BorderStyle.Top = Telerik.Reporting.Drawing.BorderType.None;
+            this.htmlTextBox43.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(15D);
+            this.htmlTextBox43.Style.TextAlign = Telerik.Reporting.Drawing.HorizontalAlign.Center;
+            this.htmlTextBox43.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Top;
+            this.htmlTextBox43.Value = "=Fields.AmharicName";
             // 
             // detail
             // 
@@ -1043,77 +1108,6 @@
             this.htmlTextBox40.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Bottom;
             this.htmlTextBox40.Value = "ፊርማ";
             // 
-            // pageFooterSection1
-            // 
-            this.pageFooterSection1.Height = Telerik.Reporting.Drawing.Unit.Cm(2.5D);
-            this.pageFooterSection1.Name = "pageFooterSection1";
-            // 
-            // pbOrgLogo
-            // 
-            this.pbOrgLogo.Bindings.Add(new Telerik.Reporting.Binding("Value", "= Fields.LogoFileName"));
-            this.pbOrgLogo.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(0.14190292358398438D), Telerik.Reporting.Drawing.Unit.Inch(0.27559056878089905D));
-            this.pbOrgLogo.Name = "pbOrgLogo";
-            this.pbOrgLogo.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(1.433687686920166D), Telerik.Reporting.Drawing.Unit.Inch(1.1023228168487549D));
-            this.pbOrgLogo.Sizing = Telerik.Reporting.Drawing.ImageSizeMode.Stretch;
-            this.pbOrgLogo.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
-            // 
-            // htmlTextBox3
-            // 
-            this.htmlTextBox3.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(1.2204724550247192D), Telerik.Reporting.Drawing.Unit.Inch(1.6339765787124634D));
-            this.htmlTextBox3.Name = "htmlTextBox3";
-            this.htmlTextBox3.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(5.9448823928833008D), Telerik.Reporting.Drawing.Unit.Inch(0.2559056282043457D));
-            this.htmlTextBox3.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.None;
-            this.htmlTextBox3.Style.BorderStyle.Left = Telerik.Reporting.Drawing.BorderType.None;
-            this.htmlTextBox3.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
-            this.htmlTextBox3.Style.Font.Bold = true;
-            this.htmlTextBox3.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Pixel(13D);
-            this.htmlTextBox3.Style.TextAlign = Telerik.Reporting.Drawing.HorizontalAlign.Center;
-            this.htmlTextBox3.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Middle;
-            this.htmlTextBox3.Value = "ለሕትመትና ቴክኒክ ኦፕሬሽን መምሪያ እና ለዕቅድ ጥራትና ኣሰራር&nbsp;ማሻሻያ ኣገልግሎት&nbsp;";
-            // 
-            // htmlTextBox42
-            // 
-            this.htmlTextBox42.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(1.4173229932785034D), Telerik.Reporting.Drawing.Unit.Inch(1.3779921531677246D));
-            this.htmlTextBox42.Name = "htmlTextBox42";
-            this.htmlTextBox42.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(5.0783476829528809D), Telerik.Reporting.Drawing.Unit.Inch(0.2559056282043457D));
-            this.htmlTextBox42.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.None;
-            this.htmlTextBox42.Style.BorderStyle.Left = Telerik.Reporting.Drawing.BorderType.None;
-            this.htmlTextBox42.Style.BorderWidth.Default = Telerik.Reporting.Drawing.Unit.Pixel(1D);
-            this.htmlTextBox42.Style.Font.Bold = true;
-            this.htmlTextBox42.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Pixel(14D);
-            this.htmlTextBox42.Style.TextAlign = Telerik.Reporting.Drawing.HorizontalAlign.Center;
-            this.htmlTextBox42.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Middle;
-            this.htmlTextBox42.Value = "የማተምና ማጠናቀቅ ቡድን ኣፈጻጸም ሪፖርት";
-            // 
-            // htmlTextBox43
-            // 
-            this.htmlTextBox43.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(1.5756692886352539D), Telerik.Reporting.Drawing.Unit.Inch(0.70866137742996216D));
-            this.htmlTextBox43.Name = "htmlTextBox43";
-            this.htmlTextBox43.Size = new Telerik.Reporting.Drawing.SizeU(Telerik.Reporting.Drawing.Unit.Inch(5.1561822891235352D), Telerik.Reporting.Drawing.Unit.Inch(0.66925191879272461D));
-            this.htmlTextBox43.Style.BorderStyle.Default = Telerik.Reporting.Drawing.BorderType.Solid;
-            this.htmlTextBox43.Style.BorderStyle.Left = Telerik.Reporting.Drawing.BorderType.None;
-            this.htmlTextBox43.Style.BorderStyle.Top = Telerik.Reporting.Drawing.BorderType.None;
-            this.htmlTextBox43.Style.Font.Size = Telerik.Reporting.Drawing.Unit.Point(15D);
-            this.htmlTextBox43.Style.TextAlign = Telerik.Reporting.Drawing.HorizontalAlign.Center;
-            this.htmlTextBox43.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Top;
-            this.htmlTextBox43.Value = "=Fields.AmharicName";
-            // 
-            // PandFTPOds
-            // 
-            this.PandFTPOds.DataMember = "PrintingAndFinishingTeamPerformances";
-            this.PandFTPOds.DataSource = typeof(ExceedERP.Reporting.ProductionFollowUp.DataSource.PrintingAndFinishingTeamPerformanceODS);
-            this.PandFTPOds.Name = "PandFTPOds";
-            this.PandFTPOds.Parameters.AddRange(new Telerik.Reporting.ObjectDataSourceParameter[] {
-            new Telerik.Reporting.ObjectDataSourceParameter("startDate", typeof(System.Nullable<System.DateTime>), "= Parameters.startDate.Value"),
-            new Telerik.Reporting.ObjectDataSourceParameter("endDate", typeof(System.Nullable<System.DateTime>), "= Parameters.endDate.Value"),
-            new Telerik.Reporting.ObjectDataSourceParameter("jobPhase", typeof(string), "= Parameters.jobPhase.Value")});
-            // 
-            // JobPhaseOds
-            // 
-            this.JobPhaseOds.DataMember = "GetJobPhases";
-            this.JobPhaseOds.DataSource = typeof(ExceedERP.Reporting.ProductionFollowUp.DataSource.ProFollowupParameterODs);
-            this.JobPhaseOds.Name = "JobPhaseOds";
-            // 
             // htmlTextBox45
             // 
             this.htmlTextBox45.Location = new Telerik.Reporting.Drawing.PointU(Telerik.Reporting.Drawing.Unit.Inch(5.0783867835998535D), Telerik.Reporting.Drawing.Unit.Inch(7.2245678901672363D));
@@ -1128,6 +1122,21 @@
             this.htmlTextBox45.Style.TextAlign = Telerik.Reporting.Drawing.HorizontalAlign.Left;
             this.htmlTextBox45.Style.VerticalAlign = Telerik.Reporting.Drawing.VerticalAlign.Bottom;
             this.htmlTextBox45.Value = "ፊርማ";
+            // 
+            // pageFooterSection1
+            // 
+            this.pageFooterSection1.Height = Telerik.Reporting.Drawing.Unit.Cm(2.5D);
+            this.pageFooterSection1.Name = "pageFooterSection1";
+            // 
+            // PandFTPOds
+            // 
+            this.PandFTPOds.DataMember = "PrintingAndFinishingTeamPerformances";
+            this.PandFTPOds.DataSource = typeof(ExceedERP.Reporting.ProductionFollowUp.DataSource.PrintingAndFinishingTeamPerformanceODS);
+            this.PandFTPOds.Name = "PandFTPOds";
+            this.PandFTPOds.Parameters.AddRange(new Telerik.Reporting.ObjectDataSourceParameter[] {
+            new Telerik.Reporting.ObjectDataSourceParameter("startDate", typeof(System.Nullable<System.DateTime>), "= Parameters.startDate.Value"),
+            new Telerik.Reporting.ObjectDataSourceParameter("endDate", typeof(System.Nullable<System.DateTime>), "= Parameters.endDate.Value"),
+            new Telerik.Reporting.ObjectDataSourceParameter("jobPhase", typeof(string), "= Parameters.jobPhase.Value")});
             // 
             // rptPrintingAndFinishingTeamPerformance
             // 

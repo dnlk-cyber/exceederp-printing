@@ -56,6 +56,14 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
             }).ToList();
             return Json(customers,JsonRequestBehavior.AllowGet);
         }
+        public JsonResult GetAllUnits()
+        {
+            var units = db.UnitOfMeasurement.Select(s => new {
+                Code = s.UnitOfMeasurementId,
+                Name = s.Name
+            }).ToList();
+            return Json(units, JsonRequestBehavior.AllowGet);
+        }
         public JsonResult GetWorkUnitCostCenters()
         {
             var costCenter = db.MainCompanyStructures;

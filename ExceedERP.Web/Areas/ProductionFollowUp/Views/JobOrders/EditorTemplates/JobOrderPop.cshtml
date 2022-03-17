@@ -19,14 +19,29 @@
                 <label>Order Demand</label>
                 <div>
                     @(Html.Kendo().DropDownListFor(model => model.OrderType)
-                                                              .DataTextField("Text")
-                                                                .DataValueField("Value")
-                                                                    .BindTo(EnumExtension.EnumToSelectList(typeof(ProductionDemand)))
+                                                                      .DataTextField("Text")
+                                                                        .DataValueField("Value")
+                                                                            .BindTo(EnumExtension.EnumToSelectList(typeof(ProductionDemand)))
                     )
                     @Html.ValidationMessageFor(model => model.OrderType, "", new { @class = "text-danger" })
                 </div>
             </div>
+            <div class="form-group">
+                <label>Unit</label>
+                <div>
+                    @(Html.Kendo().DropDownListFor(model => model.UnitId)
+                                                        .DataTextField("Name")
+                                                        .DataValueField("Code")
+                                                        .DataSource(dataSource =>
+                                                        {
+                                                            dataSource.Read(read => read.Action("GetAllUnits", "ProductionDataProvider", new { area = "ProductionFollowUp" }))
+                                                                    .ServerFiltering(false);
+                                                        })
+                                                      .ValuePrimitive(true))                        
+                    @Html.ValidationMessageFor(model => model.OrderType, "", new { @class = "text-danger" })
+                </div>
             </div>
+        </div>
             <div class="col-md-3 ro1">
 
                 <div class="form-group">
@@ -83,7 +98,7 @@
                                                                                                                                                      .Enable(false)
                                                                                                                                              .DataSource(dataSource =>
                                                                                                                                              {
-                                                                                                                                                 dataSource.Read(read => read.Action("GetAllCustomers", "EstimationForm", new { area = "PrintingEstimation" }))
+                                                                                                                                                 dataSource.Read(read => read.Action("GetAllCustomers", "ProductionDataProvider", new { area = "ProductionFollowUp" }))
                                                                                                                                                           .ServerFiltering(false);
                                                                                                                                              })
                                                                                                                                           .ValuePrimitive(true))
