@@ -9,6 +9,7 @@ namespace ExceedERP.Reporting.ProductionFollowUp.ViewModel
    public class ProductDeliveryItemsVM
     {
         public string ItemCode { get; set; }
+        public string JobNumber { get; set; }
         public string Description { get; set; }
         public string Unit { get; set; }
         public double Quantity { get; set; }

@@ -90,7 +90,11 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
         public ActionResult ProductionStoreRequisitions_Read([DataSourceRequest] DataSourceRequest request, int id)
         {
             var user = _userdb.Users.FirstOrDefault(x => x.UserName == User.Identity.Name);
-            var storekeepers = _db.StoreKeeperAssignments.Where(x => x.StoreKeeper == user.Id).ToList();
+            //if(user!=null)
+            //    {
+            //    var storekeepers = _db.StoreKeeperAssignments.Where(x => x.StoreKeeper == user.Id).ToList();
+
+            //}
             //int userworkunit = UserInformationHelper.GetUserReportsTo(User.Identity.Name);
             List<int> userworkunit = UserInformationHelper.GetUserReportsToAndChildWorkUnits(User.Identity.Name);
             List<string> userStores = UserInformationHelper.GetUserStores(User.Identity.Name);

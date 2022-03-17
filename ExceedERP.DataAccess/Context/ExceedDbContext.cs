@@ -1445,6 +1445,7 @@ namespace ExceedERP.DataAccess.Context
             #endregion
 
             #region Production Follow UP Entity Configuration
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.ProductFollowUpEntityConfiguration.ProductionPlanEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.ProductFollowUpEntityConfiguration.JobCategoryEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.ProductFollowUpEntityConfiguration.ProformaEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.ProductFollowUpEntityConfiguration.GraphicEntityTypeConfiguration());
@@ -1464,6 +1465,7 @@ namespace ExceedERP.DataAccess.Context
             #endregion
 
             #region Job Costing Entity Configuration
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobCostingEntityConfiguration.JcPensionEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobCostingEntityConfiguration.IdleTimeCategoryEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobCostingEntityConfiguration.JobOrderTimeSheetEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.JobCostingEntityConfiguration.JobOrderTimeRegistrationEntityTypeConfiguration());
@@ -3398,6 +3400,7 @@ namespace ExceedERP.DataAccess.Context
         #endregion
         #region Production Follow UP
         public DbSet<Proforma> Proformas { get; set; }
+        public DbSet<ProductionPlan> ProductionPlans { get; set; }
         public DbSet<PFProformaItems> PFProformaItems { get; set; }
         public DbSet<JobCategory> JobCategories { get; set; }
         public DbSet<Job> Jobs { get; set; }
@@ -3415,6 +3418,7 @@ namespace ExceedERP.DataAccess.Context
         #endregion
         #region Job Costing
         public DbSet<IdleTimeCategory> IdleTimeCategories { get; set; }
+        public DbSet<JcPension> JcPensions { get; set; }
         public DbSet<YearlyOverHeadRate> YearlyOverHeadRates { get; set; }
         public DbSet<Machine> Machines { get; set; }
         public DbSet<Unit> Units { get; set; }

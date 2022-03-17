@@ -10,6 +10,7 @@ using Kendo.Mvc.UI;
 using ExceedERP.Core.Domain.ProductionFollowUp;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Web.Helpers;
+using ExceedERP.Core.Domain.PrintingEstimation.Setting;
 
 namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
 {
@@ -31,6 +32,7 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                 JobStatusId = jobStatusLineItem.JobStatusId,
                 Date = jobStatusLineItem.Date,
                 Quantiy = jobStatusLineItem.Quantiy,
+                RemainigQuantiy = jobStatusLineItem.RemainigQuantiy,
                 TotalPrice = jobStatusLineItem.TotalPrice,
                 Invoice = jobStatusLineItem.Invoice,
                 SalesVoucherNo = jobStatusLineItem.SalesVoucherNo,
@@ -44,30 +46,70 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
 
         public ActionResult JobStatusLineItems_Create([DataSourceRequest]DataSourceRequest request, JobStatusLineItem jobStatusLineItem, int id)
         {
+            var jobStstus = db.JobStatuses.Find(id);
+            var job = db.Jobs.Find(jobStstus?.JobId);
+            var jobStatus = db.JobStatusLineItems.Where(q=>q.JobStatusId== id).ToList();
+            var totQuan = jobStatus.Sum(s => s.Quantiy) + jobStatusLineItem.Quantiy;
+            var orderedQuant = job?.Quantity;
+            if (totQuan > orderedQuant)
+            {
+                ModelState.AddModelError("Error","The items sum must be equals to the ordered quantity");
+            }
 
             if (ModelState.IsValid)
             {
+                jobStatusLineItem.RemainigQuantiy = orderedQuant - totQuan;
                 var entity = (JobStatusLineItem)this.GetObject(jobStatusLineItem, true, id);
                 db.JobStatusLineItems.Add(entity);
+               
+                    ChangeJobStatus(jobStstus,jobStatusLineItem.RemainigQuantiy);                   
                 db.SaveChanges();
+
                 jobStatusLineItem.JobStatusId = entity.JobStatusId;
             }
 
             return Json(new[] { jobStatusLineItem }.ToDataSourceResult(request, ModelState));
         }
 
+        private void ChangeJobStatus(JobStatus jobStstus, decimal? remainigQuantiy)
+        {
+            jobStstus.EndDate = DateTime.Now;
+            if(remainigQuantiy==0)
+            {
+                jobStstus.Status = JobState.Finished;
 
+            }
+            db.JobStatuses.Attach(jobStstus);
+            db.Entry(jobStstus).State = EntityState.Modified;
+        }
 
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult JobStatusLineItems_Update([DataSourceRequest]DataSourceRequest request, JobStatusLineItem jobStatusLineItem)
         {
+            var jobStstus = db.JobStatuses.Find(jobStatusLineItem.JobStatusId);
+            var job = db.Jobs.Find(jobStstus?.JobId);
+            var jobStatus = db.JobStatusLineItems.Where(q => q.JobStatusId == jobStatusLineItem.JobStatusId
+            && q.JobStatusLineItemId != jobStatusLineItem.JobStatusLineItemId).ToList();
+            var totQuan = jobStatus.Sum(s => s.Quantiy) + jobStatusLineItem.Quantiy;
+            var orderedQuant = job?.Quantity;
+            if (totQuan > orderedQuant)
+            {
+                ModelState.AddModelError("Error", "The items sum must be equals to the ordered quantity");
+            }
+
             if (ModelState.IsValid)
             {
+                jobStatusLineItem.RemainigQuantiy = orderedQuant - totQuan;
                 var entity = (JobStatusLineItem)this.GetObject(jobStatusLineItem, false);
 
                 db.JobStatusLineItems.Attach(entity);
                 db.Entry(entity).State = EntityState.Modified;
+                if (jobStatusLineItem.RemainigQuantiy == 0)
+                {
+                    ChangeJobStatus(jobStstus, jobStatusLineItem.RemainigQuantiy);
+                }
                 db.SaveChanges();
+
             }
 
             return Json(new[] { jobStatusLineItem }.ToDataSourceResult(request, ModelState));
@@ -101,6 +143,7 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                 JobStatusId = jobStatusLineItem.JobStatusId,
                 Date = jobStatusLineItem.Date,
                 Quantiy = jobStatusLineItem.Quantiy,
+                RemainigQuantiy = jobStatusLineItem.RemainigQuantiy,
                 TotalPrice = jobStatusLineItem.TotalPrice,
                 Invoice = jobStatusLineItem.Invoice,
                 SalesVoucherNo = jobStatusLineItem.SalesVoucherNo,

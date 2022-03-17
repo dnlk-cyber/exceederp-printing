@@ -102,7 +102,6 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                 PreparedBy = productDelivery.PreparedBy,
                 ApprovedBy = productDelivery.ApprovedBy,
                 IdentificationNo = productDelivery.IdentificationNo,
-                JobId = productDelivery.JobId,
                 IsVoid = productDelivery.IsVoid,
                 VoidBy = productDelivery.VoidBy,
                 VoidTime = productDelivery.VoidTime,
@@ -130,17 +129,15 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
         {
             if (ModelState.IsValid)
             {
-                var finishedGood = db.Jobs.Find(productDelivery.JobId);
                 var entity = new ProductDelivery
                 {
                     CustomerRefNo = productDelivery.CustomerRefNo,
                     CreditSaleNo = productDelivery.CreditSaleNo,
-                    CustomerId = finishedGood.CustomerId,
+                    CustomerId = productDelivery.CustomerId,
                     CashSaleNo = productDelivery.CashSaleNo,
                     PreparedBy = productDelivery.PreparedBy,
                     ApprovedBy = productDelivery.ApprovedBy,
                     IdentificationNo = productDelivery.IdentificationNo,
-                    JobId = productDelivery.JobId
                 };
 
                 db.ProductDeliveries.Add(entity);
@@ -156,19 +153,16 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
         {
             if (ModelState.IsValid)
             {
-                var finishedGood = db.Jobs.Find(productDelivery.JobId);
 
                 var entity = new ProductDelivery
                 {
                     ProductDeliveryId = productDelivery.ProductDeliveryId,
                     CustomerRefNo = productDelivery.CustomerRefNo,
-                    CustomerId = finishedGood.CustomerId,
                     CreditSaleNo = productDelivery.CreditSaleNo,
                     CashSaleNo = productDelivery.CashSaleNo,
                     PreparedBy = productDelivery.PreparedBy,
                     ApprovedBy = productDelivery.ApprovedBy,
                     IdentificationNo = productDelivery.IdentificationNo,
-                    JobId = productDelivery.JobId
                 };
 
                 db.ProductDeliveries.Attach(entity);
@@ -194,7 +188,6 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                     PreparedBy = productDelivery.PreparedBy,
                     ApprovedBy = productDelivery.ApprovedBy,
                     IdentificationNo = productDelivery.IdentificationNo,
-                    JobId = productDelivery.JobId
                 };
 
                 db.ProductDeliveries.Attach(entity);

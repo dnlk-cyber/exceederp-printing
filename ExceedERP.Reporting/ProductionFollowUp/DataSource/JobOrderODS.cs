@@ -40,7 +40,7 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                 //jobOrder.Pobox = job.POBox;             
 
 
-                jobOrder.Quantity = job.Quant;
+                jobOrder.Quantity = job.Quantity;
                 jobOrder.Copies = job.Copies;
                 jobOrder.TotalImpression = job.TotalImpression;
                 jobOrder.TextWeight = job.TextWeight;
@@ -48,10 +48,8 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                 jobOrder.FinishingSize = job.FinishingSize;
                 jobOrder.PrintingLine = job.PrintingLine;
                 jobOrder.PrintingMachine = job.PrintingMachine;
-                jobOrder.Sewing = job.Sewing;
-               
+                jobOrder.Sewing = job.Sewing;           
                 jobOrder.NoOfPage = job.Pages;
-               
                 jobOrder.CoverWeight = job.CoverWeight;
                 jobOrder.ColorCover = job.Colorcover;
                 jobOrder.New = job.New;

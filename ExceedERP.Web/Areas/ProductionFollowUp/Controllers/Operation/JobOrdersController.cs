@@ -163,6 +163,7 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                 hv = job.hv,
                 IsExistingCustomer = job.IsExistingCustomer,
                 ProformaId = job.ProformaId,
+                OrderType = job.OrderType,
                 MachineId = job.MachineId,
                 JobNo = job.JobNo,
                 CustomerId = job.CustomerId,
@@ -176,8 +177,9 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                 JT = job.JobTypeId.ToString(),
                 UnitPrice = job.UnitPrice,
                 BeforeTax = job.BeforeTax,
-                Quant = job.Quant,
+                Quantity = job.Quantity,
                 Pages = job.Pages,
+                ContactPhone = job.ContactPhone,
                 Copies = job.Copies,
                 TotalPrice = job.TotalPrice,
                 Contract = job.Contract,
@@ -203,7 +205,11 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                 PrintingExpectedCompletetion = job.PrintingExpectedCompletetion,
                 FinishExpectedCompletetion = job.FinishExpectedCompletetion,
                 Status = job.Status,
-                FinishingWorkflow = job.FinishingWorkflow
+                FinishingWorkflow = job.FinishingWorkflow,
+                CreatedBy = job.CreatedBy,
+                DateCreated = job.DateCreated,
+                ModifiedBy = job.ModifiedBy,
+                LastModified = job.LastModified
             });
 
             return Json(result);
@@ -215,6 +221,8 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
             job.JobTypeId = Int16.Parse(job.JT);
             if (ModelState.IsValid)
             {
+                job.CreatedBy = User.Identity.Name;
+                job.DateCreated = DateTime.Now;
                 var proforma = new Proforma();
                 var customer = new OrganizationCustomer();
                 if (!job.hv && !job.IsExistingCustomer)
@@ -222,7 +230,7 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                     customer = AddNewCustomer.Add(job);
                     db.OrganizationCustomers.Add(customer);
                     db.SaveChanges();
-
+                    Index();
 
                 }
                 else if (job.hv)
@@ -247,7 +255,8 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
 
             if (ModelState.IsValid)
             {
-
+                job.ModifiedBy = User.Identity.Name;
+                job.LastModified = DateTime.Now;
                 var proforma = new Proforma();
                 var customer = new OrganizationCustomer();
                 if (!job.hv && !job.IsExistingCustomer&&job.CustomerId.ToString()==null)
@@ -447,9 +456,11 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                 JobTypeId = job.JobTypeId,
                 BeforeTax = job.BeforeTax,
                 UnitPrice = job.UnitPrice,
-                Quant = job.Quant,
+                Quantity = job.Quantity,
+                ContactPhone = job.ContactPhone,
                 Pages = job.Pages,
                 Copies = job.Copies,
+                OrderType = job.OrderType,
                 TotalPrice = job.TotalPrice,
                 Contract = job.Contract,
                 TotalImpression = job.TotalImpression,
@@ -476,7 +487,10 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                 PrintingExpectedCompletetion = job.PrintingExpectedCompletetion,
                 FinishExpectedCompletetion = job.FinishExpectedCompletetion,
                 Status = job.Status,
-                FinishingWorkflow = job.FinishingWorkflow
+                CreatedBy = job.CreatedBy,
+                DateCreated = job.DateCreated,
+                ModifiedBy = job.ModifiedBy,
+                LastModified = job.LastModified
             };
             return entity;
         }

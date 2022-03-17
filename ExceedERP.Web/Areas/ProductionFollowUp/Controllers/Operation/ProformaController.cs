@@ -25,20 +25,39 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
         public ActionResult Index()
         {
              
-            ViewData["EstimationForms"] = db.EstimationForms.ToList();
-            ViewData["Customers"] = db.OrganizationCustomers.Select(s => new {
-                Code = s.OrganizationCustomerID,
-                Name = s.TradeName
-            }).ToList();
-             var jobCategories= db.JobCategories.Select(s => new {
+            ViewData["EstimationForms"] = db.EstimationForms.ToList();                   
+             var jobCategories = db.JobCategories.Select(s => new {
                 JobTypeId = s.JobCategoryId,
                 type = s.HaveParent ?s.ParentId + " " + s.JobName : s.JobName
             }).ToList();
             ViewData["JobType"] = jobCategories;
             ViewBag.data = GetData();
+            var customers = db.OrganizationCustomers.Select(s => new
+            {
+                Code = s.OrganizationCustomerID,
+                Name = s.TradeName
+            }).ToList();
+            ViewData["Customers"] = customers;
+
             return View();
         }
+        //public IList<OrganizationCustomer> getCustomers(Proforma proforma=null)
+        //{
+        //    var customers = db.OrganizationCustomers.ToList();
+        //    if(proforma != null&& !proforma.HaveEstimation && !proforma.IsExistingCustomer)
+        //    {
+        //        var entity = new OrganizationCustomer()
+        //        {
+        //            Code = proforma.CustomerId,
+        //            BrandName = proforma.BrandName,
+        //            NAme = proforma.CustomerName
+        //        };
+        //        customers.Add(entity);
+        //    }
 
+        //    ViewData["Customers"] = customers;
+        //    return customers;
+        //}
         public JsonResult GetAllProformas()
         {
             var data = db.Proformas;
@@ -59,9 +78,10 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                 ValidityDate = proforma.ValidityDate,
                 PaymentTerm = proforma.PaymentTerm,
                 InvoiceNo = proforma.InvoiceNo,
+                CustomerName = proforma.CustomerName,
                 BrandName = proforma.BrandName,
                 ProformaNo = proforma.ProformaNo,
-                TinNo = proforma.TinNo
+               TinNo = proforma.TinNo
             });
 
             return Json(result);
@@ -79,15 +99,12 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                     customer = AddNewCustomer.Save(proforma);
                     db.OrganizationCustomers.Add(customer);
                     db.SaveChanges();
-
-
                 }
                 else if (proforma.HaveEstimation)
                 {
                      estimationForm = db.EstimationForms.Find(proforma.EstimationFormId);
                     
                 }
-
                 var entity = new Proforma
                 {
                     Time = proforma.Time,
@@ -100,14 +117,18 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                     ValidityDate = proforma.ValidityDate,
                     PaymentTerm = proforma.PaymentTerm,
                     InvoiceNo = proforma.InvoiceNo,
+                    CustomerName = proforma.CustomerName,
                     BrandName = proforma.BrandName,
                     ProformaNo = proforma.ProformaNo,
                     TinNo = proforma.TinNo
                 };
-
                 db.Proformas.Add(entity);
                 db.SaveChanges();
                 proforma.ProformaId = entity.ProformaId;
+                proforma.CustomerId = entity.CustomerId;
+                //Index();
+
+              //  return RedirectToAction("Index", "Proforma", new { area = "ProductionFollowUp" });
 
                 #region
 
@@ -145,7 +166,7 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                 #endregion
             }
 
-            return Json(new[] { proforma }.ToDataSourceResult(request, ModelState));
+           return Json(new[] { proforma }.ToDataSourceResult(request, ModelState));
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
@@ -181,6 +202,7 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                     PaymentTerm = proforma.PaymentTerm,
                     InvoiceNo = proforma.InvoiceNo,
                     BrandName = proforma.BrandName,
+                    CustomerName = proforma.CustomerName,
                     ProformaNo = proforma.ProformaNo,
                     TinNo = proforma.TinNo
                 };
@@ -188,6 +210,7 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                 db.Entry(entity).State = EntityState.Modified;
                 db.SaveChanges();
             }
+            return RedirectToAction("Index", "Proforma", new { area = "ProductionFollowUp" });
 
             return Json(new[] { proforma }.ToDataSourceResult(request, ModelState));
         }

@@ -52,7 +52,7 @@
                                                                               .Title("Customer");
                                     columns.ForeignKey(c => c.MachineId, (IEnumerable)ViewData["Machines"], "Code", "Name")
                                                                               .Width(110);
-                                    columns.Bound(c => c.Quant).Width(90);
+                                    columns.Bound(c => c.Quantity).Width(90);
                                     columns.Bound(c => c.UnitPrice).Width(90);
                                     columns.Bound(c => c.BeforeTax).Width(90);
                                     columns.Bound(c => c.TotalPrice).Width(90);
@@ -77,7 +77,7 @@
                                             window.Title("Job Order");
                                         }))
 
-                                                           .Events(ev => ev.DetailExpand("MasterOnExpand").DataBound("jobDataBound").Save("onSave"))
+                                                           .Events(ev => ev.DetailExpand("MasterOnExpand").DataBound("jobDataBound").Save("onSave").Save("onSave"))
 
                                         .Pageable(pageable => pageable
                                                      .Input(true)
@@ -420,7 +420,8 @@
                                 .Columns(columns =>
                                 {
                                                                             columns.Bound(c => c.UserId);
-                                                                            columns.Bound(c => c.Date);
+                                                                            columns.Bound(c => c.StartDate);
+                                                                            columns.Bound(c => c.EndDate);
                                                                             columns.Bound(c => c.JobPhase).EditorTemplateName("JobPhaseTemplate");
                                                                             columns.Bound(c => c.Status).EditorTemplateName("JobstatusTemplate"); ;
                                                                 //columns.Bound(c => c.Remark).Width(100);
@@ -435,7 +436,8 @@
                                         {
                                                                                 toolbar.Create();
                                                                             })
-                                            .NoRecords("No Data Registered")
+                                    .NoRecords("No Data Registered")
+                                    .Events(ev=>ev.Edit("onJobStatusEdit"))
                                     .Editable(editable => editable.Mode(GridEditMode.InLine).Window(window =>
                                     {
 
@@ -451,7 +453,7 @@
                                 .ClientDetailTemplateId("JobStatusLineItem")
                                 .DataSource(dataSource => dataSource
                                     .Ajax()
-                                            //  .Sort(s => s.Add(x => x.ProformaId).Descending())
+                                             .Sort(s => s.Add(x => x.JobStatusId).Descending())
                                             .Events(events =>
                                             {
                                                                                     events.Error("error_handler(\"JobStatus#=JobId#\")");
@@ -464,6 +466,7 @@
                                                 {
                                                                                         model.Id(p => p.JobStatusId);
                                                                                         model.Field(p => p.UserId).Editable(false);
+                                                                                        //model.Field(p => p.Status).Editable(false);
 
                                                                                     })
 
@@ -1061,6 +1064,7 @@
               {
                   columns.Bound(c => c.Date);
                   columns.Bound(c => c.Quantiy).EditorTemplateName("QuantityEditorTemplate");
+                  columns.Bound(c => c.RemainigQuantiy);
                   columns.Bound(c => c.TotalPrice);
                   columns.Bound(c => c.Invoice);
                   columns.Bound(c => c.SalesVoucherNo);
@@ -1100,11 +1104,11 @@
                                                 events.RequestEnd("onRequestEnd(\"JobStatusLineItem#=JobStatusId#\")");
                                             }
                                                 )
-
+                                                .Sort(sort=>sort.Add(s=>s.JobStatusLineItemId).Descending())
                                                 .Model(model =>
                                                 {
                                                     model.Id(p => p.JobStatusLineItemId);
-                                                 //   model.Field(p => p.TotalPrice).Editable(false);
+                                                 model.Field(p => p.RemainigQuantiy).Editable(false);
 
                                                 })
 
@@ -1121,6 +1125,7 @@
     var unitPrice;
     var jobStatusId;
     var jobPhase;
+    var jobState;
 
     function jobDataBound() {
     //this.expandRow(this.tbody.find("tr.k-master-row").first());
@@ -1130,7 +1135,10 @@
         masterGrid.dataSource.read();
         masterGrid.refresh();
         location.reload();
-        console.log(2233333)
+
+        masterGrid.dataSource.read();
+        masterGrid.refresh();
+        location.reload();
     }
         function onGridEdit(e) {
             e.sender.one("dataBound", function (e) {
@@ -1146,7 +1154,6 @@
         $(document).ready(function () {
             var grid = $("#JobGrid").data("kendoGrid");
             grid.bind("save", bindDataAndRefresh);
-            console.log("uuuuuu");
         });    
     function MasterOnExpand(e) {
 
@@ -1156,7 +1163,7 @@
 
     var masterDataItem = masterGrid.dataItem(masterRow);
     codeid = masterDataItem.JobId;
-    unitPrice = masterDataItem.TotalPrice / masterDataItem.Quant;
+    unitPrice = masterDataItem.TotalPrice / masterDataItem.Quantity;
     }
 
     function jobStatusExpand(e) {
@@ -1167,22 +1174,33 @@
     var childMasterDataItem = childMasterGrid.dataItem(childMasterRow);
     jobStatusId = childMasterDataItem.JobStatusId;
     jobPhase = childMasterDataItem.JobPhase;
+        jobState = childMasterDataItem.Status;
+        if (jobState == 1) {
+            $(".k-grid-top", $("#JobStatusLineItem" + jobStatusId)).hide();
+
+        }
     }
 
-    function jobStatusDataBound() {
-    var dataSource = this.dataSource;
+    function jobStatusDataBound(e) {
+        var dataSource = this.dataSource;
+       
     this.element.find('tr.k-master-row').each(function () {
-    var row = $(this);
-    var data = dataSource.getByUid(row.data('uid'));
-    // this example will work if ReportId is null or 0 (if the row has no details)
-    if (data.JobPhase ==1) {
+        var row = $(this);
+
+        var data = dataSource.getByUid(row.data('uid'));
+        if (data.Status == 1) {
+            row.find(".k-grid-delete").hide();
+            row.find(".k-grid-edit").hide();
+        }
+        if (data.JobPhase == 1) {
     row.find('.k-hierarchy-cell a').css({ opacity: 0.0, cursor: 'default' }).click(function (e) { e.stopImmediatePropagation(); return false; });
     }
     });
     }
+
+
     function jobStatusLineItemDataBound()
     {
-        console.log(jobPhase);
         var grid = $('#JobStatusLineItem' + jobStatusId).data('kendoGrid');
 
     if(jobPhase==3)
@@ -1208,8 +1226,16 @@
     grid.hideColumn('Credit');
     grid.hideColumn('CashCreditInvoice');
     grid.hideColumn('Invoice');
-    }
+        }
 
+
+        var grid = this;
+        grid.tbody.find("tr[role='row']").each(function (e) {
+            if (jobState == 1) {
+                $(this).find(".k-grid-delete").remove();
+                $(this).find(".k-grid-edit").remove();
+            }
+        });
     }
     function jobStatusLineItemEdit()
     {
@@ -1242,7 +1268,7 @@
         var quantity = $("#Quantiy").val();
         console.log(quantity);
 
-        var totalPrice = $("#TotalPrice").val(quantity * unitPrice);
+        var totalPrice = $("#TotalPrice").val((quantity * unitPrice).toFixed(2));
         totalPrice.trigger("change");
 
     }
@@ -1317,17 +1343,27 @@
     $(".k-grid-edit", detailGrid).hide();
     }
     }
+    let quantity = 0;
+    function onChangeQuan() {
+        var value = this.value();
+        quantity = value;
+        onChange();
+    }
     function onChange() {
-    var unitPrice = $("#UnitPrice").val();
-    var quant = $("#Quant").val();
+        var unitPrice = $("#UnitPrice").val();
+        var quantitynumerictextbox = $("#Quantity");
     var jobTypeId = $("#JT").val();
+        console.log(unitPrice);
+        console.log(jobTypeId);
 
-    if (quant !== "" && unitPrice !== "" && jobTypeId !== "") {
-
+        console.log(quantity);
+        if (quantity !== "" && unitPrice !== "" && jobTypeId != "") {
+        console.log(unitPrice);
+        console.log(111111111111111111);
     $.ajax({
     url: '@Url.Action("GetBeforeVatAndTotalPerice", "JobOrders")',
 
-    data: { jobTypeId: jobTypeId, quant: quant, unitPrice: unitPrice },
+        data: { jobTypeId: jobTypeId, quant: quantity, unitPrice: unitPrice },
     type: 'POST',
     cache: false,
     success: function (result) {
@@ -1919,6 +1955,24 @@
             }
         }
     }
+    function onJobStatusEdit(e) {
+        var statusOption = e.sender.editable.options.model.Status;
+        var statusInput = $('[data-role="editable"] input#Status');
+        if (!e.model.isNew()) {
+            if (statusOption == 0) {
+                $("#Status").data("kendoDropDownList").enable(true);
+                console.log(statusOption);
+            } else {
+                console.log(statusOption);
+                $("#Status").data("kendoDropDownList").enable(false);
+            }
+        }
+        else {
+            $("#Status").data("kendoDropDownList").enable(false);
+            console.log(10000);
+
+        }
+    }
     function onDataBoundLines(e) {
 
         var detailGrid = "#"+e.sender.element[0].id;// "#ProductionStoreRequisitionItem_" + codeid;
@@ -1985,9 +2039,9 @@
         width: 170px;
     }
 
-    .row .col-sm-3 {
+    /*.row .col-sm-3 {
         width: 250px;
-    }
+    }*/
 
     /*.row .col-md-3 {
         margin: 40px;

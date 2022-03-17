@@ -23,9 +23,11 @@ namespace ExceedERP.Core.Domain.ProductionFollowUp
         [Display(Name = "Proforma ")]
         public int? ProformaId { get; set; }
         public int CustomerId { get; set; }
-        // [RegularExpression(@"^(\d{5})$", ErrorMessage = "Enter a valid 5 digit Job No")]
+        [RegularExpression(@"^(\d{5})$", ErrorMessage = "Enter a valid 5 digit Job No")]
         [Display(Name = "Job No.")]
         public string JobNo { get; set; }
+        [Display(Name = "Order Type")]
+        public ProductionDemand OrderType { get; set; }
         [Display(Name = "Customer Name")]
         public string CustomerName { get; set; }
         [Display(Name = "Estimated By")]
@@ -35,6 +37,8 @@ namespace ExceedERP.Core.Domain.ProductionFollowUp
         public string BrandName { get; set; }
         [Display(Name = "Tin No ")]
         public string TinNo { get; set; }
+        [Display(Name = "Contact Phone")]
+        public string ContactPhone { get; set; }
 
         [Display(Name = "Job Type")]
         public int JobTypeId { get; set; }
@@ -42,9 +46,9 @@ namespace ExceedERP.Core.Domain.ProductionFollowUp
         public string JT { get; set; }
         [Display(Name = "Pages")]
        
-        public int Pages { get; set; }
-        public int Copies { get; set; }
-        public int Quant { get; set; }
+        public decimal Pages { get; set; }
+        public decimal Copies { get; set; }
+        public decimal Quantity { get; set; }
         [Display(Name = "Unit Price")]
         public double UnitPrice { get; set; }
         [Display(Name = "Before Tax")]
@@ -115,6 +119,11 @@ namespace ExceedERP.Core.Domain.ProductionFollowUp
         public string Reason { get; set; }
 
     }
-    
+   public enum ProductionDemand
+    {
+        External,
+        Internal
+        
+    }
 
 }

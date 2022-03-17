@@ -10,7 +10,6 @@ namespace ExceedERP.Core.Domain.ProductionFollowUp
    public class ProductDelivery : Operations
     {
         public int ProductDeliveryId { get; set; }
-        public int JobId { get; set; }
         public int CustomerId { get; set; }
         public string CustomerRefNo { get; set; }
         public string CreditSaleNo { get; set; }

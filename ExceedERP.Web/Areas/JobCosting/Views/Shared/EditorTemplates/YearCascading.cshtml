@@ -1,20 +1,19 @@
 ﻿
 @(Html.Kendo().DropDownListFor(m => m)
-            .Name("PeriodId")
-            .ValuePrimitive(true)
-            .OptionLabel("--Months--")
-            .DataTextField("Name")
-            .DataValueField("GLPeriodId")
-            .CascadeFrom("YearId")
-            .DataSource(dataSource =>
-            {
-                dataSource.Read(read => read.Action("GetAllPeriods", "JobCostingDataProvider")
-                .Data("filterPeriods"))
-                
-                .ServerFiltering(true);
-            })
-            .AutoBind(false)
-            .Enable(false)
+                .ValuePrimitive(true)
+                .OptionLabel("--Months--")
+                .DataValueField("GLPeriodId")
+                .DataTextField("Name")
+                .DataSource(dataSource =>
+                {
+                    dataSource.Read(read => read.Action("GetAllPeriods", "JobCostingDataProvider")
+                    .Data("filterPeriods"))
+
+                    .ServerFiltering(true);
+                })
+                .AutoBind(false)
+                //.Enable(false)
+                .CascadeFrom("GlFiscalYearId")
 
 )
 @Html.ValidationMessageFor(m => m)

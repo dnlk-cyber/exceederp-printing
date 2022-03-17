@@ -11,6 +11,8 @@ namespace ExceedERP.Core.Domain.ProductionFollowUp
     {
         public int ProductDeliveryItemsId { get; set; }
         public int ProductDeliveryId { get; set; }
+        public int JobId { get; set; }
+        public string ItemCategory { get; set; }
         public string ItemCode { get; set; }
         public string Description { get; set; }
         public int UnitId { get; set; }

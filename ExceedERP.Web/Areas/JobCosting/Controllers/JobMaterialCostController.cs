@@ -29,32 +29,37 @@ namespace ExceedERP.Web.Areas.JobCosting.Common
             var jobCost = db.JobCosts.Find(id);
             if(jobCost != null)
             {
-
-                var items = db.IssueItems.Where(q => q.ProductionJobNo == jobCost.JobId.ToString());
-                foreach(var item in items)
+                var job = db.Jobs.Find(jobCost.JobId);
+                if(job!=null)
                 {
-                    JobMaterialCost jobMaterial = new JobMaterialCost();
+                    var items = db.IssueItems.Where(q => q.ProductionJobNo == job.JobNo).ToList();
+                    foreach (var item in items)
+                    {
+                        JobMaterialCost jobMaterial = new JobMaterialCost();
 
-                    jobMaterial.JobMaterialCostId = item.IssueItemID;
-                    jobMaterial.JobCostId = id;
-                    jobMaterial.ItemCode = item.ItemCode;
-                    jobMaterial.ItemCategoryCode = item.ItemCategoryCode;
-                    jobMaterial.Date = DateTime.Now;
-                    jobMaterial.Reference = item.ProductionJobNo;
-                    jobMaterial.Quantity = item.IssuedQuantity;
-                    jobMaterial.UnitPrice = item.UnitPrice;
-                    jobMaterial.Cost = item.Total;
-                    jobMaterial.SubTotal = item.UnitPrice * item.IssuedQuantity;
-                  jobMaterial.TaxAmount = item.Total-(item.UnitPrice * item.IssuedQuantity);
-                    jobMaterial.ItemDescription = jobCost.Description;
-                    jobMaterial.DateCreated = item.DateCreated;
-                  jobMaterial.LastModified = item.LastModified;
-                 jobMaterial.CreatedBy = item.CreatedBy;
-                    jobMaterial.ModifiedBy = item.ModifiedBy;
-                    jobmaterialcosts.Add(jobMaterial);
+                        jobMaterial.JobMaterialCostId = item.IssueItemID;
+                        jobMaterial.JobCostId = id;
+                        jobMaterial.ItemCode = item.ItemCode;
+                        jobMaterial.ItemCategoryCode = item.ItemCategoryCode;
+                        jobMaterial.Date = DateTime.Now;
+                        jobMaterial.Reference = item.ProductionJobNo;
+                        jobMaterial.Quantity = item.IssuedQuantity;
+                        jobMaterial.UnitPrice = item.UnitPrice;
+                        jobMaterial.Cost = item.Total;
+                        jobMaterial.SubTotal = item.UnitPrice * item.IssuedQuantity;
+                        jobMaterial.TaxAmount = item.Total - (item.UnitPrice * item.IssuedQuantity);
+                        // jobMaterial.ItemDescription = jobCost.Re;
+                        jobMaterial.DateCreated = item.DateCreated;
+                        jobMaterial.LastModified = item.LastModified;
+                        jobMaterial.CreatedBy = item.CreatedBy;
+                        jobMaterial.ModifiedBy = item.ModifiedBy;
+                        jobmaterialcosts.Add(jobMaterial);
+                    }
                 }
+               
                 
             }
+            //return Json(jobmaterialcosts);
 
             DataSourceResult result = jobmaterialcosts.ToDataSourceResult(request, jobMaterialCost => new {
                 JobMaterialCostId = jobMaterialCost.JobMaterialCostId,

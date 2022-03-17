@@ -22,7 +22,7 @@ namespace ExceedERP.Web.Areas.JobCosting.Common
         }
         public ActionResult GetAllPeriods(int YearId)
         {
-            var periods = db.GLPeriods.Select(s => new
+            var periods = db.GLPeriods.Where(q=>q.GlFiscalYearId==YearId).Select(s => new
             {
                 GLPeriodId = s.GLPeriodId,
                 Name = s.Name

@@ -162,6 +162,42 @@
     <Compile Include="Migrations\202201101216119_ProdFollowUpMod.Designer.cs">
       <DependentUpon>202201101216119_ProdFollowUpMod.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202202111315275_PensionAdded.cs" />
+    <Compile Include="Migrations\202202111315275_PensionAdded.Designer.cs">
+      <DependentUpon>202202111315275_PensionAdded.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202203101148356_IdleTiemUpdate.cs" />
+    <Compile Include="Migrations\202203101148356_IdleTiemUpdate.Designer.cs">
+      <DependentUpon>202203101148356_IdleTiemUpdate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202203101250104_DeliverUpdate.cs" />
+    <Compile Include="Migrations\202203101250104_DeliverUpdate.Designer.cs">
+      <DependentUpon>202203101250104_DeliverUpdate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202203111144257_PlanAdded.cs" />
+    <Compile Include="Migrations\202203111144257_PlanAdded.Designer.cs">
+      <DependentUpon>202203111144257_PlanAdded.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202203111317282_JobOrderWithOrderType.cs" />
+    <Compile Include="Migrations\202203111317282_JobOrderWithOrderType.Designer.cs">
+      <DependentUpon>202203111317282_JobOrderWithOrderType.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202203120640449_JobStatusItemUpdate.cs" />
+    <Compile Include="Migrations\202203120640449_JobStatusItemUpdate.Designer.cs">
+      <DependentUpon>202203120640449_JobStatusItemUpdate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202203120710233_JobStatusItemUpdateNullable.cs" />
+    <Compile Include="Migrations\202203120710233_JobStatusItemUpdateNullable.Designer.cs">
+      <DependentUpon>202203120710233_JobStatusItemUpdateNullable.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202203120751235_JobStatusStartAndEndDateAdded.cs" />
+    <Compile Include="Migrations\202203120751235_JobStatusStartAndEndDateAdded.Designer.cs">
+      <DependentUpon>202203120751235_JobStatusStartAndEndDateAdded.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202203150838437_JobStatusEndDateRequired.cs" />
+    <Compile Include="Migrations\202203150838437_JobStatusEndDateRequired.Designer.cs">
+      <DependentUpon>202203150838437_JobStatusEndDateRequired.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -240,6 +276,33 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202201101216119_ProdFollowUpMod.resx">
       <DependentUpon>202201101216119_ProdFollowUpMod.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202202111315275_PensionAdded.resx">
+      <DependentUpon>202202111315275_PensionAdded.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202203101148356_IdleTiemUpdate.resx">
+      <DependentUpon>202203101148356_IdleTiemUpdate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202203101250104_DeliverUpdate.resx">
+      <DependentUpon>202203101250104_DeliverUpdate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202203111144257_PlanAdded.resx">
+      <DependentUpon>202203111144257_PlanAdded.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202203111317282_JobOrderWithOrderType.resx">
+      <DependentUpon>202203111317282_JobOrderWithOrderType.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202203120640449_JobStatusItemUpdate.resx">
+      <DependentUpon>202203120640449_JobStatusItemUpdate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202203120710233_JobStatusItemUpdateNullable.resx">
+      <DependentUpon>202203120710233_JobStatusItemUpdateNullable.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202203120751235_JobStatusStartAndEndDateAdded.resx">
+      <DependentUpon>202203120751235_JobStatusStartAndEndDateAdded.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202203150838437_JobStatusEndDateRequired.resx">
+      <DependentUpon>202203150838437_JobStatusEndDateRequired.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

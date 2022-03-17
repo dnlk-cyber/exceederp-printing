@@ -40,7 +40,7 @@
                                                      .ButtonCount(5))
                               .Filterable()
                                .Scrollable(h => h.Height(500))
-                               .Events(ev=>ev.Edit("EnableDisableEstimation").Save("onSave"))
+                               .Events(ev=>ev.Edit("EnableDisableEstimation").Save("onSave").Save("onSave"))
                                   .DataSource(dataSource => dataSource
                                       .Ajax()
                                       .ServerOperation(true)
@@ -153,12 +153,15 @@
 
     function onSave() {
         var masterGrid = $("#ProformaGrid").data("kendoGrid");
-        var cus = $("#CustomerId").data("kendoDropDownList");
-        cus.dataSource.read();
+        //var cus = $("#CustomerId").data("kendoDropDownList");
+        //cus.dataSource.read();
         masterGrid.dataSource.read();
         masterGrid.refresh();
         location.reload();
-        console.log(2233333)
+        masterGrid.dataSource.read();
+        masterGrid.refresh();
+        location.reload();
+        //console.log(2233333)
     }
     function onChangeEstimation() {
 
@@ -233,9 +236,9 @@
                 $("#TinNo").prop("readonly", false);
 
                 $("#EstimationFormId").data("kendoDropDownList").value(0);//.trigger("change");
-                $("#CustomerName").val("");
-                $("#ContactName").val("");
-                $("#ContactPhone").val("");
+                //$("#CustomerName").val("");
+                //$("#ContactName").val("");
+                //$("#ContactPhone").val("");
             }
 
 

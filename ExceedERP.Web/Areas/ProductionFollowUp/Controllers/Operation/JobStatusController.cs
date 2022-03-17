@@ -32,7 +32,8 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                 JobId = jobStatus.JobId,
                 UserId = jobStatus.UserId,
                 Time = jobStatus.Time,
-                Date = jobStatus.Date,
+                StartDate = jobStatus.StartDate,
+                EndDate = jobStatus.EndDate,
                 JobPhase = jobStatus.JobPhase,
                 Status = jobStatus.Status
             });
@@ -42,10 +43,17 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
 
         public ActionResult JobStatuses_Create([DataSourceRequest]DataSourceRequest request, JobStatus jobStatus, int id)
         {
-
+            var jobS = db.JobStatuses.Where(q => q.JobPhase == jobStatus.JobPhase
+            && q.Status == jobStatus.Status
+            &&q.JobId==id).FirstOrDefault();
+            if(jobS!=null)
+            {
+                ModelState.AddModelError("Error","Existed Phase");
+            }
             if (ModelState.IsValid)
             {
-                var entity = (JobStatus)this.GetObject(jobStatus, true, id);
+                jobStatus.EndDate = jobStatus.StartDate;
+                   var entity = (JobStatus)this.GetObject(jobStatus, true, id);
                 db.JobStatuses.Add(entity);
                 db.SaveChanges();
                 jobStatus.JobStatusId = entity.JobStatusId;
@@ -59,13 +67,28 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult JobStatuses_Update([DataSourceRequest]DataSourceRequest request, JobStatus jobStatus)
         {
+            var jobS = db.JobStatuses.Where(q => q.JobPhase == jobStatus.JobPhase 
+            && q.Status == jobStatus.Status
+            && q.JobStatusId!= jobStatus.JobStatusId
+            && q.JobId == jobStatus.JobId).FirstOrDefault();
+            if (jobS != null)
+            {
+                ModelState.AddModelError("Error", "Existed Phase");
+            }
             if (ModelState.IsValid)
             {
                 var entity = (JobStatus)this.GetObject(jobStatus, false);
 
+                if (entity.JobPhase == JobPhase.Graphic)
+                {
+                    jobStatus.EndDate = DateTime.Now;
+                }
                 db.JobStatuses.Attach(entity);
                 db.Entry(entity).State = EntityState.Modified;
+                
+            
                 db.SaveChanges();
+
             }
 
             return Json(new[] { jobStatus }.ToDataSourceResult(request, ModelState));
@@ -99,7 +122,8 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                 JobId = jobStatus.JobId,
                 UserId = User.Identity.Name,
                 Time = jobStatus.Time,
-                Date = jobStatus.Date,
+                StartDate = jobStatus.StartDate,
+                EndDate = jobStatus.EndDate,
                 JobPhase = jobStatus.JobPhase,
                 Status = jobStatus.Status
 

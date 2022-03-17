@@ -48,7 +48,14 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
 
             return null;
         }
-
+        public JsonResult GetAllCustomers()
+        {
+            var customers = db.OrganizationCustomers.Select(s => new {
+                Code = s.OrganizationCustomerID,
+                Name = s.TradeName
+            }).ToList();
+            return Json(customers,JsonRequestBehavior.AllowGet);
+        }
         public JsonResult GetWorkUnitCostCenters()
         {
             var costCenter = db.MainCompanyStructures;

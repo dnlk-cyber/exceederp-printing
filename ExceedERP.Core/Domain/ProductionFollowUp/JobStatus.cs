@@ -21,10 +21,14 @@ namespace ExceedERP.Core.Domain.ProductionFollowUp
         public DateTime Time { get; set; }
         //finished time
         //[Required]
-        [Display(Name = "Date")]
+        [Display(Name = "Start Date")]
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
-        public DateTime Date { get; set; }
+        public DateTime StartDate { get; set; }
+        [Display(Name = "End Date")]
+        [DataType(DataType.Date)]
+        [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
+        public DateTime EndDate { get; set; }
         // [Required]
         [Display(Name = "Phase")]
         public JobPhase JobPhase { get; set; }
@@ -43,6 +47,10 @@ namespace ExceedERP.Core.Domain.ProductionFollowUp
         public DateTime Date { get; set; }
         [Display(Name = "Quantity")]
         public decimal Quantiy { get; set; }
+        [Display(Name = "Remainig Quantity")]
+        public decimal? RemainigQuantiy { get; set; }
+        [Display(Name = "Total Quantity")]
+        public decimal? TotalQuantiy { get; set; }
         [Display(Name = "Total Price")]
         public decimal TotalPrice { get; set; }
         [Display(Name = "Invoice")]

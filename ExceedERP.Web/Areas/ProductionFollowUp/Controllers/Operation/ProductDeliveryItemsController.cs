@@ -30,7 +30,9 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
             DataSourceResult result = productdeliveryitems.ToDataSourceResult(request, productDeliveryItems => new {
                 ProductDeliveryItemsId = productDeliveryItems.ProductDeliveryItemsId,
                 ProductDeliveryId = productDeliveryItems.ProductDeliveryId,
+                JobId = productDeliveryItems.JobId,
                 ItemCode = productDeliveryItems.ItemCode,
+                ItemCategory = productDeliveryItems.ItemCategory,
                 Description = productDeliveryItems.Description,
                 UnitId = productDeliveryItems.UnitId,
                 Quantity = productDeliveryItems.Quantity,
@@ -50,6 +52,8 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                 {
                     ProductDeliveryId = id,
                     ItemCode = productDeliveryItems.ItemCode,
+                    JobId = productDeliveryItems.JobId,
+                    ItemCategory = productDeliveryItems.ItemCategory,
                     Description = productDeliveryItems.Description,
                     UnitId = productDeliveryItems.UnitId,
                     Quantity = productDeliveryItems.Quantity,
@@ -74,6 +78,8 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                 {
                     ProductDeliveryItemsId = productDeliveryItems.ProductDeliveryItemsId,
                     ProductDeliveryId = productDeliveryItems.ProductDeliveryId,
+                    JobId = productDeliveryItems.JobId,
+                    ItemCategory = productDeliveryItems.ItemCategory,
                     ItemCode = productDeliveryItems.ItemCode,
                     Description = productDeliveryItems.Description,
                     UnitId = productDeliveryItems.UnitId,
@@ -99,6 +105,8 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                 {
                     ProductDeliveryItemsId = productDeliveryItems.ProductDeliveryItemsId,
                     ProductDeliveryId = productDeliveryItems.ProductDeliveryId,
+                    JobId = productDeliveryItems.JobId,
+                    ItemCategory = productDeliveryItems.ItemCategory,
                     ItemCode = productDeliveryItems.ItemCode,
                     Description = productDeliveryItems.Description,
                     UnitId = productDeliveryItems.UnitId,

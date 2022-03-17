@@ -13,6 +13,7 @@ namespace ExceedERP.Reporting.ProductionFollowUp.ViewModel
         public string CustomerRefNo { get; set; }
         public string CustomerName { get; set; }
         public string ContactName { get; set; }
+        public string BrandName { get; set; }
         public DateTime Date { get; set; }
         public string CreditSaleNo { get; set; }
         public string CashSaleNo { get; set; }

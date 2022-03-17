@@ -1,9 +1,9 @@
 ﻿@using ExceedERP.Core.Domain.JobCosting
-@if (HttpContext.Current.User.IsInRole(JobCostingRoles.JobCostingAdmin)
+@*@if (HttpContext.Current.User.IsInRole(JobCostingRoles.JobCostingAdmin)
              || HttpContext.Current.User.IsInRole(JobCostingRoles.JobCostingDailyLaborRateUser)
              || HttpContext.Current.User.IsInRole(JobCostingRoles.JobCostingIdleTimeUser)
              || HttpContext.Current.User.IsInRole(JobCostingRoles.JobCostingJobCostUser))
-{
+{*@
 <li class="">
     <a href="#" class="dropdown-toggle">
         <i class="menu-icon fa fa-lastfm-square"></i>
@@ -69,7 +69,7 @@
                            
                         </ul>
                     </li>
-                    //}
+                    @*}*@
                 </ul>
                     </li>
                     <li class="">
@@ -110,11 +110,14 @@
                             {*@
 
                                 <li id="JobCosting00100100871" class="actionlinlk">
-                                    @Html.ActionLink("Idle Time Category", "Index", "IdleTimeCategory", new { area = "JobCosting" }, null)<b class="arrow"></b>
+                                    @Html.ActionLink("Idle Time Setup", "Index", "IdleTimeCategory", new { area = "JobCosting" }, null)<b class="arrow"></b>
                                 </li>
 
                                 <li id="JobCosting00100100871" class="actionlinlk">
                                     @Html.ActionLink("Yearly Overhead Rate", "Index", "YearlyOverHeadRate", new { area = "JobCosting" }, null)<b class="arrow"></b>
+                                </li> 
+                            <li id="JobCosting00100100871" class="actionlinlk">
+                                    @Html.ActionLink("Pension", "Index", "JcPension", new { area = "JobCosting" }, null)<b class="arrow"></b>
                                 </li>
                            @* }*@
 
@@ -123,4 +126,4 @@
     </ul>
 </li>
 
- } 
+@* }*@ 

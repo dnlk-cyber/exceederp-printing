@@ -3,10 +3,10 @@
           .Name("grid")
           .Columns(columns =>
           {
-              columns.Bound(c => c.CategoryName);
+              columns.Bound(c => c.CategoryName).Title("Idle Time Name");
               columns.Bound(c => c.IsControllable)
                                 .ClientTemplate("<input type='checkbox' #= IsControllable ? checked='checked': '' # class='chkbx' />");
-              columns.Bound(c => c.CategoryDescription);
+              columns.Bound(c => c.CategoryDescription).Title("Description");
               
               columns.Command(command =>
         {
