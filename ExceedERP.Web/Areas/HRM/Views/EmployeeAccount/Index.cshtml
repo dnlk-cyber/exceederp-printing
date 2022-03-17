@@ -17,7 +17,7 @@
           columns.Bound(c => c.LastNameEnglish).Width(140);
           columns.Bound(c => c.MothersFullName).Width(150);
           columns.Bound(c => c.Gender).Width(100);
-          columns.Bound(c => c.Branch).Width(100);
+          columns.ForeignKey(c => c.Branch, (IEnumerable)ViewData["branches"], "BranchId", "Name").Filterable(ftb => ftb.Multi(true).Search(true)).Width(80);
           columns.Bound(c => c.AccountNumber).Width(150);
           //  columns.Bound(c => c.Assignment).Width(100);
 
@@ -40,7 +40,7 @@
                      .ProxyURL(Url.Action("Pdf_Export_Save", "EmployeeAccount"))
                                     )
          .Scrollable(h => h.Height(500))
-             .Groupable()
+             
                       .Sortable(sortable =>
                       {
                           sortable.SortMode(GridSortMode.SingleColumn);

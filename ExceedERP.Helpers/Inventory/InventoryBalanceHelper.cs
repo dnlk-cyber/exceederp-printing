@@ -36,8 +36,10 @@ namespace ExceedERP.Helpers.Inventory
                 // for recalculate all we shall use the next year since it starts from previous year
                 if (useNextYear)
                 {
-                    FiscalYearHelper fiscalYearHelper = new FiscalYearHelper();
-                    currentYear = db.GLFiscalYears.Find(fiscalYearHelper.GetNextFYearId(currentYear.GlFiscalYearId));
+                    var fiscalYearHelper = new FiscalYearHelper();
+                    var nextYear = db.GLFiscalYears.Find(fiscalYearHelper.GetNextFYearId(currentYear.GlFiscalYearId));
+                    if (nextYear != null)
+                        currentYear = nextYear;
                 }
                 var countBinCard = db.BinCardLines
                     .FirstOrDefault(b => b.StoreItemAssignmentID == storeAssignmentId &&

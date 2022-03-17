@@ -30,8 +30,11 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
       
            var list = inputs.GetPayrollPlacmentEmployees(User.Identity.Name);
             ViewData["EmployeeList"] = list.Where(x => x.IsActive);
-          
-            
+
+            var branchs = db.Branch;
+            ViewData["branches"] = branchs;
+
+
             return View();
         }
         public JsonResult GetCostCenter()
@@ -140,7 +143,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                              LastNameEnglish = a.employee.LastNameEnglish,
                              DateOfBirthAm = a.employee.DateOfBirthAm,
                              HiredDateAmharic = a.employee.HiredDateAmharic,
-                             //Branch = a.bank.FirstOrDefault(x => x.EmployeeId == a.employee.EmployeeId && x.isCurrent ).Branch .Name ,
+                             Branch = a.bank.FirstOrDefault(x => x.EmployeeId == a.employee.EmployeeId && x.isCurrent ).BranchId,
 
                          });
 
@@ -158,7 +161,7 @@ namespace ExceedERP.Web.Areas.HRM.Controllers.Payroll
                 DateOfBirthAm = person_Employee.DateOfBirthAm,
                 HiredDateAmharic = person_Employee.HiredDateAmharic,
                 AccountNumber = person_Employee.AccountNumber,
-                //Branch = person_Employee.Branch,
+                Branch = person_Employee.Branch,
              
 
             });
