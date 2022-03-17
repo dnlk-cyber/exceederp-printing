@@ -13,7 +13,7 @@ namespace ExceedERP.DataAccess.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "202203170842343_JobOrderUnitAdded"; }
+            get { return "202203171105584_JobOrderUnitAdded"; }
         }
         
         string IMigrationMetadata.Source

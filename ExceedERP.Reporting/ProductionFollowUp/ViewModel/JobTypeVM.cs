@@ -6,9 +6,22 @@ using System.Threading.Tasks;
 
 namespace ExceedERP.Reporting.ProductionFollowUp.ViewModel
 {
-   public class JobTypeVM
+    public class JobTypeVM
     {
-        public int JobTypeId { get; set; }
-        public string Type { get; set; }       
+        public string From { get; set; }
+        public string To { get; set; }
+        public List<JobTypeItemVM> JobTypeItemVMs { get; set; }
+
+
+    }
+    public class JobTypeItemVM
+    {
+        public string JobNo { get; set; }       
+        public string JobType { get; set; }       
+        public string Client { get; set; }       
+        public string QuantityAndPage { get; set; }       
+        public string Size { get; set; }       
+        public decimal TotalPrice { get; set; }       
+        public string Code { get; set; }       
     }
 }

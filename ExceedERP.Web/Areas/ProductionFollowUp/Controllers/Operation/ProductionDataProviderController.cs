@@ -58,9 +58,9 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
         }
         public JsonResult GetAllUnits()
         {
-            var units = db.UnitOfMeasurement.Select(s => new {
-                Code = s.UnitOfMeasurementId,
-                Name = s.Name
+            var units = db.UoMs.Select(s => new {
+                Code = s.UoMName,
+                Name = s.UoMName
             }).ToList();
             return Json(units, JsonRequestBehavior.AllowGet);
         }

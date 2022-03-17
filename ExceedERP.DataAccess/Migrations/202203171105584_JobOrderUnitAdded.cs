@@ -7,7 +7,7 @@ namespace ExceedERP.DataAccess.Migrations
     {
         public override void Up()
         {
-            AddColumn("ProductFollowUp.Job", "UnitId", c => c.Int(nullable: false));
+            AddColumn("ProductFollowUp.Job", "UnitId", c => c.String());
         }
         
         public override void Down()

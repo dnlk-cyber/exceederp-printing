@@ -76,6 +76,7 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                         var product = new ProductDeliveryItemsVM();
 
                         product.ItemCode = item.ItemCode;
+                        product.Unit = db.UoMs.Find(db.Jobs.Find(item.JobId)?.UnitId)?.UoMName;
                         product.JobNumber = db.Jobs.Find(item.JobId)?.JobNo;
                         product.Description = db.JobCategories.Find(db.Jobs.Find(item.JobId)?.JobTypeId)?.JobName;
                         product.JobNumber = db.Jobs.Find(item.JobId)?.JobNo;

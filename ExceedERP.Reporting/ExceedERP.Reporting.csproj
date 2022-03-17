@@ -3988,6 +3988,7 @@
     <Compile Include="Procurements\ViewModel\TenderOpening.cs" />
     <Compile Include="Procurements\ViewModel\TranscriptViewModel.cs" />
     <Compile Include="Procurements\ViewModel\WinningSupplierDetailVM.cs" />
+    <Compile Include="ProductionFollowUp\DataSource\JobTypeODS.cs" />
     <Compile Include="ProductionFollowUp\DataSource\ChangeOfOrderODS.cs" />
     <Compile Include="ProductionFollowUp\DataSource\FinishedGoodReceivalODS.cs" />
     <Compile Include="ProductionFollowUp\DataSource\DeliveryTeamPerformanceODS.cs" />
@@ -4054,6 +4055,12 @@
     </Compile>
     <Compile Include="ProductionFollowUp\Designer\rptProforma.Designer.cs">
       <DependentUpon>rptProforma.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ProductionFollowUp\Designer\RtlJobType.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ProductionFollowUp\Designer\RtlJobType.Designer.cs">
+      <DependentUpon>RtlJobType.cs</DependentUpon>
     </Compile>
     <Compile Include="ProductionFollowUp\ViewModel\ChangeOfOrderVM.cs" />
     <Compile Include="ProductionFollowUp\ViewModel\FinishedGoodReceivalVM.cs" />
@@ -5815,6 +5822,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="ProductionFollowUp\Designer\rptProforma.resx">
       <DependentUpon>rptProforma.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ProductionFollowUp\Designer\RtlJobType.resx">
+      <DependentUpon>RtlJobType.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Production\ReportDesign\prdProductionInputs.resx">
       <DependentUpon>prdProductionInputs.cs</DependentUpon>

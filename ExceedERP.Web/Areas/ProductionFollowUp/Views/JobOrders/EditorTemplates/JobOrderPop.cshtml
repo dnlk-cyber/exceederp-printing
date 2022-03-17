@@ -30,6 +30,7 @@
                 <label>Unit</label>
                 <div>
                     @(Html.Kendo().DropDownListFor(model => model.UnitId)
+                                                        .OptionLabel("--Select--")
                                                         .DataTextField("Name")
                                                         .DataValueField("Code")
                                                         .DataSource(dataSource =>
