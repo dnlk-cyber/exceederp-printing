@@ -26,9 +26,9 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Settings
         }
 
       
-        public ActionResult ProductionMonthlyPlans_Read([DataSourceRequest]DataSourceRequest request)
+        public ActionResult ProductionMonthlyPlans_Read([DataSourceRequest]DataSourceRequest request, int id)
         {
-            IQueryable<ProductionMonthlyPlan> ProductionMonthlyPlans = db.ProductionMonthlyPlans;
+            IQueryable<ProductionMonthlyPlan> ProductionMonthlyPlans = db.ProductionMonthlyPlans.Where(q=>q.ProductionYearlyPlanId==id);
             DataSourceResult result = ProductionMonthlyPlans.ToDataSourceResult(request, ProductionMonthlyPlan => new {
                 ProductionMonthlyPlanId = ProductionMonthlyPlan.ProductionMonthlyPlanId,
                 ProductionYearlyPlanId = ProductionMonthlyPlan.ProductionYearlyPlanId,
@@ -60,11 +60,11 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Settings
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult ProductionMonthlyPlans_Update([DataSourceRequest] DataSourceRequest request, [Bind(Prefix = "models")] IEnumerable<ProductionMonthlyPlan> productionMonthlyPlans)
+        public ActionResult ProductionMonthlyPlans_Update([DataSourceRequest] DataSourceRequest request, [Bind(Prefix = "models")] IEnumerable<ProductionMonthlyPlan> productionMonthlyPlans,int id)
         {
             var monthlIds = productionMonthlyPlans.ToList().Select(s => s.ProductionMonthlyPlanId);
             var updatedMOnthlyPlan = productionMonthlyPlans.ToList().Sum(s => s.TotalPrice);
-            var yearlyPlan = db.ProductionYearlyPlans.Where(q => q.ProductionYearlyPlanId == productionMonthlyPlans.FirstOrDefault().ProductionYearlyPlanId).FirstOrDefault();
+            var yearlyPlan = db.ProductionYearlyPlans.Find(id);
             var monthlyPlan = db.ProductionMonthlyPlans.Where(q => !monthlIds.Contains(q.ProductionMonthlyPlanId)).ToList().Sum(s => s.TotalPrice);
             if(yearlyPlan?.TotalPrice< (monthlyPlan+ updatedMOnthlyPlan))
             {

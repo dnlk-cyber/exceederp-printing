@@ -26,10 +26,35 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Settings
         }
 
       
-        public ActionResult ProductionMonthlyJobTypePlans_Read([DataSourceRequest]DataSourceRequest request)
+        public ActionResult ProductionMonthlyJobTypePlans_Read([DataSourceRequest]DataSourceRequest request,int id)
         {
-            IQueryable<ProductionMonthlyJobTypePlan> ProductionMonthlyJobTypePlans = db.ProductionMonthlyJobTypePlans;
-            DataSourceResult result = ProductionMonthlyJobTypePlans.ToDataSourceResult(request, ProductionMonthlyJobTypePlan => new {
+            var jobTypes = db.JobCategories.Where(q => !q.HaveParent).ToList();
+            IList<ProductionMonthlyJobTypePlan> jobTypePlans = new List<ProductionMonthlyJobTypePlan>();
+            foreach (var jobType in jobTypes)
+            {
+                ProductionMonthlyJobTypePlan jobTypePlan = new ProductionMonthlyJobTypePlan();
+                var jobTypePlann = db.ProductionMonthlyJobTypePlans.Where(q => q.ProductionMonthlyPlanId == id
+                                         && q.JobTypeId == jobType.JobCategoryId).FirstOrDefault();
+                int jobTypePlanId = 0;
+                decimal jobTypeTotalPricePlan = 0;
+                decimal jobTypeTotalProductPlan = 0;
+                if (jobTypePlann!=null)
+                {
+                     jobTypePlanId = (int)(jobTypePlann?.ProductionMonthlyJobTypePlanId);
+
+                     jobTypeTotalPricePlan = (decimal)jobTypePlann?.TotalPrice;
+                     jobTypeTotalProductPlan = (decimal)jobTypePlann?.TotalProduct;
+                    jobTypePlan.ProductionMonthlyJobTypePlanId = jobTypePlanId;
+                }
+                
+                jobTypePlan.JobTypeId = jobType.JobCategoryId;
+                jobTypePlan.TotalProduct = jobTypeTotalProductPlan;
+                jobTypePlan.TotalPrice = jobTypeTotalPricePlan;
+
+                jobTypePlans.Add(jobTypePlan);
+
+            }
+            DataSourceResult result = jobTypePlans.ToDataSourceResult(request, ProductionMonthlyJobTypePlan => new {
                 ProductionMonthlyJobTypePlanId = ProductionMonthlyJobTypePlan.ProductionMonthlyJobTypePlanId,
                 ProductionMonthlyPlanId = ProductionMonthlyJobTypePlan.ProductionMonthlyPlanId,
                 JobTypeId = ProductionMonthlyJobTypePlan.JobTypeId,
@@ -41,43 +66,62 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Settings
             return Json(result);
         }
 
-        public ActionResult ProductionMonthlyJobTypePlans_Create([DataSourceRequest]DataSourceRequest request, ProductionMonthlyJobTypePlan ProductionMonthlyJobTypePlan)
+        public ActionResult ProductionMonthlyJobTypePlans_Create([DataSourceRequest] DataSourceRequest request, [Bind(Prefix = "models")] IEnumerable<ProductionMonthlyJobTypePlan> productionMonthlyJobTypePlans, int id)
         {
-            //var plan = db.ProductionMonthlyJobTypePlans.Where(q => q.G == ProductionMonthlyJobTypePlan.GlFiscalYearId).FirstOrDefault();
-            //if(plan!=null)
-            //{
-            //    ModelState.AddModelError("Error","Fiscal Year Plan Already Existed!");
-            //}
+            var jobTypeIds = productionMonthlyJobTypePlans.ToList().Select(s => s.ProductionMonthlyJobTypePlanId);
+            var updatedMonthlyJobTypePlan = productionMonthlyJobTypePlans.ToList().Sum(s => s.TotalPrice);
+            var monthlyPlan = db.ProductionMonthlyPlans.Find(id);
+            var monthlyJobTypePlan = db.ProductionMonthlyJobTypePlans.Where(q => q.ProductionMonthlyPlanId==id).ToList().Sum(s => s.TotalPrice);
+
+           // return Json(jobTypeIds);
+                if (monthlyPlan?.TotalPrice < (updatedMonthlyJobTypePlan))
+            {
+                ModelState.AddModelError("Error", "Summation of monthly job type plans must equals with the monthly paln!");
+            }
             if (ModelState.IsValid)
             {
-                var entity = (ProductionMonthlyJobTypePlan)this.GetObject(ProductionMonthlyJobTypePlan);
-                db.ProductionMonthlyJobTypePlans.Add(entity);
+                foreach (var productionMonthlyJobTypePlan in productionMonthlyJobTypePlans)
+                {
+                    productionMonthlyJobTypePlan.ProductionMonthlyPlanId = id;
+                    var entity = (ProductionMonthlyJobTypePlan)this.GetObject(productionMonthlyJobTypePlan);
+
+                    db.ProductionMonthlyJobTypePlans.Add(entity);
+                }
                 db.SaveChanges();
-                ProductionMonthlyJobTypePlan.ProductionMonthlyJobTypePlanId = entity.ProductionMonthlyJobTypePlanId;
             }
 
-            return Json(new[] { ProductionMonthlyJobTypePlan }.ToDataSourceResult(request, ModelState));
+            return Json(new[] { productionMonthlyJobTypePlans }.ToDataSourceResult(request, ModelState));
         }
 
         [AcceptVerbs(HttpVerbs.Post)]      
-            public ActionResult ProductionMonthlyJobTypePlans_Update([DataSourceRequest] DataSourceRequest request, [Bind(Prefix = "models")] IEnumerable<ProductionMonthlyJobTypePlan> productionMonthlyJobTypePlans)
+            public ActionResult ProductionMonthlyJobTypePlans_Update([DataSourceRequest] DataSourceRequest request, [Bind(Prefix = "models")] IEnumerable<ProductionMonthlyJobTypePlan> productionMonthlyJobTypePlans, int id)
             {
                 var jobTypeIds = productionMonthlyJobTypePlans.ToList().Select(s => s.ProductionMonthlyJobTypePlanId);
                 var updatedMonthlyJobTypePlan = productionMonthlyJobTypePlans.ToList().Sum(s => s.TotalPrice);
-                var monthlyPlan = db.ProductionMonthlyPlans.Where(q => q.ProductionMonthlyPlanId == productionMonthlyJobTypePlans.FirstOrDefault().ProductionMonthlyPlanId).FirstOrDefault();
-                var monthlyJobTypePlan = db.ProductionMonthlyPlans.Where(q => !jobTypeIds.Contains(q.ProductionMonthlyPlanId)).ToList().Sum(s => s.TotalPrice);
-                if (monthlyPlan?.TotalPrice < (monthlyJobTypePlan + updatedMonthlyJobTypePlan))
+                var monthlyPlan = db.ProductionMonthlyPlans.Find(id);
+                var monthlyJobTypePlan = db.ProductionMonthlyJobTypePlans.Where(q=>q.ProductionMonthlyPlanId==id).Where(q => !jobTypeIds.Contains(q.ProductionMonthlyJobTypePlanId)).ToList().Sum(s => s.TotalPrice);
+            if (monthlyPlan?.TotalPrice < (monthlyJobTypePlan + updatedMonthlyJobTypePlan))
                 {
+
                     ModelState.AddModelError("Error", "Summation of monthly job type plans must equals with the monthly paln!");
                 }
                 if (ModelState.IsValid)
             {
                 foreach (var productionMonthlyJobTypePlan in productionMonthlyJobTypePlans)
                 {
+                    productionMonthlyJobTypePlan.ProductionMonthlyPlanId = id;
                     var entity = (ProductionMonthlyJobTypePlan)this.GetObject(productionMonthlyJobTypePlan);
+                    if(productionMonthlyJobTypePlan.ProductionMonthlyJobTypePlanId==0)
+                    {
+                        db.ProductionMonthlyJobTypePlans.Add(entity);
 
-                    db.ProductionMonthlyJobTypePlans.Attach(entity);
-                    db.Entry(entity).State = EntityState.Modified;
+                    }
+                    else
+                    {
+                        db.ProductionMonthlyJobTypePlans.Attach(entity);
+                        db.Entry(entity).State = EntityState.Modified;
+                    }
+                   
                 }
                 db.SaveChanges();
             }

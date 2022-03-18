@@ -202,6 +202,10 @@
     <Compile Include="Migrations\202203171105584_JobOrderUnitAdded.Designer.cs">
       <DependentUpon>202203171105584_JobOrderUnitAdded.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202203180751422_MonthlyAndJobTypePlanAdded.cs" />
+    <Compile Include="Migrations\202203180751422_MonthlyAndJobTypePlanAdded.Designer.cs">
+      <DependentUpon>202203180751422_MonthlyAndJobTypePlanAdded.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -310,6 +314,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202203171105584_JobOrderUnitAdded.resx">
       <DependentUpon>202203171105584_JobOrderUnitAdded.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202203180751422_MonthlyAndJobTypePlanAdded.resx">
+      <DependentUpon>202203180751422_MonthlyAndJobTypePlanAdded.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

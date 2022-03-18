@@ -1,4 +1,4 @@
-﻿﻿using System;
+﻿using System;
 using System.Collections.Generic;
 
 using System.Data.Entity;
@@ -11,6 +11,7 @@ using Kendo.Mvc.UI;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Core.Domain.ProductionFollowUp;
 using ExceedERP.Web.Helpers;
+using ExceedERP.Core.Domain.Finance.GL;
 
 namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Settings
 {
@@ -22,6 +23,8 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Settings
         public ActionResult Index()
         {
             ViewData["FiscalYears"] = db.GLFiscalYears.ToList();
+            ViewData["GlPeriods"] = db.GLPeriods.ToList();
+            ViewData["JobTypes"] = db.JobCategories.ToList();
             return View();
         }
 
@@ -53,9 +56,30 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Settings
                 db.ProductionYearlyPlans.Add(entity);
                 db.SaveChanges();
                 ProductionYearlyPlan.ProductionYearlyPlanId = entity.ProductionYearlyPlanId;
+                var periods = db.GLPeriods.Where(q => q.GlFiscalYearId == ProductionYearlyPlan.GlFiscalYearId).ToList();
+                CreatMonthlyProductionPlans(periods, ProductionYearlyPlan.ProductionYearlyPlanId);
+                db.SaveChanges();
+
             }
 
             return Json(new[] { ProductionYearlyPlan }.ToDataSourceResult(request, ModelState));
+        }
+
+        private void CreatMonthlyProductionPlans(List<GLPeriod> periods, int yearPlanId)
+        {
+
+             foreach(var period in periods)
+            {
+                var entity = new ProductionMonthlyPlan
+                {
+                    ProductionYearlyPlanId = yearPlanId,
+                    GLPeriodId = period.GLPeriodId,
+                    TotalPrice = 0,
+                    TotalProduct = 0
+
+                };
+                db.ProductionMonthlyPlans.Add(entity);
+            }
         }
 
         [AcceptVerbs(HttpVerbs.Post)]
