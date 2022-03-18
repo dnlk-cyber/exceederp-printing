@@ -11,6 +11,7 @@
                   columns.Bound(c => c.PeriodName).Width(120).EditorTemplateName("Period");
                   columns.Bound(c => c.CategoryName).Width(150).EditorTemplateName("GLCategory");
                   columns.Bound(c => c.JournalNumber).Title("Reference").Width(120);
+                  columns.Bound(c => c.ReferenceDoc).Width(100).Title("Doc. Ref.");
                   columns.Bound(c => c.EffectiveDate).Title("Date").Width(130);
                   columns.Bound(c => c.Remark).Width(100);
                   columns.Bound(c => c.CreatedBy).Width(130);
@@ -21,6 +22,7 @@
                     "# } #" +
                     "/>"
                     );
+                  columns.Bound(c => c.DebitSum).Width(100).Format("{0:n}");
                   columns.Bound(c => c.Status).Width(100);
               })
               .ToolBar(toolbar =>

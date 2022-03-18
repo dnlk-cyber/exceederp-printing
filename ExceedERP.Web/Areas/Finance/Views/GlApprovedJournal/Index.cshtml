@@ -10,19 +10,20 @@
           columns.Bound(c => c.PeriodName).Width(150);
           columns.Bound(c => c.CategoryName).Width(150);
           columns.Bound(c => c.JournalNumber).Title("Reference").Width(120);
+          columns.Bound(c => c.ReferenceDoc).Width(100).Title("Doc. Ref.");
           columns.Bound(c => c.EffectiveDate).Title("Date").Width(150);
           columns.Bound(c => c.CreatedBy).Width(130);
-          columns.Bound(c => c.ReferenceDoc).Width(100).Title("Doc. Ref.");
+          columns.Bound(c => c.DebitSum).Width(100).Format("{0:n}");
           columns.Bound(c => c.PaymentReference).Width(100).Title("Pay. Ref.");
           columns.Bound(c => c.InvoiceReferenceDoc).Width(100).Title("Invoice Ref");
           columns.Bound(c => c.Remark).Width(100);
           columns.Bound(c => c.Status).Width(100);
-          
+
       })
       .ToolBar(toolbar =>
       {
-         // toolbar.Excel();
-         // toolbar.Pdf();
+          // toolbar.Excel();
+          // toolbar.Pdf();
       })
 
       .Editable(editable => editable.Mode(GridEditMode.InLine))
@@ -37,10 +38,10 @@
         .Sortable()
         .Filterable()
              .Selectable(selectable =>
-                        {
-                            selectable.Mode(GridSelectionMode.Single);
-                            selectable.Type(GridSelectionType.Row);
-                        })
+             {
+                 selectable.Mode(GridSelectionMode.Single);
+                 selectable.Type(GridSelectionType.Row);
+             })
                     .Sortable(sortable =>
                     {
                         sortable.SortMode(GridSortMode.SingleColumn);

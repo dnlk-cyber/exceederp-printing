@@ -97,6 +97,14 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
                     _db.GLRecordJournalDetails.Add(entity);
                     _db.SaveChanges();
                     gLRecordJournalDetail.GlRecordJournalDetailId = entity.GlRecordJournalDetailId;
+                #region update journal sum
+                var journal = _db.GLRecordJournals.Find(id);
+                var lines = _db.GLRecordJournalDetails.Where(x => x.GlRecordJournalId == id);
+                journal.DebitSum = lines.Sum(x => x.Debit);
+                _db.GLRecordJournals.Attach(journal);
+                _db.Entry(journal).State = EntityState.Modified;
+                _db.SaveChanges();
+                #endregion
 
                 #region operation log
                 UserHelper.OperationLog(Request.UserHostAddress, "GL record journal item", "Success", User.Identity.Name, $"created item {entity.AccountCode} under journal {entity.GlRecordJournalId}", Modules.Finance);
@@ -152,6 +160,14 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
                     _db.GLRecordJournalDetails.Attach(entity);
                     _db.Entry(entity).State = EntityState.Modified;
                     _db.SaveChanges();
+                #region update journal sum
+                var journal = _db.GLRecordJournals.Find(id);
+                var lines = _db.GLRecordJournalDetails.Where(x => x.GlRecordJournalId == id);
+                journal.DebitSum = lines.Sum(x => x.Debit);
+                _db.GLRecordJournals.Attach(journal);
+                _db.Entry(journal).State = EntityState.Modified;
+                _db.SaveChanges();
+                #endregion
 
                 #region operation log
                 UserHelper.OperationLog(Request.UserHostAddress, "GL record journal item", "Success", User.Identity.Name, $"updated item {entity.AccountCode} under journal {entity.GlRecordJournalId}", Modules.Finance);
@@ -201,6 +217,14 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
                     _db.GLRecordJournalDetails.Attach(entity);
                     _db.GLRecordJournalDetails.Remove(entity);
                     _db.SaveChanges();
+                #region update journal sum
+                var journal = _db.GLRecordJournals.Find(gLRecordJournalDetail.GlRecordJournalId);
+                var lines = _db.GLRecordJournalDetails.Where(x => x.GlRecordJournalId == gLRecordJournalDetail.GlRecordJournalId);
+                journal.DebitSum = lines.Sum(x => x.Debit);
+                _db.GLRecordJournals.Attach(journal);
+                _db.Entry(journal).State = EntityState.Modified;
+                _db.SaveChanges();
+                #endregion
                 #region delete log
                 UserHelper.DeleteLog(Request.UserHostAddress, "Delete", "Success", User.Identity.Name, "Deleted journal line " + gLRecordJournalDetail.GlRecordJournalId + " " + gLRecordJournalDetail.AccountCode, Modules.Finance);
                 #endregion

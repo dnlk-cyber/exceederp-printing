@@ -67,7 +67,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                 {
                     if (aPMiscellaneousPaymentValidation.Status == ApprovalStatuses.Approve)
                     {
-                       
+                        
                         #region pass data for reconciliation
 
                         foreach (var distribution in record.ApMiscellaneousPaymentDistribution)
