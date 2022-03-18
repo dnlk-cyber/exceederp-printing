@@ -1,8 +1,10 @@
 ﻿using ExceedERP.DataAccess.Context;
 using ExceedERP.Reporting.ProductionFollowUp.ViewModel;
+using ExceedERP.Reporting.SharedDataSources;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -14,9 +16,10 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
     {
         ExceedDbContext db = new ExceedDbContext();
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public List<ProductDeliveryVM> GetProductDelivery(string id)
+        public ProductDeliveryVM GetProductDelivery(string id)
         {
-            List<ProductDeliveryVM> productList = new List<ProductDeliveryVM>();
+            var delivery = new ProductDeliveryVM();
+
             if (id != null)
             {
                 int.TryParse(id, out int productDeliveryId);
@@ -24,8 +27,26 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                 var productDelivery = db.ProductDeliveries.FirstOrDefault(x => x.ProductDeliveryId == productDeliveryId);
                 if (productDelivery != null)
                 {
-                    var delivery = new ProductDeliveryVM();
+                    var organization = db.Companies.FirstOrDefault(x => x.Category == "0");
+                    Image LogoFileName = null;
+                    string AmharicName = "";
+                    string Name = "";
+                    if (organization != null)
+                    {
+                        Name = organization.TradeName;
+                        AmharicName = organization.AmharicName;
+                        var logo =
+                                           db.Attachments.FirstOrDefault(a => a.Reference == organization.MainCompanyId.ToString() &&
+                                                   a.ReferenceType == ExceedERP.Core.Domain.Common.AttachmentType.LOGO);
+                        if (logo != null)
+                        {
+                            LogoFileName = OrganizationObjectDataSource.ByteArrayToImage(logo.BinaryFile);
+                        }
+                    }
 
+                    delivery.LogoFileName = LogoFileName;
+                    delivery.Name = Name;
+                    delivery.AmharicName = AmharicName;
                     delivery.PrepareBy = productDelivery.PreparedBy ;
                     delivery.ApprovedBy =  productDelivery.ApprovedBy ;
                     delivery.IdentificationNo = productDelivery.IdentificationNo;
@@ -55,22 +76,25 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                         var product = new ProductDeliveryItemsVM();
 
                         product.ItemCode = item.ItemCode;
+                        product.Unit = db.UoMs.Find(db.Jobs.Find(item.JobId)?.UnitId)?.UoMName;
                         product.JobNumber = db.Jobs.Find(item.JobId)?.JobNo;
-                        product.Description = item.Description;
+                        product.Description = db.JobCategories.Find(db.Jobs.Find(item.JobId)?.JobTypeId)?.JobName;
                         product.JobNumber = db.Jobs.Find(item.JobId)?.JobNo;
                         product.Unit = unit?.UOM;
                         product.Quantity = item.Quantity;
-                        product.UnitCost = item.UnitCost;
-                        product.TotalPrice = item.TotalCost;
+                        product.UnitCostBirr = (int)item.UnitCost;
+                        product.UnitCostCent = (int)(Math.Round(item.UnitCost, 2) % 1 * 100);
+                        product.TotalPriceBirr = (int)item.TotalCost;
+                        product.TotalPriceCent = (int)(Math.Round(item.TotalCost, 2) % 1 * 100);
 
                         delivery.DeliveryItems.Add(product);
                     }
 
-                    productList.Add(delivery);
+                    //productList.Add(delivery);
                 }
             }
 
-            return productList;
+            return delivery;
         }
     }
 }

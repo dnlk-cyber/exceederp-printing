@@ -43,6 +43,7 @@ namespace ExceedERP.Reporting.ProductionFollowUp.ViewModel
         public decimal LastWeekPendingJobs { get; set; }
         public decimal CurrentWeekOrderedJobs { get; set; }
         public decimal Total { get; set; }
+        public string Unit { get; set; }
         public decimal WeeklyPlan { get; set; }
         public decimal WeeklyPerformance { get; set; }
         public decimal ProductionInProgress { get; set; }

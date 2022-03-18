@@ -47,6 +47,7 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                 if(jobOrder!=null)
                 {
                     item.JobNo = jobOrder.JobNo;
+                    item.Unit = db.UoMs.Find(jobOrder.UnitId)?.UoMName;
                     item.JobType = db.JobCategories.Find(jobOrder.JobTypeId)?.JobName;
                     item.Client = db.OrganizationCustomers.Find(jobOrder.CustomerId)?.TradeName;
                     item.JobType = db.JobCategories.Find(jobOrder.JobTypeId)?.JobName;
@@ -55,7 +56,7 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                     item.JobType = db.JobCategories.Find(jobOrder.JobTypeId)?.JobName;
                     decimal TotalBirr = Math.Round(item.Quantity * (decimal)jobOrder.UnitPrice,2);
                     item.TotalPriceBirr = (int)TotalBirr;
-                    item.TotalPriceCent = (TotalBirr % 1) * 100;
+                    item.TotalPriceCent = (int)(Math.Round((TotalBirr % 1) ,2)* 100);
                     item.Remark = "";
                     item.JobType = db.JobCategories.Find(jobOrder.JobTypeId)?.JobName;
                     items.Add(item);

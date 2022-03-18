@@ -37,7 +37,7 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
 
             }
 
-            var plans = db.ProductionPlans.FirstOrDefault();
+            var plans = db.ProductionMonthlyPlans.FirstOrDefault();
             var latestJobsPrices = latestJobs.Sum(s=>s.TotalPrice);
             var model = new PrintingAndFinishingTeamPerformanceVM();
             decimal LastWeekFinishedJobs = 0;

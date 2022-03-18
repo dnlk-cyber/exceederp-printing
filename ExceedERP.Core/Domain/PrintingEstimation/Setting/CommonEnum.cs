@@ -21,6 +21,7 @@ namespace ExceedERP.Core.Domain.PrintingEstimation.Setting
     {
         Printing = 1,
         Finishing = 2,
+
     }
     public enum Sub_Category
     {
@@ -52,7 +53,8 @@ namespace ExceedERP.Core.Domain.PrintingEstimation.Setting
     public enum JobState
     {
         InProgress,
-        Finished
+        Finished,
+        Delivered
     }
     public enum EmployementType
     {

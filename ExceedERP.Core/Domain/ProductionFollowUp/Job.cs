@@ -49,6 +49,8 @@ namespace ExceedERP.Core.Domain.ProductionFollowUp
         public decimal Pages { get; set; }
         public decimal Copies { get; set; }
         public decimal Quantity { get; set; }
+        [Display(Name = "Unit")]
+        public string UnitId { get; set; }
         [Display(Name = "Unit Price")]
         public double UnitPrice { get; set; }
         [Display(Name = "Before Tax")]
