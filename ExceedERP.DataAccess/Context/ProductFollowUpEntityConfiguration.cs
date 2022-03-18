@@ -10,12 +10,28 @@ namespace ExceedERP.DataAccess.Context
 {
    public class ProductFollowUpEntityConfiguration
     {
-        public class ProductionPlanEntityTypeConfiguration : EntityTypeConfiguration<ProductionPlan>
+        public class ProductionMonthlyJobTypePlanEntityTypeConfiguration : EntityTypeConfiguration<ProductionMonthlyJobTypePlan>
         {
-            public ProductionPlanEntityTypeConfiguration()
+            public ProductionMonthlyJobTypePlanEntityTypeConfiguration()
             {
-                this.ToTable("ProductionPlans", "ProductFollowUp");
-                this.HasKey<int>(t => t.ProductionPlanId);
+                this.ToTable("ProductionMonthlyJobTypePlans", "ProductFollowUp");
+                this.HasKey<int>(t => t.ProductionMonthlyJobTypePlanId);
+            }
+        }
+        public class ProductionMonthlyPlanEntityTypeConfiguration : EntityTypeConfiguration<ProductionMonthlyPlan>
+        {
+            public ProductionMonthlyPlanEntityTypeConfiguration()
+            {
+                this.ToTable("ProductionMonthlyPlans", "ProductFollowUp");
+                this.HasKey<int>(t => t.ProductionMonthlyPlanId);
+            }
+        }
+        public class ProductionYearlyPlanEntityTypeConfiguration : EntityTypeConfiguration<ProductionYearlyPlan>
+        {
+            public ProductionYearlyPlanEntityTypeConfiguration()
+            {
+                this.ToTable("ProductionYearlyPlans", "ProductFollowUp");
+                this.HasKey<int>(t => t.ProductionYearlyPlanId);
             }
         }
         public class JobStatusLineItemEntityTypeConfiguration : EntityTypeConfiguration<JobStatusLineItem>

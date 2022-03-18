@@ -36,6 +36,8 @@ namespace ExceedERP.Core.Domain.ProductionFollowUp
     {
         public int ProductionMonthlyJobTypePlanId { get; set; }
         public int ProductionMonthlyPlanId { get; set; }
+        [Display(Name = "Job Type")]
+        public int JobTypeId { get; set; }
         [DisplayFormat(DataFormatString = "{0:n}", ApplyFormatInEditMode = true)]
         [Display(Name = "Total Production Plan")]
         public decimal? TotalProduct { get; set; }
