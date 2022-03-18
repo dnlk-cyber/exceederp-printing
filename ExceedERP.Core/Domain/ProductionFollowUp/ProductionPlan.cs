@@ -7,11 +7,35 @@ using System.Threading.Tasks;
 
 namespace ExceedERP.Core.Domain.ProductionFollowUp
 {
-    public class ProductionPlan
+    public class ProductionYearlyPlan
     {
-        public int ProductionPlanId { get; set; }
+        public int ProductionYearlyPlanId { get; set; }
         [Display(Name="Fiscal Year")]
         public int GlFiscalYearId   { get; set; }
+        [DisplayFormat(DataFormatString = "{0:n}", ApplyFormatInEditMode = true)]
+        [Display(Name = "Total Production Plan")]
+        public decimal? TotalProduct { get; set; }
+        [DisplayFormat(DataFormatString = "{0:C}", ApplyFormatInEditMode = true)]
+        [Display(Name = "Total Sales Plan")]
+        public decimal TotalPrice { get; set; }
+    }
+    public class ProductionMonthlyPlan
+    {
+        public int ProductionMonthlyPlanId { get; set; }
+        public int ProductionYearlyPlanId { get; set; }
+        [Display(Name = "Monthly Plan")]
+        public int GLPeriodId { get; set; }
+        [DisplayFormat(DataFormatString = "{0:n}", ApplyFormatInEditMode = true)]
+        [Display(Name = "Total Production Plan")]
+        public decimal? TotalProduct { get; set; }
+        [DisplayFormat(DataFormatString = "{0:C}", ApplyFormatInEditMode = true)]
+        [Display(Name = "Total Sales Plan")]
+        public decimal TotalPrice { get; set; }
+    }
+    public class ProductionMonthlyJobTypePlan
+    {
+        public int ProductionMonthlyJobTypePlanId { get; set; }
+        public int ProductionMonthlyPlanId { get; set; }
         [DisplayFormat(DataFormatString = "{0:n}", ApplyFormatInEditMode = true)]
         [Display(Name = "Total Production Plan")]
         public decimal? TotalProduct { get; set; }

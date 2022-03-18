@@ -65,5 +65,10 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Report
             ViewBag.id = id;
             return View();
         }
+        public ActionResult GetJobOrders()
+        {
+            return View();
+
+        }
     }
 }
