@@ -4,8 +4,8 @@
       .Name("grid")
       .Columns(columns =>
       {
-          columns.Bound(c => c.WithholdingAccountCode).EditorTemplateName("AccountCode").Width(150);
-          columns.Bound(c => c.Branch).Hidden();
+          columns.Bound(c => c.WithholdingAccountCode).EditorTemplateName("AccountCode").Width(100);
+          columns.Bound(c => c.WithholdPercent).Width(90);
 
           columns.Bound(c => c.DateCreated).Width(150).Format("{0:dd/MM/yyyy}").Hidden(true);
           columns.Bound(c => c.LastModified).Width(150).Format("{0:dd/MM/yyyy}").Hidden(true);
@@ -30,7 +30,7 @@
       .Scrollable()
       .Sortable()
       .Filterable()
-      .Groupable()
+     
       .DataSource(dataSource => dataSource
           .Ajax()
           .Model(

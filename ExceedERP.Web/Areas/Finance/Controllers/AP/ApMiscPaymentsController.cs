@@ -710,7 +710,8 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                 
                  if (record.ApMiscellaneousPaymentDistribution.Any())
                  {
-                     GlRecordJournal journal = new GlRecordJournal
+                    
+                    GlRecordJournal journal = new GlRecordJournal
                      {
                          DateCreated = DateTime.Now,
                          CreatedBy = User.Identity.Name,

@@ -83,7 +83,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
                 SourcesName = glRecordJournal.SourcesName,
                 JournalNumber = glRecordJournal.JournalNumber,
                 EffectiveDate = glRecordJournal.EffectiveDate,
-                DebitSum = glRecordJournal.GLRecordJournalDetail.Sum(x=>x.Debit),
+                DebitSum = glRecordJournal.DebitSum,
                 Posting = glRecordJournal.Posting,
                 isReversed = glRecordJournal.isReversed,
                 IsPostedToSecondLedger = glRecordJournal.IsPostedToSecondLedger,
@@ -296,6 +296,11 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
 
                     //}
 
+                    #region update sum
+                    var lines = _db.GLRecordJournalDetails.Where(x=>x.GlRecordJournalId==glRecordJournal.GlRecordJournalId);
+                    glRecordJournal.DebitSum = lines.Sum(x => x.Debit);
+                    #endregion
+
                     var entity = new GlRecordJournal
                     {
                         GlRecordJournalId = glRecordJournal.GlRecordJournalId,
@@ -315,6 +320,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
                         PostedTime = glRecordJournal.PostedTime,
                         IsPostedToSecondLedger = glRecordJournal.IsPostedToSecondLedger,
                         IsVoidDoc = glRecordJournal.IsVoidDoc,
+                        DebitSum= glRecordJournal.DebitSum,
                         Remark = glRecordJournal.Remark,
                         ReferenceDoc = glRecordJournal.ReferenceDoc,
                         PaymentReference = glRecordJournal.PaymentReference,

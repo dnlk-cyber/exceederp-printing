@@ -378,6 +378,8 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL
                 SourcesName = glRecordJournal.SourcesName,
                 JournalNumber = glRecordJournal.JournalNumber,
                 EffectiveDate = glRecordJournal.EffectiveDate.Date,
+                DebitSum = glRecordJournal.DebitSum,
+                ReferenceDoc = glRecordJournal.ReferenceDoc,
                 Posting = glRecordJournal.Posting,
                 isReversed = glRecordJournal.isReversed,
                 IsSendForApproval = glRecordJournal.IsSendForApproval,

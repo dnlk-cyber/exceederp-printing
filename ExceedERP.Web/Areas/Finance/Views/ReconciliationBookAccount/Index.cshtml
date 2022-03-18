@@ -6,13 +6,13 @@
       .Columns(columns =>
       {
           columns.Bound(c => c.AccountCode).Width(150);
-          columns.Bound(c => c.Type).Width(120);
-          columns.Bound(c => c.ReferenceDoc).Width(110);
-          columns.Bound(c => c.Reference).Width(120);
+          columns.Bound(c => c.Type).Width(100);
+          columns.Bound(c => c.ReferenceDoc).Width(160);
+          columns.Bound(c => c.Reference).Width(100);
           columns.Bound(c => c.Debit).Format("{0:n}").Width(120);
           columns.Bound(c => c.Credit).Format("{0:n}").Width(120);
           columns.Bound(c => c.Date).Width(120);
-          columns.Bound(c => c.Reconciled).Width(120).ClientTemplate(
+          columns.Bound(c => c.Reconciled).Width(100).ClientTemplate(
               "<input type='checkbox' disabled = 'true' value='#= Reconciled #' " +
               "# if (Reconciled) { #" +
               "checked='checked'" +

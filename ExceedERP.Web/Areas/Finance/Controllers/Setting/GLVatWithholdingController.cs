@@ -29,6 +29,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Setting
             DataSourceResult result = glvatwithholdings.ToDataSourceResult(request, gLVatWithholding => new {
                 GLVatWithholdingID = gLVatWithholding.GLVatWithholdingID,
                 WithholdingAccountCode = gLVatWithholding.WithholdingAccountCode,
+                WithholdPercent = gLVatWithholding.WithholdPercent,
                 Branch = gLVatWithholding.Branch,
                 DateCreated = gLVatWithholding.DateCreated,
                 LastModified = gLVatWithholding.LastModified,
@@ -63,6 +64,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Setting
                     {
                         WithholdingAccountCode = gLVatWithholding.WithholdingAccountCode,
                         Branch = gLVatWithholding.Branch,
+                        WithholdPercent = gLVatWithholding.WithholdPercent,
                         DateCreated = DateTime.Now,
                         LastModified = gLVatWithholding.LastModified,
                         CreatedBy = User.Identity.Name,
@@ -106,6 +108,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Setting
                     {
                         GLVatWithholdingID = gLVatWithholding.GLVatWithholdingID,
                         WithholdingAccountCode = gLVatWithholding.WithholdingAccountCode,
+                        WithholdPercent = gLVatWithholding.WithholdPercent,
                         Branch = gLVatWithholding.Branch,
                         DateCreated = gLVatWithholding.DateCreated,
                         LastModified = DateTime.Now,
@@ -135,6 +138,7 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.Setting
                 {
                     GLVatWithholdingID = gLVatWithholding.GLVatWithholdingID,
                     WithholdingAccountCode = gLVatWithholding.WithholdingAccountCode,
+                    WithholdPercent = gLVatWithholding.WithholdPercent,
                     Branch = gLVatWithholding.Branch,
                     DateCreated = gLVatWithholding.DateCreated,
                     LastModified = gLVatWithholding.LastModified,

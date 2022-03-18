@@ -952,7 +952,9 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.AP
                         SourcesName = "AP",
                         JournalNumber = "APPAY." + record.ApPaymentId.ToString(),
                         SourceId = record.ApPaymentId.ToString(),
-                        Source = JournalSources.AP_Payment.ToString(),
+                        Source = record.IsPrepayment
+                                        ? JournalSources.AP_PrePayment.ToString()
+                                        : JournalSources.AP_Payment.ToString(),
                         EffectiveDate = record.PaymentDate.Date,
                         OrgBranchName = record.OrgBranchName,
                         Status = "Approved",

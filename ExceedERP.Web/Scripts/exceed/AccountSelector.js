@@ -6,8 +6,8 @@ var aCode;
 var previosAccountCode;
 function SelectAccCode(e) {
 
-    accountCodeTextBox = $(e).prev('input').attr('id');
-    previosAccountCode = $("#" + accountCodeTextBox).val();
+    accountCodeTextBox = $(e).prev('input').attr('id'); 
+    previosAccountCode = $("#" + accountCodeTextBox).val(); console.log("prev:"+previosAccountCode);
   //get setting
     $.ajax({
         type: "POST",
@@ -21,7 +21,7 @@ function SelectAccCode(e) {
 
             } else {
                 //alert("auto");
-                popup = window.open('/Finance/AccountCodeSelector/GLAccountSelector', 'WindowPopup', 'top=100, left=400, width=850 , height=400,resizable=no,');
+                popup = window.open('/Finance/AccountCodeSelector/GLAccountSelector?q=' + previosAccountCode, 'WindowPopup', 'top=100, left=400, width=850 , height=400,resizable=no,');
                 popup.focus();
                 return false;
             }
@@ -40,6 +40,7 @@ function SelectAccCodeZZZ(e) {
 
     accountCodeTextBox = $(e).prev('input').attr('id');
     previosAccountCode = $("#" + accountCodeTextBox).val();
+    console.log("pre"+previosAccountCode);
     //get setting
     $.ajax({
         type: "POST",
@@ -53,7 +54,7 @@ function SelectAccCodeZZZ(e) {
 
             } else {
                 //alert("auto");
-                popup = window.open('/Finance/AccountCodeSelector/GLAccountSelector?s=true', 'WindowPopup', 'top=100, left=400, width=850 , height=400,resizable=no,');
+                popup = window.open('/Finance/AccountCodeSelector/GLAccountSelector?s=true&q='+ previosAccountCode, 'WindowPopup', 'top=100, left=400, width=850 , height=400,resizable=no,');
                 popup.focus();
                 return false;
             }

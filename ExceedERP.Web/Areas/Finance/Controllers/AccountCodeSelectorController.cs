@@ -267,8 +267,9 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
         //}
 
 
-        public ActionResult GlAccountSelector(string s)
+        public ActionResult GlAccountSelector(string s,string q)
         {
+            ViewBag.PreviousAccount = q;
             ViewBag.Setup = s;
             ViewBag.ErrorMsg = "";
             var numberOfSegment = _db.GlRuleValues.FirstOrDefault();

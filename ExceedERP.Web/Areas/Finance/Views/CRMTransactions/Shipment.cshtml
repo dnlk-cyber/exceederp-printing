@@ -5,36 +5,38 @@
         .Name("grid")
         .Columns(columns =>
         {
-            columns.Bound(c => c.SalesShipmentId).Title("#").Width(90);
-            columns.Bound(c => c.Source);
+            columns.Bound(c => c.SalesShipmentId).Title("#").Width(40);
+            columns.Bound(c => c.Source).Width(80);
             columns.Group(g => g.Title("References").HeaderHtmlAttributes(new { style = "text-align: center; font-weight: bold;" })
                 .Columns(innerCols =>
                 {
-                    innerCols.Bound(c => c.CashSalesInvoiceID);
-                    innerCols.Bound(c => c.FsInvoiceNumber);
-                    innerCols.Bound(c => c.SalesOrderVoucherID);
+                    innerCols.Bound(c => c.CashSalesInvoiceID).Width(70);
+                    innerCols.Bound(c => c.FsInvoiceNumber).Width(70);
+                    innerCols.Bound(c => c.SalesOrderVoucherID).Width(70);
+                    innerCols.Bound(c => c.JobOrderNumber).Title("JO #").Width(70);
+                    innerCols.Bound(c => c.StoreRequisitionNumber).Title("SRQ #").Width(70);
                     //innerCols.ForeignKey(c => c.CashSalesInvoiceID, (System.Collections.IEnumerable)ViewData["SalesInvoices"], "CashSalesInvoiceID", "InvoiceNumberDisplay").EditorTemplateName("SalesInvoiceSelector");
                     //innerCols.ForeignKey(c => c.SalesOrderVoucherID , (System.Collections.IEnumerable)ViewData["SalesOrderVouchers"], "SalesOrderVoucherID", "SalesOrderVoucherID");
                 })
-            );
-            columns.ForeignKey(c => c.OrganizationCustomerId, (System.Collections.IEnumerable)ViewData["OrganizationCustomers"], "OrganizationCustomerID", "TradeName").Title("Customer").EditorTemplateName("CashOrgCustomerEditor");
-            columns.ForeignKey(c => c.BranchId, (System.Collections.IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("BranchSelector");
-            columns.ForeignKey(c => c.StoreID, (System.Collections.IEnumerable)ViewData["SalesStore"], "SalesStoreId", "Description").Width(100);
-            columns.ForeignKey(c => c.CRMPeriodId, (System.Collections.IEnumerable)ViewData["CRMPeriods"], "CRMPeriodId", "Name").EditorTemplateName("OpenCRMPeriodsSelector");
+                );
+            columns.ForeignKey(c => c.OrganizationCustomerId, (System.Collections.IEnumerable)ViewData["OrganizationCustomers"], "OrganizationCustomerID", "TradeName").Title("Customer").EditorTemplateName("CashOrgCustomerEditor").Width(90);
+            columns.ForeignKey(c => c.BranchId, (System.Collections.IEnumerable)ViewData["Branches"], "BranchId", "Name").EditorTemplateName("BranchSelector").Width(90);
+            columns.ForeignKey(c => c.StoreID, (System.Collections.IEnumerable)ViewData["SalesStore"], "SalesStoreId", "Description").Width(90);
+            columns.ForeignKey(c => c.CRMPeriodId, (System.Collections.IEnumerable)ViewData["CRMPeriods"], "CRMPeriodId", "Name").EditorTemplateName("OpenCRMPeriodsSelector").Width(90);
             //columns.ForeignKey(c => c.CashSalesInvoiceID, (System.Collections.IEnumerable)ViewData["SalesInvoices"], "CashSalesInvoiceID", "InvoiceNumberDisplay").EditorTemplateName("SalesInvoiceSelector");
-            columns.Bound(c => c.ShipmentDate);
-            columns.Bound(c => c.MethodOfShipment);
-            columns.Bound(c => c.PlateNo);
+            columns.Bound(c => c.ShipmentDate).Width(90);
+            columns.Bound(c => c.MethodOfShipment).Width(90);
+            columns.Bound(c => c.PlateNo).Width(90);
 
             //columns.Bound(c => c.DateCreated).Format("{0:yyyy-MM-dd}");
-            columns.Bound(c => c.CreatedBy);
-            columns.Bound(c => c.Status);
-            columns.Bound(c => c.Remark);
-            
+            columns.Bound(c => c.CreatedBy).Width(90);
+            columns.Bound(c => c.Status).Width(90);
+            columns.Bound(c => c.Remark).Width(100);
+
         })
         .ToolBar(toolbar =>
-                  {
-                      toolbar.Template(@<text>
+        {
+        toolbar.Template(@<text>
                         <div class="toolbar">
                             <table>
                                 <tr>
@@ -351,6 +353,139 @@
                 ).ToClientTemplate()
                 )
         </text>);
+        items.Add().Text("Cost Distribution").Content(
+            @<text>
+                 #if(!IsOnlineTransferred)
+                    {#
+                            <a onclick='return regenerateDistribution("#=SalesShipmentId#")' href='\#' title='Regenerate Distribution'><i class='fa  fa-refresh fa-2x' style='color:red'></i></a>
+                    #}#
+                # if (IsOnlineApproved && !IsOnlineTransferred )
+                {#
+                    <a onclick='return transferToGl("#=SalesShipmentId#")' href=' \#' title="Transfer to GL"><i class="fa fa-paper-plane fa-2x"></i></a>
+                # } #
+                #if(IsOnlineTransferred){#
+                    @CostDistributionContent()
+                #} else if(!IsOnlineTransferred){#
+                    @CostDistributionContentWithCrud()
+                #}#
+            </text>);
+            items.Add().Text("Revenue Distribution").Content(
+            @<text>
+                 #if(!IsOnlineTransferred)
+                    {#
+                            <a onclick='return regenerateDistribution("#=SalesShipmentId#")' href='\#' title='Regenerate Distribution'><i class='fa  fa-refresh fa-2x' style='color:red'></i></a>
+                    #}#
+                # if (IsOnlineApproved && !IsOnlineTransferred )
+                {#
+                    <a onclick='return transferToGl("#=SalesShipmentId#")' href=' \#' title="Transfer to GL"><i class="fa fa-paper-plane fa-2x"></i></a>
+                # } #
+                #if(IsOnlineTransferred){#
+                    @RevenueDistributionContent()
+                #} else if(!IsOnlineTransferred){#
+                    @RevenueDistributionContentWithCrud()
+                #}#
+            </text>);
+
+            items.Add().Text("Validation").Content(
+            @<text>
+                #if(IsOnlineApproved){#
+                    @ValidationHelper()
+                #} else if (!IsOnlineApproved){#
+                    @ValidationHelperCrud()
+                #}#
+            </text>
+            );
+
+            }).ToClientTemplate()
+
+    )
+    #}else if(Source == 2){#
+        @(Html.Kendo().TabStrip()
+        .Name("tabstrip_#=SalesShipmentId#")
+        .SelectedIndex(0)
+        .Items(items =>
+        {
+        items.Add().Text("Detail").Content(
+            @<text>
+                <a href='@Url.Action("Shipment", "Print", new { area = "CRM"})/#=SalesShipmentId#' title="Print Shipment"><i class="fa fa-print  fa-2x"></i></a>
+                @(Html.Kendo().PanelBar()
+                    .Name("panelbar_#=SalesShipmentId#")
+                    .ExpandMode(PanelBarExpandMode.Multiple)
+                    //.HtmlAttributes(new { st})
+                    .Items(panelbar =>
+                    {
+                            panelbar.Add()
+                                .Expanded(true)
+                                .Text("Shipment Detail")
+                                .Content(
+                                    "<div>" +
+                                    "<ul>" +
+                                    "<li> <label> Created by: </label> <strong> #=CreatedBy != null ? CreatedBy: ' '# </strong> </li>" +
+                                    "<li> <label> Created on: </label> #= kendo.toString(DateCreated, 'dd/MM/yyyy H:mm:ss')# </li>" +
+                                    "<li> <label> Modified by :</label> #= ModifiedBy != null ? ModifiedBy: ''# </li>" +
+                                    "<li> <label> Last Modified :</label> #= LastModified != null ? kendo.toString(LastModified, 'dd/MM/yyyy H:mm:ss') : ' '# </li>" +
+                                    "<li> <label> Remark: </label> <strong> #=Remark != null ? Remark : ' '# </strong> </li>" +
+                                    "</ul>" +
+                                    "</div>"
+                                );
+                        }).ToClientTemplate()
+                )
+            </text>);
+
+        items.Add().Text("Shipment Line Items ").Content(
+            @<text>
+                 #if(IsOnlineApproved){#
+                @ShipmentLineItemHelper()
+            #} else if(!IsOnlineApproved){#
+                @ShipmentLineItemHelper()
+            #}#
+            </text>
+        );
+        items.Add().Text("Store Requisition Line Items").Content(
+                    @<text>
+                        @(Html.Kendo().Grid<ExceedERP.Core.Domain.Inventory.StoreRequisitionItem>()
+                                    .Name("str_req_lineItems_#=SalesShipmentId#")
+                                      .Columns(columns =>
+                                      {
+                                          columns.ForeignKey(p => p.ItemCategoryCode, (System.Collections.IEnumerable)ViewData["InventoryCategory"], "ItemCategoryCode", "Name").Title("Category").EditorTemplateName("ItemCategorySelector").Width(200);
+                                          columns.ForeignKey(p => p.ItemCode, (System.Collections.IEnumerable)ViewData["InventoryItems"], "ItemCode", "Name").Title("Item").EditorTemplateName("ItemSelector").Width(300);
+                                          columns.Bound(c => c.Unit).Width(120);
+                                          columns.Bound(c => c.PartNo).EditorTemplateName("PartNo").Width(120);
+                                          columns.Bound(c => c.ModelNo).Width(120);
+                                          columns.Bound(c => c.SerialNo).Width(120);
+                                          columns.Bound(c => c.ChasisNo).Width(120);
+                                          columns.Bound(c => c.RequestedQuantity).Width(120);
+                                          columns.Bound(c => c.ApprovedQuantity).Width(120);
+                                          columns.Bound(c => c.IssuedQuantity).Hidden().Width(90);
+                                          columns.Bound(c => c.PurchaseQuantity).Hidden().Width(90);
+                                          columns.Bound(c => c.ItemSpecification).Width(120);
+                                          columns.Bound(c => c.CurrentBalance).Hidden();
+                                      })
+
+                                      .Scrollable()
+                                      .DataSource(dataSource => dataSource
+                                          .Ajax()
+                                          .Events(ev => ev
+                                              .Error("error_handler(\"str_req_lineItems_#=SalesShipmentId#\")")
+                                              .RequestStart("onRequestStart(\"str_req_lineItems_#=SalesShipmentId#\")")
+                                              .RequestEnd("onRequestEnd(\"str_req_lineItems_#=SalesShipmentId#\")"))
+                                          .Model(model =>
+                                          {
+                                              model.Id(p => p.StoreRequisitionItemID);
+                                              model.Field(p => p.IssuedQuantity).Editable(false);
+                                              model.Field(p => p.PurchaseQuantity).Editable(false);
+                                              model.Field(p => p.PartNo).Editable(false);
+                                              model.Field(p => p.Unit).Editable(false);
+                                              model.Field(p => p.CreatedBy).Editable(false);
+                                              model.Field(p => p.DateCreated).Editable(false);
+                                              model.Field(p => p.ModifiedBy).Editable(false);
+                                              model.Field(p => p.LastModified).Editable(false);
+
+                                          })
+                                          .Read(read => read.Action("StoreRequisitionItems_Read", "CRMMaintennceLink", new {area="CRM", reqNumber = "#=StoreRequisitionNumber#" }))
+                                    ).ToClientTemplate()
+                        )
+                    </text>);
         items.Add().Text("Cost Distribution").Content(
             @<text>
                  #if(!IsOnlineTransferred)

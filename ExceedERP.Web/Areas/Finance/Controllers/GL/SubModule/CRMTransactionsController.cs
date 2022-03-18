@@ -358,6 +358,8 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL.SubModule
             ViewData["OrganizationCustomers"] = db.OrganizationCustomers;
             ViewData["Branches"] = db.Branch.Select(b => new { b.BranchId, b.Name, b.Abbreviation }).ToList();
             ViewData["CRMPeriods"] = db.CRMPeriods.Select(b => new { b.CRMPeriodId, b.Name }).ToList();
+            ViewData["InventoryItems"] = db.InventoryItems.Select(i => new { Name = i.ItemCode + " " + i.Name, i.ItemCode }).ToList();
+            ViewData["InventoryCategory"] = db.ItemCategorys.Select(c => new { c.Name, c.ItemCategoryCode }).ToList();
 
             return View();
         }
@@ -383,6 +385,8 @@ namespace ExceedERP.Web.Areas.Finance.Controllers.GL.SubModule
                 PlateNo = shipment.PlateNo,
                 FsInvoiceNumber = shipment.FsInvoiceNumber,
                 TrailerPlateNo = shipment.TrailerPlateNo,
+                StoreRequisitionNumber = shipment.StoreRequisitionNumber,
+                JobOrderNumber = shipment.JobOrderNumber,
 
                 Status = shipment.Status,
                 IsVoid = shipment.IsVoid,
