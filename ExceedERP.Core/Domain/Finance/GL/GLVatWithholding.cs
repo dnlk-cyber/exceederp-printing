@@ -12,5 +12,7 @@ namespace ExceedERP.Core.Domain.Finance.GL
 
         [Display(Name = "Branch")]
         public string Branch { get; set; }
+        [Display(Name = "Withhold %")]
+        public decimal WithholdPercent { get; set; }
     }
 }
