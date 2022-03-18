@@ -70,5 +70,10 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Report
             return View();
 
         }
+        public ActionResult GetJobSupply()
+        {
+            return View();
+
+        }
     }
 }
