@@ -137,6 +137,7 @@ namespace ExceedERP.Web.Controllers
                 new ApplicationRole("Finance_Checker","To check and correct account transactions","Finance"),
                 new ApplicationRole("Finance_Report","To generate common finance report","Finance"),
                 new ApplicationRole("General_Ledger_Post_User","To post journal records to ledger","Finance"),
+                new ApplicationRole(FinanceConstants.GeneralLedgerUnPostUser,"To un-post journal records","Finance"),
                 new ApplicationRole("GeneralLedgerUser","User will record, reverse, send for approval, edit, and delete diffrernt type of transaction entries","Finance"),
                 new ApplicationRole("GeneralLedgerApprover","User will approve/reject different type of transaction ","Finance"),
                 new ApplicationRole("GeneralLedgerView","User will view only transaction.","Finance"),
