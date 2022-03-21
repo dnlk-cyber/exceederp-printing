@@ -20,6 +20,40 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
         {
             return View();
         }
+        public ActionResult GetBeforeVatAndTotalCost(int jobId, int quant)
+        {
+            var job = db.Jobs.Find(jobId);
+            var jobType = db.JobCategories.FirstOrDefault(x => x.JobCategoryId.ToString() == job.JobTypeId.ToString());
+            if (jobType != null)
+            {
+                var tax = db.GLTaxRates.FirstOrDefault(x => x.GLTaxRateID == jobType.GLTaxRateID);
+                if (tax != null)
+                {
+                    double beforeTax = quant * job.UnitPrice;
+                    double withTax = (quant * job.UnitPrice) + (quant * job.UnitPrice * Convert.ToDouble(tax.CalculatedRate));
+
+                    var calculatedField = Json(new
+                    {
+                        Status = "OK",
+                        BeforeTax = Math.Round(beforeTax, 5),
+                        TotalPrice = Math.Round(withTax, 5)
+                    });
+
+                    return calculatedField;
+                }
+            }
+
+            var nodata = Json(new
+            {
+                Status = "OK",
+                BeforeTax = 0,
+                TotalPrice = 0
+            });
+
+            return nodata;
+
+        }
+
         public JsonResult GetJobOrders(int customerId)
         {
             var jobOrders = db.Jobs.Where(q=>q.CustomerId==customerId).ToList();

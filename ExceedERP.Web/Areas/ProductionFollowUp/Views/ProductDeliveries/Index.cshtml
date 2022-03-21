@@ -26,6 +26,7 @@
                   {
                       toolbar.Create();
                   })
+                  .Events(ev=>ev.DetailExpand("onMasterExpand"))
            //       .Events(ev => ev.Save("showColumn"))
                   .Editable(editable => editable.Mode(GridEditMode.InLine))
                 .Pageable(pageable => pageable
@@ -64,13 +65,12 @@
                                         {
                                             columns.ForeignKey(c => c.JobId, (ICollection)ViewData["JobOrder"], "JobId", "JobNo").EditorTemplateName("JobOrderEditorTemplate").Title("Job No");
                                            // columns.ForeignKey(c => c.JobId, (ICollection)ViewData["JobOrder"], "JobId", "JobType").EditorTemplateName("JobOrders").Title("Job Type");
-
                                             //columns.Bound(c => c.ItemCategory).Width(100);
                                             //columns.Bound(c => c.ItemCode).Width(100);
                                             columns.Bound(c => c.Description).Width(100);
-                                         //   columns.Bound(c => c.UnitId).Width(70);
+                                         //  columns.Bound(c => c.UnitId).Width(70);
                                             columns.Bound(c => c.Quantity).Width(70).EditorTemplateName("NumericTextBox");
-                                            columns.Bound(c => c.UnitCost).Width(70).EditorTemplateName("NumericTextBox");
+                                          //  columns.Bound(c => c.UnitCost).Width(70).EditorTemplateName("NumericTextBox");
                                             columns.Bound(c => c.TotalCost).Width(70);
 
                                             columns.Command(command =>
@@ -125,12 +125,48 @@
                                 }).ToClientTemplate())
 </script>
 <script>
+    var customerId;
+    function onMasterExpand(e) {
+        var masterRow = e.masterRow;
+
+        var masterGrid = $("#grid").data("kendoGrid");
+
+        var masterDataItem = masterGrid.dataItem(masterRow);
+        customerId = masterDataItem.CustomerId;
+        console.log(customerId);
+    }
+
+   function filterJobOrders()
+    {
+        return {
+            customerId: customerId
+        };
+    }
+  
     function onChange() {
         var unitCost = $("#UnitCost").val();
         var quantity = $("#Quantity").val();
+        var job = $("#JobId").val();
         console.log(unitCost);
-        $("#TotalCost").val(unitCost * quantity).trigger("change");
-    }
+        //$("#TotalCost").val(unitCost * quantity).trigger("change");
+
+
+        console.log(quantity);
+        if (quantity !== "" && unitCost !== "" && job != "") {
+            $.ajax({
+                url: '@Url.Action("GetBeforeVatAndTotalCost", "ProductionDataProvider")',
+
+                data: { jobId: job, quant: quantity, unitPrice: unitCost },
+                type: 'POST',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                    $("#TotalCost").val(r.TotalPrice).trigger("change");
+                }
+
+            });
+        }
+       }
 
     function hideColumn() {
         var grid = $('#grid').data('kendoGrid');

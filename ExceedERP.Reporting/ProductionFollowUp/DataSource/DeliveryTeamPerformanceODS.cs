@@ -96,24 +96,14 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                 }
                 model.TotalClient = latestJobs.Select(s => s.CustomerId).Distinct().Count().ToString();
                 model.CancelledDelivery = latestJobs.Select(s => s.CustomerId).Distinct().Count().ToString();
-               
-                model.From = startDate?.ToString("dd/MM/yyyy");
-                model.To = endDate?.ToString("dd/MM/yyyy"); ;
-                //var plans = db.ProductionMonthlyPlans.FirstOrDefault();
-                //LastWeekPendingJobs = previousJobs.Sum(s => s.TotalPrice) - LastWeekPendingJobs; //model.LastWeekPendingJobsBirr = (int)LastWeekPendingJobs;
-                //model.LastWeekPendingJobsCent = getDecimalPartNo(LastWeekPendingJobs);
-                //model.CurrentWeekJobsBirr = (int)latestJobsPrices;
-                //model.CurrentWeekJobsCent = getDecimalPartNo(latestJobsPrices);
-                //model.TotalBirr = (int)(latestJobsPrices + LastWeekPendingJobs);
-                //model.TotalCent = getDecimalPartNo(model.TotalBirr);
-                //var weekPlan = monthlyPlans.Sum(s=>s.TotalPrice);
-                //model.WeeklyProductionPlanBirr = (int)weekPlan;
-                //model.WeeklyProductionPlanCent = getDecimalPartNo(weekPlan);
-                //model.WeeklyProductionPerformanceBirr = (int)currentWeekFinishedJobs;
-                //model.WeeklyProductionPerformanceCent = getDecimalPartNo(currentWeekFinishedJobs);
-                //model.PendingPlanBirr = (int)(weekPlan - currentWeekFinishedJobs);
-                //model.PendingPlanCent = getDecimalPartNo(model.PendingPlanBirr);
-                //model.Percent = Math.Round((model.WeeklyProductionPerformanceBirr / model.WeeklyProductionPlanBirr), 2) * 100;
+                var customers = latestJobs.Select(s=>s.CustomerId);
+                var deliverdProductIds = db.ProductDeliveries.Where(q => customers.Contains(q.CustomerId)).Select(s=>s.ProductDeliveryId);
+                var deliverdProductItems = db.ProductDeliveryItems.Where(q => deliverdProductIds.Contains(q.ProductDeliveryId)).ToList();
+                model.DeliveryFrom = deliverdProductItems.FirstOrDefault()?.ProductDeliveryItemsId.ToString();
+                model.DeliveryTo = deliverdProductItems.LastOrDefault()?.ProductDeliveryItemsId.ToString();
+                model.From = startDate?.ToString("dd/MM/yyyy"); 
+                model.To = endDate?.ToString("dd/MM/yyyy"); 
+                
                 var items = new List<PrintingAndFinishingTeamPerformanceItem>();
                 var jobTypeIds = latestJobs.ToList().Select(s => s.JobTypeId).Distinct();
                 foreach (var jobType in jobTypeIds)
@@ -163,7 +153,8 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                             item.WeeklyPlan = Math.Round((jobTypePlans.Sum(s=>s.TotalPrice)), 2);
                             item.WeeklyPerformance = currentWeekFinishedJobTypes;
                             item.ProductionInProgress = Math.Round(item.Total - currentWeekFinishedJobTypes, 2);
-                            if(item.WeeklyPlan!=0)
+
+                            if (item.WeeklyPlan!=0)
                             {
                                 item.Percent = Math.Round(item.WeeklyPerformance / item.WeeklyPlan, 2) * 100;
 

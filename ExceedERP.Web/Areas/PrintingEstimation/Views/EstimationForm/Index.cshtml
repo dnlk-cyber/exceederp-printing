@@ -6,7 +6,7 @@
     {
         columns.Bound(c => c.Date).EditorTemplateName("Date").Width("100px").Format("{0:dd/MM/yyyy}");
         columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customers"], "Code", "Name")
-        .Width(110).Title("Customer");
+                            .Width(110).Title("Customer");
         columns.Bound(c => c.JobNumber).Width(100);
         columns.Bound(c => c.Quantity).Width(100);
         columns.Bound(c => c.Size).Width(80);

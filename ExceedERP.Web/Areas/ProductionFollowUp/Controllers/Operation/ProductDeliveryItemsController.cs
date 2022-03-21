@@ -46,6 +46,14 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ProductDeliveryItems_Create([DataSourceRequest]DataSourceRequest request, ProductDeliveryItems productDeliveryItems, int id)
         {
+            var job = db.Jobs.Find(productDeliveryItems?.JobId);
+            var deliveredJobs = db.ProductDeliveryItems.Where(q => q.JobId == productDeliveryItems.JobId).ToList();
+            var totQuan = deliveredJobs.Sum(s => s.Quantity) + productDeliveryItems.Quantity;
+            var orderedQuant = job?.Quantity;
+            if ((decimal)totQuan > orderedQuant)
+            {
+                ModelState.AddModelError("Error", "The items sum must be equals to the ordered quantity");
+            }
             if (ModelState.IsValid)
             {
                 var entity = new ProductDeliveryItems
@@ -72,6 +80,15 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ProductDeliveryItems_Update([DataSourceRequest]DataSourceRequest request, ProductDeliveryItems productDeliveryItems)
         {
+            var job = db.Jobs.Find(productDeliveryItems?.JobId);
+            var deliveredJobs = db.ProductDeliveryItems.Where(q => q.JobId == productDeliveryItems.JobId
+            && q.ProductDeliveryId!= productDeliveryItems.ProductDeliveryId).ToList();
+            var totQuan = deliveredJobs.Sum(s => s.Quantity) + productDeliveryItems.Quantity;
+            var orderedQuant = job?.Quantity;
+            if ((decimal)totQuan > orderedQuant)
+            {
+                ModelState.AddModelError("Error", "The items sum must be equals to the ordered quantity");
+            }
             if (ModelState.IsValid)
             {
                 var entity = new ProductDeliveryItems
