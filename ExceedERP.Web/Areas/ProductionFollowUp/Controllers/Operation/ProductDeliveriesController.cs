@@ -28,9 +28,7 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
             ViewData["JobOrder"] = db.Jobs.ToList().Select(s=>
             new {
                 JobId =s.JobId,
-                JobNo = s.JobNo,
-                JobType = db.JobCategories.Find(s.JobTypeId)?.JobName
-
+                JobNo = s.JobNo+"-"+ db.JobCategories.Find(s.JobTypeId).JobName
             }).ToList();
             ViewData["Units"] = db.Units.ToList();
             PopulateViewData();

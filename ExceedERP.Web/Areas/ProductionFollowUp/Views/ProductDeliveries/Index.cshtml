@@ -62,8 +62,8 @@
                                 .Name("ProductDeliveryItems#=ProductDeliveryId#")
                                         .Columns(columns =>
                                         {
-                                            columns.ForeignKey(c => c.JobId, (ICollection)ViewData["JobOrder"], "JobId", "JobNo").EditorTemplateName("JobOrders").Title("Job No");
-                                            columns.ForeignKey(c => c.JobId, (ICollection)ViewData["JobOrder"], "JobId", "JobType").EditorTemplateName("JobOrders").Title("Job Type");
+                                            columns.ForeignKey(c => c.JobId, (ICollection)ViewData["JobOrder"], "JobId", "JobNo").EditorTemplateName("JobOrderEditorTemplate").Title("Job No");
+                                           // columns.ForeignKey(c => c.JobId, (ICollection)ViewData["JobOrder"], "JobId", "JobType").EditorTemplateName("JobOrders").Title("Job Type");
 
                                             //columns.Bound(c => c.ItemCategory).Width(100);
                                             //columns.Bound(c => c.ItemCode).Width(100);

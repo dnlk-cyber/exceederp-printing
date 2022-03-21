@@ -3988,6 +3988,7 @@
     <Compile Include="Procurements\ViewModel\TenderOpening.cs" />
     <Compile Include="Procurements\ViewModel\TranscriptViewModel.cs" />
     <Compile Include="Procurements\ViewModel\WinningSupplierDetailVM.cs" />
+    <Compile Include="ProductionFollowUp\DataSource\JobSupplyandSalesODS.cs" />
     <Compile Include="ProductionFollowUp\DataSource\JobSupplyODS.cs" />
     <Compile Include="ProductionFollowUp\DataSource\JobTypeODS.cs" />
     <Compile Include="ProductionFollowUp\DataSource\ChangeOfOrderODS.cs" />
@@ -4045,6 +4046,12 @@
     <Compile Include="ProductionFollowUp\Designer\rptJobSupply.Designer.cs">
       <DependentUpon>rptJobSupply.cs</DependentUpon>
     </Compile>
+    <Compile Include="ProductionFollowUp\Designer\rptJobSupplyandSalesVM.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ProductionFollowUp\Designer\rptJobSupplyandSalesVM.Designer.cs">
+      <DependentUpon>rptJobSupplyandSalesVM.cs</DependentUpon>
+    </Compile>
     <Compile Include="ProductionFollowUp\Designer\rptPrintingAndFinishingTeamPerformance.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -4073,6 +4080,7 @@
     <Compile Include="ProductionFollowUp\ViewModel\FinishedGoodReceivalVM.cs" />
     <Compile Include="ProductionFollowUp\ViewModel\FinishedGoodsVM.cs" />
     <Compile Include="ProductionFollowUp\ViewModel\JobSupplyVM.cs" />
+    <Compile Include="ProductionFollowUp\ViewModel\JobSupplyandSalesVM.cs" />
     <Compile Include="ProductionFollowUp\ViewModel\PrintingAndFinishingTeamPerformanceVM.cs" />
     <Compile Include="ProductionFollowUp\ViewModel\FinishedProductsReceivingNoteVM.cs" />
     <Compile Include="ProductionFollowUp\ViewModel\JobOrderMaterialVM.cs" />
@@ -5823,6 +5831,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="ProductionFollowUp\Designer\rptJobSupply.resx">
       <DependentUpon>rptJobSupply.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ProductionFollowUp\Designer\rptJobSupplyandSalesVM.resx">
+      <DependentUpon>rptJobSupplyandSalesVM.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ProductionFollowUp\Designer\rptPrintingAndFinishingTeamPerformance.resx">
       <DependentUpon>rptPrintingAndFinishingTeamPerformance.cs</DependentUpon>

@@ -14,9 +14,21 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
         private ExceedDbContext db = new ExceedDbContext();
 
         // GET: ProductionFollowUp/ProductionDataProvider
+
+
         public ActionResult Index()
         {
             return View();
+        }
+        public JsonResult GetJobOrders(int customerId)
+        {
+            var jobOrders = db.Jobs.Where(q=>q.CustomerId==customerId).ToList();
+
+            return Json(jobOrders.Select(p => new
+            {
+                JobId = p.JobId,
+                JobNo = p.JobNo,
+            }), JsonRequestBehavior.AllowGet);
         }
         public JsonResult GetItemCategory()
         {

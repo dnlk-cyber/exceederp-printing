@@ -4888,7 +4888,7 @@
     <Content Include="Areas\ProductionFollowUp\Views\JobTypes\EditorTemplates\TaxList.cshtml" />
     <Content Include="Areas\ProductionFollowUp\Views\JobTypes\Index.cshtml" />
     <Content Include="Areas\ProductionFollowUp\Views\Machines\Index.cshtml" />
-    <Content Include="Areas\ProductionFollowUp\Views\ProductDeliveries\EditorTemplates\JobOrders.cshtml" />
+    <Content Include="Areas\ProductionFollowUp\Views\ProductDeliveries\EditorTemplates\JobOrderEditorTemplate.cshtml" />
     <Content Include="Areas\ProductionFollowUp\Views\ProductDeliveries\Index.cshtml" />
     <Content Include="Areas\ProductionFollowUp\Views\ProductDeliveryItems\Index.cshtml" />
     <Content Include="Areas\ProductionFollowUp\Views\ProformaItems\Index.cshtml" />
@@ -5151,6 +5151,7 @@
     <Content Include="Areas\ProductionFollowUp\Views\ProductionFollowUpReport\GetDeliveryNote.cshtml" />
     <Content Include="Areas\ProductionFollowUp\Views\ProductionFollowUpReport\GetJobOrders.cshtml" />
     <Content Include="Areas\ProductionFollowUp\Views\ProductionFollowUpReport\GetJobSupply.cshtml" />
+    <Content Include="Areas\ProductionFollowUp\Views\ProductionFollowUpReport\GetJobSupplyandSales.cshtml" />
     <None Include="Properties\PublishProfiles\Brana.pubxml" />
     <None Include="Properties\PublishProfiles\mega.pubxml" />
     <None Include="Scripts\kendo\2018.3.911\kendo.all-vsdoc.js" />

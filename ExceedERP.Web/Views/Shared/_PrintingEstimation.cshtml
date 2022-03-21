@@ -3,9 +3,9 @@
     ViewBag.Title = "_PrintingEstimation";
 }
 
-@if (HttpContext.Current.User.IsInRole(PrintingEstimationRoles.PrintingEstimationAdmin)
+@*@if (HttpContext.Current.User.IsInRole(PrintingEstimationRoles.PrintingEstimationAdmin)
      || HttpContext.Current.User.IsInRole(PrintingEstimationRoles.PrintingEstimationFormUser))
-{
+{*@
 
     <li class="">
         <a href="#" class="dropdown-toggle">
@@ -54,4 +54,4 @@
         </ul>
         </li>
 
-  }
+ @* }*@
