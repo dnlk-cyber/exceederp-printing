@@ -95,12 +95,15 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                     }
                 }
                 model.TotalClient = latestJobs.Select(s => s.CustomerId).Distinct().Count().ToString();
-                model.CancelledDelivery = latestJobs.Select(s => s.CustomerId).Distinct().Count().ToString();
                 var customers = latestJobs.Select(s=>s.CustomerId);
                 var deliverdProductIds = db.ProductDeliveries.Where(q => customers.Contains(q.CustomerId)).Select(s=>s.ProductDeliveryId);
                 var deliverdProductItems = db.ProductDeliveryItems.Where(q => deliverdProductIds.Contains(q.ProductDeliveryId)).ToList();
                 model.DeliveryFrom = deliverdProductItems.FirstOrDefault()?.ProductDeliveryItemsId.ToString();
                 model.DeliveryTo = deliverdProductItems.LastOrDefault()?.ProductDeliveryItemsId.ToString();
+                var voidedProductDeliveryItemss = deliverdProductItems.Where(q => q.Status == DeliveryStatus.Voided).Select(s => s.ProductDeliveryItemsId);
+                model.CancelledDelivery = string.Join(",", voidedProductDeliveryItemss);
+                
+
                 model.From = startDate?.ToString("dd/MM/yyyy"); 
                 model.To = endDate?.ToString("dd/MM/yyyy"); 
                 

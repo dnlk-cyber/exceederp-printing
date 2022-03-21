@@ -11,16 +11,18 @@
                                                .EditorTemplateName("CustomerEditor")
                                                .Width("110px")
                                                .Title("Customer");
-                      columns.Bound(c => c.CreditSaleNo);
-                      columns.Bound(c => c.CashSaleNo);
-                      columns.Bound(c => c.PreparedBy);
-                      columns.Bound(c => c.ApprovedBy);
+                      columns.Bound(c => c.CreditSaleNo).Width(100);
+                      columns.Bound(c => c.Credit).Width(100);
+                      columns.Bound(c => c.CashSaleNo).Width(100);
+                      columns.Bound(c => c.Cash).Width(100);
+                      columns.Bound(c => c.PreparedBy).Width(100);
+                      columns.Bound(c => c.ApprovedBy).Width(100);
                       columns.Bound(c => c.IdentificationNo);
                       columns.Command(command =>
                       {
                           command.Edit();
                           command.Destroy();
-                      }).Width(180);
+                      }).Width(250);
                   })
                   .ToolBar(toolbar =>
                   {
@@ -76,6 +78,7 @@
                                             columns.Command(command =>
                                             {
                                                 command.Edit();
+                                                command.Custom("cmd-void-request").Text("Void").Click("voidDelivery");
                                                 command.Destroy();
                                             }).Width(250);
                                         })
@@ -135,7 +138,23 @@
         customerId = masterDataItem.CustomerId;
         console.log(customerId);
     }
+    function voidDelivery(e) {
+        var grid = this,
+            dataItem = grid.dataItem(e.currentTarget.closest("tr"));
+        $.ajax({
+           type: "POST",
+           url: '@Url.Action("VoidDelivereItems", "ProductDeliveryItems", new { area = "ProductionFollowUp" })',
+            data: { id: dataItem.ProductDeliveryItemsId },
+           success: function(result) {
+                alert(result);
+                location.reload(true);
+           },
+           error: function(result) {
+               alert(result);
+           }
+       });
 
+    }
    function filterJobOrders()
     {
         return {

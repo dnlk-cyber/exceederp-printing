@@ -35,6 +35,7 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                 ItemCategory = productDeliveryItems.ItemCategory,
                 Description = productDeliveryItems.Description,
                 UnitId = productDeliveryItems.UnitId,
+                Status = productDeliveryItems.Status,
                 Quantity = productDeliveryItems.Quantity,
                 UnitCost = productDeliveryItems.UnitCost,
                 TotalCost = productDeliveryItems.TotalCost
@@ -71,11 +72,62 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
 
                 db.ProductDeliveryItems.Add(entity);
                 db.SaveChanges();
+                if (job != null)
+                {
+                    var jobStatus = db.JobStatuses.Where(q => q.JobId == job.JobId
+                    && q.JobPhase == JobPhase.Delivery).FirstOrDefault();
+                    if (jobStatus != null)
+                    {
+                        GetJobLineItems(entity,jobStatus.JobStatusId,id);
+                    }
+                    else
+                    {
+                        var jobStatusEntity = new JobStatus
+                        {
+                            JobStatusId = id,
+                            JobId = job.JobId,
+                            UserId = User.Identity.Name,
+                            Time = DateTime.Now,
+                            StartDate = DateTime.Now,
+                            EndDate = DateTime.Now,
+                            JobPhase = JobPhase.Delivery,
+                            Status = Core.Domain.PrintingEstimation.Setting.JobState.InProgress
+                        };
+                        db.JobStatuses.Add(jobStatusEntity);
+                        db.SaveChanges();
+                        GetJobLineItems(entity,jobStatusEntity.JobStatusId, id);
+
+                    }
+                }
+
                 productDeliveryItems.ProductDeliveryItemsId = entity.ProductDeliveryItemsId;
             }
 
             return Json(new[] { productDeliveryItems }.ToDataSourceResult(request, ModelState));
         }
+
+        private void GetJobLineItems(ProductDeliveryItems entity, int jobStatusId, int id)
+        {
+            var deliveryProduct = db.ProductDeliveries.Find(id);
+            var jobStatusItemEntity = new JobStatusLineItem
+            {
+                JobStatusId = jobStatusId,
+                Date = DateTime.Now,
+                Quantiy = (decimal)entity.Quantity,
+                TotalPrice = (decimal)entity.TotalCost,
+                //Invoice = deliveryProduct.,
+                SalesVoucherNo = deliveryProduct.CashSaleNo,
+                Cash = deliveryProduct.Cash,
+                Credit = deliveryProduct.Credit,
+                CashCreditInvoice = deliveryProduct.CreditSaleNo
+            };
+
+            DataSourceRequest request = new DataSourceRequest();
+            JobStatusLineItemController jsIC = new JobStatusLineItemController();
+            jsIC.JobStatusLineItems_Create(request,jobStatusItemEntity, jobStatusId);
+        }
+
+      
 
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ProductDeliveryItems_Update([DataSourceRequest]DataSourceRequest request, ProductDeliveryItems productDeliveryItems)
@@ -104,7 +156,7 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                     UnitCost = productDeliveryItems.UnitCost,
                     TotalCost = productDeliveryItems.TotalCost
                 };
-
+                db.SaveChanges();
                 db.ProductDeliveryItems.Attach(entity);
                 db.Entry(entity).State = EntityState.Modified;
                 db.SaveChanges();
@@ -112,7 +164,23 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
 
             return Json(new[] { productDeliveryItems }.ToDataSourceResult(request, ModelState));
         }
+        public ActionResult VoidDelivereItems(int id)
+        {
+            var deliveryItem = db.ProductDeliveryItems.Find(id);
+            if(deliveryItem!=null)
+            {
+                deliveryItem.Status = DeliveryStatus.Voided;
+                db.ProductDeliveryItems.Attach(deliveryItem);
+                db.Entry(deliveryItem).State = EntityState.Modified;
+                db.SaveChanges();
+                return Json("Item delivered has been voided");
 
+            }
+            return Json("Item delivery is not found");
+
+            return Json(deliveryItem);
+
+        }
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ProductDeliveryItems_Destroy([DataSourceRequest]DataSourceRequest request, ProductDeliveryItems productDeliveryItems)
         {

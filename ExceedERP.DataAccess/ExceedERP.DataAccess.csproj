@@ -210,6 +210,10 @@
     <Compile Include="Migrations\202203211425178_ProductDeliveryItemStatus.Designer.cs">
       <DependentUpon>202203211425178_ProductDeliveryItemStatus.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202203211542398_DeliveryAddCasAndCredit.cs" />
+    <Compile Include="Migrations\202203211542398_DeliveryAddCasAndCredit.Designer.cs">
+      <DependentUpon>202203211542398_DeliveryAddCasAndCredit.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -324,6 +328,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202203211425178_ProductDeliveryItemStatus.resx">
       <DependentUpon>202203211425178_ProductDeliveryItemStatus.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202203211542398_DeliveryAddCasAndCredit.resx">
+      <DependentUpon>202203211542398_DeliveryAddCasAndCredit.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
