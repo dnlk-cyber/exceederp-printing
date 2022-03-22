@@ -14,9 +14,55 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
         private ExceedDbContext db = new ExceedDbContext();
 
         // GET: ProductionFollowUp/ProductionDataProvider
+
+
         public ActionResult Index()
         {
             return View();
+        }
+        public ActionResult GetBeforeVatAndTotalCost(int jobId, int quant)
+        {
+            var job = db.Jobs.Find(jobId);
+            var jobType = db.JobCategories.FirstOrDefault(x => x.JobCategoryId.ToString() == job.JobTypeId.ToString());
+            if (jobType != null)
+            {
+                var tax = db.GLTaxRates.FirstOrDefault(x => x.GLTaxRateID == jobType.GLTaxRateID);
+                if (tax != null)
+                {
+                    double beforeTax = quant * job.UnitPrice;
+                    double withTax = (quant * job.UnitPrice) + (quant * job.UnitPrice * Convert.ToDouble(tax.CalculatedRate));
+
+                    var calculatedField = Json(new
+                    {
+                        Status = "OK",
+                        BeforeTax = Math.Round(beforeTax, 5),
+                        TotalPrice = Math.Round(withTax, 5)
+                    });
+
+                    return calculatedField;
+                }
+            }
+
+            var nodata = Json(new
+            {
+                Status = "OK",
+                BeforeTax = 0,
+                TotalPrice = 0
+            });
+
+            return nodata;
+
+        }
+
+        public JsonResult GetJobOrders(int customerId)
+        {
+            var jobOrders = db.Jobs.Where(q=>q.CustomerId==customerId).ToList();
+
+            return Json(jobOrders.Select(p => new
+            {
+                JobId = p.JobId,
+                JobNo = p.JobNo,
+            }), JsonRequestBehavior.AllowGet);
         }
         public JsonResult GetItemCategory()
         {

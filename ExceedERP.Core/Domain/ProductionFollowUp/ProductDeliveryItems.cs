@@ -19,5 +19,12 @@ namespace ExceedERP.Core.Domain.ProductionFollowUp
         public double Quantity { get; set; }
         public decimal UnitCost { get; set; }
         public decimal TotalCost { get; set; }
+        public DeliveryStatus Status { get; set; }
+    }
+    public enum DeliveryStatus
+    {
+        Delivered,
+        Voided
+
     }
 }

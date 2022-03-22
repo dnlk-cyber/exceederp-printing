@@ -70,17 +70,24 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                     delivery.DeliveryItems = new List<ProductDeliveryItemsVM>();
 
                     var deliveryItems = db.ProductDeliveryItems.Where(x=>x.ProductDeliveryId == productDelivery.ProductDeliveryId).ToList();
-                    foreach(var item in deliveryItems)
+                    var items = deliveryItems.GroupBy(g => g.JobId)
+                        .Select(s => new
+                        {
+                            JobId = s.Key,
+                            TotalCost = s.Sum(su=>su.TotalCost),
+                            UnitCost = s.Sum(su=>su.UnitCost),
+                            Quantity = s.Sum(su=>su.Quantity)
+                        });
+                    foreach (var item in items)
                     {
-                        var unit = db.Units.Find(item.UnitId);
+                        var jobb = db.Jobs.Find(item.JobId);
                         var product = new ProductDeliveryItemsVM();
 
-                        product.ItemCode = item.ItemCode;
+                        //product.ItemCode = item.ItemCode;
                         product.Unit = db.UoMs.Find(db.Jobs.Find(item.JobId)?.UnitId)?.UoMName;
                         product.JobNumber = db.Jobs.Find(item.JobId)?.JobNo;
                         product.Description = db.JobCategories.Find(db.Jobs.Find(item.JobId)?.JobTypeId)?.JobName;
                         product.JobNumber = db.Jobs.Find(item.JobId)?.JobNo;
-                        product.Unit = unit?.UOM;
                         product.Quantity = item.Quantity;
                         product.UnitCostBirr = (int)item.UnitCost;
                         product.UnitCostCent = (int)(Math.Round(item.UnitCost, 2) % 1 * 100);

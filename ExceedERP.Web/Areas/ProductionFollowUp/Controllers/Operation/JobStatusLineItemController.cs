@@ -44,7 +44,7 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
             return Json(result);
         }
 
-        public ActionResult JobStatusLineItems_Create([DataSourceRequest]DataSourceRequest request, JobStatusLineItem jobStatusLineItem, int id)
+        public  ActionResult JobStatusLineItems_Create([DataSourceRequest]DataSourceRequest request, JobStatusLineItem jobStatusLineItem, int id)
         {
             var jobStstus = db.JobStatuses.Find(id);
             var job = db.Jobs.Find(jobStstus?.JobId);

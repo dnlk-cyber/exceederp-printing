@@ -28,9 +28,7 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
             ViewData["JobOrder"] = db.Jobs.ToList().Select(s=>
             new {
                 JobId =s.JobId,
-                JobNo = s.JobNo,
-                JobType = db.JobCategories.Find(s.JobTypeId)?.JobName
-
+                JobNo = s.JobNo+"-"+ db.JobCategories.Find(s.JobTypeId).JobName
             }).ToList();
             ViewData["Units"] = db.Units.ToList();
             PopulateViewData();
@@ -104,7 +102,9 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                 CustomerId = productDelivery.CustomerId,
                 CustomerRefNo = productDelivery.CustomerRefNo,
                 CreditSaleNo = productDelivery.CreditSaleNo,
+                Credit = productDelivery.Credit,
                 CashSaleNo = productDelivery.CashSaleNo,
+                Cash = productDelivery.Cash,
                 PreparedBy = productDelivery.PreparedBy,
                 ApprovedBy = productDelivery.ApprovedBy,
                 IdentificationNo = productDelivery.IdentificationNo,
@@ -140,7 +140,9 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                     CustomerRefNo = productDelivery.CustomerRefNo,
                     CreditSaleNo = productDelivery.CreditSaleNo,
                     CustomerId = productDelivery.CustomerId,
+                    Credit = productDelivery.Credit,
                     CashSaleNo = productDelivery.CashSaleNo,
+                    Cash = productDelivery.Cash,
                     PreparedBy = productDelivery.PreparedBy,
                     ApprovedBy = productDelivery.ApprovedBy,
                     IdentificationNo = productDelivery.IdentificationNo,
@@ -165,7 +167,9 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                     ProductDeliveryId = productDelivery.ProductDeliveryId,
                     CustomerRefNo = productDelivery.CustomerRefNo,
                     CreditSaleNo = productDelivery.CreditSaleNo,
+                    Credit = productDelivery.Credit,
                     CashSaleNo = productDelivery.CashSaleNo,
+                    Cash = productDelivery.Cash,
                     PreparedBy = productDelivery.PreparedBy,
                     ApprovedBy = productDelivery.ApprovedBy,
                     IdentificationNo = productDelivery.IdentificationNo,
@@ -190,7 +194,9 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                     CustomerId = productDelivery.CustomerId,
                     CustomerRefNo = productDelivery.CustomerRefNo,
                     CreditSaleNo = productDelivery.CreditSaleNo,
+                    Credit = productDelivery.Credit,
                     CashSaleNo = productDelivery.CashSaleNo,
+                    Cash = productDelivery.Cash,
                     PreparedBy = productDelivery.PreparedBy,
                     ApprovedBy = productDelivery.ApprovedBy,
                     IdentificationNo = productDelivery.IdentificationNo,

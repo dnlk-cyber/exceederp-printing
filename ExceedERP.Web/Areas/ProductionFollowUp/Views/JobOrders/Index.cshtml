@@ -45,7 +45,7 @@
                                 {
                                     //columns.Bound(c => c.Time);
                                     columns.Bound(c => c.JobNo).Width(90).Title("JobNo");
-                                    columns.ForeignKey(c => c.ProformaId, (IEnumerable)ViewData["Proforma"], "ProformaId", "ProformaNo");
+                                    columns.ForeignKey(c => c.ProformaId, (IEnumerable)ViewData["Proforma"], "ProformaId", "ProformaNo").Width(100);
                                     columns.ForeignKey(c => c.JobTypeId, (IEnumerable)ViewData["JobType"], "JobTypeId", "Type").Width(130);
                                     columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customers"], "Code", "Name")
                                                                               .Width(110)
@@ -1359,7 +1359,6 @@
         console.log(quantity);
         if (quantity !== "" && unitPrice !== "" && jobTypeId != "") {
         console.log(unitPrice);
-        console.log(111111111111111111);
     $.ajax({
     url: '@Url.Action("GetBeforeVatAndTotalPerice", "JobOrders")',
 

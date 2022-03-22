@@ -14,6 +14,8 @@ namespace ExceedERP.Core.Domain.ProductionFollowUp
         public string CustomerRefNo { get; set; }
         public string CreditSaleNo { get; set; }
         public string CashSaleNo { get; set; }
+        public decimal Cash { get; set; }
+        public decimal Credit { get; set; }
         public string PreparedBy { get; set; }
         public string ApprovedBy { get; set; }
         public string IdentificationNo { get; set; }

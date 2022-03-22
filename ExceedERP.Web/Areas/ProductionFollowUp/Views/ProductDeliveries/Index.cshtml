@@ -11,21 +11,24 @@
                                                .EditorTemplateName("CustomerEditor")
                                                .Width("110px")
                                                .Title("Customer");
-                      columns.Bound(c => c.CreditSaleNo);
-                      columns.Bound(c => c.CashSaleNo);
-                      columns.Bound(c => c.PreparedBy);
-                      columns.Bound(c => c.ApprovedBy);
+                      columns.Bound(c => c.CreditSaleNo).Width(100);
+                      columns.Bound(c => c.Credit).Width(100);
+                      columns.Bound(c => c.CashSaleNo).Width(100);
+                      columns.Bound(c => c.Cash).Width(100);
+                      columns.Bound(c => c.PreparedBy).Width(100);
+                      columns.Bound(c => c.ApprovedBy).Width(100);
                       columns.Bound(c => c.IdentificationNo);
                       columns.Command(command =>
                       {
                           command.Edit();
                           command.Destroy();
-                      }).Width(180);
+                      }).Width(250);
                   })
                   .ToolBar(toolbar =>
                   {
                       toolbar.Create();
                   })
+                  .Events(ev=>ev.DetailExpand("onMasterExpand"))
            //       .Events(ev => ev.Save("showColumn"))
                   .Editable(editable => editable.Mode(GridEditMode.InLine))
                 .Pageable(pageable => pageable
@@ -62,20 +65,20 @@
                                 .Name("ProductDeliveryItems#=ProductDeliveryId#")
                                         .Columns(columns =>
                                         {
-                                            columns.ForeignKey(c => c.JobId, (ICollection)ViewData["JobOrder"], "JobId", "JobNo").EditorTemplateName("JobOrders").Title("Job No");
-                                            columns.ForeignKey(c => c.JobId, (ICollection)ViewData["JobOrder"], "JobId", "JobType").EditorTemplateName("JobOrders").Title("Job Type");
-
+                                            columns.ForeignKey(c => c.JobId, (ICollection)ViewData["JobOrder"], "JobId", "JobNo").EditorTemplateName("JobOrderEditorTemplate").Title("Job No");
+                                           // columns.ForeignKey(c => c.JobId, (ICollection)ViewData["JobOrder"], "JobId", "JobType").EditorTemplateName("JobOrders").Title("Job Type");
                                             //columns.Bound(c => c.ItemCategory).Width(100);
                                             //columns.Bound(c => c.ItemCode).Width(100);
                                             columns.Bound(c => c.Description).Width(100);
-                                         //   columns.Bound(c => c.UnitId).Width(70);
+                                         //  columns.Bound(c => c.UnitId).Width(70);
                                             columns.Bound(c => c.Quantity).Width(70).EditorTemplateName("NumericTextBox");
-                                            columns.Bound(c => c.UnitCost).Width(70).EditorTemplateName("NumericTextBox");
+                                          //  columns.Bound(c => c.UnitCost).Width(70).EditorTemplateName("NumericTextBox");
                                             columns.Bound(c => c.TotalCost).Width(70);
 
                                             columns.Command(command =>
                                             {
                                                 command.Edit();
+                                                command.Custom("cmd-void-request").Text("Void").Click("voidDelivery");
                                                 command.Destroy();
                                             }).Width(250);
                                         })
@@ -125,12 +128,64 @@
                                 }).ToClientTemplate())
 </script>
 <script>
+    var customerId;
+    function onMasterExpand(e) {
+        var masterRow = e.masterRow;
+
+        var masterGrid = $("#grid").data("kendoGrid");
+
+        var masterDataItem = masterGrid.dataItem(masterRow);
+        customerId = masterDataItem.CustomerId;
+        console.log(customerId);
+    }
+    function voidDelivery(e) {
+        var grid = this,
+            dataItem = grid.dataItem(e.currentTarget.closest("tr"));
+        $.ajax({
+           type: "POST",
+           url: '@Url.Action("VoidDelivereItems", "ProductDeliveryItems", new { area = "ProductionFollowUp" })',
+            data: { id: dataItem.ProductDeliveryItemsId },
+           success: function(result) {
+                alert(result);
+                location.reload(true);
+           },
+           error: function(result) {
+               alert(result);
+           }
+       });
+
+    }
+   function filterJobOrders()
+    {
+        return {
+            customerId: customerId
+        };
+    }
+  
     function onChange() {
         var unitCost = $("#UnitCost").val();
         var quantity = $("#Quantity").val();
+        var job = $("#JobId").val();
         console.log(unitCost);
-        $("#TotalCost").val(unitCost * quantity).trigger("change");
-    }
+        //$("#TotalCost").val(unitCost * quantity).trigger("change");
+
+
+        console.log(quantity);
+        if (quantity !== "" && unitCost !== "" && job != "") {
+            $.ajax({
+                url: '@Url.Action("GetBeforeVatAndTotalCost", "ProductionDataProvider")',
+
+                data: { jobId: job, quant: quantity, unitPrice: unitCost },
+                type: 'POST',
+                cache: false,
+                success: function (result) {
+                    r = result;
+                    $("#TotalCost").val(r.TotalPrice).trigger("change");
+                }
+
+            });
+        }
+       }
 
     function hideColumn() {
         var grid = $('#grid').data('kendoGrid');
