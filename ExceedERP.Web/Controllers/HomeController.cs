@@ -466,6 +466,29 @@ namespace ExceedERP.Web.Controllers
             #endregion
             return View("Success");
         }
+
+        public ActionResult DebitSum()
+        {
+            #region
+
+            var journals = _db.GLRecordJournals.ToList();
+
+            foreach (var journal in journals)
+            {
+                var lines = _db.GLRecordJournalDetails.Where(x => x.GlRecordJournalId == journal.GlRecordJournalId);
+                if (lines.Any())
+                {
+                    journal.DebitSum = lines.Sum(x => x.Debit);
+                    _db.GLRecordJournals.Attach(journal);
+                    _db.Entry(journal).State = EntityState.Modified;
+                    _db.SaveChanges();
+                }
+
+            }
+
+            #endregion
+            return View("Success");
+        }
         public ActionResult PlateNo()
         {
             #region

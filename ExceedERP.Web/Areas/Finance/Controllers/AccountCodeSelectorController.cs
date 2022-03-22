@@ -112,6 +112,15 @@ namespace ExceedERP.Web.Areas.Finance.Controllers
                             .OrderBy(x => x.Values)
                             .ToList();
 
+                        if (segment.SegmentType == DynamicSegmentTypes.Location)
+                        {
+                            List<string> mybraches = UserInformationHelper.GetUserBranchs(User.Identity.Name);
+
+                            List<string> locationCodes = _db.Branch.Where(x => mybraches.Contains(x.BranchId.ToString())).Select(x => x.Code).ToList();
+
+                            segments = segments.Where(x => locationCodes.Contains(x.Values)).ToList();
+                        }
+
                         if (segment.SegmentType == DynamicSegmentTypes.BusinessUnit)
                         {
                             var userid = UserInformationHelper.GetUserId(User.Identity.Name);
