@@ -26,12 +26,13 @@ namespace ExceedERP.Core.Domain.ProductionFollowUp
         Secure = 5
     }
 
-    public enum JobPhase
+    public enum ProductionDepartment
     {
         Graphic = 1,
         Printing = 2,
         Finishing = 3,
-        Delivery = 4
+        FinishingDelivery = 4,
+        SalesDelivery = 4
     }
 
     public enum CheckType

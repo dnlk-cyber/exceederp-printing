@@ -79,7 +79,7 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
             {
                 var entity = (JobStatus)this.GetObject(jobStatus, false);
 
-                if (entity.JobPhase == JobPhase.Graphic)
+                if (entity.JobPhase == ProductionDepartment.Graphic)
                 {
                     jobStatus.EndDate = DateTime.Now;
                 }

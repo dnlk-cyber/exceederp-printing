@@ -31,7 +31,7 @@ namespace ExceedERP.Core.Domain.ProductionFollowUp
         public DateTime EndDate { get; set; }
         // [Required]
         [Display(Name = "Phase")]
-        public JobPhase JobPhase { get; set; }
+        public ProductionDepartment JobPhase { get; set; }
         // [Required]
         [Display(Name = "Type")]
         public JobState Status { get; set; }

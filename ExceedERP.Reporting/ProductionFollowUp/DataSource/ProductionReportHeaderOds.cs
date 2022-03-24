@@ -7,10 +7,10 @@ using ExceedERP.DataAccess.Context;
 using ExceedERP.Reporting.SharedDataSources;
 using ExceedERP.Reporting.SharedDataSources.ViewModel;
 
-namespace TradeMarketSystem.Reporting.Common.DataSources
+namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
 {
     [DataObject]
-    public class CompanyReportHeaderOds
+    public class ProductionReportHeaderOds
     {
         private readonly ExceedDbContext db = new ExceedDbContext();
 

@@ -75,7 +75,7 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                 if (job != null)
                 {
                     var jobStatus = db.JobStatuses.Where(q => q.JobId == job.JobId
-                    && q.JobPhase == JobPhase.Delivery).FirstOrDefault();
+                    && q.JobPhase == ProductionDepartment.SalesDelivery).FirstOrDefault();
                     if (jobStatus != null)
                     {
                         GetJobLineItems(entity,jobStatus.JobStatusId,id);
@@ -90,7 +90,7 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                             Time = DateTime.Now,
                             StartDate = DateTime.Now,
                             EndDate = DateTime.Now,
-                            JobPhase = JobPhase.Delivery,
+                            JobPhase = ProductionDepartment.SalesDelivery,
                             Status = Core.Domain.PrintingEstimation.Setting.JobState.InProgress
                         };
                         db.JobStatuses.Add(jobStatusEntity);

@@ -18,9 +18,9 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
     {
         ExceedDbContext db = new ExceedDbContext();
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public PrintingAndFinishingTeamPerformanceVM DeliveryTeamPerformances(DateTime? startDate, DateTime? endDate)
+        public PrintingAndFinishingTeamPerformanceVM DeliveryTeamPerformances(DateTime? startDate, DateTime? endDate, string jobTypeId)
         {
-            string jobPhase = ExceedERP.Core.Domain.ProductionFollowUp.JobPhase.Delivery.ToString();
+            string jobPhase = ProductionDepartment.FinishingDelivery.ToString();
             var previousJobs = db.Jobs.ToList();
             var latestJobs = db.Jobs.ToList();
             if (startDate.HasValue)
@@ -37,11 +37,16 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                 days = (endDate.Value.Date - startDate.Value.Date).Days;
 
             }
+            if (jobTypeId != null)
+            {
+                latestJobs = latestJobs.Where(q => q.JobTypeId.ToString() == jobTypeId).ToList();
+                previousJobs = previousJobs.Where(q => q.JobTypeId.ToString() == jobTypeId).ToList();
+            }
 
             var latestJobsPrices = latestJobs.Sum(s=>s.TotalPrice);
             var model = new PrintingAndFinishingTeamPerformanceVM();
+
             decimal LastWeekFinishedJobs = 0;
-            decimal LastWeekPendingJobs = 0;
             decimal currentWeekFinishedJobs = 0;
             var organization = db.Companies.FirstOrDefault(x => x.Category == "0");
             Image LogoFileName = null;
@@ -63,6 +68,7 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
             model.LogoFileName = LogoFileName;
             model.Name = Name;
             model.AmharicName = AmharicName;
+            model.Date = DateTime.Now.ToString("MM/dd/yyyy");
             if (days>0)
             {
                 foreach (var lastJob in previousJobs)
@@ -140,7 +146,7 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                             }
                             foreach (var currentJob in currentWeekJobTypes)
                             {
-                                var jobStatus = db.JobStatuses.Where(q => q.JobId == currentJob.JobId && q.JobPhase.ToString() == jobPhase).FirstOrDefault();
+                                var jobStatus = db.JobStatuses.Where(q => q.JobId == currentJob.JobId && q.JobPhase.ToString() == ProductionDepartment.SalesDelivery.ToString()).FirstOrDefault();
                                 if (jobStatus != null)
                                 {
                                     var finished = db.JobStatusLineItems.Where(q => q.JobStatusId == jobStatus.JobStatusId).ToList().Sum(q => q.TotalPrice);

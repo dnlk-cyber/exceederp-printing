@@ -45,5 +45,17 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
 
             return custList;
         }
+        [DataObjectMethod(DataObjectMethodType.Select)]
+        public List<SelectListItem> GetJobTypes()
+        {
+            var custList = db.JobCategories.Where(q=>!q.HaveParent).ToList()
+                .Select(s => new SelectListItem
+                {
+                    Value = s.JobCategoryId.ToString(),
+                    Text = s.JobName
+                }).ToList();
+
+            return custList;
         }
+    }
 }
