@@ -42,26 +42,7 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
             decimal LastWeekFinishedJobs = 0;
             decimal LastWeekPendingJobs = 0;
             decimal currentWeekFinishedJobs = 0;
-            var organization = db.Companies.FirstOrDefault(x => x.Category == "0");
-            Image LogoFileName = null;
-            string AmharicName = "";
-            string Name = "";
-            if (organization!=null)
-            {
-                Name = organization.TradeName;
-                AmharicName = organization.AmharicName;
-                var logo =
-                                   db.Attachments.FirstOrDefault(a => a.Reference == organization.MainCompanyId.ToString() &&
-                                           a.ReferenceType == ExceedERP.Core.Domain.Common.AttachmentType.LOGO);
-                if (logo != null)
-                {
-                    LogoFileName = OrganizationObjectDataSource.ByteArrayToImage(logo.BinaryFile);
-                }
-            }
-         
-            model.LogoFileName = LogoFileName;
-            model.Name = Name;
-            model.AmharicName = AmharicName;
+           
             if (days>0)
             {
                 foreach (var lastJob in previousJobs)

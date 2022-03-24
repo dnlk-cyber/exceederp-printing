@@ -145,6 +145,7 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                     Cash = productDelivery.Cash,
                     PreparedBy = productDelivery.PreparedBy,
                     ApprovedBy = productDelivery.ApprovedBy,
+                    DateCreated = DateTime.Now,
                     IdentificationNo = productDelivery.IdentificationNo,
                 };
 
@@ -167,11 +168,13 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                     ProductDeliveryId = productDelivery.ProductDeliveryId,
                     CustomerRefNo = productDelivery.CustomerRefNo,
                     CreditSaleNo = productDelivery.CreditSaleNo,
+                    CustomerId = productDelivery.CustomerId,
                     Credit = productDelivery.Credit,
                     CashSaleNo = productDelivery.CashSaleNo,
                     Cash = productDelivery.Cash,
                     PreparedBy = productDelivery.PreparedBy,
                     ApprovedBy = productDelivery.ApprovedBy,
+                    DateCreated = DateTime.Now,
                     IdentificationNo = productDelivery.IdentificationNo,
                 };
 

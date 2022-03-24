@@ -124,7 +124,7 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
 
             DataSourceRequest request = new DataSourceRequest();
             JobStatusLineItemController jsIC = new JobStatusLineItemController();
-            jsIC.JobStatusLineItems_Create(request,jobStatusItemEntity, jobStatusId);
+            jsIC.JobStatusLineItems_Create(request,jobStatusItemEntity, jobStatusId   );
         }
 
       

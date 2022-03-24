@@ -1,4 +1,6 @@
-﻿using ExceedERP.Core.Domain.PrintingEstimation.Setting;
+﻿using ExceedERP.Core.Domain.CRM;
+using ExceedERP.Core.Domain.PrintingEstimation.Setting;
+using ExceedERP.DataAccess.Context;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -12,6 +14,7 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
     [DataObject]
     public class ProFollowupParameterODs
     {
+        ExceedDbContext db = new ExceedDbContext();
         [DataObjectMethod(DataObjectMethodType.Select)]
         public List<SelectListItem> GetJobPhases()
         {
@@ -31,5 +34,16 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
             };
             return jobPhases;
         }
-    }
+        [DataObjectMethod(DataObjectMethodType.Select)]
+        public List<SelectListItem> GetCustomers()
+        {
+            var custList = db.OrganizationCustomers.ToList()
+                .Select(s =>  new SelectListItem{
+                    Value = s.OrganizationCustomerID.ToString(),
+                    Text = s.TradeName
+                }).ToList();
+
+            return custList;
+        }
+        }
 }
