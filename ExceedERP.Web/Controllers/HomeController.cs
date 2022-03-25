@@ -471,13 +471,14 @@ namespace ExceedERP.Web.Controllers
         {
             #region
 
-            var journals = _db.GLRecordJournals.ToList();
+            var journals = _db.GLRecordJournals.AsNoTracking().Select(x => x.GlRecordJournalId).ToList();
 
-            foreach (var journal in journals)
+            foreach (var journalId in journals)
             {
-                var lines = _db.GLRecordJournalDetails.Where(x => x.GlRecordJournalId == journal.GlRecordJournalId);
+                var lines = _db.GLRecordJournalDetails.Where(x => x.GlRecordJournalId == journalId);
                 if (lines.Any())
                 {
+                    var journal = _db.GLRecordJournals.Find(journalId);
                     journal.DebitSum = lines.Sum(x => x.Debit);
                     _db.GLRecordJournals.Attach(journal);
                     _db.Entry(journal).State = EntityState.Modified;
