@@ -38,13 +38,11 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Report
             ViewBag.id = id;
             return View();
         }
-
         public ActionResult ProductDelivery(int id)
         {
             ViewBag.id = id;
             return View();
         }
-
         public ActionResult GetFinishedProductsReceivingNote()
         {
             ViewBag.UserName = User.Identity.Name;
@@ -80,6 +78,9 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Report
             return View();
 
         }
-        
+        public ActionResult GetDeliveryFollowUpSheet()
+        {
+            return View();
+        }
     }
 }

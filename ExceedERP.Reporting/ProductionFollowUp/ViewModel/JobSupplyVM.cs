@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ExceedERP.Reporting.SharedDataSources.ViewModel;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ExceedERP.Reporting.ProductionFollowUp.ViewModel
 {
-    public class JobSupplyVM
+    public class JobSupplyVM :Organization
     { 
             public string From { get; set; }
             public string To { get; set; }

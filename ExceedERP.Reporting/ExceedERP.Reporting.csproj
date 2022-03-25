@@ -3988,6 +3988,7 @@
     <Compile Include="Procurements\ViewModel\TenderOpening.cs" />
     <Compile Include="Procurements\ViewModel\TranscriptViewModel.cs" />
     <Compile Include="Procurements\ViewModel\WinningSupplierDetailVM.cs" />
+    <Compile Include="ProductionFollowUp\DataSource\ProductionReportHeaderOds.cs" />
     <Compile Include="ProductionFollowUp\DataSource\JobSupplyandSalesODS.cs" />
     <Compile Include="ProductionFollowUp\DataSource\JobSupplyODS.cs" />
     <Compile Include="ProductionFollowUp\DataSource\JobTypeODS.cs" />
@@ -3999,6 +4000,7 @@
     <Compile Include="ProductionFollowUp\DataSource\JobOrderNoParameterODS.cs" />
     <Compile Include="ProductionFollowUp\DataSource\JobOrderODS.cs" />
     <Compile Include="ProductionFollowUp\DataSource\JobOrderTimeSheetODS.cs" />
+    <Compile Include="ProductionFollowUp\DataSource\DeliveryFollowUpSheetODS.cs" />
     <Compile Include="ProductionFollowUp\DataSource\ProductDeliveryODS.cs" />
     <Compile Include="ProductionFollowUp\DataSource\ProformaItemsListParameterODS.cs" />
     <Compile Include="ProductionFollowUp\DataSource\ProformaItemsODS.cs" />
@@ -4009,6 +4011,12 @@
     </Compile>
     <Compile Include="ProductionFollowUp\Designer\rptChangeOfOrder.Designer.cs">
       <DependentUpon>rptChangeOfOrder.cs</DependentUpon>
+    </Compile>
+    <Compile Include="ProductionFollowUp\Designer\rptDeliveryFollowUpSheet.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="ProductionFollowUp\Designer\rptDeliveryFollowUpSheet.Designer.cs">
+      <DependentUpon>rptDeliveryFollowUpSheet.cs</DependentUpon>
     </Compile>
     <Compile Include="ProductionFollowUp\Designer\rptDeliveryTeamPerformance.cs">
       <SubType>Component</SubType>
@@ -4089,6 +4097,7 @@
     <Compile Include="ProductionFollowUp\ViewModel\JobTimeSheetVM.cs" />
     <Compile Include="ProductionFollowUp\ViewModel\JobTypeVM.cs" />
     <Compile Include="ProductionFollowUp\ViewModel\ProductDeliveryItemsVM.cs" />
+    <Compile Include="ProductionFollowUp\ViewModel\DeliveryFollowUpSheetVM.cs" />
     <Compile Include="ProductionFollowUp\ViewModel\ProductDeliveryVM.cs" />
     <Compile Include="ProductionFollowUp\DataSource\ProFollowupParameterODs.cs" />
     <Compile Include="ProductionFollowUp\ViewModel\ProformaItemVM.cs" />
@@ -5813,6 +5822,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="ProductionFollowUp\Designer\rptChangeOfOrder.resx">
       <DependentUpon>rptChangeOfOrder.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="ProductionFollowUp\Designer\rptDeliveryFollowUpSheet.resx">
+      <DependentUpon>rptDeliveryFollowUpSheet.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="ProductionFollowUp\Designer\rptDeliveryTeamPerformance.resx">
       <DependentUpon>rptDeliveryTeamPerformance.cs</DependentUpon>

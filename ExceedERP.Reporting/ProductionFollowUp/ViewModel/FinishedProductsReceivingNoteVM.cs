@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ExceedERP.Reporting.SharedDataSources.ViewModel;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -6,9 +7,8 @@ using System.Threading.Tasks;
 
 namespace ExceedERP.Reporting.ProductionFollowUp.ViewModel
 {
-    public class FinishedProductsReceivingNoteVM
+    public class FinishedProductsReceivingNoteVM : Organization
     {
-        public string Date { get; set; }
         public string From { get; set; }
         public string To { get; set; }
         public string DeliveredBy { get; set; }

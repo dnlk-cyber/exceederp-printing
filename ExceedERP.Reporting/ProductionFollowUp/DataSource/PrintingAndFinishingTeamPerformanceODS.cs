@@ -18,7 +18,7 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
     {
         ExceedDbContext db = new ExceedDbContext();
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public PrintingAndFinishingTeamPerformanceVM PrintingAndFinishingTeamPerformances(DateTime? startDate, DateTime? endDate, string jobPhase)
+        public PrintingAndFinishingTeamPerformanceVM PrintingAndFinishingTeamPerformances(DateTime? startDate, DateTime? endDate, string jobPhase, string jobTypeId)
         {
             var previousJobs = db.Jobs.ToList();
             var latestJobs = db.Jobs.ToList();
@@ -36,17 +36,19 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                 days = (endDate.Value.Date - startDate.Value.Date).Days;
 
             }
+            if(jobTypeId!=null)
+            {
+                latestJobs = latestJobs.Where(q => q.JobTypeId.ToString() == jobTypeId).ToList();
+                previousJobs = previousJobs.Where(q => q.JobTypeId.ToString() == jobTypeId).ToList();
+            }
 
             var latestJobsPrices = latestJobs.Sum(s=>s.TotalPrice);
             var model = new PrintingAndFinishingTeamPerformanceVM();
-            decimal LastWeekFinishedJobs = 0;
-            decimal LastWeekPendingJobs = 0;
-            decimal currentWeekFinishedJobs = 0;
             var organization = db.Companies.FirstOrDefault(x => x.Category == "0");
             Image LogoFileName = null;
             string AmharicName = "";
             string Name = "";
-            if (organization!=null)
+            if (organization != null)
             {
                 Name = organization.TradeName;
                 AmharicName = organization.AmharicName;
@@ -58,10 +60,14 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                     LogoFileName = OrganizationObjectDataSource.ByteArrayToImage(logo.BinaryFile);
                 }
             }
-         
+
             model.LogoFileName = LogoFileName;
             model.Name = Name;
             model.AmharicName = AmharicName;
+            decimal LastWeekFinishedJobs = 0;
+            decimal LastWeekPendingJobs = 0;
+            decimal currentWeekFinishedJobs = 0;
+           
             if (days>0)
             {
                 foreach (var lastJob in previousJobs)

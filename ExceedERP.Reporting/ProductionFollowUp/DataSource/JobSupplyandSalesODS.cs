@@ -1,8 +1,11 @@
-﻿using ExceedERP.DataAccess.Context;
+﻿using ExceedERP.Core.Domain.ProductionFollowUp;
+using ExceedERP.DataAccess.Context;
 using ExceedERP.Reporting.ProductionFollowUp.ViewModel;
+using ExceedERP.Reporting.SharedDataSources;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Drawing;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -16,7 +19,28 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
         [DataObjectMethod(DataObjectMethodType.Select)]
         public JobSupplyandSalesVM GetJobSupplyandSalesODS(DateTime? startDate, DateTime? endDate)
         {
+
             var model = new JobSupplyandSalesVM();
+            var organization = db.Companies.FirstOrDefault(x => x.Category == "0");
+            Image LogoFileName = null;
+            string AmharicName = "";
+            string Name = "";
+            if (organization != null)
+            {
+                Name = organization.TradeName;
+                AmharicName = organization.AmharicName;
+                var logo =
+                                   db.Attachments.FirstOrDefault(a => a.Reference == organization.MainCompanyId.ToString() &&
+                                           a.ReferenceType == ExceedERP.Core.Domain.Common.AttachmentType.LOGO);
+                if (logo != null)
+                {
+                    LogoFileName = OrganizationObjectDataSource.ByteArrayToImage(logo.BinaryFile);
+                }
+            }
+
+            model.LogoFileName = LogoFileName;
+            model.Name = Name;
+            model.AmharicName = AmharicName;
             decimal days = 0;
             decimal WeeklySupplyAndSalesPlan = 0;
             decimal WeeklyReceivedActual = 0;
@@ -40,7 +64,7 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                     var job = new JobSupplyandSalesItemVM();
                     jobs = jobs.Where(q => q.JobTypeId == jobType.JobCategoryId).ToList();
                     var jobIds = jobs.Select(s => s.JobId);
-                    IEnumerable<int> deliveredJobIds = db.JobStatuses.Where(q => q.JobPhase == Core.Domain.ProductionFollowUp.JobPhase.Delivery
+                    IEnumerable<int> deliveredJobIds = db.JobStatuses.Where(q => q.JobPhase == ProductionDepartment.SalesDelivery
                                && q.Status == Core.Domain.PrintingEstimation.Setting.JobState.Finished
                                && jobIds.Contains(q.JobId)).Select(s => s.JobStatusId);
                     var deliveredJobs = db.JobStatusLineItems.ToList().Where(q => deliveredJobIds.Contains(q.JobStatusId));
