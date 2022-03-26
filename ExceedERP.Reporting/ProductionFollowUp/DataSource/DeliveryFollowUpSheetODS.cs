@@ -61,6 +61,8 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
             foreach (var productDelivery in productDeliverys)
             {
                 var item = new DeliveryFollowUpSheetItemsVM();
+                decimal vat = 0;
+                decimal total = 0;
                 var deliveries = db.ProductDeliveryItems.ToList().Where(q => q.ProductDeliveryId == productDelivery.ProductDeliveryId);
                 var jobs = deliveries.Select(s => s.JobId);
                 var jobTypeIds = db.Jobs.Where(q => jobs.Contains(q.JobId)).Select(s=>s.JobTypeId).Distinct();

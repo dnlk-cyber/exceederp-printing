@@ -1,5 +1,6 @@
 ﻿using ExceedERP.Core.Domain.CRM;
 using ExceedERP.Core.Domain.PrintingEstimation.Setting;
+using ExceedERP.Core.Domain.ProductionFollowUp;
 using ExceedERP.DataAccess.Context;
 using System;
 using System.Collections.Generic;
@@ -15,6 +16,15 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
     public class ProFollowupParameterODs
     {
         ExceedDbContext db = new ExceedDbContext();
+        [DataObjectMethod(DataObjectMethodType.Select)]
+        public List<SelectListItem> GetAllJobPhases()
+        {
+            List<SelectListItem> jobPhases = new List<SelectListItem>();
+            jobPhases = (Enum.GetValues(typeof(ProductionDepartment)).Cast<ProductionDepartment>().Select(
+        e => new SelectListItem() { Text = e.ToString(), Value = e.ToString() })).ToList();
+
+            return jobPhases;
+        }
         [DataObjectMethod(DataObjectMethodType.Select)]
         public List<SelectListItem> GetJobPhases()
         {

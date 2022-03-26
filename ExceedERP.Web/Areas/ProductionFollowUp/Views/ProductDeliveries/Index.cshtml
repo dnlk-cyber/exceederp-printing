@@ -75,6 +75,8 @@
                                          //   columns.Bound(c => c.Description).Width(100);
                                          //  columns.Bound(c => c.UnitId).Width(70);
                                             columns.Bound(c => c.Quantity).Width(70).EditorTemplateName("NumericTextBox");
+                                            columns.Bound(c => c.Amount);
+                                            columns.Bound(c => c.VAT);
                                           //  columns.Bound(c => c.UnitCost).Width(70).EditorTemplateName("NumericTextBox");
                                             columns.Bound(c => c.TotalCost).Width(70);
 
@@ -182,7 +184,9 @@
                 cache: false,
                 success: function (result) {
                     r = result;
-                    $("#TotalCost").val(r.TotalPrice).trigger("change");
+                    $("#TotalCost").val(r.Total).trigger("change");
+                    $("#Amount").val(r.Amount).trigger("change");
+                    $("#VAT").val(r.VAT).trigger("change");
                 }
 
             });

@@ -206,10 +206,6 @@
     <Compile Include="Migrations\202203181048430_finance-vat-withholding.Designer.cs">
       <DependentUpon>202203181048430_finance-vat-withholding.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\202203211425178_ProductDeliveryItemStatus.cs" />
-    <Compile Include="Migrations\202203211425178_ProductDeliveryItemStatus.Designer.cs">
-      <DependentUpon>202203211425178_ProductDeliveryItemStatus.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\202203211542398_DeliveryAddCasAndCredit.cs" />
     <Compile Include="Migrations\202203211542398_DeliveryAddCasAndCredit.Designer.cs">
       <DependentUpon>202203211542398_DeliveryAddCasAndCredit.cs</DependentUpon>
@@ -221,6 +217,10 @@
     <Compile Include="Migrations\202203251343054_financedebit.cs" />
     <Compile Include="Migrations\202203251343054_financedebit.Designer.cs">
       <DependentUpon>202203251343054_financedebit.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202203260743494_ProductDeliveryVatAdded.cs" />
+    <Compile Include="Migrations\202203260743494_ProductDeliveryVatAdded.Designer.cs">
+      <DependentUpon>202203260743494_ProductDeliveryVatAdded.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -334,9 +334,6 @@
     <EmbeddedResource Include="Migrations\202203181048430_finance-vat-withholding.resx">
       <DependentUpon>202203181048430_finance-vat-withholding.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202203211425178_ProductDeliveryItemStatus.resx">
-      <DependentUpon>202203211425178_ProductDeliveryItemStatus.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202203211542398_DeliveryAddCasAndCredit.resx">
       <DependentUpon>202203211542398_DeliveryAddCasAndCredit.cs</DependentUpon>
     </EmbeddedResource>
@@ -345,6 +342,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202203251343054_financedebit.resx">
       <DependentUpon>202203251343054_financedebit.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202203260743494_ProductDeliveryVatAdded.resx">
+      <DependentUpon>202203260743494_ProductDeliveryVatAdded.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

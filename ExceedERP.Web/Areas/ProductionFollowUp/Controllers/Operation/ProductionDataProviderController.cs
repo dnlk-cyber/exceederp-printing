@@ -31,12 +31,13 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                 {
                     double beforeTax = quant * job.UnitPrice;
                     double withTax = (quant * job.UnitPrice) + (quant * job.UnitPrice * Convert.ToDouble(tax.CalculatedRate));
-
+                    double vat = withTax - beforeTax;
                     var calculatedField = Json(new
                     {
                         Status = "OK",
-                        BeforeTax = Math.Round(beforeTax, 5),
-                        TotalPrice = Math.Round(withTax, 5)
+                        Amount = Math.Round(beforeTax, 3),
+                        VAT = Math.Round(vat, 3),
+                        Total = Math.Round(withTax, 3)
                     });
 
                     return calculatedField;
