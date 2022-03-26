@@ -39,7 +39,7 @@ namespace ExceedERP.Core.Domain.Finance.GL
         public bool IsPostedToSecondLedger { get; set; }
         public string PostedBy { get; set; }
         public DateTime? PostedTime { get; set; }
-        [NotMapped]
+      
         public decimal DebitSum { get; set; }
         public string Remark { get; set; }
         //ap ,ar,or gl
