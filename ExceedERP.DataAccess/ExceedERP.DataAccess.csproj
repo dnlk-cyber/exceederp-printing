@@ -214,6 +214,10 @@
     <Compile Include="Migrations\202203211542398_DeliveryAddCasAndCredit.Designer.cs">
       <DependentUpon>202203211542398_DeliveryAddCasAndCredit.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202203251231165_ProductDeliveryUpdate.cs" />
+    <Compile Include="Migrations\202203251231165_ProductDeliveryUpdate.Designer.cs">
+      <DependentUpon>202203251231165_ProductDeliveryUpdate.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\202203251343054_financedebit.cs" />
     <Compile Include="Migrations\202203251343054_financedebit.Designer.cs">
       <DependentUpon>202203251343054_financedebit.cs</DependentUpon>
@@ -335,6 +339,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202203211542398_DeliveryAddCasAndCredit.resx">
       <DependentUpon>202203211542398_DeliveryAddCasAndCredit.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202203251231165_ProductDeliveryUpdate.resx">
+      <DependentUpon>202203251231165_ProductDeliveryUpdate.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202203251343054_financedebit.resx">
       <DependentUpon>202203251343054_financedebit.cs</DependentUpon>
