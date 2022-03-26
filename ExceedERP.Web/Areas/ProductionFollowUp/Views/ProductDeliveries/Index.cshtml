@@ -69,16 +69,16 @@
                                         .Columns(columns =>
                                         {
                                             columns.ForeignKey(c => c.JobId, (ICollection)ViewData["JobOrder"], "JobId", "JobNo").EditorTemplateName("JobOrderEditorTemplate").Title("Job No").Width(100);
-                                           // columns.ForeignKey(c => c.JobId, (ICollection)ViewData["JobOrder"], "JobId", "JobType").EditorTemplateName("JobOrders").Title("Job Type");
+                                            // columns.ForeignKey(c => c.JobId, (ICollection)ViewData["JobOrder"], "JobId", "JobType").EditorTemplateName("JobOrders").Title("Job Type");
                                             //columns.Bound(c => c.ItemCategory).Width(100);
                                             //columns.Bound(c => c.ItemCode).Width(100);
-                                         //   columns.Bound(c => c.Description).Width(100);
-                                         //  columns.Bound(c => c.UnitId).Width(70);
-                                            columns.Bound(c => c.Quantity).Width(70).EditorTemplateName("NumericTextBox");
-                                            columns.Bound(c => c.Amount);
-                                            columns.Bound(c => c.VAT);
-                                          //  columns.Bound(c => c.UnitCost).Width(70).EditorTemplateName("NumericTextBox");
-                                            columns.Bound(c => c.TotalCost).Width(70);
+                                            //   columns.Bound(c => c.Description).Width(100);
+                                            //  columns.Bound(c => c.UnitId).Width(70);
+                                            columns.Bound(c => c.Quantity).ClientFooterTemplate("T Q: \\#=sum\\# ").Width(70).EditorTemplateName("NumericTextBox");
+                                            columns.Bound(c => c.Amount).ClientFooterTemplate("T A: \\#=sum\\# ").Width(100);
+                                            columns.Bound(c => c.VAT).ClientFooterTemplate("T V: \\#=sum\\# ").Width(100);
+                                            //  columns.Bound(c => c.UnitCost).Width(70).EditorTemplateName("NumericTextBox");
+                                            columns.Bound(c => c.TotalCost).ClientFooterTemplate("Total: \\#=sum\\# ").Width(100);
 
                                             columns.Command(command =>
                                             {
@@ -105,6 +105,12 @@
 
                                              .DataSource(dataSource => dataSource
                                                 .Ajax()
+                                                .Aggregates(ag=> {
+                                                    ag.Add(a => a.Quantity).Sum();
+                                                    ag.Add(a => a.Amount).Sum();
+                                                    ag.Add(a => a.VAT).Sum();
+                                                    ag.Add(a => a.TotalCost).Sum();
+                                                })
                                                         //  .Sort(s => s.Add(x => x.ProformaId).Descending())
                                                         .Events(events =>
                                                         {

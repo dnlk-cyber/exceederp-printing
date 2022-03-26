@@ -294,7 +294,8 @@
 
                                                                                                                                                                         .ValuePrimitive(true)
                                                                                                                                                                         .Placeholder("--select--")
-                                                                                                                                                                        .Events(ev => ev.Change("onSelectLoading"))
+                                                                                                                                                                        .Events(ev => ev.Change("onSelectLoading").Change("onChange"))
+                                                                                                                                                                        
                                                                                                                                                                         .BindTo((IEnumerable<DropDownTreeItemModel>)ViewBag.data))
 
                                             @Html.ValidationMessageFor(model => model.JT, "", new { @class = "text-danger" })
@@ -333,7 +334,7 @@
                                         @Html.LabelFor(model => model.Quantity, htmlAttributes: new { @class = "control-label col-sm-8" })
                                         <div>
 
-                                            @(Html.Kendo().NumericTextBoxFor(model => model.Quantity)
+                                            @(Html.Kendo().NumericTextBoxFor(model => model.Quantity).Name("Quantity")
                                                                                                                                                                                                                          .Events(e =>
                                                                                                                                                                                                                          {
                                                                                                                                                                                                                              e.Change("onChangeQuan");

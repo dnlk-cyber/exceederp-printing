@@ -350,7 +350,7 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                 var changeOrder = new ChangeOrder();
 
                 changeOrder.Date = DateTime.Now;// changeOfOrder.Date;
-                changeOrder.Quantity = changeOfOrder.Quantity;
+                changeOrder.Quantity = changeOfOrder.ChangedQuantity;
                 changeOrder.Size = changeOfOrder.Size;
                 changeOrder.JobId = changeOfOrder.JobId;
                 changeOrder.Tax = changeOfOrder.Tax;

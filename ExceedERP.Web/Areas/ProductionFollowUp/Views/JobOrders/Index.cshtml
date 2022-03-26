@@ -507,7 +507,7 @@
 
                                                         @Html.Label("Quantity")
 
-                                                        @Html.TextBox("Quantity", "", new { type = "text", onchange = "onChangeOfOrder()" })
+                                                        @Html.TextBox("ChangedQuantity", "", new { type = "text", onchange = "onChangeOfOrder()" })
 
                                                         @Html.Label("Unit Price")
 
@@ -1357,13 +1357,12 @@
     }
     function onChange() {
         var unitPrice = $("#UnitPrice").val();
-        var quantitynumerictextbox = $("#Quantity");
+        quantity = $("#Quantity").val();
     var jobTypeId = $("#JT").val();
         console.log(unitPrice);
         console.log(jobTypeId);
-
         console.log(quantity);
-        if (quantity !== "" && unitPrice !== "" && jobTypeId != "") {
+        if (quantity !== "" && quantity !== 0 && unitPrice !== "" && unitPrice !== "0" && jobTypeId != "") {
         console.log(unitPrice);
     $.ajax({
     url: '@Url.Action("GetBeforeVatAndTotalPerice", "JobOrders")',

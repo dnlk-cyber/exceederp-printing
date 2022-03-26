@@ -32,6 +32,8 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                 ProductDeliveryId = productDeliveryItems.ProductDeliveryId,
                 JobId = productDeliveryItems.JobId,
                 ItemCode = productDeliveryItems.ItemCode,
+                VAT = productDeliveryItems.VAT,
+                Amount = productDeliveryItems.Amount,
                 ItemCategory = productDeliveryItems.ItemCategory,
                 Description = productDeliveryItems.Description,
                 UnitId = productDeliveryItems.UnitId,
@@ -64,6 +66,8 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                     ItemCategory = productDeliveryItems.ItemCategory,
                     Description = productDeliveryItems.Description,
                     UnitId = productDeliveryItems.UnitId,
+                    VAT = productDeliveryItems.VAT,
+                    Amount = productDeliveryItems.Amount,
                     Quantity = productDeliveryItems.Quantity,
                     UnitCost = productDeliveryItems.UnitCost,
                     TotalCost = productDeliveryItems.TotalCost
@@ -115,6 +119,7 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                 Quantiy = (decimal)entity.Quantity,
                 TotalPrice = (decimal)entity.TotalCost,
                 //Invoice = deliveryProduct.,
+
                 SalesVoucherNo = deliveryProduct.CashSaleNo,
                 Cash = deliveryProduct.Cash,
                 Credit = deliveryProduct.Credit,
@@ -152,6 +157,8 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                     Description = productDeliveryItems.Description,
                     UnitId = productDeliveryItems.UnitId,
                     Quantity = productDeliveryItems.Quantity,
+                    VAT = productDeliveryItems.VAT,
+                    Amount = productDeliveryItems.Amount,
                     UnitCost = productDeliveryItems.UnitCost,
                     TotalCost = productDeliveryItems.TotalCost
                 };
@@ -177,6 +184,8 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                     ItemCode = productDeliveryItems.ItemCode,
                     Description = productDeliveryItems.Description,
                     UnitId = productDeliveryItems.UnitId,
+                    VAT = productDeliveryItems.VAT,
+                    Amount = productDeliveryItems.Amount,
                     Quantity = productDeliveryItems.Quantity,
                     UnitCost = productDeliveryItems.UnitCost,
                     TotalCost = productDeliveryItems.TotalCost

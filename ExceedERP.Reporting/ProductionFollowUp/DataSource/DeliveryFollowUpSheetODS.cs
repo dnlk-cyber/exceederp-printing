@@ -61,8 +61,7 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
             foreach (var productDelivery in productDeliverys)
             {
                 var item = new DeliveryFollowUpSheetItemsVM();
-                decimal vat = 0;
-                decimal total = 0;
+                
                 var deliveries = db.ProductDeliveryItems.ToList().Where(q => q.ProductDeliveryId == productDelivery.ProductDeliveryId);
                 var jobs = deliveries.Select(s => s.JobId);
                 var jobTypeIds = db.Jobs.Where(q => jobs.Contains(q.JobId)).Select(s=>s.JobTypeId).Distinct();
@@ -72,9 +71,9 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                    item.Date = productDelivery.DateCreated?.ToString("MM/dd/yyyy");
                    item.Customer = db.OrganizationCustomers.Find(productDelivery.CustomerId)?.TradeName;
                    item.Credit = productDelivery.Credit.ToString();
-                   item.Amount = deliveries.Sum(s=>s.TotalCost);
-                   item.VAT = deliveries.Sum(s => s.TotalCost);
-                   item.Total = item.Total;
+                   item.Amount = deliveries.Sum(s=>s.Amount);
+                   item.VAT = deliveries.Sum(s => s.VAT);
+                   item.Total = item.Amount + item.VAT;
                    grandTotal += deliveries.Sum(s => s.TotalCost);
                    item.GrandTotal = grandTotal;
                        
