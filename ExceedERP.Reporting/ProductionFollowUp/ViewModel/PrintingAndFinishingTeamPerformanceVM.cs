@@ -39,6 +39,7 @@ namespace ExceedERP.Reporting.ProductionFollowUp.ViewModel
     public class PrintingAndFinishingTeamPerformanceItem
     {
      
+        public string JobCode { get; set; }
         public string JobType { get; set; }
         public decimal LastWeekPendingJobs { get; set; }
         public decimal CurrentWeekOrderedJobs { get; set; }

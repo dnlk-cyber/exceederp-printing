@@ -18,6 +18,14 @@ namespace ExceedERP.Core.Domain.ProductionFollowUp
         public decimal Credit { get; set; }
         public string PreparedBy { get; set; }
         public string ApprovedBy { get; set; }
+        public DeliveryStatus DeliveryStatus { get; set; }
+
         public string IdentificationNo { get; set; }
+    }
+    public enum DeliveryStatus
+    {
+        Delivered,
+        Voided
+
     }
 }

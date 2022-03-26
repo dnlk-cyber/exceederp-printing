@@ -102,11 +102,10 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                 }
                 model.TotalClient = latestJobs.Select(s => s.CustomerId).Distinct().Count().ToString();
                 var customers = latestJobs.Select(s=>s.CustomerId);
-                var deliverdProductIds = db.ProductDeliveries.Where(q => customers.Contains(q.CustomerId)).Select(s=>s.ProductDeliveryId);
-                var deliverdProductItems = db.ProductDeliveryItems.Where(q => deliverdProductIds.Contains(q.ProductDeliveryId)).ToList();
-                model.DeliveryFrom = deliverdProductItems.FirstOrDefault()?.ProductDeliveryItemsId.ToString();
-                model.DeliveryTo = deliverdProductItems.LastOrDefault()?.ProductDeliveryItemsId.ToString();
-                var voidedProductDeliveryItemss = deliverdProductItems.Where(q => q.Status == DeliveryStatus.Voided).Select(s => s.ProductDeliveryItemsId);
+                var deliverdProducts = db.ProductDeliveries.Where(q => customers.Contains(q.CustomerId)).ToList();
+                model.DeliveryFrom = deliverdProducts.FirstOrDefault()?.ProductDeliveryId.ToString();
+                model.DeliveryTo = deliverdProducts.LastOrDefault()?.ProductDeliveryId.ToString();
+                var voidedProductDeliveryItemss = deliverdProducts.Where(q => q.DeliveryStatus == DeliveryStatus.Voided).Select(s => s.ProductDeliveryId);
                 model.CancelledDelivery = string.Join(",", voidedProductDeliveryItemss);
                 
 
@@ -129,7 +128,7 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                             var jobTypePlans = db.ProductionMonthlyJobTypePlans.Where(q => proMonthlyPlans.Contains(q.ProductionMonthlyPlanId)
                             && q.JobTypeId == jobType).ToList();
                             //var plans = db.ProductionMonthlyPlans.FirstOrDefault();
-                            var jobTypeName = db.JobCategories.Find(jobType)?.JobName;
+                            var jobTypeRec = db.JobCategories.Find(jobType);
                             var lastWeekJobTypes = previousJobs.Where(q => q.JobTypeId == jobType).ToList();
                             var currentWeekJobTypes = latestJobs.Where(q => q.JobTypeId == jobType).ToList();
                             decimal lastWeekFinishedJobTypes = 0;
@@ -155,7 +154,16 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                             }
                             lastWeekPendingJobTypes = lastWeekJobTypes.Sum(s => s.TotalPrice) - lastWeekFinishedJobTypes;
                             var item = new PrintingAndFinishingTeamPerformanceItem();
-                            item.JobType = jobTypeName;
+                            var jobC = jobTypeRec?.JobCode;
+                            var jobN = jobTypeRec?.JobName;
+                            if (jobTypeRec.HaveParent)
+                            {
+                                var parentRec = db.JobCategories.Find(jobTypeRec.ParentId);
+                                jobC = parentRec?.JobCode;
+                                jobN = parentRec?.JobName;
+                            }
+                            item.JobCode = jobC;
+                            item.JobType = jobN;
                             item.LastWeekPendingJobs = Math.Round(lastWeekPendingJobTypes, 2);
                             item.CurrentWeekOrderedJobs = Math.Round(currentWeekJobTypes.Sum(s => s.TotalPrice), 2);
                             item.Total = item.LastWeekPendingJobs + item.CurrentWeekOrderedJobs;

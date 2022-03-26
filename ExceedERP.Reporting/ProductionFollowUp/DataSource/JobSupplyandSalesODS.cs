@@ -62,8 +62,8 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                 foreach (var jobType in jobTypes)
                 {
                     var job = new JobSupplyandSalesItemVM();
-                    jobs = jobs.Where(q => q.JobTypeId == jobType.JobCategoryId).ToList();
-                    var jobIds = jobs.Select(s => s.JobId);
+                    var jobTS = jobs.Where(q => q.JobTypeId == jobType.JobCategoryId).ToList();
+                    var jobIds = jobTS.Select(s => s.JobId);
                     IEnumerable<int> deliveredJobIds = db.JobStatuses.Where(q => q.JobPhase == ProductionDepartment.SalesDelivery
                                && q.Status == Core.Domain.PrintingEstimation.Setting.JobState.Finished
                                && jobIds.Contains(q.JobId)).Select(s => s.JobStatusId);
@@ -84,7 +84,7 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                             {
                                 job.DailySupply = Math.Round(jobTypePlan.Sum(s=>s.TotalPrice) / (count*30),2);
                                 job.WeeklySupplyAndSalesPlan = Math.Round(job.DailySupply*days,2);
-                                job.WeeklyReceivedActual = Math.Round(jobs.Sum(s=>s.TotalPrice),2);
+                                job.WeeklyReceivedActual = Math.Round(jobTS.Sum(s=>s.TotalPrice),2);
                                 job.WeeklySupplyPerformance = Math.Round(job.WeeklySupplyAndSalesPlan - job.WeeklyReceivedActual,2);
                                 job.WeeklySalesActual = Math.Round(deliveredJobs.Sum(s=>s.TotalPrice),2);
                                 job.WeeklySalesPerformance = Math.Round(job.WeeklySupplyAndSalesPlan - job.WeeklySalesActual,2);

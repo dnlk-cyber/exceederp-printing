@@ -52,10 +52,10 @@
                                                                               .Title("Customer");
                                     columns.ForeignKey(c => c.MachineId, (IEnumerable)ViewData["Machines"], "Code", "Name")
                                                                               .Width(110);
-                                    columns.Bound(c => c.Quantity).Width(90);
-                                    columns.Bound(c => c.UnitPrice).Width(90);
-                                    columns.Bound(c => c.BeforeTax).Width(90);
-                                    columns.Bound(c => c.TotalPrice).Width(90);
+                                    columns.Bound(c => c.Quantity).Width(90).ClientFooterTemplate("T Q: #=sum# ");
+                                    columns.Bound(c => c.UnitPrice).Width(90).ClientFooterTemplate("T UP: #=sum# ");
+                                    columns.Bound(c => c.BeforeTax).Width(90).ClientFooterTemplate("T BT: #=sum# ");
+                                    columns.Bound(c => c.TotalPrice).Width(90).ClientFooterTemplate("T P: #=sum# ");
 
                                     columns.Command(command =>
                                     {
@@ -92,7 +92,13 @@
                                          .DataSource(dataSource => dataSource
                                              .Ajax()
                                              .ServerOperation(true)
-
+                                             .Aggregates(ag=> {
+                                                 ag.Add(a=>a.Quantity).Sum();
+                                                 ag.Add(a=>a.UnitPrice).Sum();
+                                                 ag.Add(a=>a.BeforeTax).Sum();
+                                                 ag.Add(a=>a.TotalPrice).Sum();
+                                                 
+                                             })
                                             .Events(events =>
                                             {
                                                 events.Error("error_handler(\"JobGrid\")");
@@ -1640,9 +1646,9 @@
     function onSelectLoading() {
     var dropdowntree = $("#JT").data("kendoDropDownTree");
     var treeviewSelect = function (e) {
-    if (e.sender.dataItem(e.node).hasChildren) {
-    e.preventDefault()
-    }
+    //if (e.sender.dataItem(e.node).hasChildren) {
+    //e.preventDefault()
+    //}
     };
 
     dropdowntree.treeview.bind("select", treeviewSelect);

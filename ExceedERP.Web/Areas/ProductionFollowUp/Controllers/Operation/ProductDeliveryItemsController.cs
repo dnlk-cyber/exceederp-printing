@@ -35,7 +35,6 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                 ItemCategory = productDeliveryItems.ItemCategory,
                 Description = productDeliveryItems.Description,
                 UnitId = productDeliveryItems.UnitId,
-                Status = productDeliveryItems.Status,
                 Quantity = productDeliveryItems.Quantity,
                 UnitCost = productDeliveryItems.UnitCost,
                 TotalCost = productDeliveryItems.TotalCost
@@ -163,23 +162,6 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
             }
 
             return Json(new[] { productDeliveryItems }.ToDataSourceResult(request, ModelState));
-        }
-        public ActionResult VoidDelivereItems(int id)
-        {
-            var deliveryItem = db.ProductDeliveryItems.Find(id);
-            if(deliveryItem!=null)
-            {
-                deliveryItem.Status = DeliveryStatus.Voided;
-                db.ProductDeliveryItems.Attach(deliveryItem);
-                db.Entry(deliveryItem).State = EntityState.Modified;
-                db.SaveChanges();
-                return Json("Item delivered has been voided");
-
-            }
-            return Json("Item delivery is not found");
-
-            return Json(deliveryItem);
-
         }
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ProductDeliveryItems_Destroy([DataSourceRequest]DataSourceRequest request, ProductDeliveryItems productDeliveryItems)

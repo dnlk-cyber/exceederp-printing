@@ -32,7 +32,7 @@ namespace ExceedERP.Core.Domain.ProductionFollowUp
         Printing = 2,
         Finishing = 3,
         FinishingDelivery = 4,
-        SalesDelivery = 4
+        SalesDelivery = 5
     }
 
     public enum CheckType

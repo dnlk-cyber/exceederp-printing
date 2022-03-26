@@ -7,9 +7,11 @@
                   .Name("grid")
                   .Columns(columns =>
                   {
+                      columns.Bound(c => c.ProductDeliveryId).Title("Do. No.").Width(100);
+
                       columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customers"], "Code", "Name")
                                                .EditorTemplateName("CustomerEditor")
-                                               .Width("110px")
+                                               .Width(150)
                                                .Title("Customer");
                       columns.Bound(c => c.CreditSaleNo).Width(100);
                       columns.Bound(c => c.Credit).Width(100);
@@ -17,10 +19,11 @@
                       columns.Bound(c => c.Cash).Width(100);
                       columns.Bound(c => c.PreparedBy).Width(100);
                       columns.Bound(c => c.ApprovedBy).Width(100);
-                      columns.Bound(c => c.IdentificationNo);
+                      //columns.Bound(c => c.IdentificationNo);
                       columns.Command(command =>
                       {
                           command.Edit();
+                          command.Custom("cmd-void-request").Text("Void").Click("voidDelivery");
                           command.Destroy();
                       }).Width(250);
                   })
@@ -29,7 +32,7 @@
                       toolbar.Create();
                   })
                   .Events(ev=>ev.DetailExpand("onMasterExpand"))
-           //       .Events(ev => ev.Save("showColumn"))
+                  //       .Events(ev => ev.Save("showColumn"))
                   .Editable(editable => editable.Mode(GridEditMode.InLine))
                 .Pageable(pageable => pageable
                                              .Input(true)
@@ -65,11 +68,11 @@
                                 .Name("ProductDeliveryItems#=ProductDeliveryId#")
                                         .Columns(columns =>
                                         {
-                                            columns.ForeignKey(c => c.JobId, (ICollection)ViewData["JobOrder"], "JobId", "JobNo").EditorTemplateName("JobOrderEditorTemplate").Title("Job No");
+                                            columns.ForeignKey(c => c.JobId, (ICollection)ViewData["JobOrder"], "JobId", "JobNo").EditorTemplateName("JobOrderEditorTemplate").Title("Job No").Width(100);
                                            // columns.ForeignKey(c => c.JobId, (ICollection)ViewData["JobOrder"], "JobId", "JobType").EditorTemplateName("JobOrders").Title("Job Type");
                                             //columns.Bound(c => c.ItemCategory).Width(100);
                                             //columns.Bound(c => c.ItemCode).Width(100);
-                                            columns.Bound(c => c.Description).Width(100);
+                                         //   columns.Bound(c => c.Description).Width(100);
                                          //  columns.Bound(c => c.UnitId).Width(70);
                                             columns.Bound(c => c.Quantity).Width(70).EditorTemplateName("NumericTextBox");
                                           //  columns.Bound(c => c.UnitCost).Width(70).EditorTemplateName("NumericTextBox");
@@ -78,7 +81,6 @@
                                             columns.Command(command =>
                                             {
                                                 command.Edit();
-                                                command.Custom("cmd-void-request").Text("Void").Click("voidDelivery");
                                                 command.Destroy();
                                             }).Width(250);
                                         })
@@ -143,8 +145,8 @@
             dataItem = grid.dataItem(e.currentTarget.closest("tr"));
         $.ajax({
            type: "POST",
-           url: '@Url.Action("VoidDelivereItems", "ProductDeliveryItems", new { area = "ProductionFollowUp" })',
-            data: { id: dataItem.ProductDeliveryItemsId },
+           url: '@Url.Action("VoidDelivery", "ProductDeliveries", new { area = "ProductionFollowUp" })',
+            data: { id: dataItem.ProductDeliveryId },
            success: function(result) {
                 alert(result);
                 location.reload(true);

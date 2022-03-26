@@ -30,7 +30,7 @@ namespace ExceedERP.Core.Domain.ProductionFollowUp
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime EndDate { get; set; }
         // [Required]
-        [Display(Name = "Phase")]
+        [Display(Name = "Department")]
         public ProductionDepartment JobPhase { get; set; }
         // [Required]
         [Display(Name = "Type")]
