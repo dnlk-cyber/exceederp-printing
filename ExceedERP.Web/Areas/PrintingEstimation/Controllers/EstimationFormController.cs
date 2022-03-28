@@ -170,6 +170,56 @@ namespace ExceedERP.Web.Areas.PrintingEstimation.Controllers
 
             return Json(new[] { estimationForm }.ToDataSourceResult(request, ModelState));
         }
+
+        public JsonResult CheckEstimation(int id)
+        {
+            var estimation = db.EstimationForms.Find(id);
+            object response = null;
+
+            if (estimation!=null)
+                {
+                estimation.IsChecked = true;
+                db.EstimationForms.Attach(estimation);
+                db.Entry(estimation).State = EntityState.Modified;
+                db.SaveChanges();
+                response = new { Success = true,Message= "Estimation has been checked Successfully!" };
+
+            }
+            else
+            {
+                response= new { Success = false, Message = "Estimation not found!" };
+            }
+
+            return Json(response);
+           
+        }
+        public JsonResult ApproveEstimation(int id)
+        {
+            var estimation = db.EstimationForms.Find(id);
+            object response = null;
+            if (estimation != null)
+            {
+                if(estimation.IsChecked)
+                {
+                    estimation.IsApproved = true;
+                    db.EstimationForms.Attach(estimation);
+                    db.Entry(estimation).State = EntityState.Modified;
+                    db.SaveChanges();
+                    response = new { Success = true, Message = "Estimation has been checked Successfully!" };
+                }    
+                else
+                {
+                    response = new { Success = false, Message = "Estimation not found!" };
+                }
+            }
+            else
+            {
+                response = new { Success = false, Message = "Estimation not found!" };
+
+            }
+
+            return Json(response);
+        }
         protected override void Dispose(bool disposing)
         {
             db.Dispose();

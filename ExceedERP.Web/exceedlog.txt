@@ -162677,3 +162677,774 @@
 2022-03-28 15:14:15.1595|INFO|Hangfire.Server.BackgroundServerProcess|Server desktop-ece92r2:16408:175b5c29 successfully reported itself as stopped in 6.7776 ms
 2022-03-28 15:14:15.1595|INFO|Hangfire.Server.BackgroundServerProcess|Server desktop-ece92r2:16408:175b5c29 has been stopped in total 11.6256 ms
 2022-03-28 15:14:15.1595|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop BackgroundServerProcess:729fe392 stopped in 12.1227 ms
+2022-03-28 15:46:28.1025|INFO|Hangfire.SqlServer.SqlServerObjectsInstaller|Start installing Hangfire SQL objects...
+2022-03-28 15:46:28.2262|INFO|Hangfire.SqlServer.SqlServerObjectsInstaller|Hangfire SQL objects installed.
+2022-03-28 15:46:28.3419|INFO|Hangfire.BackgroundJobServer|Starting Hangfire Server using job storage: 'SQL Server: localhost@ExceedERP2021-BRANA-PRO'
+2022-03-28 15:46:28.3419|INFO|Hangfire.BackgroundJobServer|Using the following options for SQL Server job storage: Queue poll interval: 00:00:15.
+2022-03-28 15:46:28.3419|INFO|Hangfire.BackgroundJobServer|Using the following options for Hangfire Server:
+    Worker count: 20
+    Listening queues: 'default'
+    Shutdown timeout: 00:00:15
+    Schedule polling interval: 00:00:15
+2022-03-28 15:46:28.3609|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop BackgroundServerProcess:2c907bf0 has started in 4.195 ms
+2022-03-28 15:46:28.6331|INFO|Hangfire.Server.BackgroundServerProcess|Server desktop-ece92r2:7772:4e91f2c6 successfully announced in 268.2041 ms
+2022-03-28 15:46:28.6331|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ServerHeartbeatProcess:569b52e4 has started in 0.9672 ms
+2022-03-28 15:46:28.6331|INFO|Hangfire.Server.BackgroundServerProcess|Server desktop-ece92r2:7772:4e91f2c6 is starting the registered dispatchers: ServerWatchdog, ServerJobCancellationWatcher, ExpirationManager, CountersAggregator, Worker, DelayedJobScheduler, RecurringJobScheduler...
+2022-03-28 15:46:28.6331|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ServerWatchdog:86cf0618 has started in 0.4023 ms
+2022-03-28 15:46:28.6331|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ServerJobCancellationWatcher:c2a72b36 has started in 0.4456 ms
+2022-03-28 15:46:28.6381|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ExpirationManager:3b41d4f0 has started in 0.5664 ms
+2022-03-28 15:46:28.6381|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop CountersAggregator:c13a1e4c has started in 0.3995 ms
+2022-03-28 15:46:28.6381|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2022-03-28 15:46:28.6381|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:6f455f62 has started in 0.4928 ms
+2022-03-28 15:46:28.6381|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:616117b1 has started in 0.653 ms
+2022-03-28 15:46:28.6381|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:bd8b5e3f has started in 0.8249 ms
+2022-03-28 15:46:28.6381|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:ae2bf72c has started in 1.0121 ms
+2022-03-28 15:46:28.6381|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'AggregatedCounter' table...
+2022-03-28 15:46:28.6381|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:226b9250 has started in 1.2148 ms
+2022-03-28 15:46:28.6381|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:56abb1e9 has started in 1.7701 ms
+2022-03-28 15:46:28.6381|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:923fed77 has started in 3.1133 ms
+2022-03-28 15:46:28.6381|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:380fb9c5 has started in 6.3603 ms
+2022-03-28 15:46:28.6381|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:164fe436 has started in 6.5757 ms
+2022-03-28 15:46:28.6381|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:10f69a48 has started in 6.8531 ms
+2022-03-28 15:46:28.6381|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:fab19e01 has started in 7.2129 ms
+2022-03-28 15:46:28.6381|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:fd1a3d5f has started in 7.3885 ms
+2022-03-28 15:46:28.6381|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:298b639a has started in 7.6766 ms
+2022-03-28 15:46:28.6381|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:e6acff73 has started in 7.9505 ms
+2022-03-28 15:46:28.6381|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:1a0df123 has started in 8.2498 ms
+2022-03-28 15:46:28.6381|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:107d5dfb has started in 8.6666 ms
+2022-03-28 15:46:28.6381|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:4545d10f has started in 9.0606 ms
+2022-03-28 15:46:28.6381|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:f599cad3 has started in 9.5362 ms
+2022-03-28 15:46:28.6381|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:a279a506 has started in 9.9687 ms
+2022-03-28 15:46:28.6381|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:72d01e9e has started in 10.2786 ms
+2022-03-28 15:46:28.6381|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop DelayedJobScheduler:08d7ae69 has started in 0.5338 ms
+2022-03-28 15:46:28.6381|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop RecurringJobScheduler:a5133ff1 has started in 0.4526 ms
+2022-03-28 15:46:28.6381|INFO|Hangfire.Server.BackgroundServerProcess|Server desktop-ece92r2:7772:4e91f2c6 all the dispatchers started
+2022-03-28 15:46:28.6601|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Job' table...
+2022-03-28 15:46:28.6780|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'List' table...
+2022-03-28 15:46:28.6780|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Set' table...
+2022-03-28 15:46:28.6780|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Hash' table...
+2022-03-28 15:46:58.6484|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:4e91f2c6 heartbeat successfully sent
+2022-03-28 15:47:28.6515|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:4e91f2c6 heartbeat successfully sent
+2022-03-28 15:47:58.6616|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:4e91f2c6 heartbeat successfully sent
+2022-03-28 15:48:28.6762|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:4e91f2c6 heartbeat successfully sent
+2022-03-28 15:48:58.6880|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:4e91f2c6 heartbeat successfully sent
+2022-03-28 15:49:28.7034|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:4e91f2c6 heartbeat successfully sent
+2022-03-28 15:49:58.8181|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:4e91f2c6 heartbeat successfully sent
+2022-03-28 15:50:28.8207|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:4e91f2c6 heartbeat successfully sent
+2022-03-28 15:50:58.4755|DEBUG|Hangfire.Processing.BackgroundExecution|Execution Worker is in the Faulted state now due to an exception, execution will be retried no more than in 00:00:01
+2022-03-28 15:50:58.4755|DEBUG|Hangfire.Processing.BackgroundExecution|Execution RecurringJobScheduler is in the Faulted state now due to an exception, execution will be retried no more than in 00:00:01
+2022-03-28 15:50:58.4755|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop RecurringJobScheduler:a5133ff1 caught an exception and will be retried in 00:00:01
+2022-03-28 15:50:58.4755|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop RecurringJobScheduler:a5133ff1 will be retried in 00:00:01...
+2022-03-28 15:50:58.4755|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:107d5dfb caught an exception and will be retried in 00:00:16
+2022-03-28 15:50:58.4755|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:107d5dfb will be retried in 00:00:16...
+2022-03-28 15:50:58.4755|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:a279a506 caught an exception and will be retried in 00:01:04
+2022-03-28 15:50:58.4755|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:a279a506 will be retried in 00:01:04...
+2022-03-28 15:50:58.4755|DEBUG|Hangfire.Processing.BackgroundExecution|Execution DelayedJobScheduler is in the Faulted state now due to an exception, execution will be retried no more than in 00:00:01
+2022-03-28 15:50:58.4755|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:72d01e9e caught an exception and will be retried in 00:00:09
+2022-03-28 15:50:58.4755|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop DelayedJobScheduler:08d7ae69 caught an exception and will be retried in 00:00:01
+2022-03-28 15:50:58.4755|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:72d01e9e will be retried in 00:00:09...
+2022-03-28 15:50:58.4755|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:1a0df123 caught an exception and will be retried in 00:02:01
+2022-03-28 15:50:58.4755|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:1a0df123 will be retried in 00:02:01...
+2022-03-28 15:50:58.4755|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:6f455f62 caught an exception and will be retried in 00:02:24
+2022-03-28 15:50:58.4755|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:6f455f62 will be retried in 00:02:24...
+2022-03-28 15:50:58.4755|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:298b639a caught an exception and will be retried in 00:00:01
+2022-03-28 15:50:58.4755|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:298b639a will be retried in 00:00:01...
+2022-03-28 15:50:58.4755|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:923fed77 caught an exception and will be retried in 00:01:21
+2022-03-28 15:50:58.4755|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:923fed77 will be retried in 00:01:21...
+2022-03-28 15:50:58.4755|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:bd8b5e3f caught an exception and will be retried in 00:03:45
+2022-03-28 15:50:58.4755|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:bd8b5e3f will be retried in 00:03:45...
+2022-03-28 15:50:58.4755|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:380fb9c5 caught an exception and will be retried in 00:04:16
+2022-03-28 15:50:58.4755|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:226b9250 caught an exception and will be retried in 00:00:04
+2022-03-28 15:50:58.4755|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:226b9250 will be retried in 00:00:04...
+2022-03-28 15:50:58.4755|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:fab19e01 caught an exception and will be retried in 00:05:00
+2022-03-28 15:50:58.4755|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:fab19e01 will be retried in 00:05:00...
+2022-03-28 15:50:58.4755|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:56abb1e9 caught an exception and will be retried in 00:03:16
+2022-03-28 15:50:58.4755|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:56abb1e9 will be retried in 00:03:16...
+2022-03-28 15:50:58.4755|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:164fe436 caught an exception and will be retried in 00:01:40
+2022-03-28 15:50:58.4755|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:164fe436 will be retried in 00:01:40...
+2022-03-28 15:50:58.4755|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:f599cad3 caught an exception and will be retried in 00:04:49
+2022-03-28 15:50:58.4755|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:380fb9c5 will be retried in 00:04:16...
+2022-03-28 15:50:58.4755|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:10f69a48 caught an exception and will be retried in 00:02:49
+2022-03-28 15:50:58.4755|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:10f69a48 will be retried in 00:02:49...
+2022-03-28 15:50:58.4755|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:fd1a3d5f caught an exception and will be retried in 00:05:00
+2022-03-28 15:50:58.4755|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:fd1a3d5f will be retried in 00:05:00...
+2022-03-28 15:50:58.4755|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:e6acff73 caught an exception and will be retried in 00:00:25
+2022-03-28 15:50:58.4755|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:e6acff73 will be retried in 00:00:25...
+2022-03-28 15:50:58.4755|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:616117b1 caught an exception and will be retried in 00:00:36
+2022-03-28 15:50:58.4755|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:f599cad3 will be retried in 00:04:49...
+2022-03-28 15:50:58.4755|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop DelayedJobScheduler:08d7ae69 will be retried in 00:00:01...
+2022-03-28 15:50:58.4755|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:4545d10f caught an exception and will be retried in 00:00:49
+2022-03-28 15:50:58.4755|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:4545d10f will be retried in 00:00:49...
+2022-03-28 15:50:58.4755|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:ae2bf72c caught an exception and will be retried in 00:05:00
+2022-03-28 15:50:58.4755|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:ae2bf72c will be retried in 00:05:00...
+2022-03-28 15:50:58.4755|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:616117b1 will be retried in 00:00:36...
+2022-03-28 15:50:58.8299|WARN|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:4e91f2c6 encountered an exception while sending heartbeat
+2022-03-28 15:50:59.4832|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop DelayedJobScheduler:08d7ae69 caught an exception and will be retried in 00:00:04
+2022-03-28 15:50:59.4832|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop DelayedJobScheduler:08d7ae69 will be retried in 00:00:04...
+2022-03-28 15:50:59.4832|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop RecurringJobScheduler:a5133ff1 caught an exception and will be retried in 00:00:04
+2022-03-28 15:50:59.4832|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop RecurringJobScheduler:a5133ff1 will be retried in 00:00:04...
+2022-03-28 15:50:59.4832|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:298b639a caught an exception and will be retried in 00:05:00
+2022-03-28 15:50:59.4832|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:298b639a will be retried in 00:05:00...
+2022-03-28 15:51:02.4868|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:226b9250 caught an exception and will be retried in 00:05:00
+2022-03-28 15:51:02.4868|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:226b9250 will be retried in 00:05:00...
+2022-03-28 15:51:18.0623|ERROR|Hangfire.Processing.BackgroundExecution|Execution DelayedJobScheduler is in the Failed state now due to an exception, execution will be retried no more than in 00:00:09
+2022-03-28 15:51:18.0623|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop DelayedJobScheduler:08d7ae69 caught an exception and will be retried in 00:00:09
+2022-03-28 15:51:18.0623|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop DelayedJobScheduler:08d7ae69 will be retried in 00:00:09...
+2022-03-28 15:51:18.0623|ERROR|Hangfire.Processing.BackgroundExecution|Execution RecurringJobScheduler is in the Failed state now due to an exception, execution will be retried no more than in 00:00:09
+2022-03-28 15:51:18.0623|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop RecurringJobScheduler:a5133ff1 caught an exception and will be retried in 00:00:09
+2022-03-28 15:51:18.0623|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop RecurringJobScheduler:a5133ff1 will be retried in 00:00:09...
+2022-03-28 15:51:18.0623|ERROR|Hangfire.Processing.BackgroundExecution|Execution Worker is in the Failed state now due to an exception, execution will be retried no more than in 00:05:00
+2022-03-28 15:51:18.0623|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:107d5dfb caught an exception and will be retried in 00:05:00
+2022-03-28 15:51:18.0623|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:107d5dfb will be retried in 00:05:00...
+2022-03-28 15:51:18.0623|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:72d01e9e caught an exception and will be retried in 00:05:00
+2022-03-28 15:51:18.0623|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:72d01e9e will be retried in 00:05:00...
+2022-03-28 15:51:23.4901|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:e6acff73 caught an exception and will be retried in 00:05:00
+2022-03-28 15:51:23.4901|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:e6acff73 will be retried in 00:05:00...
+2022-03-28 15:51:27.0634|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop DelayedJobScheduler:08d7ae69 caught an exception and will be retried in 00:00:16
+2022-03-28 15:51:27.0634|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop DelayedJobScheduler:08d7ae69 will be retried in 00:00:16...
+2022-03-28 15:51:27.0634|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop RecurringJobScheduler:a5133ff1 caught an exception and will be retried in 00:00:16
+2022-03-28 15:51:27.0634|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop RecurringJobScheduler:a5133ff1 will be retried in 00:00:16...
+2022-03-28 15:51:28.6593|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2022-03-28 15:51:43.2665|DEBUG|Hangfire.Processing.BackgroundExecution|Execution ServerWatchdog is in the Faulted state now due to an exception, execution will be retried no more than in 00:00:01
+2022-03-28 15:51:43.2665|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ServerWatchdog:86cf0618 caught an exception and will be retried in 00:00:01
+2022-03-28 15:51:43.2665|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ServerWatchdog:86cf0618 will be retried in 00:00:01...
+2022-03-28 15:51:43.2665|DEBUG|Hangfire.Processing.BackgroundExecution|Execution CountersAggregator is in the Faulted state now due to an exception, execution will be retried no more than in 00:00:01
+2022-03-28 15:51:43.2665|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop CountersAggregator:c13a1e4c caught an exception and will be retried in 00:00:01
+2022-03-28 15:51:43.2665|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop CountersAggregator:c13a1e4c will be retried in 00:00:01...
+2022-03-28 15:51:43.2665|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:616117b1 caught an exception and will be retried in 00:05:00
+2022-03-28 15:51:43.2665|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:616117b1 will be retried in 00:05:00...
+2022-03-28 15:51:43.2665|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop DelayedJobScheduler:08d7ae69 caught an exception and will be retried in 00:00:25
+2022-03-28 15:51:43.2665|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop RecurringJobScheduler:a5133ff1 caught an exception and will be retried in 00:00:25
+2022-03-28 15:51:43.2665|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop RecurringJobScheduler:a5133ff1 will be retried in 00:00:25...
+2022-03-28 15:51:43.2665|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop DelayedJobScheduler:08d7ae69 will be retried in 00:00:25...
+2022-03-28 15:51:43.2665|WARN|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:4e91f2c6 encountered an exception while sending heartbeat
+2022-03-28 15:51:44.2688|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2022-03-28 15:51:44.2688|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ServerWatchdog:86cf0618 caught an exception and will be retried in 00:00:04
+2022-03-28 15:51:44.2688|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ServerWatchdog:86cf0618 will be retried in 00:00:04...
+2022-03-28 15:51:44.2688|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop CountersAggregator:c13a1e4c caught an exception and will be retried in 00:00:04
+2022-03-28 15:51:44.2688|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop CountersAggregator:c13a1e4c will be retried in 00:00:04...
+2022-03-28 15:51:47.4880|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:4545d10f caught an exception and will be retried in 00:05:00
+2022-03-28 15:51:47.4880|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:4545d10f will be retried in 00:05:00...
+2022-03-28 15:51:48.2819|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2022-03-28 15:52:02.9060|ERROR|Hangfire.Processing.BackgroundExecution|Execution ServerWatchdog is in the Failed state now due to an exception, execution will be retried no more than in 00:00:09
+2022-03-28 15:52:02.9060|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ServerWatchdog:86cf0618 caught an exception and will be retried in 00:00:09
+2022-03-28 15:52:02.9060|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ServerWatchdog:86cf0618 will be retried in 00:00:09...
+2022-03-28 15:52:02.9060|ERROR|Hangfire.Processing.BackgroundExecution|Execution CountersAggregator is in the Failed state now due to an exception, execution will be retried no more than in 00:00:09
+2022-03-28 15:52:02.9060|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop CountersAggregator:c13a1e4c caught an exception and will be retried in 00:00:09
+2022-03-28 15:52:02.9060|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop CountersAggregator:c13a1e4c will be retried in 00:00:09...
+2022-03-28 15:52:11.9193|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2022-03-28 15:52:12.0436|INFO|Hangfire.Server.ServerWatchdog|1 servers were removed due to timeout
+2022-03-28 15:52:13.2787|WARN|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:4e91f2c6 was considered dead by other servers, restarting...
+2022-03-28 15:52:13.2787|INFO|Hangfire.Server.BackgroundServerProcess|Server desktop-ece92r2:7772:4e91f2c6 caught restart signal...
+2022-03-28 15:52:13.2787|WARN|Hangfire.Server.BackgroundServerProcess|Server desktop-ece92r2:7772:4e91f2c6 stopped non-gracefully due to ServerWatchdog, ServerJobCancellationWatcher, ExpirationManager, CountersAggregator, Worker, DelayedJobScheduler, RecurringJobScheduler. Outstanding work on those dispatchers could be aborted, and there can be delays in background processing. This server instance will be incorrectly shown as active for a while. To avoid non-graceful shutdowns, investigate what prevents from stopping gracefully and add CancellationToken support for those methods.
+2022-03-28 15:52:13.2787|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:107d5dfb stopped in 0.1177 ms
+2022-03-28 15:52:13.2787|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:e6acff73 stopped in 0.1272 ms
+2022-03-28 15:52:13.2787|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop CountersAggregator:c13a1e4c stopped in 0.1094 ms
+2022-03-28 15:52:13.2787|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:226b9250 stopped in 0.5211 ms
+2022-03-28 15:52:13.2787|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:10f69a48 stopped in 0.7396 ms
+2022-03-28 15:52:13.2787|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:f599cad3 stopped in 0.8099 ms
+2022-03-28 15:52:13.2787|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:380fb9c5 stopped in 0.9663 ms
+2022-03-28 15:52:13.2787|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:4545d10f stopped in 0.1571 ms
+2022-03-28 15:52:13.2787|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:72d01e9e stopped in 0.1614 ms
+2022-03-28 15:52:13.2787|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:ae2bf72c stopped in 1.3178 ms
+2022-03-28 15:52:13.2787|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop RecurringJobScheduler:a5133ff1 stopped in 0.5158 ms
+2022-03-28 15:52:13.2787|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:a279a506 stopped in 2.1729 ms
+2022-03-28 15:52:13.2787|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:923fed77 stopped in 2.309 ms
+2022-03-28 15:52:13.2787|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ExpirationManager:3b41d4f0 stopped in 0.4957 ms
+2022-03-28 15:52:13.2787|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:616117b1 stopped in 0.1587 ms
+2022-03-28 15:52:13.2787|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:bd8b5e3f stopped in 1.5492 ms
+2022-03-28 15:52:13.2787|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:6f455f62 stopped in 2.3533 ms
+2022-03-28 15:52:13.2787|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:56abb1e9 stopped in 2.0665 ms
+2022-03-28 15:52:13.2787|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ServerJobCancellationWatcher:c2a72b36 stopped in 0.4849 ms
+2022-03-28 15:52:13.2787|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop DelayedJobScheduler:08d7ae69 stopped in 2.9951 ms
+2022-03-28 15:52:13.2787|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:fab19e01 stopped in 1.1792 ms
+2022-03-28 15:52:13.2787|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:164fe436 stopped in 1.5486 ms
+2022-03-28 15:52:13.2787|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:fd1a3d5f stopped in 1.1118 ms
+2022-03-28 15:52:13.2787|INFO|Hangfire.Server.BackgroundServerProcess|Server desktop-ece92r2:7772:4e91f2c6 successfully reported itself as stopped in 4.5142 ms
+2022-03-28 15:52:13.2787|INFO|Hangfire.Server.BackgroundServerProcess|Server desktop-ece92r2:7772:4e91f2c6 has been stopped in total 5.8064 ms
+2022-03-28 15:52:13.2787|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:298b639a stopped in 0.4495 ms
+2022-03-28 15:52:13.2787|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ServerHeartbeatProcess:569b52e4 stopped in 0.154 ms
+2022-03-28 15:52:13.2787|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:1a0df123 stopped in 1.4601 ms
+2022-03-28 15:52:13.2787|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ServerWatchdog:86cf0618 stopped in 2.2233 ms
+2022-03-28 15:52:13.2787|INFO|Hangfire.Server.BackgroundServerProcess|Server desktop-ece92r2:7772:e80df379 successfully announced in 3.3734 ms
+2022-03-28 15:52:13.2787|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ServerHeartbeatProcess:7c757472 has started in 0.5479 ms
+2022-03-28 15:52:13.2787|INFO|Hangfire.Server.BackgroundServerProcess|Server desktop-ece92r2:7772:e80df379 is starting the registered dispatchers: ServerWatchdog, ServerJobCancellationWatcher, ExpirationManager, CountersAggregator, Worker, DelayedJobScheduler, RecurringJobScheduler...
+2022-03-28 15:52:13.2787|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ServerWatchdog:eac7b26c has started in 0.3517 ms
+2022-03-28 15:52:13.2787|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ServerJobCancellationWatcher:2333593d has started in 0.4482 ms
+2022-03-28 15:52:13.2787|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ExpirationManager:72f4f59c has started in 0.372 ms
+2022-03-28 15:52:13.2787|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'AggregatedCounter' table...
+2022-03-28 15:52:13.2787|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop CountersAggregator:bfbf094d has started in 0.4058 ms
+2022-03-28 15:52:13.2787|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2022-03-28 15:52:13.2787|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:7e315e74 has started in 0.3654 ms
+2022-03-28 15:52:13.2787|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:b599d5da has started in 0.4899 ms
+2022-03-28 15:52:13.2787|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:5bd8fe81 has started in 0.6474 ms
+2022-03-28 15:52:13.2946|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:3a417b5b has started in 0.7968 ms
+2022-03-28 15:52:13.2946|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:f5313596 has started in 0.9553 ms
+2022-03-28 15:52:13.2946|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:df955d6f has started in 1.1358 ms
+2022-03-28 15:52:13.2946|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:a888f2fc has started in 1.2722 ms
+2022-03-28 15:52:13.2946|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:f72e46c9 has started in 1.4385 ms
+2022-03-28 15:52:13.2946|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:1c162908 has started in 1.5933 ms
+2022-03-28 15:52:13.2946|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:7d1fdd12 has started in 1.9378 ms
+2022-03-28 15:52:13.2946|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:4452b467 has started in 2.0868 ms
+2022-03-28 15:52:13.2946|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:9f1b364a has started in 2.2367 ms
+2022-03-28 15:52:13.2946|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:b691b38d has started in 2.4104 ms
+2022-03-28 15:52:13.2946|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:13c07f0a has started in 2.5702 ms
+2022-03-28 15:52:13.2946|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:ee43bc92 has started in 2.7305 ms
+2022-03-28 15:52:13.2946|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:8e9dfd10 has started in 2.9068 ms
+2022-03-28 15:52:13.2946|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Job' table...
+2022-03-28 15:52:13.2946|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:d876111a has started in 3.2442 ms
+2022-03-28 15:52:13.2946|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:f6b0d073 has started in 3.4532 ms
+2022-03-28 15:52:13.2946|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:d99c1d65 has started in 1.752 ms
+2022-03-28 15:52:13.2946|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:8f3a78b2 has started in 3.061 ms
+2022-03-28 15:52:13.2946|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop DelayedJobScheduler:e0bb6089 has started in 0.4502 ms
+2022-03-28 15:52:13.2946|INFO|Hangfire.Server.BackgroundServerProcess|Server desktop-ece92r2:7772:e80df379 all the dispatchers started
+2022-03-28 15:52:13.2946|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop RecurringJobScheduler:b4fe911c has started in 0.5202 ms
+2022-03-28 15:52:13.3474|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'List' table...
+2022-03-28 15:52:13.3660|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Set' table...
+2022-03-28 15:52:13.3660|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Hash' table...
+2022-03-28 15:52:43.2991|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:e80df379 heartbeat successfully sent
+2022-03-28 15:53:13.3069|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:e80df379 heartbeat successfully sent
+2022-03-28 15:53:43.3161|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:e80df379 heartbeat successfully sent
+2022-03-28 15:54:13.3327|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:e80df379 heartbeat successfully sent
+2022-03-28 15:54:43.3440|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:e80df379 heartbeat successfully sent
+2022-03-28 15:55:13.3500|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:e80df379 heartbeat successfully sent
+2022-03-28 15:55:43.3605|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:e80df379 heartbeat successfully sent
+2022-03-28 15:56:13.3641|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:e80df379 heartbeat successfully sent
+2022-03-28 15:56:43.3694|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:e80df379 heartbeat successfully sent
+2022-03-28 15:57:13.3025|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2022-03-28 15:57:13.3830|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:e80df379 heartbeat successfully sent
+2022-03-28 15:57:43.3963|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:e80df379 heartbeat successfully sent
+2022-03-28 15:58:13.4153|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:e80df379 heartbeat successfully sent
+2022-03-28 15:58:43.4257|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:e80df379 heartbeat successfully sent
+2022-03-28 15:59:13.4321|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:e80df379 heartbeat successfully sent
+2022-03-28 15:59:43.4450|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:e80df379 heartbeat successfully sent
+2022-03-28 16:00:13.4502|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:e80df379 heartbeat successfully sent
+2022-03-28 16:00:43.4579|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:e80df379 heartbeat successfully sent
+2022-03-28 16:01:13.4693|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:e80df379 heartbeat successfully sent
+2022-03-28 16:01:43.4744|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:e80df379 heartbeat successfully sent
+2022-03-28 16:02:13.3155|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2022-03-28 16:02:13.4877|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:e80df379 heartbeat successfully sent
+2022-03-28 16:02:43.5022|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:e80df379 heartbeat successfully sent
+2022-03-28 16:03:13.5067|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:e80df379 heartbeat successfully sent
+2022-03-28 16:03:43.5192|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:e80df379 heartbeat successfully sent
+2022-03-28 16:04:13.5314|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:e80df379 heartbeat successfully sent
+2022-03-28 16:04:43.5434|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:e80df379 heartbeat successfully sent
+2022-03-28 16:05:13.5516|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:e80df379 heartbeat successfully sent
+2022-03-28 16:05:43.5624|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:e80df379 heartbeat successfully sent
+2022-03-28 16:06:13.5664|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:e80df379 heartbeat successfully sent
+2022-03-28 16:06:43.5695|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:e80df379 heartbeat successfully sent
+2022-03-28 16:07:13.3218|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2022-03-28 16:07:13.5774|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:e80df379 heartbeat successfully sent
+2022-03-28 16:07:43.5832|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:e80df379 heartbeat successfully sent
+2022-03-28 16:08:13.5945|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:e80df379 heartbeat successfully sent
+2022-03-28 16:08:43.5986|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:e80df379 heartbeat successfully sent
+2022-03-28 16:09:13.6127|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:e80df379 heartbeat successfully sent
+2022-03-28 16:09:43.6166|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:e80df379 heartbeat successfully sent
+2022-03-28 16:10:13.6448|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:e80df379 heartbeat successfully sent
+2022-03-28 16:10:19.8574|INFO|Hangfire.Server.BackgroundServerProcess|Server desktop-ece92r2:7772:e80df379 caught stopping signal...
+2022-03-28 16:10:19.8574|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ServerJobCancellationWatcher:2333593d stopped in 0 ms
+2022-03-28 16:10:19.8574|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop DelayedJobScheduler:e0bb6089 stopped in 0.088 ms
+2022-03-28 16:10:19.8574|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop CountersAggregator:bfbf094d stopped in 0.3588 ms
+2022-03-28 16:10:19.8574|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:df955d6f stopped in 0.4889 ms
+2022-03-28 16:10:19.8574|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:7d1fdd12 stopped in 0.6187 ms
+2022-03-28 16:10:19.8574|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:7e315e74 stopped in 0.7845 ms
+2022-03-28 16:10:19.8574|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ExpirationManager:72f4f59c stopped in 0 ms
+2022-03-28 16:10:19.8574|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:d876111a stopped in 0.1286 ms
+2022-03-28 16:10:19.8574|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:f6b0d073 stopped in 0.0986 ms
+2022-03-28 16:10:19.8574|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop RecurringJobScheduler:b4fe911c stopped in 1.2514 ms
+2022-03-28 16:10:19.8574|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:f72e46c9 stopped in 0.2411 ms
+2022-03-28 16:10:19.8574|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:b691b38d stopped in 2.2463 ms
+2022-03-28 16:10:19.8574|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:ee43bc92 stopped in 3.3322 ms
+2022-03-28 16:10:19.8574|INFO|Hangfire.Server.BackgroundServerProcess|Server desktop-ece92r2:7772:e80df379 caught stopped signal...
+2022-03-28 16:10:19.8574|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:d99c1d65 stopped in 1.5218 ms
+2022-03-28 16:10:19.8574|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:8e9dfd10 stopped in 0.1014 ms
+2022-03-28 16:10:19.8574|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:1c162908 stopped in 1.0856 ms
+2022-03-28 16:10:19.8574|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:f5313596 stopped in 0.1044 ms
+2022-03-28 16:10:19.8574|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:4452b467 stopped in 1.9804 ms
+2022-03-28 16:10:19.8574|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:3a417b5b stopped in 1.1932 ms
+2022-03-28 16:10:19.8574|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:9f1b364a stopped in 2.0025 ms
+2022-03-28 16:10:19.8574|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:8f3a78b2 stopped in 0.1364 ms
+2022-03-28 16:10:19.8574|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:b599d5da stopped in 1.5724 ms
+2022-03-28 16:10:19.8574|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:a888f2fc stopped in 1.115 ms
+2022-03-28 16:10:19.8574|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ServerWatchdog:eac7b26c stopped in 1.9439 ms
+2022-03-28 16:10:19.8574|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:5bd8fe81 stopped in 0.1048 ms
+2022-03-28 16:10:19.8574|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:13c07f0a stopped in 2.9787 ms
+2022-03-28 16:10:19.8574|INFO|Hangfire.Server.BackgroundServerProcess|Server desktop-ece92r2:7772:e80df379 All dispatchers stopped
+2022-03-28 16:10:19.8574|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ServerHeartbeatProcess:7c757472 stopped in 6.2666 ms
+2022-03-28 16:10:19.8574|INFO|Hangfire.Server.BackgroundServerProcess|Server desktop-ece92r2:7772:e80df379 successfully reported itself as stopped in 1.2288 ms
+2022-03-28 16:10:19.8574|INFO|Hangfire.Server.BackgroundServerProcess|Server desktop-ece92r2:7772:e80df379 has been stopped in total 7.5964 ms
+2022-03-28 16:10:19.8574|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop BackgroundServerProcess:2c907bf0 stopped in 8.0761 ms
+2022-03-28 16:14:10.4295|INFO|Hangfire.SqlServer.SqlServerObjectsInstaller|Start installing Hangfire SQL objects...
+2022-03-28 16:14:10.5123|INFO|Hangfire.SqlServer.SqlServerObjectsInstaller|Hangfire SQL objects installed.
+2022-03-28 16:14:10.5362|INFO|Hangfire.BackgroundJobServer|Starting Hangfire Server using job storage: 'SQL Server: localhost@ExceedERP2021-BRANA-PRO'
+2022-03-28 16:14:10.5362|INFO|Hangfire.BackgroundJobServer|Using the following options for SQL Server job storage: Queue poll interval: 00:00:15.
+2022-03-28 16:14:10.5362|INFO|Hangfire.BackgroundJobServer|Using the following options for Hangfire Server:
+    Worker count: 20
+    Listening queues: 'default'
+    Shutdown timeout: 00:00:15
+    Schedule polling interval: 00:00:15
+2022-03-28 16:14:10.5581|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop BackgroundServerProcess:be5976af has started in 3.8546 ms
+2022-03-28 16:14:10.5791|INFO|Hangfire.Server.BackgroundServerProcess|Server desktop-ece92r2:7772:10be3bfd successfully announced in 15.745 ms
+2022-03-28 16:14:10.5791|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ServerHeartbeatProcess:7e914f6d has started in 0.9329 ms
+2022-03-28 16:14:10.5791|INFO|Hangfire.Server.BackgroundServerProcess|Server desktop-ece92r2:7772:10be3bfd is starting the registered dispatchers: ServerWatchdog, ServerJobCancellationWatcher, ExpirationManager, CountersAggregator, Worker, DelayedJobScheduler, RecurringJobScheduler...
+2022-03-28 16:14:10.5791|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ServerWatchdog:cb6896a8 has started in 0.3597 ms
+2022-03-28 16:14:10.5791|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ServerJobCancellationWatcher:afb15b26 has started in 0.3103 ms
+2022-03-28 16:14:10.5791|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ExpirationManager:c6c4be79 has started in 0.5059 ms
+2022-03-28 16:14:10.5791|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop CountersAggregator:4b24946d has started in 0.3323 ms
+2022-03-28 16:14:10.5791|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'AggregatedCounter' table...
+2022-03-28 16:14:10.5791|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2022-03-28 16:14:10.5791|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:9e550376 has started in 0.3594 ms
+2022-03-28 16:14:10.5791|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:42c6da64 has started in 0.5004 ms
+2022-03-28 16:14:10.5791|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:e0144c39 has started in 0.6635 ms
+2022-03-28 16:14:10.5791|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:a960aa5b has started in 0.8463 ms
+2022-03-28 16:14:10.5791|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:7f30a391 has started in 1.0238 ms
+2022-03-28 16:14:10.5791|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:7678f815 has started in 1.3863 ms
+2022-03-28 16:14:10.5791|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:541a61b3 has started in 2.2891 ms
+2022-03-28 16:14:10.5791|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:d26cf29b has started in 2.5047 ms
+2022-03-28 16:14:10.5791|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:51d2bdd7 has started in 3.8851 ms
+2022-03-28 16:14:10.5791|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:5e249ab7 has started in 4.0329 ms
+2022-03-28 16:14:10.5791|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:f429f243 has started in 4.2207 ms
+2022-03-28 16:14:10.5791|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:d055e060 has started in 4.5301 ms
+2022-03-28 16:14:10.5791|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:c32808d2 has started in 4.8091 ms
+2022-03-28 16:14:10.5791|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:74916f2a has started in 4.9615 ms
+2022-03-28 16:14:10.5791|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:05f3877c has started in 5.0991 ms
+2022-03-28 16:14:10.5791|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:c0e7d176 has started in 5.2653 ms
+2022-03-28 16:14:10.5791|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:1130b006 has started in 5.4478 ms
+2022-03-28 16:14:10.5791|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:3a0499ed has started in 5.6 ms
+2022-03-28 16:14:10.5791|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:5d3a2e45 has started in 5.7704 ms
+2022-03-28 16:14:10.5791|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:fac62f50 has started in 5.9269 ms
+2022-03-28 16:14:10.5791|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop DelayedJobScheduler:dc7070c5 has started in 0.4044 ms
+2022-03-28 16:14:10.5921|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop RecurringJobScheduler:4376ccf9 has started in 0.4836 ms
+2022-03-28 16:14:10.5921|INFO|Hangfire.Server.BackgroundServerProcess|Server desktop-ece92r2:7772:10be3bfd all the dispatchers started
+2022-03-28 16:14:10.5921|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Job' table...
+2022-03-28 16:14:10.6160|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'List' table...
+2022-03-28 16:14:10.6160|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Set' table...
+2022-03-28 16:14:10.6160|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Hash' table...
+2022-03-28 16:14:18.5099|INFO|Hangfire.SqlServer.SqlServerObjectsInstaller|Start installing Hangfire SQL objects...
+2022-03-28 16:14:18.5368|INFO|Hangfire.SqlServer.SqlServerObjectsInstaller|Hangfire SQL objects installed.
+2022-03-28 16:14:18.5558|INFO|Hangfire.BackgroundJobServer|Starting Hangfire Server using job storage: 'SQL Server: localhost@ExceedERP2021-BRANA-PRO'
+2022-03-28 16:14:18.5558|INFO|Hangfire.BackgroundJobServer|Using the following options for SQL Server job storage: Queue poll interval: 00:00:15.
+2022-03-28 16:14:18.5558|INFO|Hangfire.BackgroundJobServer|Using the following options for Hangfire Server:
+    Worker count: 20
+    Listening queues: 'default'
+    Shutdown timeout: 00:00:15
+    Schedule polling interval: 00:00:15
+2022-03-28 16:14:18.5707|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop BackgroundServerProcess:16d3d914 has started in 3.6017 ms
+2022-03-28 16:14:18.6016|INFO|Hangfire.Server.BackgroundServerProcess|Server desktop-ece92r2:7772:a4690a13 successfully announced in 23.4087 ms
+2022-03-28 16:14:18.6016|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ServerHeartbeatProcess:cd2fe622 has started in 1.0941 ms
+2022-03-28 16:14:18.6016|INFO|Hangfire.Server.BackgroundServerProcess|Server desktop-ece92r2:7772:a4690a13 is starting the registered dispatchers: ServerWatchdog, ServerJobCancellationWatcher, ExpirationManager, CountersAggregator, Worker, DelayedJobScheduler, RecurringJobScheduler...
+2022-03-28 16:14:18.6016|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ServerWatchdog:d827384d has started in 0.6267 ms
+2022-03-28 16:14:18.6016|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ServerJobCancellationWatcher:a49221e9 has started in 0.5361 ms
+2022-03-28 16:14:18.6076|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ExpirationManager:ca9c5e1a has started in 0.6553 ms
+2022-03-28 16:14:18.6076|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop CountersAggregator:754156fe has started in 0.4282 ms
+2022-03-28 16:14:18.6076|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'AggregatedCounter' table...
+2022-03-28 16:14:18.6076|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:dc622eeb has started in 0.381 ms
+2022-03-28 16:14:18.6076|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:667397ad has started in 0.5483 ms
+2022-03-28 16:14:18.6076|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:543f8d3b has started in 0.7593 ms
+2022-03-28 16:14:18.6076|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:9b96dce7 has started in 0.9494 ms
+2022-03-28 16:14:18.6076|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2022-03-28 16:14:18.6076|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:25694668 has started in 2.1209 ms
+2022-03-28 16:14:18.6076|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:dd8adfde has started in 4.7363 ms
+2022-03-28 16:14:18.6076|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:0ab08a48 has started in 5.4129 ms
+2022-03-28 16:14:18.6076|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:628f7939 has started in 5.5757 ms
+2022-03-28 16:14:18.6076|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:0bece3cc has started in 5.823 ms
+2022-03-28 16:14:18.6076|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:5e81fad0 has started in 6.1446 ms
+2022-03-28 16:14:18.6076|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:fe97758a has started in 6.3592 ms
+2022-03-28 16:14:18.6076|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:5243d3cc has started in 6.5199 ms
+2022-03-28 16:14:18.6076|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:634288bc has started in 6.8463 ms
+2022-03-28 16:14:18.6076|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:1016cd8a has started in 7.0168 ms
+2022-03-28 16:14:18.6076|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:85368f9c has started in 7.2469 ms
+2022-03-28 16:14:18.6076|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:c2c2d35f has started in 8.2783 ms
+2022-03-28 16:14:18.6076|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:eff08e3d has started in 7.3866 ms
+2022-03-28 16:14:18.6076|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:b5726ec1 has started in 8.8353 ms
+2022-03-28 16:14:18.6076|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:81061dc8 has started in 8.9828 ms
+2022-03-28 16:14:18.6076|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:6c77e4d7 has started in 9.1658 ms
+2022-03-28 16:14:18.6076|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop DelayedJobScheduler:13708649 has started in 0.5025 ms
+2022-03-28 16:14:18.6076|INFO|Hangfire.Server.BackgroundServerProcess|Server desktop-ece92r2:7772:a4690a13 all the dispatchers started
+2022-03-28 16:14:18.6076|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop RecurringJobScheduler:6d26dbe9 has started in 0.5136 ms
+2022-03-28 16:14:18.6076|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Job' table...
+2022-03-28 16:14:18.6435|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'List' table...
+2022-03-28 16:14:18.6435|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Set' table...
+2022-03-28 16:14:18.6435|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Hash' table...
+2022-03-28 16:14:40.5901|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:10be3bfd heartbeat successfully sent
+2022-03-28 16:14:40.7606|INFO|Hangfire.Server.BackgroundServerProcess|Server desktop-ece92r2:7772:10be3bfd caught stopping signal...
+2022-03-28 16:14:40.7606|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop DelayedJobScheduler:dc7070c5 stopped in 0 ms
+2022-03-28 16:14:40.7606|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:e0144c39 stopped in 0 ms
+2022-03-28 16:14:40.7606|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:05f3877c stopped in 0 ms
+2022-03-28 16:14:40.7606|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:51d2bdd7 stopped in 0.2546 ms
+2022-03-28 16:14:40.7606|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:541a61b3 stopped in 0.7163 ms
+2022-03-28 16:14:40.7606|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ServerJobCancellationWatcher:afb15b26 stopped in 0 ms
+2022-03-28 16:14:40.7606|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:9e550376 stopped in 0 ms
+2022-03-28 16:14:40.7606|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:c32808d2 stopped in 0 ms
+2022-03-28 16:14:40.7606|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:3a0499ed stopped in 0 ms
+2022-03-28 16:14:40.7606|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:7f30a391 stopped in 0 ms
+2022-03-28 16:14:40.7606|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop CountersAggregator:4b24946d stopped in 0 ms
+2022-03-28 16:14:40.7606|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:a960aa5b stopped in 0 ms
+2022-03-28 16:14:40.7606|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:fac62f50 stopped in 0.3007 ms
+2022-03-28 16:14:40.7606|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:c0e7d176 stopped in 1.1586 ms
+2022-03-28 16:14:40.7606|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:5d3a2e45 stopped in 1.0404 ms
+2022-03-28 16:14:40.7606|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:d055e060 stopped in 0.9078 ms
+2022-03-28 16:14:40.7606|INFO|Hangfire.Server.BackgroundServerProcess|Server desktop-ece92r2:7772:10be3bfd caught stopped signal...
+2022-03-28 16:14:40.7606|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:d26cf29b stopped in 1.0407 ms
+2022-03-28 16:14:40.7606|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ServerWatchdog:cb6896a8 stopped in 0.9846 ms
+2022-03-28 16:14:40.7606|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:42c6da64 stopped in 1.2726 ms
+2022-03-28 16:14:40.7606|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:1130b006 stopped in 1.0514 ms
+2022-03-28 16:14:40.7606|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:7678f815 stopped in 1.4049 ms
+2022-03-28 16:14:40.7606|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop RecurringJobScheduler:4376ccf9 stopped in 0.9855 ms
+2022-03-28 16:14:40.7606|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ExpirationManager:c6c4be79 stopped in 0.9779 ms
+2022-03-28 16:14:40.7606|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:5e249ab7 stopped in 1.2541 ms
+2022-03-28 16:14:40.7606|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:f429f243 stopped in 1.2606 ms
+2022-03-28 16:14:40.7606|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:74916f2a stopped in 1.2714 ms
+2022-03-28 16:14:40.7656|INFO|Hangfire.Server.BackgroundServerProcess|Server desktop-ece92r2:7772:10be3bfd All dispatchers stopped
+2022-03-28 16:14:40.7656|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ServerHeartbeatProcess:7e914f6d stopped in 5.046 ms
+2022-03-28 16:14:40.7656|INFO|Hangfire.Server.BackgroundServerProcess|Server desktop-ece92r2:7772:10be3bfd successfully reported itself as stopped in 2.1108 ms
+2022-03-28 16:14:40.7656|INFO|Hangfire.Server.BackgroundServerProcess|Server desktop-ece92r2:7772:10be3bfd has been stopped in total 7.9244 ms
+2022-03-28 16:14:40.7656|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop BackgroundServerProcess:be5976af stopped in 9.6931 ms
+2022-03-28 16:14:48.6109|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:15:18.6269|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:15:48.6308|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:16:18.6446|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:16:48.6578|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:17:18.6664|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:17:48.6709|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:18:18.6866|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:18:48.6881|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:19:18.6271|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2022-03-28 16:19:18.7047|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:19:48.7198|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:20:18.7211|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:20:48.7235|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:21:18.7335|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:21:48.7476|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:22:18.7579|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:22:48.7670|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:23:18.7740|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:23:48.7858|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:24:18.6415|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2022-03-28 16:24:18.8181|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:24:48.8326|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:25:18.8383|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:25:48.8474|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:26:18.8514|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:26:48.8558|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:27:18.8631|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:27:48.8672|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:28:18.9552|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:28:48.9620|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:29:18.6462|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2022-03-28 16:29:18.9763|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:29:48.9907|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:30:18.9990|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:30:49.0073|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:31:19.0128|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:31:49.0254|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:32:19.0361|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:32:49.0374|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:33:19.0526|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:33:49.0614|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:34:18.6574|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2022-03-28 16:34:19.0636|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:34:49.0670|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:35:19.0758|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:35:49.0806|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:36:19.0941|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:36:49.1070|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:37:19.1121|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:37:49.1195|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:38:19.1265|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:38:49.1406|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:39:18.6714|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2022-03-28 16:39:19.1557|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:39:49.1586|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:40:19.1713|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:40:49.1752|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:41:19.1794|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:41:49.1906|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:42:19.1919|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:42:49.2063|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:43:19.2161|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:43:49.2213|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:44:18.6564|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'AggregatedCounter' table...
+2022-03-28 16:44:18.6564|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Job' table...
+2022-03-28 16:44:18.6564|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'List' table...
+2022-03-28 16:44:18.6564|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Set' table...
+2022-03-28 16:44:18.6564|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Hash' table...
+2022-03-28 16:44:18.6873|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2022-03-28 16:44:19.2368|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:44:49.2607|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:45:19.2649|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:45:49.2703|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:46:19.2787|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:46:49.2952|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:47:19.3026|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:47:49.3172|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:48:19.3198|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:48:49.3261|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:49:18.6915|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2022-03-28 16:49:19.3345|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:49:49.3402|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:50:19.3520|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:50:49.3669|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:51:19.3785|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:51:49.3912|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:52:19.3972|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:52:49.4097|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:53:19.4272|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:53:49.4419|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:54:18.7854|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2022-03-28 16:54:19.4542|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:54:49.4643|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:55:19.4707|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:55:49.4753|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:56:19.4834|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:56:49.4902|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:57:19.5042|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:57:49.5192|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:58:19.5301|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:58:49.5417|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:59:18.8291|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2022-03-28 16:59:19.5508|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 16:59:49.5662|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 17:00:19.5686|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 17:00:49.5833|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 17:01:19.6020|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 17:01:49.6045|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 17:02:19.6201|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 17:02:49.6297|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 17:03:19.6384|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 17:03:49.6430|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 17:04:18.8514|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2022-03-28 17:04:19.6469|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 17:04:49.6498|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 17:05:19.6531|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 17:05:49.6653|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 17:06:19.6843|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 17:06:49.7009|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 17:07:19.7031|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 17:07:49.7196|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 17:08:19.7217|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 17:08:49.7317|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 17:09:18.8689|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2022-03-28 17:09:19.7456|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 17:09:49.7621|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 17:10:19.7706|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 17:10:49.7761|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 17:11:19.7848|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 17:11:49.7968|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 17:12:19.7998|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 17:12:49.8125|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 17:13:19.8266|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 17:13:49.8422|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 17:14:18.6720|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'AggregatedCounter' table...
+2022-03-28 17:14:18.6720|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Job' table...
+2022-03-28 17:14:18.7696|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'List' table...
+2022-03-28 17:14:18.7826|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Set' table...
+2022-03-28 17:14:18.7966|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Hash' table...
+2022-03-28 17:14:18.8752|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2022-03-28 17:14:19.8439|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 17:14:49.8508|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 17:15:19.8532|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 17:15:49.8633|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 17:16:19.9720|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 17:16:49.9903|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 17:17:20.0034|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 17:17:50.0123|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 17:18:20.0288|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 17:18:50.0459|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 17:19:18.9037|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2022-03-28 17:19:20.0565|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 17:19:50.0731|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 17:20:20.0788|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 17:20:50.0905|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 17:21:20.1080|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 17:21:50.1100|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 17:22:20.1177|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 17:22:50.1332|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 17:23:20.1418|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 17:23:50.1582|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 17:24:18.9243|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2022-03-28 17:24:20.1740|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 17:24:50.1902|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 17:25:20.1922|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 17:25:50.2040|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 17:26:20.2062|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 17:26:50.2092|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 17:27:20.2214|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 17:27:50.2385|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 17:28:20.2410|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 17:28:50.2562|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 17:29:18.9355|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2022-03-28 17:29:20.2694|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 17:29:50.2832|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 17:30:20.2946|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 17:30:50.2977|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 17:31:20.3083|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 17:31:50.3221|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 17:32:20.3399|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 17:32:50.3503|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 17:33:20.3530|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 17:33:50.3580|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 17:34:18.9440|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2022-03-28 17:34:20.3655|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 17:34:50.3681|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 17:35:20.3741|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:a4690a13 heartbeat successfully sent
+2022-03-28 17:35:23.1140|INFO|Hangfire.Server.BackgroundServerProcess|Server desktop-ece92r2:7772:a4690a13 caught stopping signal...
+2022-03-28 17:35:23.1140|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ServerWatchdog:d827384d stopped in 0.2651 ms
+2022-03-28 17:35:23.1140|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ExpirationManager:ca9c5e1a stopped in 0.2987 ms
+2022-03-28 17:35:23.1140|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop DelayedJobScheduler:13708649 stopped in 0.3304 ms
+2022-03-28 17:35:23.1140|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop CountersAggregator:754156fe stopped in 0.3271 ms
+2022-03-28 17:35:23.1140|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:eff08e3d stopped in 0.3297 ms
+2022-03-28 17:35:23.1140|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:b5726ec1 stopped in 0.3664 ms
+2022-03-28 17:35:23.1140|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:543f8d3b stopped in 0.3697 ms
+2022-03-28 17:35:23.1140|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:81061dc8 stopped in 0.373 ms
+2022-03-28 17:35:23.1140|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:5e81fad0 stopped in 0.3895 ms
+2022-03-28 17:35:23.1140|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:667397ad stopped in 0.4275 ms
+2022-03-28 17:35:23.1140|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop RecurringJobScheduler:6d26dbe9 stopped in 0.7006 ms
+2022-03-28 17:35:23.1140|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ServerJobCancellationWatcher:a49221e9 stopped in 0.7234 ms
+2022-03-28 17:35:23.1140|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:9b96dce7 stopped in 1.3039 ms
+2022-03-28 17:35:23.1140|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:0bece3cc stopped in 1.2709 ms
+2022-03-28 17:35:23.1140|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:25694668 stopped in 1.389 ms
+2022-03-28 17:35:23.1140|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:628f7939 stopped in 1.2908 ms
+2022-03-28 17:35:23.1140|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:dd8adfde stopped in 1.3387 ms
+2022-03-28 17:35:23.1140|INFO|Hangfire.Server.BackgroundServerProcess|Server desktop-ece92r2:7772:a4690a13 caught stopped signal...
+2022-03-28 17:35:23.1140|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:1016cd8a stopped in 1.6576 ms
+2022-03-28 17:35:23.1140|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:dc622eeb stopped in 1.3319 ms
+2022-03-28 17:35:23.1140|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:634288bc stopped in 1.3542 ms
+2022-03-28 17:35:23.1140|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:0ab08a48 stopped in 1.668 ms
+2022-03-28 17:35:23.1140|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:fe97758a stopped in 1.8549 ms
+2022-03-28 17:35:23.1140|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:6c77e4d7 stopped in 1.5791 ms
+2022-03-28 17:35:23.1140|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:85368f9c stopped in 1.508 ms
+2022-03-28 17:35:23.1140|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:c2c2d35f stopped in 1.3333 ms
+2022-03-28 17:35:23.1140|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:5243d3cc stopped in 1.3142 ms
+2022-03-28 17:35:23.1140|INFO|Hangfire.Server.BackgroundServerProcess|Server desktop-ece92r2:7772:a4690a13 All dispatchers stopped
+2022-03-28 17:35:23.1140|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ServerHeartbeatProcess:cd2fe622 stopped in 6.4318 ms
+2022-03-28 17:35:23.1819|INFO|Hangfire.Server.BackgroundServerProcess|Server desktop-ece92r2:7772:a4690a13 successfully reported itself as stopped in 59.9077 ms
+2022-03-28 17:35:23.1819|INFO|Hangfire.Server.BackgroundServerProcess|Server desktop-ece92r2:7772:a4690a13 has been stopped in total 68.3162 ms
+2022-03-28 17:35:23.1819|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop BackgroundServerProcess:16d3d914 stopped in 69.6635 ms
+2022-03-28 17:53:56.3699|INFO|Hangfire.SqlServer.SqlServerObjectsInstaller|Start installing Hangfire SQL objects...
+2022-03-28 17:53:56.7172|INFO|Hangfire.SqlServer.SqlServerObjectsInstaller|Hangfire SQL objects installed.
+2022-03-28 17:53:56.7362|INFO|Hangfire.BackgroundJobServer|Starting Hangfire Server using job storage: 'SQL Server: localhost@ExceedERP2021-BRANA-PRO'
+2022-03-28 17:53:56.7362|INFO|Hangfire.BackgroundJobServer|Using the following options for SQL Server job storage: Queue poll interval: 00:00:15.
+2022-03-28 17:53:56.7362|INFO|Hangfire.BackgroundJobServer|Using the following options for Hangfire Server:
+    Worker count: 20
+    Listening queues: 'default'
+    Shutdown timeout: 00:00:15
+    Schedule polling interval: 00:00:15
+2022-03-28 17:53:56.7492|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop BackgroundServerProcess:7d85868b has started in 3.5608 ms
+2022-03-28 17:53:56.7731|INFO|Hangfire.Server.BackgroundServerProcess|Server desktop-ece92r2:7772:59d22315 successfully announced in 19.6953 ms
+2022-03-28 17:53:56.7731|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ServerHeartbeatProcess:b12617cd has started in 0.9593 ms
+2022-03-28 17:53:56.7731|INFO|Hangfire.Server.BackgroundServerProcess|Server desktop-ece92r2:7772:59d22315 is starting the registered dispatchers: ServerWatchdog, ServerJobCancellationWatcher, ExpirationManager, CountersAggregator, Worker, DelayedJobScheduler, RecurringJobScheduler...
+2022-03-28 17:53:56.7731|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ServerWatchdog:4ce26a98 has started in 0.3799 ms
+2022-03-28 17:53:56.7731|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ServerJobCancellationWatcher:158c89d1 has started in 0.3459 ms
+2022-03-28 17:53:56.7791|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ExpirationManager:b3b9a559 has started in 0.6235 ms
+2022-03-28 17:53:56.7791|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop CountersAggregator:d1820266 has started in 0.4704 ms
+2022-03-28 17:53:56.7791|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'AggregatedCounter' table...
+2022-03-28 17:53:56.7791|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2022-03-28 17:53:56.7791|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:b5f98dc8 has started in 0.6137 ms
+2022-03-28 17:53:56.7791|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:9b04972b has started in 0.8432 ms
+2022-03-28 17:53:56.7791|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:18cf4a9e has started in 1.0421 ms
+2022-03-28 17:53:56.7791|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:5af495e4 has started in 1.3988 ms
+2022-03-28 17:53:56.7791|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:152cb3a3 has started in 1.6509 ms
+2022-03-28 17:53:56.7791|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:00a36146 has started in 1.9058 ms
+2022-03-28 17:53:56.7791|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:76be673b has started in 3.4118 ms
+2022-03-28 17:53:56.7791|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:47f576f8 has started in 3.686 ms
+2022-03-28 17:53:56.7791|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:4fea1859 has started in 5.961 ms
+2022-03-28 17:53:56.7791|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:3f02ed85 has started in 6.5018 ms
+2022-03-28 17:53:56.7791|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:368e8645 has started in 6.9586 ms
+2022-03-28 17:53:56.7791|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:aa5cf5f2 has started in 7.1569 ms
+2022-03-28 17:53:56.7791|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:12ba4d0e has started in 7.3915 ms
+2022-03-28 17:53:56.7791|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:29a0b90a has started in 7.6936 ms
+2022-03-28 17:53:56.7791|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:cc2b4bc2 has started in 8.0037 ms
+2022-03-28 17:53:56.7791|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:ca1160a2 has started in 8.2716 ms
+2022-03-28 17:53:56.7791|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:4e253e4e has started in 8.544 ms
+2022-03-28 17:53:56.7791|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:44cf1f90 has started in 8.7455 ms
+2022-03-28 17:53:56.7791|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:29d9036d has started in 8.942 ms
+2022-03-28 17:53:56.7791|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:1de93cdb has started in 9.1776 ms
+2022-03-28 17:53:56.7791|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop DelayedJobScheduler:d8fc3c3d has started in 0.5048 ms
+2022-03-28 17:53:56.7791|INFO|Hangfire.Server.BackgroundServerProcess|Server desktop-ece92r2:7772:59d22315 all the dispatchers started
+2022-03-28 17:53:56.7791|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop RecurringJobScheduler:fd390193 has started in 0.6231 ms
+2022-03-28 17:53:56.8080|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Job' table...
+2022-03-28 17:53:56.8250|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'List' table...
+2022-03-28 17:53:56.8260|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Set' table...
+2022-03-28 17:53:56.8260|DEBUG|Hangfire.SqlServer.ExpirationManager|Removing outdated records from the 'Hash' table...
+2022-03-28 17:54:26.8177|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:59d22315 heartbeat successfully sent
+2022-03-28 17:54:56.8258|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:59d22315 heartbeat successfully sent
+2022-03-28 17:55:26.8341|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:59d22315 heartbeat successfully sent
+2022-03-28 17:55:56.8399|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:59d22315 heartbeat successfully sent
+2022-03-28 17:56:26.8476|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:59d22315 heartbeat successfully sent
+2022-03-28 17:56:56.8582|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:59d22315 heartbeat successfully sent
+2022-03-28 17:57:26.8638|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:59d22315 heartbeat successfully sent
+2022-03-28 17:57:56.8715|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:59d22315 heartbeat successfully sent
+2022-03-28 17:58:26.8876|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:59d22315 heartbeat successfully sent
+2022-03-28 17:58:56.7986|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2022-03-28 17:58:56.8933|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:59d22315 heartbeat successfully sent
+2022-03-28 17:59:26.8991|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:59d22315 heartbeat successfully sent
+2022-03-28 17:59:56.9040|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:59d22315 heartbeat successfully sent
+2022-03-28 18:00:26.9146|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:59d22315 heartbeat successfully sent
+2022-03-28 18:00:56.9269|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:59d22315 heartbeat successfully sent
+2022-03-28 18:01:26.9404|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:59d22315 heartbeat successfully sent
+2022-03-28 18:01:56.9507|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:59d22315 heartbeat successfully sent
+2022-03-28 18:02:26.9652|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:59d22315 heartbeat successfully sent
+2022-03-28 18:02:56.9723|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:59d22315 heartbeat successfully sent
+2022-03-28 18:03:26.9780|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:59d22315 heartbeat successfully sent
+2022-03-28 18:03:56.8346|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2022-03-28 18:03:56.9790|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:59d22315 heartbeat successfully sent
+2022-03-28 18:04:26.9890|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:59d22315 heartbeat successfully sent
+2022-03-28 18:04:57.0037|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:59d22315 heartbeat successfully sent
+2022-03-28 18:05:27.0084|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:59d22315 heartbeat successfully sent
+2022-03-28 18:05:57.0125|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:59d22315 heartbeat successfully sent
+2022-03-28 18:06:27.0274|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:59d22315 heartbeat successfully sent
+2022-03-28 18:06:57.0395|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:59d22315 heartbeat successfully sent
+2022-03-28 18:07:27.0544|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:59d22315 heartbeat successfully sent
+2022-03-28 18:07:57.0630|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:59d22315 heartbeat successfully sent
+2022-03-28 18:08:27.0686|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:59d22315 heartbeat successfully sent
+2022-03-28 18:08:56.8583|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2022-03-28 18:08:57.0971|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:59d22315 heartbeat successfully sent
+2022-03-28 18:09:27.1118|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:59d22315 heartbeat successfully sent
+2022-03-28 18:09:57.1251|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:59d22315 heartbeat successfully sent
+2022-03-28 18:10:27.1309|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:59d22315 heartbeat successfully sent
+2022-03-28 18:10:57.1359|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:59d22315 heartbeat successfully sent
+2022-03-28 18:11:27.1488|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:59d22315 heartbeat successfully sent
+2022-03-28 18:11:57.1525|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:59d22315 heartbeat successfully sent
+2022-03-28 18:12:27.1588|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:59d22315 heartbeat successfully sent
+2022-03-28 18:12:57.1731|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:59d22315 heartbeat successfully sent
+2022-03-28 18:13:27.1788|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:59d22315 heartbeat successfully sent
+2022-03-28 18:13:56.8816|DEBUG|Hangfire.SqlServer.CountersAggregator|Aggregating records in 'Counter' table...
+2022-03-28 18:13:57.1950|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:59d22315 heartbeat successfully sent
+2022-03-28 18:14:27.2087|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:59d22315 heartbeat successfully sent
+2022-03-28 18:14:57.2242|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:59d22315 heartbeat successfully sent
+2022-03-28 18:15:27.2339|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:59d22315 heartbeat successfully sent
+2022-03-28 18:15:57.2445|DEBUG|Hangfire.Server.ServerHeartbeatProcess|Server desktop-ece92r2:7772:59d22315 heartbeat successfully sent
+2022-03-28 18:16:18.2717|INFO|Hangfire.Server.BackgroundServerProcess|Server desktop-ece92r2:7772:59d22315 caught stopping signal...
+2022-03-28 18:16:18.2717|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop CountersAggregator:d1820266 stopped in 0.0976 ms
+2022-03-28 18:16:18.2717|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:12ba4d0e stopped in 0.1521 ms
+2022-03-28 18:16:18.2717|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop RecurringJobScheduler:fd390193 stopped in 0.1193 ms
+2022-03-28 18:16:18.2717|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:44cf1f90 stopped in 0.134 ms
+2022-03-28 18:16:18.2717|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:ca1160a2 stopped in 0.1338 ms
+2022-03-28 18:16:18.2717|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:47f576f8 stopped in 0.1535 ms
+2022-03-28 18:16:18.2717|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:76be673b stopped in 0.4264 ms
+2022-03-28 18:16:18.2717|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ServerJobCancellationWatcher:158c89d1 stopped in 0.4694 ms
+2022-03-28 18:16:18.2717|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ServerWatchdog:4ce26a98 stopped in 0.4972 ms
+2022-03-28 18:16:18.2717|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:4fea1859 stopped in 0.4905 ms
+2022-03-28 18:16:18.2717|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:aa5cf5f2 stopped in 0.5385 ms
+2022-03-28 18:16:18.2717|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:b5f98dc8 stopped in 1.3847 ms
+2022-03-28 18:16:18.2717|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:00a36146 stopped in 1.4526 ms
+2022-03-28 18:16:18.2717|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:4e253e4e stopped in 1.738 ms
+2022-03-28 18:16:18.2717|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:5af495e4 stopped in 1.4011 ms
+2022-03-28 18:16:18.2717|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:9b04972b stopped in 1.3796 ms
+2022-03-28 18:16:18.2717|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop DelayedJobScheduler:d8fc3c3d stopped in 0.7475 ms
+2022-03-28 18:16:18.2717|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:368e8645 stopped in 1.3245 ms
+2022-03-28 18:16:18.2717|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:152cb3a3 stopped in 1.0692 ms
+2022-03-28 18:16:18.2717|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:29a0b90a stopped in 1.6105 ms
+2022-03-28 18:16:18.2717|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:18cf4a9e stopped in 1.6911 ms
+2022-03-28 18:16:18.2717|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:3f02ed85 stopped in 1.1188 ms
+2022-03-28 18:16:18.2717|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:1de93cdb stopped in 1.1152 ms
+2022-03-28 18:16:18.2717|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:29d9036d stopped in 1.0975 ms
+2022-03-28 18:16:18.2717|INFO|Hangfire.Server.BackgroundServerProcess|Server desktop-ece92r2:7772:59d22315 caught stopped signal...
+2022-03-28 18:16:18.2717|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ExpirationManager:b3b9a559 stopped in 1.2629 ms
+2022-03-28 18:16:18.2717|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop Worker:cc2b4bc2 stopped in 1.4824 ms
+2022-03-28 18:16:18.2796|INFO|Hangfire.Server.BackgroundServerProcess|Server desktop-ece92r2:7772:59d22315 All dispatchers stopped
+2022-03-28 18:16:18.2796|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop ServerHeartbeatProcess:b12617cd stopped in 8.1996 ms
+2022-03-28 18:16:18.2796|INFO|Hangfire.Server.BackgroundServerProcess|Server desktop-ece92r2:7772:59d22315 successfully reported itself as stopped in 2.8144 ms
+2022-03-28 18:16:18.2796|INFO|Hangfire.Server.BackgroundServerProcess|Server desktop-ece92r2:7772:59d22315 has been stopped in total 12.1388 ms
+2022-03-28 18:16:18.2796|DEBUG|Hangfire.Processing.BackgroundExecution|Execution loop BackgroundServerProcess:7d85868b stopped in 12.3557 ms
