@@ -194,10 +194,6 @@
     <Compile Include="Migrations\202203120751235_JobStatusStartAndEndDateAdded.Designer.cs">
       <DependentUpon>202203120751235_JobStatusStartAndEndDateAdded.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\202203150838437_JobStatusEndDateRequired.cs" />
-    <Compile Include="Migrations\202203150838437_JobStatusEndDateRequired.Designer.cs">
-      <DependentUpon>202203150838437_JobStatusEndDateRequired.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\202203171105584_JobOrderUnitAdded.cs" />
     <Compile Include="Migrations\202203171105584_JobOrderUnitAdded.Designer.cs">
       <DependentUpon>202203171105584_JobOrderUnitAdded.cs</DependentUpon>
@@ -210,10 +206,6 @@
     <Compile Include="Migrations\202203211542398_DeliveryAddCasAndCredit.Designer.cs">
       <DependentUpon>202203211542398_DeliveryAddCasAndCredit.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\202203251231165_ProductDeliveryUpdate.cs" />
-    <Compile Include="Migrations\202203251231165_ProductDeliveryUpdate.Designer.cs">
-      <DependentUpon>202203251231165_ProductDeliveryUpdate.cs</DependentUpon>
-    </Compile>
     <Compile Include="Migrations\202203251343054_financedebit.cs" />
     <Compile Include="Migrations\202203251343054_financedebit.Designer.cs">
       <DependentUpon>202203251343054_financedebit.cs</DependentUpon>
@@ -222,9 +214,9 @@
     <Compile Include="Migrations\202203260743494_ProductDeliveryVatAdded.Designer.cs">
       <DependentUpon>202203260743494_ProductDeliveryVatAdded.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\202203280916048_JobStatusDateNullable.cs" />
-    <Compile Include="Migrations\202203280916048_JobStatusDateNullable.Designer.cs">
-      <DependentUpon>202203280916048_JobStatusDateNullable.cs</DependentUpon>
+    <Compile Include="Migrations\202203281142437_EstimationUpdate.cs" />
+    <Compile Include="Migrations\202203281142437_EstimationUpdate.Designer.cs">
+      <DependentUpon>202203281142437_EstimationUpdate.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -329,9 +321,6 @@
     <EmbeddedResource Include="Migrations\202203120751235_JobStatusStartAndEndDateAdded.resx">
       <DependentUpon>202203120751235_JobStatusStartAndEndDateAdded.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202203150838437_JobStatusEndDateRequired.resx">
-      <DependentUpon>202203150838437_JobStatusEndDateRequired.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202203171105584_JobOrderUnitAdded.resx">
       <DependentUpon>202203171105584_JobOrderUnitAdded.cs</DependentUpon>
     </EmbeddedResource>
@@ -341,17 +330,14 @@
     <EmbeddedResource Include="Migrations\202203211542398_DeliveryAddCasAndCredit.resx">
       <DependentUpon>202203211542398_DeliveryAddCasAndCredit.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202203251231165_ProductDeliveryUpdate.resx">
-      <DependentUpon>202203251231165_ProductDeliveryUpdate.cs</DependentUpon>
-    </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202203251343054_financedebit.resx">
       <DependentUpon>202203251343054_financedebit.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202203260743494_ProductDeliveryVatAdded.resx">
       <DependentUpon>202203260743494_ProductDeliveryVatAdded.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\202203280916048_JobStatusDateNullable.resx">
-      <DependentUpon>202203280916048_JobStatusDateNullable.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\202203281142437_EstimationUpdate.resx">
+      <DependentUpon>202203281142437_EstimationUpdate.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

@@ -7,13 +7,13 @@ namespace ExceedERP.DataAccess.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.3-40302")]
-    public sealed partial class ProductDeliveryUpdate : IMigrationMetadata
+    public sealed partial class EstimationUpdate : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(ProductDeliveryUpdate));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(EstimationUpdate));
         
         string IMigrationMetadata.Id
         {
-            get { return "202203251231165_ProductDeliveryUpdate"; }
+            get { return "202203281142437_EstimationUpdate"; }
         }
         
         string IMigrationMetadata.Source

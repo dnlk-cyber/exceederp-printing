@@ -17,6 +17,8 @@ namespace ExceedERP.Core.Domain.PrintingEstimation
         [Required]
         public DateTime Date { get; set; }
         [Required]
+        public int  JobType { get; set; }
+        [Required]
         public string JobNumber { get; set; }
         [Required]
         public decimal Quantity { get; set; }
@@ -31,6 +33,8 @@ namespace ExceedERP.Core.Domain.PrintingEstimation
         [Required]
         public string BindingStyle { get; set; }
         public string Others { get; set; }
+        public bool IsChecked { get; set; }
+        public bool IsApproved { get; set; }
         public virtual ICollection<MaterialCost> MaterialCosts { get; set; } = new List<MaterialCost>();
         public virtual ICollection<LaborCost> LaborCosts { get; set; } = new List<LaborCost>();
 

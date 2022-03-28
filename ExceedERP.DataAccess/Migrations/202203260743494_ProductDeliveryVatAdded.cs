@@ -10,12 +10,10 @@ namespace ExceedERP.DataAccess.Migrations
             AddColumn("ProductFollowUp.ProductDelivery", "DeliveryStatus", c => c.Int(nullable: false));
             AddColumn("ProductFollowUp.ProductDeliveryItems", "VAT", c => c.Decimal(nullable: false, precision: 18, scale: 2));
             AddColumn("ProductFollowUp.ProductDeliveryItems", "Amount", c => c.Decimal(nullable: false, precision: 18, scale: 2));
-            DropColumn("ProductFollowUp.ProductDeliveryItems", "Status");
         }
         
         public override void Down()
         {
-            AddColumn("ProductFollowUp.ProductDeliveryItems", "Status", c => c.Int(nullable: false));
             DropColumn("ProductFollowUp.ProductDeliveryItems", "Amount");
             DropColumn("ProductFollowUp.ProductDeliveryItems", "VAT");
             DropColumn("ProductFollowUp.ProductDelivery", "DeliveryStatus");

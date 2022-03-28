@@ -1009,6 +1009,7 @@
     <Compile Include="Domain\PrintingEstimation\PrintingEstimationRoles.cs" />
     <Compile Include="Domain\PrintingEstimation\PrintingStep.cs" />
     <Compile Include="Domain\PrintingEstimation\Setting\CommonEnum.cs" />
+    <Compile Include="Domain\PrintingEstimation\Setting\Validation.cs" />
     <Compile Include="Domain\Procurement\Contract\ContractTerminationAttachment.cs" />
     <Compile Include="Domain\Procurement\Contract\ContractTerminationValidation.cs" />
     <Compile Include="Domain\Procurement\Contract\ContractTermination.cs" />
