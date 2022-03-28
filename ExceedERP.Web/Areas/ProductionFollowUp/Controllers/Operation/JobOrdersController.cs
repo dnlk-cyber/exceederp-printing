@@ -343,7 +343,6 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                 //jobOrder.FinishingSize = changeOfOrder.Size;
                 //jobOrder.TotalPrice = changeOfOrder.Total;
                 //jobOrder.Reason = changeOfOrder.Reason;
-
                 //db.Entry(jobOrder).State = EntityState.Modified;
                 //db.SaveChanges();
 

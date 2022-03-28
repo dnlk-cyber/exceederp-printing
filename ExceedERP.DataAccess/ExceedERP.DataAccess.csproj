@@ -222,6 +222,10 @@
     <Compile Include="Migrations\202203260743494_ProductDeliveryVatAdded.Designer.cs">
       <DependentUpon>202203260743494_ProductDeliveryVatAdded.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202203280916048_JobStatusDateNullable.cs" />
+    <Compile Include="Migrations\202203280916048_JobStatusDateNullable.Designer.cs">
+      <DependentUpon>202203280916048_JobStatusDateNullable.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -345,6 +349,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202203260743494_ProductDeliveryVatAdded.resx">
       <DependentUpon>202203260743494_ProductDeliveryVatAdded.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202203280916048_JobStatusDateNullable.resx">
+      <DependentUpon>202203280916048_JobStatusDateNullable.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

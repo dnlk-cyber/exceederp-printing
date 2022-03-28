@@ -20,8 +20,8 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
         public FinishedProductsReceivingNoteVM GetFinishedProducts(DateTime? startDate, DateTime? endDate, string jobPhase,string jobTypeId, string userName)
         {
             var jobs = db.JobStatuses.ToList().Where(q =>  q.JobPhase.ToString() == jobPhase
-                                        && q.StartDate.Date >= startDate.Value.Date
-                                        && q.EndDate.Date <= endDate.Value.Date
+                                        && q.StartDate.Value.Date >= startDate.Value.Date
+                                        && q.EndDate.Value.Date <= endDate.Value.Date
                                         ).ToList();
             if(jobTypeId!=null)
             {
