@@ -4,65 +4,66 @@
 
 <legend>Estimation Form</legend>
 @(Html.Kendo().Grid<ExceedERP.Core.Domain.PrintingEstimation.EstimationForm>()
-            .Name("grid")
-            .Columns(columns =>
-            {
-                columns.Bound(c => c.Date).EditorTemplateName("Date").Width("100px").Format("{0:dd/MM/yyyy}");
-                columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customers"], "Code", "Name")
-                                    .Width(110).Title("Customer");
-                columns.Bound(c => c.JobNumber).Width(100);
-                columns.Bound(c => c.Quantity).Width(100);
-                columns.Bound(c => c.Size).Width(80);
-                columns.Bound(c => c.TextPaper).Width(80);
-                columns.Bound(c => c.TextPrint).Width(80);
-                columns.Bound(c => c.CoverPrint).Width(80);
-                columns.Bound(c => c.BindingStyle).Width(100);
-                columns.Bound(c => c.Others).Width(100);
-                columns.Command(command =>
+                .Name("grid")
+                .Columns(columns =>
                 {
-                    command.Edit().Text(" ").IconClass("fa fa-pencil");
-                    command.Custom("check").Text(" ").IconClass("fa fa-check").Click("checkEstimation");
-                    command.Custom("approve").Text(" ").IconClass("fa fa-thumbs-o-up").Click("approveEstimation");
-                    command.Destroy().Text(" ").IconClass("fa fa-trash");
-                }).Width(200);
+                    columns.ForeignKey(c => c.JobTypeId, (IEnumerable)ViewData["JobTypes"], "JobTypeId", "Type").Width(130);
+                    columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customers"], "Code", "Name")
+                                        .Width(110).Title("Customer");
+                    columns.Bound(c => c.JobNumber).Width(100);
+                    columns.Bound(c => c.Quantity).Width(100);
+                    columns.Bound(c => c.Size).Width(80);
+                    columns.Bound(c => c.TextPaper).Width(80);
+                    columns.Bound(c => c.TextPrint).Width(80);
+                    columns.Bound(c => c.CoverPrint).Width(80);
+                    columns.Bound(c => c.BindingStyle).Width(100);
+                    columns.Bound(c => c.Others).Width(100);
+                    columns.Command(command =>
+                    {
+                        command.Edit().Text(" ").IconClass("fa fa-pencil");
+                        command.Custom("check").Text(" ").IconClass("fa fa-check").HtmlAttributes(new { @class="check"}).Click("checkEstimation");
+                        command.Custom("approve").Text(" ").IconClass("fa fa-thumbs-o-up").HtmlAttributes(new { @class = "approve" }).Click("approveEstimation");
+                        command.Custom("reject").Text(" ").IconClass("fa fa-remove").HtmlAttributes(new { @class = "reject" }).Click("rejectEstimation");
+                        command.Destroy().Text(" ").IconClass("fa fa-trash");
+                    }).Width(200);
 
-            })
-            .ToolBar(toolbar =>
-            {
-                toolbar.Create();
-                toolbar.Excel();
-                toolbar.Pdf();
-            })
-          .Events(ev => ev.DetailExpand("detailExpand").DataBound("dataBound"))
-            .Scrollable(s => s.Height(400))
-            .ClientDetailTemplateId("cost_estimation")
-            .Sortable()
-            .Filterable()
-            .Editable(editable => editable.Mode(GridEditMode.PopUp)
-            .TemplateName("EstimationForm")
-            .Window(w => w.Title("Estimation Form").Width(600)))
-            .Pageable(pageable => pageable
-            .Refresh(true)
-            .PageSizes(true)
-            .ButtonCount(5))
-            .DataSource(dataSource => dataSource
-            .Ajax()
-            .Events(ev => ev.Error("error_handler(\"grid\")")
-                            .RequestStart("onRequestStart(\"grid\")")
-                            .RequestEnd("onRequestEnd(\"grid\")"))
-            //   .ServerOperation(false)
-            .Model(model => model.Id(p => p.EstimationFormId))
-            .Read(read => read.Action("EstimationForms_Read", "EstimationForm"))
-            .Create(create => create.Action("EstimationForms_Create", "EstimationForm"))
-            .Update(update => update.Action("EstimationForms_Update", "EstimationForm"))
-            .Destroy(destroy => destroy.Action("EstimationForms_Destroy", "EstimationForm"))
-            .PageSize(10)
-            .Sort(sort =>
-            {
-                sort.Add(e => e.EstimationFormId).Descending();
+                })
+                .ToolBar(toolbar =>
+                {
+                    toolbar.Create();
+                    toolbar.Excel();
+                    toolbar.Pdf();
+                })
+              .Events(ev => ev.DetailExpand("detailExpand").DataBound("dataBound"))
+                .Scrollable(s => s.Height(400))
+                .ClientDetailTemplateId("cost_estimation")
+                .Sortable()
+                .Filterable()
+                .Editable(editable => editable.Mode(GridEditMode.PopUp)
+                .TemplateName("EstimationForm")
+                .Window(w => w.Title("Estimation Form").Width(600)))
+                .Pageable(pageable => pageable
+                .Refresh(true)
+                .PageSizes(true)
+                .ButtonCount(5))
+                .DataSource(dataSource => dataSource
+                .Ajax()
+                .Events(ev => ev.Error("error_handler(\"grid\")")
+                                .RequestStart("onRequestStart(\"grid\")")
+                                .RequestEnd("onRequestEnd(\"grid\")"))
+                //   .ServerOperation(false)
+                .Model(model => model.Id(p => p.EstimationFormId))
+                .Read(read => read.Action("EstimationForms_Read", "EstimationForm"))
+                .Create(create => create.Action("EstimationForms_Create", "EstimationForm"))
+                .Update(update => update.Action("EstimationForms_Update", "EstimationForm"))
+                .Destroy(destroy => destroy.Action("EstimationForms_Destroy", "EstimationForm"))
+                .PageSize(10)
+                .Sort(sort =>
+                {
+                    sort.Add(e => e.EstimationFormId).Descending();
 
-            }))
-           //  .Resizable(resize => resize.Columns(true))
+                }))
+//  .Resizable(resize => resize.Columns(true))
 )
 
 
@@ -83,168 +84,171 @@
 
 <script id="cost_estimation" type="text/x-kendo-template">
     @(Html.Kendo().TabStrip().Name("tabstrip_grid_#=EstimationFormId#").SelectedIndex(0).Items(itemn =>
-                {
+                        {
 
-                    itemn.Add().Text("Material Costs").Content(@<text>
-                        @(Html.Kendo().Grid<ExceedERP.Core.Domain.PrintingEstimation.MaterialCost>()
-                                                    .Name("material_costs_#=EstimationFormId#") // template expression, to be evaluated in the master context
-                                                .Columns(columns =>
-                                                {
-                                                            columns.Bound(c => c.MaterialCostId).Hidden(true).Filterable(false);
-                                                            columns.ForeignKey(c => c.InventoryCategoryId, (IEnumerable)ViewData["Categorys"], "Code", "Name")
-                                                   .Width(90);
-                                                            columns.ForeignKey(c => c.InventoryId, (IEnumerable)ViewData["Inventories"], "Code", "Name")
-                                                   .Width(90);
-                                                            columns.Bound(c => c.Quantity).Width(80);
-                                                            columns.Bound(c => c.UnitPrice).Width(80);
-                                                            columns.Bound(c => c.TotalPrice).Width(150).ClientFooterTemplate("Material Cost: \\#=sum\\# ");
-                                                // escaped template expression, to be evaluated in the child/detail context
-                                                columns.Command(command => { command.Edit(); command.Destroy(); }).Width(200);
-                                                        })
-                                                .ToolBar(toolbar =>
-                                                {
-                                                            toolbar.Create();
+                            itemn.Add().Text("Material Costs").Content(@<text>
+                                @(Html.Kendo().Grid<ExceedERP.Core.Domain.PrintingEstimation.MaterialCost>()
+                                                                    .Name("material_costs_#=EstimationFormId#") // template expression, to be evaluated in the master context
+                                                                .Columns(columns =>
+                                                                {
+                                                                            columns.Bound(c => c.MaterialCostId).Hidden(true).Filterable(false);
+                                                                            columns.ForeignKey(c => c.InventoryCategoryId, (IEnumerable)ViewData["Categorys"], "Code", "Name")
+                                                       .Width(90);
+                                                                            columns.ForeignKey(c => c.InventoryId, (IEnumerable)ViewData["Inventories"], "Code", "Name")
+                                                       .Width(90);
+                                                                            columns.Bound(c => c.Quantity).Width(80);
+                                                                            columns.Bound(c => c.UnitPrice).Width(80);
+                                                                            columns.Bound(c => c.TotalPrice).Width(150).ClientFooterTemplate("Material Cost: \\#=sum\\# ");
+                                                                // escaped template expression, to be evaluated in the child/detail context
+                                                                columns.Command(command => { command.Edit(); command.Destroy(); }).Width(200);
+                                                                        })
+                                                                .ToolBar(toolbar =>
+                                                                {
+                                                                            toolbar.Create();
 
-                                                        })
-                                                .Editable(editable => editable.Mode(GridEditMode.PopUp)
-                                                .TemplateName("MaterialCost")
-                                               .Window(w => w.Title("Material Cost Form").Width(400)))
-                                                .Pageable(pageable => pageable
-                                                .Refresh(true)
-                                                .PageSizes(true)
-                                                .ButtonCount(5))
-                                                .DataSource(dataSource => dataSource
-                                                    .Ajax()
-                                                    //   .ServerOperation(false)
-                                                    .Events(ev => ev.Error("error_handler(\"material_costs_#=EstimationFormId#\")")
-                                                    .RequestStart("onRequestStart(\"material_costs_#=EstimationFormId#\")")
-                                                    .RequestEnd("onRequestEnd(\"material_costs_#=EstimationFormId#\")"))
-                                                    .Aggregates(aggregates =>
+                                                                        })
+                                                                        .Events(ev => ev.DataBound("onChildDataBound"))
+                                                                .Editable(editable => editable.Mode(GridEditMode.PopUp)
+                                                                .TemplateName("MaterialCost")
+                                                               .Window(w => w.Title("Material Cost Form").Width(400)))
+                                                                .Pageable(pageable => pageable
+                                                                .Refresh(true)
+                                                                .PageSizes(true)
+                                                                .ButtonCount(5))
+                                                                .DataSource(dataSource => dataSource
+                                                                    .Ajax()
+                                                                    //   .ServerOperation(false)
+                                                                    .Events(ev => ev.Error("error_handler(\"material_costs_#=EstimationFormId#\")")
+                                                                    .RequestStart("onRequestStart(\"material_costs_#=EstimationFormId#\")")
+                                                                    .RequestEnd("onRequestEnd(\"material_costs_#=EstimationFormId#\")"))
+                                                                    .Aggregates(aggregates =>
 
-                                                    {
-                                                                aggregates.Add(c => c.TotalPrice).Sum();
-                                                            })
-                                                    .Model(model => model.Id(p => p.MaterialCostId))
-                                                    .Read(read => read.Action("MaterialCosts_Read", "MaterialCost", new { estimationFormId = "#=EstimationFormId #" }))
-                                                    .Create(create => create.Action("MaterialCosts_Create", "MaterialCost", new { parentId = "#=EstimationFormId #" }))
-                                                    .Update(update => update.Action("MaterialCosts_Update", "MaterialCost"))
-                                                    .Destroy(destroy => destroy.Action("MaterialCosts_Destroy", "MaterialCost"))
-                                                    .Sort(sort =>
-                                                    {
-                                                                sort.Add(m => m.LastModified).Descending();
-
-                                                            })
-                                                    .PageSize(5))
-                                                    .ToClientTemplate())
-                    </text>
-
-                                        );
-                            itemn.Add().Text("Labor Costs").Content(@<text>
-                                @(Html.Kendo().Grid<ExceedERP.Core.Domain.PrintingEstimation.LaborCost>()
-                                                                    .Name("labor_costs_#=EstimationFormId#")
-                                                                    .Columns(columns =>
                                                                     {
-                                                                                        columns.Bound(x => x.LaborCostId).Hidden(true);
-                                                                                        columns.Bound(c => c.PrintingSteps).EditorTemplateName("PrintingCategory").
-                                                                            Title("Printing Category").Width(100);
-                                                                                        columns.ForeignKey(c => c.PrintingStepId, (IEnumerable)ViewData["PrintingSteps"], "PrintingStepId", "Name")
-                                                                            .Title("Name").Width(100);
-                                                                                        columns.Bound(o => o.WorkingTime).Width(80);
-                                                                                        columns.Bound(o => o.CostPerHour).Width(80);
-                                                                                        columns.Bound(o => o.TotalCost).Width(150).ClientFooterTemplate("Labor Cost: \\#=sum\\# ");
-                                                                                        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(200);
-                                                                                    })
-                                                                        //.ToolBar(toolbar =>
-                                                                        //{
-                                                                        //    toolbar.Custom().Name("cmdAddRecord")
-                                                                        //    .Text("Add New Record")
-                                                                        //    .HtmlAttributes(new { @id = "cmdAddRecord" });
-                                                                        //})
-                                                                        .ToolBar(toolbar =>
-                                                                        {
-                                                                                            toolbar.Create();
+                                                                                aggregates.Add(c => c.TotalPrice).Sum();
+                                                                            })
+                                                                    .Model(model => model.Id(p => p.MaterialCostId))
+                                                                    .Read(read => read.Action("MaterialCosts_Read", "MaterialCost", new { estimationFormId = "#=EstimationFormId #" }))
+                                                                    .Create(create => create.Action("MaterialCosts_Create", "MaterialCost", new { parentId = "#=EstimationFormId #" }))
+                                                                    .Update(update => update.Action("MaterialCosts_Update", "MaterialCost"))
+                                                                    .Destroy(destroy => destroy.Action("MaterialCosts_Destroy", "MaterialCost"))
+                                                                    .Sort(sort =>
+                                                                    {
+                                                                                sort.Add(m => m.LastModified).Descending();
 
-                                                                                        })
-                                                                        .Editable(editable => editable.Mode(GridEditMode.PopUp)
-                                                                        .TemplateName("LaborCost")
-                                                                       .Window(w => w.Title("Labor Cost Form").Width(400)))
-                                                                        .Pageable(pageable => pageable
-                                                                        .Refresh(true)
-                                                                        .PageSizes(true)
-                                                                        .ButtonCount(5))
-                                                                        .DataSource(dataSource => dataSource
-                                                                            .Ajax()
-                                                                            //.ServerOperation(false)
-                                                                            .Events(ev => ev.Error("error_handler(\"labor_costs_#=EstimationFormId#\")")
-                                                                            .RequestStart("onRequestStart(\"labor_costs_#=EstimationFormId#\")")
-                                                                            .RequestEnd("onRequestEnd(\"labor_costs_#=EstimationFormId#\")"))
-                                                                            .Aggregates(aggregates =>
-
-                                                                            {
-                                                                                                aggregates.Add(c => c.TotalCost).Sum();
-                                                                                            })
-                                                                            .Model(model => model.Id(p => p.LaborCostId))
-                                                                            .Read(read => read.Action("LaborCosts_Read", "LaborCost", new { estimationFormId = "#=EstimationFormId#" }))
-                                                                            .Create(create => create.Action("LaborCosts_Create", "LaborCost", new { parentId = "#=EstimationFormId#" }))
-                                                                            .Update(update => update.Action("LaborCosts_Update", "LaborCost"))
-                                                                            .Destroy(destroy => destroy.Action("LaborCosts_Destroy", "LaborCost"))
-                                                                            .Sort(sort =>
-                                                                            {
-                                                                                                sort.Add(l => l.LastModified).Descending();
-                                                                                            })
-                                                                            .PageSize(5))
-                                                                            .ToClientTemplate()
-
-                                )
+                                                                            })
+                                                                    .PageSize(5))
+                                                                    .ToClientTemplate())
                             </text>
 
-                                                );
-                                    itemn.Add().Text("Overall Costs")
-                        .Content(@<text>
-                            <a href='@Url.Action("PrintingEstimationForms", "PrintingReport")/#=EstimationFormId#' title="Print"><i class="fa fa-print  fa-2x"></i></a>
-
-                            @(Html.Kendo().Grid<ExceedERP.Core.Domain.PrintingEstimation.OverallCost>()
-                                                                            .Name("overall_costs_#=EstimationFormId#")
-                                                                            .Columns(columns =>
-                                                                            {
-                                                                                        columns.Bound(c => c.MaterialCost).Title("M.C").Width(80);
-                                                                                        columns.Bound(c => c.LaborCost).Title("L.C").Width(80);
-                                                                                        columns.Bound(c => c.OverHeadCost).Title("O.H(%)").Width(80);
-                                                                                        columns.Bound(c => c.T).Width(80);
-                                                                                        columns.Bound(c => c.MarginalCost).Title("M(%)").Width(80);
-                                                                                        columns.Bound(c => c.NBT).Title("N.B.T").Width(80);
-                                                                                        columns.Bound(c => c.TInpercent).Title("T(%)").Width(80);
-                                                                                        columns.Bound(c => c.GT).Title("G.T").Width(80);
-                                                                                        columns.Bound(c => c.Graphic).Width(80);
-                                                                                        columns.Bound(c => c.EstimatedNetPrice).Width(80);
-                                                                                        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(200);
-                                                                                    })
-
-                                                                                .Editable(editable => editable.Mode(GridEditMode.InLine))
-                                                                                .DataSource(dataSource => dataSource
-                                                                                    .Ajax()
-                                                                                    //.ServerOperation(false)
-                                                                                    .Events(events => events.Error("error_handler")
-                                                                                     .RequestStart("onRequestStart(\"overall_costs_#=EstimationFormId#\")")
-                                                                                     .RequestEnd("onRequestEnd(\"overall_costs_#=EstimationFormId#\")"))
-                                                                                    .Model(model =>
-                                                                                    {
-                                                                                                model.Id(p => p.OverallCostId);
-                                                                                                model.Field(p => p.OverallCostId).Editable(false);
-                                                                                            })
-                                                                                    .Read(read => read.Action("OverallCosts_Read", "OverallCost", new { estimationFormId = "#=EstimationFormId#" }))
-                                                                                    .Create(create => create.Action("OverallCosts_Create", "OverallCost", new { parentId = "#=EstimationFormId#" }))
-                                                                                    .Update(update => update.Action("OverallCosts_Update", "OverallCost"))
-                                                                                    .Destroy(destroy => destroy.Action("OverallCosts_Destroy", "OverallCost")))
-
-                                                                                    .Sortable()
-                                                                                    .ToClientTemplate()
-
-                            )
-                        </text>
-
                                                         );
-            }).ToClientTemplate())
+                                    itemn.Add().Text("Labor Costs").Content(@<text>
+                                        @(Html.Kendo().Grid<ExceedERP.Core.Domain.PrintingEstimation.LaborCost>()
+                                                                                    .Name("labor_costs_#=EstimationFormId#")
+                                                                                    .Columns(columns =>
+                                                                                    {
+                                                                                                        columns.Bound(x => x.LaborCostId).Hidden(true);
+                                                                                                        columns.Bound(c => c.PrintingSteps).EditorTemplateName("PrintingCategory").
+                                                                                            Title("Printing Category").Width(100);
+                                                                                                        columns.ForeignKey(c => c.PrintingStepId, (IEnumerable)ViewData["PrintingSteps"], "PrintingStepId", "Name")
+                                                                                            .Title("Name").Width(100);
+                                                                                                        columns.Bound(o => o.WorkingTime).Width(80);
+                                                                                                        columns.Bound(o => o.CostPerHour).Width(80);
+                                                                                                        columns.Bound(o => o.TotalCost).Width(150).ClientFooterTemplate("Labor Cost: \\#=sum\\# ");
+                                                                                                        columns.Command(command => { command.Edit(); command.Destroy(); }).Width(200);
+                                                                                                    })
+                                                                                        //.ToolBar(toolbar =>
+                                                                                        //{
+                                                                                        //    toolbar.Custom().Name("cmdAddRecord")
+                                                                                        //    .Text("Add New Record")
+                                                                                        //    .HtmlAttributes(new { @id = "cmdAddRecord" });
+                                                                                        //})
+                                                                                        .ToolBar(toolbar =>
+                                                                                        {
+                                                                                                            toolbar.Create();
+
+                                                                                                        })
+                                                                                        .Editable(editable => editable.Mode(GridEditMode.PopUp)
+                                                                                        .TemplateName("LaborCost")
+                                                                                       .Window(w => w.Title("Labor Cost Form").Width(400)))
+                                                                                       .Events(ev => ev.DataBound("onChildDataBound"))
+                                                                                        .Pageable(pageable => pageable
+                                                                                        .Refresh(true)
+                                                                                        .PageSizes(true)
+                                                                                        .ButtonCount(5))
+                                                                                        .DataSource(dataSource => dataSource
+                                                                                            .Ajax()
+                                                                                            //.ServerOperation(false)
+                                                                                            .Events(ev => ev.Error("error_handler(\"labor_costs_#=EstimationFormId#\")")
+                                                                                            .RequestStart("onRequestStart(\"labor_costs_#=EstimationFormId#\")")
+                                                                                            .RequestEnd("onRequestEnd(\"labor_costs_#=EstimationFormId#\")"))
+                                                                                            .Aggregates(aggregates =>
+
+                                                                                            {
+                                                                                                                aggregates.Add(c => c.TotalCost).Sum();
+                                                                                                            })
+                                                                                            .Model(model => model.Id(p => p.LaborCostId))
+                                                                                            .Read(read => read.Action("LaborCosts_Read", "LaborCost", new { estimationFormId = "#=EstimationFormId#" }))
+                                                                                            .Create(create => create.Action("LaborCosts_Create", "LaborCost", new { parentId = "#=EstimationFormId#" }))
+                                                                                            .Update(update => update.Action("LaborCosts_Update", "LaborCost"))
+                                                                                            .Destroy(destroy => destroy.Action("LaborCosts_Destroy", "LaborCost"))
+                                                                                            .Sort(sort =>
+                                                                                            {
+                                                                                                                sort.Add(l => l.LastModified).Descending();
+                                                                                                            })
+                                                                                            .PageSize(5))
+                                                                                            .ToClientTemplate()
+
+                                        )
+                                    </text>
+
+                                                    );
+                                            itemn.Add().Text("Overall Costs")
+                    .Content(@<text>
+                        <a href='@Url.Action("PrintingEstimationForms", "PrintingReport")/#=EstimationFormId#' title="Print"><i class="fa fa-print  fa-2x"></i></a>
+
+                        @(Html.Kendo().Grid<ExceedERP.Core.Domain.PrintingEstimation.OverallCost>()
+                                                                                .Name("overall_costs_#=EstimationFormId#")
+                                                                                .Columns(columns =>
+                                                                                {
+                                                                                            columns.Bound(c => c.MaterialCost).Title("M.C").Width(80);
+                                                                                            columns.Bound(c => c.LaborCost).Title("L.C").Width(80);
+                                                                                            columns.Bound(c => c.OverHeadCost).Title("O.H(%)").Width(80);
+                                                                                            columns.Bound(c => c.T).Width(80);
+                                                                                            columns.Bound(c => c.MarginalCost).Title("M(%)").Width(80);
+                                                                                            columns.Bound(c => c.NBT).Title("N.B.T").Width(80);
+                                                                                            columns.Bound(c => c.TInpercent).Title("T(%)").Width(80);
+                                                                                            columns.Bound(c => c.GT).Title("G.T").Width(80);
+                                                                                            columns.Bound(c => c.Graphic).Width(80);
+                                                                                            columns.Bound(c => c.EstimatedNetPrice).Width(80);
+                                                                                            columns.Command(command => { command.Edit(); command.Destroy(); }).Width(200);
+                                                                                        })
+
+                                                                                    .Editable(editable => editable.Mode(GridEditMode.InLine))
+                                                                                    .Events(ev => ev.DataBound("onChildDataBound"))
+                                                                                    .DataSource(dataSource => dataSource
+                                                                                        .Ajax()
+                                                                                        //.ServerOperation(false)
+                                                                                        .Events(events => events.Error("error_handler")
+                                                                                         .RequestStart("onRequestStart(\"overall_costs_#=EstimationFormId#\")")
+                                                                                         .RequestEnd("onRequestEnd(\"overall_costs_#=EstimationFormId#\")"))
+                                                                                        .Model(model =>
+                                                                                        {
+                                                                                                    model.Id(p => p.OverallCostId);
+                                                                                                    model.Field(p => p.OverallCostId).Editable(false);
+                                                                                                })
+                                                                                        .Read(read => read.Action("OverallCosts_Read", "OverallCost", new { estimationFormId = "#=EstimationFormId#" }))
+                                                                                        .Create(create => create.Action("OverallCosts_Create", "OverallCost", new { parentId = "#=EstimationFormId#" }))
+                                                                                        .Update(update => update.Action("OverallCosts_Update", "OverallCost"))
+                                                                                        .Destroy(destroy => destroy.Action("OverallCosts_Destroy", "OverallCost")))
+
+                                                                                        .Sortable()
+                                                                                        .ToClientTemplate()
+
+                        )
+                    </text>
+
+                                );
+                    }).ToClientTemplate())
 
 
 </script>
@@ -269,8 +273,37 @@
     });
     function dataBound() {
         this.expandRow(this.tbody.find("tr.k-master-row").first());
-    }
+        var grid = this;
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+            $(this).find(".k-grid-reject").hide();
 
+            if (dataItem.IsChecked == true) {
+                $(this).find(".k-grid-edit").hide();
+                $(this).find(".k-grid-check").hide();
+                $(this).find(".k-grid-delete").hide();
+                $(this).find(".k-grid-reject").show();
+            }
+            else if (dataItem.IsApproved == true) {
+                $(this).find(".k-grid-edit").hide();
+                $(this).find(".k-grid-check").hide();
+                $(this).find(".k-grid-approve").hide();
+                $(this).find(".k-grid-delete").hide();
+            }
+        });
+    }
+    function onChildDataBound(e) {
+        this.expandRow(this.tbody.find("tr.k-master-row").first());
+        var grid = this;
+        grid.tbody.find("tr[role='row']").each(function () {
+            var dataItem = grid.dataItem(this);
+            if (isChecked == true ||isApproved) {
+                $(this).find(".k-grid-edit").hide();
+                $(this).find(".k-grid-delete").hide();
+            }
+
+        });
+    }
     function selectProduct() {
         var productId = $("#InventoryId").val()
 
@@ -306,6 +339,7 @@
             success: function (result) {
                 if (result.Success) {
                     toastr.success(result.Message);
+                    $("#grid").data("kendoGrid").dataSource.read();
                 }
                 else {
                     toastr.error(result.Message);
@@ -331,6 +365,31 @@
             success: function (result) {
                 if (result.Success) {
                     toastr.success(result.Message);
+                    $("#grid").data("kendoGrid").dataSource.read();
+                }
+                else {
+                    toastr.error(result.Message);
+
+                }
+           },
+           error: function(result) {
+               alert(result);
+           }
+       });
+        }
+    }
+      function rejectEstimation(e) {
+            if (confirm("Are you sure to reject this checked estimation form?")) {
+             var grid = this,
+            dataItem = grid.dataItem(e.currentTarget.closest("tr"));
+        $.ajax({
+           type: "POST",
+            url: '@Url.Action("RejectEstimation", "EstimationForm", new { area = "PrintingEstimation" })',
+            data: { id: dataItem.EstimationFormId },
+            success: function (result) {
+                if (result.Success) {
+                    toastr.success(result.Message);
+                    $("#grid").data("kendoGrid").dataSource.read();
                 }
                 else {
                     toastr.error(result.Message);
@@ -378,11 +437,15 @@
     var masterGrid;
     var masterDataItem;
     var codeid;
+    var isApproved;
+    var isChecked;
     function detailExpand(e) {
         masterRow = e.masterRow;
         masterGrid = $("#grid").data("kendoGrid");
         masterDataItem = masterGrid.dataItem(masterRow);
         codeid = masterDataItem.EstimationFormId;
+        isApproved = masterDataItem.IsApproved;
+        isChecked = masterDataItem.IsChecked;
 
     }
 
@@ -406,3 +469,38 @@
         }
     }
 </script>
+
+<style>
+    .k-grid .k-grid-toolbar .k-grid-add,
+    .k-grid tbody .k-grid-edit,
+    .k-grid tbody .k-grid-update,
+    .k-grid tbody .k-grid-cancel,
+    .k-grid tbody .k-grid-delete {
+        min-width: 0;
+    }
+
+        .k-grid .k-grid-toolbar .k-grid-add .k-icon,
+        .k-grid tbody .k-grid-edit .k-icon,
+        .k-grid tbody .k-grid-update .k-icon,
+        .k-grid tbody .k-grid-cancel .k-icon,
+        .k-grid tbody .k-grid-delete .k-icon {
+            margin: 0;
+        }
+    .k-grid tbody .k-button {
+       
+        min-width: 30px;
+        min-height: 30px;
+    }
+    .check {
+        background-color: #e68a00;
+        color: white;
+    }
+    .approve {
+        background-color: #077d01;
+        color: white;
+    }
+    .reject {
+        color:white;
+        background-color: #fc0000;
+    }
+</style>

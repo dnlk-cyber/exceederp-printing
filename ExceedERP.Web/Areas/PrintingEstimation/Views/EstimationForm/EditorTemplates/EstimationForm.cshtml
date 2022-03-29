@@ -10,11 +10,18 @@
         </div>
         <div class="col-sm-4">
             <div class="form-group">
-                <div class="k-label">
-                    <label for="Date">Date</label>
-                </div>
+                @Html.LabelFor(model => model.JobTypeId, htmlAttributes: new { @class = "control-label col-sm-8" })
                 <div>
-                    @(Html.Kendo().DatePickerFor(model => model.Date))
+
+                    @(Html.Kendo().DropDownTreeFor(model => model.JobTypeId)
+
+                                                                                                                                                        .ValuePrimitive(true)
+                                                                                                                                                        .Placeholder("--select--")
+                                                                                                                                                        //.Events(ev => ev.Change("onSelectLoading").Change("onChange"))
+
+                                                                                                                                                        .BindTo((IEnumerable<DropDownTreeItemModel>)ViewBag.data))
+
+                    @Html.ValidationMessageFor(model => model.JobTypeId, "", new { @class = "text-danger" })
                 </div>
             </div>
         </div>

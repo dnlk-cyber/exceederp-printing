@@ -218,6 +218,14 @@
     <Compile Include="Migrations\202203281142437_EstimationUpdate.Designer.cs">
       <DependentUpon>202203281142437_EstimationUpdate.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202203290732189_EstimationFormJobTypeUpdated.cs" />
+    <Compile Include="Migrations\202203290732189_EstimationFormJobTypeUpdated.Designer.cs">
+      <DependentUpon>202203290732189_EstimationFormJobTypeUpdated.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202203290754458_EstimationFormJTUpdated.cs" />
+    <Compile Include="Migrations\202203290754458_EstimationFormJTUpdated.Designer.cs">
+      <DependentUpon>202203290754458_EstimationFormJTUpdated.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -338,6 +346,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202203281142437_EstimationUpdate.resx">
       <DependentUpon>202203281142437_EstimationUpdate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202203290732189_EstimationFormJobTypeUpdated.resx">
+      <DependentUpon>202203290732189_EstimationFormJobTypeUpdated.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202203290754458_EstimationFormJTUpdated.resx">
+      <DependentUpon>202203290754458_EstimationFormJTUpdated.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
