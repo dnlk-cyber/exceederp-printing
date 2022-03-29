@@ -15,9 +15,9 @@ namespace ExceedERP.Core.Domain.ProductionFollowUp
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime? Time { get; set; }
-        public DateTime InvoiceDate { get; set; }
-        public DateTime DeliveryDate { get; set; }
-        public DateTime ValidityDate { get; set; }
+        public DateTime? InvoiceDate { get; set; }
+        public DateTime? DeliveryDate { get; set; }
+        public DateTime? ValidityDate { get; set; }
         public PaymentTer PaymentTerm { get; set; }
         public bool HaveEstimation { get; set; }
         public bool IsExistingCustomer { get; set; }
@@ -43,7 +43,7 @@ namespace ExceedERP.Core.Domain.ProductionFollowUp
         public int JobTypeId { get; set; }
        
         [Display(Name = ("Quantity"))]
-        public int Quantity { get; set; }
+        public decimal Quantity { get; set; }
         public string Size { get; set; }
         [Display(Name = ("Unit Price"))]
         public decimal UnitPrice { get; set; }     

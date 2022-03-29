@@ -44,8 +44,8 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
             {
                 model.From = startDate?.ToString("dd/MM/yyyy");
                 model.To = endDate?.ToString("dd/MM/yyyy");
-                var jobs = db.Jobs.ToList().Where(x => x.DateCreated.Value.Date >= startDate.Value.Date
-                && x.DateCreated.Value.Date <= endDate.Value.Date).ToList();
+                var jobs = db.Jobs.ToList().Where(x => x.DateCreated.HasValue ?  x.DateCreated.Value.Date >= startDate.Value.Date
+                && x.DateCreated.Value.Date <= endDate.Value.Date:false).ToList();
                 if (jobTypeId != null)
                 {
                     jobs = jobs.Where(q => q.JobTypeId.ToString() == jobTypeId).ToList();

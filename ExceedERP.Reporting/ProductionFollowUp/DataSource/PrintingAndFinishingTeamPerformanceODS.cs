@@ -24,14 +24,14 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
             var latestJobs = db.Jobs.ToList();
             if (startDate.HasValue)
             {
-                previousJobs = previousJobs.Where(q => q.DateCreated.Value.Date < startDate.Value.Date).ToList();
+                previousJobs = previousJobs.Where(q => q.DateCreated.HasValue ? q.DateCreated.Value.Date < startDate.Value.Date:false).ToList();
             }
             var days = 0;
 
             if (startDate.HasValue&& endDate.HasValue)
             {
-               latestJobs = latestJobs.Where(q => q.DateCreated.Value.Date >= startDate.Value.Date
-                                                        && q.DateCreated.Value.Date <= endDate.Value.Date
+               latestJobs = latestJobs.Where(q => q.DateCreated.HasValue ? q.DateCreated.Value.Date >= startDate.Value.Date
+                                                        && q.DateCreated.Value.Date <= endDate.Value.Date:false
                                                         ).ToList();
                 days = (endDate.Value.Date - startDate.Value.Date).Days;
 

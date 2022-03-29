@@ -11,6 +11,7 @@ using Kendo.Mvc.UI;
 using ExceedERP.Core.Domain.PrintingEstimation;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Web.Helpers;
+using ExceedERP.Core.Domain.ProductionFollowUp;
 
 namespace ExceedERP.Web.Areas.PrintingEstimation.Controllers
 {
@@ -240,9 +241,30 @@ namespace ExceedERP.Web.Areas.PrintingEstimation.Controllers
                 if(estimation.IsChecked)
                 {
                     estimation.IsApproved = true;
+                    var oc = db.OverallCosts.Where(q => q.EstimationFormId == estimation.EstimationFormId).FirstOrDefault();
                     db.EstimationForms.Attach(estimation);
                     db.Entry(estimation).State = EntityState.Modified;
                     //add new proforma 
+                    var proforma = new Proforma();
+                    proforma.HaveEstimation = true;
+                    proforma.IsExistingCustomer = true;
+                    proforma.ProformaId = proforma.ProformaId;
+                    proforma.CustomerId = estimation.CustomerId;
+                    proforma.EstimationFormId = estimation.EstimationFormId;
+                    db.Proformas.Add(proforma);
+                    db.SaveChanges();
+                    var proformaItem = new PFProformaItems();
+                    proformaItem.PFProformaItemsId = proformaItem.PFProformaItemsId;
+                    proformaItem.ProformaId = proforma.ProformaId;
+                    proformaItem.JobTypeId = estimation.JobTypeId;
+                    proformaItem.Quantity = estimation.Quantity;
+                    proformaItem.UnitPrice = Math.Round((decimal)oc?.EstimatedNetPrice/ proformaItem.Quantity, 2);
+                    proformaItem.BeforeTax =(decimal)oc?.EstimatedNetPrice ;
+                    proformaItem.TotalPrice =(decimal)oc?.EstimatedNetPrice ;
+                    proformaItem.Size = estimation.Size ;
+                    proformaItem.Tax = proformaItem.TotalPrice- proformaItem.BeforeTax;
+                    
+                    db.PFProformaItems.Add(proformaItem);
                     db.SaveChanges();
                     response = new { Success = true, Message = "Estimation has been checked Successfully!" };
                 }    

@@ -9,8 +9,8 @@
                                   {
                                       columns.Bound(c => c.ProformaNo);
                                       columns.Bound(c => c.CustomerName);
-                                      columns.Bound(c => c.ContactName);
-                                      columns.Bound(c => c.ContactPhone);
+                                      //columns.Bound(c => c.ContactName);
+                                      //columns.Bound(c => c.ContactPhone);
                                       columns.Command(command =>
                                       {
                                           command.Edit();
@@ -64,7 +64,7 @@
                                                            .Columns(columns =>
                                                            {
                                                                columns.ForeignKey(c => c.JobTypeId, (IEnumerable)ViewData["JobType"], "JobTypeId", "Type").Width(100);
-                                                               columns.ForeignKey(c => c.JobTypeItemId, (IEnumerable)ViewData["JobTypeItem"], "JobTypeItemId", "Name").Width(100);
+                                                               //columns.ForeignKey(c => c.JobTypeItemId, (IEnumerable)ViewData["JobTypeItem"], "JobTypeItemId", "Name").Width(100);
                                                                //  columns.Bound(c => c.SubCategory);
                                                                columns.Bound(c => c.Quantity);
                                                                columns.Bound(c => c.Size);

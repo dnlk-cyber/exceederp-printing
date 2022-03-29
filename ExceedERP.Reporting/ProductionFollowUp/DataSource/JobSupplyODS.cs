@@ -41,8 +41,8 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
             model.AmharicName = AmharicName;
             if (startDate.HasValue && endDate.HasValue)
             {
-                var jobs = db.Jobs.ToList().Where(x => x.DateCreated.Value.Date >= startDate.Value.Date
-                  && x.DateCreated.Value.Date <= endDate.Value.Date).ToList();
+                var jobs = db.Jobs.ToList().Where(x => x.DateCreated.HasValue ? x.DateCreated.Value.Date >= startDate.Value.Date
+                  && x.DateCreated.Value.Date <= endDate.Value.Date:false).ToList();
                 model.From = startDate?.ToString("dd/MM/yyyy");
                 model.To = endDate?.ToString("dd/MM/yyyy");
                 model.TotalJob = jobs.Count().ToString();

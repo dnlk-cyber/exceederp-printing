@@ -13,7 +13,7 @@
                 @Html.LabelFor(model => model.JobTypeId, htmlAttributes: new { @class = "control-label col-sm-8" })
                 <div>
 
-                    @(Html.Kendo().DropDownTreeFor(model => model.JobTypeId)
+                    @(Html.Kendo().DropDownTreeFor(model => model.JT)
 
                                                                                                                                                         .ValuePrimitive(true)
                                                                                                                                                         .Placeholder("--select--")
@@ -21,7 +21,7 @@
 
                                                                                                                                                         .BindTo((IEnumerable<DropDownTreeItemModel>)ViewBag.data))
 
-                    @Html.ValidationMessageFor(model => model.JobTypeId, "", new { @class = "text-danger" })
+                    @Html.ValidationMessageFor(model => model.JT, "", new { @class = "text-danger" })
                 </div>
             </div>
         </div>

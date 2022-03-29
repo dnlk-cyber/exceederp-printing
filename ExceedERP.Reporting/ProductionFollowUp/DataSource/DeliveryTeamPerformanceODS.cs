@@ -31,8 +31,8 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
 
             if (startDate.HasValue&& endDate.HasValue)
             {
-               latestJobs = latestJobs.Where(q => q.DateCreated.Value.Date >= startDate.Value.Date
-                                                        && q.DateCreated.Value.Date <= endDate.Value.Date
+               latestJobs = latestJobs.Where(q => q.DateCreated.HasValue ? q.DateCreated.Value.Date >= startDate.Value.Date:false
+                                                        && q.DateCreated.HasValue ? q.DateCreated.Value.Date <= endDate.Value.Date:false
                                                         ).ToList();
                 days = (endDate.Value.Date - startDate.Value.Date).Days;
 

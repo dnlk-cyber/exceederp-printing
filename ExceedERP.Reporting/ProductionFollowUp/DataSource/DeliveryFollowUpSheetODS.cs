@@ -27,13 +27,13 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
             }
             if(startDate.HasValue)
             {
-                productDeliverys = productDeliverys.Where(q => q.DateCreated.Value.Date >= startDate.Value.Date).ToList();
+                productDeliverys = productDeliverys.Where(q => q.DateCreated.HasValue?q.DateCreated.Value.Date >= startDate.Value.Date:false).ToList();
                 model.From = startDate?.ToString("MM/dd/yyyy");
 
             }
             if (endDate.HasValue)
             {
-                productDeliverys = productDeliverys.Where(q => q.DateCreated.Value.Date <= endDate.Value.Date).ToList();
+                productDeliverys = productDeliverys.Where(q => q.DateCreated.HasValue ? q.DateCreated.Value.Date <= endDate.Value.Date:false).ToList();
                 model.To = endDate?.ToString("MM/dd/yyyy");
             }
             var organization = db.Companies.FirstOrDefault(x => x.Category == "0");

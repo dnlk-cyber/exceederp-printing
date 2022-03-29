@@ -17,6 +17,7 @@ namespace ExceedERP.Core.Domain.PrintingEstimation
         [Required]
         public DateTime Date { get; set; }
         [Required]
+        [Display(Name ="Job Type")]
         public int  JobTypeId { get; set; }
         public string  JT { get; set; }
         [Required]

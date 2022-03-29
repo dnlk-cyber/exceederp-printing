@@ -58,7 +58,7 @@
                                       .Destroy(destroy => destroy.Action("Proformas_Destroy", "Proforma"))
                                   .Sort(sort =>
                                         {
-                                            sort.Add(e => e.InvoiceDate).Descending();
+                                            sort.Add(e => e.ProformaId).Descending();
 
                                         })
                                       )

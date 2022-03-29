@@ -51,7 +51,6 @@
                 .Events(ev => ev.Error("error_handler(\"grid\")")
                                 .RequestStart("onRequestStart(\"grid\")")
                                 .RequestEnd("onRequestEnd(\"grid\")"))
-                //   .ServerOperation(false)
                 .Model(model => model.Id(p => p.EstimationFormId))
                 .Read(read => read.Action("EstimationForms_Read", "EstimationForm"))
                 .Create(create => create.Action("EstimationForms_Create", "EstimationForm"))
@@ -63,23 +62,7 @@
                     sort.Add(e => e.EstimationFormId).Descending();
 
                 }))
-//  .Resizable(resize => resize.Columns(true))
 )
-
-
-<style>
-    div.k-edit-form-container {
-        width: auto;
-    }
-
-    .row {
-        margin: 10px;
-    }
-
-        .row .col-sm-3 {
-            margin: 10px;
-        }
-</style>
 
 
 <script id="cost_estimation" type="text/x-kendo-template">
@@ -210,18 +193,18 @@
                                                                                 .Name("overall_costs_#=EstimationFormId#")
                                                                                 .Columns(columns =>
                                                                                 {
-                                                                                            columns.Bound(c => c.MaterialCost).Title("M.C").Width(80);
-                                                                                            columns.Bound(c => c.LaborCost).Title("L.C").Width(80);
-                                                                                            columns.Bound(c => c.OverHeadCost).Title("O.H(%)").Width(80);
-                                                                                            columns.Bound(c => c.T).Width(80);
-                                                                                            columns.Bound(c => c.MarginalCost).Title("M(%)").Width(80);
-                                                                                            columns.Bound(c => c.NBT).Title("N.B.T").Width(80);
-                                                                                            columns.Bound(c => c.TInpercent).Title("T(%)").Width(80);
-                                                                                            columns.Bound(c => c.GT).Title("G.T").Width(80);
-                                                                                            columns.Bound(c => c.Graphic).Width(80);
-                                                                                            columns.Bound(c => c.EstimatedNetPrice).Width(80);
-                                                                                            columns.Command(command => { command.Edit(); command.Destroy(); }).Width(200);
-                                                                                        })
+                                                                                    columns.Bound(c => c.MaterialCost).Title("M.C").Width(80);
+                                                                                    columns.Bound(c => c.LaborCost).Title("L.C").Width(80);
+                                                                                    columns.Bound(c => c.OverHeadCost).Title("O.H(%)").Width(80).EditorTemplateName("NumericTextBox");
+                                                                                    columns.Bound(c => c.T).Width(80);
+                                                                                    columns.Bound(c => c.MarginalCost).Title("M(%)").EditorTemplateName("NumericTextBox").Width(80);
+                                                                                    columns.Bound(c => c.NBT).Title("N.B.T").Width(80);
+                                                                                    columns.Bound(c => c.TInpercent).Title("T(%)").EditorTemplateName("NumericTextBox").Width(80);
+                                                                                    columns.Bound(c => c.GT).Title("G.T").Width(80);
+                                                                                    columns.Bound(c => c.Graphic).EditorTemplateName("NumericTextBox").Width(80);
+                                                                                    columns.Bound(c => c.EstimatedNetPrice).Width(80);
+                                                                                    columns.Command(command => { command.Edit(); command.Destroy(); }).Width(200);
+                                                                                })
 
                                                                                     .Editable(editable => editable.Mode(GridEditMode.InLine))
                                                                                     .Events(ev => ev.DataBound("onChildDataBound"))
@@ -233,9 +216,11 @@
                                                                                          .RequestEnd("onRequestEnd(\"overall_costs_#=EstimationFormId#\")"))
                                                                                         .Model(model =>
                                                                                         {
-                                                                                                    model.Id(p => p.OverallCostId);
-                                                                                                    model.Field(p => p.OverallCostId).Editable(false);
-                                                                                                })
+                                                                                            model.Id(p => p.OverallCostId);
+                                                                                            //model.Field(p => p.LaborCost).Editable(false);
+                                                                                            //model.Field(p => p.MaterialCost).Editable(false);
+                                                                                            model.Field(p => p.OverallCostId).Editable(false);
+                                                                                        })
                                                                                         .Read(read => read.Action("OverallCosts_Read", "OverallCost", new { estimationFormId = "#=EstimationFormId#" }))
                                                                                         .Create(create => create.Action("OverallCosts_Create", "OverallCost", new { parentId = "#=EstimationFormId#" }))
                                                                                         .Update(update => update.Action("OverallCosts_Update", "OverallCost"))
@@ -271,25 +256,42 @@
         e.preventDefault();
 
     });
+    function onChangeOC() {
+        //var lc = parseInt($("#LaborCost").val());
+        //var mc = parseInt($("#MaterialCost").val());
+        //$("#MaterialCost").attr("disabled", "true");
+        //$("#LaborCost").attr("disabled", "true");
+        //console.log($("#LaborCost").val());
+        //console.log($("#MaterialCost").val());
+        //console.log($("#OverHeadCost").val());
+        //var ohC = $("#OverHeadCost").val();
+       
+        //var oc = lc + mc;
+        //var tc = oc + oc + (ohC/100);
+        //var tt = $("#T").val(tc);
+        //tt.trigger("change");
+    }
     function dataBound() {
         this.expandRow(this.tbody.find("tr.k-master-row").first());
         var grid = this;
         grid.tbody.find("tr[role='row']").each(function () {
             var dataItem = grid.dataItem(this);
             $(this).find(".k-grid-reject").hide();
+            if (dataItem.IsApproved == true) {
+                $(this).find(".k-grid-edit").hide();
+                $(this).find(".k-grid-check").hide();
+                $(this).find(".k-grid-approve").hide();
+                $(this).find(".k-grid-reject").hide();
 
-            if (dataItem.IsChecked == true) {
+                $(this).find(".k-grid-delete").hide();
+            }
+             else if (dataItem.IsChecked == true) {
                 $(this).find(".k-grid-edit").hide();
                 $(this).find(".k-grid-check").hide();
                 $(this).find(".k-grid-delete").hide();
                 $(this).find(".k-grid-reject").show();
             }
-            else if (dataItem.IsApproved == true) {
-                $(this).find(".k-grid-edit").hide();
-                $(this).find(".k-grid-check").hide();
-                $(this).find(".k-grid-approve").hide();
-                $(this).find(".k-grid-delete").hide();
-            }
+            
         });
     }
     function onChildDataBound(e) {
@@ -451,9 +453,6 @@
 
 </script>
 
-<script>
-
-</script>
 <script type="text/javascript">
     function error_handler(e) {
         if (e.errors) {
@@ -469,7 +468,6 @@
         }
     }
 </script>
-
 <style>
     .k-grid .k-grid-toolbar .k-grid-add,
     .k-grid tbody .k-grid-edit,
@@ -503,4 +501,17 @@
         color:white;
         background-color: #fc0000;
     }
+</style>
+<style>
+    div.k-edit-form-container {
+        width: auto;
+    }
+
+    .row {
+        margin: 10px;
+    }
+
+        .row .col-sm-3 {
+            margin: 10px;
+        }
 </style>

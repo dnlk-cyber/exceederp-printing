@@ -226,6 +226,10 @@
     <Compile Include="Migrations\202203290754458_EstimationFormJTUpdated.Designer.cs">
       <DependentUpon>202203290754458_EstimationFormJTUpdated.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202203290902128_ProformaUpdated.cs" />
+    <Compile Include="Migrations\202203290902128_ProformaUpdated.Designer.cs">
+      <DependentUpon>202203290902128_ProformaUpdated.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -352,6 +356,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202203290754458_EstimationFormJTUpdated.resx">
       <DependentUpon>202203290754458_EstimationFormJTUpdated.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202203290902128_ProformaUpdated.resx">
+      <DependentUpon>202203290902128_ProformaUpdated.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
