@@ -249,20 +249,36 @@ namespace ExceedERP.Web.Areas.PrintingEstimation.Controllers
                     proforma.HaveEstimation = true;
                     proforma.IsExistingCustomer = true;
                     proforma.ProformaId = proforma.ProformaId;
+                    proforma.ProformaNo = estimation.EstimationFormId.ToString();
                     proforma.CustomerId = estimation.CustomerId;
                     proforma.EstimationFormId = estimation.EstimationFormId;
                     db.Proformas.Add(proforma);
                     db.SaveChanges();
-                    var proformaItem = new PFProformaItems();
+                    decimal beforeTax = 0;
+                    decimal withTax = 0;
+                    decimal vat = 0;
+                        var jobType = db.JobCategories.FirstOrDefault(x => x.JobCategoryId.ToString() == estimation.JobTypeId.ToString());
+                    if (jobType != null)
+                    {
+                        var tax = db.GLTaxRates.FirstOrDefault(x => x.GLTaxRateID == jobType.GLTaxRateID);
+                        if (tax != null)
+                        {
+                             beforeTax = estimation.Quantity * oc.EstimatedNetPrice;
+                             withTax = beforeTax + (beforeTax * Convert.ToDecimal(tax.CalculatedRate));
+                             vat = withTax - beforeTax;
+                        }
+                    }
+                            var proformaItem = new PFProformaItems();
                     proformaItem.PFProformaItemsId = proformaItem.PFProformaItemsId;
+                    proformaItem.ProformaId = proforma.ProformaId;
                     proformaItem.ProformaId = proforma.ProformaId;
                     proformaItem.JobTypeId = estimation.JobTypeId;
                     proformaItem.Quantity = estimation.Quantity;
-                    proformaItem.UnitPrice = Math.Round((decimal)oc?.EstimatedNetPrice/ proformaItem.Quantity, 2);
-                    proformaItem.BeforeTax =(decimal)oc?.EstimatedNetPrice ;
-                    proformaItem.TotalPrice =(decimal)oc?.EstimatedNetPrice ;
+                    proformaItem.UnitPrice = (decimal)oc?.EstimatedNetPrice;
+                    proformaItem.BeforeTax = beforeTax;
+                    proformaItem.TotalPrice = withTax;
                     proformaItem.Size = estimation.Size ;
-                    proformaItem.Tax = proformaItem.TotalPrice- proformaItem.BeforeTax;
+                    proformaItem.Tax = vat;
                     
                     db.PFProformaItems.Add(proformaItem);
                     db.SaveChanges();

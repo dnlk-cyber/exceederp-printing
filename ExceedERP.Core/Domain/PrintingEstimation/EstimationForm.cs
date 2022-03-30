@@ -27,9 +27,9 @@ namespace ExceedERP.Core.Domain.PrintingEstimation
         [Required]
         public string Size { get; set; }
         [Required]
-        public decimal TextPaper { get; set; }
+        public string TextPaper { get; set; }
         [Required]
-        public decimal TextPrint { get; set; }
+        public string TextPrint { get; set; }
         [Required]
         public string CoverPrint { get; set; }
         [Required]

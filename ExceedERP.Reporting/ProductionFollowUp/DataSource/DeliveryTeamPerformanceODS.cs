@@ -25,14 +25,14 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
             var latestJobs = db.Jobs.ToList();
             if (startDate.HasValue)
             {
-                previousJobs = previousJobs.Where(q => q.DateCreated.Value.Date < startDate.Value.Date).ToList();
+                previousJobs = previousJobs.Where(q => q.ReceivedDate.HasValue ? q.ReceivedDate.Value.Date < startDate.Value.Date:false).ToList();
             }
             var days = 0;
 
             if (startDate.HasValue&& endDate.HasValue)
             {
-               latestJobs = latestJobs.Where(q => q.DateCreated.HasValue ? q.DateCreated.Value.Date >= startDate.Value.Date:false
-                                                        && q.DateCreated.HasValue ? q.DateCreated.Value.Date <= endDate.Value.Date:false
+               latestJobs = latestJobs.Where(q =>q.ReceivedDate.HasValue ?  q.ReceivedDate.Value.Date >= startDate.Value.Date:false
+                                                        && q.ReceivedDate.HasValue ? q.ReceivedDate.Value.Date <= endDate.Value.Date:false
                                                         ).ToList();
                 days = (endDate.Value.Date - startDate.Value.Date).Days;
 
@@ -81,10 +81,10 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                         LastWeekFinishedJobs += finished;
                     }
                 }
-                var period = db.GLPeriods.ToList().Where(q => (q.DateFrom.Date >= startDate.Value.Date && q.DateFrom.Date <= endDate.Value.Date)
-                              || (q.DateTo.Date <= endDate.Value.Date && q.DateTo.Date >= startDate.Value.Date));
+                var period = db.GLPeriods.ToList().Where(q => (q.DateFrom.Date <= startDate.Value.Date && startDate.Value.Date <= q.DateTo.Date)
+                                 && (q.DateTo.Date >= endDate.Value.Date && endDate.Value.Date >= q.DateFrom.Date));
 
-               var monthlyPlans  = new List<ProductionMonthlyPlan>();
+                var monthlyPlans  = new List<ProductionMonthlyPlan>();
                 if (period != null) 
                 {
                     var periods = period.Select(s => s.GLPeriodId);

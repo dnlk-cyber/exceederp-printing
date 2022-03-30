@@ -222,8 +222,8 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
             job.JobTypeId = Int16.Parse(job.JT);
             if (ModelState.IsValid)
             {
-                job.CreatedBy = User.Identity.Name;
-                job.DateCreated = DateTime.Now;
+                //job.CreatedBy = User.Identity.Name;
+                //job.DateCreated = DateTime.Now;
                 var proforma = new Proforma();
                 var customer = new OrganizationCustomer();
                 if (!job.hv && !job.IsExistingCustomer)

@@ -28,6 +28,7 @@ namespace ExceedERP.Core.Domain.ProductionFollowUp
 
     public enum ProductionDepartment
     {
+        JobFollowup = 0,
         Graphic = 1,
         Printing = 2,
         Finishing = 3,

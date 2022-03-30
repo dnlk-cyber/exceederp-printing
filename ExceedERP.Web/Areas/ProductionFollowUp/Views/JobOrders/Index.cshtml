@@ -52,6 +52,7 @@
                                                                               .Title("Customer");
                                     columns.ForeignKey(c => c.MachineId, (IEnumerable)ViewData["Machines"], "Code", "Name")
                                                                               .Width(110);
+                                    columns.Bound(c => c.ReceivedDate).Width(90).Format("{0:MM-dd-yyyy}");
                                     columns.Bound(c => c.Quantity).Width(90).ClientFooterTemplate("T Q: #=sum# ");
                                     columns.Bound(c => c.UnitPrice).Width(90).ClientFooterTemplate("T UP: #=sum# ");
                                     columns.Bound(c => c.BeforeTax).Width(90).ClientFooterTemplate("T BT: #=sum# ");

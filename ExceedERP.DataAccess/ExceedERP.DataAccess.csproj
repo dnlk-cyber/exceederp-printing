@@ -230,6 +230,10 @@
     <Compile Include="Migrations\202203290902128_ProformaUpdated.Designer.cs">
       <DependentUpon>202203290902128_ProformaUpdated.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202203291334118_PrintingPropertyDatatTypeUpdate.cs" />
+    <Compile Include="Migrations\202203291334118_PrintingPropertyDatatTypeUpdate.Designer.cs">
+      <DependentUpon>202203291334118_PrintingPropertyDatatTypeUpdate.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -359,6 +363,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202203290902128_ProformaUpdated.resx">
       <DependentUpon>202203290902128_ProformaUpdated.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202203291334118_PrintingPropertyDatatTypeUpdate.resx">
+      <DependentUpon>202203291334118_PrintingPropertyDatatTypeUpdate.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

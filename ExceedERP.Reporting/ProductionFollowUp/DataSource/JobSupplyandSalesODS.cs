@@ -48,8 +48,8 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
             if (startDate.HasValue && endDate.HasValue)
             {
                 days = (endDate.Value.Date - startDate.Value.Date).Days;
-                var jobs = db.Jobs.ToList().Where(x => x.DateCreated.Value.Date >= startDate.Value.Date
-                  && x.DateCreated.Value.Date <= endDate.Value.Date).ToList();
+                var jobs = db.Jobs.ToList().Where(x => x.ReceivedDate.HasValue? x.ReceivedDate.Value.Date >= startDate.Value.Date
+                  && x.ReceivedDate.Value.Date <= endDate.Value.Date:false).ToList();
                 
                 model.From = startDate?.ToString("dd/MM/yyyy");
                 model.To = endDate?.ToString("dd/MM/yyyy");
@@ -66,10 +66,10 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                     var jobIds = jobTS.Select(s => s.JobId);
                     IEnumerable<int> deliveredJobIds = db.JobStatuses.Where(q => q.JobPhase == ProductionDepartment.SalesDelivery
                                && q.Status == Core.Domain.PrintingEstimation.Setting.JobState.Finished
-                               && jobIds.Contains(q.JobId)).Select(s => s.JobStatusId);
+                               && jobIds.Contains(q.JobId)). Select(s => s.JobStatusId);
                     var deliveredJobs = db.JobStatusLineItems.ToList().Where(q => deliveredJobIds.Contains(q.JobStatusId));
-                    var period = db.GLPeriods.ToList().Where(q => (q.DateFrom.Date >= startDate.Value.Date&& q.DateFrom.Date <= endDate.Value.Date)
-                               || (q.DateTo.Date <= endDate.Value.Date && q.DateTo.Date >= startDate.Value.Date));
+                    var period = db.GLPeriods.ToList().Where(q => (q.DateFrom.Date <= startDate.Value.Date&& startDate.Value.Date <= q.DateTo.Date)
+                               && (q.DateTo.Date >= endDate.Value.Date && endDate.Value.Date >= q.DateFrom.Date));
                     if(period!=null)
                     {
                         var periods = period.Select(s => s.GLPeriodId);

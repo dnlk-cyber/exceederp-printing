@@ -33,6 +33,8 @@ namespace ExceedERP.Core.Domain.ProductionFollowUp
         public string BrandName { get; set; }
         [Display(Name = "Tin No ")]
         public string TinNo { get; set; }
+        public bool IsApproved { get; set; }
+        public bool IsChecked { get; set; }
 
     }
     public class PFProformaItems
