@@ -1445,6 +1445,7 @@ namespace ExceedERP.DataAccess.Context
             #endregion
 
             #region Production Follow UP Entity Configuration
+            modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.ProductFollowUpEntityConfiguration.ProductionCustomerTypeEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.ProductFollowUpEntityConfiguration.ProductionMonthlyJobTypePlanEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.ProductFollowUpEntityConfiguration.ProductionMonthlyPlanEntityTypeConfiguration());
             modelBuilder.Configurations.Add(new ExceedERP.DataAccess.Context.ProductFollowUpEntityConfiguration.ProductionYearlyPlanEntityTypeConfiguration());
@@ -3401,6 +3402,7 @@ namespace ExceedERP.DataAccess.Context
         public DbSet<OverallCost> OverallCosts { get; set; }
         #endregion
         #region Production Follow UP
+        public DbSet<ProductionCustomerType> ProductionCustomerTypes { get; set; }
         public DbSet<Proforma> Proformas { get; set; }
         public DbSet<ProductionYearlyPlan> ProductionYearlyPlans { get; set; }
         public DbSet<ProductionMonthlyPlan> ProductionMonthlyPlans { get; set; }

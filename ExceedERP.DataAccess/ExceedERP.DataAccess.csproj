@@ -234,6 +234,18 @@
     <Compile Include="Migrations\202203291334118_PrintingPropertyDatatTypeUpdate.Designer.cs">
       <DependentUpon>202203291334118_PrintingPropertyDatatTypeUpdate.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\202203310702430_CustomerTypeAdded.cs" />
+    <Compile Include="Migrations\202203310702430_CustomerTypeAdded.Designer.cs">
+      <DependentUpon>202203310702430_CustomerTypeAdded.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202203310819347_JobCustomerTypeAdded.cs" />
+    <Compile Include="Migrations\202203310819347_JobCustomerTypeAdded.Designer.cs">
+      <DependentUpon>202203310819347_JobCustomerTypeAdded.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\202203310856088_JobApprovalAdded.cs" />
+    <Compile Include="Migrations\202203310856088_JobApprovalAdded.Designer.cs">
+      <DependentUpon>202203310856088_JobApprovalAdded.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\Configuration.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
@@ -366,6 +378,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\202203291334118_PrintingPropertyDatatTypeUpdate.resx">
       <DependentUpon>202203291334118_PrintingPropertyDatatTypeUpdate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202203310702430_CustomerTypeAdded.resx">
+      <DependentUpon>202203310702430_CustomerTypeAdded.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202203310819347_JobCustomerTypeAdded.resx">
+      <DependentUpon>202203310819347_JobCustomerTypeAdded.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\202203310856088_JobApprovalAdded.resx">
+      <DependentUpon>202203310856088_JobApprovalAdded.cs</DependentUpon>
     </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

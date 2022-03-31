@@ -30,6 +30,10 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                 JobTypeId = s.JobCategoryId,
                 type = s.HaveParent?db.JobCategories.Where(q=>q.JobCategoryId==s.ParentId).FirstOrDefault().JobName+"-"+ s.JobName : s.JobName
             }).ToList();
+            ViewData["CustomerTypes"] = db.ProductionCustomerTypes.Select(s => new {
+                Code = s.ProductionCustomerTypeId,
+                Name = s.Name
+            }).ToList();
             ViewData["Customers"] = db.OrganizationCustomers.Select(s => new {
                 Code = s.OrganizationCustomerID,
                 Name = s.TradeName
@@ -163,7 +167,7 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                 hv = job.hv,
                 IsExistingCustomer = job.IsExistingCustomer,
                 ProformaId = job.ProformaId,
-                OrderType = job.OrderType,
+                ProductionCustomertypeId = job.ProductionCustomertypeId,
                 MachineId = job.MachineId,
                 JobNo = job.JobNo,
                 CustomerId = job.CustomerId,
@@ -460,7 +464,7 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                 ContactPhone = job.ContactPhone,
                 Pages = job.Pages,
                 Copies = job.Copies,
-                OrderType = job.OrderType,
+                ProductionCustomertypeId = job.ProductionCustomertypeId,
                 TotalPrice = job.TotalPrice,
                 Contract = job.Contract,
                 TotalImpression = job.TotalImpression,

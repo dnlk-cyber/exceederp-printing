@@ -45,7 +45,8 @@
                                 {
                                     //columns.Bound(c => c.Time);
                                     columns.Bound(c => c.JobNo).Width(90).Title("JobNo");
-                                    columns.ForeignKey(c => c.ProformaId, (IEnumerable)ViewData["Proforma"], "ProformaId", "ProformaNo").Width(100);
+                                    columns.ForeignKey(c => c.ProductionCustomertypeId, (IEnumerable)ViewData["CustomerTypes"], "Code", "Name").Width(100);
+                                    //  columns.ForeignKey(c => c.ProformaId, (IEnumerable)ViewData["Proforma"], "ProformaId", "ProformaNo").Width(100);
                                     columns.ForeignKey(c => c.JobTypeId, (IEnumerable)ViewData["JobType"], "JobTypeId", "Type").Width(130);
                                     columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customers"], "Code", "Name")
                                                                               .Width(110)
@@ -60,11 +61,11 @@
 
                                     columns.Command(command =>
                                     {
-                                        command.Edit();
+                                        command.Edit().Text("Edit").HtmlAttributes(new { @class = "normal-edit"});
                                         command.Destroy();
-                                        command.Edit().Text("Reorder").HtmlAttributes(new { onclick = "change(this);" });
-
-                                        command.Custom("ReOrder").Text("Change Order").Click("forReOrder").HtmlAttributes(new { @class = "btn btn-primary", id = "btnStyle", style = "padding:2px;", title = "ReOrder" });
+                                        command.Edit().Text("Reorder").HtmlAttributes(new { onclick = "change(this);", @class = "reorder-edit" });
+                                        command.Custom("approve").Text("Approve").IconClass("fa fa-check");
+                                        command.Custom("change-order").Text("Change Order").Click("forReOrder").HtmlAttributes(new { @class = "btn btn-primary", id = "btnStyle", style = "padding:2px;", title = "ReOrder" });
 
                                     }).Width(400);
                                 })
@@ -98,7 +99,7 @@
                                                  ag.Add(a=>a.UnitPrice).Sum();
                                                  ag.Add(a=>a.BeforeTax).Sum();
                                                  ag.Add(a=>a.TotalPrice).Sum();
-                                                 
+
                                              })
                                             .Events(events =>
                                             {

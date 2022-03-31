@@ -2057,6 +2057,7 @@
     <Compile Include="Areas\ProductionFollowUp\Controllers\Operation\ProformaItemsController.cs" />
     <Compile Include="Areas\ProductionFollowUp\Controllers\Report\ProductionFollowUpReportController.cs" />
     <Compile Include="Areas\ProductionFollowUp\Controllers\Setting\JobCategoryController.cs" />
+    <Compile Include="Areas\ProductionFollowUp\Controllers\Setting\ProductionCustomerTypeController.cs" />
     <Compile Include="Areas\ProductionFollowUp\Controllers\Setting\ProductionMonthlyJobTypePlanController.cs" />
     <Compile Include="Areas\ProductionFollowUp\Controllers\Setting\ProductionMonthlyPlanController.cs" />
     <Compile Include="Areas\ProductionFollowUp\Controllers\Setting\ProductionYearlyPlanController.cs" />
@@ -5178,6 +5179,7 @@
     <Content Include="Areas\PrintingEstimation\Views\PrintingEstimationJobOrder\EditorTemplates\StoreReturn.cshtml" />
     <Content Include="Areas\PrintingEstimation\Views\PrintingEstimationJobOrder\EditorTemplates\ValidationStatus.cshtml" />
     <Content Include="Areas\PrintingEstimation\Views\PrintingEstimationJobOrder\Index.cshtml" />
+    <Content Include="Areas\ProductionFollowUp\Views\ProductionCustomerType\Index.cshtml" />
     <None Include="Properties\PublishProfiles\Brana.pubxml" />
     <None Include="Properties\PublishProfiles\mega.pubxml" />
     <None Include="Scripts\kendo\2018.3.911\kendo.all-vsdoc.js" />

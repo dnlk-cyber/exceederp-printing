@@ -10,6 +10,14 @@ namespace ExceedERP.DataAccess.Context
 {
    public class ProductFollowUpEntityConfiguration
     {
+        public class ProductionCustomerTypeEntityTypeConfiguration : EntityTypeConfiguration<ProductionCustomerType>
+        {
+            public ProductionCustomerTypeEntityTypeConfiguration()
+            {
+                this.ToTable("ProductionCustomerTypes", "ProductFollowUp");
+                this.HasKey<int>(t => t.ProductionCustomerTypeId);
+            }
+        }
         public class ProductionMonthlyJobTypePlanEntityTypeConfiguration : EntityTypeConfiguration<ProductionMonthlyJobTypePlan>
         {
             public ProductionMonthlyJobTypePlanEntityTypeConfiguration()

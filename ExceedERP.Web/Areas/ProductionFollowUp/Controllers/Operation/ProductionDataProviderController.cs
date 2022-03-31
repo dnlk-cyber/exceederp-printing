@@ -20,6 +20,11 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
         {
             return View();
         }
+        public ActionResult GetAllProductionCustomerTypes()
+        {
+            var data = db.ProductionCustomerTypes;
+            return Json(data.Select(s => new { Code = s.ProductionCustomerTypeId, Name = s.Name }), JsonRequestBehavior.AllowGet);
+        }
         public ActionResult GetBeforeVatAndTotalCost(int jobId, int quant)
         {
             var job = db.Jobs.Find(jobId);

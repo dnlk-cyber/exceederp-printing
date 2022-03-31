@@ -27,7 +27,9 @@ namespace ExceedERP.Core.Domain.ProductionFollowUp
         [Display(Name = "Job No.")]
         public string JobNo { get; set; }
         [Display(Name = "Order Type")]
-        public ProductionDemand OrderType { get; set; }
+        public ProductionJobOrderStatus? Status { get; set; }
+        [Display(Name = "Customer Type")]
+        public int ProductionCustomertypeId { get; set; }
         [Display(Name = "Customer Name")]
         public string CustomerName { get; set; }
         [Display(Name = "Estimated By")]
@@ -108,8 +110,6 @@ namespace ExceedERP.Core.Domain.ProductionFollowUp
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime? FinishExpectedCompletetion { get; set; }
-        [StringLength(25)]
-        public string Status { get; set; }
         [StringLength(50)]
         [Display(Name = "Finishing Workflow")]
         public string FinishingWorkflow { get; set; }
@@ -118,13 +118,15 @@ namespace ExceedERP.Core.Domain.ProductionFollowUp
        
         [Display(Name = "Approved By")]
         public string ApprovedBy { get; set; }
+        public bool IsApproved { get; set; }
         public string Reason { get; set; }
 
     }
-   public enum ProductionDemand
+   public enum ProductionJobOrderStatus
     {
-        External,
-        Internal
+        Normal,
+        ChangedOrder,
+        ReOrdered
         
     }
 
