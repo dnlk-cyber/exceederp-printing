@@ -73,7 +73,7 @@ namespace ExceedERP.Web.Controllers
         [AllowAnonymous]
         public ActionResult Login(string returnUrl)
         {
-            if (DateTime.Now > new DateTime(2022, 4, 1))
+            if (DateTime.Now > new DateTime(2025, 4, 1))
             {
                 return null;
             }
