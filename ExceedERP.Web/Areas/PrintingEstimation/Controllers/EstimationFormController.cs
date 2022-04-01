@@ -11,6 +11,7 @@ using Kendo.Mvc.UI;
 using ExceedERP.Core.Domain.PrintingEstimation;
 using ExceedERP.DataAccess.Context;
 using ExceedERP.Web.Helpers;
+using ExceedERP.Core.Domain.ProductionFollowUp;
 
 namespace ExceedERP.Web.Areas.PrintingEstimation.Controllers
 {
@@ -21,6 +22,10 @@ namespace ExceedERP.Web.Areas.PrintingEstimation.Controllers
 
         public ActionResult Index()
         {
+            ViewData["JobTypes"] = db.JobCategories.Select(s => new {
+                JobTypeId = s.JobCategoryId,
+                Type = s.HaveParent ? db.JobCategories.Where(q => q.JobCategoryId == s.ParentId).FirstOrDefault().JobName + "-" + s.JobName : s.JobName
+            }).ToList();
             var selecteditems = db.InventoryItems.Select(
                i => new
                {
@@ -46,7 +51,8 @@ namespace ExceedERP.Web.Areas.PrintingEstimation.Controllers
 
             IList<PrintingStep> printingSteps = db.PrintingSteps.ToList();
             ViewData["PrintingSteps"] = printingSteps;
-            
+            ViewBag.data = GetData();
+
             return View();
 
         }
@@ -71,13 +77,16 @@ namespace ExceedERP.Web.Areas.PrintingEstimation.Controllers
                 CustomerId = estimationForm.CustomerId,
                 Date = estimationForm.Date,
                 JobNumber = estimationForm.JobNumber,
+                JobTypeId = estimationForm.JobTypeId,
                 Quantity = estimationForm.Quantity,
                 Size = estimationForm.Size,
                 TextPaper = estimationForm.TextPaper,
                 TextPrint = estimationForm.TextPrint,
                 CoverPrint = estimationForm.CoverPrint,
                 BindingStyle = estimationForm.BindingStyle,
-                Others = estimationForm.Others
+                Others = estimationForm.Others,
+                IsChecked = estimationForm.IsChecked,
+                IsApproved = estimationForm.IsApproved
             });
 
             return Json(result);
@@ -86,13 +95,15 @@ namespace ExceedERP.Web.Areas.PrintingEstimation.Controllers
         {
             if (ModelState.IsValid)
             {
+
                 var entity = new EstimationForm
                 {
                     EstimationFormId = estimationForm.EstimationFormId,
                     CustomerId = estimationForm.CustomerId,
-                    Date = estimationForm.Date,
+                    Date = DateTime.Now,
                     JobNumber = estimationForm.JobNumber,
                     Quantity = estimationForm.Quantity,
+                    JobTypeId = int.Parse(estimationForm.JT),
                     Size = estimationForm.Size,
                     TextPaper = estimationForm.TextPaper,
                     TextPrint = estimationForm.TextPrint,
@@ -124,11 +135,14 @@ namespace ExceedERP.Web.Areas.PrintingEstimation.Controllers
                     JobNumber = estimationForm.JobNumber,
                     Quantity = estimationForm.Quantity,
                     Size = estimationForm.Size,
+                    JobTypeId = int.Parse(estimationForm.JT),
                     TextPaper = estimationForm.TextPaper,
                     TextPrint = estimationForm.TextPrint,
                     CoverPrint = estimationForm.CoverPrint,
                     BindingStyle = estimationForm.BindingStyle,
-                    Others = estimationForm.Others
+                    Others = estimationForm.Others,
+                    IsChecked = estimationForm.IsChecked,
+                    IsApproved = estimationForm.IsApproved
 
                 };
 
@@ -152,6 +166,7 @@ namespace ExceedERP.Web.Areas.PrintingEstimation.Controllers
                     CustomerId = estimationForm.CustomerId,
                     Date = estimationForm.Date,
                     JobNumber = estimationForm.JobNumber,
+                    JobTypeId = estimationForm.JobTypeId,
                     Quantity = estimationForm.Quantity,
                     Size = estimationForm.Size,
                     TextPaper = estimationForm.TextPaper,
@@ -170,10 +185,157 @@ namespace ExceedERP.Web.Areas.PrintingEstimation.Controllers
 
             return Json(new[] { estimationForm }.ToDataSourceResult(request, ModelState));
         }
+
+        public JsonResult CheckEstimation(int id)
+        {
+            var estimation = db.EstimationForms.Find(id);
+            object response = null;
+
+            if (estimation!=null)
+                {
+                estimation.IsChecked = true;
+                db.EstimationForms.Attach(estimation);
+                db.Entry(estimation).State = EntityState.Modified;
+                db.SaveChanges();
+                response = new { Success = true,Message= "Estimation has been checked Successfully!" };
+
+            }
+            else
+            {
+                response= new { Success = false, Message = "Estimation not found!" };
+            }
+
+            return Json(response);
+           
+        }
+
+        public JsonResult RejectEstimation(int id)
+        {
+            var estimation = db.EstimationForms.Find(id);
+            object response = null;
+
+            if (estimation != null)
+            {
+                estimation.IsChecked = false;
+                db.EstimationForms.Attach(estimation);
+                db.Entry(estimation).State = EntityState.Modified;
+                db.SaveChanges();
+                response = new { Success = true, Message = "Estimation has been rejected Successfully!" };
+
+            }
+            else
+            {
+                response = new { Success = false, Message = "Estimation not found!" };
+            }
+
+            return Json(response);
+
+        }
+
+        public JsonResult ApproveEstimation(int id)
+        {
+            var estimation = db.EstimationForms.Find(id);
+            object response = null;
+            if (estimation != null)
+            {
+                if(estimation.IsChecked)
+                {
+                    estimation.IsApproved = true;
+                    var oc = db.OverallCosts.Where(q => q.EstimationFormId == estimation.EstimationFormId).FirstOrDefault();
+                    db.EstimationForms.Attach(estimation);
+                    db.Entry(estimation).State = EntityState.Modified;
+                    //add new proforma 
+                    var proforma = new Proforma();
+                    proforma.HaveEstimation = true;
+                    proforma.IsExistingCustomer = true;
+                    proforma.ProformaId = proforma.ProformaId;
+                    proforma.ProformaNo = estimation.EstimationFormId.ToString();
+                    proforma.CustomerId = estimation.CustomerId;
+                    proforma.EstimationFormId = estimation.EstimationFormId;
+                    db.Proformas.Add(proforma);
+                    db.SaveChanges();
+                    decimal beforeTax = 0;
+                    decimal withTax = 0;
+                    decimal vat = 0;
+                        var jobType = db.JobCategories.FirstOrDefault(x => x.JobCategoryId.ToString() == estimation.JobTypeId.ToString());
+                    if (jobType != null)
+                    {
+                        var tax = db.GLTaxRates.FirstOrDefault(x => x.GLTaxRateID == jobType.GLTaxRateID);
+                        if (tax != null)
+                        {
+                             beforeTax = estimation.Quantity * oc.EstimatedNetPrice;
+                             withTax = beforeTax + (beforeTax * Convert.ToDecimal(tax.CalculatedRate));
+                             vat = withTax - beforeTax;
+                        }
+                    }
+                            var proformaItem = new PFProformaItems();
+                    proformaItem.PFProformaItemsId = proformaItem.PFProformaItemsId;
+                    proformaItem.ProformaId = proforma.ProformaId;
+                    proformaItem.ProformaId = proforma.ProformaId;
+                    proformaItem.JobTypeId = estimation.JobTypeId;
+                    proformaItem.Quantity = estimation.Quantity;
+                    proformaItem.UnitPrice = (decimal)oc?.EstimatedNetPrice;
+                    proformaItem.BeforeTax = beforeTax;
+                    proformaItem.TotalPrice = withTax;
+                    proformaItem.Size = estimation.Size ;
+                    proformaItem.Tax = vat;
+                    
+                    db.PFProformaItems.Add(proformaItem);
+                    db.SaveChanges();
+                    response = new { Success = true, Message = "Estimation has been checked Successfully!" };
+                }    
+                else
+                {
+                    response = new { Success = false, Message = "Estimation not found!" };
+                }
+            }
+            else
+            {
+                response = new { Success = false, Message = "Estimation not found!" };
+
+            }
+
+            return Json(response);
+        }
         protected override void Dispose(bool disposing)
         {
             db.Dispose();
             base.Dispose(disposing);
         }
+        private IEnumerable<DropDownTreeItemModel> GetData()
+        {
+            var jobCategories = db.JobCategories.Where(q => q.HaveParent == false).ToList();
+            List<DropDownTreeItemModel> jobs = new List<DropDownTreeItemModel>();
+            foreach (var jobCategory in jobCategories)
+            {
+                int i = 0;
+                DropDownTreeItemModel jobType = new DropDownTreeItemModel();
+                List<DropDownTreeItemModel> jobTypes = new List<DropDownTreeItemModel>();
+
+                var childs = db.JobCategories.Where(q => q.ParentId == jobCategory.JobCategoryId).ToList();
+                foreach (var child in childs)
+                {
+                    i++;
+                    DropDownTreeItemModel prt = new DropDownTreeItemModel();
+                    prt.Text = child.JobName;
+                    prt.Selected = true;
+                    prt.HasChildren = false;
+                    prt.Value = child.JobCategoryId.ToString();
+                    jobTypes.Add(prt);
+                }
+                jobType.Text = jobCategory.JobName;
+
+                jobType.Value = jobCategory.JobCategoryId.ToString();
+                jobType.Items = jobTypes;
+                jobs.Add(jobType);
+
+
+            }
+
+
+
+            return jobs;
+        }
+
     }
 }

@@ -24,9 +24,9 @@ namespace ExceedERP.Reporting.ProductionFollowUp.ViewModel
         public decimal Quantity { get; set; }
         public decimal Copies { get; set; }
         public decimal TotalImpression { get; set; }
-        public double TextWeight { get; set; }
+        public string TextWeight { get; set; }
         public bool Contract { get; set; }
-        public int ColorText { get; set; }
+        public string ColorText { get; set; }
         public string FinishingSize { get; set; }
         public string PrintingLine { get; set; }
         public string PrintingMachine { get; set; } 
@@ -47,8 +47,8 @@ namespace ExceedERP.Reporting.ProductionFollowUp.ViewModel
         public decimal Tax { get; set; }
         public decimal TotalPrice { get; set; }
         public DateTime? DeliveryDate { get; set; }
-        public double CoverWeight { get; set; }   
-        public decimal ColorCover { get; set; }  
+        public string CoverWeight { get; set; }   
+        public string ColorCover { get; set; }  
         public List<JobOrderMaterialVM> PaperTypes { get; set; }
         public List<JobOrderMaterialVM> FilmOrPlates { get; set; }
     }

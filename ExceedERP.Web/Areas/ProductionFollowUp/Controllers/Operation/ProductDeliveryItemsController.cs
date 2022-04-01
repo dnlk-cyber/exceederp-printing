@@ -32,10 +32,11 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                 ProductDeliveryId = productDeliveryItems.ProductDeliveryId,
                 JobId = productDeliveryItems.JobId,
                 ItemCode = productDeliveryItems.ItemCode,
+                VAT = productDeliveryItems.VAT,
+                Amount = productDeliveryItems.Amount,
                 ItemCategory = productDeliveryItems.ItemCategory,
                 Description = productDeliveryItems.Description,
                 UnitId = productDeliveryItems.UnitId,
-                Status = productDeliveryItems.Status,
                 Quantity = productDeliveryItems.Quantity,
                 UnitCost = productDeliveryItems.UnitCost,
                 TotalCost = productDeliveryItems.TotalCost
@@ -65,6 +66,8 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                     ItemCategory = productDeliveryItems.ItemCategory,
                     Description = productDeliveryItems.Description,
                     UnitId = productDeliveryItems.UnitId,
+                    VAT = productDeliveryItems.VAT,
+                    Amount = productDeliveryItems.Amount,
                     Quantity = productDeliveryItems.Quantity,
                     UnitCost = productDeliveryItems.UnitCost,
                     TotalCost = productDeliveryItems.TotalCost
@@ -116,6 +119,7 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                 Quantiy = (decimal)entity.Quantity,
                 TotalPrice = (decimal)entity.TotalCost,
                 //Invoice = deliveryProduct.,
+
                 SalesVoucherNo = deliveryProduct.CashSaleNo,
                 Cash = deliveryProduct.Cash,
                 Credit = deliveryProduct.Credit,
@@ -153,6 +157,8 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                     Description = productDeliveryItems.Description,
                     UnitId = productDeliveryItems.UnitId,
                     Quantity = productDeliveryItems.Quantity,
+                    VAT = productDeliveryItems.VAT,
+                    Amount = productDeliveryItems.Amount,
                     UnitCost = productDeliveryItems.UnitCost,
                     TotalCost = productDeliveryItems.TotalCost
                 };
@@ -163,23 +169,6 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
             }
 
             return Json(new[] { productDeliveryItems }.ToDataSourceResult(request, ModelState));
-        }
-        public ActionResult VoidDelivereItems(int id)
-        {
-            var deliveryItem = db.ProductDeliveryItems.Find(id);
-            if(deliveryItem!=null)
-            {
-                deliveryItem.Status = DeliveryStatus.Voided;
-                db.ProductDeliveryItems.Attach(deliveryItem);
-                db.Entry(deliveryItem).State = EntityState.Modified;
-                db.SaveChanges();
-                return Json("Item delivered has been voided");
-
-            }
-            return Json("Item delivery is not found");
-
-            return Json(deliveryItem);
-
         }
         [AcceptVerbs(HttpVerbs.Post)]
         public ActionResult ProductDeliveryItems_Destroy([DataSourceRequest]DataSourceRequest request, ProductDeliveryItems productDeliveryItems)
@@ -195,6 +184,8 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                     ItemCode = productDeliveryItems.ItemCode,
                     Description = productDeliveryItems.Description,
                     UnitId = productDeliveryItems.UnitId,
+                    VAT = productDeliveryItems.VAT,
+                    Amount = productDeliveryItems.Amount,
                     Quantity = productDeliveryItems.Quantity,
                     UnitCost = productDeliveryItems.UnitCost,
                     TotalCost = productDeliveryItems.TotalCost

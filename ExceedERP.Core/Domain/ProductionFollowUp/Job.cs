@@ -23,11 +23,13 @@ namespace ExceedERP.Core.Domain.ProductionFollowUp
         [Display(Name = "Proforma ")]
         public int? ProformaId { get; set; }
         public int CustomerId { get; set; }
-        [RegularExpression(@"^(\d{5})$", ErrorMessage = "Enter a valid 5 digit Job No")]
+        //[RegularExpression(@"^(\d{5})$", ErrorMessage = "Enter a valid 5 digit Job No")]
         [Display(Name = "Job No.")]
         public string JobNo { get; set; }
         [Display(Name = "Order Type")]
-        public ProductionDemand OrderType { get; set; }
+        public ProductionJobOrderStatus? Status { get; set; }
+        [Display(Name = "Customer Type")]
+        public int ProductionCustomertypeId { get; set; }
         [Display(Name = "Customer Name")]
         public string CustomerName { get; set; }
         [Display(Name = "Estimated By")]
@@ -72,13 +74,13 @@ namespace ExceedERP.Core.Domain.ProductionFollowUp
         public DateTime? ReceivedDate { get; set; }
 
         [Display(Name = "Text Weight")]
-        public double TextWeight { get; set; }
+        public string TextWeight { get; set; }
         [Display(Name = "Cover Weight")]
-        public double CoverWeight { get; set; }
+        public string CoverWeight { get; set; }
         [Display(Name = "Color Text")]
-        public int ColorText { get; set; }
+        public string ColorText { get; set; }
         [Display(Name = "Color Cover")]
-        public int Colorcover { get; set; }
+        public string Colorcover { get; set; }
         [StringLength(15)]
         [Display(Name = "Finishing Size")]
         public string FinishingSize { get; set; }
@@ -108,8 +110,6 @@ namespace ExceedERP.Core.Domain.ProductionFollowUp
         [DataType(DataType.Date)]
         [DisplayFormat(DataFormatString = "{0:yyyy-MM-dd}", ApplyFormatInEditMode = true)]
         public DateTime? FinishExpectedCompletetion { get; set; }
-        [StringLength(25)]
-        public string Status { get; set; }
         [StringLength(50)]
         [Display(Name = "Finishing Workflow")]
         public string FinishingWorkflow { get; set; }
@@ -118,13 +118,15 @@ namespace ExceedERP.Core.Domain.ProductionFollowUp
        
         [Display(Name = "Approved By")]
         public string ApprovedBy { get; set; }
+        public bool IsApproved { get; set; }
         public string Reason { get; set; }
 
     }
-   public enum ProductionDemand
+   public enum ProductionJobOrderStatus
     {
-        External,
-        Internal
+        Normal,
+        ChangedOrder,
+        ReOrdered
         
     }
 

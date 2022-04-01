@@ -5,8 +5,8 @@
           .Columns(columns =>
           {
               columns.ForeignKey(c => c.GlFiscalYearId, (IEnumerable)ViewData["FiscalYears"], "GlFiscalYearId", "Name").Width(150);
-              columns.Bound(c => c.TotalProduct).Width(150);
-              columns.Bound(c => c.TotalPrice).Width(150);
+              columns.Bound(c => c.TotalProduct).ClientFooterTemplate("Total Product: #=sum# ").Width(150);
+              columns.Bound(c => c.TotalPrice).ClientFooterTemplate("Total Price: #=sum# ").Width(150);
               columns.Command(command =>
               {
                   command.Edit();
@@ -31,6 +31,10 @@
             .Events(ev => ev.Error("error_handler(\"grid\")")
                                .RequestStart("onRequestStart(\"grid\")")
                                .RequestEnd("onRequestEnd(\"grid\")"))
+                               .Aggregates(ag=> {
+                                   ag.Add(a => a.TotalProduct).Sum();
+                                   ag.Add(a => a.TotalPrice).Sum();
+                               })
             .Model(model => model.Id(p => p.ProductionYearlyPlanId))
             .Read(read => read.Action("ProductionYearlyPlans_Read", "ProductionYearlyPlan"))
             .Create(create => create.Action("ProductionYearlyPlans_Create", "ProductionYearlyPlan"))
@@ -66,8 +70,8 @@
           .Columns(columns =>
           {
               columns.ForeignKey(c => c.GLPeriodId, (IEnumerable)ViewData["GlPeriods"], "GLPeriodId", "Name").Width(150);
-              columns.Bound(c => c.TotalProduct).Width(150);
-              columns.Bound(c => c.TotalPrice).Width(150);
+              columns.Bound(c => c.TotalProduct).ClientFooterTemplate("Total Product: \\#=sum\\# ").Width(150);
+              columns.Bound(c => c.TotalPrice).ClientFooterTemplate("Total Price: \\#=sum\\# ").Width(150);
 
           })
               .ToolBar(toolbar =>
@@ -89,11 +93,16 @@
             .Events(ev => ev.Error("error_handler(\"production_month_plan_#=ProductionYearlyPlanId#\")")
                                .RequestStart("onRequestStart(\"production_month_plan_#=ProductionYearlyPlanId#\")")
                                .RequestEnd("onRequestEnd(\"production_month_plan_#=ProductionYearlyPlanId#\")"))
-            .Model(model =>
+            .Aggregates(ag =>
             {
-                model.Id(p => p.ProductionMonthlyPlanId);
-                model.Field(p => p.GLPeriodId).Editable(false);
+                ag.Add(a => a.TotalProduct).Sum();
+                ag.Add(a => a.TotalPrice).Sum();
             })
+                               .Model(model =>
+                               {
+                                   model.Id(p => p.ProductionMonthlyPlanId);
+                                   model.Field(p => p.GLPeriodId).Editable(false);
+                               })
             .Read(read => read.Action("ProductionMonthlyPlans_Read", "ProductionMonthlyPlan", new { id = "#=ProductionYearlyPlanId#" }))
             .Create(create => create.Action("ProductionMonthlyPlans_Create", "ProductionMonthlyPlan"))
             .Update(update => update.Action("ProductionMonthlyPlans_Update", "ProductionMonthlyPlan", new { id = "#=ProductionYearlyPlanId#" }))
@@ -128,8 +137,8 @@
           .Columns(columns =>
           {
               columns.ForeignKey(c => c.JobTypeId, (IEnumerable)ViewData["JobTypes"], "JobCategoryId", "JobName").Width(150);
-              columns.Bound(c => c.TotalProduct).Width(150);
-              columns.Bound(c => c.TotalPrice).Width(150);
+              columns.Bound(c => c.TotalProduct).ClientFooterTemplate("Total Product: \\#=sum\\# ").Width(150);
+              columns.Bound(c => c.TotalPrice).ClientFooterTemplate("Total Price: \\#=sum\\# ").Width(150);
 
           })
               .ToolBar(toolbar =>
@@ -151,10 +160,15 @@
             .Events(ev => ev.Error("error_handler(\"production_month_job_type_plan_#=ProductionMonthlyPlanId#\")")
                                .RequestStart("onRequestStart(\"production_month_job_type_plan_#=ProductionMonthlyPlanId#\")")
                                .RequestEnd("onRequestEnd(\"production_month_job_type_plan_#=ProductionMonthlyPlanId#\")"))
-            .Model(model => {
-                model.Id(p => p.ProductionMonthlyJobTypePlanId);
-                model.Field(p => p.JobTypeId).Editable(false);
+            .Aggregates(ag =>
+            {
+                ag.Add(a => a.TotalProduct).Sum();
+                ag.Add(a => a.TotalPrice).Sum();
             })
+                               .Model(model => {
+                                   model.Id(p => p.ProductionMonthlyJobTypePlanId);
+                                   model.Field(p => p.JobTypeId).Editable(false);
+                               })
             .Read(read => read.Action("ProductionMonthlyJobTypePlans_Read", "ProductionMonthlyJobTypePlan", new { id = "#=ProductionMonthlyPlanId#" }))
             .Create(create => create.Action("ProductionMonthlyJobTypePlans_Create", "ProductionMonthlyJobTypePlan", new { id = "#=ProductionMonthlyPlanId#" }))
             .Update(update => update.Action("ProductionMonthlyJobTypePlans_Update", "ProductionMonthlyJobTypePlan", new { id = "#=ProductionMonthlyPlanId#" }))

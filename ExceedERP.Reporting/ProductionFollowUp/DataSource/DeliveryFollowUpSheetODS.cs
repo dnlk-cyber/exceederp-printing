@@ -27,13 +27,13 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
             }
             if(startDate.HasValue)
             {
-                productDeliverys = productDeliverys.Where(q => q.DateCreated.Value.Date >= startDate.Value.Date).ToList();
+                productDeliverys = productDeliverys.Where(q => q.DateCreated.HasValue?q.DateCreated.Value.Date >= startDate.Value.Date:false).ToList();
                 model.From = startDate?.ToString("MM/dd/yyyy");
 
             }
             if (endDate.HasValue)
             {
-                productDeliverys = productDeliverys.Where(q => q.DateCreated.Value.Date <= endDate.Value.Date).ToList();
+                productDeliverys = productDeliverys.Where(q => q.DateCreated.HasValue ? q.DateCreated.Value.Date <= endDate.Value.Date:false).ToList();
                 model.To = endDate?.ToString("MM/dd/yyyy");
             }
             var organization = db.Companies.FirstOrDefault(x => x.Category == "0");
@@ -61,6 +61,7 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
             foreach (var productDelivery in productDeliverys)
             {
                 var item = new DeliveryFollowUpSheetItemsVM();
+                
                 var deliveries = db.ProductDeliveryItems.ToList().Where(q => q.ProductDeliveryId == productDelivery.ProductDeliveryId);
                 var jobs = deliveries.Select(s => s.JobId);
                 var jobTypeIds = db.Jobs.Where(q => jobs.Contains(q.JobId)).Select(s=>s.JobTypeId).Distinct();
@@ -70,9 +71,9 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
                    item.Date = productDelivery.DateCreated?.ToString("MM/dd/yyyy");
                    item.Customer = db.OrganizationCustomers.Find(productDelivery.CustomerId)?.TradeName;
                    item.Credit = productDelivery.Credit.ToString();
-                   item.Amount = deliveries.Sum(s=>s.TotalCost);
-                   item.VAT = deliveries.Sum(s => s.TotalCost);
-                   item.Total = item.Total;
+                   item.Amount = deliveries.Sum(s=>s.Amount);
+                   item.VAT = deliveries.Sum(s => s.VAT);
+                   item.Total = item.Amount + item.VAT;
                    grandTotal += deliveries.Sum(s => s.TotalCost);
                    item.GrandTotal = grandTotal;
                        

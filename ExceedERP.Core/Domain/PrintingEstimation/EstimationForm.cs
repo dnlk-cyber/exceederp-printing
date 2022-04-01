@@ -17,20 +17,26 @@ namespace ExceedERP.Core.Domain.PrintingEstimation
         [Required]
         public DateTime Date { get; set; }
         [Required]
+        [Display(Name ="Job Type")]
+        public int  JobTypeId { get; set; }
+        public string  JT { get; set; }
+        [Required]
         public string JobNumber { get; set; }
         [Required]
         public decimal Quantity { get; set; }
         [Required]
         public string Size { get; set; }
         [Required]
-        public decimal TextPaper { get; set; }
+        public string TextPaper { get; set; }
         [Required]
-        public decimal TextPrint { get; set; }
+        public string TextPrint { get; set; }
         [Required]
         public string CoverPrint { get; set; }
         [Required]
         public string BindingStyle { get; set; }
         public string Others { get; set; }
+        public bool IsChecked { get; set; }
+        public bool IsApproved { get; set; }
         public virtual ICollection<MaterialCost> MaterialCosts { get; set; } = new List<MaterialCost>();
         public virtual ICollection<LaborCost> LaborCosts { get; set; } = new List<LaborCost>();
 

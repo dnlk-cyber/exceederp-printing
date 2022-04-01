@@ -28,11 +28,12 @@ namespace ExceedERP.Core.Domain.ProductionFollowUp
 
     public enum ProductionDepartment
     {
+        JobFollowup = 0,
         Graphic = 1,
         Printing = 2,
         Finishing = 3,
         FinishingDelivery = 4,
-        SalesDelivery = 4
+        SalesDelivery = 5
     }
 
     public enum CheckType

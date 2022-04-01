@@ -45,25 +45,27 @@
                                 {
                                     //columns.Bound(c => c.Time);
                                     columns.Bound(c => c.JobNo).Width(90).Title("JobNo");
-                                    columns.ForeignKey(c => c.ProformaId, (IEnumerable)ViewData["Proforma"], "ProformaId", "ProformaNo").Width(100);
+                                    columns.ForeignKey(c => c.ProductionCustomertypeId, (IEnumerable)ViewData["CustomerTypes"], "Code", "Name").Width(100);
+                                    //  columns.ForeignKey(c => c.ProformaId, (IEnumerable)ViewData["Proforma"], "ProformaId", "ProformaNo").Width(100);
                                     columns.ForeignKey(c => c.JobTypeId, (IEnumerable)ViewData["JobType"], "JobTypeId", "Type").Width(130);
                                     columns.ForeignKey(c => c.CustomerId, (IEnumerable)ViewData["Customers"], "Code", "Name")
                                                                               .Width(110)
                                                                               .Title("Customer");
                                     columns.ForeignKey(c => c.MachineId, (IEnumerable)ViewData["Machines"], "Code", "Name")
                                                                               .Width(110);
-                                    columns.Bound(c => c.Quantity).Width(90);
-                                    columns.Bound(c => c.UnitPrice).Width(90);
-                                    columns.Bound(c => c.BeforeTax).Width(90);
-                                    columns.Bound(c => c.TotalPrice).Width(90);
+                                    columns.Bound(c => c.ReceivedDate).Width(90).Format("{0:MM-dd-yyyy}");
+                                    columns.Bound(c => c.Quantity).Width(90).ClientFooterTemplate("T Q: #=sum# ");
+                                    columns.Bound(c => c.UnitPrice).Width(90).ClientFooterTemplate("T UP: #=sum# ");
+                                    columns.Bound(c => c.BeforeTax).Width(90).ClientFooterTemplate("T BT: #=sum# ");
+                                    columns.Bound(c => c.TotalPrice).Width(90).ClientFooterTemplate("T P: #=sum# ");
 
                                     columns.Command(command =>
                                     {
-                                        command.Edit();
+                                        command.Edit().Text("Edit").HtmlAttributes(new { @class = "normal-edit"});
                                         command.Destroy();
-                                        command.Edit().Text("Reorder").HtmlAttributes(new { onclick = "change(this);" });
-
-                                        command.Custom("ReOrder").Text("Change Order").Click("forReOrder").HtmlAttributes(new { @class = "btn btn-primary", id = "btnStyle", style = "padding:2px;", title = "ReOrder" });
+                                        command.Edit().Text("Reorder").HtmlAttributes(new { onclick = "change(this);", @class = "reorder-edit" });
+                                        command.Custom("approve").Text("Approve").IconClass("fa fa-check");
+                                        command.Custom("change-order").Text("Change Order").Click("forReOrder").HtmlAttributes(new { @class = "btn btn-primary", id = "btnStyle", style = "padding:2px;", title = "ReOrder" });
 
                                     }).Width(400);
                                 })
@@ -92,7 +94,13 @@
                                          .DataSource(dataSource => dataSource
                                              .Ajax()
                                              .ServerOperation(true)
+                                             .Aggregates(ag=> {
+                                                 ag.Add(a=>a.Quantity).Sum();
+                                                 ag.Add(a=>a.UnitPrice).Sum();
+                                                 ag.Add(a=>a.BeforeTax).Sum();
+                                                 ag.Add(a=>a.TotalPrice).Sum();
 
+                                             })
                                             .Events(events =>
                                             {
                                                 events.Error("error_handler(\"JobGrid\")");
@@ -501,7 +509,7 @@
 
                                                         @Html.Label("Quantity")
 
-                                                        @Html.TextBox("Quantity", "", new { type = "text", onchange = "onChangeOfOrder()" })
+                                                        @Html.TextBox("ChangedQuantity", "", new { type = "text", onchange = "onChangeOfOrder()" })
 
                                                         @Html.Label("Unit Price")
 
@@ -1351,13 +1359,12 @@
     }
     function onChange() {
         var unitPrice = $("#UnitPrice").val();
-        var quantitynumerictextbox = $("#Quantity");
+        quantity = $("#Quantity").val();
     var jobTypeId = $("#JT").val();
         console.log(unitPrice);
         console.log(jobTypeId);
-
         console.log(quantity);
-        if (quantity !== "" && unitPrice !== "" && jobTypeId != "") {
+        if (quantity !== "" && quantity !== 0 && unitPrice !== "" && unitPrice !== "0" && jobTypeId != "") {
         console.log(unitPrice);
     $.ajax({
     url: '@Url.Action("GetBeforeVatAndTotalPerice", "JobOrders")',
@@ -1640,9 +1647,9 @@
     function onSelectLoading() {
     var dropdowntree = $("#JT").data("kendoDropDownTree");
     var treeviewSelect = function (e) {
-    if (e.sender.dataItem(e.node).hasChildren) {
-    e.preventDefault()
-    }
+    //if (e.sender.dataItem(e.node).hasChildren) {
+    //e.preventDefault()
+    //}
     };
 
     dropdowntree.treeview.bind("select", treeviewSelect);

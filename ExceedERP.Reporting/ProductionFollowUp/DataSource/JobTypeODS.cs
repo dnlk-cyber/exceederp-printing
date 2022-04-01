@@ -1,4 +1,5 @@
-﻿using ExceedERP.DataAccess.Context;
+﻿using ExceedERP.Core.Domain.ProductionFollowUp;
+using ExceedERP.DataAccess.Context;
 using ExceedERP.Reporting.ProductionFollowUp.ViewModel;
 using ExceedERP.Reporting.SharedDataSources;
 using System;
@@ -16,7 +17,7 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
     {
         ExceedDbContext db = new ExceedDbContext();
         [DataObjectMethod(DataObjectMethodType.Select)]
-        public JobTypeVM GetJobTypeODS(DateTime? startDate, DateTime? endDate, string jobTypeId, string customerId)
+        public JobTypeVM GetJobTypeODS(DateTime? startDate, DateTime? endDate,string jobPhase, string jobTypeId, string customerId)
         {
             var model = new JobTypeVM();
             var organization = db.Companies.FirstOrDefault(x => x.Category == "0");
@@ -43,8 +44,8 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
             {
                 model.From = startDate?.ToString("dd/MM/yyyy");
                 model.To = endDate?.ToString("dd/MM/yyyy");
-                var jobs = db.Jobs.ToList().Where(x => x.DateCreated.Value.Date >= startDate.Value.Date
-                && x.DateCreated.Value.Date <= endDate.Value.Date).ToList();
+                var jobs = db.Jobs.ToList().Where(x => x.ReceivedDate.HasValue ?  x.ReceivedDate.Value.Date >= startDate.Value.Date
+                && x.ReceivedDate.Value.Date <= endDate.Value.Date:false).ToList();
                 if (jobTypeId != null)
                 {
                     jobs = jobs.Where(q => q.JobTypeId.ToString() == jobTypeId).ToList();
@@ -70,12 +71,47 @@ namespace ExceedERP.Reporting.ProductionFollowUp.DataSource
 
                         var jobType = db.JobCategories.FirstOrDefault(x => x.JobCategoryId == jobOrder.JobTypeId);
                         var client = db.OrganizationCustomers.FirstOrDefault(x => x.OrganizationCustomerID == jobOrder.CustomerId);
+                        var totalPrice = jobOrder.TotalPrice;
+                        if(jobPhase!=null)
+                        {
+                            var jobStatus = db.JobStatuses.Where(q => q.JobId == jobOrder.JobId && q.JobPhase.ToString() == jobPhase).FirstOrDefault();
+                            if (jobStatus != null|| jobPhase == ProductionDepartment.JobFollowup.ToString())
+                            {
+                                if (jobPhase == ProductionDepartment.Graphic.ToString())
+                                {
+                                    if (jobStatus.Status == Core.Domain.PrintingEstimation.Setting.JobState.InProgress)
+                                    {
+                                        totalPrice = 0;
+                                    }
 
+                                }
+                                else if (jobPhase == ProductionDepartment.JobFollowup.ToString())
+                                {
+                                    var jobS = db.JobStatuses.Where(q => q.JobId == jobOrder.JobId && q.JobPhase.ToString() == ProductionDepartment.Graphic.ToString()).FirstOrDefault();
+                                    if(jobS!=null)
+                                    {
+                                        totalPrice = 0;
+                                    }
+                                }
+                                else
+                                {
+
+
+                                    totalPrice = db.JobStatusLineItems.Where(q => q.JobStatusId == jobStatus.JobStatusId).ToList().Sum(s => s.TotalPrice);
+
+                                }                       
+                            }
+                            else
+                            {
+                                totalPrice = 0;
+                            }
+                        }
+                        job.JobNo = jobOrder?.JobNo;
                         job.JobType = jobType?.JobName;
                         job.Client = client?.TradeName;
                         job.Quantity = jobOrder.Quantity + "x" + jobOrder.Pages;
                         job.Size = jobOrder.FinishingSize + "x" + jobOrder.Copies;
-                        job.TotalPrice = jobOrder.TotalPrice;
+                        job.TotalPrice = totalPrice;
                         job.Code = jobType?.JobCode;
                         jobList.Add(job);
                     }

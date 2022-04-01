@@ -15,8 +15,8 @@ namespace ExceedERP.Reporting.PrintingEstimation.ViewModel
         public string JobNumber { get; set; }
         public decimal Quantity { get; set; }
         public string Size { get; set; }
-        public decimal TextPaper { get; set; }
-        public decimal TextPrint { get; set; }
+        public string TextPaper { get; set; }
+        public string TextPrint { get; set; }
         public string CoverPrint { get; set; }
         public string BindingStyle { get; set; }
         public string Others { get; set; }

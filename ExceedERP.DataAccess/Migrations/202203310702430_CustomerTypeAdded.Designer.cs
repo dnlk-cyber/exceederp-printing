@@ -7,13 +7,13 @@ namespace ExceedERP.DataAccess.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.3-40302")]
-    public sealed partial class MonthlyAndJobTypePlanAdded : IMigrationMetadata
+    public sealed partial class CustomerTypeAdded : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(MonthlyAndJobTypePlanAdded));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(CustomerTypeAdded));
         
         string IMigrationMetadata.Id
         {
-            get { return "202203180751422_MonthlyAndJobTypePlanAdded"; }
+            get { return "202203310702430_CustomerTypeAdded"; }
         }
         
         string IMigrationMetadata.Source

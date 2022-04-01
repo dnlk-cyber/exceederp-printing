@@ -16,14 +16,19 @@
         </div>
         <div class="col-md-3 ro1">
             <div class="form-group">
-                <label>Order Demand</label>
+                <label>Customer Type</label>
                 <div>
-                    @(Html.Kendo().DropDownListFor(model => model.OrderType)
-                                                                      .DataTextField("Text")
-                                                                        .DataValueField("Value")
-                                                                            .BindTo(EnumExtension.EnumToSelectList(typeof(ProductionDemand)))
-                    )
-                    @Html.ValidationMessageFor(model => model.OrderType, "", new { @class = "text-danger" })
+                    @(Html.Kendo().DropDownListFor(model => model.ProductionCustomertypeId)
+                                                                .OptionLabel("--Select--")
+                                                                .DataTextField("Name")
+                                                                .DataValueField("Code")
+                                                                .DataSource(dataSource =>
+                                                                {
+                                                                    dataSource.Read(read => read.Action("GetAllProductionCustomerTypes", "ProductionDataProvider", new { area = "ProductionFollowUp" }))
+                                                                            .ServerFiltering(false);
+                                                                })
+                                                              .ValuePrimitive(true))
+                    @Html.ValidationMessageFor(model => model.UnitId, "", new { @class = "text-danger" })
                 </div>
             </div>
             <div class="form-group">
@@ -39,7 +44,7 @@
                                                                     .ServerFiltering(false);
                                                         })
                                                       .ValuePrimitive(true))                        
-                    @Html.ValidationMessageFor(model => model.OrderType, "", new { @class = "text-danger" })
+                    @Html.ValidationMessageFor(model => model.UnitId, "", new { @class = "text-danger" })
                 </div>
             </div>
         </div>
@@ -294,7 +299,8 @@
 
                                                                                                                                                                         .ValuePrimitive(true)
                                                                                                                                                                         .Placeholder("--select--")
-                                                                                                                                                                        .Events(ev => ev.Change("onSelectLoading"))
+                                                                                                                                                                        .Events(ev => ev.Change("onSelectLoading").Change("onChange"))
+                                                                                                                                                                        
                                                                                                                                                                         .BindTo((IEnumerable<DropDownTreeItemModel>)ViewBag.data))
 
                                             @Html.ValidationMessageFor(model => model.JT, "", new { @class = "text-danger" })
@@ -333,7 +339,7 @@
                                         @Html.LabelFor(model => model.Quantity, htmlAttributes: new { @class = "control-label col-sm-8" })
                                         <div>
 
-                                            @(Html.Kendo().NumericTextBoxFor(model => model.Quantity)
+                                            @(Html.Kendo().NumericTextBoxFor(model => model.Quantity).Name("Quantity")
                                                                                                                                                                                                                          .Events(e =>
                                                                                                                                                                                                                          {
                                                                                                                                                                                                                              e.Change("onChangeQuan");

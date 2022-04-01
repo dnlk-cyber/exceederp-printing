@@ -105,6 +105,7 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
                 Credit = productDelivery.Credit,
                 CashSaleNo = productDelivery.CashSaleNo,
                 Cash = productDelivery.Cash,
+                DeliveryStatus = productDelivery.DeliveryStatus,
                 PreparedBy = productDelivery.PreparedBy,
                 ApprovedBy = productDelivery.ApprovedBy,
                 IdentificationNo = productDelivery.IdentificationNo,
@@ -213,6 +214,22 @@ namespace ExceedERP.Web.Areas.ProductionFollowUp.Controllers.Operation
             return Json(new[] { productDelivery }.ToDataSourceResult(request, ModelState));
         }
 
+        public ActionResult VoidDelivery(int id)
+        {
+            var delivery = db.ProductDeliveries.Find(id);
+            if (delivery != null)
+            {
+                delivery.DeliveryStatus = DeliveryStatus.Voided;
+                db.ProductDeliveries.Attach(delivery);
+                db.Entry(delivery).State = EntityState.Modified;
+                db.SaveChanges();
+                return Json("Delivery has been voided");
+
+            }
+            return Json("Delivery is not found");
+
+
+        }
         protected override void Dispose(bool disposing)
         {
             db.Dispose();
